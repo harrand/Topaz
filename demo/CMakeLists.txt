@@ -2,7 +2,7 @@ function(add_demo)
 	cmake_parse_arguments(
 		ADD_DEMO
 		""
-		"TARGET"
+		"TARGET;CUSTOM_ICON"
 		"SOURCE_FILES;SHADER_SOURCES"
 		${ARGN}
 	)
@@ -21,6 +21,17 @@ function(add_demo)
 		TARGET ${ADD_DEMO_TARGET}
 		SHADERS ${ADD_DEMO_SHADER_SOURCES}
 	)
+
+	if(${TOPAZ_BUILDCONFIG} MATCHES "release")
+		if(ADD_DEMO_CUSTOM_ICON)
+			set(icon_path ${ADD_DEMO_CUSTOM_ICON})
+		else()
+			set(icon_path ${PROJECT_SOURCE_DIR}/doc/favicon.ico)
+		endif()
+		tz_set_target_meta(TARGET ${ADD_DEMO_TARGET}
+			NAME "untitled"
+			ICON_PATH ${icon_path})
+	endif()
 endfunction()
 
 add_subdirectory(core)

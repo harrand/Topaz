@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 include(cmake/util.cmake)
+include(cmake/exe_config.cmake)
 include(cmake/setup_configs.cmake)
 
 file(READ ./version.txt TZ_VERSION)
@@ -237,12 +238,13 @@ function(add_app)
 	cmake_parse_arguments(
 		ADD_APP
 		""
-		"TARGET"
+		"TARGET;CUSTOM_ICON"
 		"SOURCE_FILES;SHADER_SOURCES"
 		${ARGN}
 	)
 
 	add_demo(TARGET ${ADD_APP_TARGET}
+		CUSTOM_ICON ${ADD_APP_CUSTOM_ICON}
 		SOURCE_FILES ${ADD_APP_SOURCE_FILES}
 		SHADER_SOURCES ${ADD_APP_SHADER_SOURCES}
 	)
