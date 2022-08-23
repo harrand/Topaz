@@ -10,7 +10,6 @@ set(TZ_CXX_STANDARD 20)
 
 project(topaz VERSION ${TZ_VERSION}
 	DESCRIPTION "C++20 Graphics Engine")
-set(TZ_ROOT_DIR ${PROJECT_SOURCE_DIR})
 
 add_library(topaz
 	# tz::core

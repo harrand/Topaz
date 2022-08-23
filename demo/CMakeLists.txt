@@ -26,7 +26,8 @@ function(add_demo)
 		if(ADD_DEMO_CUSTOM_ICON)
 			set(icon_path ${ADD_DEMO_CUSTOM_ICON})
 		else()
-			set(icon_path ${TZ_ROOT_DIR}/doc/favicon.ico)
+			get_target_property(TOPAZ_ROOT_DIR topaz SOURCE_DIR)
+			set(icon_path ${TOPAZ_ROOT_DIR}/doc/favicon.ico)
 		endif()
 		tz_set_target_meta(TARGET ${ADD_DEMO_TARGET}
 			NAME "untitled"
