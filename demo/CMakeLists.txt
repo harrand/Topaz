@@ -30,7 +30,7 @@ function(add_demo)
 			set(icon_path ${TOPAZ_ROOT_DIR}/doc/favicon.ico)
 		endif()
 		tz_set_target_meta(TARGET ${ADD_DEMO_TARGET}
-			NAME "untitled"
+			NAME ${ADD_DEMO_TARGET}
 			ICON_PATH ${icon_path})
 	endif()
 endfunction()
