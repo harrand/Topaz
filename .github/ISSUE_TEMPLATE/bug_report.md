@@ -1,8 +1,8 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: Bug Report
+about: Report a bug in the engine
+title: 'Bug Report: '
+labels: 'bug'
 assignees: ''
 
 ---
@@ -10,12 +10,18 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Reproduction**
+- Repros On: [demo name/test name/application name]
+- Repro Type: [build-error/assert/crash/unexpected behaviour]
+- Repro Rate: [once-off/intermittent/sometimes/often/every time]
+- Repro Severity (how badly does it affect your bottom line): [very little/little/moderate/high/show-stopper]
+**Repro Steps**
+Steps to reproduce the bug:
+1. Run '...'
+2. Do X
+3. Do Y
+4. Do Z
+5. See crash/assert/glitch/unexpected behaviour
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -23,16 +29,12 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Conditions (please complete the following information):**
+ - OS: [windows/linux]
+ - Render API: [vulkan/opengl]
+ - Build Config: [debug/release/profile]
+ - Version: [master/version]
+ - Compiler: [gcc/clang/msvc]
 
 **Additional context**
 Add any other context about the problem here.
