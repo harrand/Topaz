@@ -1376,12 +1376,66 @@ namespace tz::gl
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
-					IResource* res = this->get_resource(arg.resource);
+					IComponent* comp = this->get_component(arg.resource);
+					IResource* res = comp->get_resource();
+					// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
 					switch(res->get_access())
 					{
 						case ResourceAccess::StaticFixed:
 						{
-							tz_error("Sorry, write edit requests for static resources are not yet implemented.");
+							//tz_error("Sorry, write edit requests for static resources are not yet implemented.");
+							// Create staging buffer.
+							vk2::Buffer staging_buffer
+							{{
+								.device = this->ldev,
+								.size_bytes = arg.offset + arg.data.size_bytes(),
+								.usage = {vk2::BufferUsage::TransferSource},
+								.residency = vk2::MemoryResidency::CPU
+							}};
+							// Write data into staging buffer.
+							{
+								void* ptr = staging_buffer.map();
+								std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
+								staging_buffer.unmap();
+							}
+							// Schedule work to transfer.
+							switch(res->get_type())
+							{
+								case ResourceType::Buffer:
+								{
+									vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
+									this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
+									{
+										record.buffer_copy_buffer
+										({
+											.src = &staging_buffer,
+											.dst = &buffer,
+											.src_offset = 0,
+											.dst_offset = arg.offset
+										});
+									});
+
+								}
+								break;
+								case ResourceType::Image:
+								{
+									vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
+									if(arg.offset != 0)
+									{
+										tz_warning_report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
+									}
+									this->command.do_scratch_operations([&image, &staging_buffer](vk2::CommandBufferRecording& record)
+									{
+										record.buffer_copy_image
+										({
+											.src = &staging_buffer,
+											.dst = &image,
+											.image_aspects = {vk2::ImageAspectFlag::Colour}
+										});
+									});
+								}
+								break;
+							}
 						}
 						break;
 						default:

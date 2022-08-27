@@ -116,6 +116,10 @@ namespace tz::gl::vk2
 			const Buffer* src;
 			/// Buffer to copy to. Must not be null.
 			Buffer* dst;
+			/// Offset, in bytes, from the beginning of the source buffer to copy from.
+			std::size_t src_offset = 0;
+			/// Offset, in bytes, from the beginning of the destination buffer to copy to.
+			std::size_t dst_offset = 0;
 		};
 
 		/**
