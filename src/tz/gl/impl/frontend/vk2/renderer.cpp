@@ -1339,6 +1339,11 @@ namespace tz::gl
 		bool resized_static_resources = false;
 
 		bool final_wireframe_mode_state = this->pipeline.is_wireframe_mode();
+		if(edit_request.empty())
+		{
+			return;
+		}
+		this->command.wait_pending_commands_complete();
 		for(const RendererEdit::Variant& req : edit_request)
 		{
 			std::visit([this, &work_commands_need_recording, &pipeline_needs_recreating, /*&resized_static_resources, */&final_wireframe_mode_state](auto&& arg)
@@ -1416,7 +1421,6 @@ namespace tz::gl
 		{
 			return;
 		}
-		this->command.wait_pending_commands_complete();
 		if(pipeline_needs_recreating)
 		{
 			this->pipeline.recreate(this->output.get_render_pass(), this->output.get_output_dimensions(), final_wireframe_mode_state);
