@@ -7,31 +7,31 @@ namespace tz::gl
 
 	RendererEditBuilder& RendererEditBuilder::compute(RendererEdit::ComputeConfig req)
 	{
-		this->request.add(req);
+		this->request.push_back(req);
 		return *this;
 	}
 
 	RendererEditBuilder& RendererEditBuilder::render_state(RendererEdit::RenderConfig req)
 	{
-		this->request.add(req);
+		this->request.push_back(req);
 		return *this;
 	}
 
 	RendererEditBuilder& RendererEditBuilder::image_resize(RendererEdit::ImageResize req)
 	{
-		this->request.add(req);
+		this->request.push_back(req);
 		return *this;
 	}
 
 	RendererEditBuilder& RendererEditBuilder::buffer_resize(RendererEdit::BufferResize req)
 	{
-		this->request.add(req);
+		this->request.push_back(req);
 		return *this;
 	}
 
 	RendererEditBuilder& RendererEditBuilder::write(RendererEdit::ResourceWrite req)
 	{
-		this->request.add(req);
+		this->request.push_back(req);
 		return *this;
 	}
 

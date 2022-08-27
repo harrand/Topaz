@@ -125,7 +125,7 @@ namespace tz::gl
 	 *
 	 * @note This is a large structure. You should use the helper class @ref RendererEditBuilder to create one of these instead of attempting to fill it directly.
 	 */
-	using RendererEditRequest = tz::BasicList<RendererEdit::Variant>;
+	using RendererEditRequest = std::vector<RendererEdit::Variant>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
