@@ -66,57 +66,58 @@ namespace tz::gl
 		{t.debug_get_name()} -> std::same_as<std::string>;
 	};
 
-	/**
-	 * Represents a resize operation for an existing buffer component.
-	 */
-	struct RendererBufferComponentResizeRequest
+	struct RendererEdit
 	{
-		/// Handle corresponding to the buffer to edit.
-		ResourceHandle buffer_handle;
-		/// New size of the buffer, in bytes.
-		std::size_t size;
-	};
 
-	/**
-	 * Represents a resize operation for an existing image component.
-	 */
-	struct RendererImageComponentResizeRequest
-	{
-		/// Handle corresponding to the image to edit.
-		ResourceHandle image_handle;
-		/// New dimensions of the image, in pixels.
-		tz::Vec2ui dimensions;
-	};
+		/**
+		 * Represents a resize operation for an existing buffer component.
+		 */
+		struct BufferResize
+		{
+			/// Handle corresponding to the buffer to edit.
+			ResourceHandle buffer_handle;
+			/// New size of the buffer, in bytes.
+			std::size_t size;
+		};
 
-	struct RendererComponentWriteRequest
-	{
-		ResourceHandle resource;
-		std::span<const std::byte> data = {};
-		std::size_t offset = 0;
-	};
+		/**
+		 * Represents a resize operation for an existing image component.
+		 */
+		struct ImageResize
+		{
+			/// Handle corresponding to the image to edit.
+			ResourceHandle image_handle;
+			/// New dimensions of the image, in pixels.
+			tz::Vec2ui dimensions;
+		};
 
-	/**
-	 * Represents an edit, setting a new value for the compute kernel for a renderer.
-	 */
-	struct RendererComputeEditRequest
-	{
-		/// New compute kernel workgroup dimensions.
-		tz::Vec3ui kernel;
-	};
+		struct ResourceWrite
+		{
+			ResourceHandle resource;
+			std::span<const std::byte> data = {};
+			std::size_t offset = 0;
+		};
 
-	/**
-	 * Represents an edit to the fixed-function renderer state.
-	 */
-	struct RendererStateEditRequest
-	{
-		/// Whether triangles should only have their outlines drawn, instead of filled.
-		bool wireframe_mode = false;
-	};
+		/**
+		 * Represents an edit, setting a new value for the compute kernel for a renderer.
+		 */
+		struct ComputeConfig
+		{
+			/// New compute kernel workgroup dimensions.
+			tz::Vec3ui kernel;
+		};
 
-	/**
-	 * Type-safe union of @ref RendererBufferComponentResizeRequest, @ref RendererImageComponentResizeRequest and @ref RendererComponentWriteRequest.
-	 */
-	using RendererComponentEditRequest = std::variant<RendererBufferComponentResizeRequest, RendererImageComponentResizeRequest, RendererComponentWriteRequest>;
+		/**
+		 * Represents an edit to the fixed-function renderer state.
+		 */
+		struct RenderConfig
+		{
+			/// Whether triangles should only have their outlines drawn, instead of filled.
+			bool wireframe_mode = false;
+		};
+
+		using Variant = std::variant<BufferResize, ImageResize, ResourceWrite, ComputeConfig, RenderConfig>;
+	};
 
 	/**
 	 * @ingroup tz_gl2_renderer
@@ -124,15 +125,7 @@ namespace tz::gl
 	 *
 	 * @note This is a large structure. You should use the helper class @ref RendererEditBuilder to create one of these instead of attempting to fill it directly.
 	 */
-	struct RendererEditRequest
-	{
-		/**
-		 * List of edits to components owned by the renderer.
-		 */
-		std::vector<RendererComponentEditRequest> component_edits;
-		std::optional<RendererComputeEditRequest> compute_edit = std::nullopt;
-		std::optional<RendererStateEditRequest> render_state_edit = std::nullopt;
-	};
+	using RendererEditRequest = tz::BasicList<RendererEdit::Variant>;
 
 	/**
 	 * @ingroup tz_gl2_renderer

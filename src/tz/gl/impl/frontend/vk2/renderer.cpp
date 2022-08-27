@@ -1336,60 +1336,45 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Edit", TZ_PROFCOL_YELLOW);
 		bool work_commands_need_recording = false;
 		bool pipeline_needs_recreating = false;
-		if(edit_request.compute_edit.has_value() && edit_request.compute_edit.value().kernel != this->compute_kernel)
-		{
-			this->compute_kernel = edit_request.compute_edit.value().kernel;
-			work_commands_need_recording = true;
-		}
-		else if(edit_request.render_state_edit.has_value() && this->pipeline.is_wireframe_mode() != edit_request.render_state_edit.value().wireframe_mode)
-		{
-			pipeline_needs_recreating = true;
-		}
-		else if(edit_request.component_edits.empty())
-		{
-			return;
-		}
-		// We have buffer/image components we need to edit.
-		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
-		this->command.wait_pending_commands_complete();
-		// Now, if we resized any static resources we're going to have to run scratch commands again.
 		bool resized_static_resources = false;
-		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
+
+		bool final_wireframe_mode_state = this->pipeline.is_wireframe_mode();
+		for(const RendererEdit::Variant& req : edit_request)
 		{
-			std::visit(
-			[this, &work_commands_need_recording](auto&& arg)
+			std::visit([this, &work_commands_need_recording, &pipeline_needs_recreating, &resized_static_resources, &final_wireframe_mode_state](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, RendererBufferComponentResizeRequest>)
+				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
 				{
-					auto buf_comp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
-					if(buf_comp->size() == arg.size)
+					auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
+					tz_assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+					if(bufcomp->size() != arg.size)
 					{
-						return;
+						bufcomp->resize(arg.size);
+						if(bufcomp == this->resources.try_get_index_buffer())
+						{
+							// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
+							work_commands_need_recording = true;
+						}
+						// Now update all descriptors.
+						this->resources.sync_descriptors(false);
 					}
-					buf_comp->resize(arg.size);
-					if(buf_comp == this->resources.try_get_index_buffer())
-					{
-						// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
-						work_commands_need_recording = true;
-					}
-					// Now update all descriptors.
-					this->resources.sync_descriptors(false);
 				}
-				else if constexpr(std::is_same_v<T, RendererImageComponentResizeRequest>)
+				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
-					auto img_comp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
-					if(img_comp->get_dimensions() == arg.dimensions)
+
+					auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
+					tz_assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+					if(imgcomp->get_dimensions() != arg.dimensions)
 					{
-						return;
+						imgcomp->resize(arg.dimensions);
+						// An imageview was looking at the old image, let's update that.
+						this->resources.notify_image_recreated(arg.image_handle);
+						// New image so descriptor array needs to be re-written to.
+						this->resources.sync_descriptors(true);
 					}
-					img_comp->resize(arg.dimensions);
-					// An imageview was looking at the old image, let's update that.
-					this->resources.notify_image_recreated(arg.image_handle);
-					// New image so descriptor array needs to be re-written to.
-					this->resources.sync_descriptors(true);
 				}
-				else if constexpr(std::is_same_v<T, RendererComponentWriteRequest>)
+				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
 					IResource* res = this->get_resource(arg.resource);
 					switch(res->get_access())
@@ -1408,15 +1393,33 @@ namespace tz::gl
 						break;
 					}
 				}
-				else
+				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
-					tz_error("Unsupported Variant Type");
+					if(arg.kernel != this->compute_kernel)
+					{
+						this->compute_kernel = arg.kernel;
+						work_commands_need_recording = true;
+					}
 				}
-			}, component_edit);
+				if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
+				{
+					if(arg.wireframe_mode != this->pipeline.is_wireframe_mode())
+					{
+						pipeline_needs_recreating = true;
+						final_wireframe_mode_state = arg.wireframe_mode;
+					}
+				}
+			}, req);
 		}
+		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
+		if(!pipeline_needs_recreating && !work_commands_need_recording && !resized_static_resources)
+		{
+			return;
+		}
+		this->command.wait_pending_commands_complete();
 		if(pipeline_needs_recreating)
 		{
-			this->pipeline.recreate(this->output.get_render_pass(), this->output.get_output_dimensions(), edit_request.render_state_edit.value().wireframe_mode);
+			this->pipeline.recreate(this->output.get_render_pass(), this->output.get_output_dimensions(), final_wireframe_mode_state);
 			work_commands_need_recording = true;
 		}
 		if(work_commands_need_recording)

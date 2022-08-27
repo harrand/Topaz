@@ -17,27 +17,26 @@ namespace tz::gl
 		/**
 		 * Make amendments to the compute configuration of the renderer. See @ref RendererComputeEditRequest for details.
 		 */
-		RendererEditBuilder& compute(RendererComputeEditRequest req);
+		RendererEditBuilder& compute(RendererEdit::ComputeConfig req);
 		/**
 		 * Make amendments to the current render state. See @ref RendererStateEditRequest for details.
 		 */
-		RendererEditBuilder& render_state(RendererStateEditRequest req);
+		RendererEditBuilder& render_state(RendererEdit::RenderConfig req);
 		/**
 		 * Make amendments to an existing image resource. See @ref RendererImageComponentResizeRequest for details.
 		 */
-		RendererEditBuilder& image_resize(RendererImageComponentResizeRequest req);
+		RendererEditBuilder& image_resize(RendererEdit::ImageResize req);
 		/**
 		 * Make amendments to an existing buffer resource. See @ref RendererBufferComponentResizeRequest for details.
 		 */
-		RendererEditBuilder& buffer_resize(RendererBufferComponentResizeRequest req);
-		RendererEditBuilder& write(RendererComponentWriteRequest req);
-
+		RendererEditBuilder& buffer_resize(RendererEdit::BufferResize req);
+		RendererEditBuilder& write(RendererEdit::ResourceWrite req);
 		/**
 		 * Retrieve a @ref RendererEditRequest corresponding to all edits specified within the builder so far.
 		 */
 		RendererEditRequest build() const;
 	private:
-		RendererEditRequest request = {.component_edits = {}};
+		RendererEditRequest request = {};
 	};
 	/**
 	 * @ingroup tz_gl2_renderer

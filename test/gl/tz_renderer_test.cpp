@@ -84,20 +84,11 @@ void renderer_edit(tz::gl::Device& dev)
 	tz::gl::Renderer ren = dev.create_renderer(rinfo1);
 	tz_assert(bres0.data().size_bytes() == sizeof(float) * 2, "BufferResource had unexpected size before Renderer edit. Expected %zu, got %zu", sizeof(float) * 2, bres0.data().size_bytes());
 	// Try to resize it larger, and then smaller. Both should work.
-	tz::gl::RendererBufferComponentResizeRequest bres0_large
-	{
+	ren.edit(tz::gl::RendererEditBuilder{}.buffer_resize
+	({
 		.buffer_handle = bh,
 		.size = sizeof(float) * 3
-	};
-	tz::gl::RendererBufferComponentResizeRequest bres0_small
-	{
-		.buffer_handle = bh,
-		.size = sizeof(float) * 1
-	};
-	tz::gl::RendererEditRequest req;
-	// Resize large
-	req.component_edits = {bres0_large};
-	ren.edit(req);
+	}).build());
 	
 	// Ensure data was preserved (first 2 floats).
 	{
@@ -106,9 +97,11 @@ void renderer_edit(tz::gl::Device& dev)
 		tz_assert(data[0] == 5.0f && data[1] == 6.0f, "After a buffer resource was resized via Renderer edit, the data was not preserved as required (buffer grew in size). Expected {%g, %g} but got {%g, %g}", data[0], data[1], 5.0f, 6.0f);
 	}
 
-	// Resize small
-	req.component_edits = {bres0_small};
-	ren.edit(req);
+	ren.edit(tz::gl::RendererEditBuilder{}.buffer_resize
+	({
+		.buffer_handle = bh,
+		.size = sizeof(float) * 1
+	}).build());
 
 	// Now that the buffer is only 1 float in size, that single float better still be correct.
 	// Ensure data was preserved (first 2 floats).
@@ -132,14 +125,12 @@ void wireframe_toggle(tz::gl::Device& dev)
 {
 	tz::gl::Renderer empty = dev.create_renderer(get_empty());
 	empty.render();
-	empty.edit
+	tz::gl::RendererEditBuilder edit;
+	edit.render_state
 	({
-		.render_state_edit =
-		tz::gl::RendererStateEditRequest
-		{
-			.wireframe_mode = true
-		}
+		.wireframe_mode = true
 	});
+	empty.edit(edit.build());
 	empty.render();
 }
 

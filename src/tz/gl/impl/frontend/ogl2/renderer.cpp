@@ -602,44 +602,37 @@ namespace tz::gl
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
 		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
-		if(edit_request.compute_edit.has_value())
+		for(const RendererEdit::Variant& req : edit_request)
 		{
-			this->compute_kernel = edit_request.compute_edit.value().kernel;
-		}
-		if(edit_request.render_state_edit.has_value())
-		{
-			this->wireframe_mode = edit_request.render_state_edit.value().wireframe_mode;
-		}
-		for(const RendererComponentEditRequest& component_edit : edit_request.component_edits)
-		{
-
-			std::visit(
-			[this](auto&& arg)
+			std::visit([this](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, RendererBufferComponentResizeRequest>)
+				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
 				{
-					auto buf_comp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
-					if(buf_comp->size() == arg.size)
+					auto bufcomp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
+					tz_assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+					if(bufcomp->size() != arg.size)
 					{
-						return;
+						bufcomp->resize(arg.size);
 					}
-					buf_comp->resize(arg.size);
 				}
-				else if constexpr(std::is_same_v<T, RendererImageComponentResizeRequest>)
+				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
-					auto img_comp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
-					img_comp->resize(arg.dimensions);
-
-					this->resources.set_image_handle(arg.image_handle, img_comp->ogl_get_image().get_bindless_handle());
+					auto imgcomp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
+					tz_assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+					if(imgcomp->get_dimensions() != arg.dimensions)
+					{
+						imgcomp->resize(arg.dimensions);
+						this->resources.set_image_handle(arg.image_handle, imgcomp->ogl_get_image().get_bindless_handle());
+					}
 				}
-				else if constexpr(std::is_same_v<T, RendererComponentWriteRequest>)
+				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
 					IResource* res = this->get_resource(arg.resource);
 					switch(res->get_access())
 					{
 						case ResourceAccess::StaticFixed:
-
+							tz_error("Sorry, ResourceWrite for staticfixed resources is not yet implemented.");
 						break;
 						default:
 							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
@@ -648,11 +641,15 @@ namespace tz::gl
 						break;
 					}
 				}
-				else
+				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
-					tz_error("Unsupported variant type");
+					this->compute_kernel = arg.kernel;
 				}
-			}, component_edit);
+				if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
+				{
+					this->wireframe_mode = arg.wireframe_mode;
+				}
+			}, req);
 		}
 	}
 }
