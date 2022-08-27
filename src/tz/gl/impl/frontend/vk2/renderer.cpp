@@ -1341,7 +1341,7 @@ namespace tz::gl
 		bool final_wireframe_mode_state = this->pipeline.is_wireframe_mode();
 		for(const RendererEdit::Variant& req : edit_request)
 		{
-			std::visit([this, &work_commands_need_recording, &pipeline_needs_recreating, &resized_static_resources, &final_wireframe_mode_state](auto&& arg)
+			std::visit([this, &work_commands_need_recording, &pipeline_needs_recreating, /*&resized_static_resources, */&final_wireframe_mode_state](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
