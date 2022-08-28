@@ -628,11 +628,34 @@ namespace tz::gl
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
-					IResource* res = this->get_resource(arg.resource);
+					IComponent* comp = this->get_component(arg.resource);
+					IResource* res = comp->get_resource();
 					switch(res->get_access())
 					{
 						case ResourceAccess::StaticFixed:
-							tz_error("Sorry, ResourceWrite for staticfixed resources is not yet implemented.");
+							switch(res->get_type())
+							{
+								case ResourceType::Buffer:
+								{
+									ogl2::Buffer& buffer = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
+									ogl2::Buffer staging_buffer
+									{{
+										.target = ogl2::BufferTarget::Uniform,
+										.residency = ogl2::BufferResidency::Dynamic,
+										.size_bytes = res->data().size_bytes()
+									}};
+									{
+										void* ptr = staging_buffer.map();
+										std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
+										staging_buffer.unmap();
+									}
+									ogl2::buffer::copy(staging_buffer, buffer);
+								}
+								break;
+								case ResourceType::Image:
+									tz_error("Sorry, ResourceWrite for StaticFixed Image is not yet implemented");
+								break;
+							}
 						break;
 						default:
 							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));

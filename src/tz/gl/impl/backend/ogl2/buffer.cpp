@@ -73,6 +73,27 @@ namespace tz::gl::ogl2
 		return this->mapped_ptr;
 	}
 
+	const void* Buffer::map() const
+	{
+		TZ_PROFZONE("OpenGL Backend - Buffer Map", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("Buffer Map", TZ_PROFCOL_RED);
+		if(this->mapped_ptr != nullptr)
+		{
+			return this->mapped_ptr;
+		}
+
+		tz_assert(this->info.residency == BufferResidency::Dynamic, "OGL Buffers with non-dynamic residency cannot be mapped. Please submit a bug report.");
+		this->mapped_ptr = glMapNamedBufferRange(this->buffer, 0, static_cast<GLsizeiptr>(this->size()), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		tz_assert(this->mapped_ptr != nullptr, "Buffer::map() returned nullptr. Please submit a bug report.");
+		return this->mapped_ptr;
+	}
+
+	void Buffer::unmap()
+	{
+		this->mapped_ptr = nullptr;
+		glUnmapNamedBuffer(this->native());
+	}
+
 	void Buffer::basic_bind() const
 	{
 		auto en = static_cast<GLenum>(this->get_target());

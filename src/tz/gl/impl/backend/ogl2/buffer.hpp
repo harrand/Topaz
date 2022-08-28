@@ -90,6 +90,11 @@ namespace tz::gl::ogl2
 		 */
 		const void* map() const;
 		/**
+		 * Unmap the buffer.
+		 * @pre The buffer must have previously been mapped via `map()` or equivalent. Otherwise, the behaviour is undefined.
+		 */
+		void unmap();
+		/**
 		 * Map the buffer as an array of some type.
 		 * @pre The buffer must have been created with a dynamic residency. See @ref BufferResidency::Dynamic. Otherwise, the behaviour is undefined.
 		 * @tparam T Type of which to retrieve an array of.
@@ -139,7 +144,7 @@ namespace tz::gl::ogl2
 
 		GLuint buffer;
 		BufferInfo info;
-		void* mapped_ptr = nullptr;
+		mutable void* mapped_ptr = nullptr;
 		std::string debug_name = "";
 	};
 
