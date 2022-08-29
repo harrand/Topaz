@@ -53,6 +53,16 @@ namespace tz
 	}
 
 	template<tz::EnumClass E>
+	EnumField<E>& EnumField<E>::operator|=(const EnumField<E>& field)
+	{
+		for(E val : field)
+		{
+			*this |= val;
+		}
+		return *this;
+	}
+
+	template<tz::EnumClass E>
 	EnumField<E> EnumField<E>::operator|(E type) const
 	{
 		EnumField<E> cpy = *this;

@@ -59,6 +59,10 @@ namespace tz
 		 */
 		EnumField<E>& operator|=(E type);
 		/**
+		 * Add a field to another field. If this field contains 'C' and other field is comprised of 'A | B', this field will become 'C | A | B'.
+		 */
+		EnumField<E>& operator|=(const EnumField<E>& field);
+		/**
 		 * Create a copy of this field, but with the parameter element added. The cumulative value `C` of the field becomes `C | E`.
 		 * @param type Element to add to the new field.
 		 * @return A copy of this.
