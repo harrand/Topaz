@@ -70,6 +70,12 @@ namespace tz
 	}
 
 	template<tz::EnumClass E>
+	void EnumField<E>::remove(E type)
+	{
+		this->elements.erase(std::remove(this->elements.begin(), this->elements.end(), type), this->elements.end());
+	}
+
+	template<tz::EnumClass E>
 	auto EnumField<E>::begin() const
 	{
 		return this->elements.begin();

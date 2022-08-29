@@ -69,6 +69,10 @@ namespace tz
 		 */
 		EnumField<E> operator|(E type) const;
 		/**
+		 * Remove the enum value from the field, if it exists.
+		 */
+		void remove(E type);
+		/**
 		 * Retrieve an iterator to the beginning of the elements.
 		 */
 		auto begin() const;
