@@ -51,7 +51,7 @@ namespace tz
 		return this->mouse_wheel_offset;
 	}
 
-	tz::Vec2ui MouseButtonState::get_mouse_press_position(MouseButton button) const
+	tz::Vec2 MouseButtonState::get_mouse_press_position(MouseButton button) const
 	{
 		tz_assert(this->is_mouse_button_down(button), "Cannot retrieve mouse press position when the button is not pressed. Please submit a bug report.");
 		auto iter = std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
@@ -71,18 +71,18 @@ namespace tz
 		#if TZ_DEBUG
 			for(const MouseButtonPressInfo& info : this->pressed_buttons)
 			{
-				std::printf("{%s (%u,%u)}", info.button.button_name, info.press_position[0], info.press_position[1]);
+				std::printf("{%s (%g,%g)}", info.button.button_name, info.press_position[0], info.press_position[1]);
 			}
 			std::printf("                                                        \r");
 		#endif
 	}
 
-	void MousePositionState::update(tz::Vec2ui position)
+	void MousePositionState::update(tz::Vec2 position)
 	{
 		this->info.position = position;
 	}
 
-	tz::Vec2ui MousePositionState::get_mouse_position() const
+	tz::Vec2 MousePositionState::get_mouse_position() const
 	{
 		return this->info.position;
 	}
@@ -90,7 +90,7 @@ namespace tz
 	void MousePositionState::debug_print_state() const
 	{
 		#if TZ_DEBUG
-			std::printf("{%u, %u}", this->info.position[0], this->info.position[1]);
+			std::printf("{%g, %g}", this->info.position[0], this->info.position[1]);
 			std::printf("                    \r");
 		#endif
 	}

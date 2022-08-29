@@ -94,7 +94,7 @@ namespace tz
 		{
 			double mx, my;
 			glfwGetCursorPos(this->wnd, &mx, &my);
-			this->mp_state.update({static_cast<unsigned int>(mx), static_cast<unsigned int>(my)});
+			this->mp_state.update({static_cast<float>(mx), static_cast<float>(my)});
 		}
 		#if TZ_VULKAN
 			// If we're on vulkan and we're minimised, halt until otherwise.

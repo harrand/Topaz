@@ -82,7 +82,7 @@ namespace tz
 	struct MouseButtonPressInfo
 	{
 		MouseButtonInfo button;
-		tz::Vec2ui press_position;
+		tz::Vec2 press_position;
 	};
 
 	/**
@@ -112,7 +112,7 @@ namespace tz
 		 * @return Positon of the cursor when the mouse button was pressed.
 		 * @pre `is_mouse_button_down(button) == true` otherwise the behaviour is undefined.
 		 */
-		tz::Vec2ui get_mouse_press_position(MouseButton button) const;
+		tz::Vec2 get_mouse_press_position(MouseButton button) const;
 		std::span<const MouseButtonPressInfo> get_pressed_buttons() const;
 		tz::Vec2 get_scroll_offset() const;
 		/**
@@ -128,15 +128,15 @@ namespace tz
 
 	struct MousePositionInfo
 	{
-		tz::Vec2ui position;
+		tz::Vec2 position;
 	};
 
 	class MousePositionState
 	{
 	public:
 		MousePositionState() = default;
-		void update(tz::Vec2ui position);
-		tz::Vec2ui get_mouse_position() const;
+		void update(tz::Vec2 position);
+		tz::Vec2 get_mouse_position() const;
 		/**
 		 * Attempt to print entire mouse position state to a single line of stdout.
 		 * 
