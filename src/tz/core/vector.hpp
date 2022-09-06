@@ -208,5 +208,22 @@ namespace tz
 	 */
 }
 
+namespace std
+{
+	template<tz::Number T, std::size_t S>
+	struct hash<tz::Vector<T, S>>
+	{
+		std::size_t operator()(const tz::Vector<T, S>& v) const
+		{
+			std::size_t ret = 0;
+			for(const T& t : v.data())
+			{
+				ret |= std::hash<T>{}(t);
+			}
+			return ret;
+		}
+	};
+}
+
 #include "tz/core/vector.inl"
 #endif // TOPAZ_CORE_VECTOR_HPP
