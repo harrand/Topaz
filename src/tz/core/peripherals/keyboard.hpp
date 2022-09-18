@@ -260,6 +260,8 @@ namespace tz
 		KeyInfo key;
 		/// Nature of the key press.
 		KeyPressType type;
+
+		bool operator<(const KeyPressInfo& rhs) const { return static_cast<int>(this->key.code) < static_cast<int>(rhs.key.code); }
 	};
 
 	/**

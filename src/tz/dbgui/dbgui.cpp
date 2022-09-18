@@ -157,8 +157,12 @@ namespace tz::dbgui
 	{
 		#if TZ_DEBUG
 			// Get keyboard pressed/released deltas.
-			std::span<const tz::KeyPressInfo> before = global_platform_data->kb_state.get_pressed_keys();
-			std::span<const tz::KeyPressInfo> after = tz::window().get_keyboard_state().get_pressed_keys();
+			std::span<const tz::KeyPressInfo> before_span = global_platform_data->kb_state.get_pressed_keys();
+			std::span<const tz::KeyPressInfo> after_span = tz::window().get_keyboard_state().get_pressed_keys();
+			std::vector<tz::KeyPressInfo> before{ before_span.begin(), before_span.end() };
+			std::vector<tz::KeyPressInfo> after{ after_span.begin(), after_span.end() };
+			std::sort(before.begin(), before.end());
+			std::sort(after.begin(), after.end());
 			std::vector<tz::KeyPressInfo> newly_pressed;
 			std::vector<tz::KeyPressInfo> newly_released;
 
