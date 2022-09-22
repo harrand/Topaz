@@ -655,7 +655,16 @@ namespace tz::gl
 								}
 								break;
 								case ResourceType::Image:
-									tz_error("Sorry, ResourceWrite for StaticFixed Image is not yet implemented");
+									ogl2::Image& image = static_cast<ImageComponentOGL*>(comp)->ogl_get_image();
+									ogl2::Image staging_image
+									{{
+										.format = image.get_format(),
+										.dimensions = image.get_dimensions(),
+										.sampler = image.get_sampler()
+									}};
+									staging_image.set_data(arg.data);
+									ogl2::image::copy(staging_image, image);
+
 								break;
 							}
 						break;

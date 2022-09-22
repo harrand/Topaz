@@ -280,14 +280,16 @@ namespace tz::gl::vk2
 			.layerCount = static_cast<std::uint32_t>(command.affected_layers.length())
 		};
 
+		ImageLayout cur_layout = this->get_layout_so_far(*command.image);
 		this->register_command(command);
+		tz_assert(command.target_layout != cur_layout, "Transitioning image layout, but it is apparantly already in this layout.");
 		VkImageMemoryBarrier barrier
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
 			.pNext = nullptr,
 			.srcAccessMask = static_cast<VkAccessFlags>(static_cast<AccessFlag>(command.source_access)),
 			.dstAccessMask = static_cast<VkAccessFlags>(static_cast<AccessFlag>(command.destination_access)),
-			.oldLayout = static_cast<VkImageLayout>(command.image->get_layout()),
+			.oldLayout = static_cast<VkImageLayout>(cur_layout),
 			.newLayout = static_cast<VkImageLayout>(command.target_layout),
 			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,

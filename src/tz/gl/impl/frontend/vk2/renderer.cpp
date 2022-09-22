@@ -1388,7 +1388,6 @@ namespace tz::gl
 					{
 						case ResourceAccess::StaticFixed:
 						{
-							//tz_error("Sorry, write edit requests for static resources are not yet implemented.");
 							// Create staging buffer.
 							vk2::Buffer staging_buffer
 							{{
@@ -1429,14 +1428,39 @@ namespace tz::gl
 									{
 										tz_warning_report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
 									}
-									this->command.do_scratch_operations([&image, &staging_buffer](vk2::CommandBufferRecording& record)
+									vk2::ImageLayout cur_layout = image.get_layout();
+									this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
 									{
+										// Need to be transfer destination layout. After that we go back to what we were.	
+										record.transition_image_layout
+										({
+											.image = &image,
+											.target_layout = vk2::ImageLayout::TransferDestination,
+											.source_access = {vk2::AccessFlag::None},
+											.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+											.source_stage = vk2::PipelineStage::Top,
+											.destination_stage = vk2::PipelineStage::TransferCommands,
+											.image_aspects = {vk2::ImageAspectFlag::Colour}
+										});
+
 										record.buffer_copy_image
 										({
 											.src = &staging_buffer,
 											.dst = &image,
 											.image_aspects = {vk2::ImageAspectFlag::Colour}
 										});
+
+										record.transition_image_layout
+										({
+											.image = &image,
+											.target_layout = cur_layout,
+											.source_access = {vk2::AccessFlag::TransferOperationWrite} /*todo: correct values?*/,
+											.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+											.source_stage = vk2::PipelineStage::TransferCommands,
+											.destination_stage = vk2::PipelineStage::FragmentShader,
+											.image_aspects = {vk2::ImageAspectFlag::Colour}
+										});
+
 									});
 								}
 								break;
