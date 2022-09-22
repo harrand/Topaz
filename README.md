@@ -21,7 +21,7 @@
  * Configurable render backend, currently supporting Vulkan and OpenGL
 	* Not coming anytime soon, but planned backends include DX12 and Metal
  
- [Topaz 3.3](https://github.com/Harrand/Topaz/tree/Topaz3.3) is the most recent release of the Topaz Engine. The next version will be version 3.4.
+ [Topaz 3.5](https://github.com/Harrand/Topaz/tree/Topaz3.5) is the most recent release of the Topaz Engine. The next version will be version 3.6.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
@@ -29,7 +29,8 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| 3.5			|	TBA		   |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
+| 3.6			|	TBA	       |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
+| 3.5			|Sep 22, 2022|[Topaz3.5](https://github.com/Harrand/Topaz/tree/Topaz3.5)	 | [Branch: gh-pages-tz3.5](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.5)
 | 3.4			|Aug 3, 2022 |[Topaz3.4](https://github.com/Harrand/Topaz/tree/Topaz3.4)| [Branch: gh-pages-tz3.4](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.4)
 | 3.3           |Jun 12, 2022|[Topaz3.3](https://github.com/Harrand/Topaz/tree/Topaz3.3)| [Branch: gh-pages-tz3.3](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.3) |
 | 3.2           |Apr 23, 2022|[Topaz3.2](https://github.com/Harrand/Topaz/tree/Topaz3.2)| [Branch: gh-pages-tz3.2](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.2) |
