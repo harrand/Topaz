@@ -140,9 +140,9 @@ void renderer_edit_resource_writes()
 
 	std::array<tz::gl::ImageResource, 3> imgs
 	{
-		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span),
-		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicFixed),
-		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicVariable),
+		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::StaticFixed, tz::gl::ResourceFlags{}),
+		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicFixed, tz::gl::ResourceFlags{}),
+		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicVariable, tz::gl::ResourceFlags{}),
 	};
 
 	tz::gl::RendererInfo rinfo;
