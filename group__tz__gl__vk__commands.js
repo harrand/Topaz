@@ -19,7 +19,9 @@ var group__tz__gl__vk__commands =
       ] ],
       [ "BufferCopyBuffer", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html", [
         [ "dst", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html#ab25083e4d84c146bfb7cf38f5f37dc0b", null ],
-        [ "src", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html#a8259921b2c071f7edf4d7e2c6e0999cb", null ]
+        [ "dst_offset", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html#a612fd1cb0f69df661f25a84225fbf325", null ],
+        [ "src", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html#a8259921b2c071f7edf4d7e2c6e0999cb", null ],
+        [ "src_offset", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html#a58cd37059874f6d410e920857f29677d", null ]
       ] ],
       [ "BufferCopyImage", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_image.html", [
         [ "dst", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_image.html#ae77ba4232185e07315aba61908c4e58c", null ],
@@ -44,6 +46,7 @@ var group__tz__gl__vk__commands =
         [ "image_aspects", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_image_copy_image.html#a0e407b294c7e6ee5ef34c9cc7ee4aa13", null ],
         [ "src", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_image_copy_image.html#a63e806b78fd1b7055dfec0ab254397ab", null ]
       ] ],
+      [ "SetScissorDynamic", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_set_scissor_dynamic.html", null ],
       [ "TransitionImageLayout", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html", [
         [ "affected_layers", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#aeaac71f2af5dc6deb49315ceedd90b66", null ],
         [ "affected_mip_levels", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#ad3b165303278ffd2d8da71e26f53219b", null ],
@@ -55,7 +58,7 @@ var group__tz__gl__vk__commands =
         [ "source_stage", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a51d5bddfc6bee5894166f297d44def18", null ],
         [ "target_layout", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a8094be6bc811b9a3b58e1277bc2cd303", null ]
       ] ],
-      [ "Variant", "structtz_1_1gl_1_1vk2_1_1_vulkan_command.html#ae344cefc45177372e284cbe1b64376bd", null ]
+      [ "Variant", "structtz_1_1gl_1_1vk2_1_1_vulkan_command.html#a769b7e5acb1a26e1037c70d3d6622edf", null ]
     ] ],
     [ "tz::gl::vk2::CommandPoolInfo", "structtz_1_1gl_1_1vk2_1_1_command_pool_info.html", [
       [ "flags", "structtz_1_1gl_1_1vk2_1_1_command_pool_info.html#a65a1ed6987db2de397e3131ee431a7ca", null ],

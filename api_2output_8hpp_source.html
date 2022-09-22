@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -100,27 +100,62 @@ $(document).ready(function(){initNavTree('api_2output_8hpp_source.html',''); ini
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_GL2_API_OUTPUT_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_GL2_API_OUTPUT_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;tz/core/interfaces/cloneable.hpp&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;concepts&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>tz::gl</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">enum class</span> OutputTarget</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    {</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        Window,</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        OffscreenImage</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    };</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1_i_output.html">   14</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">IOutput</a> : <span class="keyword">public</span> <a class="code hl_class" href="classtz_1_1_i_unique_cloneable.html">IUniqueCloneable</a>&lt;IOutput&gt;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    {</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">constexpr</span> <span class="keyword">virtual</span> OutputTarget get_target() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">~IOutput</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    };</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL2_API_OUTPUT_HPP</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/core/vector.hpp&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;concepts&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>tz::gl</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">enum class</span> OutputTarget</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        Window,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        OffscreenImage</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    };</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1_viewport_region.html">   16</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1_viewport_region.html">ViewportRegion</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec2ui</a> offset;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec2ui</a> extent;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">static</span> <a class="code hl_struct" href="structtz_1_1gl_1_1_viewport_region.html">ViewportRegion</a> null()</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            <span class="keywordflow">return</span> {.offset = {0u, 0u}, .extent = {<a class="code hl_function" href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">std::numeric_limits&lt;unsigned int&gt;::max</a>(), <a class="code hl_function" href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">std::numeric_limits&lt;unsigned int&gt;::max</a>()}};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code hl_struct" href="structtz_1_1gl_1_1_viewport_region.html">ViewportRegion</a>&amp; rhs) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1_scissor_region.html">   29</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1_scissor_region.html">ScissorRegion</a></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec2ui</a> offset;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_class" href="classtz_1_1_vector.html">tz::Vec2ui</a> extent;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">static</span> <a class="code hl_struct" href="structtz_1_1gl_1_1_scissor_region.html">ScissorRegion</a> null()</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">return</span> {.offset = {0u, 0u}, .extent = {<a class="code hl_function" href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">std::numeric_limits&lt;unsigned int&gt;::max</a>(), <a class="code hl_function" href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">std::numeric_limits&lt;unsigned int&gt;::max</a>()}};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code hl_struct" href="structtz_1_1gl_1_1_scissor_region.html">ScissorRegion</a>&amp; rhs) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    };</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classtz_1_1gl_1_1_i_output.html">   42</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">IOutput</a> : <span class="keyword">public</span> <a class="code hl_class" href="classtz_1_1_i_unique_cloneable.html">IUniqueCloneable</a>&lt;IOutput&gt;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">constexpr</span> <span class="keyword">virtual</span> OutputTarget get_target() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">virtual</span> <a class="code hl_class" href="classtz_1_1gl_1_1_i_output.html">~IOutput</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_struct" href="structtz_1_1gl_1_1_viewport_region.html">ViewportRegion</a> viewport = ViewportRegion::null();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_struct" href="structtz_1_1gl_1_1_scissor_region.html">ScissorRegion</a> scissor = ScissorRegion::null();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    };</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL2_API_OUTPUT_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1_i_unique_cloneable_html"><div class="ttname"><a href="classtz_1_1_i_unique_cloneable.html">tz::IUniqueCloneable</a></div><div class="ttdef"><b>Definition:</b> cloneable.hpp:9</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_i_output_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_output.html">tz::gl::IOutput</a></div><div class="ttdef"><b>Definition:</b> output.hpp:15</div></div>
+<div class="ttc" id="aclasstz_1_1_vector_html"><div class="ttname"><a href="classtz_1_1_vector.html">tz::Vector&lt; unsigned int, 2 &gt;</a></div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_i_output_html"><div class="ttname"><a href="classtz_1_1gl_1_1_i_output.html">tz::gl::IOutput</a></div><div class="ttdef"><b>Definition:</b> output.hpp:43</div></div>
+<div class="ttc" id="agroup__tzsl__atomic_html_ga7be084073b7420420cd5f5b5b9f81db6"><div class="ttname"><a href="group__tzsl__atomic.html#ga7be084073b7420420cd5f5b5b9f81db6">tz::atomic::max</a></div><div class="ttdeci">int max(int &amp;mem, int data)</div><div class="ttdoc">Performs an atomic max operation.</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1_scissor_region_html"><div class="ttname"><a href="structtz_1_1gl_1_1_scissor_region.html">tz::gl::ScissorRegion</a></div><div class="ttdef"><b>Definition:</b> output.hpp:30</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1_viewport_region_html"><div class="ttname"><a href="structtz_1_1gl_1_1_viewport_region.html">tz::gl::ViewportRegion</a></div><div class="ttdef"><b>Definition:</b> output.hpp:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

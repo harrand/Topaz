@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -137,12 +137,17 @@ $(document).ready(function(){initNavTree('callback_8hpp_source.html',''); initRe
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                }</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            }</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        }</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        std::vector&lt;std::function&lt;void(Args...)&gt;&gt; callback_storage = {};</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    };</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_CALLBACK_HPP</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordtype">bool</span> empty()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">return</span> this-&gt;callback_storage.empty();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        std::vector&lt;std::function&lt;void(Args...)&gt;&gt; callback_storage = {};</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    };</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_CALLBACK_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1_callback_html"><div class="ttname"><a href="classtz_1_1_callback.html">tz::Callback</a></div><div class="ttdoc">Represents a centralised storage/management of callback functions of a common signature void(Args....</div><div class="ttdef"><b>Definition:</b> callback.hpp:31</div></div>
 <div class="ttc" id="aclasstz_1_1_callback_html_a230a814e8d87a75255b4034907ac2aa8"><div class="ttname"><a href="classtz_1_1_callback.html#a230a814e8d87a75255b4034907ac2aa8">tz::Callback::operator()</a></div><div class="ttdeci">void operator()(Args... args) const</div><div class="ttdoc">Invoke the callback object, calling all registered callbacks with the provided aerguments.</div><div class="ttdef"><b>Definition:</b> callback.hpp:61</div></div>
 <div class="ttc" id="aclasstz_1_1_callback_html_a44af8023af94750edde95dc54d8e81c5"><div class="ttname"><a href="classtz_1_1_callback.html#a44af8023af94750edde95dc54d8e81c5">tz::Callback::Callback</a></div><div class="ttdeci">Callback()=default</div><div class="ttdoc">Create an empty callback object with no registered callables.</div></div>

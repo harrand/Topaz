@@ -11,6 +11,7 @@ var searchData=
   ['commandpoolinfo_8',['CommandPoolInfo',['../structtz_1_1gl_1_1vk2_1_1_command_pool_info.html',1,'tz::gl::vk2']]],
   ['commandprocessor_9',['CommandProcessor',['../classtz_1_1gl_1_1_command_processor.html',1,'tz::gl']]],
   ['compileresult_10',['CompileResult',['../structtz_1_1gl_1_1ogl2_1_1_shader_module_1_1_compile_result.html',1,'tz::gl::ogl2::ShaderModule']]],
-  ['computepipeline_11',['ComputePipeline',['../classtz_1_1gl_1_1vk2_1_1_compute_pipeline.html',1,'tz::gl::vk2']]],
-  ['computepipelineinfo_12',['ComputePipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_compute_pipeline_info.html',1,'tz::gl::vk2']]]
+  ['computeconfig_11',['ComputeConfig',['../structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html',1,'tz::gl::RendererEdit']]],
+  ['computepipeline_12',['ComputePipeline',['../classtz_1_1gl_1_1vk2_1_1_compute_pipeline.html',1,'tz::gl::vk2']]],
+  ['computepipelineinfo_13',['ComputePipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_compute_pipeline_info.html',1,'tz::gl::vk2']]]
 ];

@@ -10,5 +10,6 @@ var classtz_1_1gl_1_1ogl2_1_1_buffer =
     [ "map", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a63698e15f3bd25b72e2bc56986861d50", null ],
     [ "map_as", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a379125d632a196f53934ae4170fcf540", null ],
     [ "map_as", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a8019a199318a6df4b34fe042ec9352ef", null ],
-    [ "size", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a210d5857f9b986b2bf04da51d485261e", null ]
+    [ "size", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#a210d5857f9b986b2bf04da51d485261e", null ],
+    [ "unmap", "classtz_1_1gl_1_1ogl2_1_1_buffer.html#ae3e391c7ebd5f9274acf057b986733fb", null ]
 ];

@@ -46,7 +46,9 @@ var group__tz__core__containers =
       [ "operator E", "classtz_1_1_enum_field.html#a7d9dcd4b9c5c3891939ea63720309819", null ],
       [ "operator==", "classtz_1_1_enum_field.html#a6d1e9fa5dd5ef69fc5e4785c603fb053", null ],
       [ "operator|", "classtz_1_1_enum_field.html#ae86f8f7dc64b433272264997b0a2226a", null ],
-      [ "operator|=", "classtz_1_1_enum_field.html#a5eb01abf94988a2d6080347bc89b1cdc", null ]
+      [ "operator|=", "classtz_1_1_enum_field.html#acb1c1bc4a2a7ac198ffac3fa81e4f3f6", null ],
+      [ "operator|=", "classtz_1_1_enum_field.html#a5eb01abf94988a2d6080347bc89b1cdc", null ],
+      [ "remove", "classtz_1_1_enum_field.html#a567b7d5179a479018149d1830123652c", null ]
     ] ],
     [ "tz::GridView< T, N >", "classtz_1_1_grid_view.html", [
       [ "GridView", "classtz_1_1_grid_view.html#a74661037720634e2964bbc1dc882403e", null ],

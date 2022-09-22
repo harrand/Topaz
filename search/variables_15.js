@@ -6,6 +6,6 @@ var searchData=
   ['waits_3',['waits',['../structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#a74f67f754d176a90fdc2b0b00497fa52',1,'tz::gl::vk2::hardware::Queue::SubmitInfo']]],
   ['width_4',['width',['../structtz_1_1_window_init_args.html#a730901591cb3b9f573d3ceaa5f022e79',1,'tz::WindowInitArgs']]],
   ['window_5',['window',['../structtz_1_1gl_1_1vk2_1_1_vulkan_instance_info.html#a6ece32893a9f8585999cb5aac1666c19',1,'tz::gl::vk2::VulkanInstanceInfo']]],
-  ['wireframe_5fmode_6',['wireframe_mode',['../structtz_1_1gl_1_1_renderer_state_edit_request.html#ad7d2a683d6c729de0b21b768ad137cf0',1,'tz::gl::RendererStateEditRequest']]],
+  ['wireframe_5fmode_6',['wireframe_mode',['../structtz_1_1gl_1_1_renderer_edit_1_1_render_config.html#a7ef48bf8b9752269e5ea585cb0838709',1,'tz::gl::RendererEdit::RenderConfig']]],
   ['write_5finfos_7',['write_infos',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html#af4094e04b87ad5da6c8c8861bf9dfb73',1,'tz::gl::vk2::DescriptorSet::Write']]]
 ];

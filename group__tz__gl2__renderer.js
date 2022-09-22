@@ -1,15 +1,12 @@
 var group__tz__gl2__renderer =
 [
     [ "tz::gl::RendererType", "concepttz_1_1gl_1_1_renderer_type.html", null ],
-    [ "tz::gl::RendererEditRequest", "structtz_1_1gl_1_1_renderer_edit_request.html", [
-      [ "component_edits", "structtz_1_1gl_1_1_renderer_edit_request.html#a1cd98819434d9cc853c7729a2c3aad83", null ]
-    ] ],
     [ "tz::gl::RendererEditBuilder", "classtz_1_1gl_1_1_renderer_edit_builder.html", [
-      [ "buffer_resize", "classtz_1_1gl_1_1_renderer_edit_builder.html#a81c6052f9abb2ec5f4b6a1034f488323", null ],
+      [ "buffer_resize", "classtz_1_1gl_1_1_renderer_edit_builder.html#a75b30a23ce739f7e3b9f66800918836d", null ],
       [ "build", "classtz_1_1gl_1_1_renderer_edit_builder.html#a032c7740eebe5fcf2e42667de581d727", null ],
-      [ "compute", "classtz_1_1gl_1_1_renderer_edit_builder.html#a105c6e733bbc47dc5c455a1b491af62f", null ],
-      [ "image_resize", "classtz_1_1gl_1_1_renderer_edit_builder.html#a8b8393145a5ae759ea1ccb35d0b226d0", null ],
-      [ "render_state", "classtz_1_1gl_1_1_renderer_edit_builder.html#adcf7784f0ea4bc42d4d1c9bef759774e", null ]
+      [ "compute", "classtz_1_1gl_1_1_renderer_edit_builder.html#ae65ffcb7c1fc9f2b9a7c92a4086d5468", null ],
+      [ "image_resize", "classtz_1_1gl_1_1_renderer_edit_builder.html#a238bd4bcac673ef7f0d6ec4fafb2b1db", null ],
+      [ "render_state", "classtz_1_1gl_1_1_renderer_edit_builder.html#aa89ac9bbb0143397e65d9ca282e2ebf2", null ]
     ] ],
     [ "tz::gl::RendererInfoCommon", "classtz_1_1gl_1_1_renderer_info_common.html", [
       [ "add_resource", "classtz_1_1gl_1_1_renderer_info_common.html#a60a396b6d8515c099ee2fd762d9b2e6a", null ],
@@ -30,11 +27,12 @@ var group__tz__gl2__renderer =
       [ "shader", "classtz_1_1gl_1_1_renderer_info_common.html#a804801f2a038b15b0332d3c58245fb86", null ]
     ] ],
     [ "Renderer", "class_renderer.html", null ],
+    [ "tz::gl::RendererEditRequest", "group__tz__gl2__renderer.html#ga53143e1ce3567a5f1b619d8277d3950f", null ],
     [ "tz::gl::RendererOptions", "group__tz__gl2__renderer.html#ga554dd35b24386d751b1c6dc2a379a3d6", null ],
     [ "tz::gl::RendererOption", "group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce", [
       [ "tz::gl::RendererOption::NoDepthTesting", "group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206ceaae6026b17332e73cf67e9d0461759d00", null ],
       [ "tz::gl::RendererOption::AlphaBlending", "group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea8bb7dc17a08b6afa19cc4c18c6334eee", null ],
-      [ "tz::gl::RendererOption::BlockingCompute", "group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64", null ],
+      [ "tz::gl::RendererOption::RenderWait", "group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea670aed95693c5ea8b935f31fa1860178", null ],
       [ "tz::gl::RendererOption::NoClearOutput", "group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea61ff183888b705ae9e4def8b3cbcce48", null ],
       [ "tz::gl::RendererOption::NoPresent", "group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cead2a93656f89c95f1bb0f72060946cbba", null ]
     ] ]

@@ -16,6 +16,6 @@ var searchData=
   ['buffer_13',['Buffer',['../classtz_1_1gl_1_1ogl2_1_1_buffer.html#a6493e1b7ed2403c2391a6e16c7ad41ee',1,'tz::gl::ogl2::Buffer']]],
   ['buffer_5fcopy_5fbuffer_14',['buffer_copy_buffer',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a42ed45f3524b6bfe1c98de341b8b88de',1,'tz::gl::vk2::CommandBufferRecording']]],
   ['buffer_5fcopy_5fimage_15',['buffer_copy_image',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a245b299b9c5cf4248e7ae19c63f63a8d',1,'tz::gl::vk2::CommandBufferRecording']]],
-  ['buffer_5fresize_16',['buffer_resize',['../classtz_1_1gl_1_1_renderer_edit_builder.html#a81c6052f9abb2ec5f4b6a1034f488323',1,'tz::gl::RendererEditBuilder']]],
+  ['buffer_5fresize_16',['buffer_resize',['../classtz_1_1gl_1_1_renderer_edit_builder.html#a75b30a23ce739f7e3b9f66800918836d',1,'tz::gl::RendererEditBuilder']]],
   ['build_17',['build',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a255b1e89de7ebac50241ccef4f995aba',1,'tz::gl::vk2::DescriptorLayoutBuilder::build()'],['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#a2f4293bd1783d6dd12a94126622d5f36',1,'tz::gl::vk2::SubpassBuilder::build()'],['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#ac2c1deaa48c76a66920eb7bd4bce8034',1,'tz::gl::vk2::RenderPassBuilder::build()'],['../classtz_1_1gl_1_1_renderer_edit_builder.html#a032c7740eebe5fcf2e42667de581d727',1,'tz::gl::RendererEditBuilder::build()']]]
 ];

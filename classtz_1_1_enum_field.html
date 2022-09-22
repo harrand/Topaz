@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -134,9 +134,16 @@ constexpr&#160;</td><td class="memItemRight" valign="bottom"><b>EnumField</b> (E
 <tr class="memitem:a5eb01abf94988a2d6080347bc89b1cdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#a5eb01abf94988a2d6080347bc89b1cdc">operator|=</a> (E type)</td></tr>
 <tr class="memdesc:a5eb01abf94988a2d6080347bc89b1cdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add the element to the field.  <a href="classtz_1_1_enum_field.html#a5eb01abf94988a2d6080347bc89b1cdc">More...</a><br /></td></tr>
 <tr class="separator:a5eb01abf94988a2d6080347bc89b1cdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1c1bc4a2a7ac198ffac3fa81e4f3f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#acb1c1bc4a2a7ac198ffac3fa81e4f3f6">operator|=</a> (const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;field)</td></tr>
+<tr class="memdesc:acb1c1bc4a2a7ac198ffac3fa81e4f3f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a field to another field.  <a href="classtz_1_1_enum_field.html#acb1c1bc4a2a7ac198ffac3fa81e4f3f6">More...</a><br /></td></tr>
+<tr class="separator:acb1c1bc4a2a7ac198ffac3fa81e4f3f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae86f8f7dc64b433272264997b0a2226a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_enum_field.html#ae86f8f7dc64b433272264997b0a2226a">operator|</a> (E type) const</td></tr>
 <tr class="memdesc:ae86f8f7dc64b433272264997b0a2226a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a copy of this field, but with the parameter element added.  <a href="classtz_1_1_enum_field.html#ae86f8f7dc64b433272264997b0a2226a">More...</a><br /></td></tr>
 <tr class="separator:ae86f8f7dc64b433272264997b0a2226a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567b7d5179a479018149d1830123652c"><td class="memItemLeft" align="right" valign="top"><a id="a567b7d5179a479018149d1830123652c" name="a567b7d5179a479018149d1830123652c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>remove</b> (E type)</td></tr>
+<tr class="memdesc:a567b7d5179a479018149d1830123652c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove the enum value from the field, if it exists. <br /></td></tr>
+<tr class="separator:a567b7d5179a479018149d1830123652c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a567ea008816a060d1d8a8b9802b33d07"><td class="memItemLeft" align="right" valign="top"><a id="a567ea008816a060d1d8a8b9802b33d07" name="a567ea008816a060d1d8a8b9802b33d07"></a>
 auto&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () const</td></tr>
 <tr class="memdesc:a567ea008816a060d1d8a8b9802b33d07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve an iterator to the beginning of the elements. <br /></td></tr>
@@ -362,8 +369,31 @@ template&lt;tz::EnumClass E&gt; </div>
 
 </div>
 </div>
+<a id="acb1c1bc4a2a7ac198ffac3fa81e4f3f6" name="acb1c1bc4a2a7ac198ffac3fa81e4f3f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb1c1bc4a2a7ac198ffac3fa81e4f3f6">&#9670;&nbsp;</a></span>operator|=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;tz::EnumClass E&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp; <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; E &gt;::operator|= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classtz_1_1_enum_field.html">EnumField</a>&lt; E &gt; &amp;&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a field to another field. </p>
+<p >If this field contains 'C' and other field is comprised of 'A | B', this field will become 'C | A | B'. </p>
+
+</div>
+</div>
 <a id="a5eb01abf94988a2d6080347bc89b1cdc" name="a5eb01abf94988a2d6080347bc89b1cdc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5eb01abf94988a2d6080347bc89b1cdc">&#9670;&nbsp;</a></span>operator|=()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eb01abf94988a2d6080347bc89b1cdc">&#9670;&nbsp;</a></span>operator|=() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

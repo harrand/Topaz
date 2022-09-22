@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -99,7 +99,7 @@ $(document).ready(function(){initNavTree('group__tz__gl2__renderer.html',''); in
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
-  <div class="headertitle"><div class="title">Renderers<div class="ingroups"><a class="el" href="group__tz__gl2.html">Topaz Graphics Library 2 (tz::gl)</a></div></div></div>
+  <div class="headertitle"><div class="title">Renderers<div class="ingroups"><a class="el" href="group__tz__gl2.html">Graphics Library (tz::gl)</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -114,11 +114,8 @@ Concepts</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1gl_1_1_renderer_edit_request.html">tz::gl::RendererEditRequest</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an edit to an existing renderer.  <a href="structtz_1_1gl_1_1_renderer_edit_request.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_renderer_edit_builder.html">tz::gl::RendererEditBuilder</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper class which can be used to generate a <a class="el" href="structtz_1_1gl_1_1_renderer_edit_request.html">RendererEditRequest</a>.  <a href="classtz_1_1gl_1_1_renderer_edit_builder.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper class which can be used to generate a RendererEditRequest.  <a href="classtz_1_1gl_1_1_renderer_edit_builder.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_renderer_info_common.html">tz::gl::RendererInfoCommon</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper struct which the user can use to specify which inputs, resources they want and where they want a <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> to render to.  <a href="classtz_1_1gl_1_1_renderer_info_common.html#details">More...</a><br /></td></tr>
@@ -133,6 +130,9 @@ Typedefs</h2></td></tr>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>tz::gl::RendererOptions</b> = <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; <a class="el" href="group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce">RendererOption</a> &gt;</td></tr>
 <tr class="memdesc:ga554dd35b24386d751b1c6dc2a379a3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a collection of renderer options. <br /></td></tr>
 <tr class="separator:ga554dd35b24386d751b1c6dc2a379a3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga53143e1ce3567a5f1b619d8277d3950f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2__renderer.html#ga53143e1ce3567a5f1b619d8277d3950f">tz::gl::RendererEditRequest</a> = std::vector&lt; RendererEdit::Variant &gt;</td></tr>
+<tr class="memdesc:ga53143e1ce3567a5f1b619d8277d3950f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents an edit to an existing renderer.  <a href="group__tz__gl2__renderer.html#ga53143e1ce3567a5f1b619d8277d3950f">More...</a><br /></td></tr>
+<tr class="separator:ga53143e1ce3567a5f1b619d8277d3950f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -141,11 +141,13 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea8bb7dc17a08b6afa19cc4c18c6334eee">RendererOption::AlphaBlending</a>
 , <br />
-&#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64">RendererOption::BlockingCompute</a>
+&#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea670aed95693c5ea8b935f31fa1860178">RendererOption::RenderWait</a>
 , <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cea61ff183888b705ae9e4def8b3cbcce48">RendererOption::NoClearOutput</a>
 , <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cead2a93656f89c95f1bb0f72060946cbba">RendererOption::NoPresent</a>
+, <br />
+&#160;&#160;<b>Internal_FinalDebugUIRenderer</b>
 <br />
  }</td></tr>
 <tr class="memdesc:ga3f915e283a9998c54f738b2735c206ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies options to enable extra functionality within Renderers.  <a href="group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce">More...</a><br /></td></tr>
@@ -153,6 +155,24 @@ Enumerations</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >Documentation for Renderers. </p>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="ga53143e1ce3567a5f1b619d8277d3950f" name="ga53143e1ce3567a5f1b619d8277d3950f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga53143e1ce3567a5f1b619d8277d3950f">&#9670;&nbsp;</a></span>RendererEditRequest</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="group__tz__gl2__renderer.html#ga53143e1ce3567a5f1b619d8277d3950f">tz::gl::RendererEditRequest</a> = typedef std::vector&lt;RendererEdit::Variant&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Represents an edit to an existing renderer. </p>
+<dl class="section note"><dt>Note</dt><dd>This is a large structure. You should use the helper class <a class="el" href="classtz_1_1gl_1_1_renderer_edit_builder.html">RendererEditBuilder</a> to create one of these instead of attempting to fill it directly. </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ga3f915e283a9998c54f738b2735c206ce" name="ga3f915e283a9998c54f738b2735c206ce"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga3f915e283a9998c54f738b2735c206ce">&#9670;&nbsp;</a></span>RendererOption</h2>
@@ -184,7 +204,7 @@ Enumerations</h2></td></tr>
 <li>Enables alpha-blending. Causes pixels with alpha value &lt;1.0 to blend with the previous colour in the framebuffer, at a small cost to performance. </li>
 </ul>
 </td></tr>
-<tr><td class="fieldname"><a id="gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64" name="gga3f915e283a9998c54f738b2735c206cea0d5bb23c4705e9f1e03d87a1ea451a64"></a>BlockingCompute&#160;</td><td class="fielddoc"><ul>
+<tr><td class="fieldname"><a id="gga3f915e283a9998c54f738b2735c206cea670aed95693c5ea8b935f31fa1860178" name="gga3f915e283a9998c54f738b2735c206cea670aed95693c5ea8b935f31fa1860178"></a>RenderWait&#160;</td><td class="fielddoc"><ul>
 <li>When a compute renderer's <code>render()</code> is invoked, the thread will block until the compute-shader has finished processing. </li>
 </ul>
 </td></tr>

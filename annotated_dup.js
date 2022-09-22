@@ -1,9 +1,18 @@
 var annotated_dup =
 [
     [ "std", null, [
-      [ "hash< tz::Handle< T > >", "structstd_1_1hash_3_01tz_1_1_handle_3_01_t_01_4_01_4.html", null ]
+      [ "hash< tz::Handle< T > >", "structstd_1_1hash_3_01tz_1_1_handle_3_01_t_01_4_01_4.html", null ],
+      [ "hash< tz::Vector< T, S > >", "structstd_1_1hash_3_01tz_1_1_vector_3_01_t_00_01_s_01_4_01_4.html", null ]
     ] ],
     [ "tz", null, [
+      [ "dbgui", null, [
+        [ "ImGuiTabTZ", "structtz_1_1dbgui_1_1_im_gui_tab_t_z.html", null ],
+        [ "InitInfo", "structtz_1_1dbgui_1_1_init_info.html", "structtz_1_1dbgui_1_1_init_info" ],
+        [ "InputDelta", "structtz_1_1dbgui_1_1_input_delta.html", null ],
+        [ "TopazPlatformData", "structtz_1_1dbgui_1_1_topaz_platform_data.html", null ],
+        [ "TopazRenderData", "structtz_1_1dbgui_1_1_topaz_render_data.html", null ],
+        [ "TopazShaderRenderData", "structtz_1_1dbgui_1_1_topaz_shader_render_data.html", null ]
+      ] ],
       [ "detail", null, [
         [ "CallbackType", "structtz_1_1detail_1_1_callback_type.html", null ]
       ] ],
@@ -122,23 +131,20 @@ var annotated_dup =
         [ "OutputImageState", "structtz_1_1gl_1_1_output_image_state.html", null ],
         [ "OutputImageViewState", "structtz_1_1gl_1_1_output_image_view_state.html", null ],
         [ "OutputManager", "classtz_1_1gl_1_1_output_manager.html", "classtz_1_1gl_1_1_output_manager" ],
-        [ "RendererBufferComponentResizeRequest", "structtz_1_1gl_1_1_renderer_buffer_component_resize_request.html", "structtz_1_1gl_1_1_renderer_buffer_component_resize_request" ],
-        [ "RendererComponentWriteRequest", "structtz_1_1gl_1_1_renderer_component_write_request.html", null ],
-        [ "RendererComputeEditRequest", "structtz_1_1gl_1_1_renderer_compute_edit_request.html", "structtz_1_1gl_1_1_renderer_compute_edit_request" ],
         [ "RendererDeviceInfoVulkan", "structtz_1_1gl_1_1_renderer_device_info_vulkan.html", "structtz_1_1gl_1_1_renderer_device_info_vulkan" ],
+        [ "RendererEdit", "structtz_1_1gl_1_1_renderer_edit.html", "structtz_1_1gl_1_1_renderer_edit" ],
         [ "RendererEditBuilder", "classtz_1_1gl_1_1_renderer_edit_builder.html", "classtz_1_1gl_1_1_renderer_edit_builder" ],
-        [ "RendererEditRequest", "structtz_1_1gl_1_1_renderer_edit_request.html", "structtz_1_1gl_1_1_renderer_edit_request" ],
-        [ "RendererImageComponentResizeRequest", "structtz_1_1gl_1_1_renderer_image_component_resize_request.html", "structtz_1_1gl_1_1_renderer_image_component_resize_request" ],
         [ "RendererInfoCommon", "classtz_1_1gl_1_1_renderer_info_common.html", "classtz_1_1gl_1_1_renderer_info_common" ],
         [ "RendererOGL", "classtz_1_1gl_1_1_renderer_o_g_l.html", "classtz_1_1gl_1_1_renderer_o_g_l" ],
         [ "RendererResizeInfoVulkan", "structtz_1_1gl_1_1_renderer_resize_info_vulkan.html", null ],
-        [ "RendererStateEditRequest", "structtz_1_1gl_1_1_renderer_state_edit_request.html", "structtz_1_1gl_1_1_renderer_state_edit_request" ],
         [ "RendererVulkan", "classtz_1_1gl_1_1_renderer_vulkan.html", "classtz_1_1gl_1_1_renderer_vulkan" ],
         [ "Resource", "classtz_1_1gl_1_1_resource.html", "classtz_1_1gl_1_1_resource" ],
         [ "ResourceStorage", "classtz_1_1gl_1_1_resource_storage.html", "classtz_1_1gl_1_1_resource_storage" ],
+        [ "ScissorRegion", "structtz_1_1gl_1_1_scissor_region.html", null ],
         [ "ShaderInfo", "classtz_1_1gl_1_1_shader_info.html", null ],
         [ "ShaderManager", "classtz_1_1gl_1_1_shader_manager.html", "classtz_1_1gl_1_1_shader_manager" ],
         [ "ShaderMeta", "structtz_1_1gl_1_1_shader_meta.html", null ],
+        [ "ViewportRegion", "structtz_1_1gl_1_1_viewport_region.html", null ],
         [ "WindowOutput", "classtz_1_1gl_1_1_window_output.html", null ]
       ] ],
       [ "space", null, [
@@ -183,5 +189,6 @@ var annotated_dup =
       [ "WindowFunctionality", "classtz_1_1_window_functionality.html", "classtz_1_1_window_functionality" ],
       [ "WindowInitArgs", "structtz_1_1_window_init_args.html", "structtz_1_1_window_init_args" ]
     ] ],
+    [ "ImGuiVertex", "struct_im_gui_vertex.html", null ],
     [ "Renderer", "class_renderer.html", null ]
 ];

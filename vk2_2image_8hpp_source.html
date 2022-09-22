@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -230,7 +230,7 @@ $(document).ready(function(){initNavTree('vk2_2image_8hpp_source.html',''); init
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <a class="code hl_enumeration" href="group__tz__gl__vk__image.html#ga41ec6a06ba8bf8e03f80cf81eb99b46a">ImageTiling</a> tiling;</div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        MemoryResidency residency;</div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <a class="code hl_class" href="classtz_1_1_vector.html">Vec2ui</a> dimensions;</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">LogicalDevice</a>* device;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">LogicalDevice</a>* <a class="code hl_function" href="group__tz__gl2.html#ga6799a0b60adc685758d035bfb56a8955">device</a>;</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keywordtype">bool</span> destroy_on_destructor;</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        std::optional&lt;VmaAllocation&gt; vma_alloc;</div>
 <div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        VmaAllocationInfo vma_alloc_info;</div>
@@ -250,8 +250,9 @@ $(document).ready(function(){initNavTree('vk2_2image_8hpp_source.html',''); init
 <div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_logical_device_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_logical_device.html">tz::gl::vk2::LogicalDevice</a></div><div class="ttdoc">Logical interface to an existing PhysicalDevice.</div><div class="ttdef"><b>Definition:</b> logical_device.hpp:95</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1_swapchain_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1_swapchain.html">tz::gl::vk2::Swapchain</a></div><div class="ttdoc">Swapchains are infrastructures which represent GPU images we will render to before they can be presen...</div><div class="ttdef"><b>Definition:</b> swapchain.hpp:32</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1vk2_1_1hardware_1_1_queue_html"><div class="ttname"><a href="classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html">tz::gl::vk2::hardware::Queue</a></div><div class="ttdoc">Represents a single hardware Queue.</div><div class="ttdef"><b>Definition:</b> queue.hpp:70</div></div>
+<div class="ttc" id="agroup__tz__gl2_html_ga6799a0b60adc685758d035bfb56a8955"><div class="ttname"><a href="group__tz__gl2.html#ga6799a0b60adc685758d035bfb56a8955">tz::gl::device</a></div><div class="ttdeci">Device &amp; device()</div><div class="ttdoc">Retrieve the global device.</div><div class="ttdef"><b>Definition:</b> device.cpp:8</div></div>
 <div class="ttc" id="agroup__tz__gl2_html_ggaa4f1e2c2e1dc0b37c3b7e5501d1bb707aec0fc0100c4fc1ce4eea230c3dc10360"><div class="ttname"><a href="group__tz__gl2.html#ggaa4f1e2c2e1dc0b37c3b7e5501d1bb707aec0fc0100c4fc1ce4eea230c3dc10360">tz::gl::ImageFormat::Undefined</a></div><div class="ttdeci">@ Undefined</div></div>
-<div class="ttc" id="agroup__tz__gl__ogl2__buffers_html_gadc71f031030e7f584e43416c367717fc"><div class="ttname"><a href="group__tz__gl__ogl2__buffers.html#gadc71f031030e7f584e43416c367717fc">tz::gl::ogl2::buffer::copy</a></div><div class="ttdeci">void copy(const Buffer &amp;source, Buffer &amp;destination)</div><div class="ttdoc">Copy the entire data store of a buffer to another.</div><div class="ttdef"><b>Definition:</b> buffer.cpp:125</div></div>
+<div class="ttc" id="agroup__tz__gl__ogl2__buffers_html_gadc71f031030e7f584e43416c367717fc"><div class="ttname"><a href="group__tz__gl__ogl2__buffers.html#gadc71f031030e7f584e43416c367717fc">tz::gl::ogl2::buffer::copy</a></div><div class="ttdeci">void copy(const Buffer &amp;source, Buffer &amp;destination)</div><div class="ttdoc">Copy the entire data store of a buffer to another.</div><div class="ttdef"><b>Definition:</b> buffer.cpp:146</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__buffer_html_gga0c6ff78fc058c3e209ba59dc1b2c02a6a8c4df84c9e73cf86122034f85efac361"><div class="ttname"><a href="group__tz__gl__vk__buffer.html#gga0c6ff78fc058c3e209ba59dc1b2c02a6a8c4df84c9e73cf86122034f85efac361">tz::gl::vk2::BufferUsage::TransferSource</a></div><div class="ttdeci">@ TransferSource</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__buffer_html_gga0c6ff78fc058c3e209ba59dc1b2c02a6a9cecc9065ff3b79e09391fcbfb7b9ce9"><div class="ttname"><a href="group__tz__gl__vk__buffer.html#gga0c6ff78fc058c3e209ba59dc1b2c02a6a9cecc9065ff3b79e09391fcbfb7b9ce9">tz::gl::vk2::BufferUsage::TransferDestination</a></div><div class="ttdeci">@ TransferDestination</div></div>
 <div class="ttc" id="agroup__tz__gl__vk__image_html_ga41ec6a06ba8bf8e03f80cf81eb99b46a"><div class="ttname"><a href="group__tz__gl__vk__image.html#ga41ec6a06ba8bf8e03f80cf81eb99b46a">tz::gl::vk2::ImageTiling</a></div><div class="ttdeci">ImageTiling</div><div class="ttdoc">Specifies how the image is laid out in memory.</div><div class="ttdef"><b>Definition:</b> image.hpp:59</div></div>

@@ -45,6 +45,7 @@ var searchData=
   ['buffercopybuffer_42',['BufferCopyBuffer',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html',1,'tz::gl::vk2::VulkanCommand']]],
   ['buffercopyimage_43',['BufferCopyImage',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_image.html',1,'tz::gl::vk2::VulkanCommand']]],
   ['bufferinfo_44',['BufferInfo',['../structtz_1_1gl_1_1ogl2_1_1_buffer_info.html',1,'tz::gl::ogl2::BufferInfo'],['../structtz_1_1gl_1_1vk2_1_1_buffer_info.html',1,'tz::gl::vk2::BufferInfo']]],
-  ['bufferresource_45',['BufferResource',['../classtz_1_1gl_1_1_buffer_resource.html',1,'tz::gl']]],
-  ['bufferwriteinfo_46',['BufferWriteInfo',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write_1_1_buffer_write_info.html',1,'tz::gl::vk2::DescriptorSet::Write']]]
+  ['bufferresize_45',['BufferResize',['../structtz_1_1gl_1_1_renderer_edit_1_1_buffer_resize.html',1,'tz::gl::RendererEdit']]],
+  ['bufferresource_46',['BufferResource',['../classtz_1_1gl_1_1_buffer_resource.html',1,'tz::gl']]],
+  ['bufferwriteinfo_47',['BufferWriteInfo',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write_1_1_buffer_write_info.html',1,'tz::gl::vk2::DescriptorSet::Write']]]
 ];

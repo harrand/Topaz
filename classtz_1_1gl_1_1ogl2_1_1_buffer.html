@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -97,7 +97,7 @@ $(document).ready(function(){initNavTree('classtz_1_1gl_1_1ogl2_1_1_buffer.html'
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a>  </div>
-  <div class="headertitle"><div class="title">tz::gl::ogl2::Buffer Class Reference<div class="ingroups"><a class="el" href="group__tz__gl2.html">Topaz Graphics Library 2 (tz::gl)</a> &raquo; <a class="el" href="group__tz__gl2__graphicsapi.html">Graphics API Specifics</a> &raquo; <a class="el" href="group__tz__gl2__graphicsapi__ogl.html">OpenGL</a> &raquo; <a class="el" href="group__tz__gl__ogl2.html">OpenGL Backend</a> &raquo; <a class="el" href="group__tz__gl__ogl2__buffers.html">Buffers</a></div></div></div>
+  <div class="headertitle"><div class="title">tz::gl::ogl2::Buffer Class Reference<div class="ingroups"><a class="el" href="group__tz__gl2.html">Graphics Library (tz::gl)</a> &raquo; <a class="el" href="group__tz__gl2__graphicsapi.html">Graphics API Specifics</a> &raquo; <a class="el" href="group__tz__gl2__graphicsapi__ogl.html">OpenGL</a> &raquo; <a class="el" href="group__tz__gl__ogl2.html">OpenGL Backend</a> &raquo; <a class="el" href="group__tz__gl__ogl2__buffers.html">Buffers</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -127,6 +127,9 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () co
 <tr class="memitem:a63698e15f3bd25b72e2bc56986861d50"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#a63698e15f3bd25b72e2bc56986861d50">map</a> () const</td></tr>
 <tr class="memdesc:a63698e15f3bd25b72e2bc56986861d50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map the buffer, receiving a CPU-visible pointer.  <a href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#a63698e15f3bd25b72e2bc56986861d50">More...</a><br /></td></tr>
 <tr class="separator:a63698e15f3bd25b72e2bc56986861d50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3e391c7ebd5f9274acf057b986733fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#ae3e391c7ebd5f9274acf057b986733fb">unmap</a> ()</td></tr>
+<tr class="memdesc:ae3e391c7ebd5f9274acf057b986733fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unmap the buffer.  <a href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#ae3e391c7ebd5f9274acf057b986733fb">More...</a><br /></td></tr>
+<tr class="separator:ae3e391c7ebd5f9274acf057b986733fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a379125d632a196f53934ae4170fcf540"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a379125d632a196f53934ae4170fcf540"><td class="memTemplItemLeft" align="right" valign="top">std::span&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#a379125d632a196f53934ae4170fcf540">map_as</a> ()</td></tr>
 <tr class="memdesc:a379125d632a196f53934ae4170fcf540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map the buffer as an array of some type.  <a href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#a379125d632a196f53934ae4170fcf540">More...</a><br /></td></tr>
@@ -384,6 +387,26 @@ template&lt;tz::ConstType T&gt; </div>
 
 <p>Create a buffer which acts as a null buffer, that is, no operations are valid on it. </p>
 <dl class="section return"><dt>Returns</dt><dd>Null <a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html" title="Documentation for OpenGL Buffers.">Buffer</a>. </dd></dl>
+
+</div>
+</div>
+<a id="ae3e391c7ebd5f9274acf057b986733fb" name="ae3e391c7ebd5f9274acf057b986733fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3e391c7ebd5f9274acf057b986733fb">&#9670;&nbsp;</a></span>unmap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tz::gl::ogl2::Buffer::unmap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unmap the buffer. </p>
+<dl class="section pre"><dt>Precondition</dt><dd>The buffer must have previously been mapped via <code><a class="el" href="classtz_1_1gl_1_1ogl2_1_1_buffer.html#ae09f939341b2ccbd8da90515ad06313c" title="Map the buffer, receiving a CPU-visible pointer.">map()</a></code> or equivalent. Otherwise, the behaviour is undefined. </dd></dl>
 
 </div>
 </div>

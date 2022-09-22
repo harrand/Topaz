@@ -10,5 +10,6 @@ var group__tz__gl2 =
     [ "tz::gl::ImageFormat", "group__tz__gl2.html#gaa4f1e2c2e1dc0b37c3b7e5501d1bb707", [
       [ "tz::gl::ImageFormat::Undefined", "group__tz__gl2.html#ggaa4f1e2c2e1dc0b37c3b7e5501d1bb707aec0fc0100c4fc1ce4eea230c3dc10360", null ]
     ] ],
-    [ "tz::gl::RenderBackend", "group__tz__gl2.html#gae47acbb5345bf8410f2ed591757d124a", null ]
+    [ "tz::gl::RenderBackend", "group__tz__gl2.html#gae47acbb5345bf8410f2ed591757d124a", null ],
+    [ "tz::gl::device", "group__tz__gl2.html#ga6799a0b60adc685758d035bfb56a8955", null ]
 ];

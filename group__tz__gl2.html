@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: Topaz Graphics Library 2 (tz::gl)</title>
+<title>Topaz: Graphics Library (tz::gl)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.4</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -98,12 +98,13 @@ $(document).ready(function(){initNavTree('group__tz__gl2.html',''); initResizabl
 <a href="#groups">Modules</a> &#124;
 <a href="#concepts">Concepts</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
-  <div class="headertitle"><div class="title">Topaz Graphics Library 2 (tz::gl)</div></div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
+  <div class="headertitle"><div class="title">Graphics Library (tz::gl)</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Documentation for the Topaz Graphics Library (since 3.1).  
+<p>Hardware-accelerated 3D graphics library.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="groups" name="groups"></a>
@@ -192,9 +193,15 @@ Enumerations</h2></td></tr>
 <tr class="memitem:gae47acbb5345bf8410f2ed591757d124a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2.html#gae47acbb5345bf8410f2ed591757d124a">tz::gl::RenderBackend</a> </td></tr>
 <tr class="memdesc:gae47acbb5345bf8410f2ed591757d124a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Topaz is built against exactly one graphics API, having a low-level graphics backedn for each supported API.  <a href="group__tz__gl2.html#gae47acbb5345bf8410f2ed591757d124a">More...</a><br /></td></tr>
 <tr class="separator:gae47acbb5345bf8410f2ed591757d124a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga6799a0b60adc685758d035bfb56a8955"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1gl_1_1_device_vulkan.html">Device</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2.html#ga6799a0b60adc685758d035bfb56a8955">tz::gl::device</a> ()</td></tr>
+<tr class="memdesc:ga6799a0b60adc685758d035bfb56a8955"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the global device.  <a href="group__tz__gl2.html#ga6799a0b60adc685758d035bfb56a8955">More...</a><br /></td></tr>
+<tr class="separator:ga6799a0b60adc685758d035bfb56a8955"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p >Documentation for the Topaz Graphics Library (since 3.1). </p>
+<p >Hardware-accelerated 3D graphics library. </p>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ga3ee0cdb60ccb74d5177791420ec65930" name="ga3ee0cdb60ccb74d5177791420ec65930"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga3ee0cdb60ccb74d5177791420ec65930">&#9670;&nbsp;</a></span>ImportedShaderHeader</h2>
@@ -331,6 +338,28 @@ Enumerations</h2></td></tr>
 
 <p>Topaz is built against exactly one graphics API, having a low-level graphics backedn for each supported API. </p>
 <p >This enum specifies all the supported graphics APIs with a corresponding render backend. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="ga6799a0b60adc685758d035bfb56a8955" name="ga6799a0b60adc685758d035bfb56a8955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6799a0b60adc685758d035bfb56a8955">&#9670;&nbsp;</a></span>device()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtz_1_1gl_1_1_device_vulkan.html">Device</a> &amp; tz::gl::device </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the global device. </p>
+<p >See <a class="el" href="concepttz_1_1gl_1_1_device_type.html">tz::gl::DeviceType</a> for usage and functionality.</p>
+<p >You should not be creating your own devices. </p>
 
 </div>
 </div>

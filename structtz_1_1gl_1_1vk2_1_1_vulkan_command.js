@@ -14,6 +14,7 @@ var structtz_1_1gl_1_1vk2_1_1_vulkan_command =
     [ "DrawIndexed", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed.html", null ],
     [ "EndRenderPass", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_end_render_pass.html", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_end_render_pass" ],
     [ "ImageCopyImage", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_image_copy_image.html", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_image_copy_image" ],
+    [ "SetScissorDynamic", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_set_scissor_dynamic.html", null ],
     [ "TransitionImageLayout", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout" ],
-    [ "Variant", "structtz_1_1gl_1_1vk2_1_1_vulkan_command.html#ae344cefc45177372e284cbe1b64376bd", null ]
+    [ "Variant", "structtz_1_1gl_1_1vk2_1_1_vulkan_command.html#a769b7e5acb1a26e1037c70d3d6622edf", null ]
 ];
