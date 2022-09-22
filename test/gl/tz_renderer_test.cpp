@@ -112,6 +112,78 @@ void renderer_edit(tz::gl::Device& dev)
 	}
 }
 
+void renderer_edit_resource_writes()
+{
+	// One of each type of resource.
+	tz::gl::ResourceHandle
+		bsf = tz::nullhand, bdf = tz::nullhand, bdv = tz::nullhand,
+		isf = tz::nullhand, idf = tz::nullhand, idv = tz::nullhand;
+
+	struct D
+	{
+		float x;
+		char y;
+		int z;
+	};
+
+	constexpr std::uint32_t black_pixel[] = {0x000000FF};
+	std::span<const std::uint32_t> black_pixel_span{black_pixel, 1};
+	constexpr std::uint32_t white_pixel[] = {0xFFFFFFFF};
+	std::span<const std::uint32_t> white_pixel_span{white_pixel, 1};
+
+	std::array<tz::gl::BufferResource, 3> bufs
+	{
+		tz::gl::BufferResource::from_one(D{}),
+		tz::gl::BufferResource::from_one(D{}, tz::gl::ResourceAccess::DynamicFixed),
+		tz::gl::BufferResource::from_one(D{}, tz::gl::ResourceAccess::DynamicVariable)
+	};
+
+	std::array<tz::gl::ImageResource, 3> imgs
+	{
+		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span),
+		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicFixed),
+		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicVariable),
+	};
+
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	bsf = rinfo.add_resource(bufs[0]);
+	bdf = rinfo.add_resource(bufs[1]);
+	bdv = rinfo.add_resource(bufs[2]);
+	isf = rinfo.add_resource(imgs[0]);
+	idf = rinfo.add_resource(imgs[0]);
+	idv = rinfo.add_resource(imgs[0]);
+
+	tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
+	auto do_edit = [&renderer, &white_pixel_span](tz::gl::ResourceHandle h)
+	{
+		renderer.edit(tz::gl::RendererEditBuilder{}
+			.write
+			({
+				.resource = h,
+				.data = std::as_bytes(white_pixel_span)
+			})
+			.build()
+		);
+	};
+	// Buffer ResourceWrite.
+	// StaticFixed
+	do_edit(bsf);
+	// DynamicFixed
+	do_edit(bdf);
+	// DynamicVariable
+	do_edit(bdv);
+
+	// Image ResourceWrite.
+	// StaticFixed
+	do_edit(isf);
+	// DynamicFixed
+	do_edit(idf);
+	// DynamicVariable
+	do_edit(idv);
+}
+
 void resize_window(tz::gl::Device& dev)
 {
 
@@ -208,6 +280,7 @@ int main()
 		renderer_creation(dev);
 		renderer_creation_index_buffer(dev);
 		renderer_edit(dev);
+		renderer_edit_resource_writes();
 		resize_window(dev);
 		wireframe_toggle(dev);
 		renderer_compute_test(dev);
