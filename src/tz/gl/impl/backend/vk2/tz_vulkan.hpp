@@ -191,6 +191,8 @@ namespace tz::gl::vk2
 		InstanceExtensionList extensions = {};
 		/// Window from which to create a @ref WindowSurface. If nullptr is passed, no @ref WindowSurface is created. Defaults to nullptr.
 		const tz::Window* window = nullptr;
+		/// Whether we should attempt to load validation layers or not.
+		bool enable_validation_layers = true;
 	};
 
 
@@ -207,7 +209,7 @@ namespace tz::gl::vk2
 		VulkanInstance(VulkanInstance&& move) = delete;
 		~VulkanInstance();
 		VulkanInstance& operator=(const VulkanInstance& rhs) = delete;
-		VulkanInstance& operator=(VulkanInstance&& rhs) = delete;
+		VulkanInstance& operator=(VulkanInstance&& rhs) = default;
 
 		bool has_surface() const;
 

@@ -292,7 +292,12 @@ namespace tz::gl::vk2
 			.apiVersion = util::tz_to_vk_version(vulkan_version)
 		};
 		// Validation Layers
-		[[maybe_unused]] const char* enabled_layers = "VK_LAYER_KHRONOS_validation";
+		std::span<const char*> enabled_layers;
+		[[maybe_unused]] const char* layer = "VK_LAYER_KHRONOS_validation";
+		if(TZ_DEBUG && info.enable_validation_layers)
+		{
+			enabled_layers = {&layer, 1};
+		}
 
 		// Extensions (Specified from VulkanInstanceInfo + GLFW)
 		util::VkExtensionList extension_natives;
@@ -340,13 +345,8 @@ namespace tz::gl::vk2
 			.pNext = inst_create_pnext,
 			.flags = 0,
 			.pApplicationInfo = &app_info,
-			#if TZ_DEBUG
-			.enabledLayerCount = 1,
-			.ppEnabledLayerNames = &enabled_layers,
-			#else
-			.enabledLayerCount = 0,
-			.ppEnabledLayerNames = nullptr,
-			#endif
+			.enabledLayerCount = static_cast<std::uint32_t>(enabled_layers.size()),
+			.ppEnabledLayerNames = enabled_layers.data(),
 			.enabledExtensionCount = static_cast<std::uint32_t>(extension_natives.length()),
 			.ppEnabledExtensionNames = extension_natives.data()
 		};
@@ -366,7 +366,16 @@ namespace tz::gl::vk2
 				tz_error("Failed to create VulkanInstance due to an implementation-specific reason that has not made itself clear. Ensure that your machine supports Vulkan 1.2");
 			break;
 			case VK_ERROR_LAYER_NOT_PRESENT:
-				tz_error("Failed to create VulkanInstance because one or more of the provided %zu layers aren't available on this machine. Please submit a bug report.", create.enabledLayerCount);
+				if(info.enable_validation_layers)
+				{
+					tz_warning_report("Initial VulkanInstance creation failed due to layer not present (most likely Vulkan SDK is not installed or is corrupt). Retrying without validation layers...");
+					info.enable_validation_layers = false;
+					*this = {info};
+				}
+				else
+				{
+					tz_error("Vulkan Instance creation failed due to layer not present, but `info.enable_validation_layers` was false. Logic error, please submit a bug report.");
+				}
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
 				tz_error("Failed to create VulkanInstance because one or more of the provided %zu extensions is not supported on this machine. Please submit a bug report.", create.enabledExtensionCount);
