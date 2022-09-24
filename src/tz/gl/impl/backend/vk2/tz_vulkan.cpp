@@ -413,6 +413,11 @@ namespace tz::gl::vk2
 		return this->maybe_window_surface.has_value();
 	}
 
+	bool VulkanInstance::validation_layers_enabled() const
+	{
+		return this->info.enable_validation_layers;
+	}
+
 	const WindowSurface& VulkanInstance::get_surface() const
 	{
 		tz_assert(this->has_surface(), "VulkanInstance did not have attached surface. Please submit a bug report.");

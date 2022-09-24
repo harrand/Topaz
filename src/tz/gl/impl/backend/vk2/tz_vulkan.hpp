@@ -212,6 +212,7 @@ namespace tz::gl::vk2
 		VulkanInstance& operator=(VulkanInstance&& rhs) = default;
 
 		bool has_surface() const;
+		bool validation_layers_enabled() const;
 
 		const WindowSurface& get_surface() const;
 		const InstanceExtensionList& get_extensions() const;

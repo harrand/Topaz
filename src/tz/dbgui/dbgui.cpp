@@ -507,8 +507,9 @@ namespace tz::dbgui
 			if(ImGui::CollapsingHeader("Graphics Backend"))
 			{
 				#if TZ_VULKAN
-					ImGui::Text("Vulkan Instance Extensions:");
 					const tz::gl::vk2::VulkanInstance& vinst = tz::gl::vk2::get();
+					ImGui::Text("Validation Layers Enabled: %s", vinst.validation_layers_enabled() ? "true" : "false");
+					ImGui::Text("Vulkan Instance Extensions:");
 					for(tz::gl::vk2::InstanceExtension iext : vinst.get_extensions())
 					{
 						ImGui::Text("- %s (%s)", tz::gl::vk2::util::instance_extension_tz_names[static_cast<int>(iext)], tz::gl::vk2::util::instance_extension_names[static_cast<int>(iext)]);
