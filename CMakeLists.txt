@@ -40,6 +40,8 @@ add_library(topaz
 	src/tz/core/profiling/zone.hpp
 	src/tz/core/assert.hpp
 	src/tz/core/callback.hpp
+	src/tz/core/debugger.cpp
+	src/tz/core/debugger.hpp
 	src/tz/core/engine_info.cpp
 	src/tz/core/engine_info.hpp
 	src/tz/core/engine_info.inl
@@ -217,7 +219,8 @@ message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC debugbreak glfw imgui)
+target_link_libraries(topaz PRIVATE debugbreak)
+target_link_libraries(topaz PUBLIC glfw imgui)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)

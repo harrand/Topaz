@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_ASSERT_HPP
 #define TOPAZ_CORE_ASSERT_HPP
-#include "debugbreak.h"
+#include "tz/core/debugger.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <utility>
@@ -14,7 +14,7 @@ namespace tz
 			std::fflush(stderr);
 			std::fprintf(stderr, fmt, std::forward<Args>(args)...);
 			std::fflush(stderr);
-			::debug_break();
+			tz::debug_break();
 		#endif
 	}
 
@@ -27,7 +27,7 @@ namespace tz
 				std::fflush(stderr);
 				std::fprintf(stderr, fmt, std::forward<Args>(args)...);
 				std::fflush(stderr);
-				::debug_break();
+				tz::debug_break();
 			}
 		#endif
 	}
