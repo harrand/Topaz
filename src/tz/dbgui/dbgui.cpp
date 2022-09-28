@@ -75,6 +75,7 @@ namespace tz::dbgui
 
 	void terminate()
 	{
+		TZ_PROFZONE("tz::dbgui::terminate", TZ_PROFCOL_PURPLE);
 		#if TZ_DEBUG
 			imgui_impl_tz_term();
 		#endif // TZ_DEBUG
@@ -82,6 +83,7 @@ namespace tz::dbgui
 
 	void begin_frame()
 	{
+		TZ_PROFZONE("tz::dbgui::begin_frame", TZ_PROFCOL_PURPLE);
 		#if TZ_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2
@@ -96,6 +98,7 @@ namespace tz::dbgui
 
 	void end_frame()
 	{
+		TZ_PROFZONE("tz::dbgui::end_frame", TZ_PROFCOL_PURPLE);
 		#if TZ_DEBUG
 			ImGui::EndFrame();
 			ImGui::Render();
@@ -357,6 +360,8 @@ namespace tz::dbgui
 
 	void imgui_impl_render()
 	{
+		TZ_PROFZONE("Dbgui Render", TZ_PROFCOL_PURPLE);
+
 		ImDrawData* draw = ImGui::GetDrawData();
 		tz_assert(draw != nullptr, "Null imgui draw data!");
 		tz_assert(draw->Valid, "Invalid draw data!");
@@ -385,7 +390,10 @@ namespace tz::dbgui
 			});
 		}
 		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
-		renderer.edit(edit.build());
+		{
+			TZ_PROFZONE("Dbgui Render - IB/VB Resize", TZ_PROFCOL_PURPLE);
+			renderer.edit(edit.build());
+		}
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
 		// Copy over the vertex and index data.
@@ -396,6 +404,7 @@ namespace tz::dbgui
 		std::size_t vertex_cursor = 0;
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
+			TZ_PROFZONE("Dbgui Render - Command List Processing", TZ_PROFCOL_PURPLE);
 			const ImDrawList* cmd = draw->CmdLists[n];
 			std::memcpy(indices.data() + index_cursor, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
 			std::memcpy(vertices.data() + vertex_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
@@ -412,6 +421,7 @@ namespace tz::dbgui
 			) * tz::view(tz::Vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
 			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
 			{
+				TZ_PROFZONE("Dbgui Render - Single Command Processing", TZ_PROFCOL_PURPLE);
 				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
@@ -438,7 +448,10 @@ namespace tz::dbgui
 				}
 			}
 		}
-		global_render_data->final_renderer->render();
+		{
+			TZ_PROFZONE("Dbgui Render - Final Pass", TZ_PROFCOL_PURPLE);
+			global_render_data->final_renderer->render();
+		}
 	}
 
 	struct ImGuiTabTZ
