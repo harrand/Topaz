@@ -35,6 +35,16 @@ add_demo(
 )
 
 add_demo(
+	TARGET tz_bloom_demo
+	SOURCE_FILES tz_bloom_demo.cpp
+	SHADER_SOURCES
+		demo/gl/shaders/blur.vertex.tzsl
+		demo/gl/shaders/blur.fragment.tzsl
+		demo/gl/shaders/tz_bloom_demo.vertex.tzsl
+		demo/gl/shaders/tz_bloom_demo.fragment.tzsl
+)
+
+add_demo(
 	TARGET tz_dynamic_triangle_demo
 	SOURCE_FILES tz_dynamic_triangle_demo.cpp
 	SHADER_SOURCES

@@ -98,6 +98,12 @@ namespace tz::gl
 			std::size_t offset = 0;
 		};
 
+		struct ResourceReference
+		{
+			ResourceHandle resource;
+			IComponent* component;
+		};
+
 		/**
 		 * Represents an edit, setting a new value for the compute kernel for a renderer.
 		 */
@@ -116,7 +122,7 @@ namespace tz::gl
 			bool wireframe_mode = false;
 		};
 
-		using Variant = std::variant<BufferResize, ImageResize, ResourceWrite, ComputeConfig, RenderConfig>;
+		using Variant = std::variant<BufferResize, ImageResize, ResourceWrite, ResourceReference, ComputeConfig, RenderConfig>;
 	};
 
 	/**
