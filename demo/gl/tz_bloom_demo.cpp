@@ -23,13 +23,18 @@ struct RenderData
 
 void dbgui(RenderData& data)
 {
-	ImGui::DragFloat2("Triangle Position", data.triangle_pos.data().data(), 0.01f, -1.0f, 1.0f);
-	ImGui::DragFloat2("Triangle Scale", data.triangle_scale.data().data(), 0.005f, 0.0f, 1.0f);
-	ImGui::ColorEdit3("Triangle Colour", data.triangle_colour.data().data());
-	ImGui::Spacing();
-	ImGui::DragFloat2("Square Position", data.quad_pos.data().data(), 0.01f, -1.0f, 1.0f);
-	ImGui::DragFloat2("Square Scale", data.quad_scale.data().data(), 0.005f, 0.0f, 1.0f);
-	ImGui::ColorEdit3("Square Colour", data.quad_colour.data().data());
+	if(ImGui::CollapsingHeader("Triangle"))
+	{
+		ImGui::DragFloat2("Position", data.triangle_pos.data().data(), 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat2("Scale", data.triangle_scale.data().data(), 0.005f, 0.0f, 1.0f);
+		ImGui::ColorEdit3("Colour", data.triangle_colour.data().data());
+	}
+	if(ImGui::CollapsingHeader("Square"))
+	{
+		ImGui::DragFloat2("Position", data.quad_pos.data().data(), 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat2("Scale", data.quad_scale.data().data(), 0.005f, 0.0f, 1.0f);
+		ImGui::ColorEdit3("Colour", data.quad_colour.data().data());
+	}
 }
 
 int main()
@@ -37,10 +42,10 @@ int main()
 
 	tz::initialise
 	({
-		.name = "tz_blur_triangle_demo",
-		.flags = {tz::ApplicationFlag::UnresizeableWindow}
+		.name = "tz_bloom_demo",
 	});
 	{
+		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{}, tz::gl::ResourceAccess::DynamicFixed);
 
 		tz::gl::RendererInfo rinfo;
@@ -48,6 +53,12 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo, fragment));
 		tz::gl::ResourceHandle render_bufh = rinfo.add_resource(render_data);
 		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
+
+		// Blur the second colour attachment
+		// TODO
+		
+		// Do a final pass, essentially adding both images together. Present that image
+		// TODO
 
 		// Debug UI
 		bool menu_enabled = false;
@@ -66,7 +77,6 @@ int main()
 				if(menu_enabled)
 				{
 					ImGui::Begin("Shapes", &menu_enabled);
-					ImGui::Text("yes");
 					dbgui(renderer.get_resource(render_bufh)->data_as<RenderData>().front());
 					ImGui::End();
 				}
