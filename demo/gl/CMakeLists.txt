@@ -40,6 +40,8 @@ add_demo(
 	SHADER_SOURCES
 		demo/gl/shaders/blur.vertex.tzsl
 		demo/gl/shaders/blur.fragment.tzsl
+		demo/gl/shaders/tz_bloom_demo_combine.vertex.tzsl
+		demo/gl/shaders/tz_bloom_demo_combine.fragment.tzsl
 		demo/gl/shaders/tz_bloom_demo.vertex.tzsl
 		demo/gl/shaders/tz_bloom_demo.fragment.tzsl
 )

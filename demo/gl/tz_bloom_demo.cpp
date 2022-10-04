@@ -3,8 +3,11 @@
 #include "tz/gl/device.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/imported_shaders.hpp"
+#include "tz/gl/output.hpp"
 #include "tz/dbgui/dbgui.hpp"
 
+#include ImportedShaderHeader(tz_bloom_demo_combine, vertex)
+#include ImportedShaderHeader(tz_bloom_demo_combine, fragment)
 #include ImportedShaderHeader(tz_bloom_demo, vertex)
 #include ImportedShaderHeader(tz_bloom_demo, fragment)
 
@@ -45,6 +48,16 @@ int main()
 		.name = "tz_bloom_demo",
 	});
 	{
+		// Renderer to combine two images into one and render it to the screen.
+		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, static_cast<tz::Vec2ui>(tz::Vec2{tz::window().get_width(), tz::window().get_height()}), tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+		tz::gl::ImageResource image_out1 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, static_cast<tz::Vec2ui>(tz::Vec2{tz::window().get_width(), tz::window().get_height()}), tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+		tz::gl::RendererInfo combine_info;
+		tz::gl::ResourceHandle iout0h = combine_info.add_resource(image_out0);
+		tz::gl::ResourceHandle iout1h = combine_info.add_resource(image_out1);
+		combine_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo_combine, vertex));
+		combine_info.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo_combine, fragment));
+		tz::gl::Renderer combine = tz::gl::device().create_renderer(combine_info);
+
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{}, tz::gl::ResourceAccess::DynamicFixed);
 
@@ -52,6 +65,10 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo, fragment));
 		tz::gl::ResourceHandle render_bufh = rinfo.add_resource(render_data);
+		rinfo.set_output(tz::gl::ImageOutput
+		{{
+			.colours = {combine.get_component(iout0h), combine.get_component(iout1h)}
+		}});
 		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 
 		// Blur the second colour attachment
@@ -71,6 +88,7 @@ int main()
 		{
 			tz::window().begin_frame();
 			renderer.render(3);
+			combine.render(1);
 
 			tz::dbgui::run([&menu_enabled, &render_bufh, &renderer]()
 			{

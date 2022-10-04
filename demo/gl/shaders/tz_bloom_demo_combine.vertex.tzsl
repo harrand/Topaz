@@ -1,0 +1,8 @@
+shader(type = vertex);
+
+import <mesh>
+
+void main()
+{
+	out::position = vec4(tz::mesh::fullscreen_triangle[in::vertex_id], 1.0f);
+}
