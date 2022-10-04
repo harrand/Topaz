@@ -36,9 +36,11 @@ namespace tz::gl::ogl2
 			}, this->info.maybe_depth_attachment.value());
 		}
 
+		std::vector<GLenum> draw_buffers;
 		for(std::size_t i = 0; std::cmp_less(i, this->info.colour_attachments.length()); i++)
 		{
 			const GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
+			draw_buffers.push_back(attachment);
 			std::visit(
 			[this, attachment](const auto& arg)
 			{
@@ -49,6 +51,7 @@ namespace tz::gl::ogl2
 				}
 			}, this->info.colour_attachments[i]);
 		}
+		glNamedFramebufferDrawBuffers(this->framebuffer, draw_buffers.size(), draw_buffers.data());
 
 		tz_assert(glCheckNamedFramebufferStatus(this->framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
 	}
@@ -99,6 +102,7 @@ namespace tz::gl::ogl2
 	{
 		TZ_PROFZONE("OpenGL Backend - Framebuffer Bind", TZ_PROFCOL_RED);
 		glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+
 		auto dims = this->get_dimensions();
 		glViewport(0, 0, static_cast<GLsizei>(dims[0]), static_cast<GLsizei>(dims[1]));
 	}
