@@ -1,5 +1,12 @@
 shader(type = fragment);
 
+resource(id = 1) const buffer BloomData
+{
+	float threshold;
+	float blur_length;
+	uint iterations;
+} bloom;
+
 output(id = 0) vec4 frag_colour;
 output(id = 1) vec4 bright_colour;
 input(id = 0) vec3 colour;
@@ -8,5 +15,5 @@ void main()
 {
 	frag_colour = vec4(colour, 1.0f);
 	bright_colour = vec4(0.0, 0.0, 0.0, 1.0);
-	bright_colour.rgb = colour - vec3(0.7);
+	bright_colour.rgb = colour - vec3(bloom.threshold);
 }

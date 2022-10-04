@@ -46,12 +46,25 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_bloom_demo",
+		.flags = {tz::ApplicationFlag::UnresizeableWindow}
 	});
 	{
+		struct BloomOptions
+		{
+			float threshold = 0.7f;
+			float blur_length = 8.0f;
+			std::uint32_t iterations = 6u;
+			float pad0;
+		};
+		// This demo uses the following
 		// Renderer to combine two images into one and render it to the screen.
 		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, static_cast<tz::Vec2ui>(tz::Vec2{tz::window().get_width(), tz::window().get_height()}), tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
 		tz::gl::ImageResource image_out1 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, static_cast<tz::Vec2ui>(tz::Vec2{tz::window().get_width(), tz::window().get_height()}), tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+
+		tz::gl::BufferResource bloom_data_buffer = tz::gl::BufferResource::from_one(BloomOptions{}, tz::gl::ResourceAccess::DynamicFixed);
+
 		tz::gl::RendererInfo combine_info;
+		tz::gl::ResourceHandle bloom_data_handle = combine_info.add_resource(bloom_data_buffer);
 		tz::gl::ResourceHandle iout0h = combine_info.add_resource(image_out0);
 		tz::gl::ResourceHandle iout1h = combine_info.add_resource(image_out1);
 		combine_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo_combine, vertex));
@@ -65,6 +78,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo, fragment));
 		tz::gl::ResourceHandle render_bufh = rinfo.add_resource(render_data);
+		tz::gl::ResourceHandle bloom_bufh = rinfo.add_component(*combine.get_component(bloom_data_handle));
 		rinfo.set_output(tz::gl::ImageOutput
 		{{
 			.colours = {combine.get_component(iout0h), combine.get_component(iout1h)}
@@ -79,9 +93,11 @@ int main()
 
 		// Debug UI
 		bool menu_enabled = false;
-		tz::dbgui::game_menu().add_callback([&menu_enabled]()
+		bool bloom_menu_enabled = false;
+		tz::dbgui::game_menu().add_callback([&menu_enabled, &bloom_menu_enabled]()
 		{
 			ImGui::MenuItem("Shapes", nullptr, &menu_enabled);
+			ImGui::MenuItem("Bloom", nullptr, &bloom_menu_enabled);
 		});
 
 		while(!tz::window().is_close_requested())
@@ -90,12 +106,25 @@ int main()
 			renderer.render(3);
 			combine.render(1);
 
-			tz::dbgui::run([&menu_enabled, &render_bufh, &renderer]()
+			tz::dbgui::run([&menu_enabled, &bloom_menu_enabled, &bloom_data_handle, &combine, &render_bufh, &renderer]()
 			{
 				if(menu_enabled)
 				{
 					ImGui::Begin("Shapes", &menu_enabled);
 					dbgui(renderer.get_resource(render_bufh)->data_as<RenderData>().front());
+					ImGui::End();
+				}
+				if(bloom_menu_enabled)
+				{
+					BloomOptions& bloom = combine.get_resource(bloom_data_handle)->data_as<BloomOptions>().front();
+					int iters = bloom.iterations;
+					ImGui::Begin("Bloom", &bloom_menu_enabled);
+					ImGui::DragFloat("Threshold", &bloom.threshold, 0.005f, 0.0f, 1.0f);
+					ImGui::DragFloat("Blur Length", &bloom.blur_length, 0.05f, 0.0f, 50.0f);
+					if(ImGui::DragInt("Iteration Count", &iters, 1, 0, 128))
+					{
+						bloom.iterations = iters;
+					}
 					ImGui::End();
 				}
 			});

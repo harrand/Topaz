@@ -1,6 +1,13 @@
 shader(type = fragment);
 
-resource(id = 0) const texture images[2];
+resource(id = 0) const buffer BloomData
+{
+	float threshold;
+	float blur_length;
+	uint iterations;
+} bloom;
+
+resource(id = 1) const texture images[2];
 output(id = 0) vec4 frag_colour;
 
 const vec2 resolution = vec2(800, 600);
@@ -23,6 +30,8 @@ void main()
 {
 	vec2 uv = vec2(in::fragment_coord.xy / resolution.xy);
 	vec4 initial_colour = texture(images[0], uv);
-	vec4 bloom_colour = blur5(uv, vec2(15.0, 0.0), 6) + blur5(uv, vec2(0.0, 15.0), 6);
+	vec4 bloom_colour = blur5(uv, vec2(bloom.blur_length, 0.0), bloom.iterations)
+			  + blur5(uv, vec2(bloom.blur_length, bloom.blur_length), bloom.iterations)
+			  + blur5(uv, vec2(0.0, bloom.blur_length), bloom.iterations);
 	frag_colour = initial_colour + bloom_colour;
 }
