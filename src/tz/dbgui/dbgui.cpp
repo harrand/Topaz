@@ -313,9 +313,18 @@ namespace tz::dbgui
 		// IB and VB have initial size of 1KiB.
 		struct Kibibyte{char d[1024];};
 
-		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
-		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
-		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{}, tz::gl::ResourceAccess::DynamicFixed);
+		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{},
+		{
+			.access = tz::gl::ResourceAccess::DynamicVariable
+		});
+		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{},
+		{
+			.access = tz::gl::ResourceAccess::DynamicVariable
+		});
+		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{},
+		{
+			.access = tz::gl::ResourceAccess::DynamicFixed
+		});
 
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory
 		(

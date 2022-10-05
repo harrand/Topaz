@@ -60,7 +60,10 @@ void renderer_creation_index_buffer(tz::gl::Device& dev)
 {
 	tz::window().begin_frame();
 	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_one(5.0f);
-	tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_one(0u, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::IndexBuffer});
+	tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_one(0u,
+	{
+		.flags = {tz::gl::ResourceFlag::IndexBuffer}
+	});
 
 	tz::gl::RendererInfo rinfo1 = get_empty();
 	tz::gl::Renderer renderer1 = dev.create_renderer(rinfo1);
@@ -76,7 +79,7 @@ void renderer_creation_index_buffer(tz::gl::Device& dev)
 
 void renderer_edit(tz::gl::Device& dev)
 {
-	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_many({5.0f, 6.0f}, tz::gl::ResourceAccess::DynamicVariable);
+	tz::gl::BufferResource bres0 = tz::gl::BufferResource::from_many({5.0f, 6.0f}, {.access = tz::gl::ResourceAccess::DynamicVariable});
 
 	tz::gl::RendererInfo rinfo1 = get_empty();
 	tz::gl::ResourceHandle bh = rinfo1.add_resource(bres0);
@@ -134,8 +137,8 @@ void renderer_edit_resource_writes()
 	std::array<tz::gl::BufferResource, 3> bufs
 	{
 		tz::gl::BufferResource::from_one(D{}),
-		tz::gl::BufferResource::from_one(D{}, tz::gl::ResourceAccess::DynamicFixed),
-		tz::gl::BufferResource::from_one(D{}, tz::gl::ResourceAccess::DynamicVariable)
+		tz::gl::BufferResource::from_one(D{}, {.access = tz::gl::ResourceAccess::DynamicFixed}),
+		tz::gl::BufferResource::from_one(D{}, {.access = tz::gl::ResourceAccess::DynamicVariable})
 	};
 
 	std::array<tz::gl::ImageResource, 3> imgs
@@ -223,7 +226,7 @@ void wireframe_toggle(tz::gl::Device& dev)
 
 void renderer_compute_test(tz::gl::Device& dev)
 {
-	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, tz::gl::ResourceAccess::DynamicFixed);
+	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, {.access = tz::gl::ResourceAccess::DynamicFixed});
 
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(six_writer, compute));
@@ -242,7 +245,7 @@ void renderer_compute_test(tz::gl::Device& dev)
 
 void resource_references_compute_test(tz::gl::Device& dev)
 {
-	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, tz::gl::ResourceAccess::DynamicFixed);
+	tz::gl::BufferResource number = tz::gl::BufferResource::from_one(1.0f, {.access = tz::gl::ResourceAccess::DynamicFixed});
 
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(six_writer, compute));

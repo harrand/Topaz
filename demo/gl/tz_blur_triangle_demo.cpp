@@ -27,7 +27,10 @@ int main()
 			float pad0[2];
 		};
 
-		tz::gl::BufferResource blur_data = tz::gl::BufferResource::from_one(BlurData{}, tz::gl::ResourceAccess::DynamicFixed);
+		tz::gl::BufferResource blur_data = tz::gl::BufferResource::from_one(BlurData{},
+		{
+			.access = tz::gl::ResourceAccess::DynamicFixed
+		});
 		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised
 		({
 			.format = tz::gl::ImageFormat::BGRA32,

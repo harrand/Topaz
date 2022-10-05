@@ -35,8 +35,14 @@ int main()
 		};
 
 
-		tz::gl::BufferResource buf = tz::gl::BufferResource::from_one(BufferData{}, tz::gl::ResourceAccess::DynamicFixed);
-		tz::gl::BufferResource buf2 = tz::gl::BufferResource::from_one(FeedbackData{}, tz::gl::ResourceAccess::DynamicFixed);
+		tz::gl::BufferResource buf = tz::gl::BufferResource::from_one(BufferData{},
+		{
+			.access = tz::gl::ResourceAccess::DynamicFixed
+		});
+		tz::gl::BufferResource buf2 = tz::gl::BufferResource::from_one(FeedbackData{},
+		{
+			tz::gl::ResourceAccess::DynamicFixed
+		});
 
 		tz::gl::RendererInfo rinfo;
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);

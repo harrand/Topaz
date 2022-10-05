@@ -33,6 +33,12 @@ namespace tz::gl
 		ResourceFlags flags;
 	};
 
+	struct BufferInfo
+	{
+		ResourceAccess access = ResourceAccess::StaticFixed;
+		ResourceFlags flags = {};
+	};
+
 	/**
 	 * @ingroup tz_gl2_res
 	 * Represents a fixed-size, static Buffer to be used by a Renderer or Processor.
@@ -43,30 +49,38 @@ namespace tz::gl
 		virtual ~BufferResource() = default;
 		/**
 		 * Create a BufferResource where the underlying data is a single object.
+		 * @note You should be able to optionally pass in braced-initializer-list expressions in for the data, so long as the types of the elements are easily deduceable.
 		 * @tparam T Object type. It must be TriviallyCopyable.
 		 * @param data Object value to store within the underlying data.
-		 * @param access Specifies access rules after the resource is created under a renderer.
-		 * @param flags An enum-field of @ref ResourceFlag.
+		 * @param info Buffer info, see @ref BufferInfo for details.
 		 * @return BufferResource containing a copy of the provided object.
 		 */
 		template<tz::TriviallyCopyable T>
-		static BufferResource from_one(const T& data, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
+		static BufferResource from_one(const T& data, BufferInfo info = {});
 
 		template<tz::TriviallyCopyable T>
-		static BufferResource from_many(std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {})
+		static BufferResource from_many(std::initializer_list<T> ts, BufferInfo info = {})
 		{
-			return from_many(std::span<const T>(ts), access, flags);
+			return from_many(std::span<const T>(ts), info);
 		}
 		/**
 		 * Create a BufferResource where the underlying data is an array of objects.
-		 * @tparam T Array element type. It must be TriviallyCopyable.
-		 * @param data View into an array. The data will be copied from this span into the underlying buffer data.
-		 * @param access Specifies access rules after the resource is created under a renderer.
-		 * @param flags An enum-field of @ref ResourceFlag.
+		 * @tparam R Type satisfying std::contiguous_range.
+		 * @param data A range of elements of some type.
+		 * @param info Buffer info. See @ref BufferInfo for details.
 		 * @return BufferResource containing a copy of the provided array.
 		 */
 		template<std::ranges::contiguous_range R>
-		static BufferResource from_many(R&& data, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
+		static BufferResource from_many(R&& data, BufferInfo info = {});
+		/**
+		 * Create a null BufferResource. It is not practically useful, aside from as a placeholder.
+		 *
+		 * Null BufferResources are guaranteed to not have size() zero, but its contents and size are implementation-defined. It is also guaranteed to be StaticFixed and have no flags.
+		 */
+		static BufferResource null()
+		{
+			return from_one(0, {});
+		}
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 	private:
 		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags);

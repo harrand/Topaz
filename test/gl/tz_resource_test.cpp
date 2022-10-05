@@ -14,7 +14,7 @@ void api_correctness()
 	using namespace tz::gl;
 	// Static fixed resources.
 	{
-		BufferResource bres0 = BufferResource::from_one<int>(0, ResourceAccess::StaticFixed);
+		BufferResource bres0 = BufferResource::from_one<int>(0, {.access = tz::gl::ResourceAccess::StaticFixed});
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::StaticFixed, "StaticFixed BufferResource does not have ResourceAccess::StaticFixed");
 
@@ -34,7 +34,7 @@ void api_correctness()
 	}
 	// DynamicFixed resources
 	{
-		BufferResource bres0 = BufferResource::from_one<int>(0, ResourceAccess::DynamicFixed);
+		BufferResource bres0 = BufferResource::from_one<int>(0, {.access = ResourceAccess::DynamicFixed});
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::DynamicFixed, "DynamicFixed BufferResource does not have ResourceAccess::DynamicFixed");
 
@@ -49,7 +49,7 @@ void api_correctness()
 	}
 	// DynamicVariable resources
 	{
-		BufferResource bres0 = BufferResource::from_one<int>(0, ResourceAccess::DynamicVariable);
+		BufferResource bres0 = BufferResource::from_one<int>(0, {.access = ResourceAccess::DynamicVariable});
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::DynamicVariable, "DynamicVariable BufferResource does not have ResourceAccess::DynamicVariable");
 
@@ -69,7 +69,7 @@ void data_correctness()
 {
 	using namespace tz::gl;
 	// Ensure buffer resource has expected size/data when it has one element.
-	BufferResource buf = BufferResource::from_one<float>(420.69f, ResourceAccess::StaticFixed);
+	BufferResource buf = BufferResource::from_one<float>(420.69f);
 	tz_assert(buf.data().size_bytes() == sizeof(float), "BufferResource (one) had unexpected size. Expected %u, got %zu", sizeof(float), buf.data().size_bytes());
 	tz_assert(buf.data_as<float>().front() == 420.69f, "BufferResource (one) had invalid data. Expected float value %.2f, got %.2f", 420.69f, buf.data_as<float>().front()); // Ensure buffer resource has expected size/data when it has many elements.
 	BufferResource buf0 = BufferResource::from_many
@@ -77,7 +77,7 @@ void data_correctness()
 		0,
 		1,
 		2
-	}, ResourceAccess::StaticFixed);
+	});
 	std::span<const int> buf0_data = buf0.data_as<const int>();
 	tz_assert(buf0_data.size() == 3, "BufferResource (many) has unexpected size. Expected %u ints, got %zu ints (%u bytes, %zu bytes)", 3u, buf0_data.size(), 3u * sizeof(int), buf0_data.size_bytes());
 	for(std::size_t i = 0; i < 3; i++)
