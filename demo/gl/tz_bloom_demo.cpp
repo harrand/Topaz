@@ -58,8 +58,13 @@ int main()
 		};
 		// This demo uses the following
 		// Renderer to combine two images into one and render it to the screen.
-		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, static_cast<tz::Vec2ui>(tz::Vec2{tz::window().get_width(), tz::window().get_height()}), tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
-		tz::gl::ImageResource image_out1 = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, static_cast<tz::Vec2ui>(tz::Vec2{tz::window().get_width(), tz::window().get_height()}), tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised
+		({
+			.format = tz::gl::ImageFormat::BGRA32,
+			.dimensions = static_cast<tz::Vec2ui>(tz::window().get_dimensions()),
+			.flags = {tz::gl::ResourceFlag::RendererOutput}
+		});
+		tz::gl::ImageResource image_out1 = image_out0;
 
 		tz::gl::BufferResource bloom_data_buffer = tz::gl::BufferResource::from_one(BloomOptions{}, tz::gl::ResourceAccess::DynamicFixed);
 

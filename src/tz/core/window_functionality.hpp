@@ -37,6 +37,7 @@ namespace tz
 		 * Retrieve the height of the window, in pixels.
 		 */
 		float get_height() const;
+		tz::Vec2 get_dimensions() const{return {this->get_width(), this->get_height()};}
 		void set_width(float width);
 		void set_height(float height);
 		

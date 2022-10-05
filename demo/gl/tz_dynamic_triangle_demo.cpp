@@ -41,8 +41,6 @@ int main()
 		using namespace tz::literals;
 		tz::gl::ImageResource img = tz::gl::ImageResource::from_memory
 		(
-			tz::gl::ImageFormat::RGBA32,
-			{2u, 2u},
 			{
 				0b1111'1111_uc,
 				0b0000'0000_uc,
@@ -64,7 +62,11 @@ int main()
 				0b0000'0000_uc,
 				0b1111'1111_uc
 			},
-			tz::gl::ResourceAccess::DynamicVariable
+			{
+				.format = tz::gl::ImageFormat::RGBA32,
+				.dimensions = {2u, 2u},
+				.access = tz::gl::ResourceAccess::DynamicVariable
+			}
 		);
 
 		std::size_t triangle_count = 1;

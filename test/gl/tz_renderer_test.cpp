@@ -140,9 +140,24 @@ void renderer_edit_resource_writes()
 
 	std::array<tz::gl::ImageResource, 3> imgs
 	{
-		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::StaticFixed, tz::gl::ResourceFlags{}),
-		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicFixed, tz::gl::ResourceFlags{}),
-		tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {1u, 1u}, black_pixel_span, tz::gl::ResourceAccess::DynamicVariable, tz::gl::ResourceFlags{}),
+		tz::gl::ImageResource::from_memory(black_pixel_span,
+		{
+			.format = tz::gl::ImageFormat::RGBA32,
+			.dimensions = {1u, 1u},
+			.access = tz::gl::ResourceAccess::StaticFixed
+		}),
+		tz::gl::ImageResource::from_memory(black_pixel_span,
+		{
+			.format = tz::gl::ImageFormat::RGBA32,
+			.dimensions = {1u, 1u},
+			.access = tz::gl::ResourceAccess::DynamicFixed
+		}),
+		tz::gl::ImageResource::from_memory(black_pixel_span,
+		{
+			.format = tz::gl::ImageFormat::RGBA32,
+			.dimensions = {1u, 1u},
+			.access = tz::gl::ResourceAccess::DynamicVariable
+		}),
 	};
 
 	tz::gl::RendererInfo rinfo;

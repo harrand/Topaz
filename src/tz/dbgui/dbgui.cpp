@@ -317,7 +317,14 @@ namespace tz::dbgui
 		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{}, tz::gl::ResourceAccess::DynamicVariable);
 		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{}, tz::gl::ResourceAccess::DynamicFixed);
 
-		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory(tz::gl::ImageFormat::RGBA32, {static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}, font_data, tz::gl::ResourceAccess::StaticFixed, {});
+		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory
+		(
+			font_data,
+			{
+				.format = tz::gl::ImageFormat::RGBA32,
+				.dimensions = tz::Vec2ui{static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}
+			}
+		);
 
 		tz::gl::WindowOutput wout{tz::window()};
 

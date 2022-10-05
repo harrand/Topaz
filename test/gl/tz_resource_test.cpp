@@ -6,7 +6,7 @@ void empty_resources()
 {
 	using namespace tz::gl;
 	BufferResource bres = BufferResource::from_one<int>(5);
-	ImageResource ires = ImageResource::from_uninitialised(ImageFormat::RGBA32, {1u, 1u});
+	ImageResource ires = ImageResource::null();
 }
 
 void api_correctness()
@@ -18,7 +18,7 @@ void api_correctness()
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::StaticFixed, "StaticFixed BufferResource does not have ResourceAccess::StaticFixed");
 
-		ImageResource ires0 = ImageResource::from_uninitialised(ImageFormat::R16, {1u, 1u}, ResourceAccess::StaticFixed);
+		ImageResource ires0 = ImageResource::null();
 		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
 		tz_assert(ires0.get_access() == ResourceAccess::StaticFixed, "StaticFixed ImageResource does not have ResourceAccess::StaticFixed");
 	}
@@ -28,7 +28,7 @@ void api_correctness()
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::StaticFixed, "BufferResource that doesnt specify access does not have ResourceAccess::StaticFixed");
 
-		ImageResource ires0 = ImageResource::from_uninitialised(ImageFormat::R16, {1u, 1u});
+		ImageResource ires0 = ImageResource::null();
 		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
 		tz_assert(ires0.get_access() == ResourceAccess::StaticFixed, "ImageResource that doesnt specify access does not have ResourceAccess::StaticFixed");
 	}
@@ -38,7 +38,12 @@ void api_correctness()
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::DynamicFixed, "DynamicFixed BufferResource does not have ResourceAccess::DynamicFixed");
 
-		ImageResource ires0 = ImageResource::from_uninitialised(ImageFormat::R16, {1u, 1u}, ResourceAccess::DynamicFixed);
+		ImageResource ires0 = ImageResource::from_uninitialised
+		({
+		 	.format = tz::gl::ImageFormat::R8,
+			.dimensions = {1u, 1u},
+			.access = tz::gl::ResourceAccess::DynamicFixed
+		});
 		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
 		tz_assert(ires0.get_access() == ResourceAccess::DynamicFixed, "DynamicFixed ImageResource does not have ResourceAccess::DynamicFixed");
 	}
@@ -48,7 +53,13 @@ void api_correctness()
 		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
 		tz_assert(bres0.get_access() == ResourceAccess::DynamicVariable, "DynamicVariable BufferResource does not have ResourceAccess::DynamicVariable");
 
-		ImageResource ires0 = ImageResource::from_uninitialised(ImageFormat::R16, {1u, 1u}, ResourceAccess::DynamicVariable);
+		ImageResource ires0 = ImageResource::from_uninitialised
+		({
+		 	.format = tz::gl::ImageFormat::R8,
+			.dimensions = {1u, 1u},
+			.access = tz::gl::ResourceAccess::DynamicVariable
+		});
+
 		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
 		tz_assert(ires0.get_access() == ResourceAccess::DynamicVariable, "DynamicVariable ImageResource does not have ResourceAccess::DynamicVariable");
 	}

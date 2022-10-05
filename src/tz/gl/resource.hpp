@@ -72,6 +72,22 @@ namespace tz::gl
 		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags);
 	};
 
+
+	/**
+	 * Represents creation flags for an image.
+	 */
+	struct ImageInfo
+	{
+		/// Image format.
+		ImageFormat format;
+		/// Image dimensions, in pixels.
+		tz::Vec2ui dimensions;
+		/// Access specifier. By default this is static fixed.
+		ResourceAccess access = ResourceAccess::StaticFixed;
+		/// Flags specifying any special usages for the image. By default there are no flags.
+		ResourceFlags flags = {};
+	};
+
 	/**
 	 * @ingroup tz_gl2_res
 	 * Represents a fixed-size, static Image to be used by a Renderer or Processor.
@@ -81,27 +97,56 @@ namespace tz::gl
 	public:
 		virtual ~ImageResource() = default;
 		/**
-		 * Create an ImageResource where the image-data is uninitialised.
-		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
-		 * @param dimensions {width, height} of the image, in pixels.
-		 * @return ImageResource containing uninitialised image-data of the given format and dimensions.
+		 * Create an ImageResource where the image-data is uninitialised. See @ref ImageInfo for details.
+		 * @return ImageResource containing uninitialised image-data.
 		 */
-		static ImageResource from_uninitialised(ImageFormat format, tz::Vec2ui dimensions, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
+		static ImageResource from_uninitialised(ImageInfo info = {});
 
 		template<tz::TriviallyCopyable T>
-		static ImageResource from_memory(ImageFormat fmt, tz::Vec2ui dimensions, std::initializer_list<T> ts, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {})
+		static ImageResource from_memory(std::initializer_list<T> ts, ImageInfo info = {})
 		{
-			return from_memory(fmt, dimensions, std::span<const T>(ts), access, flags);
+			return from_memory(std::span<const T>(ts), info);
 		}
 		/**
 		 * Create an ImageResource using values existing in memory.
-		 * @param format ImageFormat of the data. It must not be ImageFormat::Undefined.
-		 * @param dimensions {width, height} of the image, in pixels.
-		 * @param byte_data Array of bytes, length equal to `tz::gl::pixel_size_bytes(format) * dimensions[0] * dimensions[1]`
-		 * @return ImageResource containing an image using the provided data.
-		 * @pre `byte_data` exactly matches the number of bytes expected in the explanation above. Otherwise, the behaviour is undefined.
+		 * @note You should be able to optionally pass in braced-initializer-list expressions in for the data, so long as the types of the elements are easily deduceable.
+		 * @param data Range containing a block of memory representing the image data. The length of the block should exactly match that of the image's size in bytes, or the behaviour is undefined.
 		 */
-		static ImageResource from_memory(ImageFormat format, tz::Vec2ui dimensions, std::ranges::contiguous_range auto data, ResourceAccess access = ResourceAccess::StaticFixed, ResourceFlags flags = {});
+		static ImageResource from_memory(std::ranges::contiguous_range auto data, ImageInfo info = {});
+		/**
+		 * Create a null ImageResource.
+		 *
+		 * The format, dimensions and image values are all implementation-defined, but the access is guaranteed to be StaticFixed.
+		 */
+		static ImageResource null()
+		{
+			return from_memory
+			(
+			 	{
+					// Missingno purple
+					(unsigned char)0b1111'1111,
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b1111'1111,
+					(unsigned char)0b1111'1111,
+					// Black
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b1111'1111,
+					// Black
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b1111'1111,
+					// Missingno purple
+					(unsigned char)0b1111'1111,
+					(unsigned char)0b0000'0000,
+					(unsigned char)0b1111'1111,
+					(unsigned char)0b1111'1111
+				},
+				{.format = ImageFormat::RGBA32, .dimensions = {2u, 2u}}
+			);
+		}
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		ImageFormat get_format() const;
 		tz::Vec2ui get_dimensions() const;

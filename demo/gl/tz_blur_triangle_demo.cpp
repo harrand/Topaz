@@ -28,7 +28,12 @@ int main()
 		};
 
 		tz::gl::BufferResource blur_data = tz::gl::BufferResource::from_one(BlurData{}, tz::gl::ResourceAccess::DynamicFixed);
-		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised(tz::gl::ImageFormat::BGRA32, tz::Vec2{tz::window().get_width(), tz::window().get_height()}, tz::gl::ResourceAccess::StaticFixed, {tz::gl::ResourceFlag::RendererOutput});
+		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised
+		({
+			.format = tz::gl::ImageFormat::BGRA32,
+			.dimensions = static_cast<tz::Vec2ui>(tz::window().get_dimensions()),
+			.flags = {tz::gl::ResourceFlag::RendererOutput}
+		});
 
 		tz::gl::RendererInfo postprocess_info;
 		postprocess_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(blur, vertex));
