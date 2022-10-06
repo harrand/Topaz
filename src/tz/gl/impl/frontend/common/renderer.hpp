@@ -60,15 +60,15 @@ namespace tz::gl
 		/**
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
-		std::span<const IResource* const> get_resources() const;
+		std::vector<const IResource*> get_resources() const;
 		std::span<const IComponent* const> get_components() const;
 		/**
 		 * Add a new resource, which will be used by a Renderer which is created from this helper struct.
 		 *
-		 * @param resource Reference to an existing resource. This will be copied by the Renderer upon construction, so its lifetime only needs to last until the desired Renderer has been created.
+		 * @param resource Resource which will be owned by a renderer.
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
-		ResourceHandle add_resource(IResource& resource);
+		ResourceHandle add_resource(const IResource& resource);
 		ResourceHandle add_component(IComponent& component);
 		/**
 		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another Renderer.
@@ -122,7 +122,7 @@ namespace tz::gl
 	private:
 		std::size_t real_resource_count() const;
 		/// Stores all provided resources. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.
-		std::vector<IResource*> resources = {};
+		std::vector<std::unique_ptr<IResource>> resources = {};
 		/// Stores all provided components. In this context, components act as references to existing resources owned by another renderer.
 		std::vector<IComponent*> components = {};
 		/// Output. Can be null, which defaults to rendering into the main window.

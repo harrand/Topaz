@@ -55,12 +55,17 @@ namespace tz::gl
 
 	const IResource* RendererInfoCommon::get_resource(ResourceHandle handle)
 	{
-		return this->resources[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+		return this->resources[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
 	}
 
-	std::span<const IResource* const> RendererInfoCommon::get_resources() const
+	std::vector<const IResource*> RendererInfoCommon::get_resources() const
 	{
-		return this->resources;
+		std::vector<const IResource*> ret;
+		for(const auto& ptr : this->resources)
+		{
+			ret.push_back(ptr.get());
+		}
+		return ret;
 	}
 
 	std::span<const IComponent* const> RendererInfoCommon::get_components() const
@@ -68,16 +73,16 @@ namespace tz::gl
 		return this->components;
 	}
 
-	ResourceHandle RendererInfoCommon::add_resource(IResource& resource)
+	ResourceHandle RendererInfoCommon::add_resource(const IResource& resource)
 	{
 		#if TZ_DEBUG
 			if(resource.get_flags().contains(ResourceFlag::IndexBuffer))
 			{
 				tz_assert(resource.get_type() == ResourceType::Buffer, "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
-				tz_assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const IResource* r)->bool{return r != nullptr && r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
+				tz_assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
 			}
 		#endif
-		this->resources.push_back(&resource);
+		this->resources.push_back(resource.unique_clone());
 		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
 	}
 
@@ -158,7 +163,7 @@ namespace tz::gl
 			}
 			std::size_t bufc = 0, imgc = 0;
 			bufc = std::count_if(this->resources.begin(), this->resources.end(),
-			[](const IResource* res)
+			[](const auto& res)
 			{
 				return res != nullptr && res->get_type() == ResourceType::Buffer;
 			}) +
@@ -168,7 +173,7 @@ namespace tz::gl
 				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Buffer;
 			});
 			imgc = std::count_if(this->resources.begin(), this->resources.end(),
-			[](const IResource* res)
+			[](const auto& res)
 			{
 				return res != nullptr && res->get_type() == ResourceType::Image;
 			}) +

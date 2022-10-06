@@ -39,63 +39,68 @@ int main()
 	});
 	{
 		using namespace tz::literals;
-		tz::gl::ImageResource img = tz::gl::ImageResource::from_memory
-		(
-			{
-				0b1111'1111_uc,
-				0b0000'0000_uc,
-				0b0000'0000_uc,
-				0b1111'1111_uc,
-
-				0b1111'1111_uc,
-				0b1111'1111_uc,
-				0b0000'0000_uc,
-				0b1111'1111_uc,
-
-				0b0000'0000_uc,
-				0b0000'0000_uc,
-				0b1111'1111_uc,
-				0b1111'1111_uc,
-
-				0b0000'0000_uc,
-				0b1111'1111_uc,
-				0b0000'0000_uc,
-				0b1111'1111_uc
-			},
-			{
-				.format = tz::gl::ImageFormat::RGBA32,
-				.dimensions = {2u, 2u},
-				.access = tz::gl::ResourceAccess::DynamicVariable
-			}
-		);
-
 		std::size_t triangle_count = 1;
-		tz::gl::BufferResource buf = tz::gl::BufferResource::from_many
-		(
-			{
-				TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
-				TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
-				TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
-			}, 
-			{
-				.access = tz::gl::ResourceAccess::DynamicVariable
-			}
-		);
-		tz::gl::BufferResource ibuf = tz::gl::BufferResource::from_many
-		(
-			{0u, 1u, 2u},
-			{
-				.access = tz::gl::ResourceAccess::DynamicVariable,
-				.flags = {tz::gl::ResourceFlag::IndexBuffer}
-			}
-		);
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
-		tz::gl::ResourceHandle imgh = rinfo.add_resource(img);
-		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
-		tz::gl::ResourceHandle ibufh = rinfo.add_resource(ibuf);
+		tz::gl::ResourceHandle imgh = rinfo.add_resource
+		(
+			tz::gl::ImageResource::from_memory
+			(
+				{
+					0b1111'1111_uc,
+					0b0000'0000_uc,
+					0b0000'0000_uc,
+					0b1111'1111_uc,
+
+					0b1111'1111_uc,
+					0b1111'1111_uc,
+					0b0000'0000_uc,
+					0b1111'1111_uc,
+
+					0b0000'0000_uc,
+					0b0000'0000_uc,
+					0b1111'1111_uc,
+					0b1111'1111_uc,
+
+					0b0000'0000_uc,
+					0b1111'1111_uc,
+					0b0000'0000_uc,
+					0b1111'1111_uc
+				},
+				{
+					.format = tz::gl::ImageFormat::RGBA32,
+					.dimensions = {2u, 2u},
+					.access = tz::gl::ResourceAccess::DynamicVariable
+				}
+			)
+		);
+		tz::gl::ResourceHandle bufh = rinfo.add_resource
+		(
+			tz::gl::BufferResource::from_many
+			(
+				{
+					TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
+					TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
+					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
+				}, 
+				{
+					.access = tz::gl::ResourceAccess::DynamicVariable
+				}
+			)
+		);
+		tz::gl::ResourceHandle ibufh = rinfo.add_resource
+		(
+			tz::gl::BufferResource::from_many
+			(
+				{0u, 1u, 2u},
+				{
+					.access = tz::gl::ResourceAccess::DynamicVariable,
+					.flags = {tz::gl::ResourceFlag::IndexBuffer}
+				}
+			)
+		);
 
 		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
 		std::default_random_engine rand;
