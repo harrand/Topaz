@@ -32,14 +32,17 @@ namespace tz::gl
 		RendererOutput,
 		/// - Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved.
 		ImageFilterNearest,
-		/// - Indicates that when doing min/mag on the image, the value of the weighted average of the nearest texels is retrieved.
+		/// - Indicates that when doing min/mag on the image, the value of the weighted average of the nearest texels is retrieved. This is the default filter.
 		ImageFilterLinear,
-		/// - Indicates that the chosen mip will have the closest match of size to the texture pixel.
+		/// - Indicates that the chosen mip will have the closest match of size to the texture pixel. @note Not yet implemented.
 		ImageMipNearest,
-		/// - Indicates that a mip computed from the weighted average of the next and previous mip will be chosen.
+		/// - Indicates that a mip computed from the weighted average of the next and previous mip will be chosen. @note Not yet implemented.
 		ImageMipLinear,
+		/// - Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will match that of the closest axis-aligned texel. This is the default wrap mode.
 		ImageWrapClampEdge,
+		/// - Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will begin repeating as if from zero.
 		ImageWrapRepeat,
+		/// - Indicates that if sampled outside of this dimensions, the colour of the sampled pixel will begin repeating as if from zero, except each time the image will look mirrored.
 		ImageWrapMirroredRepeat
 	};
 
