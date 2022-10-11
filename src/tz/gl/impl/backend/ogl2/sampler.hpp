@@ -24,7 +24,12 @@ namespace tz::gl::ogl2
 	enum class AddressMode : GLint
 	{
 		/// - An imaginary line is drawn from the out-of-bounds-coordinate back to the edge of the sampled image. The colour of the texel that it meets is used.
-		ClampToEdge = GL_CLAMP_TO_EDGE
+		ClampToEdge = GL_CLAMP_TO_EDGE,
+		/// - The texcoord is essentially modulo'd with the image dimensions.
+		Repeat = GL_REPEAT,
+		/// - Just like Repeat, except mirrored.
+		MirroredRepeat = GL_MIRRORED_REPEAT
+		
 	};
 
 	/**

@@ -38,6 +38,9 @@ namespace tz::gl
 		ImageMipNearest,
 		/// - Indicates that a mip computed from the weighted average of the next and previous mip will be chosen.
 		ImageMipLinear,
+		ImageWrapClampEdge,
+		ImageWrapRepeat,
+		ImageWrapMirroredRepeat
 	};
 
 	using ResourceFlags = tz::EnumField<ResourceFlag>;

@@ -132,6 +132,7 @@ namespace tz::gl
 		tz_assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
+		ogl2::AddressMode mode = ogl2::AddressMode::ClampToEdge;
 #if TZ_DEBUG
 		if(img_res->get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
 		{
@@ -146,6 +147,23 @@ namespace tz::gl
 		{
 			filter = ogl2::LookupFilter::Linear;
 		}
+
+		if(img_res->get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
+		{
+			tz_error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
+		}
+		if(img_res->get_flags().contains(ResourceFlag::ImageWrapClampEdge))
+		{
+			mode = ogl2::AddressMode::ClampToEdge;
+		}
+		if(img_res->get_flags().contains(ResourceFlag::ImageWrapRepeat))
+		{
+			mode = ogl2::AddressMode::Repeat;
+		}
+		if(img_res->get_flags().contains(ResourceFlag::ImageWrapMirroredRepeat))
+		{
+			mode = ogl2::AddressMode::MirroredRepeat;
+		}
 		return
 		{{
 			.format = to_ogl2(img_res->get_format()),
@@ -154,9 +172,9 @@ namespace tz::gl
 			{
 				.min_filter = filter,
 				.mag_filter = filter,
-				.address_mode_s = ogl2::AddressMode::ClampToEdge,
-				.address_mode_t = ogl2::AddressMode::ClampToEdge,
-				.address_mode_r = ogl2::AddressMode::ClampToEdge
+				.address_mode_s = mode,
+				.address_mode_t = mode,
+				.address_mode_r = mode
 			}
 		}};
 	}

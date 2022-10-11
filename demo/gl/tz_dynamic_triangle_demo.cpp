@@ -75,7 +75,8 @@ int main()
 					.access = tz::gl::ResourceAccess::DynamicVariable,
 					.flags =
 					{
-						tz::gl::ResourceFlag::ImageFilterLinear
+						tz::gl::ResourceFlag::ImageFilterLinear,
+						tz::gl::ResourceFlag::ImageWrapRepeat
 					}
 				}
 			)

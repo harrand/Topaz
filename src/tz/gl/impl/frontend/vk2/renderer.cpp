@@ -36,6 +36,7 @@ namespace tz::gl
 		{
 			vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
 			vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
+			vk2::SamplerAddressMode mode = vk2::SamplerAddressMode::ClampToEdge;
 #if TZ_DEBUG
 			if(res.get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
 			{
@@ -50,6 +51,23 @@ namespace tz::gl
 			{
 				filter = vk2::LookupFilter::Linear;
 			}
+
+			if(res.get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
+			{
+				tz_error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
+			}
+			if(res.get_flags().contains(ResourceFlag::ImageWrapClampEdge))
+			{
+				mode = vk2::SamplerAddressMode::ClampToEdge;
+			}
+			if(res.get_flags().contains(ResourceFlag::ImageWrapRepeat))
+			{
+				mode = vk2::SamplerAddressMode::Repeat;
+			}
+			if(res.get_flags().contains(ResourceFlag::ImageWrapMirroredRepeat))
+			{
+				mode = vk2::SamplerAddressMode::MirroredRepeat;
+			}
 			
 			return
 			{
@@ -57,9 +75,9 @@ namespace tz::gl
 				.min_filter = filter,
 				.mag_filter = filter,
 				.mipmap_mode = mip_filter,
-				.address_mode_u = vk2::SamplerAddressMode::ClampToEdge,
-				.address_mode_v = vk2::SamplerAddressMode::ClampToEdge,
-				.address_mode_w = vk2::SamplerAddressMode::ClampToEdge
+				.address_mode_u = mode,
+				.address_mode_v = mode,
+				.address_mode_w = mode
 			};
 		};
 
