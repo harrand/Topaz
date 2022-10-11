@@ -62,6 +62,21 @@ namespace tz
 		return glfwGetWindowAttrib(this->wnd, GLFW_ICONIFIED);
 	}
 
+	bool WindowFunctionality::is_maximised() const
+	{
+		return glfwGetWindowAttrib(this->wnd, GLFW_MAXIMIZED);
+	}
+
+	bool WindowFunctionality::is_focused() const
+	{
+		return glfwGetWindowAttrib(this->wnd, GLFW_FOCUSED);
+	}
+
+	bool WindowFunctionality::is_resizeable() const
+	{
+		return glfwGetWindowAttrib(this->wnd, GLFW_RESIZABLE);
+	}
+
 	WindowFunctionality::ResizeCallbackType& WindowFunctionality::on_resize()
 	{
 		return this->window_resize_callbacks;

@@ -473,6 +473,7 @@ namespace tz::dbgui
 	struct ImGuiTabTZ
 	{
 		bool show_info = false;
+		bool show_window_info = false;
 	};
 
 	ImGuiTabTZ tab_tz;
@@ -610,6 +611,39 @@ namespace tz::dbgui
 		}
 	}
 
+	void draw_tz_window_info()
+	{
+		if(ImGui::Begin("Window", &tab_tz.show_window_info))
+		{
+			auto& wnd = tz::window();
+			if(wnd.is_null())
+			{
+				ImGui::Text("Detected that `tz::window().is_null()`. Cannot display window diagnostics, you're probably in a really weird state.");
+			}
+			else
+			{
+				if(wnd.is_resizeable())
+				{
+					int xy[] = {static_cast<int>(wnd.get_width()), static_cast<int>(wnd.get_height())};
+					if(ImGui::DragInt2("Dimensions", xy, 3, 1, 4192))
+					{
+						wnd.set_width(static_cast<float>(xy[0]));
+						wnd.set_height(static_cast<float>(xy[1]));
+					}
+				}
+				else
+				{
+					ImGui::Text("Dimensions = {%u, %u} - Fixed-size window", static_cast<unsigned int>(wnd.get_width()), static_cast<unsigned int>(wnd.get_height()));
+				}
+				ImGui::Text("Minimised = %s", wnd.is_minimised() ? "true" : "false");
+				ImGui::Text("Maximised = %s", wnd.is_maximised() ? "true" : "false");
+				ImGui::Text("Focused = %s", wnd.is_focused() ? "true" : "false");
+			}
+			ImGui::End();
+		}
+
+	}
+
 	void imgui_impl_begin_commands()
 	{
 		if(ImGui::BeginMainMenuBar())
@@ -617,6 +651,7 @@ namespace tz::dbgui
 			if(ImGui::BeginMenu("Engine"))
 			{
 				ImGui::MenuItem("Info", nullptr, &tab_tz.show_info);
+				ImGui::MenuItem("Window", nullptr, &tab_tz.show_window_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
 					tz_error("Manual debug breakpoint occurred.");
@@ -633,6 +668,10 @@ namespace tz::dbgui
 			if(tab_tz.show_info)
 			{
 				draw_tz_info();
+			}
+			if(tab_tz.show_window_info)
+			{
+				draw_tz_window_info();
 			}
 		}
 	}

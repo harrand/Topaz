@@ -42,6 +42,10 @@ namespace tz
 		void set_height(float height);
 		
 		bool is_minimised() const;
+		bool is_maximised() const;
+		bool is_focused() const;
+		bool is_resizeable() const;
+
 		/**
 		 * Retrieve the callback object for when the window is resized.
 		 */
