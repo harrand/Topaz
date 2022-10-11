@@ -1,3 +1,4 @@
+#include "tz/gl/impl/backend/vk2/sampler.hpp"
 #if TZ_VULKAN
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/frontend/vk2/device.hpp"
@@ -22,28 +23,52 @@ namespace tz::gl
 	AssetStorageCommon<IResource>(info.get_resources()),
 	components(),
 	image_component_views(),
-	basic_sampler(vk2::SamplerInfo
-	{
-		.device = &ldev,
-		.min_filter = vk2::LookupFilter::Nearest,
-		.mag_filter = vk2::LookupFilter::Nearest,
-		.mipmap_mode = vk2::MipLookupFilter::Nearest,
-		.address_mode_u = vk2::SamplerAddressMode::ClampToEdge,
-		.address_mode_v = vk2::SamplerAddressMode::ClampToEdge,
-		.address_mode_w = vk2::SamplerAddressMode::ClampToEdge,
-	}),
+	samplers(),
 	descriptor_layout(vk2::DescriptorLayout::null()),
 	descriptor_pool(vk2::DescriptorPool::null()),
 	descriptors(),
 	frame_in_flight_count(frame_in_flight_count)
 	{
-		auto resources = info.get_resources();
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", TZ_PROFCOL_YELLOW);
+		this->samplers.reserve(this->count());
+
+		auto get_fitting_sampler = [&ldev](const IResource& res) -> vk2::SamplerInfo
+		{
+			vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
+			vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
+#if TZ_DEBUG
+			if(res.get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
+			{
+				tz_error("ImageResource contained both ResourceFlags ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
+			}
+#endif // TZ_DEBUG
+			if(res.get_flags().contains(ResourceFlag::ImageFilterNearest))
+			{
+				filter = vk2::LookupFilter::Nearest;
+			}
+			else if(res.get_flags().contains(ResourceFlag::ImageFilterLinear))
+			{
+				filter = vk2::LookupFilter::Linear;
+			}
+			
+			return
+			{
+				.device = &ldev,
+				.min_filter = filter,
+				.mag_filter = filter,
+				.mipmap_mode = mip_filter,
+				.address_mode_u = vk2::SamplerAddressMode::ClampToEdge,
+				.address_mode_v = vk2::SamplerAddressMode::ClampToEdge,
+				.address_mode_w = vk2::SamplerAddressMode::ClampToEdge
+			};
+		};
+
+		auto resources = info.get_resources();
 		std::vector<bool> buffer_id_to_variable_access;
 		std::vector<bool> buffer_id_to_descriptor_visibility;
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility](IComponent* cmp)
+		auto retrieve_resource_metadata = [this, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility, get_fitting_sampler](IComponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
@@ -66,6 +91,8 @@ namespace tz::gl
 				break;
 				case ResourceType::Image:
 				{
+					this->samplers.emplace_back(get_fitting_sampler(*res));
+
 					auto* img = static_cast<ImageComponentVulkan*>(cmp);
 					// We will need to create an image view. Let's get that out-of-the-way-now.
 					vk2::Image& underlying_image = img->vk_get_image();
@@ -222,7 +249,7 @@ namespace tz::gl
 	AssetStorageCommon<IResource>(static_cast<AssetStorageCommon<IResource>&&>(move)),
 	components(std::move(move.components)),
 	image_component_views(std::move(move.image_component_views)),
-	basic_sampler(std::move(move.basic_sampler)),
+	samplers(std::move(move.samplers)),
 	descriptor_layout(std::move(move.descriptor_layout)),
 	descriptor_pool(std::move(move.descriptor_pool)),
 	descriptors(std::move(move.descriptors)),
@@ -238,7 +265,7 @@ namespace tz::gl
 	{
 		std::swap(this->components, rhs.components);
 		std::swap(this->image_component_views, rhs.image_component_views);
-		std::swap(this->basic_sampler, rhs.basic_sampler);
+		std::swap(this->samplers, rhs.samplers);
 		std::swap(this->descriptor_layout, rhs.descriptor_layout);
 		std::swap(this->descriptor_pool, rhs.descriptor_pool);
 		std::swap(this->descriptors, rhs.descriptors);
@@ -359,7 +386,7 @@ namespace tz::gl
 				{
 					set_edit.set_image(descriptor_buffer_count,
 					{
-						.sampler = &this->basic_sampler,
+						.sampler = &this->samplers[j],
 						.image_view = &this->image_component_views[j]
 					}, j);
 				}

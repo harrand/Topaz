@@ -16,6 +16,7 @@ namespace tz::gl
 		// IResource
 		virtual ResourceType get_type() const final;
 		virtual ResourceAccess get_access() const final;
+		virtual const ResourceFlags& get_flags() const final;
 		virtual std::span<const std::byte> data() const final;
 		virtual std::span<std::byte> data() final;
 
@@ -23,7 +24,6 @@ namespace tz::gl
 	protected:
 		Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;
-		virtual const ResourceFlags& get_flags() const final;
 	private:
 		ResourceAccess access;
 		std::vector<std::byte> resource_data;

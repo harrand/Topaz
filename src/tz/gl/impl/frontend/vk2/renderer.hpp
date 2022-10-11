@@ -99,8 +99,8 @@ namespace tz::gl
 		std::vector<tz::MaybeOwnedPtr<IComponent>> components;
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
 		std::vector<vk2::ImageView> image_component_views;
-		/// Hard-coded sampler info. This might need to be editable in the future, but for now the user has no control over this. Care must be taken to ensure that other graphics API frontends sample images in the same way.
-		vk2::Sampler basic_sampler;
+		// A unique sampler for every single image. There is no duplicate checking, so there may be redundant samplers in here. However, it's not trivial to fix this because we use combined image sampling - to use separate image and samplers requires shader source changes, which means big tzslc changes for vulkan only. Looks like it could end up changing syntax so we avoid this for the time being.
+		std::vector<vk2::Sampler> samplers;
 		/// Vulkan Descriptor Set layout, which matches the layout of the provided buffer and image resources. Note that buffer resources get their own binding, but all image resources are a single descriptor array.
 		vk2::DescriptorLayout descriptor_layout;
 		/// Storage for DescriptorSets.

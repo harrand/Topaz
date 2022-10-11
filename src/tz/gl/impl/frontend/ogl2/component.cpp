@@ -131,14 +131,29 @@ namespace tz::gl
 	{
 		tz_assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
+		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
+#if TZ_DEBUG
+		if(img_res->get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
+		{
+			tz_error("ResourceFlags included both ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
+		}
+#endif
+		if(img_res->get_flags().contains(ResourceFlag::ImageFilterNearest))
+		{
+			filter = ogl2::LookupFilter::Nearest;
+		}
+		if(img_res->get_flags().contains(ResourceFlag::ImageFilterLinear))
+		{
+			filter = ogl2::LookupFilter::Linear;
+		}
 		return
 		{{
 			.format = to_ogl2(img_res->get_format()),
 			.dimensions = img_res->get_dimensions(),
 			.sampler = 
 			{
-				.min_filter = ogl2::LookupFilter::Nearest,
-				.mag_filter = ogl2::LookupFilter::Nearest,
+				.min_filter = filter,
+				.mag_filter = filter,
 				.address_mode_s = ogl2::AddressMode::ClampToEdge,
 				.address_mode_t = ogl2::AddressMode::ClampToEdge,
 				.address_mode_r = ogl2::AddressMode::ClampToEdge

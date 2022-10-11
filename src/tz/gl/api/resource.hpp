@@ -29,7 +29,15 @@ namespace tz::gl
 		/// - Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as `unsigned int[]`. Can only be applied to buffer resources.
 		IndexBuffer,
 		/// - Indicates that the image can be used as an ImageOutput for another renderer. Can only be applied to image resources.
-		RendererOutput
+		RendererOutput,
+		/// - Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved.
+		ImageFilterNearest,
+		/// - Indicates that when doing min/mag on the image, the value of the weighted average of the nearest texels is retrieved.
+		ImageFilterLinear,
+		/// - Indicates that the chosen mip will have the closest match of size to the texture pixel.
+		ImageMipNearest,
+		/// - Indicates that a mip computed from the weighted average of the next and previous mip will be chosen.
+		ImageMipLinear,
 	};
 
 	using ResourceFlags = tz::EnumField<ResourceFlag>;

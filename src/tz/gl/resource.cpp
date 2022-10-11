@@ -12,6 +12,11 @@ namespace tz::gl
 		return this->access;
 	}
 
+	const ResourceFlags& Resource::get_flags() const
+	{
+		return this->flags;
+	}
+
 	std::span<const std::byte> Resource::data() const
 	{
 		if(this->mapped_resource_data.has_value())
@@ -50,11 +55,6 @@ namespace tz::gl
 	{
 		tz_assert(this->get_access() == ResourceAccess::DynamicFixed || this->get_access() == ResourceAccess::DynamicVariable, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
-	}
-
-	const ResourceFlags& Resource::get_flags() const
-	{
-		return this->flags;
 	}
 
 	std::unique_ptr<IResource> BufferResource::unique_clone() const

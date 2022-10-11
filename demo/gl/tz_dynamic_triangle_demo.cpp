@@ -72,7 +72,11 @@ int main()
 				{
 					.format = tz::gl::ImageFormat::RGBA32,
 					.dimensions = {2u, 2u},
-					.access = tz::gl::ResourceAccess::DynamicVariable
+					.access = tz::gl::ResourceAccess::DynamicVariable,
+					.flags =
+					{
+						tz::gl::ResourceFlag::ImageFilterLinear
+					}
 				}
 			)
 		);
