@@ -49,7 +49,9 @@ namespace tz::gl
 	initial_alignment_offset(initial_alignment_offset),
 	type(type),
 	flags(flags)
-	{}
+	{
+		tz_assert(!flags.contains(ResourceFlag::ImageMipNearest) && !flags.contains(ResourceFlag::ImageMipLinear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
+	}
 
 	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
