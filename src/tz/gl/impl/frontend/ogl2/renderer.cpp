@@ -10,6 +10,54 @@
 
 namespace tz::gl
 {
+	namespace detail
+	{
+		void initialise_buffer(BufferComponentOGL& bufcomp)
+		{
+			ogl2::Buffer& buffer = bufcomp.ogl_get_buffer();
+			IResource* res = bufcomp.get_resource();
+			tz_assert(res != nullptr, "BufferComponent had null resource");
+			switch(res->get_access())
+			{
+				case ResourceAccess::StaticFixed:
+				{
+					// Create a staging buffer, write the resource data into it, and then do a buffer copy to the component.
+					ogl2::BufferTarget tar = ogl2::BufferTarget::ShaderStorage;
+					if(res->get_flags().contains(ResourceFlag::IndexBuffer))
+					{
+						tar = ogl2::BufferTarget::Index;
+					}
+
+					ogl2::Buffer staging_buffer
+					{{
+						.target = tar,
+						.residency = ogl2::BufferResidency::Dynamic,
+						.size_bytes = buffer.size()
+					}};
+					auto staging_data = staging_buffer.map_as<std::byte>();
+					auto resource_data = res->data();
+					std::copy(resource_data.begin(), resource_data.end(), staging_data.begin());
+					ogl2::buffer::copy(staging_buffer, buffer);
+				}
+				break;
+				case ResourceAccess::DynamicFixed:
+				[[fallthrough]];
+				case ResourceAccess::DynamicVariable:
+				{
+					// Map component buffer and write resource data directly into it, then pass the mapped ptr back into the resource to set it as the new data source.
+					auto resdata = res->data();
+					auto compdata = buffer.map_as<std::byte>();
+					std::copy(resdata.begin(), resdata.end(), compdata.begin());
+					res->set_mapped_data(compdata);
+				}
+				break;
+				default:
+					tz_error("ResourceAccess for this buffer is not yet implemented");	
+				break;
+			}
+		}
+	}
+
 	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, std::span<const IComponent* const> components):
 	AssetStorageCommon<IResource>(resources),
 	components(),
@@ -23,61 +71,7 @@ namespace tz::gl
 			switch(res->get_type())
 			{
 				case ResourceType::Buffer:
-					{
-						BufferComponentOGL& buf = *static_cast<BufferComponentOGL*>(comp);
-						ogl2::Buffer& buffer = buf.ogl_get_buffer();
-						switch(buf.get_resource()->get_access())
-						{
-							case ResourceAccess::StaticFixed:
-								{
-									// Create staging buffer and do a copy.
-									ogl2::BufferTarget buf_tar;
-									if(res->get_flags().contains(ResourceFlag::IndexBuffer))
-									{
-										buf_tar = ogl2::BufferTarget::Index;
-									}
-									else
-									{
-										buf_tar = ogl2::BufferTarget::ShaderStorage;
-									}
-									ogl2::Buffer staging
-									{{
-										.target = buf_tar,
-										.residency = ogl2::BufferResidency::Dynamic,
-										.size_bytes = buffer.size()
-									}};
-									std::span<std::byte> staging_data = staging.map_as<std::byte>();
-									std::span<const std::byte> resource_data = res->data();
-									std::copy(resource_data.begin(), resource_data.end(), staging_data.begin());
-									ogl2::buffer::copy(staging, buffer);
-								}
-							break;
-							case ResourceAccess::DynamicFixed:
-							[[fallthrough]];
-							case ResourceAccess::DynamicVariable:
-							{
-
-								// Tell the resource to use the buffer's data. Also copy whatever we had before.
-								std::span<const std::byte> initial_data = res->data();
-								std::span<std::byte> buffer_byte_data = buffer.map_as<std::byte>();
-								std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
-								res->set_mapped_data(buffer_byte_data);
-							}
-							break;
-							default:
-								tz_error("ResourceAccess for this buffer is not yet implemented.");
-							break;
-						}
-
-						if(res->get_access() == ResourceAccess::DynamicFixed)
-						{
-							// Tell the resource to use the buffer's data. Also copy whatever we had before.
-							std::span<const std::byte> initial_data = res->data();
-							std::span<std::byte> buffer_byte_data = buf.ogl_get_buffer().map_as<std::byte>();
-							std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
-							res->set_mapped_data(buffer_byte_data);
-						}
-					}
+					detail::initialise_buffer(*static_cast<BufferComponentOGL*>(comp));
 				break;
 				case ResourceType::Image:
 					{
@@ -100,6 +94,7 @@ namespace tz::gl
 				break;
 			}
 		};
+
 		std::size_t encountered_reference_count = 0;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
