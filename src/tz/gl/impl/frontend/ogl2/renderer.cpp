@@ -1,6 +1,7 @@
 #if TZ_OGL
 #include "tz/core/profiling/zone.hpp"
 #include "tz/core/report.hpp"
+#include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/buffer.hpp"
 #include "tz/gl/impl/frontend/ogl2/renderer.hpp"
@@ -679,6 +680,30 @@ namespace tz::gl
 					this->wireframe_mode = arg.wireframe_mode;
 				}
 			}, req);
+		}
+	}
+
+	void RendererOGL::dbgui()
+	{
+		ImGui::Text("	Name: %s", this->debug_name.c_str());
+		if(this->shader.is_compute())
+		{
+			auto kernel_signed = static_cast<tz::Vec3i>(this->compute_kernel);
+			if(ImGui::DragInt3("Compute Kernel", kernel_signed.data().data(), 1.0f, 1, 8))
+			{
+				this->compute_kernel = static_cast<tz::Vec3ui>(kernel_signed);
+			}
+		}
+		else
+		{
+			if(ImGui::ColorEdit3("Clear Colour", this->clear_colour.data().data()))
+			{
+
+			}
+		}
+		if(ImGui::CollapsingHeader("Immediate State"))
+		{
+			ImGui::Text("Triangle Count: %u", this->tri_count);
 		}
 	}
 }

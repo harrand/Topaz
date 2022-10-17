@@ -35,14 +35,17 @@ int main()
 		tz::gl::ResourceHandle tbufh = pinfo.add_resource(time_buffer);
 		pinfo.debug_name("Compute");
 
-		tz::gl::Renderer compute_worker = tz::gl::device().create_renderer(pinfo);
+		tz::gl::RendererHandle compute_workerh = tz::gl::device().create_renderer(pinfo);
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
-		auto refbuf = rinfo.add_component(*compute_worker.get_component(cbuf));
+		auto refbuf = rinfo.add_component(*tz::gl::device().get_renderer(compute_workerh).get_component(cbuf));
 		rinfo.debug_name("Window Renderer");
-		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
+		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+
+		tz::gl::Renderer& compute_worker = tz::gl::device().get_renderer(compute_workerh);
+		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 
 		bool game_menu_enabled = false;
 		tz::dbgui::game_menu().add_callback([&game_menu_enabled]()

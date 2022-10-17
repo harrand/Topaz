@@ -187,6 +187,8 @@ namespace tz::gl
 		 * @param edit_request Structure specifying which edits to make.
 		 */
 		void edit(const RendererEditRequest& edit_request);
+
+		void dbgui();
 	private:
 		ogl2::VertexArray vao;
 		ResourceStorage resources;

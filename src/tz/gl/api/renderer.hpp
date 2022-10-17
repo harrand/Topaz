@@ -194,6 +194,10 @@ namespace tz::gl
 		 * @param edit_request Structure specifying which edits to make.
 		 */
 		{t.edit(edit_request)} -> std::same_as<void>;
+		/**
+		 * Display information about the renderer in the debug ui.
+		 */
+		{t.dbgui()} -> std::same_as<void>;
 	};
 }
 

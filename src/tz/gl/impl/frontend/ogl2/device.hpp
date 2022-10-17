@@ -17,6 +17,7 @@ namespace tz::gl
 		const RendererOGL& get_renderer(tz::gl::RendererHandle handle) const;
 		RendererOGL& get_renderer(tz::gl::RendererHandle handle);
 		ImageFormat get_window_format() const;
+		void dbgui();
 	private:
 		std::vector<RendererOGL> renderers;
 	};

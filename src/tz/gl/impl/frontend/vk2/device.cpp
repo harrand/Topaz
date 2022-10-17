@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "tz/core/profiling/zone.hpp"
 #include "tz/core/report.hpp"
+#include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/frontend/vk2/renderer.hpp"
 #include "tz/gl/impl/frontend/vk2/device.hpp"
 #include "tz/gl/impl/frontend/vk2/convert.hpp"
@@ -369,6 +370,19 @@ namespace tz::gl
 	ImageFormat DeviceVulkan::get_window_format() const
 	{
 		return from_vk2(this->window_storage.get_format());
+	}
+
+	void DeviceVulkan::dbgui()
+	{
+		std::size_t id = 0;
+		for(RendererVulkan& renderer : this->renderers)
+		{
+			std::string id_str = std::string("Renderer ") + std::to_string(id++);
+			if(ImGui::CollapsingHeader(id_str.c_str()))
+			{
+				renderer.dbgui();
+			}
+		}
 	}
 
 	const vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device() const

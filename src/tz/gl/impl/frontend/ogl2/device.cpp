@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "tz/core/profiling/zone.hpp"
+#include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/frontend/ogl2/renderer.hpp"
 #include "tz/gl/impl/frontend/ogl2/device.hpp"
 
@@ -31,6 +32,19 @@ namespace tz::gl
 	ImageFormat DeviceOGL::get_window_format() const
 	{
 		return ImageFormat::RGBA32;
+	}
+
+	void DeviceOGL::dbgui()
+	{
+		std::size_t id = 0;
+		for(RendererOGL& renderer : this->renderers)
+		{
+			std::string id_str = std::string("Renderer ") + std::to_string(id++);
+			if(ImGui::CollapsingHeader(id_str.c_str()))
+			{
+				renderer.dbgui();
+			}
+		}
 	}
 }
 

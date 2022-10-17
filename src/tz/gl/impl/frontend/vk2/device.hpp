@@ -80,6 +80,7 @@ namespace tz::gl
 		const tz::gl::RendererVulkan& get_renderer(tz::gl::RendererHandle handle) const;
 		tz::gl::RendererVulkan& get_renderer(tz::gl::RendererHandle handle);
 		ImageFormat get_window_format() const;
+		void dbgui();
 		const vk2::LogicalDevice& vk_get_logical_device() const;
 	private:
 		static vk2::LogicalDevice make_device(const vk2::VulkanInstance& instance);

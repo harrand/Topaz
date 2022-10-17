@@ -1,9 +1,10 @@
-#include "tz/gl/impl/backend/vk2/sampler.hpp"
 #if TZ_VULKAN
+#include "tz/gl/impl/backend/vk2/sampler.hpp"
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/frontend/vk2/device.hpp"
 #include "tz/core/profiling/zone.hpp"
 #include "tz/core/report.hpp"
+#include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/impl/backend/vk2/fixed_function.hpp"
 #include "tz/gl/impl/backend/vk2/gpu_mem.hpp"
@@ -1557,6 +1558,11 @@ namespace tz::gl
 		{
 			this->setup_static_resources();
 		}
+	}
+
+	void RendererVulkan::dbgui()
+	{
+		ImGui::Text("TODO: Implement");
 	}
 
 	void RendererVulkan::setup_static_resources()

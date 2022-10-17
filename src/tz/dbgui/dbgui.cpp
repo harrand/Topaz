@@ -649,7 +649,7 @@ namespace tz::dbgui
 	{
 		if(ImGui::Begin("Device", &tab_tz.show_device_info))
 		{
-			ImGui::Text("well met");
+			tz::gl::device().dbgui();
 			ImGui::End();
 		}
 	}
