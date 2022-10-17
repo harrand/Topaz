@@ -76,7 +76,9 @@ namespace tz::gl
 		DeviceVulkan(const DeviceVulkan& copy) = delete;
 
 		// Satisfies DeviceType.
-		RendererVulkan create_renderer(const RendererInfoVulkan& info);
+		tz::gl::RendererHandle create_renderer(const RendererInfoVulkan& info);
+		const tz::gl::RendererVulkan& get_renderer(tz::gl::RendererHandle handle) const;
+		tz::gl::RendererVulkan& get_renderer(tz::gl::RendererHandle handle);
 		ImageFormat get_window_format() const;
 		const vk2::LogicalDevice& vk_get_logical_device() const;
 	private:
@@ -85,6 +87,7 @@ namespace tz::gl
 		vk2::LogicalDevice device;
 		DeviceWindowVulkan window_storage;
 		DeviceRenderSchedulerVulkan scheduler;
+		std::vector<RendererVulkan> renderers;
 	};
 
 	static_assert(DeviceType<DeviceVulkan, RendererInfoVulkan>);

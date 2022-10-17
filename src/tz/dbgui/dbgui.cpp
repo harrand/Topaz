@@ -35,8 +35,8 @@ namespace tz::dbgui
 
 	struct TopazRenderData
 	{
-		std::unique_ptr<tz::gl::Renderer> renderer = nullptr;
-		std::unique_ptr<tz::gl::Renderer> final_renderer = nullptr;
+		tz::gl::RendererHandle renderer = tz::nullhand;
+		tz::gl::RendererHandle final_renderer = tz::nullhand;
 		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
 		tz::gl::ResourceHandle index_buffer = tz::nullhand;
 		tz::gl::ResourceHandle shader_data_buffer = tz::nullhand;
@@ -348,14 +348,14 @@ namespace tz::dbgui
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
 		
-		global_render_data->renderer = std::make_unique<tz::gl::Renderer>(tz::gl::device().create_renderer(rinfo));
+		global_render_data->renderer = tz::gl::device().create_renderer(rinfo);
 
 		tz::gl::RendererInfo empty;
 		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::Internal_FinalDebugUIRenderer});
 		empty.debug_name("ImGui Final Renderer");
-		global_render_data->final_renderer = std::make_unique<tz::gl::Renderer>(tz::gl::device().create_renderer(empty));
+		global_render_data->final_renderer = tz::gl::device().create_renderer(empty);
 
 		io.Fonts->SetTexID(0);
 
@@ -382,9 +382,9 @@ namespace tz::dbgui
 		tz_assert(draw != nullptr, "Null imgui draw data!");
 		tz_assert(draw->Valid, "Invalid draw data!");
 
-		tz_assert(global_render_data->renderer != nullptr, "Null imgui renderer when trying to render!");
+		tz_assert(global_render_data->renderer != tz::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
-		tz::gl::Renderer& renderer = *(global_render_data->renderer);
+		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
@@ -466,7 +466,7 @@ namespace tz::dbgui
 		}
 		{
 			TZ_PROFZONE("Dbgui Render - Final Pass", TZ_PROFCOL_PURPLE);
-			global_render_data->final_renderer->render();
+			tz::gl::device().get_renderer(global_render_data->final_renderer).render();
 		}
 	}
 
@@ -474,6 +474,7 @@ namespace tz::dbgui
 	{
 		bool show_info = false;
 		bool show_window_info = false;
+		bool show_device_info = false;
 	};
 
 	ImGuiTabTZ tab_tz;
@@ -644,6 +645,15 @@ namespace tz::dbgui
 
 	}
 
+	void draw_tz_device_info()
+	{
+		if(ImGui::Begin("Device", &tab_tz.show_device_info))
+		{
+			ImGui::Text("well met");
+			ImGui::End();
+		}
+	}
+
 	void imgui_impl_begin_commands()
 	{
 		if(ImGui::BeginMainMenuBar())
@@ -652,6 +662,7 @@ namespace tz::dbgui
 			{
 				ImGui::MenuItem("Info", nullptr, &tab_tz.show_info);
 				ImGui::MenuItem("Window", nullptr, &tab_tz.show_window_info);
+				ImGui::MenuItem("Device", nullptr, &tab_tz.show_device_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
 					tz_error("Manual debug breakpoint occurred.");
@@ -672,6 +683,10 @@ namespace tz::dbgui
 			if(tab_tz.show_window_info)
 			{
 				draw_tz_window_info();
+			}
+			if(tab_tz.show_device_info)
+			{
+				draw_tz_device_info();
 			}
 		}
 	}

@@ -16,12 +16,13 @@ namespace tz::gl
 	 * - Have direct access to the window surface, and exposes relevant information about said surface.
 	 */
 	template<typename T, typename RendererInfo>
-	concept DeviceType = requires(T t, RendererInfo& rinfo)
+	concept DeviceType = requires(T t, RendererInfo& rinfo, RendererHandle h)
 	{
 		requires std::is_default_constructible_v<std::decay_t<T>>;
 		requires RendererInfoType<RendererInfo>;
 
-		{t.create_renderer(rinfo)} -> RendererType;
+		{t.create_renderer(rinfo)} -> std::same_as<RendererHandle>;
+		{t.get_renderer(h)} -> RendererType;
 		{t.get_window_format()} -> std::same_as<ImageFormat>;
 	};
 }

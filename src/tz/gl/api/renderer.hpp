@@ -14,6 +14,10 @@
 
 namespace tz::gl
 {
+	namespace detail
+	{
+		struct RendererTag{};
+	}
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Specifies options to enable extra functionality within Renderers.
@@ -132,6 +136,12 @@ namespace tz::gl
 	 * @note This is a large structure. You should use the helper class @ref RendererEditBuilder to create one of these instead of attempting to fill it directly.
 	 */
 	using RendererEditRequest = std::vector<RendererEdit::Variant>;
+
+	/**
+	 * @ingroup tz_gl2_renderer
+	 * Represents a handle for a renderer owned by an existing device.
+	 */
+	using RendererHandle = tz::Handle<detail::RendererTag>;
 
 	/**
 	 * @ingroup tz_gl2_renderer

@@ -11,10 +11,21 @@ namespace tz::gl
 		glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 	}
 
-	RendererOGL DeviceOGL::create_renderer(const RendererInfoOGL& info)
+	tz::gl::RendererHandle DeviceOGL::create_renderer(const RendererInfoOGL& info)
 	{
 		TZ_PROFZONE("OpenGL Frontend - Renderer Create (via Device)", TZ_PROFCOL_RED);
-		return {info};
+		this->renderers.push_back({info});
+		return static_cast<tz::HandleValue>(this->renderers.size() - 1);
+	}
+
+	const RendererOGL& DeviceOGL::get_renderer(tz::gl::RendererHandle handle) const
+	{
+		return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+	}
+
+	RendererOGL& DeviceOGL::get_renderer(tz::gl::RendererHandle handle)
+	{
+		return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
 	}
 	
 	ImageFormat DeviceOGL::get_window_format() const
