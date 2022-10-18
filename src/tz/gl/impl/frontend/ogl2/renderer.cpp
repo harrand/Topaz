@@ -686,17 +686,19 @@ namespace tz::gl
 	void RendererOGL::dbgui()
 	{
 		ImGui::Text("	Name: %s", this->debug_name.c_str());
+		std::string dbgname_kernel = this->debug_name + " Compute Kernel";
+		std::string dbgname_clearcolour = this->debug_name + " Clear Colour";
 		if(this->shader.is_compute())
 		{
 			auto kernel_signed = static_cast<tz::Vec3i>(this->compute_kernel);
-			if(ImGui::DragInt3("Compute Kernel", kernel_signed.data().data(), 1.0f, 1, 8))
+			if(ImGui::DragInt3(dbgname_kernel.c_str(), kernel_signed.data().data(), 1.0f, 1, 8))
 			{
 				this->compute_kernel = static_cast<tz::Vec3ui>(kernel_signed);
 			}
 		}
 		else
 		{
-			if(ImGui::ColorEdit3("Clear Colour", this->clear_colour.data().data()))
+			if(ImGui::ColorEdit3(dbgname_clearcolour.c_str(), this->clear_colour.data().data()))
 			{
 
 			}
