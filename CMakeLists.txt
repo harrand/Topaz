@@ -91,6 +91,7 @@ add_library(topaz
 	src/tz/gl/resource.inl
 	src/tz/gl/tz_gl.hpp
 	# tz::gl (Common Impl)
+	src/tz/gl/impl/frontend/common/device.hpp
 	src/tz/gl/impl/frontend/common/renderer.cpp
 	src/tz/gl/impl/frontend/common/renderer.hpp
 	src/tz/gl/impl/frontend/common/shader.cpp

@@ -4,6 +4,7 @@
 #include "tz/core/callback.hpp"
 #include "tz/core/handle.hpp"
 #include "tz/gl/api/device.hpp"
+#include "tz/gl/impl/frontend/common/device.hpp"
 #include "tz/gl/impl/frontend/vk2/renderer.hpp"
 #include "tz/gl/impl/backend/vk2/swapchain.hpp"
 #include "tz/gl/impl/backend/vk2/image.hpp"
@@ -68,7 +69,7 @@ namespace tz::gl
 		std::vector<vk2::Fence> frame_work;
 	};
 
-	class DeviceVulkan
+	class DeviceVulkan : public DeviceCommon<RendererVulkan>
 	{
 	public:
 		DeviceVulkan();
@@ -77,10 +78,9 @@ namespace tz::gl
 
 		// Satisfies DeviceType.
 		tz::gl::RendererHandle create_renderer(const RendererInfoVulkan& info);
-		const tz::gl::RendererVulkan& get_renderer(tz::gl::RendererHandle handle) const;
-		tz::gl::RendererVulkan& get_renderer(tz::gl::RendererHandle handle);
+		using DeviceCommon<RendererVulkan>::get_renderer;
 		ImageFormat get_window_format() const;
-		void dbgui();
+		using DeviceCommon<RendererVulkan>::dbgui;
 		const vk2::LogicalDevice& vk_get_logical_device() const;
 	private:
 		static vk2::LogicalDevice make_device(const vk2::VulkanInstance& instance);

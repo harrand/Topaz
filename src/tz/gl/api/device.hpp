@@ -24,6 +24,7 @@ namespace tz::gl
 		{t.create_renderer(rinfo)} -> std::same_as<RendererHandle>;
 		{t.get_renderer(h)} -> RendererType;
 		{t.get_window_format()} -> std::same_as<ImageFormat>;
+		{t.dbgui()} -> std::same_as<void>;
 	};
 }
 

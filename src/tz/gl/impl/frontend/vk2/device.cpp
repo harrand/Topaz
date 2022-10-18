@@ -346,43 +346,19 @@ namespace tz::gl
 	tz::gl::RendererHandle DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
 	{
 		TZ_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", TZ_PROFCOL_YELLOW);
-		this->renderers.push_back({info,
-		{
+		return DeviceCommon<RendererVulkan>::emplace_renderer(info, 
+		tz::gl::RendererDeviceInfoVulkan{
 			.device = &this->device,
 			.output_images = this->window_storage.get_output_images(),
 			.device_window = &this->window_storage,
 			.device_scheduler = &this->scheduler,
 			.resize_callback = &this->window_storage.resize_callback()
-		}});
-		return static_cast<tz::HandleValue>(this->renderers.size() - 1);
-	}
-
-	const tz::gl::RendererVulkan& DeviceVulkan::get_renderer(tz::gl::RendererHandle handle) const
-	{
-		return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
-	}
-
-	tz::gl::RendererVulkan& DeviceVulkan::get_renderer(tz::gl::RendererHandle handle)
-	{
-		return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+		});
 	}
 
 	ImageFormat DeviceVulkan::get_window_format() const
 	{
 		return from_vk2(this->window_storage.get_format());
-	}
-
-	void DeviceVulkan::dbgui()
-	{
-		std::size_t id = 0;
-		for(RendererVulkan& renderer : this->renderers)
-		{
-			std::string id_str = std::string("Renderer ") + std::to_string(id++);
-			if(ImGui::CollapsingHeader(id_str.c_str()))
-			{
-				renderer.dbgui();
-			}
-		}
 	}
 
 	const vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device() const

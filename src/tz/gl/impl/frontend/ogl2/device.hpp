@@ -3,21 +3,24 @@
 #if TZ_OGL
 #include "tz/gl/api/device.hpp"
 #include "tz/gl/declare/image_format.hpp"
+#include "tz/gl/impl/frontend/common/device.hpp"
 #include "tz/gl/impl/frontend/ogl2/renderer.hpp"
 
 namespace tz::gl
 {
-	class DeviceOGL
+	class DeviceOGL : public DeviceCommon<RendererOGL>
 	{
 	public:
 		DeviceOGL();
 
 		// Satisfies DeviceType.
 		tz::gl::RendererHandle create_renderer(const RendererInfoOGL& info);
-		const RendererOGL& get_renderer(tz::gl::RendererHandle handle) const;
-		RendererOGL& get_renderer(tz::gl::RendererHandle handle);
+		using DeviceCommon<RendererOGL>::get_renderer;
+		//const RendererOGL& get_renderer(tz::gl::RendererHandle handle) const;
+		//RendererOGL& get_renderer(tz::gl::RendererHandle handle);
 		ImageFormat get_window_format() const;
-		void dbgui();
+		//void dbgui();
+		using DeviceCommon<RendererOGL>::dbgui;
 	private:
 		std::vector<RendererOGL> renderers;
 	};
