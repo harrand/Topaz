@@ -44,7 +44,7 @@ int main()
 		tz::gl::ResourceHandle blur_buffer_handle = postprocess_info.add_resource(blur_data);
 		tz::gl::ResourceHandle colour_target_handle = postprocess_info.add_resource(blur_image);
 		postprocess_info.set_options({tz::gl::RendererOption::NoDepthTesting});
-		tz::gl::Renderer blur_renderer = tz::gl::device().create_renderer(postprocess_info);
+		tz::gl::RendererHandle blur_rendererh = tz::gl::device().create_renderer(postprocess_info);
 
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
@@ -52,10 +52,13 @@ int main()
 		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
 		rinfo.set_output(tz::gl::ImageOutput
 		{{
-			.colours = {blur_renderer.get_component(colour_target_handle)}
+			.colours = {tz::gl::device().get_renderer(blur_rendererh).get_component(colour_target_handle)}
 		}});
 
-		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
+		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+		
+		tz::gl::Renderer& blur_renderer = tz::gl::device().get_renderer(blur_rendererh);
+		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 
 		while(!tz::window().is_close_requested())
 		{

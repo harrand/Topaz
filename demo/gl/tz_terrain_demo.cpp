@@ -53,7 +53,8 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_terrain_demo, fragment));
 		rinfo.set_clear_colour({0.0f, 0.765f, 1.0f, 1.0f});
 
-		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
+		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool wireframe_mode = false;
 		bool flight_enabled = false;

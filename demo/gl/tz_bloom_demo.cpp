@@ -77,7 +77,7 @@ int main()
 		tz::gl::ResourceHandle iout1h = combine_info.add_resource(image_out1);
 		combine_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo_combine, vertex));
 		combine_info.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo_combine, fragment));
-		tz::gl::Renderer combine = tz::gl::device().create_renderer(combine_info);
+		tz::gl::RendererHandle combineh = tz::gl::device().create_renderer(combine_info);
 
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{},
@@ -89,12 +89,15 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo, fragment));
 		tz::gl::ResourceHandle render_bufh = rinfo.add_resource(render_data);
-		tz::gl::ResourceHandle bloom_bufh = rinfo.add_component(*combine.get_component(bloom_data_handle));
+
+		tz::gl::Renderer& combine_old = tz::gl::device().get_renderer(combineh);
+
+		tz::gl::ResourceHandle bloom_bufh = rinfo.add_component(*combine_old.get_component(bloom_data_handle));
 		rinfo.set_output(tz::gl::ImageOutput
 		{{
-			.colours = {combine.get_component(iout0h), combine.get_component(iout1h)}
+			.colours = {combine_old.get_component(iout0h), combine_old.get_component(iout1h)}
 		}});
-		tz::gl::Renderer renderer = tz::gl::device().create_renderer(rinfo);
+		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
 
 		// Blur the second colour attachment
 		// TODO
@@ -110,6 +113,9 @@ int main()
 			ImGui::MenuItem("Shapes", nullptr, &menu_enabled);
 			ImGui::MenuItem("Bloom", nullptr, &bloom_menu_enabled);
 		});
+
+		tz::gl::Renderer& combine = tz::gl::device().get_renderer(combineh);
+		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 
 		while(!tz::window().is_close_requested())
 		{
