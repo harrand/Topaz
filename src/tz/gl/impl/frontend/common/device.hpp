@@ -43,6 +43,11 @@ namespace tz::gl
 			this->renderers.emplace_back(std::forward<Args>(args)...);
 			return static_cast<tz::HandleValue>(this->renderers.size() - 1);
 		}
+
+		void internal_clear()
+		{
+			this->renderers.clear();
+		}
 	private:
 		std::vector<R> renderers;
 	};

@@ -75,6 +75,7 @@ namespace tz::gl
 		DeviceVulkan();
 		DeviceVulkan(const vk2::VulkanInstance& instance);
 		DeviceVulkan(const DeviceVulkan& copy) = delete;
+		~DeviceVulkan();
 
 		// Satisfies DeviceType.
 		tz::gl::RendererHandle create_renderer(const RendererInfoVulkan& info);
@@ -88,7 +89,6 @@ namespace tz::gl
 		vk2::LogicalDevice device;
 		DeviceWindowVulkan window_storage;
 		DeviceRenderSchedulerVulkan scheduler;
-		std::vector<RendererVulkan> renderers;
 	};
 
 	static_assert(DeviceType<DeviceVulkan, RendererInfoVulkan>);

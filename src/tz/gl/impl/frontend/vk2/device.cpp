@@ -343,6 +343,12 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - DeviceVulkan Create", TZ_PROFCOL_YELLOW);
 	}
 
+	DeviceVulkan::~DeviceVulkan()
+	{
+		this->scheduler.wait_frame_work_complete();
+		DeviceCommon<RendererVulkan>::internal_clear();
+	}
+
 	tz::gl::RendererHandle DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
 	{
 		TZ_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", TZ_PROFCOL_YELLOW);
