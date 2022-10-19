@@ -1,7 +1,19 @@
 #include "tz/gl/resource.hpp"
+#include "tz/dbgui/dbgui.hpp"
+#include <array>
 
 namespace tz::gl
 {
+	namespace detail
+	{
+		std::array<const char*, static_cast<int>(ResourceAccess::Count)> resource_access_strings
+		{
+			"Static Fixed",
+			"Dynamic Fixed",
+			"Dynamic Variable"
+		};
+	}
+
 	ResourceType Resource::get_type() const
 	{
 		return this->type;
@@ -37,6 +49,11 @@ namespace tz::gl
 		return {beg_offsetted, this->resource_data.end()};
 	}
 
+	void Resource::dbgui()
+	{
+		ImGui::Text("Resource Access: %s", detail::resource_access_strings[static_cast<int>(this->get_access())]);
+	}
+
 	void Resource::resize_data(std::size_t new_size)
 	{
 		this->resource_data.resize(new_size);
@@ -64,6 +81,13 @@ namespace tz::gl
 		return std::make_unique<BufferResource>(*this);
 	}
 
+	void BufferResource::dbgui()
+	{
+		Resource::dbgui();
+		ImGui::Text("Buffer Resource!");
+		ImGui::Text("Buffer Size: %zu bytes", this->data().size_bytes());
+	}
+
 	BufferResource::BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags):
 	Resource(access, resource_data, initial_alignment_offset, ResourceType::Buffer, flags){}
 			
@@ -78,6 +102,13 @@ namespace tz::gl
 	std::unique_ptr<IResource> ImageResource::unique_clone() const
 	{
 		return std::make_unique<ImageResource>(*this);
+	}
+
+	void ImageResource::dbgui()
+	{
+		Resource::dbgui();
+		ImGui::Text("Image Resource!");
+		ImGui::Text("Dimensions: {%u, %u}", this->dimensions[0], this->dimensions[1]);
 	}
 
 	ImageFormat ImageResource::get_format() const

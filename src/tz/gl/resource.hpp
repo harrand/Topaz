@@ -19,6 +19,7 @@ namespace tz::gl
 		virtual const ResourceFlags& get_flags() const final;
 		virtual std::span<const std::byte> data() const final;
 		virtual std::span<std::byte> data() final;
+		virtual void dbgui() override;
 
 		void resize_data(std::size_t new_size);
 	protected:
@@ -82,6 +83,7 @@ namespace tz::gl
 			return from_one(0, {});
 		}
 		virtual std::unique_ptr<IResource> unique_clone() const final;
+		virtual void dbgui() final;
 	private:
 		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags);
 	};
@@ -162,6 +164,7 @@ namespace tz::gl
 			);
 		}
 		virtual std::unique_ptr<IResource> unique_clone() const final;
+		virtual void dbgui() final;
 		ImageFormat get_format() const;
 		tz::Vec2ui get_dimensions() const;
 		void set_dimensions(tz::Vec2ui dims);

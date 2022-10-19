@@ -1563,6 +1563,7 @@ namespace tz::gl
 	void RendererVulkan::dbgui()
 	{
 		ImGui::Text("TODO: Implement");
+		tz::gl::common_renderer_dbgui(*this);
 	}
 
 	void RendererVulkan::setup_static_resources()

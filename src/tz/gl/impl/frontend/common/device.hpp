@@ -24,15 +24,16 @@ namespace tz::gl
 
 		void dbgui()
 		{
-			std::size_t id = 0;
-			for(R& renderer : this->renderers)
+			static int id = 0;
+			const std::size_t renderer_count = this->renderers.size();
+			if(renderer_count == 0)
 			{
-				std::string id_str = std::string("Renderer ") + std::to_string(id++);
-				if(ImGui::CollapsingHeader(id_str.c_str()))
-				{
-					renderer.dbgui();
-				}
+				return;
 			}
+			ImGui::DragInt("Renderer ID", &id, 0.2f, 0, renderer_count - 1);
+			ImGui::Indent();
+			this->renderers[id].dbgui();
+			ImGui::Unindent();
 		}
 
 		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.

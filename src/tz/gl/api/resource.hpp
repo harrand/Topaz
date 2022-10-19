@@ -59,7 +59,8 @@ namespace tz::gl
 		/// - Resource data is always writable, but cannot be resized.
 		DynamicFixed,
 		/// - Resource data is always writeable and resizeable.
-		DynamicVariable
+		DynamicVariable,
+		Count
 	};
 
 	/**
@@ -124,6 +125,11 @@ namespace tz::gl
 		 * Retrieve a field containing all flags applied to this resource. If you didn't specify any flags for this resource, it will be empty.
 		 */
 		virtual const ResourceFlags& get_flags() const = 0;
+
+		/**
+		 * Display debug information about the resource.
+		 */
+		virtual void dbgui() = 0;
 	};
 
 	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.

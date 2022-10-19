@@ -685,6 +685,7 @@ namespace tz::gl
 
 	void RendererOGL::dbgui()
 	{
+		common_renderer_dbgui(*this);
 		ImGui::Text("	Name: %s", this->debug_name.c_str());
 		std::string dbgname_kernel = this->debug_name + " Compute Kernel";
 		std::string dbgname_clearcolour = this->debug_name + " Clear Colour";

@@ -3,6 +3,7 @@
 #include "tz/core/memory.hpp"
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/impl/frontend/common/shader.hpp"
+#include "imgui.h"
 
 namespace tz::gl
 {
@@ -186,6 +187,33 @@ namespace tz::gl
 	private:
 		std::vector<MaybeOwnedPtr<Asset>> asset_storage;
 	};
+
+	/**
+	 * @ingroup tz_gl2_renderer
+	 * Helper function which displays render-api-agnostic information about renderers.
+	 */
+	void common_renderer_dbgui(RendererType auto& renderer)
+	{
+		ImGui::PushID(&renderer);
+		if(renderer.resource_count() > 0)
+		{
+			unsigned int rcount = renderer.resource_count() - 1;
+			ImGui::Text("Resource Count: %u", renderer.resource_count());
+			static int res_id = 0;
+			res_id = std::clamp(res_id, 0, static_cast<int>(rcount));
+			ImGui::DragInt("Resource ID:", &res_id, 0.05f, 0, rcount);
+
+			// Display information about current resource.
+			ImGui::Indent();
+			renderer.get_resource(static_cast<tz::HandleValue>(res_id))->dbgui();
+			ImGui::Unindent();
+		}
+		else
+		{
+			ImGui::Text("Renderer has no resources.");
+		}
+		ImGui::PopID();
+	}
 
 }
 
