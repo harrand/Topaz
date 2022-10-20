@@ -7,7 +7,7 @@ add_tz_test(NAME tz_resource_test
 	)
 
 add_tz_test(NAME tz_renderer_test
-	SOURCE_FILES tz_renderer_test2.cpp
+	SOURCE_FILES tz_renderer_test.cpp
 	SHADER_SOURCES
 		test/gl/shaders/empty.vertex.tzsl
 		test/gl/shaders/empty.fragment.tzsl
