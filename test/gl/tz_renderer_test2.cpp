@@ -49,6 +49,80 @@ TESTFUNC_BEGIN(create_destroy_empty_renderer)
 TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(renderer_resource_reference_buffer)
+	// Create 2 renderers. One with a buffer resource, the other referencing that buffer resource.
+	constexpr float expected_value = 69.0f;
+	tz::gl::RendererInfo rinfo1;
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::ResourceHandle r1bh = rinfo1.add_resource(tz::gl::BufferResource::from_one(expected_value));
+	tz::gl::RendererHandle r1h = tz::gl::device().create_renderer(rinfo1);
+
+
+	tz::gl::RendererInfo rinfo2;
+	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::ResourceHandle r2bh = rinfo2.add_component(*tz::gl::device().get_renderer(r1h).get_component(r1bh));
+
+	tz::gl::RendererHandle r2h = tz::gl::device().create_renderer(rinfo2);
+
+	// Try rendering with them as they shouldn't crash.
+	tz::gl::device().get_renderer(r1h).render();
+	tz::gl::device().get_renderer(r2h).render();
+
+	// Make sure the buffer resource reference contains the expected value.
+	{
+		float actual = tz::gl::device().get_renderer(r2h).get_resource(r2bh)->data_as<float>().front();
+		tz_assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
+	}
+	
+	tz::gl::device().destroy_renderer(r2h);
+	tz::gl::device().destroy_renderer(r1h);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(renderer_resource_reference_image)
+	if(!image_resources_supported())
+	{
+		tz_warning_report("Test skipped due to lack of support for image resources.");	
+		return;
+	}
+
+	// Create 2 renderers. One with an image resource, the other referencing that image resource.
+	constexpr std::uint32_t expected_value = 0xff0000ff;
+	tz::gl::RendererInfo rinfo1;
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::ResourceHandle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
+	{
+		.format = tz::gl::ImageFormat::RGBA32,
+		.dimensions = {1u, 1u},
+	}));
+	tz::gl::RendererHandle r1h = tz::gl::device().create_renderer(rinfo1);
+
+
+	tz::gl::RendererInfo rinfo2;
+	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::ResourceHandle r2ih = rinfo2.add_component(*tz::gl::device().get_renderer(r1h).get_component(r1ih));
+
+	tz::gl::RendererHandle r2h = tz::gl::device().create_renderer(rinfo2);
+
+	// Try rendering with them as they shouldn't crash.
+	tz::gl::device().get_renderer(r1h).render();
+	tz::gl::device().get_renderer(r2h).render();
+
+	// Make sure the image resource reference contains the expected value.
+	{
+		std::uint32_t actual = tz::gl::device().get_renderer(r2h).get_resource(r2ih)->data_as<std::uint32_t>().front();
+		tz_assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
+	}
+	
+	tz::gl::device().destroy_renderer(r2h);
+	tz::gl::device().destroy_renderer(r1h);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_bufferresize)
 	// Create a renderer with buffer containing {1.0f}, then resize it to {2.0f, 3.0f}
 	tz::gl::RendererInfo rinfo;
@@ -311,6 +385,9 @@ int main()
 	});
 	{
 		create_destroy_empty_renderer();
+
+		renderer_resource_reference_buffer();
+		renderer_resource_reference_image();
 
 		rendereredit_bufferresize();
 		rendereredit_imageresize();

@@ -81,7 +81,11 @@ namespace tz::gl
 						image.set_data(img.get_resource()->data());
 						if(ogl2::supports_bindless_textures())
 						{
-							image.make_bindless();
+							// Note: If we are a resource reference, this component has probably already been made bindless in the past, and making a bindless image bindless again will assert.
+							if(!image.is_bindless())
+							{
+								image.make_bindless();
+							}
 							this->image_handles.push_back(img.ogl_get_image().get_bindless_handle());
 						}
 						else
