@@ -22,6 +22,7 @@ namespace tz::gl
 		requires RendererInfoType<RendererInfo>;
 
 		{t.create_renderer(rinfo)} -> std::same_as<RendererHandle>;
+		{t.destroy_renderer(h)} -> std::same_as<void>;
 		{t.get_renderer(h)} -> RendererType;
 		{t.get_window_format()} -> std::same_as<ImageFormat>;
 		{t.dbgui()} -> std::same_as<void>;

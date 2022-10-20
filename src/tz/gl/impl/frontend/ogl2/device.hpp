@@ -16,10 +16,8 @@ namespace tz::gl
 		// Satisfies DeviceType.
 		tz::gl::RendererHandle create_renderer(const RendererInfoOGL& info);
 		using DeviceCommon<RendererOGL>::get_renderer;
-		//const RendererOGL& get_renderer(tz::gl::RendererHandle handle) const;
-		//RendererOGL& get_renderer(tz::gl::RendererHandle handle);
+		using DeviceCommon<RendererOGL>::destroy_renderer;
 		ImageFormat get_window_format() const;
-		//void dbgui();
 		using DeviceCommon<RendererOGL>::dbgui;
 	private:
 		std::vector<RendererOGL> renderers;

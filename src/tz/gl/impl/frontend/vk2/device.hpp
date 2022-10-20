@@ -80,6 +80,7 @@ namespace tz::gl
 		// Satisfies DeviceType.
 		tz::gl::RendererHandle create_renderer(const RendererInfoVulkan& info);
 		using DeviceCommon<RendererVulkan>::get_renderer;
+		using DeviceCommon<RendererVulkan>::destroy_renderer;
 		ImageFormat get_window_format() const;
 		using DeviceCommon<RendererVulkan>::dbgui;
 		const vk2::LogicalDevice& vk_get_logical_device() const;
