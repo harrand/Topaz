@@ -49,6 +49,11 @@ namespace tz::gl
 			this->free_list.push_back(h);
 		}
 
+		std::size_t renderer_count() const
+		{
+			return this->renderers.size() - this->free_list.size();
+		}
+
 		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
 	protected:
 		template<typename... Args>
@@ -64,7 +69,7 @@ namespace tz::gl
 			{
 				// We destroyed a renderer in the past and now the free list contains a reference to the null renderer at its place. We can re-use this position.
 				// If we destroyed a renderer in the past, let's re-use its handle. The renderer at the position will be a null renderer.
-				tz::gl::RendererHandle h = static_cast<tz::HandleValue>(this->free_list.front());
+				tz::gl::RendererHandle h = static_cast<tz::HandleValue>(this->free_list.back());
 				this->free_list.pop_back();
 				this->get_renderer(h) = R{std::forward<Args>(args)...};
 				return h;

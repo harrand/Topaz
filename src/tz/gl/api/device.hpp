@@ -23,6 +23,7 @@ namespace tz::gl
 
 		{t.create_renderer(rinfo)} -> std::same_as<RendererHandle>;
 		{t.destroy_renderer(h)} -> std::same_as<void>;
+		{t.renderer_count()} -> std::convertible_to<std::size_t>;
 		{t.get_renderer(h)} -> RendererType;
 		{t.get_window_format()} -> std::same_as<ImageFormat>;
 		{t.dbgui()} -> std::same_as<void>;

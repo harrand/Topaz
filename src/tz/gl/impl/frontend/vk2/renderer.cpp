@@ -293,6 +293,7 @@ namespace tz::gl
 
 	ResourceStorage& ResourceStorage::operator=(ResourceStorage&& rhs)
 	{
+		AssetStorageCommon<IResource>::operator=(std::move(rhs));
 		std::swap(this->components, rhs.components);
 		std::swap(this->image_component_views, rhs.image_component_views);
 		std::swap(this->samplers, rhs.samplers);
@@ -536,9 +537,12 @@ namespace tz::gl
 		std::swap(this->render_pass, rhs.render_pass);
 		std::swap(this->output_framebuffers, rhs.output_framebuffers);
 		std::swap(this->options, rhs.options);
-		for(auto& fb : this->output_framebuffers)
+		if(!this->render_pass.is_null())
 		{
-			fb.set_render_pass(this->render_pass);
+			for(auto& fb : this->output_framebuffers)
+			{
+				fb.set_render_pass(this->render_pass);
+			}
 		}
 		return *this;
 	}
@@ -799,7 +803,10 @@ namespace tz::gl
 	graphics_pipeline(std::move(move.graphics_pipeline)),
 	depth_testing_enabled(move.depth_testing_enabled)
 	{
-		this->graphics_pipeline.set_layout(this->pipeline_layout);
+		if(!this->pipeline_layout.is_null())
+		{
+			this->graphics_pipeline.set_layout(this->pipeline_layout);
+		}
 	}
 
 	GraphicsPipelineManager& GraphicsPipelineManager::operator=(GraphicsPipelineManager&& rhs)
@@ -808,7 +815,11 @@ namespace tz::gl
 		std::swap(this->pipeline_layout, rhs.pipeline_layout);
 		std::swap(this->graphics_pipeline, rhs.graphics_pipeline);
 		std::swap(this->depth_testing_enabled, rhs.depth_testing_enabled);
-		this->graphics_pipeline.set_layout(this->pipeline_layout);
+
+		if(!this->pipeline_layout.is_null())
+		{
+			this->graphics_pipeline.set_layout(this->pipeline_layout);
+		}
 
 		return *this;
 	}
@@ -1308,6 +1319,10 @@ namespace tz::gl
 
 	RendererVulkan::~RendererVulkan()
 	{
+		if(this->is_null())
+		{
+			return;
+		}
 		if(this->device_resize_callback != nullptr)
 		{
 			this->device_resize_callback->remove_callback(this->window_resize_callback);
@@ -1332,9 +1347,26 @@ namespace tz::gl
 		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
 		std::swap(this->scissor_cache, rhs.scissor_cache);
-		this->device_resize_callback->remove_callback(rhs.window_resize_callback);
-		this->device_resize_callback->remove_callback(this->window_resize_callback);
-		this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+		if(this->is_null() && rhs.is_null())
+		{
+
+		}
+		else if(this->is_null() && !rhs.is_null())
+		{
+			rhs.device_resize_callback->remove_callback(rhs.window_resize_callback);
+			rhs.window_resize_callback = rhs.device_resize_callback->add_callback([&rhs](RendererResizeInfoVulkan resize_info){rhs.handle_resize(resize_info);});
+		}
+		else if(!this->is_null() && rhs.is_null())
+		{
+			this->device_resize_callback->remove_callback(this->window_resize_callback);
+			this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+		}
+		else
+		{
+			this->device_resize_callback->remove_callback(rhs.window_resize_callback);
+			this->device_resize_callback->remove_callback(this->window_resize_callback);
+			this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+		}
 		return *this;
 	}
 
