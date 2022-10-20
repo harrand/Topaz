@@ -1,5 +1,6 @@
 #include "tz/core/tz.hpp"
 #include "tz/core/assert.hpp"
+#include "tz/core/report.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/device.hpp"
@@ -11,6 +12,16 @@
 
 #define TESTFUNC_BEGIN(n) void n(){ std::size_t internal_rcount = tz::gl::device().renderer_count();
 #define TESTFUNC_END ;tz_assert(tz::gl::device().renderer_count() == internal_rcount, "Detected test function that ended with a different number of renderers (%zu) than it started with (%zu).", tz::gl::device().renderer_count(), internal_rcount);}
+
+bool image_resources_supported()
+{
+	// TODO: Better support for OGL non-bindless textures. These fail for bindful OGL textures.
+	#if TZ_OGL
+		return tz::gl::ogl2::supports_bindless_textures();
+	#else
+		return true;
+	#endif
+}
 
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(create_destroy_empty_renderer)
@@ -78,6 +89,219 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_imageresize)
+	if(!image_resources_supported())
+	{
+		tz_warning_report("Test skipped due to lack of support for image resources.");	
+		return;
+	}
+	// Create a renderer with image of dimensions {1, 1} and then resize to {2, 2}
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+
+	constexpr tz::Vec2ui old_dims{1u, 1u};
+	constexpr tz::Vec2ui new_dims{2u, 2u};
+
+	tz::gl::ResourceHandle ih = rinfo.add_resource(tz::gl::ImageResource::from_uninitialised
+	({
+		.format = tz::gl::ImageFormat::RGBA32,
+		.dimensions = old_dims,
+		.access = tz::gl::ResourceAccess::DynamicVariable
+	}));
+	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+
+	// Do the resize.
+	{
+		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
+		const tz::gl::ImageResource* ires = static_cast<const tz::gl::ImageResource*>(ren.get_resource(ih));
+
+		tz_assert(ires->get_dimensions() == old_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", old_dims[0], old_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
+
+		ren.edit
+		(
+			tz::gl::RendererEditBuilder{}
+			.image_resize
+			({
+				.image_handle = ih,
+				.dimensions = new_dims
+			})
+			.build()
+		);
+
+		tz_assert(ires->get_dimensions() == new_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", new_dims[0], new_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
+
+	}
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+
+	tz::gl::device().destroy_renderer(rh);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
+	// Create a renderer with buffer containing {1.0f, 2.0f, 3.0f}, then write {4.0f, 5.0f, 6.0f} into it
+	constexpr std::array<float, 3> old_data{1.0f, 2.0f, 3.0f};
+	constexpr std::array<float, 3> new_data{4.0f, 5.0f, 6.0f};
+
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
+	{
+		.access = tz::gl::ResourceAccess::DynamicFixed
+		// TODO: Test should pass even if StaticFixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
+	}));
+	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+
+	// Do the write.
+	{
+		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
+		{
+			std::span<const float> bufdata = ren.get_resource(bh)->data_as<const float>();
+			tz_assert(std::equal(bufdata.begin(), bufdata.end(), old_data.begin()), "Buffer data did not match expected values prior to resource write.");
+		}
+		ren.edit
+		(
+			tz::gl::RendererEditBuilder{}
+			.write
+			({
+				.resource = bh,
+				.data = std::as_bytes(std::span<const float>(new_data)),
+			})
+			.build()
+		);
+		{
+			std::span<const float> bufdata = ren.get_resource(bh)->data_as<const float>();
+			tz_assert(std::equal(bufdata.begin(), bufdata.end(), new_data.begin()), "Buffer data did not match expected values prior to resource write.");
+		}
+
+	}
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+	
+	tz::gl::device().destroy_renderer(rh);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
+	if(!image_resources_supported())
+	{
+		tz_warning_report("Test skipped due to lack of support for image resources.");	
+		return;
+	}
+	// Create a renderer with image of dimensions {1, 1}, colour black.
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+
+	constexpr std::uint32_t black_pixel = 0x000000ff;
+	constexpr std::uint32_t white_pixel = 0xffffffff;
+
+	tz::gl::ResourceHandle ih = rinfo.add_resource(tz::gl::ImageResource::from_memory
+	(
+	{
+		black_pixel
+	},
+	{
+		.format = tz::gl::ImageFormat::RGBA32,
+		.dimensions = {2u, 2u},
+		.access = tz::gl::ResourceAccess::DynamicFixed
+	}));
+	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+
+	// Do the write.
+	{
+		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
+		tz_assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == black_pixel, "Expected colour %x, got %x", black_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
+		ren.edit
+		(
+			tz::gl::RendererEditBuilder{}
+			.write
+			({
+				.resource = ih,
+				.data = std::as_bytes(std::span<const std::uint32_t>{&white_pixel, 1})
+			})
+			.build()
+		);
+
+		tz_assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == white_pixel, "Expected colour %x, got %x", white_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
+	}
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+
+	tz::gl::device().destroy_renderer(rh);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_computeconfig)
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
+
+	tz::gl::RendererHandle ch = tz::gl::device().create_renderer(rinfo);
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(ch).render();
+	{
+		tz::gl::Renderer& ren = tz::gl::device().get_renderer(ch);
+		ren.edit
+		(
+			tz::gl::RendererEditBuilder{}
+			.compute
+			({
+				.kernel = {4u, 4u, 4u}
+			})
+			.build()
+		);
+	}
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(ch).render();
+
+	tz::gl::device().destroy_renderer(ch);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_renderconfig)
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+
+	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+	{
+		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
+		ren.edit
+		(
+			tz::gl::RendererEditBuilder{}
+			.render_state
+			({
+				.wireframe_mode = true
+			})
+			.build()
+		);
+	}
+	// Try rendering and make sure it doesn't crash.
+	tz::gl::device().get_renderer(rh).render();
+
+	tz::gl::device().destroy_renderer(rh);
+
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
 int main()
 {
 	tz::initialise
@@ -89,6 +313,11 @@ int main()
 		create_destroy_empty_renderer();
 
 		rendereredit_bufferresize();
+		rendereredit_imageresize();
+		rendereredit_resourcewrite_buffer();
+		rendereredit_resourcewrite_image();
+		rendereredit_computeconfig();
+		rendereredit_renderconfig();
 	}
 	tz::terminate();
 }
