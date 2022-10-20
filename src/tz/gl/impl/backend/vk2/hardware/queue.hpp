@@ -142,8 +142,12 @@ namespace tz::gl::vk2
 			using NativeType = VkQueue;
 			NativeType native() const;
 
+			static Queue null();
+			bool is_null() const;
+
 			bool operator==(const Queue& rhs) const;
 		private:
+			Queue();
 			void execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const;
 
 			VkQueue queue;

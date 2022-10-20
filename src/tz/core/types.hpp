@@ -55,6 +55,20 @@ namespace tz
 	template<typename T>
 	concept TriviallyCopyable = std::is_trivially_copyable_v<T>;
 
+	template<typename T>
+	concept Nullable = requires(const T t)
+	{
+		//{decltype(t)::null()};
+		{t.is_null()} -> std::same_as<bool>;
+	};
+
+	template<typename T>
+	concept NativeAvailable = requires(T t)
+	{
+		T::NativeType;
+		{t.native()} -> std::same_as<typename T::NativeType>;
+	};
+
 	/**
 	 * @ingroup tz_core_allocators
 	 * Named requirement for topaz allocators. Not to be confused with the c++ standard library allocators.

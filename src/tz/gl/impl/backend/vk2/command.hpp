@@ -440,7 +440,12 @@ namespace tz::gl::vk2
 
 		using NativeType = VkCommandPool;
 		NativeType native() const;
+
+		static CommandPool null();
+		bool is_null() const;
 	private:
+		CommandPool();
+
 		VkCommandPool pool;
 		CommandPoolInfo info;
 	};

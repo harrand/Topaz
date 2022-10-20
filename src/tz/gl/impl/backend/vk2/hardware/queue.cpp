@@ -162,9 +162,25 @@ namespace tz::gl::vk2::hardware
 		return this->queue;
 	}
 
+	Queue Queue::null()
+	{
+		return {};
+	}
+
+	bool Queue::is_null() const
+	{
+		return this->queue == VK_NULL_HANDLE;
+	}
+
 	bool Queue::operator==(const Queue& rhs) const
 	{
 		return this->queue == rhs.queue;
+	}
+
+	Queue::Queue():
+	queue(VK_NULL_HANDLE),
+	info()
+	{
 	}
 
 	void Queue::execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const

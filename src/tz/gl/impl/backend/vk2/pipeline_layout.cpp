@@ -74,6 +74,22 @@ namespace tz::gl::vk2
 	{
 		return this->pipeline_layout;
 	}
-}
 
+	PipelineLayout PipelineLayout::null()
+	{
+		return {};
+	}
+
+	bool PipelineLayout::is_null() const
+	{
+		return this->pipeline_layout == VK_NULL_HANDLE;
+	}
+
+	PipelineLayout::PipelineLayout():
+	pipeline_layout(VK_NULL_HANDLE),
+	logical_device(nullptr)
+	{
+
+	}
+}
 #endif // TZ_VULKAN

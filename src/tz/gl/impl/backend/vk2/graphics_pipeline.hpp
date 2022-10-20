@@ -107,8 +107,13 @@ namespace tz::gl::vk2
 
 		using NativeType = VkPipeline;
 		NativeType native() const;
+
+		static Pipeline null();
+		bool is_null() const;
 	private:
-		std::variant<GraphicsPipeline, ComputePipeline> pipeline_variant;
+		Pipeline();
+
+		std::variant<GraphicsPipeline, ComputePipeline, std::monostate> pipeline_variant;
 	};
 }
 

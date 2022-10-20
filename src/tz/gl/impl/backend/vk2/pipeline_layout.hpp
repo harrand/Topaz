@@ -36,7 +36,12 @@ namespace tz::gl::vk2
 
 		using NativeType = VkPipelineLayout;
 		NativeType native() const;
+
+		static PipelineLayout null();
+		bool is_null() const;
 	private:
+		PipelineLayout();
+
 		VkPipelineLayout pipeline_layout;
 		const LogicalDevice* logical_device;
 	};

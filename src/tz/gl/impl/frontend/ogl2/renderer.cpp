@@ -269,6 +269,12 @@ namespace tz::gl
 
 	}
 
+	ShaderManager::ShaderManager():
+	shader(ogl2::Shader::null())
+	{
+		
+	}
+
 	void ShaderManager::use()
 	{
 		this->shader.use();
@@ -512,6 +518,7 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("RendererOGL Render", TZ_PROFCOL_RED);
+		tz_assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
 		#if TZ_DEBUG
 		{
 			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, this->debug_name.c_str());
@@ -600,6 +607,7 @@ namespace tz::gl
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
 		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
+		tz_assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
 		for(const RendererEdit::Variant& req : edit_request)
 		{
 			std::visit([this](auto&& arg)
@@ -708,6 +716,29 @@ namespace tz::gl
 		{
 			ImGui::Text("Triangle Count: %u", this->tri_count);
 		}
+	}
+
+	RendererOGL RendererOGL::null()
+	{
+		return {};
+	}
+
+	bool RendererOGL::is_null() const
+	{
+		return this->is_null_value;
+	}
+
+	RendererOGL::RendererOGL():
+	vao(),
+	resources({}, {}),
+	shader(),
+	output(nullptr, {}),
+	clear_colour(),
+	compute_kernel(),
+	options(),
+	debug_name("Null Renderer")
+	{
+		this->is_null_value = true;
 	}
 }
 

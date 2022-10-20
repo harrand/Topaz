@@ -264,6 +264,17 @@ namespace tz::gl
 		this->sync_descriptors(true);
 	}
 
+	ResourceStorage::ResourceStorage():
+	AssetStorageCommon<IResource>({}),
+	components(),
+	image_component_views(),
+	samplers(),
+	descriptor_layout(vk2::DescriptorLayout::null()),
+	descriptor_pool(vk2::DescriptorPool::null()),
+	descriptors(),
+	frame_in_flight_count(0)
+	{}
+
 	ResourceStorage::ResourceStorage(ResourceStorage&& move):
 	AssetStorageCommon<IResource>(static_cast<AssetStorageCommon<IResource>&&>(move)),
 	components(std::move(move.components)),
@@ -481,6 +492,20 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
 		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images);
+	}
+
+	OutputManager::OutputManager():
+	output(nullptr),
+	ldev(nullptr),
+	swapchain_images({}),
+	swapchain_depth_images(nullptr),
+	output_imageviews(),
+	output_depth_imageviews(),
+	render_pass(vk2::RenderPass::null()),
+	output_framebuffers(),
+	options()
+	{
+
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
@@ -759,6 +784,15 @@ namespace tz::gl
 		tz_assert(dlayout.get_device() == render_pass.get_device(), "DescriptorLayout and RenderPass were not made by the same LogicalDevice. This is likely to cause issues, please submit a bug report.");
 	}
 
+	GraphicsPipelineManager::GraphicsPipelineManager():
+	shader(vk2::Shader::null()),
+	pipeline_layout(vk2::PipelineLayout::null()),
+	graphics_pipeline(vk2::Pipeline::null()),
+	depth_testing_enabled(false)
+	{
+
+	}
+
 	GraphicsPipelineManager::GraphicsPipelineManager(GraphicsPipelineManager&& move):
 	shader(std::move(move.shader)),
 	pipeline_layout(std::move(move.pipeline_layout)),
@@ -1022,6 +1056,21 @@ namespace tz::gl
 		tz_assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		tz_assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
 		tz_assert(this->commands.success(), "Failed to allocate from CommandPool");
+	}
+
+	CommandProcessor::CommandProcessor():
+	requires_present(false),
+	instant_compute_enabled(false),
+	graphics_queue(nullptr),
+	compute_queue(nullptr),
+	command_pool(vk2::CommandPool::null()),
+	commands(),
+	frame_in_flight_count(0),
+	images_in_flight(),
+	options(),
+	device_scheduler(nullptr)
+	{
+
 	}
 
 	CommandProcessor::CommandProcessor(CommandProcessor&& move):
@@ -1564,6 +1613,31 @@ namespace tz::gl
 	{
 		ImGui::Text("TODO: Implement");
 		tz::gl::common_renderer_dbgui(*this);
+	}
+
+	RendererVulkan RendererVulkan::null()
+	{
+		return {};
+	}
+	
+	bool RendererVulkan::is_null() const
+	{
+		return this->ldev == nullptr;
+	}
+
+	RendererVulkan::RendererVulkan():
+	ldev(nullptr),
+	device_window(nullptr),
+	options(),
+	clear_colour(),
+	compute_kernel(),
+	resources(),
+	output(),
+	pipeline(),
+	command(),
+	debug_name("Null Renderer")
+	{
+
 	}
 
 	void RendererVulkan::setup_static_resources()

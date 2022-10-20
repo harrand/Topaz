@@ -279,6 +279,7 @@ namespace tz::gl::vk2
 
 	PipelineContext Pipeline::get_context() const
 	{
+		tz_assert(!std::holds_alternative<std::monostate>(this->pipeline_variant), "Cannot get context of the null pipeline!");
 		if(std::holds_alternative<GraphicsPipeline>(this->pipeline_variant))
 		{
 			return PipelineContext::Graphics;
@@ -291,7 +292,15 @@ namespace tz::gl::vk2
 		const LogicalDevice* ldev;
 		std::visit([&ldev](auto&& arg)
 		{
-			ldev = &arg.get_device();
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr(std::is_same_v<T, std::monostate>)
+			{
+				tz_error("Attempting to get device for a null Pipeline");
+			}
+			else
+			{
+				ldev = &arg.get_device();
+			}
 		}, this->pipeline_variant);
 		tz_assert(ldev != nullptr, "Pipeline had no LogicalDevice attached. Please submit a bug report.");
 		return *ldev;
@@ -302,7 +311,15 @@ namespace tz::gl::vk2
 		const PipelineLayout* lay;
 		std::visit([&lay](auto&& arg)
 		{
-			lay = arg.get_info().pipeline_layout;
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr(std::is_same_v<T, std::monostate>)
+			{
+				tz_error("Attempting to get layout for a null Pipeline");
+			}
+			else
+			{
+				lay = arg.get_info().pipeline_layout;
+			}
 		}, this->pipeline_variant);
 		tz_assert(lay != nullptr, "Pipeline had no PipelineLayout attached. Please submit a bug report.");
 		return *lay;
@@ -312,7 +329,15 @@ namespace tz::gl::vk2
 	{
 		std::visit([&layout](auto&& arg)
 		{
-			arg.set_layout(layout);
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr(std::is_same_v<T, std::monostate>)
+			{
+				tz_error("Attempting to set layout for a null Pipeline");
+			}
+			else
+			{
+				arg.set_layout(layout);
+			}
 		}, this->pipeline_variant);
 	}
 
@@ -321,9 +346,32 @@ namespace tz::gl::vk2
 		Pipeline::NativeType nat;
 		std::visit([&nat](auto&& arg)
 		{
-			nat = arg.native();
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr(std::is_same_v<T, std::monostate>)
+			{
+				tz_error("Attempting to retrieve native type for a null Pipeline");
+			}
+			else
+			{
+				nat = arg.native();
+			}
 		}, this->pipeline_variant);
 		return nat;
+	}
+
+	Pipeline Pipeline::null()
+	{
+		return {};
+	}
+
+	bool Pipeline::is_null() const
+	{
+		return std::holds_alternative<std::monostate>(this->pipeline_variant);
+	}
+
+	Pipeline::Pipeline():
+	pipeline_variant{std::monostate{}}
+	{
 	}
 }
 

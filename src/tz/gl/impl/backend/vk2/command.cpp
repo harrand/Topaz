@@ -557,6 +557,23 @@ namespace tz::gl::vk2
 		return this->pool;
 	}
 
+	CommandPool CommandPool::null()
+	{
+		return {};
+	}
+
+	bool CommandPool::is_null() const
+	{
+		return this->pool == VK_NULL_HANDLE;
+	}
+
+	CommandPool::CommandPool():
+	pool(VK_NULL_HANDLE),
+	info()
+	{
+
+	}
+
 }
 
 #endif // TZ_VULKAN

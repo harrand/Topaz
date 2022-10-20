@@ -50,6 +50,7 @@ namespace tz::gl
 		 * @param ldev Vulkan LogicalDevice, this will be used to handle the various components and vulkan descriptor shenanigans.
 		 */
 		ResourceStorage(const RendererInfoVulkan& info, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
+		ResourceStorage();
 		ResourceStorage(ResourceStorage&& move);
 		~ResourceStorage() = default;
 		ResourceStorage& operator=(ResourceStorage&& rhs);
@@ -148,6 +149,7 @@ namespace tz::gl
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
 		OutputManager(const IOutput* output, DeviceWindowVulkan* device_window, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev);
+		OutputManager();
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
 		OutputManager& operator=(OutputManager&& rhs);
@@ -230,6 +232,7 @@ namespace tz::gl
 		 * @param depth_testing_enabled Specifies whether we want to create a graphics pipeline which will perform depth tests or not. If the output manager was told to create depth images, this should be enabled (otherwise the framebuffer will not match the provided render pass).
 		 */
 		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled);
+		GraphicsPipelineManager();
 		GraphicsPipelineManager(GraphicsPipelineManager&& move);
 		~GraphicsPipelineManager() = default;
 		GraphicsPipelineManager& operator=(GraphicsPipelineManager&& rhs);
@@ -278,6 +281,7 @@ namespace tz::gl
 		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
 		 */
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
+		CommandProcessor();
 		CommandProcessor(const CommandProcessor& copy) = delete;
 		CommandProcessor(CommandProcessor&& move);
 		~CommandProcessor() = default;
@@ -435,7 +439,12 @@ namespace tz::gl
 		 */
 		void edit(const RendererEditRequest& edit_request);
 		void dbgui();
+
+		static RendererVulkan null();
+		bool is_null() const;
 	private:
+		RendererVulkan();
+
 		void setup_static_resources();
 		void setup_render_commands();
 		void setup_compute_commands();

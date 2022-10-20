@@ -85,6 +85,10 @@ namespace tz::gl
 		 */
 		ShaderManager(const ShaderInfo& sinfo);
 		/**
+		 * Construct a null shader manager. It is an error to do any render/compute work with a null shader manager.
+		 */
+		ShaderManager();
+		/**
 		 * Use the shader program, meaning it will be used in the next draw call.
 		 */
 		void use();
@@ -92,6 +96,7 @@ namespace tz::gl
 		bool has_tessellation() const;
 
 		ogl2::Shader& get_program();
+
 	private:
 		ogl2::Shader make_shader(const ShaderInfo& sinfo) const;
 
@@ -189,7 +194,13 @@ namespace tz::gl
 		void edit(const RendererEditRequest& edit_request);
 
 		void dbgui();
+
+		// Satisfies Nullable.
+		static RendererOGL null();
+		bool is_null() const;
 	private:
+		RendererOGL();
+
 		ogl2::VertexArray vao;
 		ResourceStorage resources;
 		ShaderManager shader;
@@ -200,6 +211,7 @@ namespace tz::gl
 		std::string debug_name;
 		unsigned int tri_count = 0;
 		bool wireframe_mode = false;
+		bool is_null_value = false;
 	};
 	static_assert(RendererType<RendererOGL>);
 }

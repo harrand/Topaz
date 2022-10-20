@@ -150,6 +150,7 @@ namespace tz::gl
 	template<typename T>
 	concept RendererType = requires(T t, ResourceHandle r, std::size_t tri_count, const RendererEditRequest& edit_request)
 	{
+		requires tz::Nullable<T>;
 		/**
 		 * Retrieves the number of resources used by the renderer.
 		 * @return Number of resources of any type.
