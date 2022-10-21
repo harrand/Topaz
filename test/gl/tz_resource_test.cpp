@@ -1,91 +1,59 @@
 #include "tz/core/tz.hpp"
 #include "tz/core/assert.hpp"
+#include "tz/core/report.hpp"
 #include "tz/gl/resource.hpp"
 
-void empty_resources()
+//--------------------------------------------------------------------------------------------------
+void null_buffer()
 {
-	using namespace tz::gl;
-	BufferResource bres = BufferResource::from_one<int>(5);
-	ImageResource ires = ImageResource::null();
+	tz_assert(tz::gl::BufferResource::null().is_null(), "Null buffer is not a null buffer");
 }
 
-void api_correctness()
+//--------------------------------------------------------------------------------------------------
+void null_image()
 {
-	using namespace tz::gl;
-	// Static fixed resources.
-	{
-		BufferResource bres0 = BufferResource::from_one<int>(0, {.access = tz::gl::ResourceAccess::StaticFixed});
-		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
-		tz_assert(bres0.get_access() == ResourceAccess::StaticFixed, "StaticFixed BufferResource does not have ResourceAccess::StaticFixed");
+	tz_assert(tz::gl::ImageResource::null().is_null(), "Null image is not a null image");
+}
 
-		ImageResource ires0 = ImageResource::null();
-		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
-		tz_assert(ires0.get_access() == ResourceAccess::StaticFixed, "StaticFixed ImageResource does not have ResourceAccess::StaticFixed");
+
+//--------------------------------------------------------------------------------------------------
+void basic_buffer()
+{
+	// Check that BufferResource::from_one returns expected data size.
+	{
+		auto buf = tz::gl::BufferResource::from_one(5u);
+		tz_assert(!buf.is_null(), "BufferResource::from_one(5u) is wrongly considered a null buffer.");
+		auto span = buf.data_as<const unsigned int>();
+		tz_assert(span.size() == 1, "BufferResource::from_one(5u) -> data_as<uint>.size() == %zu when it should be %d", span.size(), 1);
 	}
-	// Don't specify resource access (should default to StaticFixed)
+	// Check that BufferResource::from_many returns expected data size.
 	{
-		BufferResource bres0 = BufferResource::from_one<int>(0);
-		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
-		tz_assert(bres0.get_access() == ResourceAccess::StaticFixed, "BufferResource that doesnt specify access does not have ResourceAccess::StaticFixed");
-
-		ImageResource ires0 = ImageResource::null();
-		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
-		tz_assert(ires0.get_access() == ResourceAccess::StaticFixed, "ImageResource that doesnt specify access does not have ResourceAccess::StaticFixed");
+		auto buf = tz::gl::BufferResource::from_many({1.0f, 2.0f, 3.0f});
+		tz_assert(!buf.is_null(), "BufferResource::from_many({1.0f, 2.0f, 3.0f}) is wrongly considered a null buffer.");
+		auto span = buf.data_as<const float>();
+		std::array<float, 3> expected{1.0f, 2.0f, 3.0f};
+		tz_assert(std::equal(span.begin(), span.end(), expected.begin()), "BufferResource::from_many({1.0f, 2.0f, 3.0f}) != array<float, 3>{1.0f, 2.0f, 3.0f}");
 	}
-	// DynamicFixed resources
-	{
-		BufferResource bres0 = BufferResource::from_one<int>(0, {.access = ResourceAccess::DynamicFixed});
-		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
-		tz_assert(bres0.get_access() == ResourceAccess::DynamicFixed, "DynamicFixed BufferResource does not have ResourceAccess::DynamicFixed");
+}
 
-		ImageResource ires0 = ImageResource::from_uninitialised
+//--------------------------------------------------------------------------------------------------
+void basic_image()
+{
+	{
+		constexpr tz::Vec2ui dims{3u, 12u};
+		auto img = tz::gl::ImageResource::from_uninitialised
 		({
-		 	.format = tz::gl::ImageFormat::R8,
-			.dimensions = {1u, 1u},
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.format = tz::gl::ImageFormat::RGBA32,
+			.dimensions = dims
 		});
-		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
-		tz_assert(ires0.get_access() == ResourceAccess::DynamicFixed, "DynamicFixed ImageResource does not have ResourceAccess::DynamicFixed");
-	}
-	// DynamicVariable resources
-	{
-		BufferResource bres0 = BufferResource::from_one<int>(0, {.access = ResourceAccess::DynamicVariable});
-		tz_assert(bres0.get_type() == ResourceType::Buffer, "BufferResource does not have ResourceType::Buffer");
-		tz_assert(bres0.get_access() == ResourceAccess::DynamicVariable, "DynamicVariable BufferResource does not have ResourceAccess::DynamicVariable");
-
-		ImageResource ires0 = ImageResource::from_uninitialised
-		({
-		 	.format = tz::gl::ImageFormat::R8,
-			.dimensions = {1u, 1u},
-			.access = tz::gl::ResourceAccess::DynamicVariable
-		});
-
-		tz_assert(ires0.get_type() == ResourceType::Image, "ImageResource does not have ResourceType::Image");
-		tz_assert(ires0.get_access() == ResourceAccess::DynamicVariable, "DynamicVariable ImageResource does not have ResourceAccess::DynamicVariable");
+		tz_assert(!img.is_null(), "ImageResource::from_unitialised(...) is wrongly considered a null image resource.");
+		tz_assert(img.get_dimensions() == dims, "ImageResource::from_uninitialised{..., .dimensions = {%uu, %uu}}.get_dimensions() wrongly == {%u, %u}", dims[0], dims[1], img.get_dimensions()[0], img.get_dimensions()[1]);
+		const std::size_t expected = tz::gl::pixel_size_bytes(img.get_format()) * dims[0] * dims[1];
+		tz_assert(img.data().size_bytes() == expected, "%ux%u image data size was expected to be %zu bytes, but instead its %zu", dims[0], dims[1], expected, img.data().size_bytes());
 	}
 }
 
-void data_correctness()
-{
-	using namespace tz::gl;
-	// Ensure buffer resource has expected size/data when it has one element.
-	BufferResource buf = BufferResource::from_one<float>(420.69f);
-	tz_assert(buf.data().size_bytes() == sizeof(float), "BufferResource (one) had unexpected size. Expected %u, got %zu", sizeof(float), buf.data().size_bytes());
-	tz_assert(buf.data_as<float>().front() == 420.69f, "BufferResource (one) had invalid data. Expected float value %.2f, got %.2f", 420.69f, buf.data_as<float>().front()); // Ensure buffer resource has expected size/data when it has many elements.
-	BufferResource buf0 = BufferResource::from_many
-	({
-		0,
-		1,
-		2
-	});
-	std::span<const int> buf0_data = buf0.data_as<const int>();
-	tz_assert(buf0_data.size() == 3, "BufferResource (many) has unexpected size. Expected %u ints, got %zu ints (%u bytes, %zu bytes)", 3u, buf0_data.size(), 3u * sizeof(int), buf0_data.size_bytes());
-	for(std::size_t i = 0; i < 3; i++)
-	{
-		tz_assert(std::cmp_equal(buf0_data[i], i), "BufferResource (many, iota ints) has invalid data. Expected %zu at %zu'th element, but it was actually %d", i, i, buf0_data[i]);
-	}
-}
-
+//--------------------------------------------------------------------------------------------------
 int main()
 {
 	tz::initialise
@@ -94,9 +62,10 @@ int main()
 		.flags = {tz::ApplicationFlag::HiddenWindow}
 	});
 	{
-		empty_resources();
-		api_correctness();
-		data_correctness();
+		null_buffer();
+		null_image();
+		basic_buffer();
+		basic_image();
 	}
 	tz::terminate();
 }

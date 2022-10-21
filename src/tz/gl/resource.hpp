@@ -76,12 +76,14 @@ namespace tz::gl
 		/**
 		 * Create a null BufferResource. It is not practically useful, aside from as a placeholder.
 		 *
-		 * Null BufferResources are guaranteed to not have size() zero, but its contents and size are implementation-defined. It is also guaranteed to be StaticFixed and have no flags.
+		 * Null BufferResources are guaranteed to have size() == 1, not zero, but its contents and size are implementation-defined. It is also guaranteed to be StaticFixed and have no flags.
 		 */
 		static BufferResource null()
 		{
-			return from_one(0, {});
+			return from_one(std::byte{255}, {});
 		}
+
+		bool is_null() const;
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		virtual void dbgui() final;
 	private:
@@ -163,6 +165,9 @@ namespace tz::gl
 				{.format = ImageFormat::RGBA32, .dimensions = {2u, 2u}}
 			);
 		}
+	
+		bool is_null() const;
+
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		virtual void dbgui() final;
 		ImageFormat get_format() const;

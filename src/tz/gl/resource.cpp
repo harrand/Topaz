@@ -76,6 +76,11 @@ namespace tz::gl
 		this->mapped_resource_data = mapped_resource_data;
 	}
 
+	bool BufferResource::is_null() const
+	{
+		return this->data().size_bytes() == 1 && this->data_as<std::byte>().front() == std::byte{255};
+	}
+
 	std::unique_ptr<IResource> BufferResource::unique_clone() const
 	{
 		return std::make_unique<BufferResource>(*this);
@@ -97,6 +102,14 @@ namespace tz::gl
 		std::vector<std::byte> resource_data(pixel_size * info.dimensions[0] * info.dimensions[1]);
 		// TODO: Sanity check? Is it correct to just not give a shit about alignment here?
 		return {info.access, resource_data, 0, info.format, info.dimensions, info.flags};
+	}
+
+	bool ImageResource::is_null() const
+	{
+		const ImageResource null = ImageResource::null();
+		auto null_data = null.data();
+		auto my_data = this->data();
+		return this->get_dimensions() == null.get_dimensions() && this->get_format() == null.get_format() && std::equal(my_data.begin(), my_data.end(), null_data.begin());
 	}
 
 	std::unique_ptr<IResource> ImageResource::unique_clone() const
