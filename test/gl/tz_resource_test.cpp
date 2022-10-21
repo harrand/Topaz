@@ -90,7 +90,12 @@ void default_arguments_image()
 		tz_assert(img.get_flags().empty(), "Defaulted Image must not have any flags");
 	}
 	{
-		auto img = tz::gl::ImageResource::from_memory({1, 2, 3}, {.format = tz::gl::ImageFormat::RGBA32, .dimensions = {1u, 1u}});
+		auto img = tz::gl::ImageResource::from_memory(
+		{
+			std::byte{1},
+			std::byte{2},
+			std::byte{3}
+		}, {.format = tz::gl::ImageFormat::RGBA32, .dimensions = {1u, 1u}});
 		tz_assert(img.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Image must be ResourceAccess::StaticFixed, but it is not.");
 		tz_assert(img.get_flags().empty(), "Defaulted Image must not have any flags");
 	}
