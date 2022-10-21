@@ -82,7 +82,7 @@ namespace tz::gl
 		using DeviceCommon<RendererVulkan>::get_renderer;
 		using DeviceCommon<RendererVulkan>::destroy_renderer;
 		ImageFormat get_window_format() const;
-		using DeviceCommon<RendererVulkan>::dbgui;
+		void dbgui();
 		const vk2::LogicalDevice& vk_get_logical_device() const;
 	private:
 		static vk2::LogicalDevice make_device(const vk2::VulkanInstance& instance);

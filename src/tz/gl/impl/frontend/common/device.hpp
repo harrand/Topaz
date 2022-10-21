@@ -1,7 +1,10 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_COMMON_DEVICE_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_COMMON_DEVICE_HPP
 #include "tz/gl/api/renderer.hpp"
+#include "tz/gl/api/device.hpp"
 #include "imgui.h"
+#include "tz/gl/declare/image_format.hpp"
+#include "tz/gl/impl/frontend/common/renderer.hpp"
 #include <vector>
 #include <string>
 
@@ -20,28 +23,6 @@ namespace tz::gl
 		R& get_renderer(tz::gl::RendererHandle handle)
 		{
 			return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
-		}
-
-		void dbgui()
-		{
-			const std::size_t renderer_count = this->renderers.size();
-
-			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "tz::gl::device()");
-			ImGui::Separator();
-			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Summary");
-			ImGui::Text("- The Device currently stores %zu renderers (%zu non-null)", renderer_count, this->renderer_count());
-			ImGui::Text("- The ImageFormat of the window is <TODO: IMPLEMENT>");
-			ImGui::Separator();
-			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
-			static int id = 0;
-			if(renderer_count == 0)
-			{
-				return;
-			}
-			ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
-			ImGui::Indent();
-			this->renderers[id].dbgui();
-			ImGui::Unindent();
 		}
 
 		void destroy_renderer(tz::gl::RendererHandle handle)
@@ -92,6 +73,30 @@ namespace tz::gl
 		std::vector<R> renderers;
 		std::vector<std::size_t> free_list = {};
 	};
+
+
+	template<tz::gl::DeviceType<tz::gl::RendererInfoCommon> T>
+	void common_device_dbgui(T& device)
+	{
+		const std::size_t renderer_count = device.renderer_count();
+
+		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "tz::gl::device()");
+		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Summary");
+		ImGui::Text("- The Device currently stores %zu renderers", renderer_count);
+		ImGui::Text("- The ImageFormat of the window is %s", detail::image_format_strings[static_cast<int>(device.get_window_format())]);
+		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
+		static int id = 0;
+		if(renderer_count == 0)
+		{
+			return;
+		}
+		ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
+		ImGui::Indent();
+		device.get_renderer(static_cast<tz::HandleValue>(id)).dbgui();
+		ImGui::Unindent();
+	}
 }
 
 #endif // TOPAZ_GL2_IMPL_FRONTEND_COMMON_DEVICE_HPP

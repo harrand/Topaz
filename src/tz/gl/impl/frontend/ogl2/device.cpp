@@ -22,6 +22,11 @@ namespace tz::gl
 	{
 		return ImageFormat::RGBA32;
 	}
+
+	void DeviceOGL::dbgui()
+	{
+		tz::gl::common_device_dbgui(*this);
+	}
 }
 
 #endif // TZ_OGL

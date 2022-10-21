@@ -1,3 +1,4 @@
+#include "tz/gl/impl/frontend/common/device.hpp"
 #if TZ_VULKAN
 #include "tz/core/profiling/zone.hpp"
 #include "tz/core/report.hpp"
@@ -365,6 +366,11 @@ namespace tz::gl
 	ImageFormat DeviceVulkan::get_window_format() const
 	{
 		return from_vk2(this->window_storage.get_format());
+	}
+
+	void DeviceVulkan::dbgui()
+	{
+		tz::gl::common_device_dbgui(*this);
 	}
 
 	const vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device() const

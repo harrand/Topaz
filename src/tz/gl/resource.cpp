@@ -1,5 +1,6 @@
 #include "tz/gl/resource.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/gl/declare/image_format.hpp"
 #include <array>
 
 namespace tz::gl
@@ -174,6 +175,7 @@ namespace tz::gl
 	{
 		Resource::dbgui();
 		ImGui::Text("Image Dimensions: {%u, %u}", this->dimensions[0], this->dimensions[1]);
+		ImGui::Text("Image Format: %s", detail::image_format_strings[static_cast<int>(this->get_format())]);
 	}
 
 	ImageFormat ImageResource::get_format() const

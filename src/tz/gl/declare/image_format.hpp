@@ -2,6 +2,7 @@
 #define TOPAZ_GL2_DECLARE_IMAGE_FORMAT_HPP
 #include "tz/core/assert.hpp"
 #include <climits>
+#include <array>
 
 namespace tz::gl
 {
@@ -32,62 +33,54 @@ namespace tz::gl
 	{
 		/// - Undefined Format. It is mostly an error to use this.
 		Undefined,
-		
 		R8,
 		R8_UNorm = R8,
 		R8_SNorm,
 		R8_UInt,
 		R8_SInt,
 		R8_sRGB,
-		
 		R16,
 		R16_UNorm = R16,
 		R16_SNorm,
 		R16_UInt,
 		R16_SInt,
-
 		RG16,
 		RG16_UNorm = RG16,
 		RG16_SNorm,
 		RG16_UInt,
 		RG16_SInt,
 		RG16_sRGB,
-
 		RG32,
 		RG32_UNorm = RG32,
 		RG32_SNorm,
 		RG32_UInt,
 		RG32_SInt,
-
 		RGB24,
 		RGB24_UNorm = RGB24,
 		RGB24_SNorm,
 		RGB24_UInt,
 		RGB24_SInt,
 		RGB24_sRGB,
-
 		BGR24,
 		BGR24_UNorm = BGR24,
 		BGR24_SNorm,
 		BGR24_UInt,
 		BGR24_SInt,
 		BGR24_sRGB,
-
 		RGBA32,
 		RGBA32_UNorm = RGBA32,
 		RGBA32_SNorm,
 		RGBA32_UInt,
 		RGBA32_SInt,
 		RGBA32_sRGB,
-
 		BGRA32,
 		BGRA32_UNorm = BGRA32,
 		BGRA32_SNorm,
 		BGRA32_UInt,
 		BGRA32_SInt,
 		BGRA32_sRGB,
-
-		Depth16_UNorm 
+		Depth16_UNorm,
+		Count
 	};
 
 	constexpr std::size_t pixel_size_bytes(ImageFormat fmt)
@@ -148,6 +141,53 @@ namespace tz::gl
 		break;
 		}
 		return 0;
+	}
+
+	namespace detail
+	{
+		constexpr std::array<const char*, static_cast<int>(ImageFormat::Count)> image_format_strings =
+		{
+			"Undefined",
+			"R8",
+			"R8_SNorm",
+			"R8_UInt",
+			"R8_SInt",
+			"R8_sRGB",
+			"R16",
+			"R16_SNorm",
+			"R16_UInt",
+			"R16_SInt",
+			"RG16",
+			"RG16_SNorm",
+			"RG16_UInt",
+			"RG16_SInt",
+			"RG16_sRGB",
+			"RG32_UNorm",
+			"RG32_SNorm",
+			"RG32_UInt",
+			"RG32_SInt",
+			"RGB24",
+			"RGB24_SNorm",
+			"RGB24_UInt",
+			"RGB24_SInt",
+			"RGB24_sRGB",
+			"BGR24",
+			"BGR24_SNorm",
+			"BGR24_UInt",
+			"BGR24_SInt",
+			"BGR24_sRGB",
+			"RGBA32",
+			"RGBA32_SNorm",
+			"RGBA32_UInt",
+			"RGBA32_SInt",
+			"RGBA32_sRGB",
+			"BGRA32",
+			"BGRA32_SNorm",
+			"BGRA32_UInt",
+			"BGRA32_SInt",
+			"BGRA32_sRGB",
+			"Depth16",
+		};
 	}
 }
 

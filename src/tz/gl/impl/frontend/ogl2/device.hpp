@@ -18,7 +18,7 @@ namespace tz::gl
 		using DeviceCommon<RendererOGL>::get_renderer;
 		using DeviceCommon<RendererOGL>::destroy_renderer;
 		ImageFormat get_window_format() const;
-		using DeviceCommon<RendererOGL>::dbgui;
+		void dbgui();
 	private:
 		std::vector<RendererOGL> renderers;
 	};
