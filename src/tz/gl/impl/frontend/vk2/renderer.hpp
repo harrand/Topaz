@@ -439,6 +439,7 @@ namespace tz::gl
 		 */
 		void edit(const RendererEditRequest& edit_request);
 		void dbgui();
+		std::string_view debug_get_name() const;
 
 		static RendererVulkan null();
 		bool is_null() const;

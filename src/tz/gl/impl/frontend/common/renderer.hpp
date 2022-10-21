@@ -7,6 +7,18 @@
 
 namespace tz::gl
 {
+	namespace detail
+	{
+		constexpr std::array<const char*, static_cast<int>(tz::gl::RendererOption::Count)> renderer_option_strings =
+		{
+			"No Depth Testing",
+			"Alpha Blending",
+			"Render Wait",
+			"No Clear Output",
+			"No Present",
+			"Final Debug UI Renderer (Internal)"
+		};
+	}
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Helper class which can be used to generate a @ref RendererEditRequest.
@@ -194,24 +206,46 @@ namespace tz::gl
 	 */
 	void common_renderer_dbgui(RendererType auto& renderer)
 	{
+		if(renderer.is_null())
+		{
+			ImGui::Text("Null Renderer");
+			return;
+		}
 		ImGui::PushID(&renderer);
+		ImGui::Text("Renderer Name:");
+		ImGui::SameLine();
+		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s", renderer.debug_get_name().data());
 		if(renderer.resource_count() > 0)
 		{
-			unsigned int rcount = renderer.resource_count() - 1;
-			ImGui::Text("Resource Count: %u", renderer.resource_count());
-			static int res_id = 0;
-			res_id = std::clamp(res_id, 0, static_cast<int>(rcount));
-			ImGui::DragInt("Resource ID:", &res_id, 0.05f, 0, rcount);
+			if(ImGui::CollapsingHeader("Resources"))
+			{
+				unsigned int rcount = renderer.resource_count() - 1;
+				ImGui::Text("Resource Count: %u", renderer.resource_count());
+				static int res_id = 0;
+				res_id = std::clamp(res_id, 0, static_cast<int>(rcount));
+				ImGui::SliderInt("Resource ID:", &res_id, 0, rcount);
 
-			// Display information about current resource.
-			ImGui::Indent();
-			renderer.get_resource(static_cast<tz::HandleValue>(res_id))->dbgui();
-			ImGui::Unindent();
+				// Display information about current resource.
+				ImGui::Indent();
+				renderer.get_resource(static_cast<tz::HandleValue>(res_id))->dbgui();
+				ImGui::Unindent();
+			}
 		}
 		else
 		{
 			ImGui::Text("Renderer has no resources.");
 		}
+		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("Renderer Options"))
+		{
+			for(RendererOption option : renderer.get_options())
+			{
+				ImGui::Text("%s", detail::renderer_option_strings[static_cast<int>(option)]);
+			}
+			ImGui::PushTextWrapPos();
+			ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
+			ImGui::PopTextWrapPos();
+		}
+		ImGui::Separator();
 		ImGui::PopID();
 	}
 

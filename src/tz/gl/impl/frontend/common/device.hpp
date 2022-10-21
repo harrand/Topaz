@@ -24,13 +24,21 @@ namespace tz::gl
 
 		void dbgui()
 		{
-			static int id = 0;
 			const std::size_t renderer_count = this->renderers.size();
+
+			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "tz::gl::device()");
+			ImGui::Separator();
+			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Summary");
+			ImGui::Text("- The Device currently stores %zu renderers (%zu non-null)", renderer_count, this->renderer_count());
+			ImGui::Text("- The ImageFormat of the window is <TODO: IMPLEMENT>");
+			ImGui::Separator();
+			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
+			static int id = 0;
 			if(renderer_count == 0)
 			{
 				return;
 			}
-			ImGui::DragInt("Renderer ID", &id, 0.2f, 0, renderer_count - 1);
+			ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
 			ImGui::Indent();
 			this->renderers[id].dbgui();
 			ImGui::Unindent();

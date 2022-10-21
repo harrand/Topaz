@@ -33,7 +33,6 @@ int main()
 		pinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_compute_demo, compute));
 		auto cbuf = pinfo.add_resource(colour_buffer);
 		tz::gl::ResourceHandle tbufh = pinfo.add_resource(time_buffer);
-		pinfo.debug_name("Compute");
 
 		tz::gl::RendererHandle compute_workerh = tz::gl::device().create_renderer(pinfo);
 

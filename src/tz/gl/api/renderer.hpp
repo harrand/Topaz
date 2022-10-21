@@ -35,7 +35,8 @@ namespace tz::gl
 		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an ImageOutput, this has no effect.
 		NoPresent,
 
-		Internal_FinalDebugUIRenderer
+		Internal_FinalDebugUIRenderer,
+		Count
 	};
 	
 	/**
@@ -199,6 +200,7 @@ namespace tz::gl
 		 * Display information about the renderer in the debug ui.
 		 */
 		{t.dbgui()} -> std::same_as<void>;
+		{t.debug_get_name()} -> std::convertible_to<std::string_view>;
 	};
 }
 

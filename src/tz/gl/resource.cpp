@@ -12,6 +12,19 @@ namespace tz::gl
 			"Dynamic Fixed",
 			"Dynamic Variable"
 		};
+
+		std::array<const char*, static_cast<int>(ResourceFlag::Count)> resource_flag_strings
+		{
+			"Index Buffer",
+			"Renderer Output",
+			"Image Filter: Nearest",
+			"Image Filter: Linear",
+			"Image Mip Filter: Nearest",
+			"Image Mip Filter: Linear",
+			"Image Wrap: Clamp To Edge",
+			"Image Wrap: Repeat",
+			"Image Wrap: Mirrored Repeat"
+		};
 	}
 
 	ResourceType Resource::get_type() const
@@ -51,7 +64,30 @@ namespace tz::gl
 
 	void Resource::dbgui()
 	{
+		const char* type;
+		switch(this->get_type())
+		{
+			case ResourceType::Buffer:
+				type = "Buffer";
+			break;
+			case ResourceType::Image:
+				type = "Image";
+			break;
+			default:
+				type = "Unknown";
+			break;
+		}
+		ImGui::Text("Resource Type: %s", type);
 		ImGui::Text("Resource Access: %s", detail::resource_access_strings[static_cast<int>(this->get_access())]);
+		if(!this->get_flags().empty() && ImGui::CollapsingHeader("Resource Flags"))
+		{
+			ImGui::Indent();
+			for(tz::gl::ResourceFlag flag : this->get_flags())
+			{
+				ImGui::Text("%s", detail::resource_flag_strings[static_cast<int>(flag)]);
+			}
+			ImGui::Unindent();
+		}
 	}
 
 	void Resource::resize_data(std::size_t new_size)
@@ -89,8 +125,25 @@ namespace tz::gl
 	void BufferResource::dbgui()
 	{
 		Resource::dbgui();
-		ImGui::Text("Buffer Resource!");
-		ImGui::Text("Buffer Size: %zu bytes", this->data().size_bytes());
+		auto size_bytes = this->data().size_bytes();
+		ImGui::Text("Buffer Size: ");
+		ImGui::SameLine();
+		if(size_bytes > (1024*1024*1024))
+		{
+			ImGui::Text("%.2f GiB", size_bytes / (1024.0f * 1024 * 1024));
+		}
+		else if(size_bytes > (1024*1024))
+		{
+			ImGui::Text("%.2f MiB", size_bytes / (1024.0f * 1024));
+		}
+		else if(size_bytes > 1024)
+		{
+			ImGui::Text("%.2f KiB", size_bytes / 1024.0f);
+		}
+		else
+		{
+			ImGui::Text("%zu B", size_bytes);
+		}
 	}
 
 	BufferResource::BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags):
@@ -120,8 +173,7 @@ namespace tz::gl
 	void ImageResource::dbgui()
 	{
 		Resource::dbgui();
-		ImGui::Text("Image Resource!");
-		ImGui::Text("Dimensions: {%u, %u}", this->dimensions[0], this->dimensions[1]);
+		ImGui::Text("Image Dimensions: {%u, %u}", this->dimensions[0], this->dimensions[1]);
 	}
 
 	ImageFormat ImageResource::get_format() const

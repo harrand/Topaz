@@ -43,7 +43,9 @@ namespace tz::gl
 		/// - Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will begin repeating as if from zero.
 		ImageWrapRepeat,
 		/// - Indicates that if sampled outside of this dimensions, the colour of the sampled pixel will begin repeating as if from zero, except each time the image will look mirrored.
-		ImageWrapMirroredRepeat
+		ImageWrapMirroredRepeat,
+
+		Count
 	};
 
 	using ResourceFlags = tz::EnumField<ResourceFlag>;

@@ -1643,8 +1643,12 @@ namespace tz::gl
 
 	void RendererVulkan::dbgui()
 	{
-		ImGui::Text("TODO: Implement");
 		tz::gl::common_renderer_dbgui(*this);
+	}
+
+	std::string_view RendererVulkan::debug_get_name() const
+	{
+		return this->debug_name;
 	}
 
 	RendererVulkan RendererVulkan::null()
