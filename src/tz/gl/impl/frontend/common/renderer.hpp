@@ -245,6 +245,30 @@ namespace tz::gl
 			ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
 			ImGui::PopTextWrapPos();
 		}
+		if(ImGui::CollapsingHeader("On-Demand Edits"))
+		{
+			ImGui::Text("Wireframe Mode");
+			if(ImGui::Button("Enable"))
+			{
+				renderer.edit
+				(
+					tz::gl::RendererEditBuilder{}
+					.render_state({.wireframe_mode = true})
+					.build()
+				);
+			}
+			ImGui::SameLine();
+			if(ImGui::Button("Disable"))
+			{
+				renderer.edit
+				(
+					tz::gl::RendererEditBuilder{}
+					.render_state({.wireframe_mode = false})
+					.build()
+				);
+			}
+			ImGui::Spacing();
+		}
 		ImGui::Separator();
 		ImGui::PopID();
 	}

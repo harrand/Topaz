@@ -56,7 +56,6 @@ int main()
 		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 		tz::Vec3 cam_rot{0.0f, 0.0f, 0.0f};
-		bool wireframe_mode = false;
 		bool flight_enabled = false;
 		bool game_menu_enabled = false;
 		using namespace tz::literals;
@@ -73,13 +72,12 @@ int main()
 			tz::window().begin_frame();
 			renderer.render(4);
 
-			tz::dbgui::run([&wireframe_mode, &flight_enabled, &game_menu_enabled]()
+			tz::dbgui::run([&flight_enabled, &game_menu_enabled]()
 			{
 				if(game_menu_enabled)
 				{
 					ImGui::Begin("Control Panel", &game_menu_enabled);
 					ImGui::Checkbox("Flight Enabled", &flight_enabled);
-					ImGui::Checkbox("Wireframe Enabled", &wireframe_mode);
 					ImGui::End();
 				}
 			});
@@ -88,10 +86,6 @@ int main()
 			if(fixed_update.done())
 			{
 				fixed_update.reset();
-
-				renderer.edit(tz::gl::RendererEditBuilder{}
-					.render_state({.wireframe_mode = wireframe_mode})
-					.build());
 				// Retrieve the dynamic buffer resource data.
 				BufferData& bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
 				tz::Vec3& camera_position = bufd.camera_position;
