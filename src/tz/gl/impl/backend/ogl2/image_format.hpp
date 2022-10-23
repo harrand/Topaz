@@ -73,6 +73,8 @@ namespace tz::gl::ogl2
 		BGRA32_SInt,
 		BGRA32_sRGB,
 
+		RGBA128_SFloat,
+
 		Depth16_UNorm,
 		Depth32_UNorm,
 		Count
@@ -126,6 +128,7 @@ namespace tz::gl::ogl2
 		/* BGRA32_UInt */ {.format = GL_BGRA, .internal_format = GL_RGBA8UI, .type = GL_UNSIGNED_INT},
 		/* BGRA32_SInt */ {.format = GL_BGRA, .internal_format = GL_RGBA8I, .type = GL_INT},
 		/* BGRA32_sRGB */ {.format = GL_BGRA, .internal_format = GL_SRGB8_ALPHA8, .type = GL_INT},
+		/* RGBA128_SFloat */{.format = GL_RGBA, .internal_format = GL_RGBA32F, .type = GL_FLOAT},
 
 		/* Depth16_UNorm */ {.format = GL_DEPTH_COMPONENT, .internal_format = GL_DEPTH_COMPONENT16, .type = GL_UNSIGNED_BYTE},
 		/* Depth32_UNorm */ {.format = GL_DEPTH_COMPONENT, .internal_format = GL_DEPTH_COMPONENT32, .type = GL_UNSIGNED_BYTE}

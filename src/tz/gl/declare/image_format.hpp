@@ -79,6 +79,7 @@ namespace tz::gl
 		BGRA32_UInt,
 		BGRA32_SInt,
 		BGRA32_sRGB,
+		RGBA128_SFloat,
 		Depth16_UNorm,
 		Count
 	};
@@ -135,6 +136,9 @@ namespace tz::gl
 		case ImageFormat::BGRA32_sRGB:
 			return 4;
 		break;
+		case ImageFormat::RGBA128_SFloat:
+			return 16;
+		break;
 		default:
 			tz_error("Unrecognised TZ ImageFormat");
 			return 0;
@@ -186,6 +190,7 @@ namespace tz::gl
 			"BGRA32_UInt",
 			"BGRA32_SInt",
 			"BGRA32_sRGB",
+			"RGBA128_SFloat",
 			"Depth16",
 		};
 	}

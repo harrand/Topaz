@@ -57,6 +57,7 @@ namespace tz::gl
 		{ImageFormat::BGRA32_UInt, vk2::ImageFormat::BGRA32_UInt},
 		{ImageFormat::BGRA32_SInt, vk2::ImageFormat::BGRA32_SInt},
 		{ImageFormat::BGRA32_sRGB, vk2::ImageFormat::BGRA32_sRGB},
+		{ImageFormat::RGBA128_SFloat, vk2::ImageFormat::RGBA128_SFloat},
 		{ImageFormat::Depth16_UNorm, vk2::ImageFormat::Depth16_UNorm} 
 	};
 
