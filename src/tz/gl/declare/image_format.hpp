@@ -79,6 +79,7 @@ namespace tz::gl
 		BGRA32_UInt,
 		BGRA32_SInt,
 		BGRA32_sRGB,
+		RGBA64_SFloat,
 		RGBA128_SFloat,
 		Depth16_UNorm,
 		Count
@@ -136,6 +137,9 @@ namespace tz::gl
 		case ImageFormat::BGRA32_sRGB:
 			return 4;
 		break;
+		case ImageFormat::RGBA64_SFloat:
+			return 8;
+		break;
 		case ImageFormat::RGBA128_SFloat:
 			return 16;
 		break;
@@ -190,6 +194,7 @@ namespace tz::gl
 			"BGRA32_UInt",
 			"BGRA32_SInt",
 			"BGRA32_sRGB",
+			"RGBA64_SFloat",
 			"RGBA128_SFloat",
 			"Depth16",
 		};
