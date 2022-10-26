@@ -16,7 +16,8 @@ namespace tz::gl
 			"Render Wait",
 			"No Clear Output",
 			"No Present",
-			"Final Debug UI Renderer (Internal)"
+			"Final Debug UI Renderer (Internal)",
+			"Internal",
 		};
 	}
 	/**

@@ -34,8 +34,10 @@ namespace tz::gl
 		NoClearOutput,
 		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an ImageOutput, this has no effect.
 		NoPresent,
-
+		// Final debug ui renderer. Do not use.
 		Internal_FinalDebugUIRenderer,
+		// Internal renderer. Has no effect aside from hiding it from the dbgui.
+		Internal,
 		Count
 	};
 	

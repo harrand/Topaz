@@ -87,6 +87,8 @@ namespace tz::gl
 		ImGui::Text("- The ImageFormat of the window is %s", detail::image_format_strings[static_cast<int>(device.get_window_format())]);
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
+		static bool display_internal_renderers = false;
+		ImGui::Checkbox("Display Internal Renderers", &display_internal_renderers);
 		static int id = 0;
 		if(renderer_count == 0)
 		{
@@ -94,8 +96,31 @@ namespace tz::gl
 		}
 		ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
 		ImGui::Indent();
-		device.get_renderer(static_cast<tz::HandleValue>(id)).dbgui();
+		const auto& renderer = device.get_renderer(static_cast<tz::HandleValue>(id));
+		if(renderer.get_options().contains(tz::gl::RendererOption::Internal) && !display_internal_renderers)
+		{
+			ImGui::Text("Internal Renderer");
+			ImGui::Spacing();
+			if(id > 0)
+			{
+				if(ImGui::Button("<<")){while(device.get_renderer(static_cast<tz::HandleValue>(id)).get_options().contains(tz::gl::RendererOption::Internal) && id > 0){id--;}}
+				ImGui::SameLine();
+				if(ImGui::Button("Prev")){id--;}
+			}
+			if(std::cmp_less(id, (renderer_count - 1)))
+			{
+				ImGui::SameLine();
+				if(ImGui::Button("Next")){id++;}
+				ImGui::SameLine();
+				if(ImGui::Button(">>")){while(device.get_renderer(static_cast<tz::HandleValue>(id)).get_options().contains(tz::gl::RendererOption::Internal) && std::cmp_less(id, (renderer_count - 1))){id++;}}
+			}
+		}
+		else
+		{
+			device.get_renderer(static_cast<tz::HandleValue>(id)).dbgui();
+		}
 		ImGui::Unindent();
+		ImGui::Separator();
 	}
 }
 
