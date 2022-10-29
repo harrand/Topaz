@@ -27,11 +27,6 @@ int main()
 		{
 			tz::window().begin_frame();
 			tz::gl::device().get_renderer(renh).render(1);
-			tz::dbgui::run([]()
-			{
-				ImGui::ShowDemoWindow();
-				ImGui::ShowStyleEditor();
-			});
 			tz::window().end_frame();
 		}
 	}
