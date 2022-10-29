@@ -1,4 +1,5 @@
 #include "tz/gl/impl/frontend/common/renderer.hpp"
+#include "tz/gl/device.hpp"
 
 namespace tz::gl
 {
@@ -91,6 +92,11 @@ namespace tz::gl
 		this->resources.push_back(nullptr);
 		this->components.push_back(component);
 		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
+	}
+
+	ResourceHandle RendererInfoCommon::ref_resource(RendererHandle ren, ResourceHandle res)
+	{
+		return this->ref_resource(tz::gl::device().get_renderer(ren).get_component(res));
 	}
 
 	void RendererInfoCommon::set_output(const IOutput& output)

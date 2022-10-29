@@ -62,7 +62,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	tz::gl::RendererInfo rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle r2bh = rinfo2.ref_resource(tz::gl::device().get_renderer(r1h).get_component(r1bh));
+	tz::gl::ResourceHandle r2bh = rinfo2.ref_resource(r1h, r1bh);
 
 	tz::gl::RendererHandle r2h = tz::gl::device().create_renderer(rinfo2);
 
@@ -104,7 +104,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	tz::gl::RendererInfo rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle r2ih = rinfo2.ref_resource(tz::gl::device().get_renderer(r1h).get_component(r1ih));
+	tz::gl::ResourceHandle r2ih = rinfo2.ref_resource(r1h, r1ih);
 
 	tz::gl::RendererHandle r2h = tz::gl::device().create_renderer(rinfo2);
 

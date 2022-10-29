@@ -18,6 +18,13 @@ namespace tz::gl
 	{
 		struct RendererTag{};
 	}
+
+	/**
+	 * @ingroup tz_gl2_renderer
+	 * Represents a handle for a renderer owned by an existing device.
+	 */
+	using RendererHandle = tz::Handle<detail::RendererTag>;
+
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Specifies options to enable extra functionality within Renderers.
@@ -48,7 +55,7 @@ namespace tz::gl
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>
-	concept RendererInfoType = requires(T t, ResourceHandle r, const IResource& resource, IComponent* component, IOutput& output, RendererOptions options, tz::Vec4 vec4, tz::Vec3ui vec3ui, std::string str)
+	concept RendererInfoType = requires(T t, RendererHandle ren, ResourceHandle r, const IResource& resource, IComponent* component, IOutput& output, RendererOptions options, tz::Vec4 vec4, tz::Vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
@@ -56,6 +63,7 @@ namespace tz::gl
 
 		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
 		{t.ref_resource(component)} -> std::same_as<ResourceHandle>;
+		{t.ref_resource(ren, r)} -> std::same_as<ResourceHandle>;
 		{t.set_output(output)} -> std::same_as<void>;
 		{t.get_output()} -> std::convertible_to<const IOutput*>;
 
@@ -139,12 +147,6 @@ namespace tz::gl
 	 * @note This is a large structure. You should use the helper class @ref RendererEditBuilder to create one of these instead of attempting to fill it directly.
 	 */
 	using RendererEditRequest = std::vector<RendererEdit::Variant>;
-
-	/**
-	 * @ingroup tz_gl2_renderer
-	 * Represents a handle for a renderer owned by an existing device.
-	 */
-	using RendererHandle = tz::Handle<detail::RendererTag>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
