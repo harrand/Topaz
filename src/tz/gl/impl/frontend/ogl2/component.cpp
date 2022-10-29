@@ -43,7 +43,7 @@ namespace tz::gl
 
 	bool BufferComponentOGL::ogl_is_descriptor_stakeholder() const
 	{
-		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer);
+		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer) && !this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
 	}
 
 	ogl2::Buffer BufferComponentOGL::make_buffer() const
@@ -67,6 +67,10 @@ namespace tz::gl
 		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
 		{
 			tar = ogl2::BufferTarget::Index;
+		}
+		else if(this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
+		{
+			tar = ogl2::BufferTarget::DrawIndirect;
 		}
 		else
 		{

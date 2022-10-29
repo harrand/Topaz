@@ -57,6 +57,28 @@ namespace tz::gl::ogl2
 		glDrawElements(tessellation ? GL_PATCHES : GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);
 	}
 
+	void VertexArray::draw_indirect(unsigned int draw_count, const Buffer& draw_indirect_buffer, bool tessellation)
+	{
+		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndirect", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("VertexArray DrawIndirect", TZ_PROFCOL_RED);
+		tz_assert(draw_indirect_buffer.get_target() == BufferTarget::DrawIndirect, "Passed non-draw-indirect buffer to VertexArray::draw_indirect(...). Please submit a bug report.");
+		this->bind();
+		draw_indirect_buffer.basic_bind();
+		glMultiDrawArraysIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, nullptr, draw_count, 0);
+	}
+
+	void VertexArray::draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation)
+	{
+		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndexedIndirect", TZ_PROFCOL_RED);
+		TZ_PROFZONE_GPU("VertexArray DrawIndexedIndirect", TZ_PROFCOL_RED);
+		tz_assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed_indirect(...). Please submit a bug report.");
+		tz_assert(draw_indirect_buffer.get_target() == BufferTarget::DrawIndirect, "Passed non-draw-indirect buffer to VertexArray::draw_indexed_indirect(...). Please submit a bug report.");
+		this->bind();
+		index_buffer.basic_bind();
+		draw_indirect_buffer.basic_bind();
+		glMultiDrawElementsIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, draw_count, 0);
+	}
+
 	VertexArray VertexArray::null()
 	{
 		return {nullptr};

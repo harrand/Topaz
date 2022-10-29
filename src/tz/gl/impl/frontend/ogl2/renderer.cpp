@@ -270,6 +270,19 @@ namespace tz::gl
 		return nullptr;
 	}
 
+	IComponent* ResourceStorage::try_get_drawindirect_buffer() const
+	{
+		for(auto& component_ptr : this->components)
+		{
+			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
+			{
+				tz_assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
+				return const_cast<IComponent*>(component_ptr.get());
+			}
+		}
+		return nullptr;
+	}
+
 //--------------------------------------------------------------------------------------------------
 
 	ShaderManager::ShaderManager(const ShaderInfo& sinfo):
@@ -582,11 +595,31 @@ namespace tz::gl
 			if(this->resources.try_get_index_buffer() != nullptr)
 			{
 				const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
-				this->vao.draw_indexed(tri_count, ibuf, this->shader.has_tessellation());
+				if(this->resources.try_get_drawindirect_buffer() != nullptr)
+				{
+					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(this->resources.try_get_drawindirect_buffer())->ogl_get_buffer();
+					// TODO: my god dont do this
+					constexpr unsigned int draw_count = 1;
+					this->vao.draw_indexed_indirect(draw_count, ibuf, dbuf, this->shader.has_tessellation());
+				}
+				else
+				{
+					this->vao.draw_indexed(tri_count, ibuf, this->shader.has_tessellation());
+				}
 			}
 			else
 			{
-				this->vao.draw(this->tri_count, this->shader.has_tessellation());
+				if(this->resources.try_get_drawindirect_buffer() != nullptr)
+				{
+					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(this->resources.try_get_drawindirect_buffer())->ogl_get_buffer();
+					// TODO: my god dont do this
+					constexpr unsigned int draw_count = 1;
+					this->vao.draw_indirect(draw_count, dbuf, this->shader.has_tessellation());
+				}
+				else
+				{
+					this->vao.draw(this->tri_count, this->shader.has_tessellation());
+				}
 			}
 			if(!this->options.contains(tz::gl::RendererOption::NoPresent))
 			{

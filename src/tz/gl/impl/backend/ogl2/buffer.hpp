@@ -13,6 +13,8 @@ namespace tz::gl::ogl2
 	{
 		/// - Index Buffers (IBOs).
 		Index = GL_ELEMENT_ARRAY_BUFFER,
+		/// - Draw Indirect Buffers.
+		DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
 		/// - Uniform Buffers (UBOs).
 		Uniform = GL_UNIFORM_BUFFER,
 		/// - Shader Storage Buffers (SSBOs).

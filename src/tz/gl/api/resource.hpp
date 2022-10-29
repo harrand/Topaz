@@ -28,6 +28,8 @@ namespace tz::gl
 	{
 		/// - Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as `unsigned int[]`. Can only be applied to buffer resources.
 		IndexBuffer,
+		/// - Indicates that the buffer should contain draw commands which will be used in a render invocation.
+		DrawIndirectBuffer,
 		/// - Indicates that the image can be used as an ImageOutput for another renderer. Can only be applied to image resources.
 		RendererOutput,
 		/// - Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved.
