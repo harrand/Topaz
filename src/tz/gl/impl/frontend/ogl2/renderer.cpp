@@ -223,13 +223,18 @@ namespace tz::gl
 		else
 		{
 			// Just set uniforms.
+			std::vector<int> uniforms;
+			uniforms.resize(this->image_handles.size());
+
 			for(std::size_t i = 0; i < this->image_handles.size(); i++)
 			{
 				auto img_nat = static_cast<ogl2::Image::NativeType>(this->image_handles[i]);
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, img_nat);
-				glUniform1i(buf_res_count + i, i);
+
+				uniforms[i] = i;
 			}
+			glUniform1iv(buf_res_count, uniforms.size(), uniforms.data());
 		}
 	}
 
