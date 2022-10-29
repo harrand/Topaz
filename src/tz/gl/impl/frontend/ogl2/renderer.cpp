@@ -208,15 +208,15 @@ namespace tz::gl
 	void ResourceStorage::bind_image_buffer()
 	{
 		auto buf_res_count = this->resource_count_of(ResourceType::Buffer);
+		if(this->try_get_index_buffer() != nullptr)
+		{
+			buf_res_count--;
+		}
 
 		if(ogl2::supports_bindless_textures())
 		{
 			if(!this->bindless_image_storage_buffer.is_null())
 			{
-				if(this->try_get_index_buffer() != nullptr)
-				{
-					buf_res_count--;
-				}
 				this->bindless_image_storage_buffer.bind_to_resource_id(buf_res_count);
 			}
 		}
@@ -633,7 +633,13 @@ namespace tz::gl
 					if(imgcomp->get_dimensions() != arg.dimensions)
 					{
 						imgcomp->resize(arg.dimensions);
-						this->resources.set_image_handle(arg.image_handle, imgcomp->ogl_get_image().get_bindless_handle());
+						
+						ogl2::Image::BindlessTextureHandle h = imgcomp->ogl_get_image().native();
+						if(ogl2::supports_bindless_textures())
+						{
+							h = imgcomp->ogl_get_image().get_bindless_handle();
+						}
+						this->resources.set_image_handle(arg.image_handle, h);
 					}
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
