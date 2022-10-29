@@ -48,14 +48,14 @@ namespace tz::gl
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>
-	concept RendererInfoType = requires(T t, ResourceHandle r, const IResource& resource, IComponent& component, IOutput& output, RendererOptions options, tz::Vec4 vec4, tz::Vec3ui vec3ui, std::string str)
+	concept RendererInfoType = requires(T t, ResourceHandle r, const IResource& resource, IComponent* component, IOutput& output, RendererOptions options, tz::Vec4 vec4, tz::Vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
 		{t.get_resources()} -> std::same_as<std::vector<const IResource*>>;
 
 		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
-		{t.add_component(component)} -> std::same_as<ResourceHandle>;
+		{t.ref_resource(component)} -> std::same_as<ResourceHandle>;
 		{t.set_output(output)} -> std::same_as<void>;
 		{t.get_output()} -> std::convertible_to<const IOutput*>;
 

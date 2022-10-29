@@ -92,7 +92,7 @@ int main()
 
 		tz::gl::Renderer& combine_old = tz::gl::device().get_renderer(combineh);
 
-		tz::gl::ResourceHandle bloom_bufh = rinfo.add_component(*combine_old.get_component(bloom_data_handle));
+		tz::gl::ResourceHandle bloom_bufh = rinfo.ref_resource(combine_old.get_component(bloom_data_handle));
 		rinfo.set_output(tz::gl::ImageOutput
 		{{
 			.colours = {combine_old.get_component(iout0h), combine_old.get_component(iout1h)}

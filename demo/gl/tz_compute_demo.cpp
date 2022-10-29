@@ -39,7 +39,7 @@ int main()
 		tz::gl::RendererInfo rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
-		auto refbuf = rinfo.add_component(*tz::gl::device().get_renderer(compute_workerh).get_component(cbuf));
+		auto refbuf = rinfo.ref_resource(tz::gl::device().get_renderer(compute_workerh).get_component(cbuf));
 		rinfo.debug_name("Window Renderer");
 		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
 

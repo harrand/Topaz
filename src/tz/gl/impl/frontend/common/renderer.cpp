@@ -86,10 +86,10 @@ namespace tz::gl
 		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
 	}
 
-	ResourceHandle RendererInfoCommon::add_component(IComponent& component)
+	ResourceHandle RendererInfoCommon::ref_resource(IComponent* component)
 	{
 		this->resources.push_back(nullptr);
-		this->components.push_back(&component);
+		this->components.push_back(component);
 		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
 	}
 

@@ -83,7 +83,7 @@ namespace tz::gl
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
 		ResourceHandle add_resource(const IResource& resource);
-		ResourceHandle add_component(IComponent& component);
+		ResourceHandle ref_resource(IComponent* component);
 		/**
 		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another Renderer.
 		 */
