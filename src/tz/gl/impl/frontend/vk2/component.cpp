@@ -78,6 +78,10 @@ namespace tz::gl
 		{
 			buf_usage = vk2::BufferUsage::IndexBuffer;
 		}
+		else if(this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
+		{
+			buf_usage = vk2::BufferUsage::DrawIndirectBuffer;
+		}
 		else
 		{
 			buf_usage = vk2::BufferUsage::StorageBuffer;

@@ -1876,17 +1876,29 @@ namespace tz::gl
 				});
 
 				const IComponent* idx_buf = this->resources.try_get_index_buffer();
-				const IComponent* ind_buf = this->resources.try_get_draw_indirect_buffer();
-				tz_assert(ind_buf == nullptr, "Draw Indirect buffers are not yet supported for VK.");
+				const auto* ind_buf = static_cast<const BufferComponentVulkan*>(this->resources.try_get_draw_indirect_buffer());
 				if(idx_buf == nullptr)
 				{
-					recording.draw
-					({
-						.vertex_count = 3 * this->tri_count,
-						.instance_count = 1,
-						.first_vertex = 0,
-						.first_instance = 0
-					});
+					if(ind_buf == nullptr)
+					{
+						recording.draw
+						({
+							.vertex_count = 3 * this->tri_count,
+							.instance_count = 1,
+							.first_vertex = 0,
+							.first_instance = 0
+						});
+					}
+					else
+					{
+						recording.draw_indirect
+						({
+							.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
+							.draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
+							.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand)),
+							.offset = static_cast<VkDeviceSize>(0)
+						});
+					}
 				}
 				else
 				{
@@ -1894,10 +1906,23 @@ namespace tz::gl
 					({
 						.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
 					});
-					recording.draw_indexed
-					({
-						.index_count = 3 * this->tri_count
-					});
+					if(ind_buf == nullptr)
+					{
+						recording.draw_indexed
+						({
+							.index_count = 3 * this->tri_count
+						});
+					}
+					else
+					{
+						recording.draw_indexed_indirect
+						({
+							.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
+							.draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndexedIndirectCommand)),
+							.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndexedIndirectCommand)),
+							.offset = static_cast<VkDeviceSize>(0)
+						});
+					}
 				}
 			}
 			recording.debug_end_label({});

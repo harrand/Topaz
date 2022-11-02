@@ -50,6 +50,30 @@ namespace tz::gl::vk2
 		};
 
 		/**
+		 * Record an unindexed indirect draw.
+		 * See @ref COmmandBufferRecording::draw_indirect for usage.
+		 */
+		struct DrawIndirect
+		{
+			const Buffer* draw_indirect_buffer;
+			std::uint32_t draw_count;
+			std::uint32_t stride;
+			VkDeviceSize offset = 0;
+		};
+
+		/**
+		 * Record an indexed indirect draw.
+		 * See @ref COmmandBufferRecording::draw_indexed_indirect for usage.
+		 */
+		struct DrawIndexedIndirect
+		{
+			const Buffer* draw_indirect_buffer;
+			std::uint32_t draw_count;
+			std::uint32_t stride;
+			VkDeviceSize offset = 0;
+		};
+
+		/**
 		 * Bind an index buffer.
 		 * See @ref CommandBufferRecording::bind_index_buffer for usage.
 		 */
@@ -206,7 +230,7 @@ namespace tz::gl::vk2
 		struct DebugEndLabel{};
 
 		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Dispatch, Draw, DrawIndexed, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
+		using Variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndexedIndirect, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -288,6 +312,16 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::Draw for details.
 		 */
 		void draw_indexed(VulkanCommand::DrawIndexed draw);
+		/**
+		 * Perform some indirect, non-indexed draws.
+		 * See @ref VulkanCommand::DrawIndirect for details.
+		 */
+		void draw_indirect(VulkanCommand::DrawIndirect draw);
+		/**
+		 * Perform some indirect, indexed draws.
+		 * See @ref VulkanCommand::DrawIndexedIndirect for details.
+		 */
+		void draw_indexed_indirect(VulkanCommand::DrawIndexedIndirect draw);
 		void bind_index_buffer(VulkanCommand::BindIndexBuffer bind);
 		/**
 		 * Bind a list of @ref DescriptorSet.
