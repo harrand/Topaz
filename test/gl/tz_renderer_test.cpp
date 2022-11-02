@@ -4,6 +4,7 @@
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/device.hpp"
+#include "tz/gl/draw.hpp"
 #include "tz/gl/imported_shaders.hpp"
 
 #include ImportedShaderHeader(empty, vertex)
@@ -396,7 +397,7 @@ TESTFUNC_BEGIN(renderer_indirect_buffer)
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	rinfo.add_resource(tz::gl::BufferResource::from_one(std::array<char, 1024>{},
+	rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
 	{
 		.flags = {tz::gl::ResourceFlag::DrawIndirectBuffer}
 	}));

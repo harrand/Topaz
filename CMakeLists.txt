@@ -83,6 +83,7 @@ add_library(topaz
 	src/tz/gl/component.hpp
 	src/tz/gl/device.cpp
 	src/tz/gl/device.hpp
+	src/tz/gl/draw.hpp
 	src/tz/gl/output.cpp
 	src/tz/gl/output.hpp
 	src/tz/gl/renderer.hpp
@@ -163,6 +164,7 @@ add_library(topaz
 	# tz::gl (OpenGL Backend)
 	src/tz/gl/impl/backend/ogl2/buffer.cpp
 	src/tz/gl/impl/backend/ogl2/buffer.hpp
+	src/tz/gl/impl/backend/ogl2/draw.hpp
 	src/tz/gl/impl/backend/ogl2/framebuffer.cpp
 	src/tz/gl/impl/backend/ogl2/framebuffer.hpp
 	src/tz/gl/impl/backend/ogl2/image.cpp

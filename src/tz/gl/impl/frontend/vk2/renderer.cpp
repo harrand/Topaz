@@ -223,14 +223,14 @@ namespace tz::gl
 			this->descriptor_layout = lbuilder.build();
 		}
 
-		// If we have no resources at all, then we completely skip creating pools and sets.
-		if(this->count() == 0)
+		// If we have no shader resources at all, then we completely skip creating pools and sets.
+		if(this->descriptor_empty())
 		{
 			return;
 		}
 		// Create pool limits. Enough for all of our resources. However, if we don't have any of a specific resource, we shouldn't add a limit at all for it (zero-size limits are not allowed).
 		decltype(std::declval<vk2::DescriptorPoolInfo::PoolLimits>().limits) limits;
-		if(buffer_count > 0)
+		if(descriptor_buffer_count > 0)
 		{
 			limits[vk2::DescriptorType::StorageBuffer] = descriptor_buffer_count * this->frame_in_flight_count;
 		}
@@ -344,6 +344,21 @@ namespace tz::gl
 		return iter->get();
 	}
 
+	const IComponent* ResourceStorage::try_get_draw_indirect_buffer() const
+	{
+		auto iter = std::find_if(this->components.begin(), this->components.end(),
+		[](const auto& component_ptr)
+		{
+			auto res = component_ptr->get_resource();
+			return res->get_type() == ResourceType::Buffer && res->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
+		});
+		if(iter == this->components.end())
+		{
+			return nullptr;
+		}
+		return iter->get();
+	}
+
 	std::size_t ResourceStorage::resource_count_of(ResourceType type) const
 	{
 		return std::count_if(this->components.begin(), this->components.end(),
@@ -430,6 +445,11 @@ namespace tz::gl
 	bool ResourceStorage::empty() const
 	{
 		return this->count() == 0;
+	}
+	
+	bool ResourceStorage::descriptor_empty() const
+	{
+		return this->descriptor_layout.binding_count() == 0;
 	}
 
 	void ResourceStorage::write_padded_image_data()
@@ -1483,7 +1503,7 @@ namespace tz::gl
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
-						if(bufcomp == this->resources.try_get_index_buffer())
+						if(bufcomp == this->resources.try_get_index_buffer() || bufcomp == this->resources.try_get_draw_indirect_buffer())
 						{
 							// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
 							work_commands_need_recording = true;
@@ -1823,7 +1843,7 @@ namespace tz::gl
 					.pipeline = &this->pipeline.get_pipeline(),
 				});
 				tz::BasicList<const vk2::DescriptorSet*> sets;
-				if(!this->resources.empty())
+				if(!this->resources.descriptor_empty())
 				{
 					std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
 					sets.resize(resource_sets.size());
@@ -1856,6 +1876,8 @@ namespace tz::gl
 				});
 
 				const IComponent* idx_buf = this->resources.try_get_index_buffer();
+				const IComponent* ind_buf = this->resources.try_get_draw_indirect_buffer();
+				tz_assert(ind_buf == nullptr, "Draw Indirect buffers are not yet supported for VK.");
 				if(idx_buf == nullptr)
 				{
 					recording.draw

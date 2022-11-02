@@ -74,6 +74,7 @@ namespace tz::gl
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 
 		const IComponent* try_get_index_buffer() const;
+		const IComponent* try_get_draw_indirect_buffer() const;
 
 		std::size_t resource_count_of(ResourceType type) const;
 		/**
@@ -90,6 +91,12 @@ namespace tz::gl
 		 * @return True if there is at least one buffer or image resource, otherwise false. This includes resource references.
 		 */
 		bool empty() const;
+		/**
+		 * Query as to whether there are any shader resources or not.
+		 * Some buffer resources are not descriptor-related, such as index and draw indirect buffers. If a renderer for example has a single index buffer, it is not empty() but descriptor_empty().
+		 * @return True if there are no descriptor-related resources.
+		 */
+		bool descriptor_empty() const;
 		/**
 		 * This must happen every frame. For each dynamic image resource, pad the current data and update the mapped data. This is because vk2::Image mappings have an implementation-defined row padding, which this function is responsible for correcting.
 		 */

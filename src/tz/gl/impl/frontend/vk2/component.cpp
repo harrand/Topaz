@@ -65,8 +65,7 @@ namespace tz::gl
 
 	bool BufferComponentVulkan::vk_is_descriptor_relevant() const
 	{
-		tz_assert(!this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer), "DrawIndirectBuffer support on vulkan is not yet implemented");
-		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer);
+		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer) && !this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
 	}
 
 	vk2::Buffer BufferComponentVulkan::make_buffer(const vk2::LogicalDevice& ldev) const
