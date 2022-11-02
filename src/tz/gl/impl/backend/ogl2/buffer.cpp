@@ -97,7 +97,7 @@ namespace tz::gl::ogl2
 	void Buffer::basic_bind() const
 	{
 		auto en = static_cast<GLenum>(this->get_target());
-		tz_assert(en == GL_ELEMENT_ARRAY_BUFFER, "fooey");
+		tz_assert(en == GL_ELEMENT_ARRAY_BUFFER || en == GL_DRAW_INDIRECT_BUFFER, "Basic bind on a buffer is only valid for an index or draw-indirect buffer.");
 		glBindBuffer(en, this->buffer);
 	}
 

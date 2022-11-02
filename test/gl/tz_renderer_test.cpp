@@ -376,6 +376,38 @@ TESTFUNC_BEGIN(rendereredit_renderconfig)
 TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(renderer_index_buffer)
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
+	{
+		.flags = {tz::gl::ResourceFlag::IndexBuffer}
+	}));
+
+	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::device().get_renderer(rh).render();
+
+	tz::gl::device().destroy_renderer(rh);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(renderer_indirect_buffer)
+	tz::gl::RendererInfo rinfo;
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.add_resource(tz::gl::BufferResource::from_one(std::array<char, 1024>{},
+	{
+		.flags = {tz::gl::ResourceFlag::DrawIndirectBuffer}
+	}));
+
+	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::device().get_renderer(rh).render();
+
+	tz::gl::device().destroy_renderer(rh);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
 int main()
 {
 	tz::initialise
@@ -395,6 +427,9 @@ int main()
 		rendereredit_resourcewrite_image();
 		rendereredit_computeconfig();
 		rendereredit_renderconfig();
+
+		renderer_index_buffer();
+		renderer_indirect_buffer();
 	}
 	tz::terminate();
 }
