@@ -131,7 +131,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
 	{
-		.access = tz::gl::ResourceAccess::DynamicVariable
+		.access = tz::gl::ResourceAccess::Dynamic
 	}));
 	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -182,7 +182,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	({
 		.format = tz::gl::ImageFormat::RGBA32,
 		.dimensions = old_dims,
-		.access = tz::gl::ResourceAccess::DynamicVariable
+		.access = tz::gl::ResourceAccess::Dynamic
 	}));
 	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -228,8 +228,8 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
 	{
-		.access = tz::gl::ResourceAccess::DynamicFixed
-		// TODO: Test should pass even if StaticFixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
+		.access = tz::gl::ResourceAccess::Dynamic
+		// TODO: Test should pass even if Static (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
 	}));
 	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -289,7 +289,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	{
 		.format = tz::gl::ImageFormat::RGBA32,
 		.dimensions = {2u, 2u},
-		.access = tz::gl::ResourceAccess::DynamicFixed
+		.access = tz::gl::ResourceAccess::Dynamic
 	}));
 	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
 

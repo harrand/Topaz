@@ -29,7 +29,7 @@ int main()
 
 		tz::gl::BufferResource blur_data = tz::gl::BufferResource::from_one(BlurData{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.access = tz::gl::ResourceAccess::Dynamic
 		});
 		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised
 		({

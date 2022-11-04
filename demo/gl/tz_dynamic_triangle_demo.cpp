@@ -72,7 +72,7 @@ int main()
 				{
 					.format = tz::gl::ImageFormat::RGBA32,
 					.dimensions = {2u, 2u},
-					.access = tz::gl::ResourceAccess::DynamicFixed,
+					.access = tz::gl::ResourceAccess::Dynamic,
 					.flags =
 					{
 						tz::gl::ResourceFlag::ImageFilterLinear,
@@ -89,9 +89,6 @@ int main()
 					TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
 					TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
 					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
-				}, 
-				{
-					.access = tz::gl::ResourceAccess::StaticFixed
 				}
 			)
 		);
@@ -101,7 +98,6 @@ int main()
 			(
 				{0u, 1u, 2u},
 				{
-					.access = tz::gl::ResourceAccess::StaticFixed,
 					.flags = {tz::gl::ResourceFlag::IndexBuffer}
 				}
 			)

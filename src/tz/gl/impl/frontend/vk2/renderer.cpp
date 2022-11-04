@@ -83,11 +83,10 @@ namespace tz::gl
 		};
 
 		auto resources = info.get_resources();
-		std::vector<bool> buffer_id_to_variable_access;
 		std::vector<bool> buffer_id_to_descriptor_visibility;
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility, get_fitting_sampler](IComponent* cmp)
+		auto retrieve_resource_metadata = [this, &buffer_id_to_descriptor_visibility, get_fitting_sampler](IComponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
@@ -96,10 +95,9 @@ namespace tz::gl
 				{
 					auto buf = static_cast<BufferComponentVulkan*>(cmp);
 					// We need to know this when creating the descriptors.
-					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
 					buffer_id_to_descriptor_visibility.push_back(buf->vk_is_descriptor_relevant());
 					// If the buffer is dynamic, let's link up the resource data span now.
-					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					if(res->get_access() == ResourceAccess::Dynamic)
 					{
 						std::span<const std::byte> initial_data = res->data();
 						std::span<std::byte> buffer_byte_data = this->components.back().as<BufferComponentVulkan>()->vk_get_buffer().map_as<std::byte>();
@@ -121,7 +119,7 @@ namespace tz::gl
 							.aspect = vk2::ImageAspect::Colour
 						 });
 					// If the image is dynamic, let's link up the resource data span now.
-					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					if(res->get_access() == ResourceAccess::Dynamic)
 					{
 
 						std::span<const std::byte> initial_data = res->data();
@@ -175,8 +173,6 @@ namespace tz::gl
 
 		std::size_t buffer_count = this->resource_count_of(ResourceType::Buffer);
 		std::size_t descriptor_buffer_count = std::count(buffer_id_to_descriptor_visibility.begin(), buffer_id_to_descriptor_visibility.end(), true);
-		// So buffer_id_to_variable_access stores a bool for each buffer (in-order). True if the access is variable, false otherwise. However, if any buffer at all is variable, we will unfortunately try to write to them all in sync_descriptors.
-		// Until we fix sync_descriptors to be a little less cavalier, we must add the descriptor-indexing flags and take the perf loss if there are *any* variable-sized buffer resources at all.
 		{
 			vk2::DescriptorLayoutBuilder lbuilder;
 			lbuilder.set_device(ldev);
@@ -189,16 +185,11 @@ namespace tz::gl
 					continue;
 				}
 				// TODO: Only add the necessary flags to the buffers with variable access instead of all of them if any have it. Dependent on changes to sync_descriptors.
-				vk2::DescriptorFlags desc_flags;
-				if(std::any_of(buffer_id_to_variable_access.begin(), buffer_id_to_variable_access.end(),
-				[](bool b){return b;}))
+				vk2::DescriptorFlags desc_flags
 				{
-					desc_flags = 
-					{
-						vk2::DescriptorFlag::UpdateAfterBind,
-						vk2::DescriptorFlag::UpdateUnusedWhilePending
-					};
-				}
+					vk2::DescriptorFlag::UpdateAfterBind,
+					vk2::DescriptorFlag::UpdateUnusedWhilePending
+				};
 
 				lbuilder.with_binding
 				({
@@ -457,7 +448,7 @@ namespace tz::gl
 		for(auto& component_ptr : this->components)
 		{
 			IResource* res = component_ptr->get_resource();
-			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			if(res->get_type() == ResourceType::Image && res->get_access() == ResourceAccess::Dynamic)
 			{
 				const vk2::Image& img = component_ptr.as<const ImageComponentVulkan>()->vk_get_image();
 				// If it's dynamic in any way, the user might have written changes.
@@ -1531,96 +1522,93 @@ namespace tz::gl
 					IComponent* comp = this->get_component(arg.resource);
 					IResource* res = comp->get_resource();
 					// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
-					switch(res->get_access())
+					if(res->get_access() == ResourceAccess::Static)
 					{
-						case ResourceAccess::StaticFixed:
+
+						// Create staging buffer.
+						vk2::Buffer staging_buffer
+						{{
+							.device = this->ldev,
+							.size_bytes = arg.offset + arg.data.size_bytes(),
+							.usage = {vk2::BufferUsage::TransferSource},
+							.residency = vk2::MemoryResidency::CPU
+						}};
+						// Write data into staging buffer.
 						{
-							// Create staging buffer.
-							vk2::Buffer staging_buffer
-							{{
-								.device = this->ldev,
-								.size_bytes = arg.offset + arg.data.size_bytes(),
-								.usage = {vk2::BufferUsage::TransferSource},
-								.residency = vk2::MemoryResidency::CPU
-							}};
-							// Write data into staging buffer.
+							void* ptr = staging_buffer.map();
+							std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
+							staging_buffer.unmap();
+						}
+						// Schedule work to transfer.
+						switch(res->get_type())
+						{
+							case ResourceType::Buffer:
 							{
-								void* ptr = staging_buffer.map();
-								std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
-								staging_buffer.unmap();
-							}
-							// Schedule work to transfer.
-							switch(res->get_type())
-							{
-								case ResourceType::Buffer:
+								vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
+								this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
 								{
-									vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
-									this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
-									{
-										record.buffer_copy_buffer
-										({
-											.src = &staging_buffer,
-											.dst = &buffer,
-											.src_offset = 0,
-											.dst_offset = arg.offset
-										});
+									record.buffer_copy_buffer
+									({
+										.src = &staging_buffer,
+										.dst = &buffer,
+										.src_offset = 0,
+										.dst_offset = arg.offset
+									});
+								});
+
+							}
+							break;
+							case ResourceType::Image:
+							{
+								vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
+								if(arg.offset != 0)
+								{
+									tz_warning_report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
+								}
+								vk2::ImageLayout cur_layout = image.get_layout();
+								this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
+								{
+									// Need to be transfer destination layout. After that we go back to what we were.	
+									record.transition_image_layout
+									({
+										.image = &image,
+										.target_layout = vk2::ImageLayout::TransferDestination,
+										.source_access = {vk2::AccessFlag::None},
+										.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+										.source_stage = vk2::PipelineStage::Top,
+										.destination_stage = vk2::PipelineStage::TransferCommands,
+										.image_aspects = {vk2::ImageAspectFlag::Colour}
 									});
 
-								}
-								break;
-								case ResourceType::Image:
-								{
-									vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
-									if(arg.offset != 0)
-									{
-										tz_warning_report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
-									}
-									vk2::ImageLayout cur_layout = image.get_layout();
-									this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
-									{
-										// Need to be transfer destination layout. After that we go back to what we were.	
-										record.transition_image_layout
-										({
-											.image = &image,
-											.target_layout = vk2::ImageLayout::TransferDestination,
-											.source_access = {vk2::AccessFlag::None},
-											.destination_access = {vk2::AccessFlag::TransferOperationWrite},
-											.source_stage = vk2::PipelineStage::Top,
-											.destination_stage = vk2::PipelineStage::TransferCommands,
-											.image_aspects = {vk2::ImageAspectFlag::Colour}
-										});
-
-										record.buffer_copy_image
-										({
-											.src = &staging_buffer,
-											.dst = &image,
-											.image_aspects = {vk2::ImageAspectFlag::Colour}
-										});
-
-										record.transition_image_layout
-										({
-											.image = &image,
-											.target_layout = cur_layout,
-											.source_access = {vk2::AccessFlag::TransferOperationWrite} /*todo: correct values?*/,
-											.destination_access = {vk2::AccessFlag::ShaderResourceRead},
-											.source_stage = vk2::PipelineStage::TransferCommands,
-											.destination_stage = vk2::PipelineStage::FragmentShader,
-											.image_aspects = {vk2::ImageAspectFlag::Colour}
-										});
-
+									record.buffer_copy_image
+									({
+										.src = &staging_buffer,
+										.dst = &image,
+										.image_aspects = {vk2::ImageAspectFlag::Colour}
 									});
-								}
-								break;
+
+									record.transition_image_layout
+									({
+										.image = &image,
+										.target_layout = cur_layout,
+										.source_access = {vk2::AccessFlag::TransferOperationWrite} /*todo: correct values?*/,
+										.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+										.source_stage = vk2::PipelineStage::TransferCommands,
+										.destination_stage = vk2::PipelineStage::FragmentShader,
+										.image_aspects = {vk2::ImageAspectFlag::Colour}
+									});
+
+								});
 							}
+							break;
 						}
-						break;
-						default:
-						{
-							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
-							std::span<std::byte> data = res->data_as<std::byte>();
-							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
-						}
-						break;
+					}
+					else
+					{
+
+						tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+						std::span<std::byte> data = res->data_as<std::byte>();
+						std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 					}
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
@@ -1755,7 +1743,7 @@ namespace tz::gl
 			{
 				IResource* res = buffer_components[i]->get_resource();
 				tz_assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
-				if(res->get_access() != ResourceAccess::StaticFixed)
+				if(res->get_access() == ResourceAccess::Dynamic)
 				{
 					continue;
 				}
@@ -1778,7 +1766,7 @@ namespace tz::gl
 			{
 				IResource* res = image_components[i]->get_resource();
 				tz_assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
-				if(res->get_access() != ResourceAccess::StaticFixed)
+				if(res->get_access() == ResourceAccess::Dynamic)
 				{
 					continue;
 				}

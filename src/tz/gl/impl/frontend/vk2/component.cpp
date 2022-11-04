@@ -31,7 +31,6 @@ namespace tz::gl
 
 	void BufferComponentVulkan::resize(std::size_t sz)
 	{
-		//tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::DynamicFixed, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -49,7 +48,14 @@ namespace tz::gl
 		//	std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
 		//	this->resource->set_mapped_data(new_data);
 		//}
-		this->resource->resize_data(sz);
+		if(this->resource->get_access() == ResourceAccess::Static)
+		{
+			this->resource->resize_data(sz);
+		}
+		else
+		{
+			this->resource->set_mapped_data(new_buf.map_as<std::byte>());
+		}
 		new_buf.debug_set_name(old_buf.debug_get_name());
 		std::swap(old_buf, new_buf);
 	}
@@ -88,21 +94,15 @@ namespace tz::gl
 			buf_usage = vk2::BufferUsage::StorageBuffer;
 		}
 
-		switch(this->resource->get_access())
+		if(this->resource->get_access() == ResourceAccess::Static)
 		{
-			default:
-				tz_error("Unrecognised ResourceAccess. Please submit a bug report.");
-			[[fallthrough]];
-			case ResourceAccess::StaticFixed:
-				usage_field = {vk2::BufferUsage::TransferDestination, buf_usage};
-				residency = vk2::MemoryResidency::GPU;
-			break;
-			case ResourceAccess::DynamicFixed:
-			[[fallthrough]];
-			case ResourceAccess::DynamicVariable:
-				usage_field = {buf_usage};
-				residency = vk2::MemoryResidency::CPUPersistent;
-			break;
+			usage_field = {vk2::BufferUsage::TransferDestination, buf_usage};
+			residency = vk2::MemoryResidency::GPU;
+		}
+		else
+		{
+			usage_field = {buf_usage};
+			residency = vk2::MemoryResidency::CPUPersistent;
 		}
 		return
 		{{
@@ -139,8 +139,6 @@ namespace tz::gl
 
 	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::DynamicFixed, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
-
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
 		{
@@ -151,10 +149,12 @@ namespace tz::gl
 		// Secondly, let's tell the ImageResource the new dimensions. It's data will be invalidated as soon as we do this.
 		auto* ires = static_cast<ImageResource*>(this->resource);
 		ires->set_dimensions(new_dimensions);
+		ires->resize_data(new_dimensions[0] * new_dimensions[1] * tz::gl::pixel_size_bytes(tz::gl::from_vk2(this->image.get_format())));
 		// Then, recreate the image. The image will have the new dimensions but undefined data contents.
 		std::string debug_name = this->image.debug_get_name();
 		this->image = make_image(this->image.get_device());
 		this->image.debug_set_name(debug_name);
+		/*
 		// After that, let's re-validate the resource data span. It will still have undefined contents for now.
 		auto new_data = this->vk_get_image().map_as<std::byte>();
 		this->resource->set_mapped_data(new_data);
@@ -165,6 +165,7 @@ namespace tz::gl
 		// Let's zero it all.
 		std::size_t num_new_texels = std::max(new_data.size_bytes(), old_data.size()) - copy_size;
 		std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
+		*/
 	}
 
 	const vk2::Image& ImageComponentVulkan::vk_get_image() const
@@ -194,20 +195,14 @@ namespace tz::gl
 		}
 		vk2::MemoryResidency residency;
 		vk2::ImageTiling tiling = vk2::ImageTiling::Optimal;
-		switch(this->resource->get_access())
+		if(this->resource->get_access() == ResourceAccess::Static)
 		{
-			default:
-				tz_error("Unknown ResourceAccess. Please submit a bug report.");
-			[[fallthrough]];
-			case ResourceAccess::StaticFixed:
-				residency = vk2::MemoryResidency::GPU;
-			break;
-			case ResourceAccess::DynamicFixed:
-			[[fallthrough]];
-			case ResourceAccess::DynamicVariable:
-				residency = vk2::MemoryResidency::CPUPersistent;
-				tiling = vk2::ImageTiling::Linear;
-			break;
+			residency = vk2::MemoryResidency::GPU;
+		}
+		else
+		{
+			residency = vk2::MemoryResidency::CPUPersistent;
+			tiling = vk2::ImageTiling::Linear;
 		}
 		return
 		{{

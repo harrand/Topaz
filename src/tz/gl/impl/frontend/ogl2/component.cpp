@@ -30,7 +30,14 @@ namespace tz::gl
 	{
 		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
 		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
-		this->resource->resize_data(sz);
+		if(this->resource->get_access() == tz::gl::ResourceAccess::Static)
+		{
+			this->resource->resize_data(sz);
+		}
+		else
+		{
+			this->resource->set_mapped_data(new_buffer.map_as<std::byte>());
+		}
 		std::swap(old_buffer, new_buffer);
 	}
 
@@ -47,19 +54,13 @@ namespace tz::gl
 	ogl2::Buffer BufferComponentOGL::make_buffer() const
 	{
 		ogl2::BufferResidency residency;
-		switch(this->resource->get_access())
+		if(this->resource->get_access() == ResourceAccess::Static)
 		{
-			default:
-				tz_error("Unknown ResourceAccess. Please submit a bug report.");
-			[[fallthrough]];
-			case ResourceAccess::StaticFixed:
-				residency = ogl2::BufferResidency::Static;
-			break;
-			case ResourceAccess::DynamicFixed:
-			[[fallthrough]];
-			case ResourceAccess::DynamicVariable:
-				residency = ogl2::BufferResidency::Dynamic;
-			break;
+			residency = ogl2::BufferResidency::Static;
+		}
+		else
+		{
+			residency = ogl2::BufferResidency::Dynamic;
 		}
 		ogl2::BufferTarget tar;
 		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
@@ -109,7 +110,6 @@ namespace tz::gl
 
 	void ImageComponentOGL::resize(tz::Vec2ui dims)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::DynamicFixed, "Requested resize of ImageComponentOGL, but the underlying resource did not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 		ogl2::Image& old_image = this->ogl_get_image();
 		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
 

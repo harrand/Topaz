@@ -58,12 +58,10 @@ namespace tz::gl
 	 */
 	enum class ResourceAccess
 	{
-		/// - Resource data is written once initially, and cannot be resized.
-		StaticFixed,
-		/// - Resource data is always writable, but cannot be resized.
-		DynamicFixed,
-		/// - Resource data is always writeable and resizeable.
-		DynamicVariable,
+		// - Resource data can be resized, but it is read-only.
+		Static, 
+		/// - Resource data can be resized, and written to whenever.
+		Dynamic,
 		Count
 	};
 

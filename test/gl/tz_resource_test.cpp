@@ -62,17 +62,17 @@ void basic_image()
 void default_arguments_buffer()
 {
 	auto nullbuf = tz::gl::BufferResource::null();
-	tz_assert(nullbuf.get_access() == tz::gl::ResourceAccess::StaticFixed, "Null Buffer must be ResourceAccess::StaticFixed, but it is not.");
+	tz_assert(nullbuf.get_access() == tz::gl::ResourceAccess::Static, "Null Buffer must be ResourceAccess::Static, but it is not.");
 	tz_assert(nullbuf.get_flags().empty(), "Null Buffer must not have any flags");
 
 	{
 		auto buf = tz::gl::BufferResource::from_one(1);
-		tz_assert(buf.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Buffer must be ResourceAccess::StaticFixed, but it is not.");
+		tz_assert(buf.get_access() == tz::gl::ResourceAccess::Static, "Defaulted Buffer must be ResourceAccess::Static, but it is not.");
 		tz_assert(buf.get_flags().empty(), "Defaulted Buffer must not have any flags");
 	}
 	{
 		auto buf = tz::gl::BufferResource::from_many({1, 2, 3});
-		tz_assert(buf.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Buffer must be ResourceAccess::StaticFixed, but it is not.");
+		tz_assert(buf.get_access() == tz::gl::ResourceAccess::Static, "Defaulted Buffer must be ResourceAccess::Static, but it is not.");
 		tz_assert(buf.get_flags().empty(), "Defaulted Buffer must not have any flags");
 	}
 }
@@ -81,12 +81,12 @@ void default_arguments_buffer()
 void default_arguments_image()
 {
 	auto nullimg = tz::gl::ImageResource::null();
-	tz_assert(nullimg.get_access() == tz::gl::ResourceAccess::StaticFixed, "Null Image must be ResourceAccess::StaticFixed, but it is not.");
+	tz_assert(nullimg.get_access() == tz::gl::ResourceAccess::Static, "Null Image must be ResourceAccess::Static, but it is not.");
 	tz_assert(nullimg.get_flags().empty(), "Null Image must not have any flags");
 
 	{
 		auto img = tz::gl::ImageResource::from_uninitialised({.format = tz::gl::ImageFormat::RGBA32, .dimensions = {1u, 1u}});
-		tz_assert(img.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Image must be ResourceAccess::StaticFixed, but it is not.");
+		tz_assert(img.get_access() == tz::gl::ResourceAccess::Static, "Defaulted Image must be ResourceAccess::Static, but it is not.");
 		tz_assert(img.get_flags().empty(), "Defaulted Image must not have any flags");
 	}
 	{
@@ -96,7 +96,7 @@ void default_arguments_image()
 			std::byte{2},
 			std::byte{3}
 		}, {.format = tz::gl::ImageFormat::RGBA32, .dimensions = {1u, 1u}});
-		tz_assert(img.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Image must be ResourceAccess::StaticFixed, but it is not.");
+		tz_assert(img.get_access() == tz::gl::ResourceAccess::Static, "Defaulted Image must be ResourceAccess::Static, but it is not.");
 		tz_assert(img.get_flags().empty(), "Defaulted Image must not have any flags");
 	}
 }

@@ -315,15 +315,15 @@ namespace tz::dbgui
 
 		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicVariable
+			.access = tz::gl::ResourceAccess::Dynamic
 		});
 		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicVariable
+			.access = tz::gl::ResourceAccess::Dynamic
 		});
 		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.access = tz::gl::ResourceAccess::Dynamic
 		});
 
 		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory

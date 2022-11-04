@@ -9,9 +9,8 @@ namespace tz::gl
 	{
 		std::array<const char*, static_cast<int>(ResourceAccess::Count)> resource_access_strings
 		{
-			"Static Fixed",
-			"Dynamic Fixed",
-			"Dynamic Variable"
+			"Static",
+			"Dynamic",
 		};
 
 		std::array<const char*, static_cast<int>(ResourceFlag::Count)> resource_flag_strings
@@ -109,7 +108,7 @@ namespace tz::gl
 
 	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
-		tz_assert(this->get_access() == ResourceAccess::DynamicFixed || this->get_access() == ResourceAccess::DynamicVariable, "Cannot set mapped data on a static resource.");
+		tz_assert(this->get_access() == ResourceAccess::Dynamic, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
 	}
 

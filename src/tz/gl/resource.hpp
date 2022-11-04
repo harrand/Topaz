@@ -36,7 +36,7 @@ namespace tz::gl
 
 	struct BufferInfo
 	{
-		ResourceAccess access = ResourceAccess::StaticFixed;
+		ResourceAccess access = ResourceAccess::Static;
 		ResourceFlags flags = {};
 	};
 
@@ -100,8 +100,8 @@ namespace tz::gl
 		ImageFormat format;
 		/// Image dimensions, in pixels.
 		tz::Vec2ui dimensions;
-		/// Access specifier. By default this is static fixed.
-		ResourceAccess access = ResourceAccess::StaticFixed;
+		/// Access specifier. By default this is static.
+		ResourceAccess access = ResourceAccess::Static;
 		/// Flags specifying any special usages for the image. By default there are no flags.
 		ResourceFlags flags = {};
 	};

@@ -68,7 +68,7 @@ int main()
 
 		tz::gl::BufferResource bloom_data_buffer = tz::gl::BufferResource::from_one(BloomOptions{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.access = tz::gl::ResourceAccess::Dynamic
 		});
 
 		tz::gl::RendererInfo combine_info;
@@ -82,7 +82,7 @@ int main()
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.access = tz::gl::ResourceAccess::Dynamic
 		});
 
 		tz::gl::RendererInfo rinfo;

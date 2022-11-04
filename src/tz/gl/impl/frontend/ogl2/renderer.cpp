@@ -21,7 +21,7 @@ namespace tz::gl
 			tz_assert(res != nullptr, "BufferComponent had null resource");
 			switch(res->get_access())
 			{
-				case ResourceAccess::StaticFixed:
+				case ResourceAccess::Static:
 				{
 					// Create a staging buffer, write the resource data into it, and then do a buffer copy to the component.
 					ogl2::BufferTarget tar = ogl2::BufferTarget::ShaderStorage;
@@ -42,9 +42,7 @@ namespace tz::gl
 					ogl2::buffer::copy(staging_buffer, buffer);
 				}
 				break;
-				case ResourceAccess::DynamicFixed:
-				[[fallthrough]];
-				case ResourceAccess::DynamicVariable:
+				case ResourceAccess::Dynamic:
 				{
 					// Map component buffer and write resource data directly into it, then pass the mapped ptr back into the resource to set it as the new data source.
 					auto resdata = res->data();
@@ -244,7 +242,7 @@ namespace tz::gl
 		for(auto& component_ptr : this->components)
 		{
 			tz::gl::IResource* res = component_ptr->get_resource();
-			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			if(res->get_type() == ResourceType::Image && res->get_access() == ResourceAccess::Dynamic)
 			{
 				// Get the underlying image, and set its data to whatever the span said it was.
 				ogl2::Image& img = static_cast<ImageComponentOGL*>(component_ptr.get())->ogl_get_image();
@@ -681,47 +679,47 @@ namespace tz::gl
 				{
 					IComponent* comp = this->get_component(arg.resource);
 					IResource* res = comp->get_resource();
-					switch(res->get_access())
+					if(res->get_access() == ResourceAccess::Static)
 					{
-						case ResourceAccess::StaticFixed:
-							switch(res->get_type())
+						switch(res->get_type())
+						{
+							case ResourceType::Buffer:
 							{
-								case ResourceType::Buffer:
+								ogl2::Buffer& buffer = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
+								ogl2::Buffer staging_buffer
+								{{
+									.target = ogl2::BufferTarget::Uniform,
+									.residency = ogl2::BufferResidency::Dynamic,
+									.size_bytes = res->data().size_bytes()
+								}};
 								{
-									ogl2::Buffer& buffer = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
-									ogl2::Buffer staging_buffer
-									{{
-										.target = ogl2::BufferTarget::Uniform,
-										.residency = ogl2::BufferResidency::Dynamic,
-										.size_bytes = res->data().size_bytes()
-									}};
-									{
-										void* ptr = staging_buffer.map();
-										std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
-										staging_buffer.unmap();
-									}
-									ogl2::buffer::copy(staging_buffer, buffer);
+									void* ptr = staging_buffer.map();
+									std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
+									staging_buffer.unmap();
 								}
-								break;
-								case ResourceType::Image:
-									ogl2::Image& image = static_cast<ImageComponentOGL*>(comp)->ogl_get_image();
-									ogl2::Image staging_image
-									{{
-										.format = image.get_format(),
-										.dimensions = image.get_dimensions(),
-										.sampler = image.get_sampler()
-									}};
-									staging_image.set_data(arg.data);
-									ogl2::image::copy(staging_image, image);
-
-								break;
+								ogl2::buffer::copy(staging_buffer, buffer);
 							}
-						break;
-						default:
-							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
-							std::span<std::byte> data = res->data_as<std::byte>();
-							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
-						break;
+							break;
+							case ResourceType::Image:
+								ogl2::Image& image = static_cast<ImageComponentOGL*>(comp)->ogl_get_image();
+								ogl2::Image staging_image
+								{{
+									.format = image.get_format(),
+									.dimensions = image.get_dimensions(),
+									.sampler = image.get_sampler()
+								}};
+								staging_image.set_data(arg.data);
+								ogl2::image::copy(staging_image, image);
+
+							break;
+						}
+					}
+					else
+					{
+
+						tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+						std::span<std::byte> data = res->data_as<std::byte>();
+						std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 					}
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
