@@ -72,7 +72,7 @@ int main()
 				{
 					.format = tz::gl::ImageFormat::RGBA32,
 					.dimensions = {2u, 2u},
-					.access = tz::gl::ResourceAccess::DynamicVariable,
+					.access = tz::gl::ResourceAccess::DynamicFixed,
 					.flags =
 					{
 						tz::gl::ResourceFlag::ImageFilterLinear,
@@ -91,7 +91,7 @@ int main()
 					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
 				}, 
 				{
-					.access = tz::gl::ResourceAccess::DynamicVariable
+					.access = tz::gl::ResourceAccess::StaticFixed
 				}
 			)
 		);
@@ -101,7 +101,7 @@ int main()
 			(
 				{0u, 1u, 2u},
 				{
-					.access = tz::gl::ResourceAccess::DynamicVariable,
+					.access = tz::gl::ResourceAccess::StaticFixed,
 					.flags = {tz::gl::ResourceFlag::IndexBuffer}
 				}
 			)
@@ -151,14 +151,41 @@ int main()
 					.image_resize({.image_handle = imgh, .dimensions = new_dims})
 					.build());
 				// Get the resource data for the new triangle and set it to random values.
+				auto old_vertex_data = renderer.get_resource(bufh)->data_as<const TriangleVertexData>();
+				auto old_index_data = renderer.get_resource(ibufh)->data_as<const unsigned int>();
+
+				std::vector<TriangleVertexData> vertices;
+				vertices.resize(old_vertex_data.size());
+				std::copy(old_vertex_data.begin(), old_vertex_data.end(), vertices.begin());
+
+				std::vector<unsigned int> indices;
+				indices.resize(old_index_data.size());
+				std::copy(old_index_data.begin(), old_index_data.end(), indices.begin());
+
 				std::span<TriangleVertexData> buf_data = renderer.get_resource(bufh)->data_as<TriangleVertexData>();
 				std::span<unsigned int> idx_data = renderer.get_resource(ibufh)->data_as<unsigned int>();
 				// We do this by setting the last 3 vertices to a random triangle;
 				for(std::size_t i = 0; i < 3; i++)
 				{
-					buf_data[buf_data.size() - 3 + i] = get_random_triangle(rand);
-					idx_data[idx_data.size() - 3 + i] = ((triangle_count - 1) * 3) + i;
+					vertices[vertices.size() - 3 + i] = get_random_triangle(rand);
+					indices[indices.size() - 3 + i] = ((triangle_count - 1) * 3) + i;
 				}
+
+				renderer.edit
+				(
+					tz::gl::RendererEditBuilder{}
+					.write
+					({
+						.resource = bufh,
+						.data = std::as_bytes(std::span<TriangleVertexData>{vertices})
+					})
+					.write
+					({
+						.resource = ibufh,
+						.data = std::as_bytes(std::span<unsigned int>{indices})
+					})
+					.build()
+				);
 
 				// Shuffle each byte randomly.
 				tz::Vec2ui img_dims = img_comp->get_dimensions();

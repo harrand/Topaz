@@ -124,6 +124,7 @@ namespace tz::gl
 		virtual std::unique_ptr<IResource> unique_clone() const = 0;
 
 		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
+		virtual void resize_data(std::size_t sz) = 0;
 
 		/**
 		 * Retrieve a field containing all flags applied to this resource. If you didn't specify any flags for this resource, it will be empty.

@@ -31,7 +31,7 @@ namespace tz::gl
 
 	void BufferComponentVulkan::resize(std::size_t sz)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
+		//tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::DynamicFixed, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -42,13 +42,14 @@ namespace tz::gl
 			.residency = old_buf.get_residency()
 		}};
 		// Copy the data over.
-		{
-			auto old_data = old_buf.map_as<const std::byte>();
-			auto new_data = new_buf.map_as<std::byte>();
-			std::size_t copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
-			std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
-			this->resource->set_mapped_data(new_data);
-		}
+		//{
+		//	auto old_data = old_buf.map_as<const std::byte>();
+		//	auto new_data = new_buf.map_as<std::byte>();
+		//	std::size_t copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
+		//	std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
+		//	this->resource->set_mapped_data(new_data);
+		//}
+		this->resource->resize_data(sz);
 		new_buf.debug_set_name(old_buf.debug_get_name());
 		std::swap(old_buf, new_buf);
 	}
@@ -138,7 +139,7 @@ namespace tz::gl
 
 	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::DynamicFixed, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;

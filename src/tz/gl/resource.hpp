@@ -21,7 +21,7 @@ namespace tz::gl
 		virtual std::span<std::byte> data() final;
 		virtual void dbgui() override;
 
-		void resize_data(std::size_t new_size);
+		virtual void resize_data(std::size_t new_size) override;
 	protected:
 		Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;

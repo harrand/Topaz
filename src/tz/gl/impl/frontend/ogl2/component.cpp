@@ -28,11 +28,9 @@ namespace tz::gl
 
 	void BufferComponentOGL::resize(std::size_t sz)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize a BufferComponentOGL, but the underlying resource was not ResourceAccess::DynamicVariable. Please submit a bug report.");
 		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
 		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
-		// Just set the new buffer range, clone resized already sorts out the data for us.
-		this->resource->set_mapped_data(new_buffer.map_as<std::byte>());
+		this->resource->resize_data(sz);
 		std::swap(old_buffer, new_buffer);
 	}
 
@@ -111,7 +109,7 @@ namespace tz::gl
 
 	void ImageComponentOGL::resize(tz::Vec2ui dims)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested resize of ImageComponentOGL, but the underlying resource did not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable || this->resource->get_access() == ResourceAccess::DynamicFixed, "Requested resize of ImageComponentOGL, but the underlying resource did not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 		ogl2::Image& old_image = this->ogl_get_image();
 		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
 
