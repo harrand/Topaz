@@ -4,6 +4,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/buffer.hpp"
+#include "tz/gl/impl/backend/ogl2/draw.hpp"
 #include "tz/gl/impl/frontend/ogl2/renderer.hpp"
 #include "tz/gl/impl/frontend/ogl2/component.hpp"
 #include "tz/gl/output.hpp"
@@ -598,9 +599,7 @@ namespace tz::gl
 				if(this->resources.try_get_drawindirect_buffer() != nullptr)
 				{
 					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(this->resources.try_get_drawindirect_buffer())->ogl_get_buffer();
-					// TODO: my god dont do this
-					constexpr unsigned int draw_count = 1;
-					this->vao.draw_indexed_indirect(draw_count, ibuf, dbuf, this->shader.has_tessellation());
+					this->vao.draw_indexed_indirect(dbuf.size() / sizeof(ogl2::DrawIndexedIndirectCommand), ibuf, dbuf, this->shader.has_tessellation());
 				}
 				else
 				{
@@ -612,9 +611,7 @@ namespace tz::gl
 				if(this->resources.try_get_drawindirect_buffer() != nullptr)
 				{
 					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(this->resources.try_get_drawindirect_buffer())->ogl_get_buffer();
-					// TODO: my god dont do this
-					constexpr unsigned int draw_count = 1;
-					this->vao.draw_indirect(draw_count, dbuf, this->shader.has_tessellation());
+					this->vao.draw_indirect(dbuf.size() / sizeof(ogl2::DrawIndirectCommand), dbuf, this->shader.has_tessellation());
 				}
 				else
 				{
