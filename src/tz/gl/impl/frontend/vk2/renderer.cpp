@@ -14,6 +14,7 @@
 #include "tz/gl/impl/frontend/vk2/component.hpp"
 #include "tz/gl/impl/frontend/vk2/convert.hpp"
 #include "tz/gl/output.hpp"
+#include "tz/gl/resource.hpp"
 
 namespace tz::gl
 {
@@ -1491,31 +1492,82 @@ namespace tz::gl
 				{
 					auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
 					tz_assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
-					if(bufcomp->size() != arg.size)
+					vk2::Buffer& buf = bufcomp->vk_get_buffer();
+					if(buf.size() == arg.size)
 					{
-						bufcomp->resize(arg.size);
-						if(bufcomp == this->resources.try_get_index_buffer() || bufcomp == this->resources.try_get_draw_indirect_buffer())
-						{
-							// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
-							work_commands_need_recording = true;
-						}
-						// Now update all descriptors.
-						this->resources.sync_descriptors(false);
+						tz_warning_report("Detected RendererEdit::BufferResize, but the new size is the same as the current size. Skipping...");
+						return;
 					}
+					vk2::Buffer new_buf
+					{{
+						.device = &buf.get_device(),
+						.size_bytes = arg.size,
+						.usage = buf.get_usage(),
+						.residency = buf.get_residency()
+					}};
+					std::swap(buf, new_buf);
+					this->edit
+					(
+						RendererEditBuilder{}
+						.write
+						({
+							.resource = arg.buffer_handle,
+							.data = std::as_bytes(bufcomp->get_resource()->data())
+						})
+						.build()
+					);
+
+					auto res = bufcomp->get_resource();
+					if(res->get_access() == ResourceAccess::Static)
+					{
+						res->resize_data(arg.size);
+					}
+					else
+					{
+						res->set_mapped_data(buf.map_as<std::byte>());
+					}
+					if(bufcomp == this->resources.try_get_index_buffer() || bufcomp == this->resources.try_get_draw_indirect_buffer())
+					{
+						work_commands_need_recording = true;
+					}
+					this->resources.sync_descriptors(false);
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
 
 					auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
 					tz_assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
-					if(imgcomp->get_dimensions() != arg.dimensions)
+					vk2::Image& image = imgcomp->vk_get_image();
+					if(image.get_dimensions() == arg.dimensions)
 					{
-						imgcomp->resize(arg.dimensions);
-						// An imageview was looking at the old image, let's update that.
-						this->resources.notify_image_recreated(arg.image_handle);
-						// New image so descriptor array needs to be re-written to.
-						this->resources.sync_descriptors(true);
+						tz_warning_report("Detected RendererEdit::ImageResize, but the new dimensions are the same as the current dimensions. Skipping...");
+						return;
 					}
+					// Create resized image. Don't worry about the data for now.
+					static_cast<tz::gl::ImageResource*>(imgcomp->get_resource())->set_dimensions(arg.dimensions);
+					vk2::Image new_image = imgcomp->make_image(image.get_device());
+
+					// If the size goes down, then some data is lost.
+					// If the size goes *up* however, we fill that new space with zeros.
+					std::vector<std::byte> new_data;
+					new_data.resize(arg.dimensions[0] * arg.dimensions[1] * tz::gl::pixel_size_bytes(tz::gl::from_vk2(image.get_format())), std::byte{0});
+					auto resource_data = imgcomp->get_resource()->data();
+					std::size_t copy_size = std::min(resource_data.size_bytes(), new_data.size());
+					std::copy(resource_data.begin(), resource_data.begin() + copy_size, new_data.begin());
+					this->edit
+					(
+						tz::gl::RendererEditBuilder{}
+						.write
+						({
+							.resource = arg.image_handle,
+							.data = resource_data
+						})
+						.build()
+					);
+					std::swap(image, new_image);
+					this->resources.notify_image_recreated(arg.image_handle);
+					// New image so descriptor array needs to be re-written to.
+					this->resources.sync_descriptors(true);
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
@@ -1555,6 +1607,7 @@ namespace tz::gl
 										.dst_offset = arg.offset
 									});
 								});
+								res->rewrite_data(arg.data);
 
 							}
 							break;
@@ -1605,8 +1658,6 @@ namespace tz::gl
 					}
 					else
 					{
-
-						tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
 						std::span<std::byte> data = res->data_as<std::byte>();
 						std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 					}

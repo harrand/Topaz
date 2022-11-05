@@ -43,8 +43,8 @@ namespace tz::gl
 
 		const vk2::Image& vk_get_image() const;
 		vk2::Image& vk_get_image();
-	private:
 		vk2::Image make_image(const vk2::LogicalDevice& ldev) const;
+	private:
 
 		IResource* resource;
 		vk2::Image image;

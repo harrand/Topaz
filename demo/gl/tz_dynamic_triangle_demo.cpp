@@ -187,7 +187,6 @@ int main()
 				tz::Vec2ui img_dims = img_comp->get_dimensions();
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
 				std::random_shuffle(img_data.begin(), img_data.end());
-				// But set the first pixel (bottom left) to always be white.
 				std::fill(img_data.begin(), img_data.begin() + 4, std::byte{255});
 			}
 		}

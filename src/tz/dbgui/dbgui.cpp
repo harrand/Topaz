@@ -389,7 +389,7 @@ namespace tz::dbgui
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
 		tz::gl::RendererEditBuilder edit;
-		if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() <= req_idx_size)
+		if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() < req_idx_size)
 		{
 			edit.buffer_resize
 			({
@@ -397,7 +397,7 @@ namespace tz::dbgui
 				.size = req_idx_size
 			});
 		}
-		if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() <= req_vtx_size)
+		if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() < req_vtx_size)
 		{
 			edit.buffer_resize
 			({

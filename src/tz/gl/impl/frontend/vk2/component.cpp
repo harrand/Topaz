@@ -31,33 +31,8 @@ namespace tz::gl
 
 	void BufferComponentVulkan::resize(std::size_t sz)
 	{
-		// Let's create a new buffer of the correct size.
-		vk2::Buffer& old_buf = this->vk_get_buffer();
-		vk2::Buffer new_buf
-		{{
-			.device = &old_buf.get_device(),
-			.size_bytes = sz,
-			.usage = old_buf.get_usage(),
-			.residency = old_buf.get_residency()
-		}};
-		// Copy the data over.
-		//{
-		//	auto old_data = old_buf.map_as<const std::byte>();
-		//	auto new_data = new_buf.map_as<std::byte>();
-		//	std::size_t copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
-		//	std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
-		//	this->resource->set_mapped_data(new_data);
-		//}
-		if(this->resource->get_access() == ResourceAccess::Static)
-		{
-			this->resource->resize_data(sz);
-		}
-		else
-		{
-			this->resource->set_mapped_data(new_buf.map_as<std::byte>());
-		}
-		new_buf.debug_set_name(old_buf.debug_get_name());
-		std::swap(old_buf, new_buf);
+		(void)sz;
+		tz_error("BufferComponent::resize is deprecated. Use a renderer edit instead. If a renderer edit is using this function, it needs to do the resize itself.");
 	}
 
 	const vk2::Buffer& BufferComponentVulkan::vk_get_buffer() const
@@ -139,6 +114,8 @@ namespace tz::gl
 
 	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
 	{
+		(void)new_dimensions;
+		tz_error("ImageComponent::resize is deprecated. Use a renderer edit instead. If a renderer edit is using this function, it needs to do the resize itself.");
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
 		{

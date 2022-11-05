@@ -123,6 +123,7 @@ namespace tz::gl
 
 		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
 		virtual void resize_data(std::size_t sz) = 0;
+		virtual void rewrite_data(std::span<const std::byte> new_data) = 0;
 
 		/**
 		 * Retrieve a field containing all flags applied to this resource. If you didn't specify any flags for this resource, it will be empty.

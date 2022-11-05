@@ -95,6 +95,11 @@ namespace tz::gl
 		this->resource_data.resize(new_size);
 	}
 
+	void Resource::rewrite_data(std::span<const std::byte> new_data)
+	{
+		std::copy(new_data.begin(), new_data.end(), this->resource_data.begin());
+	}
+
 	Resource::Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags):
 	access(access),
 	resource_data(resource_data),
