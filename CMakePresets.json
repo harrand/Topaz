@@ -1,0 +1,48 @@
+{
+	"version": 4,
+	"cmakeMinimumRequired":
+	{
+		"major": 3,
+		"minor": 23,
+		"patch": 0
+	},
+	"configurePresets":
+	[
+	{
+		"name": "vulkan",
+		"cacheVariables":
+		{
+			"TOPAZ_RENDER_API":
+			{
+				"type": "string",
+				"value": "Vulkan"
+			}
+		},
+		"hidden": true
+	},
+	{
+		"name": "vulkan_debug",
+		"binaryDir": "${sourceDir}/build/vulkan_debug",
+		"displayName": "Vulkan Debug",
+		"description": "A vulkan debug build.",
+		"inherits": [ "vulkan", "debug" ]
+	},
+	{
+		"name": "vulkan_release",
+		"binaryDir": "${sourceDir}/build/vulkan_release",
+		"displayName": "Vulkan Release",
+		"description": "A vulkan release build.",
+		"inherits": [ "vulkan", "release" ]
+	},
+	{
+		"name": "vulkan_profile",
+		"binaryDir": "${sourceDir}/build/vulkan_profile",
+		"displayName": "Vulkan Profile",
+		"description": "A vulkan profile build.",
+		"inherits": [ "vulkan", "profile" ]
+	}
+	],
+	"include": [
+		"vendor/HDK/CMakePresets.json"
+	]
+}
