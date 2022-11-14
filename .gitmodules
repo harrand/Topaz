@@ -1,0 +1,4 @@
+[submodule "vendor/HDK"]
+	path = vendor/HDK
+	url = https://github.com/Harrand/HDK
+	branch = HDK1.0
