@@ -9,6 +9,12 @@ hdk_add_library(TARGET topaz
 )
 
 target_compile_options(topaz PUBLIC "-DTOPAZ_RENDER_API=${TOPAZ_RENDER_API}")
-target_link_libraries(topaz PRIVATE volk)
+message(STATUS "Topaz - Render API: \"${TOPAZ_RENDER_API}\"")
+if(${TOPAZ_RENDER_API} STREQUAL "Vulkan")
+	target_link_libraries(topaz PRIVATE volk)
+else()
+	message(FATAL_ERROR "Unknown RenderAPI \"${TOPAZ_RENDER_API}\"")
+endif()
+
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
