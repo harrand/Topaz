@@ -1,9 +1,0 @@
-shader(type = vertex);
-
-output(id = 0) uint number;
-
-void main()
-{
-	number = 5;
-	out::position = vec4(vec2(in::vertex_id), 0.0, 1.0);
-}
