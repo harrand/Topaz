@@ -2,3 +2,6 @@
 	path = vendor/HDK
 	url = https://github.com/Harrand/HDK
 	branch = HDK1.0
+[submodule "vendor/volk"]
+	path = vendor/volk
+	url = https://github.com/zeux/volk
