@@ -1,5 +1,7 @@
 #include "tz/tz.hpp"
 #include "hdk/hdk.hpp"
+#include "hdk/data/version.hpp"
+#include "hdk/debug.hpp"
 
 #include "impl/vulkan/tzvk.hpp"
 
@@ -15,11 +17,19 @@ namespace tz
 	{
 		hdk::initialise();
 		impl::initialise();
+
+		hdk::report("Topaz %s - Initialised", get_version().to_string().c_str());
 	}
 
 	void terminate()
 	{
 		hdk::terminate();
 		impl::terminate();
+		hdk::report("Topaz - Terminated");
+	}
+
+	hdk::version get_version()
+	{
+		return hdk::version::from_binary_string(TZ_VER);
 	}
 }

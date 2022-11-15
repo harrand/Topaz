@@ -9,13 +9,13 @@ namespace tz::impl_vk
 {
 	struct system_t
 	{
-		bool initialised = false;
+		bool initialise_attempted = false;
 		VkInstance instance = VK_NULL_HANDLE;
 	} system;
-	
+
 	void initialise()
 	{
-		hdk::assert(!system.initialised, "Vulkan backend already initialised!");
+		hdk::assert(!system.initialise_attempted, "Vulkan backend already initialise_attempted!");
 
 		VkResult res = volkInitialize();
 		hdk::assert(res == VK_SUCCESS, "`volkInitialize` failed. This means the vulkan loader is not installed on your system.");
@@ -70,17 +70,17 @@ namespace tz::impl_vk
 			hdk::report("Vulkan Initialised");
 		}
 
-		system.initialised = true;
+		system.initialise_attempted = true;
 	}
 
 	void terminate()
 	{
-		hdk::assert(system.initialised, "Vulkan backend was never initialised!");
+		hdk::assert(system.initialise_attempted, "Vulkan backend was never initialise_attempted!");
 	
 		vkDestroyInstance(system.instance, nullptr);
 		system.instance = VK_NULL_HANDLE;
 
-		system.initialised = false;
+		system.initialise_attempted = false;
 		hdk::report("Vulkan Terminated");
 	}
 }
