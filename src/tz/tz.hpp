@@ -3,7 +3,8 @@
 
 namespace tz
 {
-
+	void initialise();
+	void terminate();
 }
 
 #endif // TZ_HPP
