@@ -13,7 +13,7 @@ namespace tz::impl_vk
 		VkInstance instance = VK_NULL_HANDLE;
 	} system;
 
-	void initialise()
+	void initialise(initialise_info_t info)
 	{
 		hdk::assert(!system.initialise_attempted, "Vulkan backend already initialise_attempted!");
 
@@ -37,8 +37,8 @@ namespace tz::impl_vk
 			{
 				.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
 				.pNext = nullptr,
-				.pApplicationName = "Topaz 4.0 Untitled Application",
-				.applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+				.pApplicationName = info.app_name,
+				.applicationVersion = VK_MAKE_VERSION(info.app_version.major, info.app_version.minor, info.app_version.patch),
 				.pEngineName = "Topaz 4.0",
 				.apiVersion = req_vk_version
 			};
@@ -71,6 +71,15 @@ namespace tz::impl_vk
 		}
 
 		system.initialise_attempted = true;
+	}
+
+	void initialise()
+	{
+		initialise
+		({
+			.app_version = hdk::version{1, 0, 0},
+			.app_name = "Untitled Topaz Application"
+		});
 	}
 
 	void terminate()
