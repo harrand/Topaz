@@ -20,6 +20,7 @@ function(add_tz_test)
 endfunction()
 
 hdk_base_add_test_harness(BASE_NAME tz)
+add_dependencies(tztest_build hdktest_build)
 
 add_subdirectory(core)
 add_subdirectory(gl)
