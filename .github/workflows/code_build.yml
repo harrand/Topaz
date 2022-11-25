@@ -8,6 +8,10 @@ jobs:
     strategy:
       matrix:
         render_api: [vulkan, opengl]
+    uses: Harrand/HDK/.github/workflows/hdk.yml@master
+      with:
+        target: topaz
+        preset_prefix: ${{matrix.render_api}}_
     steps:
       - name: 'Linux Dependencies'
         run: |
@@ -18,7 +22,3 @@ jobs:
         uses: humbletim/install-vulkan-sdk@v1.1.1
         if: ${{matrix.render_api == 'vulkan'}}
 
-      - uses: Harrand/HDK/.github/workflows/hdk.yml@master
-        with:
-          target: topaz
-          preset_prefix: ${{matrix.render_api}}_
