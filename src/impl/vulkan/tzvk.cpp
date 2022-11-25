@@ -159,9 +159,37 @@ namespace tz::impl_vk
 
 //------------------------------------------------------------------------------------------------
 
+bool supports_bindless(VkPhysicalDevice dev)
+{
+	VkPhysicalDeviceProperties2 props2{};
+	props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+	VkPhysicalDeviceDescriptorIndexingProperties descriptor_indexing_props{};
+	descriptor_indexing_props.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
+	props2.pNext = &descriptor_indexing_props;
+	vkGetPhysicalDeviceProperties2(dev, &props2);
+	// TODO: Use accurate values.
+	return descriptor_indexing_props.maxUpdateAfterBindDescriptorsInAllPools > 0
+		&& descriptor_indexing_props.maxPerStageUpdateAfterBindResources > 0
+
+		&& descriptor_indexing_props.maxPerStageDescriptorUpdateAfterBindSamplers > 0
+		&& descriptor_indexing_props.maxPerStageDescriptorUpdateAfterBindUniformBuffers > 0
+		&& descriptor_indexing_props.maxPerStageDescriptorUpdateAfterBindStorageBuffers > 0
+		&& descriptor_indexing_props.maxPerStageDescriptorUpdateAfterBindSampledImages > 0
+		&& descriptor_indexing_props.maxPerStageDescriptorUpdateAfterBindStorageImages > 0
+
+		&& descriptor_indexing_props.maxDescriptorSetUpdateAfterBindUniformBuffers > 0
+		&& descriptor_indexing_props.maxDescriptorSetUpdateAfterBindStorageBuffers > 0
+		&& descriptor_indexing_props.maxDescriptorSetUpdateAfterBindSampledImages > 0
+		&& descriptor_indexing_props.maxDescriptorSetUpdateAfterBindStorageImages > 0;
+}
+
+
+//------------------------------------------------------------------------------------------------
+
 		bool is_physical_device_appropriate(VkPhysicalDevice dev)
 		{
-			return get_render_queue_family_index(dev).has_value();
+			return get_render_queue_family_index(dev).has_value()
+				&& supports_bindless(dev);
 		}
 
 //------------------------------------------------------------------------------------------------
@@ -258,6 +286,7 @@ namespace tz::impl_vk
 		detail::system_enum_devices();
 		system.selected_device = detail::select_physical_device(system.installed_devices);
 		system.render_device = detail::system_make_render_device();
+		volkLoadDevice(system.render_device);
 
 		#if HDK_DEBUG
 		{
