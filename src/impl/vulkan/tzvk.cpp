@@ -26,6 +26,8 @@ namespace tz::impl_vk
 
 	namespace detail
 	{
+
+//------------------------------------------------------------------------------------------------
 		void system_init_instance(const initialise_info_t& info)
 		{
 			std::uint32_t inst_vk_version = volkGetInstanceVersion();
@@ -78,6 +80,8 @@ namespace tz::impl_vk
 			}
 		}
 
+//------------------------------------------------------------------------------------------------
+
 		void system_enum_devices()
 		{
 			system.debug_check();
@@ -113,6 +117,8 @@ namespace tz::impl_vk
 			res = vkEnumeratePhysicalDevices(system.instance, &count, system.installed_devices.data());
 			enum_dbgchk(res);
 		}
+
+//------------------------------------------------------------------------------------------------
 	
 		unsigned int rate_physical_device(VkPhysicalDevice dev)
 		{
@@ -130,6 +136,8 @@ namespace tz::impl_vk
 			}
 			return score;
 		}
+
+//------------------------------------------------------------------------------------------------
 
 		std::optional<std::uint32_t> get_render_queue_family_index(VkPhysicalDevice device)
 		{
@@ -149,10 +157,14 @@ namespace tz::impl_vk
 			return std::nullopt;
 		}
 
+//------------------------------------------------------------------------------------------------
+
 		bool is_physical_device_appropriate(VkPhysicalDevice dev)
 		{
 			return get_render_queue_family_index(dev).has_value();
 		}
+
+//------------------------------------------------------------------------------------------------
 
 		VkPhysicalDevice select_physical_device(std::span<VkPhysicalDevice> devices)
 		{
@@ -165,6 +177,8 @@ namespace tz::impl_vk
 			// simply retrieve highest rated device.
 			return *std::max_element(devices.begin(), valid_end, [](VkPhysicalDevice a, VkPhysicalDevice b){return rate_physical_device(a) < rate_physical_device(b);});
 		}
+
+//------------------------------------------------------------------------------------------------
 	
 		VkDevice system_make_render_device()
 		{
@@ -232,6 +246,8 @@ namespace tz::impl_vk
 		}
 	}
 
+//------------------------------------------------------------------------------------------------
+
 	void initialise(initialise_info_t info)
 	{
 		hdk::assert(!system.initialise_attempted, "Vulkan backend already initialise_attempted!");
@@ -254,6 +270,8 @@ namespace tz::impl_vk
 		system.initialise_attempted = true;
 	}
 
+//------------------------------------------------------------------------------------------------
+
 	void initialise()
 	{
 		initialise
@@ -262,6 +280,8 @@ namespace tz::impl_vk
 			.app_name = "Untitled Topaz Application"
 		});
 	}
+
+//------------------------------------------------------------------------------------------------
 
 	void terminate()
 	{

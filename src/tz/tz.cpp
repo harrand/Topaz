@@ -13,6 +13,8 @@ namespace tz
 		static_assert(false, "Internal: Unrecognised Graphics API");
 	#endif
 
+//------------------------------------------------------------------------------------------------
+
 	void initialise()
 	{
 		hdk::initialise();
@@ -21,12 +23,16 @@ namespace tz
 		hdk::report("Topaz %s - Initialised", get_version().to_string().c_str());
 	}
 
+//------------------------------------------------------------------------------------------------
+
 	void terminate()
 	{
 		hdk::terminate();
 		impl::terminate();
 		hdk::report("Topaz - Terminated");
 	}
+
+//------------------------------------------------------------------------------------------------
 
 	hdk::version get_version()
 	{
