@@ -104,7 +104,7 @@ namespace tz::gl
 		std::size_t encountered_reference_count = 0;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
-			IResource* res = this->get(static_cast<tz::HandleValue>(i));
+			IResource* res = this->get(static_cast<hdk::hanval>(i));
 			IComponent* comp = nullptr;
 			if(res == nullptr)
 			{
@@ -112,7 +112,7 @@ namespace tz::gl
 				this->components.push_back(comp);
 				encountered_reference_count++;
 				res = comp->get_resource();
-				this->set(static_cast<tz::HandleValue>(i), res);
+				this->set(static_cast<hdk::hanval>(i), res);
 			}
 			else
 			{
@@ -137,12 +137,12 @@ namespace tz::gl
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
-		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
+		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	IComponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
-		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
+		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	unsigned int ResourceStorage::resource_count_of(ResourceType type) const
@@ -255,7 +255,7 @@ namespace tz::gl
 
 	void ResourceStorage::set_image_handle(tz::gl::ResourceHandle h, ogl2::Image::BindlessTextureHandle bindless_handle)
 	{
-		this->image_handles[static_cast<std::size_t>(static_cast<tz::HandleValue>(h))] = bindless_handle;
+		this->image_handles[static_cast<std::size_t>(static_cast<hdk::hanval>(h))] = bindless_handle;
 	}
 
 	IComponent* ResourceStorage::try_get_index_buffer() const
@@ -479,7 +479,7 @@ namespace tz::gl
 		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
-				IComponent* comp = this->resources.get_component(static_cast<tz::HandleValue>(i));
+				IComponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
 				if(comp->get_resource()->get_type() == ResourceType::Buffer)
 				{
 					ogl2::Buffer& buf = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
@@ -718,7 +718,7 @@ namespace tz::gl
 							}
 						break;
 						default:
-							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<hdk::hanval>(arg.resource)));
 							std::span<std::byte> data = res->data_as<std::byte>();
 							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 						break;

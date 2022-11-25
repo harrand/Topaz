@@ -1,13 +1,5 @@
-add_tz_test(NAME tz_allocator_test
-	SOURCE_FILES allocator_test.cpp
-	)
-
 add_tz_test(NAME tz_callback_test
 	SOURCE_FILES callback_test.cpp
-	)
-
-add_tz_test(NAME tz_handle_test
-	SOURCE_FILES handle_test.cpp
 	)
 
 add_tz_test(NAME tz_initialise_test
@@ -28,8 +20,4 @@ add_tz_test(NAME tz_types_test
 
 add_tz_test(NAME tz_types_test2
 	SOURCE_FILES types_test2.cpp
-	)
-
-add_tz_test(NAME tz_vector_test
-	SOURCE_FILES vector_test.cpp
 	)

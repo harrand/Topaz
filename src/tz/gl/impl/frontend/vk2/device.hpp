@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #if TZ_VULKAN
+#include "hdk/data/handle.hpp"
 #include "tz/core/callback.hpp"
-#include "tz/core/handle.hpp"
 #include "tz/gl/api/device.hpp"
 #include "tz/gl/impl/frontend/common/device.hpp"
 #include "tz/gl/impl/frontend/vk2/renderer.hpp"
@@ -48,7 +48,7 @@ namespace tz::gl
 		vk2::Swapchain window_buf = vk2::Swapchain::null();
 		vk2::Image old_depth_image = vk2::Image::null();
 		vk2::Image depth_image = vk2::Image::null();
-		tz::CallbackHandle on_resize_handle = tz::nullhand;
+		tz::CallbackHandle on_resize_handle = hdk::nullhand;
 		RendererResizeCallbackType renderer_resize_callbacks = {};
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
 	};

@@ -159,7 +159,7 @@ namespace tz::gl
 	class AssetStorageCommon
 	{
 	public:
-		using AssetHandle = tz::Handle<Asset>;
+		using AssetHandle = hdk::handle<Asset>;
 		AssetStorageCommon(std::span<const Asset* const> assets):
 		asset_storage()
 		{
@@ -183,19 +183,19 @@ namespace tz::gl
 		
 		const Asset* get(AssetHandle handle) const
 		{
-			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			return this->asset_storage[handle_val].get();
 		}
 
 		Asset* get(AssetHandle handle)
 		{
-			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			return this->asset_storage[handle_val].get();
 		}
 
 		void set(AssetHandle handle, Asset* value)
 		{
-			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			hdk::assert(!this->asset_storage[handle_val].owning(), "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
 			this->asset_storage[handle_val] = value;
 		}
@@ -230,7 +230,7 @@ namespace tz::gl
 
 				// Display information about current resource.
 				ImGui::Indent();
-				renderer.get_resource(static_cast<tz::HandleValue>(res_id))->dbgui();
+				renderer.get_resource(static_cast<hdk::hanval>(res_id))->dbgui();
 				ImGui::Unindent();
 			}
 		}

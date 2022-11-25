@@ -256,13 +256,13 @@ namespace tz::gl
 		if(this->is_resize_registered())
 		{
 			tz::window().on_resize().remove_callback(this->on_resize_handle);
-			this->on_resize_handle = tz::nullhand;
+			this->on_resize_handle = hdk::nullhand;
 		}
 	}
 
 	bool DeviceWindowVulkan::is_resize_registered() const
 	{
-		return this->on_resize_handle != tz::nullhand;
+		return this->on_resize_handle != hdk::nullhand;
 	}
 	
 	void DeviceWindowVulkan::reregister_resize()

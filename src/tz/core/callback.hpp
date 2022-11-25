@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_CALLBACK_HPP
 #define TOPAZ_CORE_CALLBACK_HPP
-#include "tz/core/handle.hpp"
+#include "hdk/data/handle.hpp"
 #include "tz/core/types.hpp"
 #include <vector>
 #include <functional>
@@ -15,7 +15,7 @@ namespace tz
 	 * @ingroup tz_core_utility
 	 * Opaque handle representing a reference to an existing @ref tz::Callback function.
 	 */
-	using CallbackHandle = tz::Handle<detail::CallbackType>;
+	using CallbackHandle = hdk::handle<detail::CallbackType>;
 
 	/**
 	 * @ingroup tz_core_utility
@@ -42,7 +42,7 @@ namespace tz
 		CallbackHandle add_callback(tz::Action<Args...> auto&& callback_function)
 		{
 			this->callback_storage.push_back(callback_function);
-			return static_cast<tz::HandleValue>(this->callback_storage.size() - 1);
+			return static_cast<hdk::hanval>(this->callback_storage.size() - 1);
 		}
 		/**
 		 * Deregister a callable that was registered by this callback object at some point in the past. The corresponding callable will no longer be invoked when the callback object is invoked.
@@ -51,7 +51,7 @@ namespace tz
 		 */
 		void remove_callback(CallbackHandle handle)
 		{
-			std::size_t handle_value = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+			std::size_t handle_value = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			this->callback_storage[handle_value] = nullptr;
 		}
 		/**

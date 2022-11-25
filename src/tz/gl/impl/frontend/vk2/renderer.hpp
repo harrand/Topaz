@@ -484,7 +484,7 @@ namespace tz::gl
 		/// Callback object which we attach to listen for when the device has been informed that the window is resized.
 		RendererResizeCallbackType* device_resize_callback = nullptr;
 		/// Handle representing the registration of our callback function from `device_resize_callback`.
-		tz::CallbackHandle window_resize_callback = tz::nullhand;
+		tz::CallbackHandle window_resize_callback = hdk::nullhand;
 		tz::gl::ScissorRegion scissor_cache = tz::gl::ScissorRegion::null();
 	};
 

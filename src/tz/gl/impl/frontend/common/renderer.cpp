@@ -56,7 +56,7 @@ namespace tz::gl
 
 	const IResource* RendererInfoCommon::get_resource(ResourceHandle handle)
 	{
-		return this->resources[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
+		return this->resources[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	std::vector<const IResource*> RendererInfoCommon::get_resources() const
@@ -84,14 +84,14 @@ namespace tz::gl
 			}
 		#endif
 		this->resources.push_back(resource.unique_clone());
-		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
+		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
 	}
 
 	ResourceHandle RendererInfoCommon::ref_resource(IComponent* component)
 	{
 		this->resources.push_back(nullptr);
 		this->components.push_back(component);
-		return static_cast<tz::HandleValue>(this->real_resource_count() - 1);
+		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
 	}
 
 	ResourceHandle RendererInfoCommon::ref_resource(RendererHandle ren, ResourceHandle res)

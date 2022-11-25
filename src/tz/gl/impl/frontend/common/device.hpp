@@ -19,17 +19,17 @@ namespace tz::gl
 		DeviceCommon() = default;
 		const R& get_renderer(tz::gl::RendererHandle handle) const
 		{
-			return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+			return this->renderers[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))];
 		}
 
 		R& get_renderer(tz::gl::RendererHandle handle)
 		{
-			return this->renderers[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))];
+			return this->renderers[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))];
 		}
 
 		void destroy_renderer(tz::gl::RendererHandle handle)
 		{
-			std::size_t h = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
+			std::size_t h = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 #if HDK_DEBUG
 			bool free_list_contains = std::find(this->free_list.begin(), this->free_list.end(), h) != this->free_list.end();
 			hdk::assert(!free_list_contains, "Detected double-destroy of renderer of handle value %zu", h);
@@ -54,13 +54,13 @@ namespace tz::gl
 			if(this->free_list.empty())
 			{
 				this->renderers.emplace_back(std::forward<Args>(args)...);
-				return static_cast<tz::HandleValue>(this->renderers.size() - 1);
+				return static_cast<hdk::hanval>(this->renderers.size() - 1);
 			}
 			else
 			{
 				// We destroyed a renderer in the past and now the free list contains a reference to the null renderer at its place. We can re-use this position.
 				// If we destroyed a renderer in the past, let's re-use its handle. The renderer at the position will be a null renderer.
-				tz::gl::RendererHandle h = static_cast<tz::HandleValue>(this->free_list.back());
+				tz::gl::RendererHandle h = static_cast<hdk::hanval>(this->free_list.back());
 				this->free_list.pop_back();
 				this->get_renderer(h) = R{std::forward<Args>(args)...};
 				return h;
@@ -98,14 +98,14 @@ namespace tz::gl
 		}
 		ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
 		ImGui::Indent();
-		const auto& renderer = device.get_renderer(static_cast<tz::HandleValue>(id));
+		const auto& renderer = device.get_renderer(static_cast<hdk::hanval>(id));
 		if(renderer.get_options().contains(tz::gl::RendererOption::Internal) && !display_internal_renderers)
 		{
 			ImGui::Text("Internal Renderer");
 			ImGui::Spacing();
 			if(id > 0)
 			{
-				if(ImGui::Button("<<")){while(device.get_renderer(static_cast<tz::HandleValue>(id)).get_options().contains(tz::gl::RendererOption::Internal) && id > 0){id--;}}
+				if(ImGui::Button("<<")){while(device.get_renderer(static_cast<hdk::hanval>(id)).get_options().contains(tz::gl::RendererOption::Internal) && id > 0){id--;}}
 				ImGui::SameLine();
 				if(ImGui::Button("Prev")){id--;}
 			}
@@ -114,12 +114,12 @@ namespace tz::gl
 				ImGui::SameLine();
 				if(ImGui::Button("Next")){id++;}
 				ImGui::SameLine();
-				if(ImGui::Button(">>")){while(device.get_renderer(static_cast<tz::HandleValue>(id)).get_options().contains(tz::gl::RendererOption::Internal) && std::cmp_less(id, (renderer_count - 1))){id++;}}
+				if(ImGui::Button(">>")){while(device.get_renderer(static_cast<hdk::hanval>(id)).get_options().contains(tz::gl::RendererOption::Internal) && std::cmp_less(id, (renderer_count - 1))){id++;}}
 			}
 		}
 		else
 		{
-			device.get_renderer(static_cast<tz::HandleValue>(id)).dbgui();
+			device.get_renderer(static_cast<hdk::hanval>(id)).dbgui();
 		}
 		ImGui::Unindent();
 		ImGui::Separator();

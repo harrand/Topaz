@@ -47,7 +47,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/engine_info.hpp
 	src/tz/core/engine_info.inl
 	src/tz/core/game_info.hpp
-	src/tz/core/handle.hpp
 	src/tz/core/imported_text.hpp
 	src/tz/core/matrix_transform.cpp
 	src/tz/core/matrix_transform.hpp

@@ -139,7 +139,7 @@ namespace tz::gl
 
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
-			IResource* res = this->get(static_cast<tz::HandleValue>(i));
+			IResource* res = this->get(static_cast<hdk::hanval>(i));
 			IComponent* comp = nullptr;
 			if(res == nullptr)
 			{
@@ -150,7 +150,7 @@ namespace tz::gl
 
 				res = comp->get_resource();
 				// Also we'll write into the asset storage so it doesn't still think the resource is null.
-				this->set(static_cast<tz::HandleValue>(i), res);
+				this->set(static_cast<hdk::hanval>(i), res);
 			}
 			else
 			{
@@ -311,12 +311,12 @@ namespace tz::gl
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
-		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
+		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	IComponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
-		return this->components[static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))].get();
+		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	const vk2::DescriptorLayout& ResourceStorage::get_descriptor_layout() const
@@ -372,10 +372,10 @@ namespace tz::gl
 	{
 		// ImageComponent's underlying vk2::Image was recently replaced with another. This means this->image_component_views[id corresponding to handle] is wrong and needs to be remade.
 		std::size_t img_view_idx = 0;
-		auto handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(image_resource_handle));
+		auto handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(image_resource_handle));
 		for(std::size_t i = 0; i < handle_val; i++)
 		{
-			if(this->get(static_cast<tz::HandleValue>(i))->get_type() == ResourceType::Image)
+			if(this->get(static_cast<hdk::hanval>(i))->get_type() == ResourceType::Image)
 			{
 				img_view_idx++;
 			}
@@ -1297,7 +1297,7 @@ namespace tz::gl
 		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
-				IComponent* comp = this->resources.get_component(static_cast<tz::HandleValue>(i));
+				IComponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
 				if(comp->get_resource()->get_type() == ResourceType::Buffer)
 				{
 					vk2::Buffer& buf = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
@@ -1346,7 +1346,7 @@ namespace tz::gl
 		if(this->device_resize_callback != nullptr)
 		{
 			this->device_resize_callback->remove_callback(this->window_resize_callback);
-			this->window_resize_callback = tz::nullhand;
+			this->window_resize_callback = hdk::nullhand;
 		}
 		this->ldev->wait_until_idle();
 	}
@@ -1616,7 +1616,7 @@ namespace tz::gl
 						break;
 						default:
 						{
-							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<hdk::hanval>(arg.resource)));
 							std::span<std::byte> data = res->data_as<std::byte>();
 							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 						}
@@ -1704,7 +1704,7 @@ namespace tz::gl
 		std::vector<ImageComponentVulkan*> image_components;
 		for(std::size_t i = 0; i < this->resource_count(); i++)
 		{
-			IComponent* icomp = this->get_component(static_cast<tz::HandleValue>(i));
+			IComponent* icomp = this->get_component(static_cast<hdk::hanval>(i));
 			switch(icomp->get_resource()->get_type())
 			{
 				case ResourceType::Buffer:

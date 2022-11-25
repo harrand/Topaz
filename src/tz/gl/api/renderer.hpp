@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL2_API_RENDERER_HPP
 #define TOPAZ_GL2_API_RENDERER_HPP
 
+#include "hdk/data/handle.hpp"
 #include "tz/gl/api/output.hpp"
 #include "tz/gl/api/resource.hpp"
 #include "tz/gl/api/component.hpp"
@@ -23,7 +24,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Represents a handle for a renderer owned by an existing device.
 	 */
-	using RendererHandle = tz::Handle<detail::RendererTag>;
+	using RendererHandle = hdk::handle<detail::RendererTag>;
 
 	/**
 	 * @ingroup tz_gl2_renderer

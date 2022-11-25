@@ -35,11 +35,11 @@ namespace tz::dbgui
 
 	struct TopazRenderData
 	{
-		tz::gl::RendererHandle renderer = tz::nullhand;
-		tz::gl::RendererHandle final_renderer = tz::nullhand;
-		tz::gl::ResourceHandle vertex_buffer = tz::nullhand;
-		tz::gl::ResourceHandle index_buffer = tz::nullhand;
-		tz::gl::ResourceHandle shader_data_buffer = tz::nullhand;
+		tz::gl::RendererHandle renderer = hdk::nullhand;
+		tz::gl::RendererHandle final_renderer = hdk::nullhand;
+		tz::gl::ResourceHandle vertex_buffer = hdk::nullhand;
+		tz::gl::ResourceHandle index_buffer = hdk::nullhand;
+		tz::gl::ResourceHandle shader_data_buffer = hdk::nullhand;
 	};
 
 	TopazPlatformData* global_platform_data = nullptr;
@@ -60,7 +60,7 @@ namespace tz::dbgui
 
 	ImTextureID handle_to_texid(tz::gl::ResourceHandle handle)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::HandleValue>(handle))));
+		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<hdk::hanval>(handle))));
 	}
 
 	void initialise([[maybe_unused]] InitInfo info)
@@ -382,7 +382,7 @@ namespace tz::dbgui
 		hdk::assert(draw != nullptr, "Null imgui draw data!");
 		hdk::assert(draw->Valid, "Invalid draw data!");
 
-		hdk::assert(global_render_data->renderer != tz::nullhand, "Null imgui renderer when trying to render!");
+		hdk::assert(global_render_data->renderer != hdk::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.

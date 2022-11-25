@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL2_API_RESOURCE_HPP
 #define TOPAZ_GL2_API_RESOURCE_HPP
-#include "tz/core/handle.hpp"
+#include "hdk/data/handle.hpp"
 #include "tz/core/containers/enum_field.hpp"
 #include <span>
 #include <memory>
@@ -137,7 +137,7 @@ namespace tz::gl
 	};
 
 	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
-	using ResourceHandle = tz::Handle<IResource>;
+	using ResourceHandle = hdk::handle<IResource>;
 }
 
 #endif // TOPAZ_GL2_API_RESOURCE_HPP
