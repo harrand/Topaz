@@ -28,7 +28,7 @@ jobs:
 
       - name: 'Check OpenGL Support'
         run:  |
-          cd ${{ github.workspace }}/build/debug
+          cd ${{ github.workspace }}/build/opengl_debug
           echo Retrieving OpenGL supported version...
           xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
@@ -61,30 +61,25 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: 'Build Unit Tests (ogl_clang_debug)'
-        uses: lukka/run-cmake@v3
-        with:
-          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-          cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--target tztest_build --parallel 4"
-          buildDirectory: "${{ github.workspace }}/build/debug"
+      - name: 'Configure Topaz Tests (ogl_clang_debug)'
+        run: cmake --preset opengl_debug -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12
+      - name: "Build Unit Tests (ogl_clang_debug)"
+        run: cmake --build ./build/opengl_debug --target tztest_build
       - name: 'Check OpenGL Support'
         run:  |
-          cd ${{ github.workspace }}/build/debug
+          cd ${{ github.workspace }}/build/opengl_debug
           echo Retrieving OpenGL supported version...
           xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
-          cd ${{ github.workspace }}/build/debug
+          cd ${{ github.workspace }}/build/opengl_debug
           ctest -V | grep "Test command" | sed 's/[0-9]\+: Test command: \/home\/runner//' > unit_test_executables.txt
           echo Unit Test Executables:
           cat unit_test_executables.txt
       - name: 'Run Unit Tests via xvfb'
         run:  |
-          cd ${{ github.workspace }}/build/debug
+          cd ${{ github.workspace }}/build/opengl_debug
           echo Running all unit tests
           for i in $(cat unit_test_executables.txt)
           do
@@ -114,21 +109,21 @@ jobs:
           #        with:
           #          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           #          cmakeGenerator: UnixMakefiles
-          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl"
+          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/opengl_debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl"
           #          buildWithCMake: true
           #          buildWithCMakeArgs: "--target tztest_build --parallel 4"
-          #          buildDirectory: "${{ github.workspace }}/build/debug"
+          #          buildDirectory: "${{ github.workspace }}/build/opengl_debug"
           #      - name: 'Copy mesa opengl dll to output directories'
           #        run:  |
           #          cd ${{ github.workspace }}/mesa/mesa_download
-          #          copy opengl32.dll ${{ github.workspace }}/build/debug/test/gl
-          #          copy opengl32.dll ${{ github.workspace }}/build/debug/test/gl/ogl2
+          #          copy opengl32.dll ${{ github.workspace }}/build/opengl_debug/test/gl
+          #          copy opengl32.dll ${{ github.workspace }}/build/opengl_debug/test/gl/ogl2
           #      - name: 'Run Unit Tests (ogl_msvc_debug)'
           #        uses: lukka/run-cmake@v3
           #        with:
           #          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           #          cmakeGenerator: UnixMakefiles
-          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl"
+          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/opengl_debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl"
           #          buildWithCMake: true
           #          buildWithCMakeArgs: "--target tztest --parallel 4"
-          #          buildDirectory: "${{ github.workspace }}/build/debug"
+          #          buildDirectory: "${{ github.workspace }}/build/opengl_debug"
