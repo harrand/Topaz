@@ -9,9 +9,9 @@ jobs:
       matrix:
         render_api: [vulkan, opengl]
     uses: Harrand/HDK/.github/workflows/hdk.yml@master
-      with:
-        target: topaz
-        preset_prefix: ${{matrix.render_api}}_
+    with:
+      target: topaz
+      preset_prefix: ${{matrix.render_api}}_
     steps:
       - name: 'Linux Dependencies'
         run: |
