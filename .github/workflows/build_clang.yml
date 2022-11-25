@@ -24,12 +24,9 @@ jobs:
         uses: humbletim/install-vulkan-sdk@v1.1.1
         if: ${{inputs.render_api == 'vulkan'}}
 
+      - name: 'Configure Topaz ${{inputs.render_api}}_clang_${{inputs.build_config}}'
+        run: cmake --preset ${{inputs.render_api}}_${{inputs.build_config}} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12
+
       - name: 'Build Topaz ${{inputs.render_api}}_clang_${{inputs.build_config}}'
-        uses: lukka/run-cmake@v3
-        with:
-          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-          cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}\" -DTOPAZ_BUILDCONFIG=${{inputs.build_config}} -DTOPAZ_RENDERAPI=${{inputs.render_api}} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12"
-          buildWithCmake: true
-          buildWithCMakeArgs: "--target topaz --parallel 4"
-          buildDirectory: "${{github.workspace}}/build/${{inputs.render_api}}_${{inputs.build_config}}"
+        run: cmake --build ./build/${{inputs.render_api}}_${{inputs.build_config}} --target topaz
+
