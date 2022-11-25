@@ -25,15 +25,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/containers/polymorphic_list.hpp
 	src/tz/core/containers/polymorphic_list.inl
 	src/tz/core/algorithms/static.hpp
-	src/tz/core/allocators/adapter.hpp
-	src/tz/core/allocators/fallback.hpp
-	src/tz/core/allocators/linear.hpp
-	src/tz/core/allocators/linear.cpp
-	src/tz/core/allocators/malloc.cpp
-	src/tz/core/allocators/malloc.hpp
-	src/tz/core/allocators/null.hpp
-	src/tz/core/allocators/stack.hpp
-	src/tz/core/allocators/stack.inl
 	src/tz/core/interfaces/cloneable.hpp
 	src/tz/core/peripherals/keyboard.cpp
 	src/tz/core/peripherals/keyboard.hpp
