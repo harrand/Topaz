@@ -1,0 +1,14 @@
+name: "Topaz Code Build"
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+jobs:
+  code_build:
+    strategy:
+      matrix:
+        render_api: [vulkan, opengl]
+    uses: Harrand/HDK/.github/workflows/hdk.yml@master
+    with:
+      target: topaz
+      preset_prefix: ${{matrix.render_api}}_
