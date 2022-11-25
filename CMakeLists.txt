@@ -12,6 +12,7 @@ project(topaz VERSION ${TZ_VERSION}
 	DESCRIPTION "C++20 Graphics Engine")
 
 add_subdirectory(lib/HDK)
+include(cmake/project.cmake)
 
 hdk_add_library(TARGET topaz
 	SOURCES
