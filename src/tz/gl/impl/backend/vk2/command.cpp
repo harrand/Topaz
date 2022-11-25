@@ -77,13 +77,13 @@ namespace tz::gl::vk2
 				this->command_buffer->set_recording(true);
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create CommandBufferRecording because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create CommandBufferRecording because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create CommandBufferRecording because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create CommandBufferRecording because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create CommandBufferRecording but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create CommandBufferRecording but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -111,7 +111,7 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::bind_pipeline(VulkanCommand::BindPipeline command)
 	{
-		tz_assert(command.pipeline != nullptr, "BindPipeline Command contained nullptr GraphicsPipeline");
+		hdk::assert(command.pipeline != nullptr, "BindPipeline Command contained nullptr GraphicsPipeline");
 		this->register_command(command);
 
 		vkCmdBindPipeline(this->get_command_buffer().native(), static_cast<VkPipelineBindPoint>(command.pipeline->get_context()), command.pipeline->native());
@@ -164,10 +164,10 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::buffer_copy_buffer(VulkanCommand::BufferCopyBuffer command)
 	{
-		tz_assert(command.src != nullptr, "BufferCopyBuffer: Source buffer was nullptr");
-		tz_assert(command.dst != nullptr, "BufferCopyBuffer: Destination buffer was nullptr");
-		tz_assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyBuffer: Source buffer did not contain BufferUsage::TransferSource");
-		tz_assert(command.dst->get_usage().contains(BufferUsage::TransferDestination), "BufferCopyBuffer: Destination buffer did not contain BufferUsage::TransferDestination");
+		hdk::assert(command.src != nullptr, "BufferCopyBuffer: Source buffer was nullptr");
+		hdk::assert(command.dst != nullptr, "BufferCopyBuffer: Destination buffer was nullptr");
+		hdk::assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyBuffer: Source buffer did not contain BufferUsage::TransferSource");
+		hdk::assert(command.dst->get_usage().contains(BufferUsage::TransferDestination), "BufferCopyBuffer: Destination buffer did not contain BufferUsage::TransferDestination");
 
 		this->register_command(command);
 		VkBufferCopy cpy
@@ -181,13 +181,13 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::buffer_copy_image(VulkanCommand::BufferCopyImage command)
 	{
-		tz_assert(command.src != nullptr, "BufferCopyImage: Source buffer was nullptr");
-		tz_assert(command.dst != nullptr, "BufferCopyImage: Destination image was nullptr");
-		tz_assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyImage: Source buffer did not contain BufferUsage::TransferSource");
+		hdk::assert(command.src != nullptr, "BufferCopyImage: Source buffer was nullptr");
+		hdk::assert(command.dst != nullptr, "BufferCopyImage: Destination image was nullptr");
+		hdk::assert(command.src->get_usage().contains(BufferUsage::TransferSource), "BufferCopyImage: Source buffer did not contain BufferUsage::TransferSource");
 
 		// So ideally we could just use command.dst->get_layout(). However, it's very possible this recording contains a previous command which will have changed that layout. We will check to make sure. If so, we use the updated layout (even though it hasn't happened yet), otherwise we just use the images current layout.
 		ImageLayout img_layout = this->get_layout_so_far(*command.dst);
-		tz_assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");
+		hdk::assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");
 
 		tz::Vec2ui img_dims = command.dst->get_dimensions();
 		VkBufferImageCopy cpy
@@ -211,8 +211,8 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::image_copy_image(VulkanCommand::ImageCopyImage command)
 	{
-		tz_assert(command.src != nullptr, "ImageCopyImage contained nullptr for its source image. Please submit a bug report.");
-		tz_assert(command.dst != nullptr, "ImageCopyImage contained nullptr for its destination image. Please submit a bug report.");
+		hdk::assert(command.src != nullptr, "ImageCopyImage contained nullptr for its source image. Please submit a bug report.");
+		hdk::assert(command.dst != nullptr, "ImageCopyImage contained nullptr for its destination image. Please submit a bug report.");
 
 		tz::Vec2ui min_dims;
 		min_dims[0] = std::min(command.src->get_dimensions()[0], command.dst->get_dimensions()[0]);
@@ -239,15 +239,15 @@ namespace tz::gl::vk2
 		};
 		ImageLayout src_layout = this->get_layout_so_far(*command.src);
 		ImageLayout dst_layout = this->get_layout_so_far(*command.dst);
-		tz_assert(src_layout == ImageLayout::General || src_layout == ImageLayout::TransferSource, "ImageCopyImage source image was not in expected layout. It should either be TransferSource or General.");
-		tz_assert(dst_layout == ImageLayout::General || src_layout == ImageLayout::TransferDestination, "ImageCopyImage destination image was not in expected layout. It should either be TransferDestination or General.");
+		hdk::assert(src_layout == ImageLayout::General || src_layout == ImageLayout::TransferSource, "ImageCopyImage source image was not in expected layout. It should either be TransferSource or General.");
+		hdk::assert(dst_layout == ImageLayout::General || src_layout == ImageLayout::TransferDestination, "ImageCopyImage destination image was not in expected layout. It should either be TransferDestination or General.");
 		vkCmdCopyImage(this->get_command_buffer().native(), command.src->native(), static_cast<VkImageLayout>(src_layout), command.dst->native(), static_cast<VkImageLayout>(dst_layout), 1, &copy_region);
 		this->register_command(command);
 	}
 
 	void CommandBufferRecording::bind_buffer(VulkanCommand::BindBuffer command)
 	{
-		tz_assert(command.buffer != nullptr, "BindBuffer contained nullptr Buffer. Please submit a bug report.");
+		hdk::assert(command.buffer != nullptr, "BindBuffer contained nullptr Buffer. Please submit a bug report.");
 		Buffer::NativeType buf_native = command.buffer->native();
 		VkDeviceSize offsets[] = {0};
 		if(command.buffer->get_usage().contains(BufferUsage::VertexBuffer))
@@ -260,7 +260,7 @@ namespace tz::gl::vk2
 		}
 		else
 		{
-			tz_error("BindBuffer contained a Buffer that was not a VertexBuffer nor IndexBuffer. Please submit a bug report.");
+			hdk::error("BindBuffer contained a Buffer that was not a VertexBuffer nor IndexBuffer. Please submit a bug report.");
 			return;
 		}
 		this->register_command(command);
@@ -268,7 +268,7 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::transition_image_layout(VulkanCommand::TransitionImageLayout command)
 	{
-		tz_assert(command.image != nullptr, "TransitionImageLayout contained nullptr Image");
+		hdk::assert(command.image != nullptr, "TransitionImageLayout contained nullptr Image");
 		// Given a list of mip-levels/array layers X:
 		// X.begin() -> X.end() must be sequential with no gaps.
 		// i.e {-1, 0, 1, 2, 3} is fine {-1, 1, 2, 3} is not, neither is {-1, 2, 3, 0, 1}
@@ -280,8 +280,8 @@ namespace tz::gl::vk2
 			return std::equal(begin, end, iota_version.begin());
 		};
 
-		tz_assert(is_ascending_with_no_gaps_ui32(command.affected_mip_levels.begin(), command.affected_mip_levels.end()), "TransitionImageLayout contained list of affected mip levels of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_mip_levels.length());
-		tz_assert(is_ascending_with_no_gaps_ui32(command.affected_layers.begin(), command.affected_layers.end()), "TransitionImageLayout contained list of affected array layers of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_layers.length());
+		hdk::assert(is_ascending_with_no_gaps_ui32(command.affected_mip_levels.begin(), command.affected_mip_levels.end()), "TransitionImageLayout contained list of affected mip levels of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_mip_levels.length());
+		hdk::assert(is_ascending_with_no_gaps_ui32(command.affected_layers.begin(), command.affected_layers.end()), "TransitionImageLayout contained list of affected array layers of size %zu. However, the elements were not 'sequential without gaps'.", command.affected_layers.length());
 
 		VkImageSubresourceRange img_subres_range
 		{
@@ -294,7 +294,7 @@ namespace tz::gl::vk2
 
 		ImageLayout cur_layout = this->get_layout_so_far(*command.image);
 		this->register_command(command);
-		tz_assert(command.target_layout != cur_layout, "Transitioning image layout, but it is apparantly already in this layout.");
+		hdk::assert(command.target_layout != cur_layout, "Transitioning image layout, but it is apparantly already in this layout.");
 		VkImageMemoryBarrier barrier
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -323,7 +323,7 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::debug_begin_label([[maybe_unused]] VulkanCommand::DebugBeginLabel command)
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			this->register_command(command);
 
 			const VulkanInstance& inst = this->get_command_buffer().get_device().get_hardware().get_instance();
@@ -344,7 +344,7 @@ namespace tz::gl::vk2
 
 	void CommandBufferRecording::debug_end_label([[maybe_unused]] VulkanCommand::DebugEndLabel command)
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			this->register_command(command);
 
 			const VulkanInstance& inst = this->get_command_buffer().get_device().get_hardware().get_instance();
@@ -354,20 +354,20 @@ namespace tz::gl::vk2
 
 	const CommandBuffer& CommandBufferRecording::get_command_buffer() const
 	{
-		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
+		hdk::assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
 		return *this->command_buffer;
 	}
 
 	CommandBuffer& CommandBufferRecording::get_command_buffer()
 	{
-		tz_assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
+		hdk::assert(this->command_buffer != nullptr, "CommandBufferRecording had nullptr CommandBuffer. Please submit a bug report");
 		return *this->command_buffer;
 	}
 
 	void CommandBufferRecording::register_command(VulkanCommand::Variant command)
 	{
 		CommandBuffer& buf = this->get_command_buffer();
-		tz_assert(buf.is_recording(), "CommandBufferRecording tried to register a command, but the CommandBuffer isn't actually recording. Please submit a bug report.");
+		hdk::assert(buf.is_recording(), "CommandBufferRecording tried to register a command, but the CommandBuffer isn't actually recording. Please submit a bug report.");
 		buf.add_command(command);
 	}
 
@@ -421,7 +421,7 @@ namespace tz::gl::vk2
 
 	CommandBufferRecording CommandBuffer::record()
 	{
-		tz_assert(!this->recording, "CommandBuffer already being recorded");
+		hdk::assert(!this->recording, "CommandBuffer already being recorded");
 		this->recorded_commands.clear();
 		return {*this};
 	}
@@ -493,13 +493,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create CommandPool because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create CommandPool because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create CommandPool because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create CommandPool because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create CommandPool but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create CommandPool but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}

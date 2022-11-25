@@ -1,7 +1,7 @@
 #ifndef TOPAZ_CORE_ALLOCATORS_ADAPTER_HPP
 #define TOPAZ_CORE_ALLOCATORS_ADAPTER_HPP
 #include "tz/core/types.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 
 namespace tz
 {
@@ -31,7 +31,7 @@ namespace tz
 		T* allocate(std::size_t n)
 		{
 			tz::Blk blk = A::allocate(n * sizeof(T));
-			tz_assert(blk != nullblk, "AllocatorAdapter -- The underlying topaz allocator returned a null-block. Memory allocation failed. The standard library allocator is going to crash.");
+			hdk::assert(blk != nullblk, "AllocatorAdapter -- The underlying topaz allocator returned a null-block. Memory allocation failed. The standard library allocator is going to crash.");
 			return reinterpret_cast<T*>(blk.ptr);
 		}
 

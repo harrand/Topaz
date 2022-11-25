@@ -1,7 +1,7 @@
 #ifndef TOPAZ_CORE_TIME_HPP
 #define TOPAZ_CORE_TIME_HPP
 #include "tz/core/types.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <compare>
 #include <type_traits>
 
@@ -99,7 +99,7 @@ namespace tz
 		{
 			if(!std::is_constant_evaluated())
 			{
-				tz_assert(this->duration_nanos >= rhs.duration_nanos, "Cannot subtract a larger duration from a smaller duration, because durations cannot be negative. Please submit a bug report.");
+				hdk::assert(this->duration_nanos >= rhs.duration_nanos, "Cannot subtract a larger duration from a smaller duration, because durations cannot be negative. Please submit a bug report.");
 			}
 			this->duration_nanos -= rhs.duration_nanos;
 			return *this;

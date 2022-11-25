@@ -1,6 +1,6 @@
 #include "tz/dbgui/dbgui.hpp"
-#include "tz/core/assert.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
+#include "hdk/debug.hpp"
 #include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "tz/core/profiling/zone.hpp"
@@ -66,25 +66,25 @@ namespace tz::dbgui
 	void initialise([[maybe_unused]] InitInfo info)
 	{
 		TZ_PROFZONE("tz::dbgui::initialise", TZ_PROFCOL_PURPLE);
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			global_info = info.game_info;
 			bool ret = imgui_impl_tz_init();
-			tz_assert(ret, "Failed to initialise tz imgui backend.");
-		#endif // TZ_DEBUG
+			hdk::assert(ret, "Failed to initialise tz imgui backend.");
+		#endif // HDK_DEBUG
 	}
 
 	void terminate()
 	{
 		TZ_PROFZONE("tz::dbgui::terminate", TZ_PROFCOL_PURPLE);
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			imgui_impl_tz_term();
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 	}
 
 	void begin_frame()
 	{
 		TZ_PROFZONE("tz::dbgui::begin_frame", TZ_PROFCOL_PURPLE);
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2
 			{
@@ -93,20 +93,20 @@ namespace tz::dbgui
 			};
 			ImGui::NewFrame();
 			imgui_impl_begin_commands();
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 	}
 
 	void end_frame()
 	{
 		TZ_PROFZONE("tz::dbgui::end_frame", TZ_PROFCOL_PURPLE);
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			ImGui::EndFrame();
 			ImGui::Render();
 			imgui_impl_render();
 
 			imgui_impl_handle_inputs();
 
-		#endif //TZ_DEBUG
+		#endif //HDK_DEBUG
 	}
 
 	GameMenuCallbackType& game_menu()
@@ -116,7 +116,7 @@ namespace tz::dbgui
 
 	bool claims_keyboard()
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			return ImGui::GetIO().WantCaptureKeyboard;
 		#endif
 		return false;
@@ -124,7 +124,7 @@ namespace tz::dbgui
 
 	bool claims_mouse()
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			return ImGui::GetIO().WantCaptureMouse;
 		#endif
 		return false;
@@ -158,7 +158,7 @@ namespace tz::dbgui
 
 	InputDelta imgui_impl_get_input_delta()
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			// Get keyboard pressed/released deltas.
 			std::span<const tz::KeyPressInfo> before_span = global_platform_data->kb_state.get_pressed_keys();
 			std::span<const tz::KeyPressInfo> after_span = tz::window().get_keyboard_state().get_pressed_keys();
@@ -231,13 +231,13 @@ namespace tz::dbgui
 				.mouse_position_changed  = mouse_moved,
 				.mouse_wheel_dir = mdir
 			};
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 		return {};
 	}
 
 	void imgui_impl_handle_inputs()
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
 			InputDelta delta = imgui_impl_get_input_delta();
 			// Pass to imgui.
@@ -287,7 +287,7 @@ namespace tz::dbgui
 					io.AddMouseWheelEvent(0.0f, -1.0f);
 				}
 			}
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 	}
 
 	bool imgui_impl_tz_init()
@@ -297,7 +297,7 @@ namespace tz::dbgui
 		global_render_data = new TopazRenderData;
 
 		ImGuiIO& io = ImGui::GetIO();
-		tz_assert(io.BackendPlatformUserData == NULL, "Already initialised imgui backend!");
+		hdk::assert(io.BackendPlatformUserData == NULL, "Already initialised imgui backend!");
 		io.BackendPlatformName = "Topaz";
 		io.BackendPlatformUserData = global_platform_data;
 		io.BackendRendererName = "tz::gl";
@@ -379,10 +379,10 @@ namespace tz::dbgui
 		TZ_PROFZONE("Dbgui Render", TZ_PROFCOL_PURPLE);
 
 		ImDrawData* draw = ImGui::GetDrawData();
-		tz_assert(draw != nullptr, "Null imgui draw data!");
-		tz_assert(draw->Valid, "Invalid draw data!");
+		hdk::assert(draw != nullptr, "Null imgui draw data!");
+		hdk::assert(draw->Valid, "Invalid draw data!");
 
-		tz_assert(global_render_data->renderer != tz::nullhand, "Null imgui renderer when trying to render!");
+		hdk::assert(global_render_data->renderer != tz::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
@@ -443,7 +443,7 @@ namespace tz::dbgui
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
 
 				tz::gl::IOutput* output = renderer.get_output();
-				tz_assert(output != nullptr, "");
+				hdk::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
 				output->scissor.offset = static_cast<tz::Vec2ui>(tz::Vec2{min.x, min.y} - tz::Vec2{draw->DisplayPos.x, draw->DisplayPos.y});
@@ -504,9 +504,9 @@ namespace tz::dbgui
 
 			ImGui::Text("Build Config:");
 			ImGui::SameLine();
-			#if TZ_DEBUG
+			#if HDK_DEBUG
 				ImGui::Text("Debug");
-			#elif TZ_PROFILE
+			#elif HDK_PROFILE
 				ImGui::Text("Profile");
 			#else
 				ImGui::Text("Release");
@@ -665,7 +665,7 @@ namespace tz::dbgui
 				ImGui::MenuItem("Device", nullptr, &tab_tz.show_device_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
-					tz_error("Manual debug breakpoint occurred.");
+					hdk::error("Manual debug breakpoint occurred.");
 				}
 				ImGui::EndMenu();
 			}

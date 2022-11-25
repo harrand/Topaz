@@ -1,4 +1,4 @@
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 
 namespace tz
 {
@@ -9,7 +9,7 @@ namespace tz
 	{
 		if(this->data.size_bytes() < (this->dimensions[0] * this->dimensions[1] * sizeof(T) * N))
 		{
-			tz_warning_report("GridView passed a span of unexpected size. View is %ux%u where each element is %zu bytes, for a expected buffer size of %zu, but buffer provided has %zu bytes.", this->dimensions[0], this->dimensions[1], sizeof(T) * N, (this->dimensions[0] * this->dimensions[1] * sizeof(T) * N), this->data.size_bytes());
+			hdk::report("GridView passed a span of unexpected size. View is %ux%u where each element is %zu bytes, for a expected buffer size of %zu, but buffer provided has %zu bytes.", this->dimensions[0], this->dimensions[1], sizeof(T) * N, (this->dimensions[0] * this->dimensions[1] * sizeof(T) * N), this->data.size_bytes());
 		}
 	}
 
@@ -39,8 +39,8 @@ namespace tz
 	std::conditional_t<N == 1, T&, std::span<T>> GridView<T, N>::operator()(unsigned int x, unsigned int y)
 	{
 		std::size_t idx = ((y * this->dimensions[0]) + x) * N;
-		tz_assert(x < this->dimensions[0] && y < this->dimensions[1], "GridView access out of bounds. Dimensions = {%u, %u} must be > {%u, %u} which was requested", this->dimensions[0], this->dimensions[1], x, y);
-		tz_assert(idx < this->data.size(), "GridView access out of bounds. About to invoke UB.");
+		hdk::assert(x < this->dimensions[0] && y < this->dimensions[1], "GridView access out of bounds. Dimensions = {%u, %u} must be > {%u, %u} which was requested", this->dimensions[0], this->dimensions[1], x, y);
+		hdk::assert(idx < this->data.size(), "GridView access out of bounds. About to invoke UB.");
 		if constexpr(N == 1)
 		{
 			return this->data[idx];

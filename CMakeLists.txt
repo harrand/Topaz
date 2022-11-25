@@ -11,7 +11,10 @@ set(TZ_CXX_STANDARD 20)
 project(topaz VERSION ${TZ_VERSION}
 	DESCRIPTION "C++20 Graphics Engine")
 
-add_library(topaz
+add_subdirectory(lib/HDK)
+
+hdk_add_library(TARGET topaz
+	SOURCES
 	# tz::core
 	src/tz/core/containers/basic_list.hpp
 	src/tz/core/containers/enum_field.hpp
@@ -38,10 +41,7 @@ add_library(topaz
 	src/tz/core/peripherals/mouse.cpp
 	src/tz/core/peripherals/mouse.hpp
 	src/tz/core/profiling/zone.hpp
-	src/tz/core/assert.hpp
 	src/tz/core/callback.hpp
-	src/tz/core/debugger.cpp
-	src/tz/core/debugger.hpp
 	src/tz/core/engine_info.cpp
 	src/tz/core/engine_info.hpp
 	src/tz/core/engine_info.inl
@@ -54,7 +54,6 @@ add_library(topaz
 	src/tz/core/matrix.inl
 	src/tz/core/memory.hpp
 	src/tz/core/memory.inl
-	src/tz/core/report.hpp
 	src/tz/core/time.cpp
 	src/tz/core/time.hpp
 	src/tz/core/tz.cpp
@@ -186,6 +185,12 @@ set_target_properties(topaz PROPERTIES
 	CXX_STANDARD ${TZ_CXX_STANDARD}
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF)
+# New Cmake presets code:
+if(${TOPAZ_RENDER_API} MATCHES "Vulkan")
+	set(TOPAZ_RENDERAPI "vulkan")
+elseif(${TOPAZ_RENDER_API} MATCHES "OpenGL")
+	set(TOPAZ_RENDERAPI "opengl")
+endif()
 
 if(${TOPAZ_RENDERAPI} MATCHES "vulkan")
 	configure_vulkan(topaz)
@@ -200,29 +205,13 @@ else()
 	message(FATAL_ERROR "Invalid render API. Values can be \"vulkan\" or \"opengl\"")
 endif()
 
-if(${TOPAZ_BUILDCONFIG} MATCHES "debug")
-	configure_debug(topaz)
-elseif(${TOPAZ_BUILDCONFIG} MATCHES "release")
-	configure_release(topaz)
-elseif(${TOPAZ_BUILDCONFIG} MATCHES "profile")
-	configure_profile(topaz)
-else()
-	if(${TOPAZ_BUILDCONFIG})
-		message(SEND_ERROR "Build config \"${TOPAZ_BUILDCONFIG}\" not recognised.")
-	else()
-		message(SEND_ERROR "Build config not specified.")
-	endif()
-	message(FATAL_ERROR "Invalid build config. Values can be \"debug\", \"release\" or \"profile\"")
-endif()
 configure_common(topaz)
 
 message(STATUS "Render API: ${TOPAZ_RENDERAPI}")
-message(STATUS "Build Config: ${TOPAZ_BUILDCONFIG}")
 
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PRIVATE debugbreak)
 target_link_libraries(topaz PUBLIC glfw imgui)
 
 add_subdirectory(tools)

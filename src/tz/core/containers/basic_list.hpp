@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP
 #define TOPAZ_GL_VK_COMMON_BASIC_LIST_HPP
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <initializer_list>
 #include <vector>
 #include <algorithm>
@@ -210,7 +210,7 @@ namespace tz
 		 */
 		const T& operator[](std::size_t index) const
 		{
-			tz_assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
+			hdk::assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
 			return this->elements[index];
 		}
 
@@ -222,7 +222,7 @@ namespace tz
 		 */
 		T& operator[](std::size_t index)
 		{
-			tz_assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
+			hdk::assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
 			return this->elements[index];
 		}
 

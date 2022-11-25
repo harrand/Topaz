@@ -73,8 +73,8 @@ namespace tz::gl::ogl2
 	void Image::make_bindless()
 	{
 		TZ_PROFZONE("OpenGL Backend - Image Make Bindless", TZ_PROFCOL_RED);
-		tz_assert(supports_bindless_textures(), "Attempted to make an image bindless, but the bindless textures extension (\"GL_ARB_bindless_texture\") is not available on this machine. Your hardware/drivers do not support this specific OGL backend.");
-		tz_assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
+		hdk::assert(supports_bindless_textures(), "Attempted to make an image bindless, but the bindless textures extension (\"GL_ARB_bindless_texture\") is not available on this machine. Your hardware/drivers do not support this specific OGL backend.");
+		hdk::assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
 		this->maybe_bindless_handle = glGetTextureHandleARB(this->image);
 		glMakeTextureHandleResidentARB(this->maybe_bindless_handle.value());
 	}
@@ -86,7 +86,7 @@ namespace tz::gl::ogl2
 
 	Image::BindlessTextureHandle Image::get_bindless_handle() const
 	{
-		tz_assert(this->is_bindless(), "Attempted to retrieve bindless handle for image which is not bindless.");
+		hdk::assert(this->is_bindless(), "Attempted to retrieve bindless handle for image which is not bindless.");
 		return this->maybe_bindless_handle.value();
 	}
 
@@ -103,7 +103,7 @@ namespace tz::gl::ogl2
 	void Image::debug_set_name(std::string name)
 	{
 		this->debug_name = name;
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			glObjectLabel(GL_TEXTURE, this->image, -1, this->debug_name.c_str());
 		#endif
 	}
@@ -129,7 +129,7 @@ namespace tz::gl::ogl2
 		void copy(const Image& source, Image& destination)
 		{
 			TZ_PROFZONE("OpenGL Backend - Image Copy", TZ_PROFCOL_RED);
-			tz_assert(source.get_format() == destination.get_format(), "Image Copy - Source and destination must have identical formats.");
+			hdk::assert(source.get_format() == destination.get_format(), "Image Copy - Source and destination must have identical formats.");
 			glCopyImageSubData(source.native(), GL_TEXTURE_2D, 0, 0, 0, 0, destination.native(), GL_TEXTURE_2D, 0, 0, 0, 0, source.get_dimensions()[0], source.get_dimensions()[1], 1);
 		}
 

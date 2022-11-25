@@ -1,4 +1,4 @@
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <cstdint>
 
 namespace tz
@@ -49,7 +49,7 @@ namespace tz
 		const auto begin = str.find_first_of(numbers);
 		if (begin == std::string_view::npos)
 		{
-			tz_error("tz::static_stoi(%.*s, ...): Failed to convert to a number.", str.size(), str.data());
+			hdk::error("tz::static_stoi(%.*s, ...): Failed to convert to a number.", str.size(), str.data());
 			return -1;
 		}
 			

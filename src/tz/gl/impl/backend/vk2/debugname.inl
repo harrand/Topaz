@@ -19,9 +19,9 @@ namespace tz::gl::vk2
 	template<VkObjectType T>
 	void DebugNameable<T>::debug_set_name([[maybe_unused]] std::string debug_name)
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			this->debug_name = debug_name;
-			tz_assert(this->device != nullptr, "Attempted to set debug name for a vulkan object, but the device was nullptr. Is the object a null object?");
+			hdk::assert(this->device != nullptr, "Attempted to set debug name for a vulkan object, but the device was nullptr. Is the object a null object?");
 			VkDebugUtilsObjectNameInfoEXT info
 			{
 				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
@@ -36,7 +36,7 @@ namespace tz::gl::vk2
 				case VK_SUCCESS:
 				break;
 				default:
-					tz_error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
+					hdk::error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
 				break;
 			}
 

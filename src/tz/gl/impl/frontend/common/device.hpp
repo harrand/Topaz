@@ -3,10 +3,12 @@
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/api/device.hpp"
 #include "imgui.h"
+#undef assert
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/impl/frontend/common/renderer.hpp"
 #include <vector>
 #include <string>
+
 
 namespace tz::gl
 {
@@ -28,12 +30,12 @@ namespace tz::gl
 		void destroy_renderer(tz::gl::RendererHandle handle)
 		{
 			std::size_t h = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-#if TZ_DEBUG
+#if HDK_DEBUG
 			bool free_list_contains = std::find(this->free_list.begin(), this->free_list.end(), h) != this->free_list.end();
-			tz_assert(!free_list_contains, "Detected double-destroy of renderer of handle value %zu", h);
-			tz_assert(this->renderers.size() > h, "Detected attempted destroy of renderer of invalid handle value %zu. Device renderer storage does not have the capacity for this, meaning no renderer with this handle was ever returned by this device.", h);
+			hdk::assert(!free_list_contains, "Detected double-destroy of renderer of handle value %zu", h);
+			hdk::assert(this->renderers.size() > h, "Detected attempted destroy of renderer of invalid handle value %zu. Device renderer storage does not have the capacity for this, meaning no renderer with this handle was ever returned by this device.", h);
 
-#endif // TZ_DEBUG
+#endif // HDK_DEBUG
 			this->renderers[h] = R::null();
 			this->free_list.push_back(h);
 		}

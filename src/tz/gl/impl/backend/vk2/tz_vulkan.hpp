@@ -8,9 +8,9 @@
 #include "tz/gl/impl/backend/vk2/extensions.hpp"
 #include "vk_mem_alloc.h"
 
-#if TZ_PROFILE
+#if HDK_PROFILE
 #include "TracyVulkan.hpp"
-#endif // TZ_PROFILE
+#endif // HDK_PROFILE
 
 #include <cstdint>
 #include <optional>

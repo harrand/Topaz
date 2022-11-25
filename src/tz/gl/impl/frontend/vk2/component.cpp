@@ -3,7 +3,7 @@
 #include "tz/gl/impl/frontend/vk2/component.hpp"
 #include "tz/gl/impl/frontend/vk2/convert.hpp"
 #include "tz/gl/resource.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 
 namespace tz::gl
 {
@@ -25,13 +25,13 @@ namespace tz::gl
 
 	std::size_t BufferComponentVulkan::size() const
 	{
-		tz_assert(this->resource->data().size_bytes() == this->buffer.size(), "BufferComponent Size does not match its IResource data size. Please submit a bug report.");
+		hdk::assert(this->resource->data().size_bytes() == this->buffer.size(), "BufferComponent Size does not match its IResource data size. Please submit a bug report.");
 		return this->buffer.size();
 	}
 
 	void BufferComponentVulkan::resize(std::size_t sz)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -90,7 +90,7 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				tz_error("Unrecognised ResourceAccess. Please submit a bug report.");
+				hdk::error("Unrecognised ResourceAccess. Please submit a bug report.");
 			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
 				usage_field = {vk2::BufferUsage::TransferDestination, buf_usage};
@@ -138,7 +138,7 @@ namespace tz::gl
 
 	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
 	{
-		tz_assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
@@ -178,7 +178,7 @@ namespace tz::gl
 
 	vk2::Image ImageComponentVulkan::make_image(const vk2::LogicalDevice& ldev) const
 	{
-		tz_assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
+		hdk::assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 		if(this->resource->get_flags().contains(ResourceFlag::RendererOutput))
@@ -188,7 +188,7 @@ namespace tz::gl
 			constexpr auto allowed = vk2::format_traits::get_mandatory_colour_attachment_formats();
 			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
 			{
-				tz_error("Detected ResourceFlag::RendererOutput in combination with an ImageFormat that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
+				hdk::error("Detected ResourceFlag::RendererOutput in combination with an ImageFormat that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
 			}
 		}
 		vk2::MemoryResidency residency;
@@ -196,7 +196,7 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				tz_error("Unknown ResourceAccess. Please submit a bug report.");
+				hdk::error("Unknown ResourceAccess. Please submit a bug report.");
 			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
 				residency = vk2::MemoryResidency::GPU;

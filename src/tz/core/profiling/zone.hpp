@@ -1,9 +1,9 @@
 #ifndef TOPAZ_CORE_PROFILING_ZONE_HPP
 #define TOPAZ_CORE_PROFILING_ZONE_HPP
-#if TZ_PROFILE
+#if HDK_PROFILE
 #include "Tracy.hpp"
 
-#endif // TZ_PROFILE
+#endif // HDK_PROFILE
 
 /**
  * @ingroup tz_core_profiling
@@ -61,9 +61,9 @@
  * @param colour Colour of the zone when viewed in the profiling server. See @ref TZ_PROFCOL
  * @hideinitializer
  * Specifies a profiling scope -- Instruments the current scope's timings with the integrated profiling technology.
- * @note Specifying a profiling scope has no effect if `!TZ_PROFILE`
+ * @note Specifying a profiling scope has no effect if `!HDK_PROFILE`
  */
-#if TZ_PROFILE
+#if HDK_PROFILE
 	#define CONCAT_TZPROF(a, b) CONCAT_INNER_TZPROF(a, b)
 	#define CONCAT_INNER_TZPROF(a, b) a ## b
 
@@ -83,16 +83,16 @@
  * @fn TZ_FRAME_BEGIN
  * @hideinitializer
  * Specifies the beginning of a profiling frame -- Instruments the current frame's timings with the integrated profiling technology.
- * @note Specifying a profiling frame has no effect if `!TZ_PROFILE`
+ * @note Specifying a profiling frame has no effect if `!HDK_PROFILE`
  */
 /**
  * @ingroup tz_core_profiling
  * @fn TZ_FRAME_END
  * @hideinitializer
  * Specifies the end of a profiling frame -- Instruments the current frame's timings with the integrated profiling technology.
- * @note Specifying a profiling frame has no effect if `!TZ_PROFILE`
+ * @note Specifying a profiling frame has no effect if `!HDK_PROFILE`
  */
-#if TZ_PROFILE
+#if HDK_PROFILE
 	#define TZ_FRAME_BEGIN FrameMarkStart("Frame Loop")
 	#define TZ_FRAME_END FrameMarkEnd("Frame Loop")
 #else

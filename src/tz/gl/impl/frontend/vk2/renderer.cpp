@@ -3,7 +3,7 @@
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/frontend/vk2/device.hpp"
 #include "tz/core/profiling/zone.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/impl/backend/vk2/fixed_function.hpp"
@@ -38,12 +38,12 @@ namespace tz::gl
 			vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
 			vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
 			vk2::SamplerAddressMode mode = vk2::SamplerAddressMode::ClampToEdge;
-#if TZ_DEBUG
+#if HDK_DEBUG
 			if(res.get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
 			{
-				tz_error("ImageResource contained both ResourceFlags ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
+				hdk::error("ImageResource contained both ResourceFlags ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
 			}
-#endif // TZ_DEBUG
+#endif // HDK_DEBUG
 			if(res.get_flags().contains(ResourceFlag::ImageFilterNearest))
 			{
 				filter = vk2::LookupFilter::Nearest;
@@ -55,7 +55,7 @@ namespace tz::gl
 
 			if(res.get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
 			{
-				tz_error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
+				hdk::error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
 			}
 			if(res.get_flags().contains(ResourceFlag::ImageWrapClampEdge))
 			{
@@ -132,7 +132,7 @@ namespace tz::gl
 				}
 				break;
 				default:
-					tz_error("Unrecognised ResourceType. Please submit a bug report.");
+					hdk::error("Unrecognised ResourceType. Please submit a bug report.");
 				break;
 			}
 		};
@@ -165,7 +165,7 @@ namespace tz::gl
 						this->components.push_back(tz::make_owned<ImageComponentVulkan>(*res, ldev));
 					break;
 					default:
-						tz_error("Unrecognised ResourceType. Please submit a bug report.");
+						hdk::error("Unrecognised ResourceType. Please submit a bug report.");
 					break;
 				}
 				comp = this->components.back().get();
@@ -260,7 +260,7 @@ namespace tz::gl
 				.set_layouts = std::move(alloc_layout_list)
 			});
 		};
-		tz_assert(this->descriptors.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
+		hdk::assert(this->descriptors.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
 		this->sync_descriptors(true);
 	}
 
@@ -473,7 +473,7 @@ namespace tz::gl
 					// Image row data really is tightly packed.
 					continue;
 				}
-				tz_assert(row_pitch > resource_row_pitch, "Linear CPU vk2::Image row data is negatively-padded? Assuming ImageResource data is tightly-packed, it uses %zu bytes per row, but the actual image uses %zu? It should be using more, not less!", resource_row_pitch, row_pitch);
+				hdk::assert(row_pitch > resource_row_pitch, "Linear CPU vk2::Image row data is negatively-padded? Assuming ImageResource data is tightly-packed, it uses %zu bytes per row, but the actual image uses %zu? It should be using more, not less!", resource_row_pitch, row_pitch);
 				/*
 					// Consider the image resource data for a 3x3 image, there are 2 extra padding bytes which we want to fix.
 					// The next row needs to start X padding bytes later.
@@ -609,12 +609,12 @@ namespace tz::gl
 			}
 
 			std::vector<OutputImageState> ret(this->swapchain_images.size(), out_image);
-			tz_assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
+			hdk::assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
 			return ret;
 		}
 		else
 		{
-			tz_error("Unrecognised OutputTarget. Please submit a bug report.");
+			hdk::error("Unrecognised OutputTarget. Please submit a bug report.");
 			return {};
 		}
 	}
@@ -631,7 +631,7 @@ namespace tz::gl
 
 	tz::Vec2ui OutputManager::get_output_dimensions() const
 	{
-		tz_assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
+		hdk::assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
 		return this->output_imageviews.front().colour_views.front().get_image().get_dimensions();
 	}
 
@@ -663,12 +663,12 @@ namespace tz::gl
 
 		this->populate_output_views();
 
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			for(const OutputImageViewState& out_view : this->output_imageviews)
 			{
-				tz_assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
+				hdk::assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
 			}
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 
 		this->make_render_pass();
 		this->populate_framebuffers();
@@ -716,7 +716,7 @@ namespace tz::gl
 		else
 		{
 			final_layout = vk2::ImageLayout::Undefined;
-			tz_error("Unknown RendererOutputType. Please submit a bug report.");
+			hdk::error("Unknown RendererOutputType. Please submit a bug report.");
 		}
 		
 		auto output_image_copy = this->get_output_images();
@@ -805,7 +805,7 @@ namespace tz::gl
 	graphics_pipeline(this->make_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
 	depth_testing_enabled(depth_testing_enabled)
 	{
-		tz_assert(dlayout.get_device() == render_pass.get_device(), "DescriptorLayout and RenderPass were not made by the same LogicalDevice. This is likely to cause issues, please submit a bug report.");
+		hdk::assert(dlayout.get_device() == render_pass.get_device(), "DescriptorLayout and RenderPass were not made by the same LogicalDevice. This is likely to cause issues, please submit a bug report.");
 	}
 
 	GraphicsPipelineManager::GraphicsPipelineManager():
@@ -915,8 +915,8 @@ namespace tz::gl
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
 		{
-			tz_assert(!sinfo.has_shader(ShaderStage::Vertex), "Shader has compute shader and vertex shader. These are mutually exclusive.");
-			tz_assert(!sinfo.has_shader(ShaderStage::Fragment), "Shader has compute shader and fragment shader. These are mutually exclusive.");
+			hdk::assert(!sinfo.has_shader(ShaderStage::Vertex), "Shader has compute shader and vertex shader. These are mutually exclusive.");
+			hdk::assert(!sinfo.has_shader(ShaderStage::Fragment), "Shader has compute shader and fragment shader. These are mutually exclusive.");
 			// Compute, we only care about the compute shader.
 			{
 				std::string_view compute_source = sinfo.get_shader(ShaderStage::Compute);
@@ -935,8 +935,8 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			tz_assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			tz_assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
 			{
 				std::string_view vertex_source = sinfo.get_shader(ShaderStage::Vertex);
 				vtx_src.resize(vertex_source.length());
@@ -962,7 +962,7 @@ namespace tz::gl
 			// Add optional shader stages.
 			if(sinfo.has_shader(ShaderStage::TessellationControl) || sinfo.has_shader(ShaderStage::TessellationEvaluation))
 			{
-				tz_assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+				hdk::assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
 
 				std::string_view tesscon_source = sinfo.get_shader(ShaderStage::TessellationControl);
 				tesscon_src.resize(tesscon_source.length());
@@ -1083,10 +1083,10 @@ namespace tz::gl
 	options(options),
 	device_scheduler(&device_scheduler)
 	{
-		tz_assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
-		tz_assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
-		tz_assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
-		tz_assert(this->commands.success(), "Failed to allocate from CommandPool");
+		hdk::assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
+		hdk::assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
+		hdk::assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
+		hdk::assert(this->commands.success(), "Failed to allocate from CommandPool");
 	}
 
 	CommandProcessor::CommandProcessor():
@@ -1294,7 +1294,7 @@ namespace tz::gl
 		this->setup_work_commands();
 
 		// Debug name settings.
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
 				IComponent* comp = this->resources.get_component(static_cast<tz::HandleValue>(i));
@@ -1461,7 +1461,7 @@ namespace tz::gl
 
 				break;
 				default:
-					tz_error("Presentation failed, but for unknown reason. Please submit a bug report.");
+					hdk::error("Presentation failed, but for unknown reason. Please submit a bug report.");
 				break;
 			}
 		}
@@ -1499,7 +1499,7 @@ namespace tz::gl
 				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
 				{
 					auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
-					tz_assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+					hdk::assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
@@ -1516,7 +1516,7 @@ namespace tz::gl
 				{
 
 					auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
-					tz_assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+					hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
 					if(imgcomp->get_dimensions() != arg.dimensions)
 					{
 						imgcomp->resize(arg.dimensions);
@@ -1573,7 +1573,7 @@ namespace tz::gl
 									vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
 									if(arg.offset != 0)
 									{
-										tz_warning_report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
+										hdk::report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
 									}
 									vk2::ImageLayout cur_layout = image.get_layout();
 									this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
@@ -1616,7 +1616,7 @@ namespace tz::gl
 						break;
 						default:
 						{
-							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
 							std::span<std::byte> data = res->data_as<std::byte>();
 							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 						}
@@ -1714,7 +1714,7 @@ namespace tz::gl
 					image_components.push_back(static_cast<ImageComponentVulkan*>(icomp));
 				break;
 				default:
-					tz_error("Unknown ResourceType.");
+					hdk::error("Unknown ResourceType.");
 				break;
 			}
 		}
@@ -1754,7 +1754,7 @@ namespace tz::gl
 			for(std::size_t i = 0; i < buffer_components.size(); i++)
 			{
 				IResource* res = buffer_components[i]->get_resource();
-				tz_assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
+				hdk::assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
 				if(res->get_access() != ResourceAccess::StaticFixed)
 				{
 					continue;
@@ -1777,7 +1777,7 @@ namespace tz::gl
 			for(std::size_t i = 0; i < image_components.size(); i++)
 			{
 				IResource* res = image_components[i]->get_resource();
-				tz_assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
+				hdk::assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
 				if(res->get_access() != ResourceAccess::StaticFixed)
 				{
 					continue;
@@ -1826,11 +1826,11 @@ namespace tz::gl
 	void RendererVulkan::setup_render_commands()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", TZ_PROFCOL_YELLOW);
-		tz_assert(!this->pipeline.is_compute(), "Running render command recording path, but pipeline is a compute pipeline. Logic error, please submit a bug report.");
+		hdk::assert(!this->pipeline.is_compute(), "Running render command recording path, but pipeline is a compute pipeline. Logic error, please submit a bug report.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
-			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			hdk::assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
 			recording.debug_begin_label
 			({
 				.name = this->debug_name
@@ -1932,11 +1932,11 @@ namespace tz::gl
 	void RendererVulkan::setup_compute_commands()
 	{
 		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", TZ_PROFCOL_YELLOW);
-		tz_assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
+		hdk::assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
 		{
-			tz_assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
+			hdk::assert(framebuffer_id < this->output.get_output_framebuffers().size(), "Attempted to retrieve output framebuffer at index %zu, but there are only %zu framebuffers available. Please submit a bug report.", framebuffer_id, this->output.get_output_framebuffers().size());
 			recording.debug_begin_label
 			({
 				.name = this->debug_name
@@ -1960,7 +1960,7 @@ namespace tz::gl
 				});
 			}
 
-			tz_assert(!this->resources.try_get_index_buffer(), "Compute Renderer has an index buffer applied. This doesn't make any sense. Please submit a bug report.");
+			hdk::assert(!this->resources.try_get_index_buffer(), "Compute Renderer has an index buffer applied. This doesn't make any sense. Please submit a bug report.");
 			{
 				recording.dispatch
 				({
@@ -1996,7 +1996,7 @@ namespace tz::gl
 
 	std::size_t RendererVulkan::get_frame_in_flight_count() const
 	{
-		tz_assert(this->device_window != nullptr, "DeviceWindow was nullptr. Please submit a bug report.");
+		hdk::assert(this->device_window != nullptr, "DeviceWindow was nullptr. Please submit a bug report.");
 		return this->device_window->get_output_images().size();
 	}
 }

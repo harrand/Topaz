@@ -9,7 +9,7 @@ namespace tz::gl::vk2
 	logical_device(info.logical_device)
 	{
 		TZ_PROFZONE("Vulkan Backend - PipelineLayout Create", TZ_PROFCOL_RED);
-		tz_assert(this->logical_device != nullptr && !this->logical_device->is_null(), "PipelineLayoutInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->logical_device != nullptr && !this->logical_device->is_null(), "PipelineLayoutInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
 		VkPipelineLayoutCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO; 
 		create.pNext = nullptr;
@@ -30,13 +30,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create PipelineLayout because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create PipelineLayout because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create PipelineLayout because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create PipelineLayout because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create PipelineLayout but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create PipelineLayout but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -52,7 +52,7 @@ namespace tz::gl::vk2
 	{
 		if(this->pipeline_layout != VK_NULL_HANDLE)
 		{
-			tz_assert(this->logical_device != nullptr && !this->logical_device->is_null(), "Failed to destroy PipelineLayout because LogicalDevice was nullptr or null");
+			hdk::assert(this->logical_device != nullptr && !this->logical_device->is_null(), "Failed to destroy PipelineLayout because LogicalDevice was nullptr or null");
 			vkDestroyPipelineLayout(this->logical_device->native(), this->pipeline_layout, nullptr);
 			this->pipeline_layout = VK_NULL_HANDLE;
 		}

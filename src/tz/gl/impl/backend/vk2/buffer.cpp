@@ -30,7 +30,7 @@ namespace tz::gl::vk2
 		switch(info.residency)
 		{
 			default:
-				tz_error("Unknown vk2::MemoryResidency. Please submit a bug report.");
+				hdk::error("Unknown vk2::MemoryResidency. Please submit a bug report.");
 			[[fallthrough]];
 			case MemoryResidency::GPU:
 				vma_usage = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -63,16 +63,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create Buffer because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Buffer because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create Buffer because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Buffer because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS:
-				tz_error("Failed to create Buffer because the requested address is not available. Note: This error type should never happen, please submit a bug report.");
+				hdk::error("Failed to create Buffer because the requested address is not available. Note: This error type should never happen, please submit a bug report.");
 			break;
 			default:
-				tz_error("Failed to create Buffer but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create Buffer but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_BUFFER>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->buffer));
@@ -108,7 +108,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Buffer::get_device() const
 	{
-		tz_assert(this->info.device != nullptr && !this->info.device->is_null(), "BufferInfo contained nullptr or null LogicalDevice");
+		hdk::assert(this->info.device != nullptr && !this->info.device->is_null(), "BufferInfo contained nullptr or null LogicalDevice");
 		return *this->info.device;
 	}
 

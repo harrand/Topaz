@@ -1,5 +1,5 @@
 #include "tz/core/time.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <thread>
 
 int main()

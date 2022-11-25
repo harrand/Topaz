@@ -4,6 +4,7 @@
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/impl/frontend/common/shader.hpp"
 #include "imgui.h"
+#undef assert
 
 namespace tz::gl
 {
@@ -195,7 +196,7 @@ namespace tz::gl
 		void set(AssetHandle handle, Asset* value)
 		{
 			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::HandleValue>(handle));
-			tz_assert(!this->asset_storage[handle_val].owning(), "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
+			hdk::assert(!this->asset_storage[handle_val].owning(), "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
 			this->asset_storage[handle_val] = value;
 		}
 	private:

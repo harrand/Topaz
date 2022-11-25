@@ -22,13 +22,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create Fence because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Fence because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create Fence because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Fence because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create Fence but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create Fence but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_FENCE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->fence));
@@ -60,7 +60,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Fence::get_device() const
 	{
-		tz_assert(this->info.device != nullptr && !this->info.device->is_null(), "Fence contained nullptr or null LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->info.device != nullptr && !this->info.device->is_null(), "Fence contained nullptr or null LogicalDevice. Please submit a bug report.");
 		return *this->info.device;
 	}
 

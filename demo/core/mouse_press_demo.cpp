@@ -1,6 +1,6 @@
 #include "tz/core/peripherals/mouse.hpp"
 #include "tz/core/tz.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 
 int main()
 {

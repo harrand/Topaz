@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/assert.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
+#include "hdk/debug.hpp"
 #include "tz/core/peripherals/monitor.hpp"
 #include "tz/core/profiling/zone.hpp"
 #include "tz/dbgui/dbgui.hpp"
@@ -22,16 +22,16 @@ namespace tz
 	void initialise(InitialiseInfo init)
 	{
 		TZ_PROFZONE("Topaz Initialise", TZ_PROFCOL_BLUE);
-		tz_report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
+		hdk::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
 		[[maybe_unused]] tz::GameInfo game_info{.name = init.name, .version = init.version, .engine = tz::info()};
 		// Ensure we're not already initialised before doing anything.
-		tz_assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
+		hdk::assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
 
 		// Firstly, initialise GLFW.
 		{
 			TZ_PROFZONE("GLFW Initialise", TZ_PROFCOL_BLUE);
 			[[maybe_unused]] int glfw_ret = glfwInit();
-			tz_assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
+			hdk::assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
 		}
 		// Then, initialise peripherals.
 		{
@@ -40,9 +40,9 @@ namespace tz
 		// After that, create the window.
 		{
 			std::string window_title = init.name;
-			#if TZ_DEBUG
+			#if HDK_DEBUG
 				window_title = game_info.to_string();
-			#endif // TZ_DEBUG
+			#endif // HDK_DEBUG
 
 			WindowInitArgs wargs
 			{
@@ -75,7 +75,7 @@ namespace tz
 	void terminate()
 	{
 		TZ_PROFZONE("Topaz Terminate", TZ_PROFCOL_BLUE);
-		tz_assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
+		hdk::assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
 		tz::gl::destroy_device();
 		#if TZ_VULKAN
@@ -96,7 +96,7 @@ namespace tz
 
 	Window& window()
 	{
-		tz_assert(wnd != nullptr, "tz::window(): Not initialised");
+		hdk::assert(wnd != nullptr, "tz::window(): Not initialised");
 		return *wnd;
 	}
 

@@ -1,6 +1,6 @@
 #if TZ_VULKAN
 #include "tz/core/tz.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 #include "tz/core/profiling/zone.hpp"
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/backend/vk2/extensions.hpp"
@@ -15,29 +15,29 @@ namespace tz::gl::vk2
 	void initialise(tz::GameInfo game_info)
 	{
 		TZ_PROFZONE("Vulkan Backend - Backend Initialise", TZ_PROFCOL_RED);
-		tz_assert(inst == nullptr, "Vulkan Backend already initialised");
+		hdk::assert(inst == nullptr, "Vulkan Backend already initialised");
 		inst = new VulkanInstance
 		{{
 			.game_info = game_info,
-#if TZ_DEBUG
+#if HDK_DEBUG
 			.extensions = {InstanceExtension::DebugMessenger},
 #endif
 			.window = &tz::window()
 		}};
-		tz_report("Vulkan v%u.%u Initialised", vulkan_version.major, vulkan_version.minor);
+		hdk::report("Vulkan v%u.%u Initialised", vulkan_version.major, vulkan_version.minor);
 	}
 
 	void terminate()
 	{
-		tz_assert(inst != nullptr, "Not initialised");
+		hdk::assert(inst != nullptr, "Not initialised");
 		delete inst;
 		inst = nullptr;
-		tz_report("Vulkan v%u.%u Terminated", vulkan_version.major, vulkan_version.minor);
+		hdk::report("Vulkan v%u.%u Terminated", vulkan_version.major, vulkan_version.minor);
 	}
 
 	const VulkanInstance& get()
 	{
-		tz_assert(inst != nullptr, "Not initialised");
+		hdk::assert(inst != nullptr, "Not initialised");
 		return *inst;
 	}
 
@@ -51,11 +51,11 @@ namespace tz::gl::vk2
 	{
 		if(message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
 		{
-			tz_error("[Vulkan Error Callback]: %s\n", callback_data->pMessage);
+			hdk::error("[Vulkan Error Callback]: %s\n", callback_data->pMessage);
 		}
 		else if(message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
 		{
-			tz_report("[Vulkan Warning Callback]: %s\n", callback_data->pMessage);
+			hdk::report("[Vulkan Warning Callback]: %s\n", callback_data->pMessage);
 		}
 		else
 		{
@@ -93,7 +93,7 @@ namespace tz::gl::vk2
 							shadertype = "Unknown";
 						break;
 					}
-					tz_error("%s Shader%s", shadertype, callback_message.data() + shadertype_loc + 2);
+					hdk::error("%s Shader%s", shadertype, callback_message.data() + shadertype_loc + 2);
 				}
 			}
 			else
@@ -108,7 +108,7 @@ namespace tz::gl::vk2
 						// We're printing!
 						callback_message.remove_prefix(print_pos + std::strlen(gpumsg_token));
 						callback_message.remove_suffix(callback_message.find("\""));
-						tz_report("%s", callback_message.data());
+						hdk::report("%s", callback_message.data());
 					}
 				}
 			}
@@ -142,7 +142,7 @@ namespace tz::gl::vk2
 		[[maybe_unused]] const VkAllocationCallbacks* pAllocator
 	)	
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
 			if(func != nullptr)
 			{
@@ -173,10 +173,10 @@ namespace tz::gl::vk2
 				// nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create DebugMessenger because we ran out of memory.");
+				hdk::error("Failed to create DebugMessenger because we ran out of memory.");
 			break;
 			default:
-				tz_error("Failed to create DebugMessenger, but couldn't find out how. This unrecognised error code is undocumented by the Vulkan API, so it's probably something very weird. Please submit a bug report!");
+				hdk::error("Failed to create DebugMessenger, but couldn't find out how. This unrecognised error code is undocumented by the Vulkan API, so it's probably something very weird. Please submit a bug report!");
 			break;
 		}
 	}
@@ -209,7 +209,7 @@ namespace tz::gl::vk2
 	instance(&instance),
 	window(&window)
 	{
-		tz_assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. Please submit a bug report.");
+		hdk::assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. Please submit a bug report.");
 
 		VkResult res = glfwCreateWindowSurface(this->instance->native(), this->window->get_middleware_handle(), nullptr, &this->surface);
 		switch(res)
@@ -218,16 +218,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				tz_error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
+				hdk::error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				tz_error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
+				hdk::error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
 			break;
 			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
-				tz_error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
+				hdk::error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
 			break;
 			default:
-				tz_error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
+				hdk::error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
 			break;
 		}
 	}
@@ -258,13 +258,13 @@ namespace tz::gl::vk2
 
 	const VulkanInstance& WindowSurface::get_instance() const
 	{
-		tz_assert(this->instance != nullptr, "WindowSurface had null instance");
+		hdk::assert(this->instance != nullptr, "WindowSurface had null instance");
 		return *this->instance;
 	}
 
 	const tz::Window& WindowSurface::get_window() const
 	{
-		tz_assert(this->window != nullptr && !this->window->is_null(), "WindowSurface had nullptr or null tz::Window. Please submit a bug report.");
+		hdk::assert(this->window != nullptr && !this->window->is_null(), "WindowSurface had nullptr or null tz::Window. Please submit a bug report.");
 		return *this->window;
 	}
 
@@ -294,7 +294,7 @@ namespace tz::gl::vk2
 		// Validation Layers
 		std::span<const char*> enabled_layers;
 		[[maybe_unused]] const char* layer = "VK_LAYER_KHRONOS_validation";
-		if(TZ_DEBUG && info.enable_validation_layers)
+		if(HDK_DEBUG && info.enable_validation_layers)
 		{
 			enabled_layers = {&layer, 1};
 		}
@@ -315,8 +315,8 @@ namespace tz::gl::vk2
 
 		void* inst_create_pnext = nullptr;
 		// Debug Messenger
-		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && TZ_DEBUG;
-		tz_assert(info.window != nullptr && !info.window->is_null(), "Null window provided. Please submit a bug report.");
+		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && HDK_DEBUG;
+		hdk::assert(info.window != nullptr && !info.window->is_null(), "Null window provided. Please submit a bug report.");
 		VkDebugUtilsMessengerCreateInfoEXT debug_validation_create;
 		if(create_debug_validation)
 		{
@@ -324,7 +324,7 @@ namespace tz::gl::vk2
 			inst_create_pnext = &debug_validation_create;
 		}
 
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			// If we're on debug, we need to pass VkValidationFeatures to enable debug pritnf.
 			VkValidationFeatureEnableEXT validation_features_enabled[1] = {VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT};
 			VkValidationFeaturesEXT validation_features =
@@ -357,34 +357,34 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create VulkanInstance because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create VulkanInstance because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create VulkanInstance because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create VulkanInstance because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				tz_error("Failed to create VulkanInstance due to an implementation-specific reason that has not made itself clear. Ensure that your machine supports Vulkan 1.2");
+				hdk::error("Failed to create VulkanInstance due to an implementation-specific reason that has not made itself clear. Ensure that your machine supports Vulkan 1.2");
 			break;
 			case VK_ERROR_LAYER_NOT_PRESENT:
 				if(info.enable_validation_layers)
 				{
-					tz_warning_report("Initial VulkanInstance creation failed due to layer not present (most likely Vulkan SDK is not installed or is corrupt). Retrying without validation layers...");
+					hdk::report("Initial VulkanInstance creation failed due to layer not present (most likely Vulkan SDK is not installed or is corrupt). Retrying without validation layers...");
 					info.enable_validation_layers = false;
 					*this = {info};
 				}
 				else
 				{
-					tz_error("Vulkan Instance creation failed due to layer not present, but `info.enable_validation_layers` was false. Logic error, please submit a bug report.");
+					hdk::error("Vulkan Instance creation failed due to layer not present, but `info.enable_validation_layers` was false. Logic error, please submit a bug report.");
 				}
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				tz_error("Failed to create VulkanInstance because one or more of the provided %zu extensions is not supported on this machine. Please submit a bug report.", create.enabledExtensionCount);
+				hdk::error("Failed to create VulkanInstance because one or more of the provided %zu extensions is not supported on this machine. Please submit a bug report.", create.enabledExtensionCount);
 			break;
 			case VK_ERROR_INCOMPATIBLE_DRIVER:
-				tz_error("Failed to create VulkanInstance because Vulkan %u.%u is not supported on this machine. You cannot run this build/version of Topaz on this machine unless you update your drivers such that support is achieved. Alternatively have you tried the OpenGL build?", vulkan_version.major, vulkan_version.minor);
+				hdk::error("Failed to create VulkanInstance because Vulkan %u.%u is not supported on this machine. You cannot run this build/version of Topaz on this machine unless you update your drivers such that support is achieved. Alternatively have you tried the OpenGL build?", vulkan_version.major, vulkan_version.minor);
 			break;
 			default:
-				tz_error("Failed to create VulkanInstance but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create VulkanInstance but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		if(create_debug_validation)
@@ -420,7 +420,7 @@ namespace tz::gl::vk2
 
 	const WindowSurface& VulkanInstance::get_surface() const
 	{
-		tz_assert(this->has_surface(), "VulkanInstance did not have attached surface. Please submit a bug report.");
+		hdk::assert(this->has_surface(), "VulkanInstance did not have attached surface. Please submit a bug report.");
 		return this->maybe_window_surface.value();
 	}
 
@@ -441,25 +441,25 @@ namespace tz::gl::vk2
 
 	void VulkanInstance::ext_begin_debug_utils_label(VkCommandBuffer cmdbuf_native, VkDebugUtilsLabelEXT label) const
 	{
-		tz_assert(this->ext_vkcmdbegindebugutilslabel != nullptr && TZ_DEBUG, "vkCmdBeginDebugUtilsLabelEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
+		hdk::assert(this->ext_vkcmdbegindebugutilslabel != nullptr && HDK_DEBUG, "vkCmdBeginDebugUtilsLabelEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
 		this->ext_vkcmdbegindebugutilslabel(cmdbuf_native, &label);
 	}
 
 	void VulkanInstance::ext_end_debug_utils_label(VkCommandBuffer cmdbuf_native) const
 	{
-		tz_assert(this->ext_vkcmdenddebugutilslabel != nullptr && TZ_DEBUG, "vkCmdEndDebugUtilsLabelEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
+		hdk::assert(this->ext_vkcmdenddebugutilslabel != nullptr && HDK_DEBUG, "vkCmdEndDebugUtilsLabelEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
 		this->ext_vkcmdenddebugutilslabel(cmdbuf_native);
 	}
 
 	VkResult VulkanInstance::ext_set_debug_utils_object_name(VkDevice device_native, VkDebugUtilsObjectNameInfoEXT info) const
 	{
-		tz_assert(this->ext_vksetdebugutilsobjectname != nullptr && TZ_DEBUG, "vkSetDebugUtilsObjectNameEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
+		hdk::assert(this->ext_vksetdebugutilsobjectname != nullptr && HDK_DEBUG, "vkSetDebugUtilsObjectNameEXT failed to load properly. Either you're not on a debug build or your machine does not support debug utils.");
 		return this->ext_vksetdebugutilsobjectname(device_native, &info);
 	}
 
 	void VulkanInstance::load_extension_functions()
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			this->ext_vkcmdbegindebugutilslabel = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdBeginDebugUtilsLabelEXT"));
 			this->ext_vkcmdenddebugutilslabel = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(this->native(), "vkCmdEndDebugUtilsLabelEXT"));
 			this->ext_vksetdebugutilsobjectname = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(this->native(), "vkSetDebugUtilsObjectNameEXT"));

@@ -293,7 +293,7 @@ namespace tz
 		/**
 		 * Attempt to print entire keyboard state to a single line of stdout.
 		 * 
-		 * If `!TZ_DEBUG`, this does nothing at all.
+		 * If `!HDK_DEBUG`, this does nothing at all.
 		 */
 		void debug_print_state() const;
 	private:

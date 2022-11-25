@@ -1,6 +1,6 @@
 #if TZ_VULKAN
 #include "tz/core/profiling/zone.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 #include "tz/gl/impl/backend/vk2/image.hpp"
 #include "tz/gl/impl/backend/vk2/swapchain.hpp"
 #include "tz/gl/impl/backend/vk2/logical_device.hpp"
@@ -21,7 +21,7 @@ namespace tz::gl::vk2
 	vma_alloc_info()
 	{
 		TZ_PROFZONE("Vulkan Backend - Swapchain Image Create", TZ_PROFCOL_RED);
-		tz_assert(sinfo.swapchain != nullptr && !sinfo.swapchain->is_null(), "SwapchainImageInfo had nullptr or null Swapchain");
+		hdk::assert(sinfo.swapchain != nullptr && !sinfo.swapchain->is_null(), "SwapchainImageInfo had nullptr or null Swapchain");
 		std::uint32_t real_swapchain_image_count;
 		std::vector<VkImage> swapchain_image_natives;
 
@@ -29,7 +29,7 @@ namespace tz::gl::vk2
 		swapchain_image_natives.resize(real_swapchain_image_count);
 		vkGetSwapchainImagesKHR(sinfo.swapchain->get_device().native(), sinfo.swapchain->native(), &real_swapchain_image_count, swapchain_image_natives.data());
 
-		tz_assert(std::cmp_less(sinfo.image_index, real_swapchain_image_count), "SwapchainImageInfo image index %u is out of range of the Swapchain's true number of images (%u).", sinfo.image_index, real_swapchain_image_count);
+		hdk::assert(std::cmp_less(sinfo.image_index, real_swapchain_image_count), "SwapchainImageInfo image index %u is out of range of the Swapchain's true number of images (%u).", sinfo.image_index, real_swapchain_image_count);
 		
 		// Now actually initialise the object internals.
 		this->image = swapchain_image_natives[sinfo.image_index];
@@ -79,7 +79,7 @@ namespace tz::gl::vk2
 		switch(info.residency)
 		{
 			default:
-				tz_error("Unrecognised MemoryResidency. Please submit a bug report.");
+				hdk::error("Unrecognised MemoryResidency. Please submit a bug report.");
 			[[fallthrough]];
 			case MemoryResidency::GPU:
 				vma_usage = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -112,16 +112,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create Image because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Image because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create Image because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Image because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
-				tz_error("Undocumented return value VK_ERROR_FEATURE_NOT_PRESENT from vmaCreateImage. TODO: Invoke vkGetPhysicalDeviceImageFormatProperties before trying to create the image to catch this early. The combination of format, tiling, residency etc are unsupported for this specific machine. Please submit a bug report.");
+				hdk::error("Undocumented return value VK_ERROR_FEATURE_NOT_PRESENT from vmaCreateImage. TODO: Invoke vkGetPhysicalDeviceImageFormatProperties before trying to create the image to catch this early. The combination of format, tiling, residency etc are unsupported for this specific machine. Please submit a bug report.");
 			break;
 			default:
-				tz_error("Failed to create Image but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create Image but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_IMAGE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image));
@@ -145,8 +145,8 @@ namespace tz::gl::vk2
 	{
 		if(this->destroy_on_destructor && this->image != VK_NULL_HANDLE)
 		{
-			tz_assert(this->device != nullptr && !this->device->is_null(), "Tried to destroy VkImage but LogicalDevice is nullptr or null");
-			tz_assert(this->vma_alloc.has_value(), "Image destructor thinks that the image does need to be destroyed, but there is no associated VmaAllocation. This means we cannot destroy the image. Please submit a bug report.");
+			hdk::assert(this->device != nullptr && !this->device->is_null(), "Tried to destroy VkImage but LogicalDevice is nullptr or null");
+			hdk::assert(this->vma_alloc.has_value(), "Image destructor thinks that the image does need to be destroyed, but there is no associated VmaAllocation. This means we cannot destroy the image. Please submit a bug report.");
 			vmaDestroyImage(this->get_device().vma_native(), this->image, this->vma_alloc.value());
 			this->image = VK_NULL_HANDLE;
 		}
@@ -185,7 +185,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Image::get_device() const
 	{
-		tz_assert(this->device != nullptr, "Image had nullptr or null LogicalDevice");
+		hdk::assert(this->device != nullptr, "Image had nullptr or null LogicalDevice");
 		return *this->device;
 	}
 
@@ -198,7 +198,7 @@ namespace tz::gl::vk2
 		}
 		if(this->tiling != ImageTiling::Linear)
 		{
-			tz_warning_report("Mapping image memory, but its tiling is not linear. You cannot predict the internal data format so writes are likely to be invalid");
+			hdk::report("Mapping image memory, but its tiling is not linear. You cannot predict the internal data format so writes are likely to be invalid");
 		}
 		// If we've mapped earlier/are CPUPersistent, we already have a ptr we can use.
 		if(this->vma_alloc_info.pMappedData != nullptr)

@@ -59,8 +59,8 @@ namespace tz::gl::vk2
 	info(info)
 	{
 		TZ_PROFZONE("Vulkan Backend - RenderPass Create", TZ_PROFCOL_RED);
-		tz_assert(this->info.has_valid_device(), "RenderPassInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
-		tz_assert(this->info.values_make_sense(), "RenderPassInfo contained values which didn't pass sanity checks. This will most likely crash horribly. Please submit a bug report. Most likely candidate is one of the attachment references contains an attachment id out of range.");
+		hdk::assert(this->info.has_valid_device(), "RenderPassInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->info.values_make_sense(), "RenderPassInfo contained values which didn't pass sanity checks. This will most likely crash horribly. Please submit a bug report. Most likely candidate is one of the attachment references contains an attachment id out of range.");
 		std::vector<VkAttachmentDescription2> attachment_natives(info.attachments.length());
 		std::transform(info.attachments.begin(), info.attachments.end(), attachment_natives.begin(),
 		[](const Attachment& attachment) -> VkAttachmentDescription2
@@ -209,13 +209,13 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create RenderPass because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create RenderPass because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create RenderPass because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create RenderPass because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create RenderPass but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create RenderPass but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -245,7 +245,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& RenderPass::get_device() const
 	{
-		tz_assert(this->info.logical_device != nullptr, "RenderPassInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->info.logical_device != nullptr, "RenderPassInfo contained nullptr LogicalDevice. Please submit a bug report.");
 		return *this->info.logical_device;
 	}
 

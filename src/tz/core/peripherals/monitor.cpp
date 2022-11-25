@@ -47,7 +47,7 @@ namespace tz
 			TZ_PROFZONE("Monitor Peripherals Terminate", TZ_PROFCOL_BLUE);
 			int last_mon_count;
 			glfwGetMonitors(&last_mon_count);
-			tz_assert(std::cmp_equal(last_mon_count, all_monitors.length()), "Number of connected monitors changed throughout runtime. Topaz does not yet support dynamically adding monitors.");
+			hdk::assert(std::cmp_equal(last_mon_count, all_monitors.length()), "Number of connected monitors changed throughout runtime. Topaz does not yet support dynamically adding monitors.");
 			all_monitors.clear();
 			initialised = false;
 		}
@@ -55,13 +55,13 @@ namespace tz
 
 	MonitorInfo get_default_monitor()
 	{
-		tz_assert(!get_monitors().empty(), "No monitors detected. Cannot retrieve default monitor.");
+		hdk::assert(!get_monitors().empty(), "No monitors detected. Cannot retrieve default monitor.");
 		return get_monitors().front();
 	}
 
 	tz::BasicList<MonitorInfo> get_monitors()
 	{
-		tz_assert(detail::peripherals::monitor::initialised, "Monitors submodule not initialised. You forgot to invoke `tz::initialise`?");
+		hdk::assert(detail::peripherals::monitor::initialised, "Monitors submodule not initialised. You forgot to invoke `tz::initialise`?");
 		return detail::peripherals::monitor::all_monitors;
 	}
 }

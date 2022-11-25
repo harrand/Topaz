@@ -1,5 +1,5 @@
 #include "tz/core/peripherals/keyboard.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <algorithm>
 
 namespace tz
@@ -33,7 +33,7 @@ namespace tz
 				}
 			break;
 			default:
-				tz_error("Key  press update should only be a press or release type. Detected another key press type.");
+				hdk::error("Key  press update should only be a press or release type. Detected another key press type.");
 			break;
 		}
 	}
@@ -58,7 +58,7 @@ namespace tz
 
 	void KeyboardState::debug_print_state() const
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			for(const KeyPressInfo& info : this->pressed_keys)
 			{
 				std::printf("{%c, %s}", info.key.representation, info.type == KeyPressType::Press ? "Press" : "Repeat");

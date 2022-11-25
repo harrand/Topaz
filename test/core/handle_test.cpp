@@ -1,5 +1,5 @@
 #include "tz/core/handle.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <vector>
 
 struct HandleGenerator
@@ -36,11 +36,11 @@ int main()
 
 	std::vector<HandleGenerator> gens;
 	auto h1 = gens.emplace_back().get();
-	tz_assert(h1 != tz::nullhand, "Valid handle == nullhand. Impossibru");
+	hdk::assert(h1 != tz::nullhand, "Valid handle == nullhand. Impossibru");
 	auto h2 = gens.emplace_back().get();
-	tz_assert(h2 != tz::nullhand && h2 != h1, "Valid handle == nullhand. Impossibru");
+	hdk::assert(h2 != tz::nullhand && h2 != h1, "Valid handle == nullhand. Impossibru");
 	gens.clear();
 	auto h3 = gens.emplace_back().get();
-	tz_assert(h3 == h1, "Handles do not make sense");
+	hdk::assert(h3 == h1, "Handles do not make sense");
 	return 0;
 }

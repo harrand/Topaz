@@ -99,8 +99,8 @@ namespace tz::gl::vk2
 	{
 		TZ_PROFZONE("Vulkan Backend - Descriptor Layout Create", TZ_PROFCOL_RED);
 		// We need a valid LogicalDevice. The info should have that.
-		tz_assert(info.has_valid_device(), "DescriptorLayoutInfo did not have valid LogicalDevice. Please submit a bug report");
-		tz_assert(info.device_supports_flags(), "DescriptorLayoutInfo contained bindings with flags which are not supported by the LogicalDevice. Please submit a bug report.");
+		hdk::assert(info.has_valid_device(), "DescriptorLayoutInfo did not have valid LogicalDevice. Please submit a bug report");
+		hdk::assert(info.device_supports_flags(), "DescriptorLayoutInfo contained bindings with flags which are not supported by the LogicalDevice. Please submit a bug report.");
 
 		// Convert the binding information from the info struct to something VKAPI-friendly.
 		std::vector<VkDescriptorBindingFlags> binding_flags(info.binding_count());
@@ -157,13 +157,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create DescriptorLayout because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create DescriptorLayout because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create DescriptorLayout because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create DescriptorLayout because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create DescriptorSetLayout but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create DescriptorSetLayout but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -178,7 +178,7 @@ namespace tz::gl::vk2
 	{
 		if(this->descriptor_layout != VK_NULL_HANDLE)
 		{
-			tz_assert(info.has_valid_device(), "DescriptorLayoutInfo did not have valid LogicalDevice. Please submit a bug report");
+			hdk::assert(info.has_valid_device(), "DescriptorLayoutInfo did not have valid LogicalDevice. Please submit a bug report");
 			vkDestroyDescriptorSetLayout(this->info.logical_device->native(), this->descriptor_layout, nullptr);
 			this->descriptor_layout = VK_NULL_HANDLE;
 		}
@@ -227,7 +227,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& DescriptorLayout::get_device() const
 	{
-		tz_assert(this->info.logical_device != nullptr, "DescriptorLayoutInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->info.logical_device != nullptr, "DescriptorLayoutInfo contained nullptr LogicalDevice. Please submit a bug report.");
 		return *this->info.logical_device;
 	}
 
@@ -283,13 +283,13 @@ namespace tz::gl::vk2
 	void DescriptorSet::EditRequest::set_buffer(std::uint32_t binding_id, Write::BufferWriteInfo buffer_write, std::uint32_t array_index)
 	{
 		// We can find out the DescriptorType at this binding id from the sets layout. Here we make sure it matches.
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			const DescriptorLayoutInfo::BindingInfo& binding_info = this->get_set().get_layout().get_bindings()[binding_id];
 			constexpr std::array<DescriptorType, 2> buffer_descriptor_types = {DescriptorType::UniformBuffer, DescriptorType::StorageBuffer};
-			tz_assert(std::find(buffer_descriptor_types.begin(), buffer_descriptor_types.end(), binding_info.type) != buffer_descriptor_types.end(), "EditRequest for a DescriptorSet wants to set an image at binding %u, but the DescriptorType at that index according to the layout is not an image.", binding_id);
+			hdk::assert(std::find(buffer_descriptor_types.begin(), buffer_descriptor_types.end(), binding_info.type) != buffer_descriptor_types.end(), "EditRequest for a DescriptorSet wants to set an image at binding %u, but the DescriptorType at that index according to the layout is not an image.", binding_id);
 			if(array_index != 0)
 			{
-				tz_assert(array_index < binding_info.count, "EditRequest for a DescriptorSet wants to set an image at binding %u and array-index %u, but the array index was out of range. Descriptor array at this binding has length %u", binding_id, array_index, binding_info.count);
+				hdk::assert(array_index < binding_info.count, "EditRequest for a DescriptorSet wants to set an image at binding %u and array-index %u, but the array index was out of range. Descriptor array at this binding has length %u", binding_id, array_index, binding_info.count);
 			}
 		#endif
 		
@@ -305,13 +305,13 @@ namespace tz::gl::vk2
 	void DescriptorSet::EditRequest::set_image(std::uint32_t binding_id, Write::ImageWriteInfo image_write, std::uint32_t array_index)
 	{
 		// We can find out the DescriptorType at this binding id from the sets layout. Here we make sure it matches.
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			const DescriptorLayoutInfo::BindingInfo& binding_info = this->get_set().get_layout().get_bindings()[binding_id];
 			constexpr std::array<DescriptorType, 3> image_descriptor_types = {DescriptorType::Image, DescriptorType::ImageWithSampler, DescriptorType::StorageImage};
-			tz_assert(std::find(image_descriptor_types.begin(), image_descriptor_types.end(), binding_info.type) != image_descriptor_types.end(), "EditRequest for a DescriptorSet wants to set an image at binding %u, but the DescriptorType at that index according to the layout is not an image.", binding_id);
+			hdk::assert(std::find(image_descriptor_types.begin(), image_descriptor_types.end(), binding_info.type) != image_descriptor_types.end(), "EditRequest for a DescriptorSet wants to set an image at binding %u, but the DescriptorType at that index according to the layout is not an image.", binding_id);
 			if(array_index != 0)
 			{
-				tz_assert(array_index < binding_info.count, "EditRequest for a DescriptorSet wants to set an image at binding %u and array-index %u, but the array index was out of range. Descriptor array at this binding has length %u", binding_id, array_index, binding_info.count);
+				hdk::assert(array_index < binding_info.count, "EditRequest for a DescriptorSet wants to set an image at binding %u and array-index %u, but the array index was out of range. Descriptor array at this binding has length %u", binding_id, array_index, binding_info.count);
 			}
 		#endif
 		write_info.add
@@ -330,7 +330,7 @@ namespace tz::gl::vk2
 
 	const DescriptorSet& DescriptorSet::EditRequest::get_set() const
 	{
-		tz_assert(this->set != nullptr, "DescriptorSet EditRequest has set nullptr, implying it is not correctly referencing an existing DescriptorSet. Please submit a bug report.");
+		hdk::assert(this->set != nullptr, "DescriptorSet EditRequest has set nullptr, implying it is not correctly referencing an existing DescriptorSet. Please submit a bug report.");
 		return *this->set;
 	}
 
@@ -375,7 +375,7 @@ namespace tz::gl::vk2
 
 	void DescriptorPool::UpdateRequest::add_set_edit(DescriptorSet::EditRequest set_edit)
 	{
-		tz_assert(this->pool->contains(set_edit.get_set()), "Trying to add set EditRequest to a pool UpdateRequest, but the set edited in the request does not belong to the pool. Please submit a bug report.");
+		hdk::assert(this->pool->contains(set_edit.get_set()), "Trying to add set EditRequest to a pool UpdateRequest, but the set edited in the request does not belong to the pool. Please submit a bug report.");
 		this->set_edits.push_back(set_edit);
 	}
 
@@ -393,7 +393,7 @@ namespace tz::gl::vk2
 	allocated_set_natives()
 	{
 		TZ_PROFZONE("Vulkan Backend - DescriptorPool Create", TZ_PROFCOL_RED);
-		tz_assert(this->info.has_valid_device(), "DescriptorPoolInfo did not have valid LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->info.has_valid_device(), "DescriptorPoolInfo did not have valid LogicalDevice. Please submit a bug report.");
 
 		VkDescriptorPoolCreateFlags flags = 0;
 		if(this->info.limits.supports_update_after_bind)
@@ -430,16 +430,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create DescriptorPool because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create DescriptorPool because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create DescriptorPool because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create DescriptorPool because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_FRAGMENTATION:
-				tz_error("Failed to create DescriptorPool due to fragmentation. There may be a code path to avoid this issue from being lethal, but it does not exist yet. Please submit a bug report.");
+				hdk::error("Failed to create DescriptorPool due to fragmentation. There may be a code path to avoid this issue from being lethal, but it does not exist yet. Please submit a bug report.");
 			break;
 			default:
-				tz_error("Failed to create DescriptorPool but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create DescriptorPool but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -478,7 +478,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& DescriptorPool::get_device() const
 	{
-		tz_assert(this->info.logical_device != nullptr, "DescriptorPoolInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		hdk::assert(this->info.logical_device != nullptr, "DescriptorPoolInfo contained nullptr LogicalDevice. Please submit a bug report.");
 		return *this->info.logical_device;
 	}
 
@@ -508,7 +508,7 @@ namespace tz::gl::vk2
 		std::transform(alloc.set_layouts.begin(), alloc.set_layouts.end(), layout_natives.begin(),
 		[](const DescriptorLayout* layout) -> DescriptorLayout::NativeType
 		{
-			tz_assert(layout != nullptr, "DescriptorPool::Allocate::set_layouts contained nullptr");
+			hdk::assert(layout != nullptr, "DescriptorPool::Allocate::set_layouts contained nullptr");
 			return layout->native();
 		});
 
@@ -538,11 +538,11 @@ namespace tz::gl::vk2
 				ret.type = AllocationResult::AllocationResultType::Success;
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to allocate DescriptorSets because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to allocate DescriptorSets because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 				ret.type = AllocationResult::AllocationResultType::FatalError;
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to allocate DescriptorSets because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to allocate DescriptorSets because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 				ret.type = AllocationResult::AllocationResultType::FatalError;
 			break;
 			case VK_ERROR_FRAGMENTED_POOL:
@@ -552,7 +552,7 @@ namespace tz::gl::vk2
 				ret.type = AllocationResult::AllocationResultType::PoolOutOfMemory;
 			break;
 			default:
-				tz_error("Failed to allocate DescriptorSets but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to allocate DescriptorSets but cannot determine why. Please submit a bug report.");
 			break;
 		}
 
@@ -622,7 +622,7 @@ namespace tz::gl::vk2
 					{
 						// We're a buffer.	
 						std::size_t buffer_index = buffer_offset++;
-						tz_assert(buffer_index < num_buffers, "Buffer Index out of range. Index = %zu, length = %zu. Please submit a bug report", buffer_index, num_buffers);
+						hdk::assert(buffer_index < num_buffers, "Buffer Index out of range. Index = %zu, length = %zu. Please submit a bug report", buffer_index, num_buffers);
 						write_buffers[buffer_index] = VkDescriptorBufferInfo
 						{
 							.buffer = arg.buffer->native(),
@@ -635,7 +635,7 @@ namespace tz::gl::vk2
 					{
 						// We're an image.
 						std::size_t image_index = image_offset++;	
-						tz_assert(image_index < num_textures, "Image index out of range. Index = %zu, length = %zu. Please submit a bug report", image_index, num_textures);
+						hdk::assert(image_index < num_textures, "Image index out of range. Index = %zu, length = %zu. Please submit a bug report", image_index, num_textures);
 						const Image& img = arg.image_view->get_image();
 						ImageLayout expected_image_layout;
 						if(img.get_layout() == ImageLayout::General)
@@ -673,13 +673,13 @@ namespace tz::gl::vk2
 			if(is_buffer)
 			{
 				std::size_t idx = buffer_offset - 1;
-				tz_assert(idx < num_buffers, "Buffer index out of range. Index = %zu, size = %zu", idx, num_buffers);
+				hdk::assert(idx < num_buffers, "Buffer index out of range. Index = %zu, size = %zu", idx, num_buffers);
 				write_natives[i].pBufferInfo = &write_buffers[idx];
 			}
 			else
 			{
 				std::size_t idx = image_offset - 1;
-				tz_assert(idx < num_textures, "Image index out of range. Index = %zu, size = %zu", idx, num_textures);
+				hdk::assert(idx < num_textures, "Image index out of range. Index = %zu, size = %zu", idx, num_textures);
 				write_natives[i].pImageInfo = &write_images[idx];
 			}
 		}

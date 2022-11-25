@@ -12,7 +12,7 @@ namespace tz::gl::vk2::hardware
 	queue(VK_NULL_HANDLE),
 	info(info)
 	{
-		tz_assert(info.dev != nullptr, "QueueInfo's LogicalDevice was nullptr");
+		hdk::assert(info.dev != nullptr, "QueueInfo's LogicalDevice was nullptr");
 		vkGetDeviceQueue(info.dev->native(), this->info.queue_family_idx, this->info.queue_idx, &this->queue);
 	}
 
@@ -23,7 +23,7 @@ namespace tz::gl::vk2::hardware
 
 	const LogicalDevice& Queue::get_device() const
 	{
-		tz_assert(this->info.dev != nullptr, "QueueInfo contained nullptr LogicalDevice");
+		hdk::assert(this->info.dev != nullptr, "QueueInfo contained nullptr LogicalDevice");
 		return *this->info.dev;
 	}
 
@@ -37,7 +37,7 @@ namespace tz::gl::vk2::hardware
 		TZ_PROFZONE("Vulkan Backend - Queue Submit", TZ_PROFCOL_RED);
 		if(submit_info.execution_complete_fence != nullptr)
 		{
-			tz_assert(!submit_info.execution_complete_fence->is_signalled(), "SubmitInfo contained Fence to signal on execution complete, but it was already signalled.");
+			hdk::assert(!submit_info.execution_complete_fence->is_signalled(), "SubmitInfo contained Fence to signal on execution complete, but it was already signalled.");
 		}
 
 		std::vector<BinarySemaphore::NativeType> wait_sem_natives(submit_info.waits.length());
@@ -83,16 +83,16 @@ namespace tz::gl::vk2::hardware
 				}
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to submit Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to submit Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to submit Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to submit Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				tz_error("Failed to submit Queue because device was lost. This is a fatal error.");
+				hdk::error("Failed to submit Queue because device was lost. This is a fatal error.");
 			break;
 			default:
-				tz_error("Failed to submit Queue but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to submit Queue but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -130,15 +130,15 @@ namespace tz::gl::vk2::hardware
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
 				pres_result = PresentResult::Fail_FatalError;
-				tz_error("Failed to present Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to present Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
 				pres_result = PresentResult::Fail_FatalError;
-				tz_error("Failed to present Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to present Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
 				pres_result = PresentResult::Fail_FatalError;
-				tz_error("Failed to present Queue because device was lost. This is a fatal error.");
+				hdk::error("Failed to present Queue because device was lost. This is a fatal error.");
 			break;
 			case VK_ERROR_OUT_OF_DATE_KHR:
 				pres_result = PresentResult::Fail_OutOfDate;
@@ -151,7 +151,7 @@ namespace tz::gl::vk2::hardware
 			break;
 			default:
 				pres_result = PresentResult::Fail_FatalError;
-				tz_error("Failed to present Queue but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to present Queue but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		return pres_result;

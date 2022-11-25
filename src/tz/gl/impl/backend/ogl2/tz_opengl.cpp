@@ -1,6 +1,6 @@
 #if TZ_OGL
 #include "tz/core/containers/basic_list.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 #include "tz/core/profiling/zone.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 
@@ -14,36 +14,36 @@ namespace tz::gl::ogl2
 	{
 		if(type == GL_DEBUG_TYPE_ERROR && (severity & (GL_DEBUG_SEVERITY_HIGH | GL_DEBUG_SEVERITY_MEDIUM)))
 		{
-			tz_error("OpenGL Error: %s", message);
+			hdk::error("OpenGL Error: %s", message);
 		}
 	}
 
 	void initialise()
 	{
 		TZ_PROFZONE("OpenGL Backend - Backend Initialise", TZ_PROFCOL_RED);
-		tz_assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
+		hdk::assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
 		int res = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-		#if TZ_PROFILE
+		#if HDK_PROFILE
 			TracyGpuContext;
-		#endif // TZ_PROFILE
-		tz_assert(res != 0, "GLAD failed to load");
-		#if TZ_DEBUG
+		#endif // HDK_PROFILE
+		hdk::assert(res != 0, "GLAD failed to load");
+		#if HDK_DEBUG
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 			glDebugMessageCallback(debug_callback, nullptr);
 		#endif
 		if(!supports_bindless_textures())
 		{
-			tz_warning_report("The OpenGL backend prefers using bindless textures under-the-hood. Unfortunately, the bindless textures extension `GL_ARB_bindltess_texture` is unavailable on this implementation. Renderers will fallback to old-style OpenGL uniforms for image resources, although this behaviour is unreliable and could be removed at any point.");
+			hdk::report("The OpenGL backend prefers using bindless textures under-the-hood. Unfortunately, the bindless textures extension `GL_ARB_bindltess_texture` is unavailable on this implementation. Renderers will fallback to old-style OpenGL uniforms for image resources, although this behaviour is unreliable and could be removed at any point.");
 		}
-		tz_report("OpenGL v%u.%u %sInitialised", ogl_version.major, ogl_version.minor, supports_bindless_textures() ? "" : "(Bindful) ");
+		hdk::report("OpenGL v%u.%u %sInitialised", ogl_version.major, ogl_version.minor, supports_bindless_textures() ? "" : "(Bindful) ");
 		initialised = true;
 	}
 
 	void terminate()
 	{
-		tz_assert(initialised, "Not initialised when trying to terminate OpenGL. Please submit a bug report.");
+		hdk::assert(initialised, "Not initialised when trying to terminate OpenGL. Please submit a bug report.");
 		initialised = false;
-		tz_report("OpenGL v%u.%u Terminated", ogl_version.major, ogl_version.minor);
+		hdk::report("OpenGL v%u.%u Terminated", ogl_version.major, ogl_version.minor);
 	}
 
 	bool is_initialised()

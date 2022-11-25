@@ -18,8 +18,8 @@ namespace tz::gl::vk2
 	info(info),
 	framebuffer(VK_NULL_HANDLE)
 	{
-		tz_assert(this->info.valid(), "FramebufferInfo was not valid. Please submit a bug report.");
-		tz_assert(info.attachments.length() == info.render_pass->get_info().attachments.length(), "Framebuffer had unexpected number of attachments. Provided %zu attachments, but associated renderpass only supports %zu attachments.", info.attachments.length(), info.render_pass->get_info().attachments.length());
+		hdk::assert(this->info.valid(), "FramebufferInfo was not valid. Please submit a bug report.");
+		hdk::assert(info.attachments.length() == info.render_pass->get_info().attachments.length(), "Framebuffer had unexpected number of attachments. Provided %zu attachments, but associated renderpass only supports %zu attachments.", info.attachments.length(), info.render_pass->get_info().attachments.length());
 		std::vector<ImageView::NativeType> view_natives(info.attachments.length());
 		std::transform(info.attachments.begin(), info.attachments.end(), view_natives.begin(),
 		[](const ImageView* view) -> ImageView::NativeType
@@ -47,13 +47,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create Framebuffer because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Framebuffer because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create Framebuffer because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create Framebuffer because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create Framebuffer but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create Framebuffer but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -88,7 +88,7 @@ namespace tz::gl::vk2
 
 	const RenderPass& Framebuffer::get_pass() const
 	{
-		tz_assert(this->info.render_pass != nullptr, "Framebuffer had no attached RenderPass. Please submit a bug report");
+		hdk::assert(this->info.render_pass != nullptr, "Framebuffer had no attached RenderPass. Please submit a bug report");
 		return *this->info.render_pass;
 	}
 

@@ -1,0 +1,81 @@
+{
+	"version": 4,
+	"cmakeMinimumRequired":
+	{
+		"major": 3,
+		"minor": 23,
+		"patch": 0
+	},
+	"configurePresets":
+	[
+	{
+		"name": "vulkan",
+		"cacheVariables":
+		{
+			"TOPAZ_RENDER_API":
+			{
+				"type": "string",
+				"value": "Vulkan"
+			}
+		},
+		"hidden": true
+	},
+	{
+		"name": "opengl",
+		"cacheVariables":
+		{
+			"TOPAZ_RENDER_API":
+			{
+				"type": "string",
+				"value": "OpenGL"
+			}
+		},
+		"hidden": true
+	},
+	{
+		"name": "vulkan_debug",
+		"binaryDir": "${sourceDir}/build/vulkan_debug",
+		"displayName": "Vulkan Debug",
+		"description": "A vulkan debug build.",
+		"inherits": [ "vulkan", "debug" ]
+	},
+	{
+		"name": "vulkan_release",
+		"binaryDir": "${sourceDir}/build/vulkan_release",
+		"displayName": "Vulkan Release",
+		"description": "A vulkan release build.",
+		"inherits": [ "vulkan", "release" ]
+	},
+	{
+		"name": "vulkan_profile",
+		"binaryDir": "${sourceDir}/build/vulkan_profile",
+		"displayName": "Vulkan Profile",
+		"description": "A vulkan profile build.",
+		"inherits": [ "vulkan", "profile" ]
+	},
+	{
+		"name": "opengl_debug",
+		"binaryDir": "${sourceDir}/build/opengl_debug",
+		"displayName": "OpenGL Debug",
+		"description": "An OpenGL debug build.",
+		"inherits": [ "opengl", "debug" ]
+	},
+	{
+		"name": "opengl_release",
+		"binaryDir": "${sourceDir}/build/opengl_release",
+		"displayName": "OpenGL Release",
+		"description": "An OpenGL release build.",
+		"inherits": [ "opengl", "release" ]
+	},
+	{
+		"name": "opengl_profile",
+		"binaryDir": "${sourceDir}/build/opengl_profile",
+		"displayName": "OpenGL Profile",
+		"description": "An OpenGL profile build.",
+		"inherits": [ "opengl", "profile" ]
+	}
+	],
+	"include": [
+		"lib/HDK/CMakePresets.json"
+	]
+}

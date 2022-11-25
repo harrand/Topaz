@@ -22,13 +22,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create BinarySemaphore because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create BinarySemaphore because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create BinarySemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create BinarySemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create BinarySemaphore but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create BinarySemaphore but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_SEMAPHORE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->sem));
@@ -59,7 +59,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& BinarySemaphore::get_device() const
 	{
-		tz_assert(this->device != nullptr && !this->device->is_null(), "BinarySemaphore had nullptr or null LogicalDevice");
+		hdk::assert(this->device != nullptr && !this->device->is_null(), "BinarySemaphore had nullptr or null LogicalDevice");
 		return *this->device;
 	}
 
@@ -75,7 +75,7 @@ namespace tz::gl::vk2
 	TimelineSemaphore::TimelineSemaphore(const LogicalDevice& device, std::uint64_t value):
 	BinarySemaphore()
 	{
-		tz_assert(TimelineSemaphore::supported(device), "TimelineSemaphores are not supported by the LogicalDevice, but tried to create one. Please submit a bug report.");
+		hdk::assert(TimelineSemaphore::supported(device), "TimelineSemaphores are not supported by the LogicalDevice, but tried to create one. Please submit a bug report.");
 		VkSemaphoreTypeCreateInfo create_type
 		{
 			.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
@@ -98,13 +98,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to create TimelineSemaphore because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create TimelineSemaphore because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to create TimelineSemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to create TimelineSemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create TimelineSemaphore but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to create TimelineSemaphore but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -140,16 +140,16 @@ namespace tz::gl::vk2
 			case VK_TIMEOUT:
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Failed to wait on TimelineSemaphore because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to wait on TimelineSemaphore because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Failed to wait on TimelineSemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				hdk::error("Failed to wait on TimelineSemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				tz_error("Failed to wait on TimelineSemaphore because Device was lost. This is a fatal error.")
+				hdk::error("Failed to wait on TimelineSemaphore because Device was lost. This is a fatal error.");
 			break;
 			default:
-				tz_error("Failed to wait on TimelineSemaphore but cannot determine why. Please submit a bug report.");
+				hdk::error("Failed to wait on TimelineSemaphore but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}

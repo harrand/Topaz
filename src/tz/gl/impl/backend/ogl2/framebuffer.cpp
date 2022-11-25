@@ -10,7 +10,7 @@ namespace tz::gl::ogl2
 	info(info)
 	{
 		TZ_PROFZONE("OpenGL Backend - Framebuffer Create", TZ_PROFCOL_RED);
-		tz_assert(ogl2::is_initialised(), "Attempted to create Framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
+		hdk::assert(ogl2::is_initialised(), "Attempted to create Framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
 		glCreateFramebuffers(1, &this->framebuffer);
 
 		// Deal with attachments.
@@ -31,7 +31,7 @@ namespace tz::gl::ogl2
 				}
 				else
 				{
-					tz_error("Unknown FramebufferTexture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");
+					hdk::error("Unknown FramebufferTexture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");
 				}
 			}, this->info.maybe_depth_attachment.value());
 		}
@@ -53,7 +53,7 @@ namespace tz::gl::ogl2
 		}
 		glNamedFramebufferDrawBuffers(this->framebuffer, draw_buffers.size(), draw_buffers.data());
 
-		tz_assert(glCheckNamedFramebufferStatus(this->framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
+		hdk::assert(glCheckNamedFramebufferStatus(this->framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
 	}
 
 	Framebuffer::Framebuffer(Framebuffer&& move):

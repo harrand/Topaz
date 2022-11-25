@@ -53,7 +53,7 @@ namespace tz
 
 	tz::Vec2 MouseButtonState::get_mouse_press_position(MouseButton button) const
 	{
-		tz_assert(this->is_mouse_button_down(button), "Cannot retrieve mouse press position when the button is not pressed. Please submit a bug report.");
+		hdk::assert(this->is_mouse_button_down(button), "Cannot retrieve mouse press position when the button is not pressed. Please submit a bug report.");
 		auto iter = std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
 		[button](const MouseButtonPressInfo& info)
 		{
@@ -68,7 +68,7 @@ namespace tz
 
 	void MouseButtonState::debug_print_state() const
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			for(const MouseButtonPressInfo& info : this->pressed_buttons)
 			{
 				std::printf("{%s (%g,%g)}", info.button.button_name, info.press_position[0], info.press_position[1]);
@@ -89,7 +89,7 @@ namespace tz
 
 	void MousePositionState::debug_print_state() const
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			std::printf("{%g, %g}", this->info.position[0], this->info.position[1]);
 			std::printf("                    \r");
 		#endif

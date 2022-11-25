@@ -1,4 +1,4 @@
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <utility>
 #include <cmath>
 #include <algorithm>
@@ -11,14 +11,14 @@ namespace tz
 	template<tz::Number T, std::size_t S>
 	const T& Vector<T, S>::operator[](std::size_t idx) const
 	{
-		tz_assert(idx < S, "Vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
+		hdk::assert(idx < S, "Vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
 		return this->vec[idx];
 	}
 
 	template<tz::Number T, std::size_t S>
 	T& Vector<T, S>::operator[](std::size_t idx)
 	{
-		tz_assert(idx < S, "Vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
+		hdk::assert(idx < S, "Vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
 		return this->vec[idx];
 	}
 

@@ -179,8 +179,8 @@ int main()
 		({
 			.set_layouts = std::move(alloc_layout_list)
 		});
-		tz_assert(dpool_alloc.success(), "Descriptor Pool allocation failed.");
-		tz_assert(dpool_alloc.sets.length() == swapchain.get_images().size(), "Descriptor Pool allocation returned incorrect number of DescriptorSets");
+		hdk::assert(dpool_alloc.success(), "Descriptor Pool allocation failed.");
+		hdk::assert(dpool_alloc.sets.length() == swapchain.get_images().size(), "Descriptor Pool allocation returned incorrect number of DescriptorSets");
 		// Write the buffers and texture to the sets. We only need to do this once fortunately.
 		// We have a set per swapchain image. For each of these sets:
 		// 	- Write the vertex storage buffer to binding 0
@@ -288,8 +288,8 @@ int main()
 		 	// Enough buffers for each swapchain image, plus an extra for one-time commands.
 			.buffer_count = static_cast<std::uint32_t>(swapchain.get_images().size()) + 1
 		});
-		tz_assert(result.success(), "CommandPool allocation failed unexpectedly");
-		tz_assert(result.buffers.length() == swapchain.get_images().size() + 1, "Did not allocate correct number of CommandBuffers");
+		hdk::assert(result.success(), "CommandPool allocation failed unexpectedly");
+		hdk::assert(result.buffers.length() == swapchain.get_images().size() + 1, "Did not allocate correct number of CommandBuffers");
 
 		for(std::size_t i = 0; i < swapchain.get_images().size(); i++)
 		{
@@ -520,7 +520,7 @@ int main()
 				.swapchain = &swapchain,
 				.swapchain_image_index = swapchain_image_index
 			});
-			tz_assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
+			hdk::assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
 
 			current_frame = (current_frame + 1) % max_frames_in_flight;
 

@@ -11,7 +11,7 @@ namespace tz::gl::vk2
 	info(info)
 	{
 		TZ_PROFZONE("Vulkan Backend - ImageView Create", TZ_PROFCOL_RED);
-		tz_assert(this->info.image != nullptr && !this->info.image->is_null(), "ImageViewInfo refers to nullptr or null Image");
+		hdk::assert(this->info.image != nullptr && !this->info.image->is_null(), "ImageViewInfo refers to nullptr or null Image");
 		VkImageViewCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO; 
 		create.image = this->info.image->native();
@@ -26,7 +26,7 @@ namespace tz::gl::vk2
 				create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 			break;
 			default:
-				tz_error("Unknown ImageAspect");
+				hdk::error("Unknown ImageAspect");
 			break;
 		}
 		create.subresourceRange.baseMipLevel = 0;
@@ -42,13 +42,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("Ran out of host memory (RAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
+				hdk::error("Ran out of host memory (RAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("Ran out of device memory (VRAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
+				hdk::error("Ran out of device memory (VRAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
 			break;
 			default:
-				tz_error("Failed to create ImageView, but the error code is unrecognised. Please submit a bug report.");
+				hdk::error("Failed to create ImageView, but the error code is unrecognised. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image_view));
@@ -84,13 +84,13 @@ namespace tz::gl::vk2
 
 	const Image& ImageView::get_image() const
 	{
-		tz_assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
+		hdk::assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
 		return *this->info.image;
 	}
 
 	Image& ImageView::get_image()
 	{
-		tz_assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
+		hdk::assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
 		return *this->info.image;
 	}
 

@@ -1,4 +1,4 @@
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include <string_view>
 #include <cstdint>
 #include <iterator>
@@ -16,9 +16,9 @@ namespace tz
 			static_assert(false, "tz::info(): No RenderAPI has been set. Can't build.");
 		#endif
 
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			inf.build = EngineInfo::BuildConfig::Debug;
-		#elif TZ_PROFILE
+		#elif HDK_PROFILE
 			inf.build = EngineInfo::BuildConfig::Profile;
 		#else
 			inf.build = EngineInfo::BuildConfig::Release;

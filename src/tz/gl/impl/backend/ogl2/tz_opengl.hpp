@@ -3,9 +3,9 @@
 #if TZ_OGL
 #include "tz/core/tz.hpp"
 #include "glad/glad.h"
-#if TZ_PROFILE
+#if HDK_PROFILE
 #include "TracyOpenGL.hpp"
-#endif // TZ_PROFILE
+#endif // HDK_PROFILE
 
 namespace tz::gl::ogl2
 {

@@ -44,9 +44,9 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 	RendererInfoCommon::RendererInfoCommon()
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			this->options |= tz::gl::RendererOption::NoPresent;
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 	}
 
 	unsigned int RendererInfoCommon::resource_count() const
@@ -76,11 +76,11 @@ namespace tz::gl
 
 	ResourceHandle RendererInfoCommon::add_resource(const IResource& resource)
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			if(resource.get_flags().contains(ResourceFlag::IndexBuffer))
 			{
-				tz_assert(resource.get_type() == ResourceType::Buffer, "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
-				tz_assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
+				hdk::assert(resource.get_type() == ResourceType::Buffer, "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
+				hdk::assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
 			}
 		#endif
 		this->resources.push_back(resource.unique_clone());
@@ -116,7 +116,7 @@ namespace tz::gl
 
 	void RendererInfoCommon::set_options(RendererOptions options)
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			if(!options.contains(RendererOption::Internal_FinalDebugUIRenderer))
 			{
 				options |= RendererOption::NoPresent;
@@ -162,7 +162,7 @@ namespace tz::gl
 
 	std::string RendererInfoCommon::debug_get_name() const
 	{
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			if(!this->dbg_name.empty())
 			{
 				return this->dbg_name;

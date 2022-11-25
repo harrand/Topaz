@@ -20,7 +20,7 @@ namespace tz
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, tz::gl::ogl2::ogl_version.major);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, tz::gl::ogl2::ogl_version.minor);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-			#if TZ_DEBUG
+			#if HDK_DEBUG
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 			#else
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_FALSE);
@@ -28,34 +28,34 @@ namespace tz
 		#endif
 
 		this->wnd = glfwCreateWindow(args.width, args.height, args.title, nullptr, nullptr);
-		if(TZ_DEBUG && this->wnd == nullptr)
+		if(HDK_DEBUG && this->wnd == nullptr)
 		{
 			// We failed somehow.	
 			switch(glfwGetError(nullptr))
 			{
 				case GLFW_NOT_INITIALIZED:
-					tz_error("Failed to create window because glfw was not initialised correctly.");
+					hdk::error("Failed to create window because glfw was not initialised correctly.");
 				break;
 				case GLFW_INVALID_ENUM:
-					tz_error("Failed to create window due to invalid glfw enum.");
+					hdk::error("Failed to create window due to invalid glfw enum.");
 				break;
 				case GLFW_INVALID_VALUE:
-					tz_error("Failed to create window due to invalid glfw value.");
+					hdk::error("Failed to create window due to invalid glfw value.");
 				break;
 				case GLFW_API_UNAVAILABLE:
-					tz_error("Failed to create window because GLFW could not find support for the requested API on the system.");
+					hdk::error("Failed to create window because GLFW could not find support for the requested API on the system.");
 				break;
 				case GLFW_VERSION_UNAVAILABLE:
-					tz_error("Failed to create window because the requested OpenGL version (4.6) is not available on this machine. If this is a vulkan build, please submit a bug report.");
+					hdk::error("Failed to create window because the requested OpenGL version (4.6) is not available on this machine. If this is a vulkan build, please submit a bug report.");
 				break;
 				case GLFW_FORMAT_UNAVAILABLE:
-					tz_error("Failed to create window because the requested pixel format is not supported.");
+					hdk::error("Failed to create window because the requested pixel format is not supported.");
 				break;
 				case GLFW_PLATFORM_ERROR:
-					tz_error("Failed to create window because a miscellaneous platform-specific error occurred. Either a bug/error in the config of GLFW has taken place, or the machine's OS/drivers are misconfigured, or there was a lack of required resources. Please submit a bug report.");
+					hdk::error("Failed to create window because a miscellaneous platform-specific error occurred. Either a bug/error in the config of GLFW has taken place, or the machine's OS/drivers are misconfigured, or there was a lack of required resources. Please submit a bug report.");
 				break;
 				default:
-					tz_error("Failed to create window, but for unknown reason. GLFW has returned an undocumented error code for glfwCreateWindow, so something is very wrong. Please submit a bug report. Error code %d", glfwGetError(nullptr));
+					hdk::error("Failed to create window, but for unknown reason. GLFW has returned an undocumented error code for glfwCreateWindow, so something is very wrong. Please submit a bug report. Error code %d", glfwGetError(nullptr));
 				break;
 			}
 		}

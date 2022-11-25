@@ -104,12 +104,12 @@ namespace tz::gl
 	type(type),
 	flags(flags)
 	{
-		tz_assert(!flags.contains(ResourceFlag::ImageMipNearest) && !flags.contains(ResourceFlag::ImageMipLinear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
+		hdk::assert(!flags.contains(ResourceFlag::ImageMipNearest) && !flags.contains(ResourceFlag::ImageMipLinear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
 	}
 
 	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
-		tz_assert(this->get_access() == ResourceAccess::DynamicFixed || this->get_access() == ResourceAccess::DynamicVariable, "Cannot set mapped data on a static resource.");
+		hdk::assert(this->get_access() == ResourceAccess::DynamicFixed || this->get_access() == ResourceAccess::DynamicVariable, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
 	}
 

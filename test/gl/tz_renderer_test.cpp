@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/assert.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
+#include "hdk/debug.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/device.hpp"
@@ -12,7 +12,7 @@
 #include ImportedShaderHeader(empty, compute)
 
 #define TESTFUNC_BEGIN(n) void n(){ std::size_t internal_rcount = tz::gl::device().renderer_count();
-#define TESTFUNC_END ;tz_assert(tz::gl::device().renderer_count() == internal_rcount, "Detected test function that ended with a different number of renderers (%zu) than it started with (%zu).", tz::gl::device().renderer_count(), internal_rcount);}
+#define TESTFUNC_END ;hdk::assert(tz::gl::device().renderer_count() == internal_rcount, "Detected test function that ended with a different number of renderers (%zu) than it started with (%zu).", tz::gl::device().renderer_count(), internal_rcount);}
 
 bool image_resources_supported()
 {
@@ -33,13 +33,13 @@ TESTFUNC_BEGIN(create_destroy_empty_renderer)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
 
-	tz_assert(!tz::gl::device().get_renderer(rh).is_null(), "Empty renderer (Graphics) is considered the null renderer.");
+	hdk::assert(!tz::gl::device().get_renderer(rh).is_null(), "Empty renderer (Graphics) is considered the null renderer.");
 	// Now compute.
 	tz::gl::RendererInfo cinfo;
 	cinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
 	tz::gl::RendererHandle ch = tz::gl::device().create_renderer(rinfo);
 
-	tz_assert(!tz::gl::device().get_renderer(ch).is_null(), "Empty renderer (Compute) is considered the null renderer.");
+	hdk::assert(!tz::gl::device().get_renderer(ch).is_null(), "Empty renderer (Compute) is considered the null renderer.");
 
 	// Try rendering with them both. Should not crash.
 	tz::gl::device().get_renderer(rh).render();
@@ -74,7 +74,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	// Make sure the buffer resource reference contains the expected value.
 	{
 		float actual = tz::gl::device().get_renderer(r2h).get_resource(r2bh)->data_as<float>().front();
-		tz_assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
+		hdk::assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
 	}
 	
 	tz::gl::device().destroy_renderer(r2h);
@@ -85,7 +85,7 @@ TESTFUNC_END
 TESTFUNC_BEGIN(renderer_resource_reference_image)
 	if(!image_resources_supported())
 	{
-		tz_warning_report("Test skipped due to lack of support for image resources.");	
+		hdk::report("Test skipped due to lack of support for image resources.");	
 		return;
 	}
 
@@ -116,7 +116,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	// Make sure the image resource reference contains the expected value.
 	{
 		std::uint32_t actual = tz::gl::device().get_renderer(r2h).get_resource(r2ih)->data_as<std::uint32_t>().front();
-		tz_assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
+		hdk::assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
 	}
 	
 	tz::gl::device().destroy_renderer(r2h);
@@ -141,7 +141,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 	// Do the resize.
 	{
 		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
-		tz_assert(ren.get_resource(bh)->data().size_bytes() == sizeof(float) * 1, "Buffer had unexpected size prior to bufferresize edit. Expected %d bytes, got %zu", sizeof(float) * 1, ren.get_resource(bh)->data().size_bytes());
+		hdk::assert(ren.get_resource(bh)->data().size_bytes() == sizeof(float) * 1, "Buffer had unexpected size prior to bufferresize edit. Expected %d bytes, got %zu", sizeof(float) * 1, ren.get_resource(bh)->data().size_bytes());
 
 		ren.edit
 		(
@@ -154,7 +154,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 			.build()
 		);
 
-		tz_assert(ren.get_resource(bh)->data().size_bytes() == sizeof(float) * 2, "Buffer had unexpected size after bufferresize edit. Expected %d bytes, got %zu", sizeof(float) * 2, ren.get_resource(bh)->data().size_bytes());
+		hdk::assert(ren.get_resource(bh)->data().size_bytes() == sizeof(float) * 2, "Buffer had unexpected size after bufferresize edit. Expected %d bytes, got %zu", sizeof(float) * 2, ren.get_resource(bh)->data().size_bytes());
 	}
 
 	// Try rendering and make sure it doesn't crash.
@@ -167,7 +167,7 @@ TESTFUNC_END
 TESTFUNC_BEGIN(rendereredit_imageresize)
 	if(!image_resources_supported())
 	{
-		tz_warning_report("Test skipped due to lack of support for image resources.");	
+		hdk::report("Test skipped due to lack of support for image resources.");	
 		return;
 	}
 	// Create a renderer with image of dimensions {1, 1} and then resize to {2, 2}
@@ -194,7 +194,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
 		const tz::gl::ImageResource* ires = static_cast<const tz::gl::ImageResource*>(ren.get_resource(ih));
 
-		tz_assert(ires->get_dimensions() == old_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", old_dims[0], old_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
+		hdk::assert(ires->get_dimensions() == old_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", old_dims[0], old_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
 
 		ren.edit
 		(
@@ -207,7 +207,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 			.build()
 		);
 
-		tz_assert(ires->get_dimensions() == new_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", new_dims[0], new_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
+		hdk::assert(ires->get_dimensions() == new_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", new_dims[0], new_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
 
 	}
 
@@ -241,7 +241,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
 		{
 			std::span<const float> bufdata = ren.get_resource(bh)->data_as<const float>();
-			tz_assert(std::equal(bufdata.begin(), bufdata.end(), old_data.begin()), "Buffer data did not match expected values prior to resource write.");
+			hdk::assert(std::equal(bufdata.begin(), bufdata.end(), old_data.begin()), "Buffer data did not match expected values prior to resource write.");
 		}
 		ren.edit
 		(
@@ -255,7 +255,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 		);
 		{
 			std::span<const float> bufdata = ren.get_resource(bh)->data_as<const float>();
-			tz_assert(std::equal(bufdata.begin(), bufdata.end(), new_data.begin()), "Buffer data did not match expected values prior to resource write.");
+			hdk::assert(std::equal(bufdata.begin(), bufdata.end(), new_data.begin()), "Buffer data did not match expected values prior to resource write.");
 		}
 
 	}
@@ -270,7 +270,7 @@ TESTFUNC_END
 TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	if(!image_resources_supported())
 	{
-		tz_warning_report("Test skipped due to lack of support for image resources.");	
+		hdk::report("Test skipped due to lack of support for image resources.");	
 		return;
 	}
 	// Create a renderer with image of dimensions {1, 1}, colour black.
@@ -299,7 +299,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	// Do the write.
 	{
 		tz::gl::Renderer& ren = tz::gl::device().get_renderer(rh);
-		tz_assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == black_pixel, "Expected colour %x, got %x", black_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
+		hdk::assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == black_pixel, "Expected colour %x, got %x", black_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
 		ren.edit
 		(
 			tz::gl::RendererEditBuilder{}
@@ -311,7 +311,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 			.build()
 		);
 
-		tz_assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == white_pixel, "Expected colour %x, got %x", white_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
+		hdk::assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == white_pixel, "Expected colour %x, got %x", white_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
 	}
 
 	// Try rendering and make sure it doesn't crash.

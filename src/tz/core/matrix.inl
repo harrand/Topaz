@@ -1,4 +1,4 @@
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #if TOPAZ_DEBUG
 #include <cstdio>
 #endif
@@ -11,30 +11,30 @@ namespace tz
 	template<tz::Number T, std::size_t R, std::size_t C>
 	const typename Matrix<T, R, C>::Row& Matrix<T, R, C>::operator[](std::size_t row_idx) const
 	{
-		tz_assert(row_idx < R, "tz::Matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
+		hdk::assert(row_idx < R, "tz::Matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
 		return this->mat[row_idx];
 	}
 
 	template<tz::Number T, std::size_t R, std::size_t C>
 	typename Matrix<T, R, C>::Row& Matrix<T, R, C>::operator[](std::size_t row_idx)
 	{
-		tz_assert(row_idx < R, "tz::Matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
+		hdk::assert(row_idx < R, "tz::Matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
 		return this->mat[row_idx];
 	}
 
 	template<tz::Number T, std::size_t R, std::size_t C>
 	const T& Matrix<T, R, C>::operator()(std::size_t row, std::size_t column) const
 	{
-		tz_assert(row < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
-		tz_assert(column < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
+		hdk::assert(row < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
+		hdk::assert(column < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
 		return (*this)[column][row];
 	}
 
 	template<tz::Number T, std::size_t R, std::size_t C>
 	T& Matrix<T, R, C>::operator()(std::size_t row, std::size_t column)
 	{
-		tz_assert(row < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
-		tz_assert(column < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
+		hdk::assert(row < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
+		hdk::assert(column < R, "tz::Matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
 		return (*this)[column][row];
 	}
 
@@ -350,7 +350,7 @@ namespace tz
 				cat(*this, 8) * cat(*this, 2) * cat(*this, 5);
 
 		float determinant = cat(*this, 0) * cat(mat, 0) + cat(*this, 1) * cat(mat, 4) + cat(*this, 2) * cat(mat, 8) + cat(*this, 3) * cat(mat, 12);
-		tz_assert(determinant != 0, "tz::geo::Matrix<T, %zu, %zu>::inverse(): Cannot get inverse because determinant is zero.", R, C);
+		hdk::assert(determinant != 0, "tz::geo::Matrix<T, %zu, %zu>::inverse(): Cannot get inverse because determinant is zero.", R, C);
 		determinant = 1.0f / determinant;
 		for(std::size_t i = 0; i < 16; i++)
 			at(mat, i) = cat(mat, i) * determinant;
@@ -375,7 +375,7 @@ namespace tz
 		return m;
 	}
 
-	#if TZ_DEBUG
+	#if HDK_DEBUG
 	template<tz::Number T, std::size_t R, std::size_t C>
 	void Matrix<T, R, C>::debug_print() const
 	{

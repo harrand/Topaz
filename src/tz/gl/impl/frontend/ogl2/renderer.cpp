@@ -1,6 +1,6 @@
 #if TZ_OGL
 #include "tz/core/profiling/zone.hpp"
-#include "tz/core/report.hpp"
+#include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/buffer.hpp"
@@ -18,7 +18,7 @@ namespace tz::gl
 		{
 			ogl2::Buffer& buffer = bufcomp.ogl_get_buffer();
 			IResource* res = bufcomp.get_resource();
-			tz_assert(res != nullptr, "BufferComponent had null resource");
+			hdk::assert(res != nullptr, "BufferComponent had null resource");
 			switch(res->get_access())
 			{
 				case ResourceAccess::StaticFixed:
@@ -54,7 +54,7 @@ namespace tz::gl
 				}
 				break;
 				default:
-					tz_error("ResourceAccess for this buffer is not yet implemented");	
+					hdk::error("ResourceAccess for this buffer is not yet implemented");	
 				break;
 			}
 		}
@@ -96,7 +96,7 @@ namespace tz::gl
 					}
 				break;
 				default:
-					tz_error("Unrecognised ResourceType. Please submit a bug report.");
+					hdk::error("Unrecognised ResourceType. Please submit a bug report.");
 				break;
 			}
 		};
@@ -125,7 +125,7 @@ namespace tz::gl
 						this->components.push_back(tz::make_owned<ImageComponentOGL>(*res));
 					break;
 					default:
-						tz_error("Unrecognised ResourceType. Please submit a bug report.");
+						hdk::error("Unrecognised ResourceType. Please submit a bug report.");
 					break;
 				}
 				comp = this->components.back().get();
@@ -264,7 +264,7 @@ namespace tz::gl
 		{
 			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::IndexBuffer))
 			{
-				tz_assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
+				hdk::assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
 				return const_cast<IComponent*>(component_ptr.get());
 			}
 		}
@@ -277,7 +277,7 @@ namespace tz::gl
 		{
 			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
 			{
-				tz_assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
+				hdk::assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
 				return const_cast<IComponent*>(component_ptr.get());
 			}
 		}
@@ -335,8 +335,8 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			tz_assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			tz_assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
 			modules =
 			{
 				{
@@ -351,7 +351,7 @@ namespace tz::gl
 
 			if(sinfo.has_shader(ShaderStage::TessellationControl) || sinfo.has_shader(ShaderStage::TessellationEvaluation))
 			{
-				tz_assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+				hdk::assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
 				modules.add
 				({
 					.type = ogl2::ShaderType::TessellationControl,
@@ -386,7 +386,7 @@ namespace tz::gl
 			case OutputTarget::OffscreenImage:
 			{
 				auto* out = static_cast<ImageOutput*>(this->output.get());
-				tz_assert(!out->has_depth_attachment(), "ImageOutput with depth attachment is not yet implemented.");
+				hdk::assert(!out->has_depth_attachment(), "ImageOutput with depth attachment is not yet implemented.");
 				tz::BasicList<ogl2::FramebufferTexture> colour_attachments;
 				colour_attachments.resize(out->colour_attachment_count());
 				for(std::size_t i = 0; i < colour_attachments.length(); i++)
@@ -412,7 +412,7 @@ namespace tz::gl
 				// Do nothing. We use null framebuffer.
 			break;
 			default:
-				tz_error("Use of this specific OutputTarget is not yet implemented.");
+				hdk::error("Use of this specific OutputTarget is not yet implemented.");
 			break;
 			}
 		}
@@ -476,7 +476,7 @@ namespace tz::gl
 	debug_name(info.debug_get_name())
 	{
 		// Handle debug names for resources.
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
 				IComponent* comp = this->resources.get_component(static_cast<tz::HandleValue>(i));
@@ -494,7 +494,7 @@ namespace tz::gl
 				}
 			}
 			this->shader.get_program().debug_set_name(this->debug_name + ":Shader");
-		#endif // TZ_DEBUG
+		#endif // HDK_DEBUG
 	}
 
 	unsigned int RendererOGL::resource_count() const
@@ -541,8 +541,8 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
 		TZ_PROFZONE_GPU("RendererOGL Render", TZ_PROFCOL_RED);
-		tz_assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
-		#if TZ_DEBUG
+		hdk::assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
+		#if HDK_DEBUG
 		{
 			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, this->debug_name.c_str());
 		}
@@ -557,7 +557,7 @@ namespace tz::gl
 			{
 				this->resources.bind_image_buffer();
 			}
-			tz_assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
+			hdk::assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
 			glDispatchCompute(this->compute_kernel[0], this->compute_kernel[1], this->compute_kernel[2]);
 		}
 		else
@@ -623,7 +623,7 @@ namespace tz::gl
 				glfwSwapBuffers(tz::window().get_middleware_handle());
 			}
 		}
-		#if TZ_DEBUG
+		#if HDK_DEBUG
 		{
 			glPopDebugGroup();
 		}
@@ -646,7 +646,7 @@ namespace tz::gl
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
 		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
-		tz_assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
+		hdk::assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
 		for(const RendererEdit::Variant& req : edit_request)
 		{
 			std::visit([this](auto&& arg)
@@ -655,7 +655,7 @@ namespace tz::gl
 				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
 				{
 					auto bufcomp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
-					tz_assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+					hdk::assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
@@ -664,7 +664,7 @@ namespace tz::gl
 				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
 					auto imgcomp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
-					tz_assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+					hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
 					if(imgcomp->get_dimensions() != arg.dimensions)
 					{
 						imgcomp->resize(arg.dimensions);
@@ -718,7 +718,7 @@ namespace tz::gl
 							}
 						break;
 						default:
-							tz_warning_report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
+							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::HandleValue>(arg.resource)));
 							std::span<std::byte> data = res->data_as<std::byte>();
 							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 						break;

@@ -1,5 +1,5 @@
 #include "tz/core/window_functionality.hpp"
-#include "tz/core/assert.hpp"
+#include "hdk/debug.hpp"
 #include "tz/core/peripherals/keyboard.hpp"
 #include "tz/core/peripherals/mouse.hpp"
 #include "tz/core/profiling/zone.hpp"
@@ -9,9 +9,9 @@
 #include "GLFW/glfw3.h"
 #if TZ_OGL
 #include "glad/glad.h"
-#if TZ_PROFILE
+#if HDK_PROFILE
 #include "TracyOpenGL.hpp"
-#endif // TZ_PROFILE
+#endif // HDK_PROFILE
 #endif
 
 namespace tz
@@ -119,9 +119,9 @@ namespace tz
 			}
 		#elif TZ_OGL
 			// OpenGL only
-			#if TZ_PROFILE
+			#if HDK_PROFILE
 				TracyGpuCollect;
-			#endif // TZ_PROFILE
+			#endif // HDK_PROFILE
 		#endif
 	}
 
@@ -179,7 +179,7 @@ namespace tz
 		switch(button)
 		{
 			default:
-				tz_error("Unrecognised MouseButton. Memory corruption? Please submit a bug report.");
+				hdk::error("Unrecognised MouseButton. Memory corruption? Please submit a bug report.");
 			[[fallthrough]];
 			case GLFW_MOUSE_BUTTON_LEFT:
 				tz_button = MouseButton::Left;
@@ -239,7 +239,7 @@ namespace tz
 
 	void WindowFunctionality::ensure() const
 	{
-		tz_assert(this->wnd != nullptr, "WindowFunctionality::ensure(): Failed");
+		hdk::assert(this->wnd != nullptr, "WindowFunctionality::ensure(): Failed");
 	}
 
 	tz::KeyInfo get_key_from_glfw_code(int glfw_key, int scancode)
