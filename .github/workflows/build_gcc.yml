@@ -25,7 +25,7 @@ jobs:
         if: ${{inputs.render_api == 'vulkan'}}
 
       - name: 'Configure Topaz ${{inputs.render_api}}_gcc_${{inputs.build_config}}'
-        run: cmake --preset ${{inputs.render_api}}_${{inputs.build_config}} -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_C_COMPILER=g++-11
+        run: cmake --preset ${{inputs.render_api}}_${{inputs.build_config}} -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_C_COMPILER=gcc-11
 
       - name: 'Build Topaz ${{inputs.render_api}}_gcc_${{inputs.build_config}}'
         run: cmake --build ./build/${{inputs.render_api}}_${{inputs.build_config}} --target topaz
