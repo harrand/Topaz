@@ -17,19 +17,15 @@ jobs:
         run:   |
           sudo apt-get clean
           sudo apt-get update
-          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb mesa-utils gdb
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev xvfb mesa-utils gdb g++-11 gcc-11
       - uses: actions/checkout@v2
         with:
           submodules: recursive
+      - name: 'Configure Topaz Tests (ogl_gcc_debug)'
+        run: cmake --preset opengl_debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_C_COMPILER=gcc-11
       - name: 'Build Unit Tests (ogl_gcc_debug)'
-        uses: lukka/run-cmake@v3
-        with:
-          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
-          cmakeGenerator: UnixMakefiles
-          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/debug\" -DTOPAZ_BUILDCONFIG=debug -DTOPAZ_RENDERAPI=opengl -DCMAKE_CXX_COMPILER=g++-10"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--target tztest_build --parallel 4"
-          buildDirectory: "${{ github.workspace }}/build/debug"
+        run: cmake --build ./build/opengl_debug --target tztest_build
+
       - name: 'Check OpenGL Support'
         run:  |
           cd ${{ github.workspace }}/build/debug
@@ -38,13 +34,13 @@ jobs:
           cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
-          cd ${{ github.workspace }}/build/debug
+          cd ${{ github.workspace }}/build/opengl_debug
           ctest -V | grep "Test command" | sed 's/[0-9]\+: Test command: \/home\/runner//' > unit_test_executables.txt
           echo Unit Test Executables:
           cat unit_test_executables.txt
       - name: 'Run Unit Tests via xvfb'
         run:  |
-          cd ${{ github.workspace }}/build/debug
+          cd ${{ github.workspace }}/build/opengl_debug
           echo Running all unit tests
           for i in $(cat unit_test_executables.txt)
           do
