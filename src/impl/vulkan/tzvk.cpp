@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <span>
+#include <limits>
+#include <optional>
 
 constexpr std::uint32_t req_vk_version = VK_VERSION_1_3;
 
@@ -16,6 +18,8 @@ namespace tz::impl_vk
 		VkInstance instance = VK_NULL_HANDLE;
 		std::vector<VkPhysicalDevice> installed_devices = {};
 		VkPhysicalDevice selected_device = VK_NULL_HANDLE;
+		std::uint32_t render_queue_family_index = std::numeric_limits<std::uint32_t>::max();
+		VkDevice render_device = VK_NULL_HANDLE;
 		
 		void debug_check(){hdk::assert(this->instance != VK_NULL_HANDLE, "Vulkan Instance null, system_t invalid or not initialised.");}
 	} system;
@@ -127,11 +131,104 @@ namespace tz::impl_vk
 			return score;
 		}
 
-		VkPhysicalDevice select_physical_device(std::span<const VkPhysicalDevice> devices)
+		std::optional<std::uint32_t> get_render_queue_family_index(VkPhysicalDevice device)
+		{
+			// TODO: Check for present aswell.	
+			std::uint32_t family_count;
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &family_count, nullptr);
+			std::vector<VkQueueFamilyProperties> props(family_count);
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &family_count, props.data());
+			auto iter = std::find_if(props.begin(), props.end(), [](VkQueueFamilyProperties prop)
+			{
+				return prop.queueFlags & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
+			});
+			if(iter != props.end())
+			{
+				return {std::distance(props.begin(), iter)};
+			}
+			return std::nullopt;
+		}
+
+		bool is_physical_device_appropriate(VkPhysicalDevice dev)
+		{
+			return get_render_queue_family_index(dev).has_value();
+		}
+
+		VkPhysicalDevice select_physical_device(std::span<VkPhysicalDevice> devices)
 		{
 			hdk::assert(!devices.empty(), "vulkan: attempting to select physical device, but the provided span is empty. bug report needed.");
+			// We want to ignore all devices for which we cant create a fitting VkDevice from to satisfy our requirements.
+			auto valid_end = std::remove_if(devices.begin(), devices.end(), [](VkPhysicalDevice dev)
+			{
+				return !is_physical_device_appropriate(dev);
+			});
 			// simply retrieve highest rated device.
-			return *std::max_element(devices.begin(), devices.end(), [](VkPhysicalDevice a, VkPhysicalDevice b){return rate_physical_device(a) < rate_physical_device(b);});
+			return *std::max_element(devices.begin(), valid_end, [](VkPhysicalDevice a, VkPhysicalDevice b){return rate_physical_device(a) < rate_physical_device(b);});
+		}
+	
+		VkDevice system_make_render_device()
+		{
+			// First make sure we've actually selected a valid physical device.
+			hdk::assert(system.render_device == VK_NULL_HANDLE, "Attempted to create vulkan device but it seems to already have been made. Logic error.");
+			hdk::assert(system.selected_device != VK_NULL_HANDLE && is_physical_device_appropriate(system.selected_device), "Attempting to create vulkan device, but the selected physical device is not appropriate. Either logic error or your machine is not compatible with topaz.");
+			{
+				auto maybe_queue_family_index = get_render_queue_family_index(system.selected_device);
+				hdk::assert(maybe_queue_family_index.has_value(), "Physical device was considered to be valid, but we still can't retrieve a queue family index for our needs -- Logic error.");
+				system.render_queue_family_index = maybe_queue_family_index.value();
+			}
+			// We're only going to create a single queue for now.
+			constexpr float default_priority = 1.0f;
+			VkDeviceQueueCreateInfo queue_create
+			{
+				.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.queueFamilyIndex = system.render_queue_family_index,
+				.queueCount = 1,
+				.pQueuePriorities = &default_priority
+			};
+
+			VkDeviceCreateInfo device_create
+			{
+				.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.queueCreateInfoCount = 1,
+				.pQueueCreateInfos = &queue_create,
+				.enabledLayerCount = 0,
+				.ppEnabledLayerNames = nullptr,
+				.enabledExtensionCount = 0,
+				.ppEnabledExtensionNames = nullptr,
+				.pEnabledFeatures = nullptr
+			};
+			VkDevice ret;
+			VkResult res = vkCreateDevice(system.selected_device, &device_create, nullptr, &ret);	
+			switch(res)
+			{
+				case VK_SUCCESS:
+				break;
+				case VK_ERROR_OUT_OF_HOST_MEMORY:
+				[[fallthrough]];
+				case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+					hdk::error("Failed to create VkDevice due to oom.");
+				break;
+				case VK_ERROR_INITIALIZATION_FAILED:
+					hdk::error("Vulkan backend not properly initialised by the time we try to create a VkDevice.");
+				break;
+				case VK_ERROR_EXTENSION_NOT_PRESENT:
+					hdk::error("One or more VkDevice extensions specified weren't supported. We should've been checking for this beforehand. Logic error.");
+				break;
+				case VK_ERROR_FEATURE_NOT_PRESENT:
+					hdk::error("One or more VkDevice features specified weren't supported. We should've been checking for this beforehand. Logic error.");
+				break;
+				case VK_ERROR_TOO_MANY_OBJECTS:
+					hdk::error("VkDevice creation failed due to too many objects. Logic error.");
+				break;
+				case VK_ERROR_DEVICE_LOST:
+					hdk::error("VkDevice creation failed due to device lost. Either engine has a severe bug, or another application that was just running has crashed the GPU.");
+				break;
+			}
+			return ret;
 		}
 	}
 
@@ -144,6 +241,7 @@ namespace tz::impl_vk
 		detail::system_init_instance(info);
 		detail::system_enum_devices();
 		system.selected_device = detail::select_physical_device(system.installed_devices);
+		system.render_device = detail::system_make_render_device();
 
 		#if HDK_DEBUG
 		{
@@ -168,6 +266,11 @@ namespace tz::impl_vk
 	void terminate()
 	{
 		hdk::assert(system.initialise_attempted, "Vulkan backend was never initialise_attempted!");
+		hdk::assert(system.render_device != VK_NULL_HANDLE);
+		hdk::assert(system.instance != VK_NULL_HANDLE);
+
+		vkDestroyDevice(system.render_device, nullptr);
+		system.render_device = VK_NULL_HANDLE;
 	
 		vkDestroyInstance(system.instance, nullptr);
 		system.instance = VK_NULL_HANDLE;
