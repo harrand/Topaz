@@ -21,10 +21,10 @@ int main()
 		tz::gl::BufferResource colour_buffer = tz::gl::BufferResource::from_many
 		(
 		 	{
-				tz::Vec4{0.0f, 0.0f, 0.0f, 1.0f},
-				tz::Vec4{1.0f, 0.0f, 0.0f, 1.0f},
-				tz::Vec4{0.0f, 1.0f, 0.0f, 1.0f},
-				tz::Vec4{0.0f, 0.0f, 1.0f, 1.0f}
+				hdk::vec4{0.0f, 0.0f, 0.0f, 1.0f},
+				hdk::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+				hdk::vec4{0.0f, 1.0f, 0.0f, 1.0f},
+				hdk::vec4{0.0f, 0.0f, 1.0f, 1.0f}
 			}
 		);
 		tz::gl::BufferResource time_buffer = tz::gl::BufferResource::from_one(0u);

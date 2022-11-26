@@ -178,7 +178,7 @@ namespace tz::gl::vk2
 		return this->layout;
 	}
 
-	Vec2ui Image::get_dimensions() const
+	hdk::vec2ui Image::get_dimensions() const
 	{
 		return this->dimensions;
 	}

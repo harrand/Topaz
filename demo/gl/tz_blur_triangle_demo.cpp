@@ -23,7 +23,7 @@ int main()
 		// Create a renderer which just draws a square with a texture applied (fragment-shader post-processing does a blur)
 		struct BlurData
 		{
-			tz::Vec2 direction;
+			hdk::vec2 direction;
 			float pad0[2];
 		};
 
@@ -34,7 +34,7 @@ int main()
 		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised
 		({
 			.format = tz::gl::ImageFormat::BGRA32,
-			.dimensions = static_cast<tz::Vec2ui>(tz::window().get_dimensions()),
+			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),
 			.flags = {tz::gl::ResourceFlag::RendererOutput}
 		});
 
@@ -66,7 +66,7 @@ int main()
 			renderer.render(1);
 			BlurData& blur = blur_renderer.get_resource(blur_buffer_handle)->data_as<BlurData>().front();
 			static float counter = 0.0f;
-			blur.direction = tz::Vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
+			blur.direction = hdk::vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
 			counter += 0.0003f;
 			blur_renderer.render(1);
 			tz::window().end_frame();

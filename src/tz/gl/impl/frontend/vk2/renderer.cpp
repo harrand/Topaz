@@ -629,7 +629,7 @@ namespace tz::gl
 		return this->output_framebuffers;
 	}
 
-	tz::Vec2ui OutputManager::get_output_dimensions() const
+	hdk::vec2ui OutputManager::get_output_dimensions() const
 	{
 		hdk::assert(!this->output_imageviews.empty(), "OutputManager had no output views, so impossible to retrieve viewport dimensions. Please submit a bug report.");
 		return this->output_imageviews.front().colour_views.front().get_image().get_dimensions();
@@ -770,7 +770,7 @@ namespace tz::gl
 	{
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
-			tz::Vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
+			hdk::vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
 			tz::BasicList<vk2::ImageView*> attachments;
 			attachments.resize(this->output_imageviews[i].colour_views.length());
 			std::transform(this->output_imageviews[i].colour_views.begin(), this->output_imageviews[i].colour_views.end(), attachments.begin(),
@@ -796,7 +796,7 @@ namespace tz::gl
 		const vk2::DescriptorLayout& dlayout,
 		const vk2::RenderPass& render_pass,
 		std::size_t frame_in_flight_count,
-		tz::Vec2ui viewport_dimensions,
+		hdk::vec2ui viewport_dimensions,
 		bool depth_testing_enabled,
 		bool alpha_blending_enabled
 	):
@@ -859,7 +859,7 @@ namespace tz::gl
 		return this->shader;
 	}
 
-	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions, bool wireframe_mode)
+	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, hdk::vec2ui new_viewport_dimensions, bool wireframe_mode)
 	{
 		this->wireframe_mode = wireframe_mode;
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", 0xFFAAAA00);
@@ -879,7 +879,7 @@ namespace tz::gl
 				.shaders = this->shader.native_data(),
 				.state = vk2::PipelineState
 				{
-					.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(new_viewport_dimensions)),
+					.viewport = vk2::create_basic_viewport(static_cast<hdk::vec2>(new_viewport_dimensions)),
 					.rasteriser = {.polygon_mode = (this->wireframe_mode ? vk2::PolygonMode::Line : vk2::PolygonMode::Fill)},
 					.depth_stencil =
 					{
@@ -1002,7 +1002,7 @@ namespace tz::gl
 		}};
 	}
 
-	vk2::GraphicsPipelineInfo GraphicsPipelineManager::make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
+	vk2::GraphicsPipelineInfo GraphicsPipelineManager::make_graphics_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
 		tz::BasicList<vk2::ColourBlendState::AttachmentState> alpha_blending_options;
 		alpha_blending_options.resize(render_pass.get_info().total_colour_attachment_count());
@@ -1012,7 +1012,7 @@ namespace tz::gl
 			.shaders = this->shader.native_data(),
 			.state =
 			{
-				.viewport = vk2::create_basic_viewport(static_cast<tz::Vec2>(viewport_dimensions)),
+				.viewport = vk2::create_basic_viewport(static_cast<hdk::vec2>(viewport_dimensions)),
 				.depth_stencil =
 				{
 					.depth_testing = depth_testing_enabled,
@@ -1044,7 +1044,7 @@ namespace tz::gl
 		};
 	}
 
-	vk2::Pipeline GraphicsPipelineManager::make_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
+	vk2::Pipeline GraphicsPipelineManager::make_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
 		if(this->is_compute())
 		{
@@ -1857,8 +1857,8 @@ namespace tz::gl
 					});
 				}
 
-				tz::Vec2ui offset{0u, 0u};
-				tz::Vec2ui extent = this->output.get_output_dimensions();
+				hdk::vec2ui offset{0u, 0u};
+				hdk::vec2ui extent = this->output.get_output_dimensions();
 
 				if(this->get_output() != nullptr)
 				{

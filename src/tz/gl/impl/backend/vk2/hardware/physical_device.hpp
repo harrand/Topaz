@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_PHYSICAL_DEVICE_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_PHYSICAL_DEVICE_HPP
 #if TZ_VULKAN
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include "tz/core/containers/basic_list.hpp"
 #include "tz/core/containers/enum_field.hpp"
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
@@ -50,9 +50,9 @@ namespace tz::gl::vk2
 		PhysicalDeviceSurfaceCapabilityInfo(VkSurfaceCapabilitiesKHR vk_capabilities);
 		struct SwapchainExtent
 		{
-			tz::Vector<std::uint32_t, 2> current_extent;
-			tz::Vector<std::uint32_t, 2> min_image_extent;
-			tz::Vector<std::uint32_t, 2> max_image_extent;
+			hdk::vector<std::uint32_t, 2> current_extent;
+			hdk::vector<std::uint32_t, 2> min_image_extent;
+			hdk::vector<std::uint32_t, 2> max_image_extent;
 		};
 		std::uint32_t min_image_count;
 		std::uint32_t max_image_count;

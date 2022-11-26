@@ -37,7 +37,7 @@ namespace tz::gl::vk2
 		{
 			if(pdev_surface_cap.maybe_surface_dimensions.has_value())
 			{
-				tz::Vector<std::uint32_t, 2> current_extent = pdev_surface_cap.maybe_surface_dimensions.value().current_extent;
+				hdk::vector<std::uint32_t, 2> current_extent = pdev_surface_cap.maybe_surface_dimensions.value().current_extent;
 				extent.width = current_extent[0];
 				extent.height = current_extent[1];
 			}
@@ -207,7 +207,7 @@ namespace tz::gl::vk2
 		return this->info.present_mode;
 	}
 
-	Vec2ui Swapchain::get_dimensions() const
+	hdk::vec2ui Swapchain::get_dimensions() const
 	{
 		return this->dimensions;
 	}

@@ -26,7 +26,7 @@ namespace tz::gl
 		const vk2::Swapchain& get_swapchain() const;
 		vk2::Swapchain& get_swapchain();
 
-		tz::Vec2ui get_dimensions() const;
+		hdk::vec2ui get_dimensions() const;
 		vk2::ImageFormat get_format() const;
 
 		vk2::Swapchain::ImageAcquisitionResult get_unused_image(const vk2::Swapchain::ImageAcquisition& acquire);
@@ -39,7 +39,7 @@ namespace tz::gl
 	private:
 		void set_swapchain_images_debug_name();
 		void make_depth_image();
-		void on_resize(tz::Vec2ui dims);
+		void on_resize(hdk::vec2ui dims);
 		void register_resize();
 		void unregister_resize();
 		bool is_resize_registered() const;

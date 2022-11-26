@@ -8,7 +8,7 @@
 #include "tz/gl/api/shader.hpp"
 #include "tz/core/containers/basic_list.hpp"
 #include "tz/core/containers/enum_field.hpp"
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include <concepts>
 #include <variant>
 #include <optional>
@@ -56,7 +56,7 @@ namespace tz::gl
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>
-	concept RendererInfoType = requires(T t, RendererHandle ren, ResourceHandle r, const IResource& resource, IComponent* component, IOutput& output, RendererOptions options, tz::Vec4 vec4, tz::Vec3ui vec3ui, std::string str)
+	concept RendererInfoType = requires(T t, RendererHandle ren, ResourceHandle r, const IResource& resource, IComponent* component, IOutput& output, RendererOptions options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
@@ -72,10 +72,10 @@ namespace tz::gl
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
 
 		{t.set_clear_colour(vec4)} -> std::same_as<void>;
-		{t.get_clear_colour()} -> std::convertible_to<tz::Vec4>;
+		{t.get_clear_colour()} -> std::convertible_to<hdk::vec4>;
 
 		{t.set_compute_kernel(vec3ui)} -> std::same_as<void>;
-		{t.get_compute_kernel()} -> std::convertible_to<tz::Vec3ui>;
+		{t.get_compute_kernel()} -> std::convertible_to<hdk::vec3ui>;
 
 		{t.shader()} -> ShaderInfoType;
 		{t.debug_name(str)} -> std::same_as<void>;
@@ -104,7 +104,7 @@ namespace tz::gl
 			/// Handle corresponding to the image to edit.
 			ResourceHandle image_handle;
 			/// New dimensions of the image, in pixels.
-			tz::Vec2ui dimensions;
+			hdk::vec2ui dimensions;
 		};
 
 		struct ResourceWrite
@@ -126,7 +126,7 @@ namespace tz::gl
 		struct ComputeConfig
 		{
 			/// New compute kernel workgroup dimensions.
-			tz::Vec3ui kernel;
+			hdk::vec3ui kernel;
 		};
 
 		/**

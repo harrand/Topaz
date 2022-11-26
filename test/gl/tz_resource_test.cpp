@@ -44,7 +44,7 @@ void basic_buffer()
 void basic_image()
 {
 	{
-		constexpr tz::Vec2ui dims{3u, 12u};
+		constexpr hdk::vec2ui dims{3u, 12u};
 		auto img = tz::gl::ImageResource::from_uninitialised
 		({
 			.format = tz::gl::ImageFormat::RGBA32,

@@ -175,8 +175,8 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 
-	constexpr tz::Vec2ui old_dims{1u, 1u};
-	constexpr tz::Vec2ui new_dims{2u, 2u};
+	constexpr hdk::vec2ui old_dims{1u, 1u};
+	constexpr hdk::vec2ui new_dims{2u, 2u};
 
 	tz::gl::ResourceHandle ih = rinfo.add_resource(tz::gl::ImageResource::from_uninitialised
 	({

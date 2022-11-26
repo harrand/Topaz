@@ -3,7 +3,7 @@
 #include "tz/gl/api/resource.hpp"
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/core/types.hpp"
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include <ranges>
 #include <optional>
 
@@ -99,7 +99,7 @@ namespace tz::gl
 		/// Image format.
 		ImageFormat format;
 		/// Image dimensions, in pixels.
-		tz::Vec2ui dimensions;
+		hdk::vec2ui dimensions;
 		/// Access specifier. By default this is static fixed.
 		ResourceAccess access = ResourceAccess::StaticFixed;
 		/// Flags specifying any special usages for the image. By default there are no flags.
@@ -171,12 +171,12 @@ namespace tz::gl
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		virtual void dbgui() final;
 		ImageFormat get_format() const;
-		tz::Vec2ui get_dimensions() const;
-		void set_dimensions(tz::Vec2ui dims);
+		hdk::vec2ui get_dimensions() const;
+		void set_dimensions(hdk::vec2ui dims);
 	private:
-		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions, ResourceFlags flags);
+		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, hdk::vec2ui dimensions, ResourceFlags flags);
 		ImageFormat format;
-		tz::Vec2ui dimensions;
+		hdk::vec2ui dimensions;
 	};
 }
 #include "tz/gl/resource.inl"

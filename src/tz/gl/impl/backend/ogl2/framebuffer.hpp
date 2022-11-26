@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_FRAMEBUFFER_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_FRAMEBUFFER_HPP
 #if TZ_OGL
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include "tz/core/containers/basic_list.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/image.hpp"
@@ -21,7 +21,7 @@ namespace tz::gl::ogl2
 	struct FramebufferInfo
 	{
 		/// {width, height}, in pixels.
-		tz::Vec2ui dimensions;
+		hdk::vec2ui dimensions;
 		/// Depth attachment, if one exists. Default nullopt.
 		std::optional<FramebufferTexture> maybe_depth_attachment = std::nullopt;
 		/// List of colour attachments in-order. Default empty.
@@ -61,7 +61,7 @@ namespace tz::gl::ogl2
 		 * Retrieve the dimensions {width, height}, in pixels, of every framebuffer attachment.
 		 * @note Every attachment must have size matching this.
 		 */
-		tz::Vec2ui get_dimensions() const;
+		hdk::vec2ui get_dimensions() const;
 
 		/**
 		 * Bind the framebuffer, causing subsequent draw calls to render into the framebuffer instead of its previous target.

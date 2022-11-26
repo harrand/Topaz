@@ -183,17 +183,17 @@ namespace tz::gl
 		return this->format;
 	}
 
-	tz::Vec2ui ImageResource::get_dimensions() const
+	hdk::vec2ui ImageResource::get_dimensions() const
 	{
 		return this->dimensions;
 	}
 
-	void ImageResource::set_dimensions(tz::Vec2ui dims)
+	void ImageResource::set_dimensions(hdk::vec2ui dims)
 	{
 		this->dimensions = dims;
 	}
 
-	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, tz::Vec2ui dimensions, ResourceFlags flags):
+	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, hdk::vec2ui dimensions, ResourceFlags flags):
 	Resource(access, resource_data, initial_alignment_offset, ResourceType::Image, flags),
 	format(format),
 	dimensions(dimensions){}

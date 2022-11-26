@@ -24,11 +24,11 @@ namespace tz::gl::vk2
 		{
 			// Retrieve the SwapchainExtent corresponding to the width and height of the surface.
 			SwapchainExtent dims;
-			dims.current_extent = tz::Vector<std::uint32_t, 2>{cur.width, cur.height};
+			dims.current_extent = hdk::vector<std::uint32_t, 2>{cur.width, cur.height};
 			const VkExtent2D min = vk_capabilities.minImageExtent;
 			const VkExtent2D max = vk_capabilities.maxImageExtent;
-			dims.min_image_extent = tz::Vector<std::uint32_t, 2>{min.width, min.height};
-			dims.max_image_extent = tz::Vector<std::uint32_t, 2>{max.width, max.height};
+			dims.min_image_extent = hdk::vector<std::uint32_t, 2>{min.width, min.height};
+			dims.max_image_extent = hdk::vector<std::uint32_t, 2>{max.width, max.height};
 			this->maybe_surface_dimensions = dims;
 		}
 	}

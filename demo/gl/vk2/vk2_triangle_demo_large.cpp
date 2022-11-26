@@ -21,11 +21,11 @@
 
 struct TriangleResourceData
 {
-	tz::Vec3 position;
+	hdk::vec3 position;
 	float pad0;
-	tz::Vec3 rotation;
+	hdk::vec3 rotation;
 	float pad1;
-	tz::Vec3 scale;
+	hdk::vec3 scale;
 	float pad2;
 	tz::Mat4 mvp;
 	std::uint32_t texture_id;
@@ -34,9 +34,9 @@ struct TriangleResourceData
 
 struct TriangleVertexData
 {
-	tz::Vec3 position;
+	hdk::vec3 position;
 	float pad0;
-	tz::Vec2 texcoord;
+	hdk::vec2 texcoord;
 	float pad1[2];
 };
 
@@ -520,7 +520,7 @@ int main()
 		}
 		// Now the resource data.
 		std::span<TriangleResourceData> resources = triangle_resource_buffer.map_as<TriangleResourceData>();
-		auto set_triangle_data = [&resources](std::size_t triangle_idx, tz::Vec3 position, tz::Vec3 rotation, tz::Vec3 scale, std::uint32_t texture_id = 0)
+		auto set_triangle_data = [&resources](std::size_t triangle_idx, hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale, std::uint32_t texture_id = 0)
 		{
 			hdk::assert(texture_id < 2, "Texture ID %u is invalid.", texture_id);
 			resources[triangle_idx] =

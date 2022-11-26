@@ -108,14 +108,14 @@ namespace tz
 	{
 		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
 		Window* cur_window = static_cast<Window*>(cur_window_func);
-		cur_window->on_resize()(tz::Vec2ui{static_cast<unsigned int>(width), static_cast<unsigned int>(height)});
+		cur_window->on_resize()(hdk::vec2ui{static_cast<unsigned int>(width), static_cast<unsigned int>(height)});
 	}
 
 	void Window::window_move_callback(GLFWwindow* window, int width, int height)
 	{
 		WindowFunctionality* cur_window_func = reinterpret_cast<WindowFunctionality*>(glfwGetWindowUserPointer(window));
 		Window* cur_window = static_cast<Window*>(cur_window_func);
-		cur_window->on_move()(tz::Vec2ui{static_cast<unsigned int>(width), static_cast<unsigned int>(height)});
+		cur_window->on_move()(hdk::vec2ui{static_cast<unsigned int>(width), static_cast<unsigned int>(height)});
 	}
 
 	void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

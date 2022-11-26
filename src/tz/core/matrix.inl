@@ -171,12 +171,12 @@ namespace tz
 	}
 
 	template<tz::Number T, std::size_t R, std::size_t C>
-	Vector<T, R> Matrix<T, R, C>::operator*(const Vector<T, C>& vec) const
+	hdk::vector<T, R> Matrix<T, R, C>::operator*(const hdk::vector<T, C>& vec) const
 	{
-		Vector<T, R> ret;
+		hdk::vector<T, R> ret;
 		for(std::size_t i = 0; i < R; i++)
 		{
-			ret[i] = tz::Vec4{(*this)[i]}.dot(vec);
+			ret[i] = hdk::vec4{(*this)[i]}.dot(vec);
 		}
 		return ret;
 	}

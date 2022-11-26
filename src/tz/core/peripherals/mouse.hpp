@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_PERIPHERALS_MOUSE_HPP
 #define TOPAZ_CORE_PERIPHERALS_MOUSE_HPP
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include <array>
 #include <vector>
 
@@ -82,7 +82,7 @@ namespace tz
 	struct MouseButtonPressInfo
 	{
 		MouseButtonInfo button;
-		tz::Vec2 press_position;
+		hdk::vec2 press_position;
 	};
 
 	/**
@@ -99,7 +99,7 @@ namespace tz
 		 * @param pressed Whether the button is pressed (true) or released (false).
 		 */
 		void update(MouseButtonPressInfo button, bool pressed);
-		void update_scroll(tz::Vec2 offset);
+		void update_scroll(hdk::vec2 offset);
 		/**
 		 * Query as to whether a mouse button is currently down. A mouse button is down if it has been pressed at some point in the past, but not yet released.
 		 * @param button Describes which mouse button should be checked.
@@ -112,9 +112,9 @@ namespace tz
 		 * @return Positon of the cursor when the mouse button was pressed.
 		 * @pre `is_mouse_button_down(button) == true` otherwise the behaviour is undefined.
 		 */
-		tz::Vec2 get_mouse_press_position(MouseButton button) const;
+		hdk::vec2 get_mouse_press_position(MouseButton button) const;
 		std::span<const MouseButtonPressInfo> get_pressed_buttons() const;
-		tz::Vec2 get_scroll_offset() const;
+		hdk::vec2 get_scroll_offset() const;
 		/**
 		 * Attempt to print entire mouse button state to a single line of stdout.
 		 * 
@@ -123,20 +123,20 @@ namespace tz
 		void debug_print_state() const;
 	private:
 		std::vector<MouseButtonPressInfo> pressed_buttons = {};
-		tz::Vec2 mouse_wheel_offset = {0.0f, 0.0f};
+		hdk::vec2 mouse_wheel_offset = {0.0f, 0.0f};
 	};
 
 	struct MousePositionInfo
 	{
-		tz::Vec2 position;
+		hdk::vec2 position;
 	};
 
 	class MousePositionState
 	{
 	public:
 		MousePositionState() = default;
-		void update(tz::Vec2 position);
-		tz::Vec2 get_mouse_position() const;
+		void update(hdk::vec2 position);
+		hdk::vec2 get_mouse_position() const;
 		/**
 		 * Attempt to print entire mouse position state to a single line of stdout.
 		 * 

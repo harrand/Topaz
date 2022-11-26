@@ -48,8 +48,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/tz.cpp
 	src/tz/core/tz.hpp
 	src/tz/core/tz.inl
-	src/tz/core/vector.hpp
-	src/tz/core/vector.inl
 	src/tz/core/version.cpp
 	src/tz/core/version.hpp
 	src/tz/core/version.inl

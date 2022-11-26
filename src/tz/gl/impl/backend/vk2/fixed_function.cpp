@@ -17,7 +17,7 @@ namespace tz::gl::vk2
 		};
 	}
 
-	ViewportState create_basic_viewport(tz::Vec2 dimensions)
+	ViewportState create_basic_viewport(hdk::vec2 dimensions)
 	{
 		ViewportState state;
 		state.viewports.add({});

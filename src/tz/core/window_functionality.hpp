@@ -20,8 +20,8 @@ namespace tz
 	class WindowFunctionality
 	{
 	public:
-		using ResizeCallbackType = tz::Callback<tz::Vec2ui>;
-		using MoveCallbackType = tz::Callback<tz::Vec2ui>;
+		using ResizeCallbackType = tz::Callback<hdk::vec2ui>;
+		using MoveCallbackType = tz::Callback<hdk::vec2ui>;
 
 		WindowFunctionality(GLFWwindow* wnd);
 		GLFWwindow* get_middleware_handle() const;
@@ -37,7 +37,7 @@ namespace tz
 		 * Retrieve the height of the window, in pixels.
 		 */
 		float get_height() const;
-		tz::Vec2 get_dimensions() const{return {this->get_width(), this->get_height()};}
+		hdk::vec2 get_dimensions() const{return {this->get_width(), this->get_height()};}
 		void set_width(float width);
 		void set_height(float height);
 		

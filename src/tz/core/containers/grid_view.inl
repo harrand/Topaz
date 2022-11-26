@@ -3,7 +3,7 @@
 namespace tz
 {
 	template<typename T, std::size_t N>
-	GridView<T, N>::GridView(std::span<T> data, tz::Vec2ui dimensions):
+	GridView<T, N>::GridView(std::span<T> data, hdk::vec2ui dimensions):
 	data(data),
 	dimensions(dimensions)
 	{
@@ -18,7 +18,7 @@ namespace tz
 	GridView<T, N>(data, {length, length}){}
 
 	template<typename T, std::size_t N>
-	tz::Vec2ui GridView<T, N>::get_dimensions() const
+	hdk::vec2ui GridView<T, N>::get_dimensions() const
 	{
 		return this->dimensions;
 	}

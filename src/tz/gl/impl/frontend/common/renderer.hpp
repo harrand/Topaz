@@ -105,19 +105,19 @@ namespace tz::gl
 		/**
 		 * Set the clear colour value. Default is solid black. {0, 0, 0, 1}
 		 */
-		void set_clear_colour(tz::Vec4 clear_colour);
+		void set_clear_colour(hdk::vec4 clear_colour);
 		/**
 		 * Retrieve the current clear colour value.
 		 */
-		const tz::Vec4& get_clear_colour() const;
+		const hdk::vec4& get_clear_colour() const;
 		/**
 		 * Set the compute kernel (aka workgroup dimensions) for any compute work dispatched by this renderer. If the renderer does not do any compute work, this is unused.
 		 */
-		void set_compute_kernel(tz::Vec3ui compute_kernel);
+		void set_compute_kernel(hdk::vec3ui compute_kernel);
 		/**
 		 * Retrieve the compute kernel (aka workgroup dimensions) for compute work. By default, this is {1, 1, 1}.
 		 */
-		const tz::Vec3ui& get_compute_kernel() const;
+		const hdk::vec3ui& get_compute_kernel() const;
 		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
@@ -148,9 +148,9 @@ namespace tz::gl
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 		/// The clear value for colour attachments.
-		tz::Vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+		hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// Workgroup sizes if we're doing compute.
-		tz::Vec3ui compute_kernel = {1u, 1u, 1u};
+		hdk::vec3ui compute_kernel = {1u, 1u, 1u};
 		std::string dbg_name = "";
 	};
 	static_assert(RendererInfoType<RendererInfoCommon>);

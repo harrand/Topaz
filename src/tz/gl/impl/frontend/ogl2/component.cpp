@@ -99,7 +99,7 @@ namespace tz::gl
 		return this->resource;
 	}
 
-	tz::Vec2ui ImageComponentOGL::get_dimensions() const
+	hdk::vec2ui ImageComponentOGL::get_dimensions() const
 	{
 		return this->image.get_dimensions();
 	}
@@ -109,7 +109,7 @@ namespace tz::gl
 		return from_ogl2(this->image.get_format());
 	}
 
-	void ImageComponentOGL::resize(tz::Vec2ui dims)
+	void ImageComponentOGL::resize(hdk::vec2ui dims)
 	{
 		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested resize of ImageComponentOGL, but the underlying resource did not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 		ogl2::Image& old_image = this->ogl_get_image();

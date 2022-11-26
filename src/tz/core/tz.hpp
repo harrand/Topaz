@@ -110,7 +110,7 @@ namespace tz
 		/// - Version of the application. If you do not version your application, you can leave this. Defaults to 1.0.0.
 		tz::Version version = {1, 0, 0};
 		/// - Specifies dimensions of the window, in pixels.
-		tz::Vec2ui dimensions = {800u, 600u};
+		hdk::vec2ui dimensions = {800u, 600u};
 		/// - Describes some optional behaviours for the application. See @ref ApplicationFlag for details.
 		ApplicationFlags flags = {};
 	};

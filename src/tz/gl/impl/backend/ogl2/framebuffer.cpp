@@ -89,7 +89,7 @@ namespace tz::gl::ogl2
 		return this->info.colour_attachments.length();
 	}
 
-	tz::Vec2ui Framebuffer::get_dimensions() const
+	hdk::vec2ui Framebuffer::get_dimensions() const
 	{
 		if(this->is_null())
 		{

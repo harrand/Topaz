@@ -35,7 +35,7 @@ namespace tz::gl::ogl2
 		return this->info.format;
 	}
 
-	tz::Vec2ui Renderbuffer::get_dimensions() const
+	hdk::vec2ui Renderbuffer::get_dimensions() const
 	{
 		return this->info.dimensions;
 	}

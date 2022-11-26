@@ -81,7 +81,7 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	tz::Vec2ui Framebuffer::get_dimensions() const
+	hdk::vec2ui Framebuffer::get_dimensions() const
 	{
 		return this->info.dimensions;
 	}

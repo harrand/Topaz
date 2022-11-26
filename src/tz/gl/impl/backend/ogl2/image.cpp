@@ -53,7 +53,7 @@ namespace tz::gl::ogl2
 		return this->info.format;
 	}
 
-	tz::Vec2ui Image::get_dimensions() const
+	hdk::vec2ui Image::get_dimensions() const
 	{
 		return this->info.dimensions;
 	}
@@ -133,7 +133,7 @@ namespace tz::gl::ogl2
 			glCopyImageSubData(source.native(), GL_TEXTURE_2D, 0, 0, 0, 0, destination.native(), GL_TEXTURE_2D, 0, 0, 0, 0, source.get_dimensions()[0], source.get_dimensions()[1], 1);
 		}
 
-		Image clone_resized(const Image& image, tz::Vec2ui new_size)
+		Image clone_resized(const Image& image, hdk::vec2ui new_size)
 		{
 			HDK_PROFZONE("OpenGL Backend - Image Clone Resized", 0xFFAA0000);
 			Image newimg
@@ -142,7 +142,7 @@ namespace tz::gl::ogl2
 				.dimensions = new_size,
 				.sampler = image.get_sampler()
 			}};
-			tz::Vec2ui min
+			hdk::vec2ui min
 			{
 				std::min(image.get_dimensions()[0], new_size[0]),
 				std::min(image.get_dimensions()[1], new_size[1])

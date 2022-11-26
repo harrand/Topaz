@@ -137,7 +137,7 @@ namespace tz::gl
 		return this->window_buf;
 	}
 
-	tz::Vec2ui DeviceWindowVulkan::get_dimensions() const
+	hdk::vec2ui DeviceWindowVulkan::get_dimensions() const
 	{
 		return this->get_swapchain().get_dimensions();
 	}
@@ -205,7 +205,7 @@ namespace tz::gl
 		this->depth_image.debug_set_name("Device Depth Image");
 	}
 
-	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
+	void DeviceWindowVulkan::on_resize(hdk::vec2ui dims)
 	{
 		HDK_PROFZONE("DeviceWindowVulkan OnResize", 0xFFAAAA00);
 		if(dims[0] == 0 || dims[0] == 0)
@@ -248,7 +248,7 @@ namespace tz::gl
 
 	void DeviceWindowVulkan::register_resize()
 	{
-		this->on_resize_handle = tz::window().on_resize().add_callback([this](tz::Vec2ui dims){this->on_resize(dims);});
+		this->on_resize_handle = tz::window().on_resize().add_callback([this](hdk::vec2ui dims){this->on_resize(dims);});
 	}
 
 	void DeviceWindowVulkan::unregister_resize()

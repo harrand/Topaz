@@ -27,7 +27,7 @@ namespace tz
 		}
 	}
 
-	void MouseButtonState::update_scroll(tz::Vec2 offset)
+	void MouseButtonState::update_scroll(hdk::vec2 offset)
 	{
 		this->mouse_wheel_offset += offset;
 	}
@@ -46,12 +46,12 @@ namespace tz
 		return this->pressed_buttons;
 	}
 
-	tz::Vec2 MouseButtonState::get_scroll_offset() const
+	hdk::vec2 MouseButtonState::get_scroll_offset() const
 	{
 		return this->mouse_wheel_offset;
 	}
 
-	tz::Vec2 MouseButtonState::get_mouse_press_position(MouseButton button) const
+	hdk::vec2 MouseButtonState::get_mouse_press_position(MouseButton button) const
 	{
 		hdk::assert(this->is_mouse_button_down(button), "Cannot retrieve mouse press position when the button is not pressed. Please submit a bug report.");
 		auto iter = std::find_if(this->pressed_buttons.begin(), this->pressed_buttons.end(),
@@ -77,12 +77,12 @@ namespace tz
 		#endif
 	}
 
-	void MousePositionState::update(tz::Vec2 position)
+	void MousePositionState::update(hdk::vec2 position)
 	{
 		this->info.position = position;
 	}
 
-	tz::Vec2 MousePositionState::get_mouse_position() const
+	hdk::vec2 MousePositionState::get_mouse_position() const
 	{
 		return this->info.position;
 	}

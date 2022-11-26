@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL2_API_OUTPUT_HPP
 #define TOPAZ_GL2_API_OUTPUT_HPP
 #include "hdk/memory/clone.hpp"
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include <concepts>
 #include <limits>
 
@@ -15,8 +15,8 @@ namespace tz::gl
 
 	struct ViewportRegion
 	{
-		tz::Vec2ui offset;
-		tz::Vec2ui extent;
+		hdk::vec2ui offset;
+		hdk::vec2ui extent;
 
 		static ViewportRegion null()
 		{
@@ -28,8 +28,8 @@ namespace tz::gl
 
 	struct ScissorRegion
 	{
-		tz::Vec2ui offset;
-		tz::Vec2ui extent;
+		hdk::vec2ui offset;
+		hdk::vec2ui extent;
 
 		static ScissorRegion null()
 		{

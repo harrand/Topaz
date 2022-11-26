@@ -15,9 +15,9 @@
 
 struct TriangleVertexData
 {
-	tz::Vec3 position;
+	hdk::vec3 position;
 	float pad0;
-	tz::Vec2 texcoord;
+	hdk::vec2 texcoord;
 	float pad1[2];
 };
 
@@ -134,7 +134,7 @@ int main()
 				{
 					up = true;
 				}
-				tz::Vec2ui new_dims = img_comp->get_dimensions();
+				hdk::vec2ui new_dims = img_comp->get_dimensions();
 				if(up)
 				{
 					new_dims += {1u, 1u};
@@ -161,7 +161,7 @@ int main()
 				}
 
 				// Shuffle each byte randomly.
-				tz::Vec2ui img_dims = img_comp->get_dimensions();
+				hdk::vec2ui img_dims = img_comp->get_dimensions();
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
 				std::random_shuffle(img_data.begin(), img_data.end());
 				// But set the first pixel (bottom left) to always be white.

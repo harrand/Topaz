@@ -193,7 +193,7 @@ namespace tz::gl
 		 * Retrieve the dimensions of the output images. The output images are guaranteed to all be the same size.
 		 * @return {width, height} of the output images, in pixels.
 		 */
-		tz::Vec2ui get_output_dimensions() const;
+		hdk::vec2ui get_output_dimensions() const;
 
 		IOutput* get_output();
 		const IOutput* get_output() const;
@@ -238,7 +238,7 @@ namespace tz::gl
 		 * @param viewport_dimensions Dimensions of the viewport, in pixels. Output images associated with the render pass may need to match these dimensions.
 		 * @param depth_testing_enabled Specifies whether we want to create a graphics pipeline which will perform depth tests or not. If the output manager was told to create depth images, this should be enabled (otherwise the framebuffer will not match the provided render pass).
 		 */
-		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled);
+		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled);
 		GraphicsPipelineManager();
 		GraphicsPipelineManager(GraphicsPipelineManager&& move);
 		~GraphicsPipelineManager() = default;
@@ -251,15 +251,15 @@ namespace tz::gl
 		const vk2::Pipeline& get_pipeline() const;
 		const vk2::Shader& get_shader() const;
 		vk2::Shader& get_shader();
-		void recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions, bool wireframe_mode = false);
+		void recreate(const vk2::RenderPass& new_render_pass, hdk::vec2ui new_viewport_dimensions, bool wireframe_mode = false);
 		bool is_compute() const;
 		bool is_wireframe_mode() const;
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
-		vk2::GraphicsPipelineInfo make_graphics_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
+		vk2::GraphicsPipelineInfo make_graphics_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 		vk2::ComputePipelineInfo make_compute_pipeline() const;
-		vk2::Pipeline make_pipeline(tz::Vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
+		vk2::Pipeline make_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 
 		vk2::Shader shader;
 		vk2::PipelineLayout pipeline_layout;
@@ -353,7 +353,7 @@ namespace tz::gl
 
 	struct RendererResizeInfoVulkan
 	{
-		tz::Vec2ui new_dimensions;
+		hdk::vec2ui new_dimensions;
 		std::span<vk2::Image> new_output_images;
 		vk2::Image* new_depth_image;
 	};
@@ -467,9 +467,9 @@ namespace tz::gl
 		// Contains which renderer options were enabled.
 		RendererOptions options;
 		// Clear colour values if a clear is performed during a render pass.
-		tz::Vec4 clear_colour;
+		hdk::vec4 clear_colour;
 		// Workgroup dimensions, if we're doing compute work.
-		tz::Vec3ui compute_kernel;
+		hdk::vec3ui compute_kernel;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
 		ResourceStorage resources;
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.

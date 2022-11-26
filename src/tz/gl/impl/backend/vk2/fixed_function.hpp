@@ -2,7 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
 #include "tz/core/containers/basic_list.hpp"
 #include "tz/core/containers/enum_field.hpp"
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include "vulkan/vulkan.h"
 #include <optional>
 
@@ -82,7 +82,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * Specifies the region of the output that will be rendered to.
 	 *
-	 * See @ref create_basic_viewport(tz::Vec2) to create a ViewportState for a basic region.
+	 * See @ref create_basic_viewport(hdk::vec2) to create a ViewportState for a basic region.
 	 */
 	struct ViewportState
 	{
@@ -93,7 +93,7 @@ namespace tz::gl::vk2
 		NativeType native() const;
 	};
 
-	ViewportState create_basic_viewport(tz::Vec2 dimensions);
+	ViewportState create_basic_viewport(hdk::vec2 dimensions);
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
@@ -217,7 +217,7 @@ namespace tz::gl::vk2
 
 		tz::BasicList<AttachmentState> attachment_states = {no_blending()};
 		std::optional<VkLogicOp> logical_operator = std::nullopt;
-		tz::Vec4 blend_constants = tz::Vec4{0.0f, 0.0f, 0.0f, 0.0f};
+		hdk::vec4 blend_constants = hdk::vec4{0.0f, 0.0f, 0.0f, 0.0f};
 		
 		using NativeType = VkPipelineColorBlendStateCreateInfo;
 		NativeType native() const;

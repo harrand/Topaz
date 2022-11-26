@@ -4,7 +4,7 @@
 
 namespace tz
 {
-	Mat4 translate(Vec3 position)
+	Mat4 translate(hdk::vec3 position)
 	{
 		HDK_PROFZONE("Matrix Translate", 0xFF0000AA);
 		Mat4 m = Mat4::identity();
@@ -79,7 +79,7 @@ namespace tz
 		return m;
 	}
 
-	Mat4 rotate(Vec3 rotation)
+	Mat4 rotate(hdk::vec3 rotation)
 	{
 		HDK_PROFZONE("Matrix Rotate", 0xFF0000AA);
 		Mat4 x = rotate_x(rotation[0]);
@@ -89,7 +89,7 @@ namespace tz
 		return r;
 	}
 
-	Mat4 scale(Vec3 scale)
+	Mat4 scale(hdk::vec3 scale)
 	{
 		HDK_PROFZONE("Matrix Scale", 0xFF0000AA);
 		Mat4 m = Mat4::identity();
@@ -100,13 +100,13 @@ namespace tz
 		return m;
 	}
 
-	Mat4 model(Vec3 position, Vec3 rotation, Vec3 scale)
+	Mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale)
 	{
 		HDK_PROFZONE("Matrix Model", 0xFF0000AA);
 		return tz::translate(position) * tz::rotate(rotation) * tz::scale(scale);
 	}
 
-	Mat4 view(Vec3 position, Vec3 rotation)
+	Mat4 view(hdk::vec3 position, hdk::vec3 rotation)
 	{
 		HDK_PROFZONE("Matrix View", 0xFF0000AA);
 		return (translate(position) * rotate(rotation)).inverse();

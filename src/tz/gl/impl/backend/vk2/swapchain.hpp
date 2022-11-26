@@ -112,14 +112,14 @@ namespace tz::gl::vk2
 		 * Retrieve the dimensions of the swapchain images.
 		 * @return Swapchain image dimensions, in pixels.
 		 */
-		Vec2ui get_dimensions() const;
+		hdk::vec2ui get_dimensions() const;
 	private:
 		Swapchain();
 		void initialise_images();
 
 		VkSwapchainKHR swapchain;
 		SwapchainInfo info;
-		Vec2ui dimensions;
+		hdk::vec2ui dimensions;
 		std::vector<Image> swapchain_images;
 		std::vector<ImageView> swapchain_image_views;
 	};

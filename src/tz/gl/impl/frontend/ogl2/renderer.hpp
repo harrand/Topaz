@@ -207,8 +207,8 @@ namespace tz::gl
 		ResourceStorage resources;
 		ShaderManager shader;
 		OutputManager output;
-		tz::Vec4 clear_colour;
-		tz::Vec3ui compute_kernel;
+		hdk::vec4 clear_colour;
+		hdk::vec3ui compute_kernel;
 		RendererOptions options;
 		std::string debug_name;
 		unsigned int tri_count = 0;

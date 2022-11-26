@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_MATRIX_HPP
 #define TOPAZ_CORE_MATRIX_HPP
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include "tz/core/types.hpp"
 #include <array>
 
@@ -157,7 +157,7 @@ namespace tz
 		 * @param vec Column matrix to multiply with the current matrix.
 		 * @return A row-matrix representing the resultant multiplication.
 		 */
-		Vector<T, R> operator*(const Vector<T, C>& vec) const;
+		hdk::vector<T, R> operator*(const hdk::vector<T, C>& vec) const;
 		/**
 		 * Equate the given scalar with each value of the matrix.
 		 * `mymatrix == T{5}` shall return if-and-only-if each element of mymatrix is equal to 'T{5}'. If no such comparison exists, then the program is ill-formed.

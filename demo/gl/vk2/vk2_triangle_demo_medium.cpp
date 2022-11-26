@@ -21,20 +21,20 @@
 
 struct TriangleResourceData
 {
-	tz::Vec3 position;
+	hdk::vec3 position;
 	float pad0;
-	tz::Vec3 rotation;
+	hdk::vec3 rotation;
 	float pad1;
-	tz::Vec3 scale;
+	hdk::vec3 scale;
 	float pad2;
 	tz::Mat4 mvp;
 };
 
 struct TriangleVertexData
 {
-	tz::Vec3 position;
+	hdk::vec3 position;
 	float pad0;
-	tz::Vec2 texcoord;
+	hdk::vec2 texcoord;
 	float pad1[2];
 };
 

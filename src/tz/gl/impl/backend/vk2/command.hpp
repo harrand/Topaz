@@ -18,7 +18,7 @@ namespace tz::gl::vk2
 	{
 		struct Dispatch
 		{
-			tz::Vec3ui groups;
+			hdk::vec3ui groups;
 		};
 		/**
 		 * Record a non-indexed draw.
@@ -217,14 +217,14 @@ namespace tz::gl::vk2
 
 		struct SetScissorDynamic
 		{
-			tz::Vec2ui offset;
-			tz::Vec2ui extent;
+			hdk::vec2ui offset;
+			hdk::vec2ui extent;
 		};
 
 		struct DebugBeginLabel
 		{
 			std::string name;
-			tz::Vec4 colour{0.0f, 0.0f, 0.0f, 0.0f};
+			hdk::vec4 colour{0.0f, 0.0f, 0.0f, 0.0f};
 		};
 
 		struct DebugEndLabel{};
@@ -272,7 +272,7 @@ namespace tz::gl::vk2
 			 * @param recording Existing recording of a @ref CommandBuffer which shall record the beginning/ending of the render pass.
 			 * @note The construction of this object begins the render pass, and the destruction ends the render pass. This means all commands recorded during the lifetime of this object will apply to the render pass.
 			 */
-			RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, tz::Vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f});
+			RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f});
 			RenderPassRun(const RenderPassRun& copy) = delete;
 			RenderPassRun(RenderPassRun&& move) = delete;
 			~RenderPassRun();

@@ -6,7 +6,7 @@
 
 namespace tz::gl::vk2
 {
-	CommandBufferRecording::RenderPassRun::RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, tz::Vec4 clear_colour):
+	CommandBufferRecording::RenderPassRun::RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, hdk::vec4 clear_colour):
 	framebuffer(&framebuffer),
 	recording(&recording)
 	{
@@ -189,7 +189,7 @@ namespace tz::gl::vk2
 		ImageLayout img_layout = this->get_layout_so_far(*command.dst);
 		hdk::assert(img_layout == ImageLayout::TransferDestination, "BufferCopyImage:: Destination image was not in TransferDestination ImageLayout, so it cannot be an, erm, transfer destination.");
 
-		tz::Vec2ui img_dims = command.dst->get_dimensions();
+		hdk::vec2ui img_dims = command.dst->get_dimensions();
 		VkBufferImageCopy cpy
 		{
 			.bufferOffset = 0,
@@ -214,7 +214,7 @@ namespace tz::gl::vk2
 		hdk::assert(command.src != nullptr, "ImageCopyImage contained nullptr for its source image. Please submit a bug report.");
 		hdk::assert(command.dst != nullptr, "ImageCopyImage contained nullptr for its destination image. Please submit a bug report.");
 
-		tz::Vec2ui min_dims;
+		hdk::vec2ui min_dims;
 		min_dims[0] = std::min(command.src->get_dimensions()[0], command.dst->get_dimensions()[0]);
 		min_dims[1] = std::min(command.src->get_dimensions()[1], command.dst->get_dimensions()[1]);
 		VkImageCopy copy_region

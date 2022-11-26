@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_PERIPHERALS_MONITOR_HPP
 #define TOPAZ_CORE_PERIPHERALS_MONITOR_HPP
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include "tz/core/containers/basic_list.hpp"
 
 namespace tz
@@ -28,16 +28,16 @@ namespace tz
 		/**
 		 * Contains the real-life dimensions of the monitor (or a close estimation), in metric millimetres.
 		 */
-		tz::Vec2ui physical_dimensions_millimetres;
+		hdk::vec2ui physical_dimensions_millimetres;
 		/**
 		 * Contains the dimensions of the monitor screen, in screen coordinates.
 		 * @note Screen coordinates do not necessarily map 1:1 to pixels. See @ref content_scale for a silver-bullet.
 		 */
-		tz::Vec2ui screen_dimensions;
+		hdk::vec2ui screen_dimensions;
 		/**
 		 * Contains the ratio between current DPI and the platform's default DPI. You can component-wise-multiply this with a pair of screen coordinates to map them to pixels. Oftentimes this will be {1.0f, 1.0f} but this is not guaranteed, for example on a Mac with a retina display.
 		 */
-		tz::Vec2 content_scale;
+		hdk::vec2 content_scale;
 		/**
 		 * Represents a human-readable name for the monitor. This is not guaranteed to be unique, nor a particularly descriptive name.
 		 */

@@ -273,7 +273,7 @@ namespace tz::dbgui
 
 			if(delta.mouse_position_changed)
 			{
-				const auto mpos = static_cast<tz::Vec2>(tz::window().get_mouse_position_state().get_mouse_position());
+				const auto mpos = static_cast<hdk::vec2>(tz::window().get_mouse_position_state().get_mouse_position());
 				io.AddMousePosEvent(mpos[0], mpos[1]);
 			}
 			if(delta.mouse_wheel_dir != MouseWheelDirection::Same)
@@ -331,7 +331,7 @@ namespace tz::dbgui
 			font_data,
 			{
 				.format = tz::gl::ImageFormat::RGBA32,
-				.dimensions = tz::Vec2ui{static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}
+				.dimensions = hdk::vec2ui{static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}
 			}
 		);
 
@@ -434,7 +434,7 @@ namespace tz::dbgui
 				io.DisplaySize.y,
 				-0.1f,
 				0.1f
-			) * tz::view(tz::Vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
+			) * tz::view(hdk::vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
 			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
 			{
 				HDK_PROFZONE("Dbgui Render - Single Command Processing", 0xFFAA00AA);
@@ -446,8 +446,8 @@ namespace tz::dbgui
 				hdk::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
-				output->scissor.offset = static_cast<tz::Vec2ui>(tz::Vec2{min.x, min.y} - tz::Vec2{draw->DisplayPos.x, draw->DisplayPos.y});
-				output->scissor.extent = static_cast<tz::Vec2ui>(tz::Vec2{max.x, max.y});
+				output->scissor.offset = static_cast<hdk::vec2ui>(hdk::vec2{min.x, min.y} - hdk::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
+				output->scissor.extent = static_cast<hdk::vec2ui>(hdk::vec2{max.x, max.y});
 #if TZ_OGL
 				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif

@@ -126,7 +126,7 @@ namespace tz::gl
 		return this->resource;
 	}
 
-	tz::Vec2ui ImageComponentVulkan::get_dimensions() const
+	hdk::vec2ui ImageComponentVulkan::get_dimensions() const
 	{
 		return this->image.get_dimensions();
 	}
@@ -136,7 +136,7 @@ namespace tz::gl
 		return from_vk2(this->image.get_format());
 	}
 
-	void ImageComponentVulkan::resize(tz::Vec2ui new_dimensions)
+	void ImageComponentVulkan::resize(hdk::vec2ui new_dimensions)
 	{
 		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
 

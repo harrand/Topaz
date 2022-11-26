@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_RENDERBUFFER_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_RENDERBUFFER_HPP
 #if TZ_OGL
-#include "tz/core/vector.hpp"
+#include "hdk/data/vector.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/image_format.hpp"
 
@@ -12,7 +12,7 @@ namespace tz::gl::ogl2
 		/// Format of the image data.
 		ImageFormat format;
 		/// {Width, Height} of the image, in pixels.
-		tz::Vec2ui dimensions;
+		hdk::vec2ui dimensions;
 	};
 
 	class Renderbuffer
@@ -27,7 +27,7 @@ namespace tz::gl::ogl2
 		Renderbuffer& operator=(Renderbuffer&& rhs);
 
 		ImageFormat get_format() const;
-		tz::Vec2ui get_dimensions() const;
+		hdk::vec2ui get_dimensions() const;
 		using NativeType = GLuint;
 		NativeType native() const;
 
