@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
 #include "tz/core/window.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "tz/core/time.hpp"
 #include "tz/dbgui/dbgui.hpp"

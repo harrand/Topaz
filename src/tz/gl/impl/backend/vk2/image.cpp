@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "hdk/debug.hpp"
 #include "tz/gl/impl/backend/vk2/image.hpp"
 #include "tz/gl/impl/backend/vk2/swapchain.hpp"
@@ -20,7 +20,7 @@ namespace tz::gl::vk2
 	vma_alloc(std::nullopt),
 	vma_alloc_info()
 	{
-		TZ_PROFZONE("Vulkan Backend - Swapchain Image Create", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Swapchain Image Create", 0xFFAA0000);
 		hdk::assert(sinfo.swapchain != nullptr && !sinfo.swapchain->is_null(), "SwapchainImageInfo had nullptr or null Swapchain");
 		std::uint32_t real_swapchain_image_count;
 		std::vector<VkImage> swapchain_image_natives;
@@ -54,7 +54,7 @@ namespace tz::gl::vk2
 	vma_alloc(VmaAllocation{}),
 	vma_alloc_info()
 	{
-		TZ_PROFZONE("Vulkan Backend - Image Create", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Image Create", 0xFFAA0000);
 		VkImageCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -191,7 +191,7 @@ namespace tz::gl::vk2
 
 	void* Image::map()
 	{
-		TZ_PROFZONE("Vulkan Backend - Image Map", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Image Map", 0xFFAA0000);
 		if(!this->vma_alloc.has_value() || this->residency == MemoryResidency::GPU)
 		{
 			return nullptr;
@@ -216,7 +216,7 @@ namespace tz::gl::vk2
 
 	void Image::unmap()
 	{
-		TZ_PROFZONE("Vulkan Backend - Image Unmap", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Image Unmap", 0xFFAA0000);
 		if(!this->vma_alloc.has_value() || this->vma_alloc_info.pMappedData == nullptr || this->residency == MemoryResidency::CPUPersistent)
 		{
 			return;

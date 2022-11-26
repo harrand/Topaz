@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/impl/backend/vk2/image.hpp"
 #include "tz/gl/impl/backend/vk2/swapchain.hpp"
 #include "tz/gl/impl/backend/vk2/semaphore.hpp"
@@ -14,7 +14,7 @@ namespace tz::gl::vk2
 	swapchain_images(),
 	swapchain_image_views()
 	{
-		TZ_PROFZONE("Vulkan Backend - Swapchain Create", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Swapchain Create", 0xFFAA0000);
 		hdk::assert(this->info.device != nullptr, "SwapchainInfo contained null LogicalDevice. Please submi a bug report.");
 		const LogicalDevice& ldev = *this->info.device;
 		const PhysicalDevice& pdev = ldev.get_hardware();
@@ -144,7 +144,7 @@ namespace tz::gl::vk2
 
 	Swapchain::ImageAcquisitionResult Swapchain::acquire_image(const Swapchain::ImageAcquisition& acquire)
 	{
-		TZ_PROFZONE("Vulkan Backend - Swapchain Image Acquire", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Swapchain Image Acquire", 0xFFAA0000);
 		BinarySemaphore::NativeType signal_semaphore_native = VK_NULL_HANDLE;
 		Fence::NativeType signal_fence_native = VK_NULL_HANDLE;
 

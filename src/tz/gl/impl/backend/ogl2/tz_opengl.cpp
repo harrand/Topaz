@@ -1,7 +1,7 @@
 #if TZ_OGL
 #include "tz/core/containers/basic_list.hpp"
 #include "hdk/debug.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 
 namespace tz::gl::ogl2
@@ -20,7 +20,7 @@ namespace tz::gl::ogl2
 
 	void initialise()
 	{
-		TZ_PROFZONE("OpenGL Backend - Backend Initialise", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Backend - Backend Initialise", 0xFFAA0000);
 		hdk::assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
 		int res = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		#if HDK_PROFILE

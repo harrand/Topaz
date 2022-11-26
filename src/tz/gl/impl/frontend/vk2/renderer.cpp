@@ -2,7 +2,7 @@
 #include "tz/gl/impl/backend/vk2/sampler.hpp"
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/frontend/vk2/device.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/declare/image_format.hpp"
@@ -30,7 +30,7 @@ namespace tz::gl
 	descriptors(),
 	frame_in_flight_count(frame_in_flight_count)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
 		this->samplers.reserve(this->count());
 
 		auto get_fitting_sampler = [&ldev](const IResource& res) -> vk2::SamplerInfo
@@ -389,7 +389,7 @@ namespace tz::gl
 
 	void ResourceStorage::sync_descriptors(bool write_everything)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
 		std::vector<BufferComponentVulkan*> buffers;
 		for(auto& component_ptr : this->components)
 		{
@@ -511,7 +511,7 @@ namespace tz::gl
 	output_framebuffers(),
 	options(options)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", 0xFFAAAA00);
 		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images);
 	}
 
@@ -652,7 +652,7 @@ namespace tz::gl
 
 	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", 0xFFAAAA00);
 		this->swapchain_images = swapchain_images;
 		this->output_imageviews.clear();
 		this->output_depth_imageviews.clear();
@@ -862,7 +862,7 @@ namespace tz::gl
 	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, tz::Vec2ui new_viewport_dimensions, bool wireframe_mode)
 	{
 		this->wireframe_mode = wireframe_mode;
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", 0xFFAAAA00);
 		if(this->is_compute())
 		{
 			this->graphics_pipeline =
@@ -910,7 +910,7 @@ namespace tz::gl
 
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", 0xFFAAAA00);
 		std::vector<char> vtx_src, frg_src, tesscon_src, tesseval_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(ShaderStage::Compute))
@@ -1161,7 +1161,7 @@ namespace tz::gl
 
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(DeviceWindowVulkan& device_window)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
 		// Submit & Present
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		bool already_have_image = device_window.has_unused_image();
@@ -1243,7 +1243,7 @@ namespace tz::gl
 
 	void CommandProcessor::do_compute_work()
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Compute Work)", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Compute Work)", 0xFFAAAA00);
 
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		this->device_scheduler->get_frame_fences()[this->current_frame].unsignal();
@@ -1263,7 +1263,7 @@ namespace tz::gl
 
 	void CommandProcessor::wait_pending_commands_complete()
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Waiting on commands to complete)", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Waiting on commands to complete)", 0xFFAAAA00);
 		this->device_scheduler->wait_frame_work_complete();
 	}
 
@@ -1281,7 +1281,7 @@ namespace tz::gl
 	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::RenderWait), info.get_options(), *device_info.device_scheduler),
 	debug_name(info.debug_get_name())
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Create", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Create", 0xFFAAAA00);
 
 		// If we're not headless, we should register a callback for our lifetime.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
@@ -1432,12 +1432,12 @@ namespace tz::gl
 
 	void RendererVulkan::render()
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Render", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Render", 0xFFAAAA00);
 		
 		// If output scissor region has changed, we need to rerecord.
 		if(this->get_output() != nullptr)
 		{
-			TZ_PROFZONE("Vulkan Frontend - RendererVulkan Scissor Cache Miss", TZ_PROFCOL_RED);
+			HDK_PROFZONE("Vulkan Frontend - RendererVulkan Scissor Cache Miss", 0xFFAA0000);
 			if(this->get_output()->scissor != this->scissor_cache)
 			{
 				this->scissor_cache = this->get_output()->scissor;
@@ -1480,7 +1480,7 @@ namespace tz::gl
 
 	void RendererVulkan::edit(const RendererEditRequest& edit_request)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Edit", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Edit", 0xFFAAAA00);
 		bool work_commands_need_recording = false;
 		bool pipeline_needs_recreating = false;
 		bool resized_static_resources = false;
@@ -1698,7 +1698,7 @@ namespace tz::gl
 
 	void RendererVulkan::setup_static_resources()
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Static Resources", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Static Resources", 0xFFAAAA00);
 		// Create staging buffers for each buffer and texture resource, and then fill the data with the resource data.
 		std::vector<BufferComponentVulkan*> buffer_components;
 		std::vector<ImageComponentVulkan*> image_components;
@@ -1825,7 +1825,7 @@ namespace tz::gl
 
 	void RendererVulkan::setup_render_commands()
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", 0xFFAAAA00);
 		hdk::assert(!this->pipeline.is_compute(), "Running render command recording path, but pipeline is a compute pipeline. Logic error, please submit a bug report.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
@@ -1931,7 +1931,7 @@ namespace tz::gl
 	
 	void RendererVulkan::setup_compute_commands()
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", 0xFFAAAA00);
 		hdk::assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
@@ -1986,7 +1986,7 @@ namespace tz::gl
 
 	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)
 	{
-		TZ_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", 0xFFAAAA00);
 		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image);

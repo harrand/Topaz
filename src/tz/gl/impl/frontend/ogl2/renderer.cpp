@@ -1,5 +1,5 @@
 #if TZ_OGL
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
@@ -66,7 +66,7 @@ namespace tz::gl
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
 	{
-		TZ_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", 0xFFAA0000);
 		auto do_metadata = [this](IComponent* comp)
 		{
 			IResource* res = comp->get_resource();
@@ -156,7 +156,7 @@ namespace tz::gl
 
 	void ResourceStorage::fill_bindless_image_buffer()
 	{
-		TZ_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage (Fill bindless image buffer)", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage (Fill bindless image buffer)", 0xFFAA0000);
 		if(this->image_handles.empty() || !ogl2::supports_bindless_textures())
 		{
 			return;
@@ -420,7 +420,7 @@ namespace tz::gl
 
 	void OutputManager::set_render_target() const
 	{
-		TZ_PROFZONE("OpenGL Frontend - RendererOGL OutputManager (Set Render Target)", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Frontend - RendererOGL OutputManager (Set Render Target)", 0xFFAA0000);
 		this->framebuffer.bind();
 		if(!this->options.contains(tz::gl::RendererOption::NoClearOutput))
 		{
@@ -539,8 +539,7 @@ namespace tz::gl
 
 	void RendererOGL::render()
 	{
-		TZ_PROFZONE("OpenGL Frontend - RendererOGL Render", TZ_PROFCOL_RED);
-		TZ_PROFZONE_GPU("RendererOGL Render", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Frontend - RendererOGL Render", 0xFFAA0000);
 		hdk::assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
 		#if HDK_DEBUG
 		{
@@ -645,7 +644,7 @@ namespace tz::gl
 
 	void RendererOGL::edit(const RendererEditRequest& edit_request)
 	{
-		TZ_PROFZONE("OpenGL Backend - RendererOGL Edit", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Backend - RendererOGL Edit", 0xFFAA0000);
 		hdk::assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
 		for(const RendererEdit::Variant& req : edit_request)
 		{

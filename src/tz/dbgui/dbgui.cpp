@@ -3,7 +3,7 @@
 #include "hdk/debug.hpp"
 #include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/output.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
@@ -65,7 +65,7 @@ namespace tz::dbgui
 
 	void initialise([[maybe_unused]] InitInfo info)
 	{
-		TZ_PROFZONE("tz::dbgui::initialise", TZ_PROFCOL_PURPLE);
+		HDK_PROFZONE("tz::dbgui::initialise", 0xFFAA00AA);
 		#if HDK_DEBUG
 			global_info = info.game_info;
 			bool ret = imgui_impl_tz_init();
@@ -75,7 +75,7 @@ namespace tz::dbgui
 
 	void terminate()
 	{
-		TZ_PROFZONE("tz::dbgui::terminate", TZ_PROFCOL_PURPLE);
+		HDK_PROFZONE("tz::dbgui::terminate", 0xFFAA00AA);
 		#if HDK_DEBUG
 			imgui_impl_tz_term();
 		#endif // HDK_DEBUG
@@ -83,7 +83,7 @@ namespace tz::dbgui
 
 	void begin_frame()
 	{
-		TZ_PROFZONE("tz::dbgui::begin_frame", TZ_PROFCOL_PURPLE);
+		HDK_PROFZONE("tz::dbgui::begin_frame", 0xFFAA00AA);
 		#if HDK_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
 			io.DisplaySize = ImVec2
@@ -98,7 +98,7 @@ namespace tz::dbgui
 
 	void end_frame()
 	{
-		TZ_PROFZONE("tz::dbgui::end_frame", TZ_PROFCOL_PURPLE);
+		HDK_PROFZONE("tz::dbgui::end_frame", 0xFFAA00AA);
 		#if HDK_DEBUG
 			ImGui::EndFrame();
 			ImGui::Render();
@@ -376,7 +376,7 @@ namespace tz::dbgui
 
 	void imgui_impl_render()
 	{
-		TZ_PROFZONE("Dbgui Render", TZ_PROFCOL_PURPLE);
+		HDK_PROFZONE("Dbgui Render", 0xFFAA00AA);
 
 		ImDrawData* draw = ImGui::GetDrawData();
 		hdk::assert(draw != nullptr, "Null imgui draw data!");
@@ -407,7 +407,7 @@ namespace tz::dbgui
 		}
 		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
 		{
-			TZ_PROFZONE("Dbgui Render - IB/VB Resize", TZ_PROFCOL_PURPLE);
+			HDK_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
 			renderer.edit(edit.build());
 		}
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
@@ -420,7 +420,7 @@ namespace tz::dbgui
 		std::size_t vertex_cursor = 0;
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
-			TZ_PROFZONE("Dbgui Render - Command List Processing", TZ_PROFCOL_PURPLE);
+			HDK_PROFZONE("Dbgui Render - Command List Processing", 0xFFAA00AA);
 			const ImDrawList* cmd = draw->CmdLists[n];
 			std::memcpy(indices.data() + index_cursor, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
 			std::memcpy(vertices.data() + vertex_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
@@ -437,7 +437,7 @@ namespace tz::dbgui
 			) * tz::view(tz::Vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
 			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
 			{
-				TZ_PROFZONE("Dbgui Render - Single Command Processing", TZ_PROFCOL_PURPLE);
+				HDK_PROFZONE("Dbgui Render - Single Command Processing", 0xFFAA00AA);
 				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
@@ -465,7 +465,7 @@ namespace tz::dbgui
 			}
 		}
 		{
-			TZ_PROFZONE("Dbgui Render - Final Pass", TZ_PROFCOL_PURPLE);
+			HDK_PROFZONE("Dbgui Render - Final Pass", 0xFFAA00AA);
 			tz::gl::device().get_renderer(global_render_data->final_renderer).render();
 		}
 	}

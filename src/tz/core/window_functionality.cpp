@@ -2,7 +2,7 @@
 #include "hdk/debug.hpp"
 #include "tz/core/peripherals/keyboard.hpp"
 #include "tz/core/peripherals/mouse.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 
 #include "tz/dbgui/dbgui.hpp"
 
@@ -104,7 +104,7 @@ namespace tz
 
 	void WindowFunctionality::update()
 	{
-		TZ_PROFZONE("WindowFunctionality::update", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("WindowFunctionality::update", 0xFFAAAA00);
 		glfwPollEvents();
 		{
 			double mx, my;
@@ -127,7 +127,7 @@ namespace tz
 
 	void WindowFunctionality::begin_frame()
 	{
-		TZ_FRAME_BEGIN;
+		HDK_FRAME_BEGIN;
 		this->update();
 		tz::dbgui::begin_frame();
 	}
@@ -135,7 +135,7 @@ namespace tz
 	void WindowFunctionality::end_frame()
 	{
 		tz::dbgui::end_frame();
-		TZ_FRAME_END;
+		HDK_FRAME_END;
 	}
 
 	void WindowFunctionality::block_until_event_happens()

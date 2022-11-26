@@ -1,7 +1,7 @@
 #if TZ_VULKAN
 #include "tz/core/tz.hpp"
 #include "hdk/debug.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/backend/vk2/extensions.hpp"
 #include <algorithm>
@@ -14,7 +14,7 @@ namespace tz::gl::vk2
 
 	void initialise(tz::GameInfo game_info)
 	{
-		TZ_PROFZONE("Vulkan Backend - Backend Initialise", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Backend Initialise", 0xFFAA0000);
 		hdk::assert(inst == nullptr, "Vulkan Backend already initialised");
 		inst = new VulkanInstance
 		{{

@@ -31,7 +31,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/peripherals/monitor.hpp
 	src/tz/core/peripherals/mouse.cpp
 	src/tz/core/peripherals/mouse.hpp
-	src/tz/core/profiling/zone.hpp
 	src/tz/core/callback.hpp
 	src/tz/core/engine_info.cpp
 	src/tz/core/engine_info.hpp

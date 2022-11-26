@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
 #include "tz/core/window.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"

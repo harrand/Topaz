@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/impl/backend/vk2/features.hpp"
 #include "tz/gl/impl/backend/vk2/hardware/physical_device.hpp"
 #include "tz/gl/impl/backend/vk2/logical_device.hpp"
@@ -8,7 +8,7 @@ namespace tz::gl::vk2
 {
 	void QueueStorage::init(std::span<const QueueFamilyInfo> queue_families, const LogicalDevice& device)
 	{
-		TZ_PROFZONE("Vulkan Backend - QueueStorage Initialisation", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - QueueStorage Initialisation", 0xFFAA0000);
 		for(std::uint32_t i = 0; std::cmp_less(i, queue_families.size()); i++)
 		{
 			List& hardware_queue_family = this->hardware_queue_families.emplace();
@@ -37,7 +37,7 @@ namespace tz::gl::vk2
 
 	const hardware::Queue* QueueStorage::request_queue(QueueRequest request) const
 	{
-		TZ_PROFZONE("Vulkan Backend - Queue Storage Request", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - Queue Storage Request", 0xFFAA0000);
 		auto queue_satisfies_request = [request](const QueueFamilyInfo& info)
 		{
 			// If we request present support, the queue family *must* support it.
@@ -127,7 +127,7 @@ namespace tz::gl::vk2
 	queue_families(),
 	vma_allocator()
 	{
-		TZ_PROFZONE("Vulkan Backend - LogicalDevice Create", TZ_PROFCOL_RED);
+		HDK_PROFZONE("Vulkan Backend - LogicalDevice Create", 0xFFAA0000);
 		hdk::assert(this->physical_device.native() != VK_NULL_HANDLE, "Null PhysicalDevice provided to LogicalDevice ctor. Submit a bug report.");
 		// Firstly, let's retrieve some information about the PhysicalDevice's queue families. Note that its API doesn't expose this to the end-user, so we have to do this ourselves.
 		{

@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
 #include "tz/core/window.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/core/time.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
@@ -121,7 +121,7 @@ int main()
 			static bool up = true;
 			if(fixed_update.done())
 			{
-				TZ_PROFZONE("Dynamic Updates", TZ_PROFCOL_GREEN);
+				HDK_PROFZONE("Dynamic Updates", 0xFF00AA00);
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				fixed_update.reset();
 				triangle_count++;

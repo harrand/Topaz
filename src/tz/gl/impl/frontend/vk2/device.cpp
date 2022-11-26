@@ -1,6 +1,6 @@
 #include "tz/gl/impl/frontend/common/device.hpp"
 #if TZ_VULKAN
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/frontend/vk2/renderer.hpp"
@@ -74,7 +74,7 @@ namespace tz::gl
 	DeviceWindowVulkan::DeviceWindowVulkan(const vk2::LogicalDevice& device):
 	DeviceWindowVulkan()
 	{
-		TZ_PROFZONE("DeviceWindowVulkan Create", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("DeviceWindowVulkan Create", 0xFFAAAA00);
 		const vk2::VulkanInstance& instance = device.get_hardware().get_instance();
 		hdk::assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance which is not headless, but doesn't have a WindowSurface attached. Please submit a bug report.");
 
@@ -207,7 +207,7 @@ namespace tz::gl
 
 	void DeviceWindowVulkan::on_resize(tz::Vec2ui dims)
 	{
-		TZ_PROFZONE("DeviceWindowVulkan OnResize", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("DeviceWindowVulkan OnResize", 0xFFAAAA00);
 		if(dims[0] == 0 || dims[0] == 0)
 		{
 			return;
@@ -341,7 +341,7 @@ namespace tz::gl
 	window_storage(this->device),
 	scheduler(this->device, this->window_storage.get_output_images().size())
 	{
-		TZ_PROFZONE("Vulkan Frontend - DeviceVulkan Create", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - DeviceVulkan Create", 0xFFAAAA00);
 	}
 
 	DeviceVulkan::~DeviceVulkan()
@@ -352,7 +352,7 @@ namespace tz::gl
 
 	tz::gl::RendererHandle DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
 	{
-		TZ_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", TZ_PROFCOL_YELLOW);
+		HDK_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", 0xFFAAAA00);
 		return DeviceCommon<RendererVulkan>::emplace_renderer(info, 
 		tz::gl::RendererDeviceInfoVulkan{
 			.device = &this->device,

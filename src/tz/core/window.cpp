@@ -1,6 +1,6 @@
 #include "tz/core/window.hpp"
 #include "GLFW/glfw3.h"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include <utility>
 
@@ -9,7 +9,7 @@ namespace tz
 	Window::Window(WindowInitArgs args):
 	WindowFunctionality(nullptr)
 	{
-		TZ_PROFZONE("tz::Window Create", TZ_PROFCOL_BLUE);
+		HDK_PROFZONE("tz::Window Create", 0xFF0000AA);
 		glfwWindowHint(GLFW_RESIZABLE, args.flags.resizeable ? GLFW_TRUE : GLFW_FALSE);
 		glfwWindowHint(GLFW_VISIBLE, args.flags.invisible ? GLFW_FALSE : GLFW_TRUE);
 
@@ -80,7 +80,7 @@ namespace tz
 
 	Window::~Window()
 	{
-		TZ_PROFZONE("tz::Window Destroy", TZ_PROFCOL_BLUE);
+		HDK_PROFZONE("tz::Window Destroy", 0xFF0000AA);
 		if(this->wnd != nullptr)
 		{
 			glfwDestroyWindow(this->wnd);

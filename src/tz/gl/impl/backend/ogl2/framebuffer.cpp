@@ -1,5 +1,5 @@
 #if TZ_OGL
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
 #include "tz/gl/impl/backend/ogl2/framebuffer.hpp"
 
@@ -9,7 +9,7 @@ namespace tz::gl::ogl2
 	framebuffer(0),
 	info(info)
 	{
-		TZ_PROFZONE("OpenGL Backend - Framebuffer Create", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Backend - Framebuffer Create", 0xFFAA0000);
 		hdk::assert(ogl2::is_initialised(), "Attempted to create Framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
 		glCreateFramebuffers(1, &this->framebuffer);
 
@@ -100,7 +100,7 @@ namespace tz::gl::ogl2
 
 	void Framebuffer::bind() const
 	{
-		TZ_PROFZONE("OpenGL Backend - Framebuffer Bind", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Backend - Framebuffer Bind", 0xFFAA0000);
 		glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
 
 		auto dims = this->get_dimensions();
@@ -109,7 +109,7 @@ namespace tz::gl::ogl2
 
 	void Framebuffer::clear() const
 	{
-		TZ_PROFZONE("OpenGL Backend - Framebuffer Clear", TZ_PROFCOL_RED);
+		HDK_PROFZONE("OpenGL Backend - Framebuffer Clear", 0xFFAA0000);
 		GLenum clear_flags = GL_COLOR_BUFFER_BIT;
 		if(this->has_depth_attachment())
 		{

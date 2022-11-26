@@ -2,7 +2,7 @@
 #include "hdk/debug.hpp"
 #include "hdk/debug.hpp"
 #include "tz/core/peripherals/monitor.hpp"
-#include "tz/core/profiling/zone.hpp"
+#include "hdk/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 
 #if TZ_VULKAN
@@ -21,7 +21,7 @@ namespace tz
 
 	void initialise(InitialiseInfo init)
 	{
-		TZ_PROFZONE("Topaz Initialise", TZ_PROFCOL_BLUE);
+		HDK_PROFZONE("Topaz Initialise", 0xFF0000AA);
 		hdk::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
 		[[maybe_unused]] tz::GameInfo game_info{.name = init.name, .version = init.version, .engine = tz::info()};
 		// Ensure we're not already initialised before doing anything.
@@ -29,7 +29,7 @@ namespace tz
 
 		// Firstly, initialise GLFW.
 		{
-			TZ_PROFZONE("GLFW Initialise", TZ_PROFCOL_BLUE);
+			HDK_PROFZONE("GLFW Initialise", 0xFF0000AA);
 			[[maybe_unused]] int glfw_ret = glfwInit();
 			hdk::assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
 		}
@@ -74,7 +74,7 @@ namespace tz
 
 	void terminate()
 	{
-		TZ_PROFZONE("Topaz Terminate", TZ_PROFCOL_BLUE);
+		HDK_PROFZONE("Topaz Terminate", 0xFF0000AA);
 		hdk::assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
 		tz::gl::destroy_device();
@@ -88,7 +88,7 @@ namespace tz
 
 		tz::detail::peripherals::monitor::terminate();
 		{
-			TZ_PROFZONE("GLFW Terminate", TZ_PROFCOL_BLUE);
+			HDK_PROFZONE("GLFW Terminate", 0xFF0000AA);
 			glfwTerminate();
 		}
 		initialised = false;
