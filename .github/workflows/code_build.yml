@@ -4,14 +4,7 @@ on:
     branches: [master]
   workflow_dispatch:
 jobs:
-  code_build:
-    strategy:
-      matrix:
-        render_api: [vulkan, opengl]
-    uses: Harrand/HDK/.github/workflows/hdk.yml@master
-    with:
-      target: topaz
-      preset_prefix: ${{matrix.render_api}}_
+  pre_install:
     steps:
       - name: 'Linux Dependencies'
         run: |
@@ -20,5 +13,12 @@ jobs:
 
       - name: 'Install Vulkan SDK'
         uses: humbletim/install-vulkan-sdk@v1.1.1
-        if: ${{matrix.render_api == 'vulkan'}}
-
+  code_build:
+    needs: pre_install
+    strategy:
+      matrix:
+        render_api: [vulkan, opengl]
+    uses: Harrand/HDK/.github/workflows/hdk.yml@master
+    with:
+      target: topaz
+      preset_prefix: ${{matrix.render_api}}_
