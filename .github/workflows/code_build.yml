@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   pre_install:
+    runs-on: 'ubuntu-latest'
     steps:
       - name: 'Linux Dependencies'
         run: |
