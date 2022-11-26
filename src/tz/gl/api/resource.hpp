@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL2_API_RESOURCE_HPP
 #define TOPAZ_GL2_API_RESOURCE_HPP
+#include "hdk/memory/clone.hpp"
 #include "hdk/data/handle.hpp"
 #include "tz/core/containers/enum_field.hpp"
 #include <span>
@@ -77,7 +78,7 @@ namespace tz::gl
 	 * - @ref BufferResource
 	 * - @ref ImageResource
 	 */
-	class IResource
+	class IResource : public hdk::unique_cloneable<IResource>
 	{
 	public:
 		IResource() = default;
@@ -120,8 +121,6 @@ namespace tz::gl
 			std::byte* byte_data = this->data().data();
 			return {reinterpret_cast<T*>(byte_data), this->data().size_bytes() / sizeof(T)};
 		}
-
-		virtual std::unique_ptr<IResource> unique_clone() const = 0;
 
 		virtual void set_mapped_data(std::span<std::byte> resource_data) = 0;
 

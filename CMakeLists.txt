@@ -25,7 +25,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/containers/polymorphic_list.hpp
 	src/tz/core/containers/polymorphic_list.inl
 	src/tz/core/algorithms/static.hpp
-	src/tz/core/interfaces/cloneable.hpp
 	src/tz/core/peripherals/keyboard.cpp
 	src/tz/core/peripherals/keyboard.hpp
 	src/tz/core/peripherals/monitor.cpp

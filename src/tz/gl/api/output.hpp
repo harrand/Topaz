@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL2_API_OUTPUT_HPP
 #define TOPAZ_GL2_API_OUTPUT_HPP
-#include "tz/core/interfaces/cloneable.hpp"
+#include "hdk/memory/clone.hpp"
 #include "tz/core/vector.hpp"
 #include <concepts>
 #include <limits>
@@ -39,7 +39,7 @@ namespace tz::gl
 		bool operator==(const ScissorRegion& rhs) const = default;
 	};
 
-	class IOutput : public IUniqueCloneable<IOutput>
+	class IOutput : public hdk::unique_cloneable<IOutput>
 	{
 	public:
 		constexpr virtual OutputTarget get_target() const = 0;
