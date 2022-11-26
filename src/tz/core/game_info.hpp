@@ -25,7 +25,7 @@ namespace tz
 		{
 			std::string res = this->name;
 			res += " v";
-			res += tz::stringify_version(this->version);
+			res += this->version.to_string();
 			res += " (";
 			res += this->engine.to_string();
 			res += ")";
@@ -38,7 +38,7 @@ namespace tz
 		}
 
 		const char* name;
-		Version version;
+		hdk::version version;
 		EngineInfo engine;
 	};
 	/**

@@ -36,7 +36,7 @@ namespace tz
 			break;
 		}
 		std::string result = "Topaz v";
-		result += tz::stringify_version(this->version);
+		result += this->version.to_string();
 		result += " ";
 		result += render_api;
 		result += " ";

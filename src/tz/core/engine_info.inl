@@ -5,7 +5,7 @@
 
 namespace tz
 {
-	constexpr EngineInfo info()
+	EngineInfo info()
 	{
 		EngineInfo inf{};
 		#if TZ_VULKAN
@@ -24,8 +24,7 @@ namespace tz
 			inf.build = EngineInfo::BuildConfig::Release;
 		#endif
 		
-		const char* version_string = TZ_VERSION;
-		inf.version = tz::parse_version(version_string);
+		inf.version = hdk::version::from_binary_string(TZ_VERSION);
 		return inf;
 	}
 }

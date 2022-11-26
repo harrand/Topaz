@@ -3,9 +3,13 @@ include(cmake/util.cmake)
 include(cmake/exe_config.cmake)
 include(cmake/setup_configs.cmake)
 
-file(READ ./version.txt TZ_VERSION)
+configure_file(version.txt version_txt_dummy.xml)
+file(READ version.txt TZ_VERSION_TXT)
+string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" TZ_VERSION ${TZ_VERSION_TXT})
+
+#file(READ ./version.txt TZ_VERSION)
 # Reconfigure on changes to ./version.txt
-configure_file(./version.txt topaz_version.xml)
+#configure_file(./version.txt topaz_version.xml)
 set(TZ_CXX_STANDARD 20)
 
 project(topaz VERSION ${TZ_VERSION}
@@ -48,9 +52,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/tz.cpp
 	src/tz/core/tz.hpp
 	src/tz/core/tz.inl
-	src/tz/core/version.cpp
-	src/tz/core/version.hpp
-	src/tz/core/version.inl
 	src/tz/core/window_functionality.cpp
 	src/tz/core/window_functionality.hpp
 	src/tz/core/window_functionality.inl

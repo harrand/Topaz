@@ -491,12 +491,12 @@ namespace tz::dbgui
 			#if TZ_VULKAN
 				ImGui::Text("Vulkan");					
 				ImGui::SameLine();
-				tz::Version ver = tz::gl::vk2::vulkan_version;
+				hdk::version ver = tz::gl::vk2::vulkan_version;
 				ImGui::Text("%u.%u", ver.major, ver.minor);
 			#elif TZ_OGL
 				ImGui::Text("OpenGL");	
 				ImGui::SameLine();
-				tz::Version ver = tz::gl::ogl2::ogl_version;
+				hdk::version ver = tz::gl::ogl2::ogl_version;
 				ImGui::Text("%u.%u Core Profile", ver.major, ver.minor);
 			#else
 				ImGui::Text("Unknown");	
