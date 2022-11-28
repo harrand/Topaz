@@ -289,7 +289,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Pipeline::get_device() const
 	{
-		const LogicalDevice* ldev;
+		const LogicalDevice* ldev = nullptr;
 		std::visit([&ldev](auto&& arg)
 		{
 			using T = std::decay_t<decltype(arg)>;
@@ -308,7 +308,7 @@ namespace tz::gl::vk2
 
 	const PipelineLayout& Pipeline::get_layout() const
 	{
-		const PipelineLayout* lay;
+		const PipelineLayout* lay = nullptr;
 		std::visit([&lay](auto&& arg)
 		{
 			using T = std::decay_t<decltype(arg)>;
@@ -343,7 +343,7 @@ namespace tz::gl::vk2
 
 	Pipeline::NativeType Pipeline::native() const
 	{
-		Pipeline::NativeType nat;
+		Pipeline::NativeType nat = VK_NULL_HANDLE;
 		std::visit([&nat](auto&& arg)
 		{
 			using T = std::decay_t<decltype(arg)>;
