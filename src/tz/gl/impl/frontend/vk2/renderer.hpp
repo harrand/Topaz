@@ -73,9 +73,6 @@ namespace tz::gl
 		 */
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 
-		const IComponent* try_get_index_buffer() const;
-		const IComponent* try_get_draw_indirect_buffer() const;
-
 		std::size_t resource_count_of(ResourceType type) const;
 		/**
 		 * Notifies that an ImageComponent at the provided handle has had its underlying vk2::Image re-seated. This recreates any necessary image views.
@@ -429,6 +426,7 @@ namespace tz::gl
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
 		const RendererOptions& get_options() const;
+		const RendererState& get_state() const;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
@@ -466,6 +464,8 @@ namespace tz::gl
 		DeviceWindowVulkan* device_window;
 		// Contains which renderer options were enabled.
 		RendererOptions options;
+		// Current state of the renderer.
+		RendererState state;
 		// Clear colour values if a clear is performed during a render pass.
 		hdk::vec4 clear_colour;
 		// Workgroup dimensions, if we're doing compute work.

@@ -63,22 +63,9 @@ namespace tz::gl
 				residency = ogl2::BufferResidency::Dynamic;
 			break;
 		}
-		ogl2::BufferTarget tar;
-		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
-		{
-			tar = ogl2::BufferTarget::Index;
-		}
-		else if(this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
-		{
-			tar = ogl2::BufferTarget::DrawIndirect;
-		}
-		else
-		{
-			tar = ogl2::BufferTarget::ShaderStorage;
-		}
 		return
 		{{
-			.target = tar,
+			.target = ogl2::BufferTarget::ShaderStorage,
 			.residency = residency,
 			.size_bytes = this->resource->data().size_bytes()
 		}};

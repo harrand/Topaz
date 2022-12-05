@@ -87,7 +87,7 @@ namespace tz::gl
 		std::vector<bool> buffer_id_to_descriptor_visibility;
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility, get_fitting_sampler](IComponent* cmp)
+		auto retrieve_resource_metadata = [this, &info, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility, get_fitting_sampler](IComponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
@@ -97,7 +97,9 @@ namespace tz::gl
 					auto buf = static_cast<BufferComponentVulkan*>(cmp);
 					// We need to know this when creating the descriptors.
 					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
-					buffer_id_to_descriptor_visibility.push_back(buf->vk_is_descriptor_relevant());
+					bool is_special_case = this->get(info.state().graphics.index_buffer) == cmp->get_resource()
+										|| this->get(info.state().graphics.draw_buffer) == cmp->get_resource();
+					buffer_id_to_descriptor_visibility.push_back(buf->vk_is_descriptor_relevant() && !is_special_case);
 					// If the buffer is dynamic, let's link up the resource data span now.
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
 					{
@@ -311,11 +313,19 @@ namespace tz::gl
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
+		if(handle == hdk::nullhand)
+		{
+			return nullptr;
+		}
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	IComponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
+		if(handle == hdk::nullhand)
+		{
+			return nullptr;
+		}
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
@@ -327,36 +337,6 @@ namespace tz::gl
 	std::span<const vk2::DescriptorSet> ResourceStorage::get_descriptor_sets() const
 	{
 		return this->descriptors.sets;
-	}
-
-	const IComponent* ResourceStorage::try_get_index_buffer() const
-	{
-		auto iter = std::find_if(this->components.begin(), this->components.end(),
-		[](const auto& component_ptr)
-		{
-			auto res = component_ptr->get_resource();
-			return res->get_type() == ResourceType::Buffer && res->get_flags().contains(ResourceFlag::IndexBuffer);
-		});
-		if(iter == this->components.end())
-		{
-			return nullptr;
-		}
-		return iter->get();
-	}
-
-	const IComponent* ResourceStorage::try_get_draw_indirect_buffer() const
-	{
-		auto iter = std::find_if(this->components.begin(), this->components.end(),
-		[](const auto& component_ptr)
-		{
-			auto res = component_ptr->get_resource();
-			return res->get_type() == ResourceType::Buffer && res->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
-		});
-		if(iter == this->components.end())
-		{
-			return nullptr;
-		}
-		return iter->get();
 	}
 
 	std::size_t ResourceStorage::resource_count_of(ResourceType type) const
@@ -1273,6 +1253,7 @@ namespace tz::gl
 	ldev(device_info.device),
 	device_window(device_info.device_window),
 	options(info.get_options()),
+	state(info.state()),
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel()),
 	resources(info, *this->ldev, this->get_frame_in_flight_count()),
@@ -1430,6 +1411,11 @@ namespace tz::gl
 		return this->options;
 	}
 
+	const RendererState& RendererVulkan::get_state() const
+	{
+		return this->state;
+	}
+
 	void RendererVulkan::render()
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Render", 0xFFAAAA00);
@@ -1503,7 +1489,9 @@ namespace tz::gl
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
-						if(bufcomp == this->resources.try_get_index_buffer() || bufcomp == this->resources.try_get_draw_indirect_buffer())
+
+						if(bufcomp == this->get_component(this->state.graphics.index_buffer)
+						|| bufcomp == this->get_component(this->state.graphics.draw_buffer))
 						{
 							// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
 							work_commands_need_recording = true;
@@ -1875,8 +1863,10 @@ namespace tz::gl
 					.extent = extent
 				});
 
-				const IComponent* idx_buf = this->resources.try_get_index_buffer();
-				const auto* ind_buf = static_cast<const BufferComponentVulkan*>(this->resources.try_get_draw_indirect_buffer());
+				//const IComponent* idx_buf = this->resources.try_get_index_buffer();
+				const IComponent* idx_buf = this->get_component(this->state.graphics.index_buffer);
+				const IComponent* ind_buf_gen = this->get_component(this->state.graphics.draw_buffer);;
+				const auto* ind_buf = static_cast<const BufferComponentVulkan*>(ind_buf_gen);
 				if(idx_buf == nullptr)
 				{
 					if(ind_buf == nullptr)
@@ -1960,7 +1950,7 @@ namespace tz::gl
 				});
 			}
 
-			hdk::assert(!this->resources.try_get_index_buffer(), "Compute Renderer has an index buffer applied. This doesn't make any sense. Please submit a bug report.");
+			//hdk::assert(!this->resources.try_get_index_buffer(), "Compute Renderer has an index buffer applied. This doesn't make any sense. Please submit a bug report.");
 			{
 				recording.dispatch
 				({

@@ -106,6 +106,7 @@ int main()
 				}
 			)
 		);
+		rinfo.state().graphics.index_buffer = ibufh;
 
 		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);

@@ -137,11 +137,19 @@ namespace tz::gl
 
 	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
+		if(handle == hdk::nullhand)
+		{
+			return nullptr;
+		}
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
 	IComponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
+		if(handle == hdk::nullhand)
+		{
+			return nullptr;
+		}
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
@@ -181,7 +189,7 @@ namespace tz::gl
 		ogl2::buffer::copy(temp_copy_buffer, this->bindless_image_storage_buffer);
 	}
 
-	void ResourceStorage::bind_buffers()
+	void ResourceStorage::bind_buffers(const RendererState& state)
 	{
 		if(this->resource_count_of(ResourceType::Buffer) == 0)
 		{
@@ -194,7 +202,12 @@ namespace tz::gl
 			if(comp->get_resource()->get_type() == ResourceType::Buffer)
 			{
 				auto bcomp = static_cast<BufferComponentOGL*>(comp);
-				if(bcomp->ogl_is_descriptor_stakeholder())
+				// If we're an index or draw-indirect buffer. Don't bind. The draw command will do that.
+				if(this->get_component(state.graphics.index_buffer) == comp || this->get_component(state.graphics.draw_buffer) == comp)
+				{
+
+				}
+				else if(bcomp->ogl_is_descriptor_stakeholder())
 				{
 					bcomp->ogl_get_buffer().bind_to_resource_id(i++);
 				}
@@ -206,10 +219,14 @@ namespace tz::gl
 		}
 	}
 
-	void ResourceStorage::bind_image_buffer()
+	void ResourceStorage::bind_image_buffer(bool has_index_buffer, bool has_draw_buffer)
 	{
 		auto buf_res_count = this->resource_count_of(ResourceType::Buffer);
-		if(this->try_get_index_buffer() != nullptr)
+		if(has_index_buffer)
+		{
+			buf_res_count--;
+		}
+		if(has_draw_buffer)
 		{
 			buf_res_count--;
 		}
@@ -256,32 +273,6 @@ namespace tz::gl
 	void ResourceStorage::set_image_handle(tz::gl::ResourceHandle h, ogl2::Image::BindlessTextureHandle bindless_handle)
 	{
 		this->image_handles[static_cast<std::size_t>(static_cast<hdk::hanval>(h))] = bindless_handle;
-	}
-
-	IComponent* ResourceStorage::try_get_index_buffer() const
-	{
-		for(auto& component_ptr : this->components)
-		{
-			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::IndexBuffer))
-			{
-				hdk::assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
-				return const_cast<IComponent*>(component_ptr.get());
-			}
-		}
-		return nullptr;
-	}
-
-	IComponent* ResourceStorage::try_get_drawindirect_buffer() const
-	{
-		for(auto& component_ptr : this->components)
-		{
-			if(component_ptr->get_resource()->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
-			{
-				hdk::assert(component_ptr->get_resource()->get_type() == ResourceType::Buffer, "Detected non-buffer resource with ResourceFlag::IndexBuffer which is illegal. Please submit a bug report.");
-				return const_cast<IComponent*>(component_ptr.get());
-			}
-		}
-		return nullptr;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -473,6 +464,7 @@ namespace tz::gl
 	clear_colour(info.get_clear_colour()),
 	compute_kernel(info.get_compute_kernel()),
 	options(info.get_options()),
+	state(info.state()),
 	debug_name(info.debug_get_name())
 	{
 		// Handle debug names for resources.
@@ -537,6 +529,11 @@ namespace tz::gl
 		return this->options;
 	}
 
+	const RendererState& RendererOGL::get_state() const
+	{
+		return this->state;
+	}
+
 	void RendererOGL::render()
 	{
 		HDK_PROFZONE("OpenGL Frontend - RendererOGL Render", 0xFFAA0000);
@@ -551,12 +548,12 @@ namespace tz::gl
 		{
 			this->resources.write_dynamic_images();
 			this->shader.use();
-			this->resources.bind_buffers();
+			this->resources.bind_buffers(this->state);
 			if(this->resources.resource_count_of(ResourceType::Image) > 0)
 			{
-				this->resources.bind_image_buffer();
+				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
 			}
-			hdk::assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
+			//hdk::assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
 			glDispatchCompute(this->compute_kernel[0], this->compute_kernel[1], this->compute_kernel[2]);
 		}
 		else
@@ -584,20 +581,22 @@ namespace tz::gl
 			this->output.set_render_target();
 
 			this->shader.use();
-			this->resources.bind_buffers();
+			this->resources.bind_buffers(this->state);
 			if(this->resources.resource_count_of(ResourceType::Image) > 0)
 			{
-				this->resources.bind_image_buffer();
+				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
 			}
 
 			glPolygonMode(GL_FRONT_AND_BACK, this->wireframe_mode ? GL_LINE : GL_FILL);
 
-			if(this->resources.try_get_index_buffer() != nullptr)
+			auto* icomp = this->get_component(this->state.graphics.index_buffer);
+			if(icomp != nullptr)
 			{
-				const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(this->resources.try_get_index_buffer())->ogl_get_buffer();
-				if(this->resources.try_get_drawindirect_buffer() != nullptr)
+				const ogl2::Buffer& ibuf = static_cast<BufferComponentOGL*>(icomp)->ogl_get_buffer();
+				auto* dcomp = this->get_component(this->state.graphics.draw_buffer);
+				if(dcomp != nullptr)
 				{
-					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(this->resources.try_get_drawindirect_buffer())->ogl_get_buffer();
+					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(dcomp)->ogl_get_buffer();
 					this->vao.draw_indexed_indirect(dbuf.size() / sizeof(ogl2::DrawIndexedIndirectCommand), ibuf, dbuf, this->shader.has_tessellation());
 				}
 				else
@@ -607,9 +606,10 @@ namespace tz::gl
 			}
 			else
 			{
-				if(this->resources.try_get_drawindirect_buffer() != nullptr)
+				auto* dcomp = this->get_component(this->state.graphics.draw_buffer);
+				if(dcomp != nullptr)
 				{
-					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(this->resources.try_get_drawindirect_buffer())->ogl_get_buffer();
+					const ogl2::Buffer& dbuf = static_cast<BufferComponentOGL*>(dcomp)->ogl_get_buffer();
 					this->vao.draw_indirect(dbuf.size() / sizeof(ogl2::DrawIndirectCommand), dbuf, this->shader.has_tessellation());
 				}
 				else
@@ -763,6 +763,7 @@ namespace tz::gl
 	clear_colour(),
 	compute_kernel(),
 	options(),
+	state(),
 	debug_name("Null Renderer")
 	{
 		this->is_null_value = true;

@@ -70,21 +70,16 @@ namespace tz::gl
 
 	vk2::Buffer BufferComponentVulkan::make_buffer(const vk2::LogicalDevice& ldev) const
 	{
-		vk2::BufferUsageField usage_field;
+		vk2::BufferUsageField usage_field{vk2::BufferUsage::StorageBuffer};
 		vk2::MemoryResidency residency;
 
-		vk2::BufferUsage buf_usage;
 		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
 		{
-			buf_usage = vk2::BufferUsage::IndexBuffer;
+			usage_field |= vk2::BufferUsage::IndexBuffer;
 		}
 		else if(this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
 		{
-			buf_usage = vk2::BufferUsage::DrawIndirectBuffer;
-		}
-		else
-		{
-			buf_usage = vk2::BufferUsage::StorageBuffer;
+			usage_field |= vk2::BufferUsage::DrawIndirectBuffer;
 		}
 
 		switch(this->resource->get_access())
@@ -93,13 +88,12 @@ namespace tz::gl
 				hdk::error("Unrecognised ResourceAccess. Please submit a bug report.");
 			[[fallthrough]];
 			case ResourceAccess::StaticFixed:
-				usage_field = {vk2::BufferUsage::TransferDestination, buf_usage};
+				usage_field |= vk2::BufferUsage::TransferDestination;
 				residency = vk2::MemoryResidency::GPU;
 			break;
 			case ResourceAccess::DynamicFixed:
 			[[fallthrough]];
 			case ResourceAccess::DynamicVariable:
-				usage_field = {buf_usage};
 				residency = vk2::MemoryResidency::CPUPersistent;
 			break;
 		}

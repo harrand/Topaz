@@ -46,30 +46,30 @@ namespace tz::gl::ogl2
 	void VertexArray::draw_indexed(unsigned int triangle_count, const Buffer& index_buffer, bool tessellation)
 	{
 		HDK_PROFZONE("OpenGL Backend - VertexArray DrawIndexed", 0xFFAA0000);
-		hdk::assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed(...). Please submit a bug report.");
+		//hdk::assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed(...). Please submit a bug report.");
 		// Note: Normally basic bind (glBindBuffer) has nothing to do with the VAO. Index buffers (GL_ELEMENT_ARRAY_BUFFER) bindings are an exception - this is explicitly associated with the currently-bound VAO. That is why we need to have the index buffer passed in via param so we can bind the vao before actually trying to bind the buffer.
 		this->bind();
-		index_buffer.basic_bind();
+		index_buffer.custom_bind(BufferTarget::Index);
 		glDrawElements(tessellation ? GL_PATCHES : GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);
 	}
 
 	void VertexArray::draw_indirect(unsigned int draw_count, const Buffer& draw_indirect_buffer, bool tessellation)
 	{
 		HDK_PROFZONE("OpenGL Backend - VertexArray DrawIndirect", 0xFFAA0000);
-		hdk::assert(draw_indirect_buffer.get_target() == BufferTarget::DrawIndirect, "Passed non-draw-indirect buffer to VertexArray::draw_indirect(...). Please submit a bug report.");
+		//hdk::assert(draw_indirect_buffer.get_target() == BufferTarget::DrawIndirect, "Passed non-draw-indirect buffer to VertexArray::draw_indirect(...). Please submit a bug report.");
 		this->bind();
-		draw_indirect_buffer.basic_bind();
+		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
 		glMultiDrawArraysIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, nullptr, draw_count, 0);
 	}
 
 	void VertexArray::draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation)
 	{
 		HDK_PROFZONE("OpenGL Backend - VertexArray DrawIndexedIndirect", 0xFFAA0000);
-		hdk::assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed_indirect(...). Please submit a bug report.");
-		hdk::assert(draw_indirect_buffer.get_target() == BufferTarget::DrawIndirect, "Passed non-draw-indirect buffer to VertexArray::draw_indexed_indirect(...). Please submit a bug report.");
+		//hdk::assert(index_buffer.get_target() == BufferTarget::Index, "Passed non-index buffer to VertexArray::draw_indexed_indirect(...). Please submit a bug report.");
+		//hdk::assert(draw_indirect_buffer.get_target() == BufferTarget::DrawIndirect, "Passed non-draw-indirect buffer to VertexArray::draw_indexed_indirect(...). Please submit a bug report.");
 		this->bind();
-		index_buffer.basic_bind();
-		draw_indirect_buffer.basic_bind();
+		index_buffer.custom_bind(BufferTarget::Index);
+		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
 		glMultiDrawElementsIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, draw_count, 0);
 	}
 

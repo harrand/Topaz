@@ -145,6 +145,16 @@ namespace tz::gl
 		return this->compute_kernel;
 	}
 
+	RendererState& RendererInfoCommon::state()
+	{
+		return this->renderer_state;
+	}
+
+	const RendererState& RendererInfoCommon::state() const
+	{
+		return this->renderer_state;
+	}
+
 	ShaderInfo& RendererInfoCommon::shader()
 	{
 		return this->shader_info;

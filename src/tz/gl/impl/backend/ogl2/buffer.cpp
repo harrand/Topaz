@@ -93,9 +93,12 @@ namespace tz::gl::ogl2
 
 	void Buffer::basic_bind() const
 	{
-		auto en = static_cast<GLenum>(this->get_target());
-		hdk::assert(en == GL_ELEMENT_ARRAY_BUFFER || en == GL_DRAW_INDIRECT_BUFFER, "Basic bind on a buffer is only valid for an index or draw-indirect buffer.");
-		glBindBuffer(en, this->buffer);
+		this->custom_bind(this->get_target());
+	}
+
+	void Buffer::custom_bind(BufferTarget tar) const
+	{
+		glBindBuffer(static_cast<GLenum>(tar), this->buffer);
 	}
 
 	void Buffer::bind_to_resource_id(unsigned int shader_resource_id) const

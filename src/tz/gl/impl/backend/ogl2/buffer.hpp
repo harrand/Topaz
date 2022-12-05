@@ -122,6 +122,7 @@ namespace tz::gl::ogl2
 		 * Bind without a resource id (i.e you are an Index Buffer).
 		 */
 		void basic_bind() const;
+		void custom_bind(BufferTarget tar) const;
 		/**
 		 * Bind the buffer to a shader resource id.
 		 */

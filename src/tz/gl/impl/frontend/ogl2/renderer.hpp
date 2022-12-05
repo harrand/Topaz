@@ -54,15 +54,13 @@ namespace tz::gl
 		/**
 		 * Bind all buffer resources to their expected resource ids.
 		 */
-		void bind_buffers();
+		void bind_buffers(const RendererState& state);
 		/**
 		 * Images are converted into bindless texture handles which are then all stored within a secret bespoke SSBO (this does not count as a buffer resource however). This binds that SSBO to the resource id equal to the list of images (this will be equal to the total number of buffer resources).
 		 */
-		void bind_image_buffer();
+		void bind_image_buffer(bool has_index_buffer, bool has_draw_buffer);
 		void write_dynamic_images();
 		void set_image_handle(tz::gl::ResourceHandle h, ogl2::Image::BindlessTextureHandle bindless_handle);
-		IComponent* try_get_index_buffer() const;
-		IComponent* try_get_drawindirect_buffer() const;
 	private:
 		void fill_bindless_image_buffer();
 
@@ -178,6 +176,10 @@ namespace tz::gl
 		 */
 		const RendererOptions& get_options() const;
 		/**
+		 * Retrieve current state of the renderer.
+		 */
+		const RendererState& get_state() const;
+		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles rendered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
 		void render();
@@ -210,6 +212,7 @@ namespace tz::gl
 		hdk::vec4 clear_colour;
 		hdk::vec3ui compute_kernel;
 		RendererOptions options;
+		RendererState state;
 		std::string debug_name;
 		unsigned int tri_count = 0;
 		bool wireframe_mode = false;

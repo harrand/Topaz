@@ -118,6 +118,8 @@ namespace tz::gl
 		 * Retrieve the compute kernel (aka workgroup dimensions) for compute work. By default, this is {1, 1, 1}.
 		 */
 		const hdk::vec3ui& get_compute_kernel() const;
+		RendererState& state();
+		const RendererState& state() const;
 		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
@@ -145,6 +147,8 @@ namespace tz::gl
 		std::unique_ptr<IOutput> output = nullptr;
 		/// Specifies which extra features the Renderer will have.
 		RendererOptions options = {};
+		/// Describes render state. It could change.
+		RendererState renderer_state = {};
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 		/// The clear value for colour attachments.
@@ -183,12 +187,14 @@ namespace tz::gl
 		
 		const Asset* get(AssetHandle handle) const
 		{
+			if(handle == hdk::nullhand) return nullptr;
 			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			return this->asset_storage[handle_val].get();
 		}
 
 		Asset* get(AssetHandle handle)
 		{
+			if(handle == hdk::nullhand) return nullptr;
 			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			return this->asset_storage[handle_val].get();
 		}
@@ -237,6 +243,29 @@ namespace tz::gl
 		else
 		{
 			ImGui::Text("Renderer has no resources.");
+		}
+		if(renderer.get_state() != tz::gl::RendererState{} && ImGui::CollapsingHeader("Renderer State"))
+		{
+			// Graphics - Index Buffer
+			{
+				auto han = renderer.get_state().graphics.index_buffer;
+				auto* comp = renderer.get_component(han);
+				if(comp != nullptr)
+				{
+					ImGui::Text("Index Buffer = [Resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Indent();
+					comp->get_resource()->dbgui();
+					ImGui::Unindent();
+				}
+			}
+			// Graphics - Draw Buffer
+			{
+				auto* comp = renderer.get_component(renderer.get_state().graphics.draw_buffer);
+				if(comp != nullptr)
+				{
+					comp->get_resource()->dbgui();
+				}
+			}
 		}
 		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("Renderer Options"))
 		{

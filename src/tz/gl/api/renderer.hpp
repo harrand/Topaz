@@ -48,6 +48,23 @@ namespace tz::gl
 		Internal,
 		Count
 	};
+
+	struct RendererState
+	{
+		struct Graphics
+		{
+			ResourceHandle index_buffer = hdk::nullhand;
+			ResourceHandle draw_buffer = hdk::nullhand;
+			bool operator==(const Graphics& rhs) const = default;
+		} graphics;
+		struct Compute
+		{
+
+			bool operator==(const Compute& rhs) const = default;
+		} compute;
+		
+		bool operator==(const RendererState& rhs) const = default;
+	};
 	
 	/**
 	 * @ingroup tz_gl2_renderer
@@ -77,6 +94,7 @@ namespace tz::gl
 		{t.set_compute_kernel(vec3ui)} -> std::same_as<void>;
 		{t.get_compute_kernel()} -> std::convertible_to<hdk::vec3ui>;
 
+		{t.state()} -> std::convertible_to<RendererState>;
 		{t.shader()} -> ShaderInfoType;
 		{t.debug_name(str)} -> std::same_as<void>;
 		{t.debug_get_name()} -> std::same_as<std::string>;
@@ -185,6 +203,7 @@ namespace tz::gl
 		 * @return Options containing additional features used by the renderer.
 		 */
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
+		{t.get_state()} -> std::convertible_to<RendererState>;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
