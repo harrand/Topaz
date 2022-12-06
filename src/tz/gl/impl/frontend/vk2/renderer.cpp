@@ -1406,7 +1406,7 @@ namespace tz::gl
 		return this->options;
 	}
 
-	const RendererState& RendererVulkan::get_state() const
+	const RenderState& RendererVulkan::get_state() const
 	{
 		return this->state;
 	}

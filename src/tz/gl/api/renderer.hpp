@@ -49,7 +49,7 @@ namespace tz::gl
 		Count
 	};
 
-	struct RendererState
+	struct RenderState
 	{
 		struct Graphics
 		{
@@ -64,7 +64,7 @@ namespace tz::gl
 			bool operator==(const Compute& rhs) const = default;
 		} compute;
 		
-		bool operator==(const RendererState& rhs) const = default;
+		bool operator==(const RenderState& rhs) const = default;
 	};
 	
 	/**
@@ -89,7 +89,7 @@ namespace tz::gl
 		{t.set_options(options)} -> std::same_as<void>;
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
 
-		{t.state()} -> std::convertible_to<RendererState>;
+		{t.state()} -> std::convertible_to<RenderState>;
 		{t.shader()} -> ShaderInfoType;
 		{t.debug_name(str)} -> std::same_as<void>;
 		{t.debug_get_name()} -> std::same_as<std::string>;
@@ -198,7 +198,7 @@ namespace tz::gl
 		 * @return Options containing additional features used by the renderer.
 		 */
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
-		{t.get_state()} -> std::convertible_to<RendererState>;
+		{t.get_state()} -> std::convertible_to<RenderState>;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */

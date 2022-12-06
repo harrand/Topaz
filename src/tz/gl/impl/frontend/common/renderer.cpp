@@ -125,12 +125,12 @@ namespace tz::gl
 		this->options = options;
 	}
 
-	RendererState& RendererInfoCommon::state()
+	RenderState& RendererInfoCommon::state()
 	{
 		return this->renderer_state;
 	}
 
-	const RendererState& RendererInfoCommon::state() const
+	const RenderState& RendererInfoCommon::state() const
 	{
 		return this->renderer_state;
 	}

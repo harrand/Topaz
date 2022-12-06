@@ -426,7 +426,7 @@ namespace tz::gl
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
 		const RendererOptions& get_options() const;
-		const RendererState& get_state() const;
+		const RenderState& get_state() const;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
@@ -465,7 +465,7 @@ namespace tz::gl
 		// Contains which renderer options were enabled.
 		RendererOptions options;
 		// Current state of the renderer.
-		RendererState state;
+		RenderState state;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
 		ResourceStorage resources;
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.

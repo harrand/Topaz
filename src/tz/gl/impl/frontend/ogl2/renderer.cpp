@@ -189,7 +189,7 @@ namespace tz::gl
 		ogl2::buffer::copy(temp_copy_buffer, this->bindless_image_storage_buffer);
 	}
 
-	void ResourceStorage::bind_buffers(const RendererState& state)
+	void ResourceStorage::bind_buffers(const RenderState& state)
 	{
 		if(this->resource_count_of(ResourceType::Buffer) == 0)
 		{
@@ -527,7 +527,7 @@ namespace tz::gl
 		return this->options;
 	}
 
-	const RendererState& RendererOGL::get_state() const
+	const RenderState& RendererOGL::get_state() const
 	{
 		return this->state;
 	}

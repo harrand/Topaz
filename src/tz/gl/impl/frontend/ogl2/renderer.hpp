@@ -54,7 +54,7 @@ namespace tz::gl
 		/**
 		 * Bind all buffer resources to their expected resource ids.
 		 */
-		void bind_buffers(const RendererState& state);
+		void bind_buffers(const RenderState& state);
 		/**
 		 * Images are converted into bindless texture handles which are then all stored within a secret bespoke SSBO (this does not count as a buffer resource however). This binds that SSBO to the resource id equal to the list of images (this will be equal to the total number of buffer resources).
 		 */
@@ -178,7 +178,7 @@ namespace tz::gl
 		/**
 		 * Retrieve current state of the renderer.
 		 */
-		const RendererState& get_state() const;
+		const RenderState& get_state() const;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles rendered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
@@ -210,7 +210,7 @@ namespace tz::gl
 		ShaderManager shader;
 		OutputManager output;
 		RendererOptions options;
-		RendererState state;
+		RenderState state;
 		std::string debug_name;
 		unsigned int tri_count = 0;
 		bool wireframe_mode = false;

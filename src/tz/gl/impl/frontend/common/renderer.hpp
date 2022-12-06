@@ -34,7 +34,7 @@ namespace tz::gl
 		 */
 		RendererEditBuilder& compute(RendererEdit::ComputeConfig req);
 		/**
-		 * Make amendments to the current render state. See @ref RendererStateEditRequest for details.
+		 * Make amendments to the current render state. See @ref RenderStateEditRequest for details.
 		 */
 		RendererEditBuilder& render_state(RendererEdit::RenderConfig req);
 		/**
@@ -102,8 +102,8 @@ namespace tz::gl
 		 * Set the currently specified options which will be used by the renderer.
 		 */
 		void set_options(RendererOptions options);
-		RendererState& state();
-		const RendererState& state() const;
+		RenderState& state();
+		const RenderState& state() const;
 		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
@@ -132,7 +132,7 @@ namespace tz::gl
 		/// Specifies which extra features the Renderer will have.
 		RendererOptions options = {};
 		/// Describes render state. It could change.
-		RendererState renderer_state = {};
+		RenderState renderer_state = {};
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 		/// The clear value for colour attachments.
