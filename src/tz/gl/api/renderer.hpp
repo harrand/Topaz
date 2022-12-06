@@ -89,12 +89,6 @@ namespace tz::gl
 		{t.set_options(options)} -> std::same_as<void>;
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
 
-		{t.set_clear_colour(vec4)} -> std::same_as<void>;
-		{t.get_clear_colour()} -> std::convertible_to<hdk::vec4>;
-
-		{t.set_compute_kernel(vec3ui)} -> std::same_as<void>;
-		{t.get_compute_kernel()} -> std::convertible_to<hdk::vec3ui>;
-
 		{t.state()} -> std::convertible_to<RendererState>;
 		{t.shader()} -> ShaderInfoType;
 		{t.debug_name(str)} -> std::same_as<void>;

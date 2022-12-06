@@ -102,22 +102,6 @@ namespace tz::gl
 		 * Set the currently specified options which will be used by the renderer.
 		 */
 		void set_options(RendererOptions options);
-		/**
-		 * Set the clear colour value. Default is solid black. {0, 0, 0, 1}
-		 */
-		void set_clear_colour(hdk::vec4 clear_colour);
-		/**
-		 * Retrieve the current clear colour value.
-		 */
-		const hdk::vec4& get_clear_colour() const;
-		/**
-		 * Set the compute kernel (aka workgroup dimensions) for any compute work dispatched by this renderer. If the renderer does not do any compute work, this is unused.
-		 */
-		void set_compute_kernel(hdk::vec3ui compute_kernel);
-		/**
-		 * Retrieve the compute kernel (aka workgroup dimensions) for compute work. By default, this is {1, 1, 1}.
-		 */
-		const hdk::vec3ui& get_compute_kernel() const;
 		RendererState& state();
 		const RendererState& state() const;
 		/**

@@ -125,26 +125,6 @@ namespace tz::gl
 		this->options = options;
 	}
 
-	void RendererInfoCommon::set_clear_colour(hdk::vec4 clear_colour)
-	{
-		this->clear_colour = clear_colour;
-	}
-
-	const hdk::vec4& RendererInfoCommon::get_clear_colour() const
-	{
-		return this->clear_colour;
-	}
-
-	void RendererInfoCommon::set_compute_kernel(hdk::vec3ui compute_kernel)
-	{
-		this->compute_kernel = compute_kernel;
-	}
-
-	const hdk::vec3ui& RendererInfoCommon::get_compute_kernel() const
-	{
-		return this->compute_kernel;
-	}
-
 	RendererState& RendererInfoCommon::state()
 	{
 		return this->renderer_state;
