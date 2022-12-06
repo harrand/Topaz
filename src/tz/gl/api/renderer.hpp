@@ -49,20 +49,32 @@ namespace tz::gl
 		Count
 	};
 
+	/**
+	 * @ingroup tz_gl2_renderer
+	 * Stores renderer-specific state, which drives the behaviour of the rendering.
+	 */
 	struct RenderState
 	{
 		struct Graphics
 		{
+			/// If an index buffer is used, this refers to the buffer resource. It must have ResourceFlag::IndexBuffer. If there is no index buffer, this is nullhand.
 			ResourceHandle index_buffer = hdk::nullhand;
+			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have ResourceFlag::DrawIndirectBuffer. If there is no draw buffer, this is nullhand.
 			ResourceHandle draw_buffer = hdk::nullhand;
+			/// Normalised RGBA floating point colour.
 			hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 			bool operator==(const Graphics& rhs) const = default;
-		} graphics;
+		};
 		struct Compute
 		{
+			/// Represents the compute kernel, which contains the number of workgroups to be launched in the X, Y and Z dimensions.
 			hdk::vec3ui kernel = {1u, 1u, 1u};
 			bool operator==(const Compute& rhs) const = default;
-		} compute;
+		};
+		/// Graphics state.
+		Graphics graphics;
+		/// Compute state.
+		Compute compute;
 		
 		bool operator==(const RenderState& rhs) const = default;
 	};

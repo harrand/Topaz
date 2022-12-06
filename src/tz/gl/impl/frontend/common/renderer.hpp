@@ -102,14 +102,20 @@ namespace tz::gl
 		 * Set the currently specified options which will be used by the renderer.
 		 */
 		void set_options(RendererOptions options);
+		/**
+		 * Read/write information about the state of the renderer when it is created.
+		 */
 		RenderState& state();
+		/**
+		 * Read-only information about the state of the renderer when it is created.
+		 */
 		const RenderState& state() const;
 		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
 		ShaderInfo& shader();
 		/**
-		 * Read/write information about the shader that will be built for the renderer.
+		 * Read-only information about the shader that will be built for the renderer.
 		 */
 		const ShaderInfo& shader() const;
 		/**
