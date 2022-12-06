@@ -1,4 +1,5 @@
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/core/time.hpp"
 #include "hdk/debug.hpp"
 #include "hdk/debug.hpp"
 #include "tz/core/window.hpp"
@@ -31,6 +32,11 @@ namespace tz::dbgui
 		tz::KeyboardState kb_state;
 		tz::MousePositionState mouse_pos_state;
 		tz::MouseButtonState mouse_button_state;
+
+		std::size_t frame_counter = 0;
+		tz::Duration last_update;
+		float frame_period = 0.0f;
+		tz::Delay fps_update{tz::literals::operator""_ms(500.0f)};
 	};
 
 	struct TopazRenderData
@@ -472,7 +478,7 @@ namespace tz::dbgui
 
 	struct ImGuiTabTZ
 	{
-		bool show_info = false;
+		bool show_top_bar = true;
 		bool show_window_info = false;
 		bool show_device_info = false;
 	};
@@ -481,135 +487,124 @@ namespace tz::dbgui
 
 	void draw_tz_info()
 	{
-		if(ImGui::Begin("Engine Info", &tab_tz.show_info))
-		{
-			ImGui::Text("%s", global_info.to_string().c_str());
-			ImGui::Spacing();
-
-			ImGui::Text("Graphics API:");
+		#if TZ_VULKAN
+			ImGui::Text("Vulkan");					
 			ImGui::SameLine();
-			#if TZ_VULKAN
-				ImGui::Text("Vulkan");					
-				ImGui::SameLine();
-				hdk::version ver = tz::gl::vk2::vulkan_version;
-				ImGui::Text("%u.%u", ver.major, ver.minor);
-			#elif TZ_OGL
-				ImGui::Text("OpenGL");	
-				ImGui::SameLine();
-				hdk::version ver = tz::gl::ogl2::ogl_version;
-				ImGui::Text("%u.%u Core Profile", ver.major, ver.minor);
-			#else
-				ImGui::Text("Unknown");	
-			#endif
-
-			ImGui::Text("Build Config:");
+			hdk::version ver = tz::gl::vk2::vulkan_version;
+			ImGui::Text("%u.%u |", ver.major, ver.minor);
+		#elif TZ_OGL
+			ImGui::Text("OpenGL");	
 			ImGui::SameLine();
-			#if HDK_DEBUG
-				ImGui::Text("Debug");
-			#elif HDK_PROFILE
-				ImGui::Text("Profile");
-			#else
-				ImGui::Text("Release");
-			#endif
+			hdk::version ver = tz::gl::ogl2::ogl_version;
+			ImGui::Text("%u.%u Core Profile |", ver.major, ver.minor);
+		#else
+			ImGui::Text("Unknown");	
+		#endif
+		ImGui::SameLine();
+		#if HDK_DEBUG
+			ImGui::Text("Debug");
+		#elif HDK_PROFILE
+			ImGui::Text("Profile");
+		#else
+			ImGui::Text("Release");
+		#endif
+		ImGui::SameLine();
+		#if defined(__GNUC__)
+			ImGui::Text("GCC");
+		#elif defined(__clang__)
+			ImGui::Text("Clang");
+		#elif defined(_MSC_VER)
+			ImGui::Text("MSVC");
+		#else
+			ImGui::Text("Unknown");
+		#endif
 
-			ImGui::Text("Build Compiler:");
-			ImGui::SameLine();
-			#if defined(__GNUC__)
-				ImGui::Text("GCC");
-			#elif defined(__clang__)
-				ImGui::Text("Clang");
-			#elif defined(_MSC_VER)
-				ImGui::Text("MSVC");
-			#else
-				ImGui::Text("Unknown");
-			#endif
+		ImGui::SameLine();
+		#if defined(_WIN64)
+			ImGui::Text("Windows |");
+		#elif defined(__unix__)
+			ImGui::Text("Unix |");	
+		#else
+			ImGui::Text("Unknown OS |");
+		#endif
 
-			ImGui::Text("Operating System:");
-			ImGui::SameLine();
-			#if defined(_WIN64)
-				ImGui::Text("Windows");
-			#elif defined(__unix__)
-				ImGui::Text("Unix");	
-			#else
-				ImGui::Text("Unknown");
-			#endif
+		ImGui::SameLine();
+		ImGui::Text("Frame %zu", global_platform_data->frame_counter);
+		ImGui::SameLine();
+		ImGui::Text("%.2ffps", 1000.0f / global_platform_data->frame_period);
 
-			ImGui::Spacing();
-			if(ImGui::CollapsingHeader("Graphics Backend"))
-			{
-				#if TZ_VULKAN
-					const tz::gl::vk2::VulkanInstance& vinst = tz::gl::vk2::get();
-					ImGui::Text("Validation Layers Enabled: %s", vinst.validation_layers_enabled() ? "true" : "false");
-					ImGui::Text("Vulkan Instance Extensions:");
-					for(tz::gl::vk2::InstanceExtension iext : vinst.get_extensions())
-					{
-						ImGui::Text("- %s (%s)", tz::gl::vk2::util::instance_extension_tz_names[static_cast<int>(iext)], tz::gl::vk2::util::instance_extension_names[static_cast<int>(iext)]);
-					}
-					const tz::gl::vk2::LogicalDevice& ldev = tz::gl::device().vk_get_logical_device();
-					ImGui::Text("Vulkan Device Extensions:");
-					for(tz::gl::vk2::DeviceExtension dext : ldev.get_extensions())
-					{
-						ImGui::Text("- %s (%s)", tz::gl::vk2::util::device_extension_tz_names[static_cast<int>(dext)], tz::gl::vk2::util::device_extension_names[static_cast<int>(dext)]);
-					}
+		//if(ImGui::CollapsingHeader("Graphics Backend"))
+		//{
+		//	#if TZ_VULKAN
+		//		const tz::gl::vk2::VulkanInstance& vinst = tz::gl::vk2::get();
+		//		ImGui::Text("Validation Layers Enabled: %s", vinst.validation_layers_enabled() ? "true" : "false");
+		//		ImGui::Text("Vulkan Instance Extensions:");
+		//		for(tz::gl::vk2::InstanceExtension iext : vinst.get_extensions())
+		//		{
+		//			ImGui::Text("- %s (%s)", tz::gl::vk2::util::instance_extension_tz_names[static_cast<int>(iext)], tz::gl::vk2::util::instance_extension_names[static_cast<int>(iext)]);
+		//		}
+		//		const tz::gl::vk2::LogicalDevice& ldev = tz::gl::device().vk_get_logical_device();
+		//		ImGui::Text("Vulkan Device Extensions:");
+		//		for(tz::gl::vk2::DeviceExtension dext : ldev.get_extensions())
+		//		{
+		//			ImGui::Text("- %s (%s)", tz::gl::vk2::util::device_extension_tz_names[static_cast<int>(dext)], tz::gl::vk2::util::device_extension_names[static_cast<int>(dext)]);
+		//		}
 
-					ImGui::Spacing();
-					for(const tz::gl::vk2::PhysicalDevice& pdev : tz::gl::vk2::get_all_devices())
-					{
-						tz::gl::vk2::PhysicalDeviceInfo pinfo = pdev.get_info();
-						if(ImGui::CollapsingHeader(pinfo.name.c_str()))
-						{
-							ImGui::Text("Used: %d", pdev == ldev.get_hardware());
-							ImGui::Text("Vendor:");
-							ImGui::SameLine();
-							switch(pinfo.vendor)
-							{
-								case tz::gl::vk2::PhysicalDeviceVendor::Nvidia:
-									ImGui::Text("Nvidia");
-								break;
-								case tz::gl::vk2::PhysicalDeviceVendor::AMD:
-									ImGui::Text("AMD");
-								break;
-								case tz::gl::vk2::PhysicalDeviceVendor::Intel:
-									ImGui::Text("Intel");
-								break;
-								case tz::gl::vk2::PhysicalDeviceVendor::Other:
-									ImGui::Text("Unknown");
-								break;
-							}
-							ImGui::Text("Type:");
-							ImGui::SameLine();
-							switch(pinfo.type)
-							{
-								case tz::gl::vk2::PhysicalDeviceType::IntegratedGPU:
-									ImGui::Text("Integrated GPU");
-								break;
-								case tz::gl::vk2::PhysicalDeviceType::DiscreteGPU:
-									ImGui::Text("Discrete GPU");
-								break;
-								case tz::gl::vk2::PhysicalDeviceType::VirtualGPU:
-									ImGui::Text("Virtual GPU");
-								break;
-								case tz::gl::vk2::PhysicalDeviceType::CPU:
-									ImGui::Text("CPU");
-								break;
-								default:
-									ImGui::Text("Unknown");
-								break;
-							}
-						}
-					}
-				#elif TZ_OGL
-					ImGui::Text("Supports Bindless Textures: %d", tz::gl::ogl2::supports_bindless_textures());
-				#endif
-			}
+		//		ImGui::Spacing();
+		//		for(const tz::gl::vk2::PhysicalDevice& pdev : tz::gl::vk2::get_all_devices())
+		//		{
+		//			tz::gl::vk2::PhysicalDeviceInfo pinfo = pdev.get_info();
+		//			if(ImGui::CollapsingHeader(pinfo.name.c_str()))
+		//			{
+		//				ImGui::Text("Used: %d", pdev == ldev.get_hardware());
+		//				ImGui::Text("Vendor:");
+		//				ImGui::SameLine();
+		//				switch(pinfo.vendor)
+		//				{
+		//					case tz::gl::vk2::PhysicalDeviceVendor::Nvidia:
+		//						ImGui::Text("Nvidia");
+		//					break;
+		//					case tz::gl::vk2::PhysicalDeviceVendor::AMD:
+		//						ImGui::Text("AMD");
+		//					break;
+		//					case tz::gl::vk2::PhysicalDeviceVendor::Intel:
+		//						ImGui::Text("Intel");
+		//					break;
+		//					case tz::gl::vk2::PhysicalDeviceVendor::Other:
+		//						ImGui::Text("Unknown");
+		//					break;
+		//				}
+		//				ImGui::Text("Type:");
+		//				ImGui::SameLine();
+		//				switch(pinfo.type)
+		//				{
+		//					case tz::gl::vk2::PhysicalDeviceType::IntegratedGPU:
+		//						ImGui::Text("Integrated GPU");
+		//					break;
+		//					case tz::gl::vk2::PhysicalDeviceType::DiscreteGPU:
+		//						ImGui::Text("Discrete GPU");
+		//					break;
+		//					case tz::gl::vk2::PhysicalDeviceType::VirtualGPU:
+		//						ImGui::Text("Virtual GPU");
+		//					break;
+		//					case tz::gl::vk2::PhysicalDeviceType::CPU:
+		//						ImGui::Text("CPU");
+		//					break;
+		//					default:
+		//						ImGui::Text("Unknown");
+		//					break;
+		//				}
+		//			}
+		//		}
+		//	#elif TZ_OGL
+		//		ImGui::Text("Supports Bindless Textures: %d", tz::gl::ogl2::supports_bindless_textures());
+		//	#endif
+		//}
 
-			if(ImGui::Button("Purple Style"))
-			{
-				imgui_impl_style_colours_purple();
-			}
-
-			ImGui::End();
-		}
+	//	if(ImGui::Button("Purple Style"))
+	//	{
+	//		imgui_impl_style_colours_purple();
+	//	}
 	}
 
 	void draw_tz_window_info()
@@ -660,7 +655,7 @@ namespace tz::dbgui
 		{
 			if(ImGui::BeginMenu("Engine"))
 			{
-				ImGui::MenuItem("Info", nullptr, &tab_tz.show_info);
+				ImGui::MenuItem("Top Bar", nullptr, &tab_tz.show_top_bar);
 				ImGui::MenuItem("Window", nullptr, &tab_tz.show_window_info);
 				ImGui::MenuItem("Device", nullptr, &tab_tz.show_device_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
@@ -676,10 +671,24 @@ namespace tz::dbgui
 			}	
 			ImGui::EndMainMenuBar();
 
-			if(tab_tz.show_info)
+			if(tab_tz.show_top_bar)
 			{
+				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+				ImGui::Begin("Runtime", nullptr,
+					//ImGuiWindowFlags_NoBackground |
+					ImGuiWindowFlags_NoDecoration |
+					ImGuiWindowFlags_NoMove |
+					ImGuiWindowFlags_NoInputs);
+				ImGui::SetWindowPos(ImVec2(0, 18), true);
+				auto sz = ImGui::GetWindowSize();
+				sz.x = ImGui::GetIO().DisplaySize.x;
+				sz.y *= 0.5f;
+				ImGui::SetWindowSize(sz);
 				draw_tz_info();
+				ImGui::PopStyleColor();
+				ImGui::End();
 			}
+
 			if(tab_tz.show_window_info)
 			{
 				draw_tz_window_info();
@@ -689,6 +698,15 @@ namespace tz::dbgui
 				draw_tz_device_info();
 			}
 		}
+
+		global_platform_data->frame_counter++;
+		auto now = tz::system_time();
+		if(global_platform_data->fps_update.done())
+		{
+			global_platform_data->frame_period = (tz::system_time() - global_platform_data->last_update).millis<float>();
+			global_platform_data->fps_update.reset();
+		}
+		global_platform_data->last_update = now;
 	}
 
 	void imgui_impl_style_colours_purple()
