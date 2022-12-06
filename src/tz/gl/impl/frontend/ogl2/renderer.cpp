@@ -461,8 +461,6 @@ namespace tz::gl
 	resources(info.get_resources(), info.get_components()),
 	shader(info.shader()),
 	output(info.get_output(), info.get_options()),
-	clear_colour(info.get_clear_colour()),
-	compute_kernel(info.get_compute_kernel()),
 	options(info.get_options()),
 	state(info.state()),
 	debug_name(info.debug_get_name())
@@ -554,12 +552,18 @@ namespace tz::gl
 				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
 			}
 			//hdk::assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
-			glDispatchCompute(this->compute_kernel[0], this->compute_kernel[1], this->compute_kernel[2]);
+			{
+				auto ker = this->state.compute.kernel;
+				glDispatchCompute(ker[0], ker[1], ker[2]);
+			}
 		}
 		else
 		{
 			this->resources.write_dynamic_images();
-			glClearColor(this->clear_colour[0], this->clear_colour[1], this->clear_colour[2], this->clear_colour[3]);
+			{
+				auto col = this->state.graphics.clear_colour;
+				glClearColor(col[0], col[1], col[2], col[3]);
+			}
 			if(this->options.contains(RendererOption::NoDepthTesting))
 			{
 				glDisable(GL_DEPTH_TEST);
@@ -725,7 +729,7 @@ namespace tz::gl
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
-					this->compute_kernel = arg.kernel;
+					this->state.compute.kernel = arg.kernel;
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
 				{
@@ -760,8 +764,6 @@ namespace tz::gl
 	resources({}, {}),
 	shader(),
 	output(nullptr, {}),
-	clear_colour(),
-	compute_kernel(),
 	options(),
 	state(),
 	debug_name("Null Renderer")

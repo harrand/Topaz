@@ -244,15 +244,17 @@ namespace tz::gl
 		{
 			ImGui::Text("Renderer has no resources.");
 		}
-		if(renderer.get_state() != tz::gl::RendererState{} && ImGui::CollapsingHeader("Renderer State"))
+		if(ImGui::CollapsingHeader("Renderer State"))
 		{
+			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Graphics");
+			ImGui::Indent();
 			// Graphics - Index Buffer
 			{
 				auto han = renderer.get_state().graphics.index_buffer;
 				auto* comp = renderer.get_component(han);
-				if(comp != nullptr)
+				if(comp != nullptr && ImGui::CollapsingHeader("Index Buffer"))
 				{
-					ImGui::Text("Index Buffer = [Resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Text("[Resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
 					ImGui::Indent();
 					comp->get_resource()->dbgui();
 					ImGui::Unindent();
@@ -266,6 +268,26 @@ namespace tz::gl
 					comp->get_resource()->dbgui();
 				}
 			}
+			// Graphics - Clear Colour
+			{
+				auto col = renderer.get_state().graphics.clear_colour;
+				if(ImGui::DragFloat4("Clear Colour", col.data().data(), 0.02f, 0.0f, 1.0f))
+				{
+					ImGui::Text("Direct edit is not yet supported.");
+				}
+			}
+			ImGui::Unindent();
+			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Compute");
+			ImGui::Indent();
+			// Compute - Kernel
+			{
+				auto kern = static_cast<hdk::vec3i>(renderer.get_state().compute.kernel);
+				if(ImGui::DragInt3("Kernel", kern.data().data(), 0.25f, 0, 64))
+				{
+					ImGui::Text("Direct edit is not yet supported.");
+				}
+			}
+			ImGui::Unindent();
 		}
 		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("Renderer Options"))
 		{
@@ -273,9 +295,11 @@ namespace tz::gl
 			{
 				ImGui::Text("%s", detail::renderer_option_strings[static_cast<int>(option)]);
 			}
-			ImGui::PushTextWrapPos();
-			ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
-			ImGui::PopTextWrapPos();
+			#if HDK_DEBUG
+				ImGui::PushTextWrapPos();
+				ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
+				ImGui::PopTextWrapPos();
+			#endif //TZ_DEBUG
 		}
 		if(ImGui::CollapsingHeader("On-Demand Edits"))
 		{

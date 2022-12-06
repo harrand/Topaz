@@ -1254,8 +1254,6 @@ namespace tz::gl
 	device_window(device_info.device_window),
 	options(info.get_options()),
 	state(info.state()),
-	clear_colour(info.get_clear_colour()),
-	compute_kernel(info.get_compute_kernel()),
 	resources(info, *this->ldev, this->get_frame_in_flight_count()),
 	output(info.get_output(), device_info.device_window, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
@@ -1301,8 +1299,6 @@ namespace tz::gl
 	ldev(move.ldev),
 	device_window(move.device_window),
 	options(move.options),
-	clear_colour(move.clear_colour),
-	compute_kernel(move.compute_kernel),
 	resources(std::move(move.resources)),
 	output(std::move(move.output)),
 	pipeline(std::move(move.pipeline)),
@@ -1337,8 +1333,7 @@ namespace tz::gl
 		std::swap(this->ldev, rhs.ldev);
 		std::swap(this->device_window, rhs.device_window);
 		std::swap(this->options, rhs.options);
-		std::swap(this->clear_colour, rhs.clear_colour);
-		std::swap(this->compute_kernel, rhs.compute_kernel);
+		std::swap(this->state, rhs.state);
 		std::swap(this->resources, rhs.resources);
 		std::swap(this->output, rhs.output);
 		std::swap(this->pipeline, rhs.pipeline);
@@ -1613,9 +1608,9 @@ namespace tz::gl
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
-					if(arg.kernel != this->compute_kernel)
+					if(arg.kernel != this->state.compute.kernel)
 					{
-						this->compute_kernel = arg.kernel;
+						this->state.compute.kernel = arg.kernel;
 						work_commands_need_recording = true;
 					}
 				}
@@ -1673,8 +1668,7 @@ namespace tz::gl
 	ldev(nullptr),
 	device_window(nullptr),
 	options(),
-	clear_colour(),
-	compute_kernel(),
+	state(),
 	resources(),
 	output(),
 	pipeline(),
@@ -1825,7 +1819,7 @@ namespace tz::gl
 			});
 
 			{
-				vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->clear_colour};
+				vk2::CommandBufferRecording::RenderPassRun run{this->output.get_output_framebuffers()[framebuffer_id], recording, this->state.graphics.clear_colour};
 				recording.bind_pipeline
 				({
 					.pipeline = &this->pipeline.get_pipeline(),
@@ -1954,7 +1948,7 @@ namespace tz::gl
 			{
 				recording.dispatch
 				({
-					.groups = this->compute_kernel
+					.groups = this->state.compute.kernel
 				});
 			}
 

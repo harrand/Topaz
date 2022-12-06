@@ -466,10 +466,6 @@ namespace tz::gl
 		RendererOptions options;
 		// Current state of the renderer.
 		RendererState state;
-		// Clear colour values if a clear is performed during a render pass.
-		hdk::vec4 clear_colour;
-		// Workgroup dimensions, if we're doing compute work.
-		hdk::vec3ui compute_kernel;
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
 		ResourceStorage resources;
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.

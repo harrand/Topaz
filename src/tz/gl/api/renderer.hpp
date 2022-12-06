@@ -55,11 +55,12 @@ namespace tz::gl
 		{
 			ResourceHandle index_buffer = hdk::nullhand;
 			ResourceHandle draw_buffer = hdk::nullhand;
+			hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 			bool operator==(const Graphics& rhs) const = default;
 		} graphics;
 		struct Compute
 		{
-
+			hdk::vec3ui kernel = {1u, 1u, 1u};
 			bool operator==(const Compute& rhs) const = default;
 		} compute;
 		
