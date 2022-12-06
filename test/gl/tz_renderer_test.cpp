@@ -381,7 +381,7 @@ TESTFUNC_BEGIN(renderer_index_buffer)
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
+	rinfo.state().graphics.index_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
 	{
 		.flags = {tz::gl::ResourceFlag::IndexBuffer}
 	}));
@@ -397,7 +397,7 @@ TESTFUNC_BEGIN(renderer_indirect_buffer)
 	tz::gl::RendererInfo rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
+	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
 	{
 		.flags = {tz::gl::ResourceFlag::DrawIndirectBuffer}
 	}));

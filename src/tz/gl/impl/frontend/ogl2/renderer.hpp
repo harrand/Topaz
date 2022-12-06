@@ -209,8 +209,6 @@ namespace tz::gl
 		ResourceStorage resources;
 		ShaderManager shader;
 		OutputManager output;
-		hdk::vec4 clear_colour;
-		hdk::vec3ui compute_kernel;
 		RendererOptions options;
 		RendererState state;
 		std::string debug_name;
