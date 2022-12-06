@@ -212,7 +212,6 @@ namespace tz::gl
 		RendererOptions options;
 		RenderState state;
 		std::string debug_name;
-		unsigned int tri_count = 0;
 		bool wireframe_mode = false;
 		bool is_null_value = false;
 	};

@@ -1304,7 +1304,6 @@ namespace tz::gl
 	pipeline(std::move(move.pipeline)),
 	command(std::move(move.command)),
 	debug_name(std::move(move.debug_name)),
-	tri_count(move.tri_count),
 	device_resize_callback(move.device_resize_callback),
 	window_resize_callback(move.window_resize_callback),
 	scissor_cache(move.scissor_cache)
@@ -1339,7 +1338,6 @@ namespace tz::gl
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->command, rhs.command);
 		std::swap(this->debug_name, rhs.debug_name);
-		std::swap(this->tri_count, rhs.tri_count);
 		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
 		std::swap(this->scissor_cache, rhs.scissor_cache);
@@ -1450,9 +1448,9 @@ namespace tz::gl
 
 	void RendererVulkan::render(unsigned int tri_count)
 	{
-		if(this->tri_count != tri_count)
+		if(this->state.graphics.tri_count != tri_count)
 		{
-			this->tri_count = tri_count;
+			this->state.graphics.tri_count = tri_count;
 			this->command.wait_pending_commands_complete();
 			this->setup_work_commands();
 		}
@@ -1867,7 +1865,7 @@ namespace tz::gl
 					{
 						recording.draw
 						({
-							.vertex_count = 3 * this->tri_count,
+							.vertex_count = static_cast<std::uint32_t>(3 * this->state.graphics.tri_count),
 							.instance_count = 1,
 							.first_vertex = 0,
 							.first_instance = 0
@@ -1894,7 +1892,7 @@ namespace tz::gl
 					{
 						recording.draw_indexed
 						({
-							.index_count = 3 * this->tri_count
+							.index_count = static_cast<std::uint32_t>(3 * this->state.graphics.tri_count)
 						});
 					}
 					else

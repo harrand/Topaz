@@ -266,6 +266,10 @@ namespace tz::gl
 					ImGui::Text("Direct edit is not yet supported.");
 				}
 			}
+			// Graphics - Tri Count
+			{
+				ImGui::Text("Triangle Count: %zu", renderer.get_state().graphics.tri_count);
+			}
 			ImGui::Unindent();
 			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Compute");
 			ImGui::Indent();

@@ -605,7 +605,7 @@ namespace tz::gl
 				}
 				else
 				{
-					this->vao.draw_indexed(tri_count, ibuf, this->shader.has_tessellation());
+					this->vao.draw_indexed(this->state.graphics.tri_count, ibuf, this->shader.has_tessellation());
 				}
 			}
 			else
@@ -618,7 +618,7 @@ namespace tz::gl
 				}
 				else
 				{
-					this->vao.draw(this->tri_count, this->shader.has_tessellation());
+					this->vao.draw(this->state.graphics.tri_count, this->shader.has_tessellation());
 				}
 			}
 			if(!this->options.contains(tz::gl::RendererOption::NoPresent))
@@ -642,7 +642,7 @@ namespace tz::gl
 
 	void RendererOGL::render(unsigned int tri_count)
 	{
-		this->tri_count = tri_count;
+		this->state.graphics.tri_count = tri_count;
 		this->render();
 	}
 

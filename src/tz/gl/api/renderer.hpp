@@ -63,6 +63,8 @@ namespace tz::gl
 			ResourceHandle draw_buffer = hdk::nullhand;
 			/// Normalised RGBA floating point colour.
 			hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+			/// Number of triangles to be rendered in the next draw call.
+			std::size_t tri_count = 0;
 			bool operator==(const Graphics& rhs) const = default;
 		};
 		struct Compute
