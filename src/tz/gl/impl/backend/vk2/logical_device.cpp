@@ -220,7 +220,7 @@ namespace tz::gl::vk2
 			});		
 		#endif
 		detail::DeviceFeatureInfo features = detail::from_feature_field(this->enabled_features);
-		features.features.pNext = &features.descriptor_indexing_features;
+		features.features.pNext = &features.features12;
 		create.pEnabledFeatures = nullptr;
 		create.pNext = &features.features;
 		VkResult res = vkCreateDevice(this->physical_device.native(), &create, nullptr, &this->dev);

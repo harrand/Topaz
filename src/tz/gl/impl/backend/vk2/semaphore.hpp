@@ -57,6 +57,8 @@ namespace tz::gl::vk2
 		TimelineSemaphore(const TimelineSemaphore& copy) = delete;
 		TimelineSemaphore(TimelineSemaphore&& move);
 		~TimelineSemaphore();
+		TimelineSemaphore& operator=(const TimelineSemaphore&& rhs) = delete;
+		TimelineSemaphore& operator=(TimelineSemaphore&& rhs);
 
 		/**
 		 * Instantaneously set the semaphore to the given value.

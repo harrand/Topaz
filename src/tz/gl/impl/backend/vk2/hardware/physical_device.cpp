@@ -43,13 +43,13 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::MultiDrawIndirect;
 			}
-			if(features.descriptor_indexing_features.descriptorBindingStorageImageUpdateAfterBind
-			&& features.descriptor_indexing_features.descriptorBindingStorageBufferUpdateAfterBind
-			&& features.descriptor_indexing_features.descriptorBindingSampledImageUpdateAfterBind
-			&& features.descriptor_indexing_features.descriptorBindingUpdateUnusedWhilePending
-			&& features.descriptor_indexing_features.descriptorBindingPartiallyBound
-			&& features.descriptor_indexing_features.descriptorBindingVariableDescriptorCount
-			&& features.descriptor_indexing_features.runtimeDescriptorArray)
+			if(features.features12.descriptorBindingStorageImageUpdateAfterBind
+			&& features.features12.descriptorBindingStorageBufferUpdateAfterBind
+			&& features.features12.descriptorBindingSampledImageUpdateAfterBind
+			&& features.features12.descriptorBindingUpdateUnusedWhilePending
+			&& features.features12.descriptorBindingPartiallyBound
+			&& features.features12.descriptorBindingVariableDescriptorCount
+			&& features.features12.runtimeDescriptorArray)
 			{
 				ret |= DeviceFeature::BindlessDescriptors;
 			}
@@ -94,13 +94,13 @@ namespace tz::gl::vk2
 
 			if(feature_field.contains(DeviceFeature::BindlessDescriptors))
 			{
-				info.descriptor_indexing_features.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE;
-				info.descriptor_indexing_features.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
-				info.descriptor_indexing_features.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
-				info.descriptor_indexing_features.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
-				info.descriptor_indexing_features.descriptorBindingPartiallyBound = VK_TRUE;
-				info.descriptor_indexing_features.descriptorBindingVariableDescriptorCount = VK_TRUE;
-				info.descriptor_indexing_features.runtimeDescriptorArray = VK_TRUE;
+				info.features12.descriptorBindingStorageImageUpdateAfterBind = VK_TRUE;
+				info.features12.descriptorBindingStorageBufferUpdateAfterBind = VK_TRUE;
+				info.features12.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+				info.features12.descriptorBindingUpdateUnusedWhilePending = VK_TRUE;
+				info.features12.descriptorBindingPartiallyBound = VK_TRUE;
+				info.features12.descriptorBindingVariableDescriptorCount = VK_TRUE;
+				info.features12.runtimeDescriptorArray = VK_TRUE;
 			}
 			return info;
 		}

@@ -73,7 +73,7 @@ namespace tz::gl::vk2
 	device(nullptr){}
 
 	TimelineSemaphore::TimelineSemaphore(const LogicalDevice& device, std::uint64_t value):
-	BinarySemaphore()
+	BinarySemaphore(device)
 	{
 		hdk::assert(TimelineSemaphore::supported(device), "TimelineSemaphores are not supported by the LogicalDevice, but tried to create one. Please submit a bug report.");
 		VkSemaphoreTypeCreateInfo create_type
@@ -107,6 +107,23 @@ namespace tz::gl::vk2
 				hdk::error("Failed to create TimelineSemaphore but cannot determine why. Please submit a bug report.");
 			break;
 		}
+	}
+	
+	TimelineSemaphore::TimelineSemaphore(TimelineSemaphore&& move)
+	{
+		*this = std::move(move);
+	}
+
+	TimelineSemaphore::~TimelineSemaphore()
+	{
+		BinarySemaphore::~BinarySemaphore();
+	}
+
+	TimelineSemaphore& TimelineSemaphore::operator=(TimelineSemaphore&& rhs)
+	{
+		std::swap(this->sem, rhs.sem);
+		std::swap(this->device, rhs.device);
+		return *this;
 	}
 
 	void TimelineSemaphore::signal(std::uint64_t value)
