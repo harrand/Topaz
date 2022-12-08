@@ -252,12 +252,17 @@ namespace tz::gl
 			}
 			// Graphics - Draw Buffer
 			{
-				auto* comp = renderer.get_component(renderer.get_state().graphics.draw_buffer);
-				if(comp != nullptr)
+				auto han = renderer.get_state().graphics.draw_buffer;
+				auto* comp = renderer.get_component(han);
+				if(comp != nullptr && ImGui::CollapsingHeader("Draw Indirect Buffer"))
 				{
+					ImGui::Text("[Resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Indent();
 					comp->get_resource()->dbgui();
+					ImGui::Unindent();
 				}
 			}
+			ImGui::Spacing();
 			// Graphics - Clear Colour
 			{
 				auto col = renderer.get_state().graphics.clear_colour;

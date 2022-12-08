@@ -11,5 +11,5 @@ resource(id = 0) buffer DrawIndirectBuffer
 void main()
 {
 	draw_buffer.command = tz::draw::DrawIndirectCommand::new();
-	draw_buffer.command.vertex_count = 6;
+	draw_buffer.command.vertex_count = 9;
 }
