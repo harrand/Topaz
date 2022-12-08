@@ -1,0 +1,17 @@
+shader(type = vertex);
+
+vec2 positions[6] = vec2[]
+(
+    vec2(0.0, 0.5),
+    vec2(0.5, -0.5),
+    vec2(-0.5, -0.5),
+
+	vec2(-0.75, -0.5),
+	vec2(-0.75, 0.5),
+	vec2(-0.25, 0.5)
+);
+
+void main()
+{
+	out::position = vec4(positions[in::vertex_id], 0.0, 1.0);
+}

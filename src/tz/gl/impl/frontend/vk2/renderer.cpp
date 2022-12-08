@@ -94,12 +94,12 @@ namespace tz::gl
 			{
 				case ResourceType::Buffer:
 				{
-					auto buf = static_cast<BufferComponentVulkan*>(cmp);
+					//auto buf = static_cast<BufferComponentVulkan*>(cmp);
 					// We need to know this when creating the descriptors.
 					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
 					bool is_special_case = this->get(info.state().graphics.index_buffer) == cmp->get_resource()
 										|| this->get(info.state().graphics.draw_buffer) == cmp->get_resource();
-					buffer_id_to_descriptor_visibility.push_back(buf->vk_is_descriptor_relevant() && !is_special_case);
+					buffer_id_to_descriptor_visibility.push_back(!is_special_case);
 					// If the buffer is dynamic, let's link up the resource data span now.
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
 					{
@@ -263,7 +263,7 @@ namespace tz::gl
 			});
 		};
 		hdk::assert(this->descriptors.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
-		this->sync_descriptors(true);
+		this->sync_descriptors(true, info.state());
 	}
 
 	ResourceStorage::ResourceStorage():
@@ -367,7 +367,7 @@ namespace tz::gl
 		}};
 	}
 
-	void ResourceStorage::sync_descriptors(bool write_everything)
+	void ResourceStorage::sync_descriptors(bool write_everything, const RenderState& state)
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
 		std::vector<BufferComponentVulkan*> buffers;
@@ -378,9 +378,14 @@ namespace tz::gl
 				buffers.push_back(component_ptr.as<BufferComponentVulkan>());
 			}
 		}
-		std::size_t descriptor_buffer_count = std::count_if(buffers.begin(), buffers.end(), [](BufferComponentVulkan* buf)
+
+		auto comp_is_descriptor_relevant = [&state, this](const BufferComponentVulkan& bcomp)
 		{
-			return buf->vk_is_descriptor_relevant();
+			return this->get(state.graphics.index_buffer) != bcomp.get_resource() && this->get(state.graphics.draw_buffer) != bcomp.get_resource();
+		};
+		std::size_t descriptor_buffer_count = std::count_if(buffers.begin(), buffers.end(), [&comp_is_descriptor_relevant](BufferComponentVulkan* buf)
+		{
+			return comp_is_descriptor_relevant(*buf);
 		});
 
 		// Now write the initial resources into their descriptors.
@@ -393,7 +398,11 @@ namespace tz::gl
 			// Now update each binding corresponding to a buffer resource.
 			for(std::size_t j = 0; j < buffers.size(); j++)
 			{
-				if(!buffers[j]->vk_is_descriptor_relevant())
+				//if(!buffers[j]->vk_is_descriptor_relevant())
+				//{
+				//	continue;
+				//}
+				if(!comp_is_descriptor_relevant(*buffers[j]))
 				{
 					continue;
 				}
@@ -1490,7 +1499,7 @@ namespace tz::gl
 							work_commands_need_recording = true;
 						}
 						// Now update all descriptors.
-						this->resources.sync_descriptors(false);
+						this->resources.sync_descriptors(false, this->state);
 					}
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
@@ -1504,7 +1513,7 @@ namespace tz::gl
 						// An imageview was looking at the old image, let's update that.
 						this->resources.notify_image_recreated(arg.image_handle);
 						// New image so descriptor array needs to be re-written to.
-						this->resources.sync_descriptors(true);
+						this->resources.sync_descriptors(true, this->state);
 					}
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)

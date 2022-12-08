@@ -62,3 +62,12 @@ add_demo(
 		demo/gl/shaders/tz_compute_demo_render.vertex.tzsl
 		demo/gl/shaders/tz_compute_demo_render.fragment.tzsl
 )
+
+add_demo(
+	TARGET tz_gpu_driven_demo
+	SOURCE_FILES tz_gpu_driven_demo.cpp
+	SHADER_SOURCES
+		demo/gl/shaders/tz_gpu_driven_demo.compute.tzsl
+		demo/gl/shaders/tz_gpu_driven_demo_render.vertex.tzsl
+		demo/gl/shaders/tz_gpu_driven_demo_render.fragment.tzsl
+)

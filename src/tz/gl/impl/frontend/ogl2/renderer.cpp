@@ -207,7 +207,7 @@ namespace tz::gl
 				{
 
 				}
-				else if(bcomp->ogl_is_descriptor_stakeholder())
+				else if(this->get(state.graphics.index_buffer) != bcomp->get_resource() && this->get(state.graphics.draw_buffer) != bcomp->get_resource())
 				{
 					bcomp->ogl_get_buffer().bind_to_resource_id(i++);
 				}

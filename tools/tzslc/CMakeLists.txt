@@ -10,6 +10,7 @@ add_tool(
 	TEXT_FILES
 		shaders/atomic.tzsl
 		shaders/debug.tzsl
+		shaders/draw.tzsl
 		shaders/math.tzsl
 		shaders/matrix.tzsl
 		shaders/mesh.tzsl

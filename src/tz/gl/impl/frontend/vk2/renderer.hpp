@@ -82,7 +82,7 @@ namespace tz::gl
 		 * Updates all relevant descriptors. If buffers are resized for example, their underlying vk2::Buffer has been re-seated and thus the descriptors need to be re-synced.
 		 * @param write_everything If true, image component views are also written. This should only need to happen during renderer construction or if an image component renderer edit is being performed.
 		 */
-		void sync_descriptors(bool write_everything);
+		void sync_descriptors(bool write_everything, const RenderState& state);
 		/**
 		 * Query as to whether there are any resources or not.
 		 * @return True if there is at least one buffer or image resource, otherwise false. This includes resource references.

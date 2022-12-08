@@ -1,0 +1,50 @@
+#ifndef TZSLC_STDLIB_DRAW_TZSL
+#define TZSLC_STDLIB_DRAW_TZSL 
+/*
+ * TZSL stdlib: <draw>
+ * harrand 08/12/2022 for tz3.6
+ */
+
+#define DOCONLY TZ_VULKAN && TZ_OGL
+#if DOCONLY
+#endif
+
+struct tz::draw::DrawIndirectCommand
+{
+	uint vertex_count;
+	uint instance_count;
+	uint first_vertex;
+	uint first_instance;
+};
+
+tz::draw::DrawIndirectCommand tz::draw::DrawIndirectCommand::new()
+{
+	tz::draw::DrawIndirectCommand cmd;
+	cmd.vertex_count = 0;
+	cmd.instance_count = 1;
+	cmd.first_vertex = 0;
+	cmd.first_instance = 0;
+	return cmd;
+}
+
+struct tz::draw::DrawIndexedIndirectCommand
+{
+	uint index_count;
+	uint instance_count;
+	uint first_index;
+	int vertex_offset;
+	uint first_instance;
+};
+
+tz::draw::DrawIndexedIndirectCommand tz::draw::DrawIndexedIndirectCommand::new()
+{
+	tz::draw::DrawIndexedIndirectCommand cmd;
+	cmd.index_count = 0;
+	cmd.instance_count = 1;
+	cmd.first_index = 0;
+	cmd.vertex_offset = 0;
+	cmd.first_instance = 0;
+	return cmd;
+}
+
+#endif // TZSLC_STDLIB_DRAW_TZSL

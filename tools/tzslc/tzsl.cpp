@@ -121,6 +121,10 @@ namespace tzslc
 			{
 				return std::string(stdlib_debug);
 			}
+			if(m == "draw")
+			{
+				return std::string(stdlib_draw);
+			}
 			if(m == "space")
 			{
 				return std::string(stdlib_space);

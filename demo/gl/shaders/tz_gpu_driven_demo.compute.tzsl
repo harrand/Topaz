@@ -1,0 +1,15 @@
+shader(type = compute);
+kernel(1, 1, 1);
+
+import <draw>
+
+resource(id = 0) buffer DrawIndirectBuffer
+{
+	tz::draw::DrawIndirectCommand command;
+} draw_buffer;
+
+void main()
+{
+	draw_buffer.command = tz::draw::DrawIndirectCommand::new();
+	draw_buffer.command.vertex_count = 6;
+}

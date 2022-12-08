@@ -268,7 +268,14 @@ namespace tz::gl
 			}
 			// Graphics - Tri Count
 			{
-				ImGui::Text("Triangle Count: %zu", renderer.get_state().graphics.tri_count);
+				if(renderer.get_state().graphics.draw_buffer != hdk::nullhand)
+				{
+					ImGui::Text("Triangle Count: Indirect Buffer");
+				}
+				else
+				{
+					ImGui::Text("Triangle Count: %zu", renderer.get_state().graphics.tri_count);
+				}
 			}
 			ImGui::Unindent();
 			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Compute");
