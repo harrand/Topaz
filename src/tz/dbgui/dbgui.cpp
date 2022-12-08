@@ -1,7 +1,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/time.hpp"
 #include "hdk/debug.hpp"
-#include "hdk/debug.hpp"
+#include "hdk/job/job.hpp"
 #include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "hdk/profile.hpp"
@@ -531,7 +531,9 @@ namespace tz::dbgui
 		ImGui::SameLine();
 		ImGui::Text("Frame %zu", global_platform_data->frame_counter);
 		ImGui::SameLine();
-		ImGui::Text("%.2ffps", 1000.0f / global_platform_data->frame_period);
+		ImGui::Text("%.2ffps |", 1000.0f / global_platform_data->frame_period);
+		ImGui::SameLine();
+		ImGui::Text("%u jobs", hdk::job_system().size());
 
 		//if(ImGui::CollapsingHeader("Graphics Backend"))
 		//{
