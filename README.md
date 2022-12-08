@@ -29,7 +29,7 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes. Patch versions are not formally shipped unless they contain emergency bugfixes for a flawed release.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| 3.6.0			|Dec 25, 2022  |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
+| 3.6.0			|Dec 8, 2022  |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
 | 3.5.0			|Sep 22, 2022|[Topaz3.5](https://github.com/Harrand/Topaz/tree/Topaz3.5)	 | [Branch: gh-pages-tz3.5](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.5)
 | 3.4.0			|Aug 3, 2022 |[Topaz3.4](https://github.com/Harrand/Topaz/tree/Topaz3.4)| [Branch: gh-pages-tz3.4](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.4)
 | 3.3.0           |Jun 12, 2022|[Topaz3.3](https://github.com/Harrand/Topaz/tree/Topaz3.3)| [Branch: gh-pages-tz3.3](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.3) |
