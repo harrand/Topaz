@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -110,9 +110,10 @@ Inheritance diagram for tz::gl::IResource:</div>
  <div class="center">
   <img src="classtz_1_1gl_1_1_i_resource.png" usemap="#tz::gl::IResource_map" alt=""/>
   <map id="tz::gl::IResource_map" name="tz::gl::IResource_map">
-<area href="classtz_1_1gl_1_1_resource.html" alt="tz::gl::Resource" shape="rect" coords="71,56,203,80"/>
-<area href="classtz_1_1gl_1_1_buffer_resource.html" title="Represents a fixed-size, static Buffer to be used by a Renderer or Processor." alt="tz::gl::BufferResource" shape="rect" coords="0,112,132,136"/>
-<area href="classtz_1_1gl_1_1_image_resource.html" title="Represents a fixed-size, static Image to be used by a Renderer or Processor." alt="tz::gl::ImageResource" shape="rect" coords="142,112,274,136"/>
+<area href="classhdk_1_1unique__cloneable.html" alt="hdk::unique_cloneable&lt; IResource &gt;" shape="rect" coords="114,0,332,24"/>
+<area href="classtz_1_1gl_1_1_resource.html" alt="tz::gl::Resource" shape="rect" coords="114,112,332,136"/>
+<area href="classtz_1_1gl_1_1_buffer_resource.html" title="Represents a fixed-size, static Buffer to be used by a Renderer or Processor." alt="tz::gl::BufferResource" shape="rect" coords="0,168,218,192"/>
+<area href="classtz_1_1gl_1_1_image_resource.html" title="Represents a fixed-size, static Image to be used by a Renderer or Processor." alt="tz::gl::ImageResource" shape="rect" coords="228,168,446,192"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -143,6 +144,10 @@ virtual std::span&lt; const std::byte &gt;&#160;</td><td class="memItemRight" va
 <tr class="memitem:af1c40dc4fb591ac0f751331d731205eb"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classtz_1_1_enum_field.html">ResourceFlags</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_i_resource.html#af1c40dc4fb591ac0f751331d731205eb">get_flags</a> () const =0</td></tr>
 <tr class="memdesc:af1c40dc4fb591ac0f751331d731205eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a field containing all flags applied to this resource.  <a href="classtz_1_1gl_1_1_i_resource.html#af1c40dc4fb591ac0f751331d731205eb">More...</a><br /></td></tr>
 <tr class="separator:af1c40dc4fb591ac0f751331d731205eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e3148235793bcff71b17ea468b793db"><td class="memItemLeft" align="right" valign="top"><a id="a4e3148235793bcff71b17ea468b793db" name="a4e3148235793bcff71b17ea468b793db"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>dbgui</b> ()=0</td></tr>
+<tr class="memdesc:a4e3148235793bcff71b17ea468b793db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Display debug information about the resource. <br /></td></tr>
+<tr class="separator:a4e3148235793bcff71b17ea468b793db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Interface for a <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> or Processor resource. </p>

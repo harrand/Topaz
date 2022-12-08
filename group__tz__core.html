@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -153,36 +153,18 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:ga1c23fd5abac5ba889b9b62885e1d692f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga1c23fd5abac5ba889b9b62885e1d692f">tz_error</a>(msg, ...)</td></tr>
-<tr class="memdesc:ga1c23fd5abac5ba889b9b62885e1d692f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Causes a debug-only runtime error.  <a href="group__tz__core.html#ga1c23fd5abac5ba889b9b62885e1d692f">More...</a><br /></td></tr>
-<tr class="separator:ga1c23fd5abac5ba889b9b62885e1d692f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3cd9aafb91fe073ccf575281a4ed7acd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd">tz_assert</a>(eval,  msg, ...)</td></tr>
-<tr class="memdesc:ga3cd9aafb91fe073ccf575281a4ed7acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug-only assert on some condition.  <a href="group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd">More...</a><br /></td></tr>
-<tr class="separator:ga3cd9aafb91fe073ccf575281a4ed7acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4f3e8bda82a6d0f26e688f5c6a2eb921"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga4f3e8bda82a6d0f26e688f5c6a2eb921">ImportedTextHeader</a>(text_name,  text_ext)</td></tr>
 <tr class="memdesc:ga4f3e8bda82a6d0f26e688f5c6a2eb921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a file path which is intended to be #included in a application's main source file.  <a href="group__tz__core.html#ga4f3e8bda82a6d0f26e688f5c6a2eb921">More...</a><br /></td></tr>
 <tr class="separator:ga4f3e8bda82a6d0f26e688f5c6a2eb921"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5716aac48c79a21fe8e66ebdc6c39177"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga5716aac48c79a21fe8e66ebdc6c39177">ImportedTextData</a>(text_name,  text_ext)</td></tr>
 <tr class="memdesc:ga5716aac48c79a21fe8e66ebdc6c39177"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a token representing a <code>std::string_view</code> which contains an imported text file's contents.  <a href="group__tz__core.html#ga5716aac48c79a21fe8e66ebdc6c39177">More...</a><br /></td></tr>
 <tr class="separator:ga5716aac48c79a21fe8e66ebdc6c39177"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga689877fdd5704decf3fde4adf8c07031"><td class="memItemLeft" align="right" valign="top"><a id="ga689877fdd5704decf3fde4adf8c07031" name="ga689877fdd5704decf3fde4adf8c07031"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>tz_report</b>(fmt, ...)</td></tr>
-<tr class="memdesc:ga689877fdd5704decf3fde4adf8c07031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send formatted output to stdout, but also print out the source of the report in the codebase. <br /></td></tr>
-<tr class="separator:ga689877fdd5704decf3fde4adf8c07031"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab413485ff0a8ff0631653b6b59395ea5"><td class="memItemLeft" align="right" valign="top"><a id="gab413485ff0a8ff0631653b6b59395ea5" name="gab413485ff0a8ff0631653b6b59395ea5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>tz_warning_report</b>(fmt, ...)</td></tr>
-<tr class="memdesc:gab413485ff0a8ff0631653b6b59395ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Functions like <a class="el" href="group__tz__core.html#ga689877fdd5704decf3fde4adf8c07031">tz_report</a> except that the message indicates a warning &ndash; something is wrong but execution should not be interrupted. <br /></td></tr>
-<tr class="separator:gab413485ff0a8ff0631653b6b59395ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaedc5290dfa96e8fd6ace3aea65a16e99"><td class="memItemLeft" align="right" valign="top"><a id="gaedc5290dfa96e8fd6ace3aea65a16e99" name="gaedc5290dfa96e8fd6ace3aea65a16e99"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>tz_debug_report</b>(fmt, ...)</td></tr>
-<tr class="memdesc:gaedc5290dfa96e8fd6ace3aea65a16e99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identical to <a class="el" href="group__tz__core.html#ga689877fdd5704decf3fde4adf8c07031">tz_report</a> except that it does nothing on non-debug builds. <br /></td></tr>
-<tr class="separator:gaedc5290dfa96e8fd6ace3aea65a16e99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga69aa7ed0761668b917bb5a365fa45b04"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structtz_1_1_engine_info.html">EngineInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga69aa7ed0761668b917bb5a365fa45b04">info</a> ()</td></tr>
-<tr class="memdesc:ga69aa7ed0761668b917bb5a365fa45b04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the <a class="el" href="structtz_1_1_engine_info.html" title="Represents information about the current engine used.">EngineInfo</a> for this specific build of Topaz.  <a href="group__tz__core.html#ga69aa7ed0761668b917bb5a365fa45b04">More...</a><br /></td></tr>
-<tr class="separator:ga69aa7ed0761668b917bb5a365fa45b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad8c086b02e15683e53043941a5dd228b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtz_1_1_engine_info.html">EngineInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gad8c086b02e15683e53043941a5dd228b">info</a> ()</td></tr>
+<tr class="memdesc:gad8c086b02e15683e53043941a5dd228b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the <a class="el" href="structtz_1_1_engine_info.html" title="Represents information about the current engine used.">EngineInfo</a> for this specific build of Topaz.  <a href="group__tz__core.html#gad8c086b02e15683e53043941a5dd228b">More...</a><br /></td></tr>
+<tr class="separator:gad8c086b02e15683e53043941a5dd228b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >A collection of platform-agnostic core functionality. </p>
@@ -255,77 +237,9 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga3cd9aafb91fe073ccf575281a4ed7acd" name="ga3cd9aafb91fe073ccf575281a4ed7acd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3cd9aafb91fe073ccf575281a4ed7acd">&#9670;&nbsp;</a></span>tz_assert</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tz_assert</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">eval, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">msg, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Debug-only assert on some condition. </p>
-<p >If the condition evaluates to false, a runtime error is raised similar to <a class="el" href="group__tz__core.html#ga1c23fd5abac5ba889b9b62885e1d692f">tz_error</a> </p>
-
-</div>
-</div>
-<a id="ga1c23fd5abac5ba889b9b62885e1d692f" name="ga1c23fd5abac5ba889b9b62885e1d692f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1c23fd5abac5ba889b9b62885e1d692f">&#9670;&nbsp;</a></span>tz_error</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tz_error</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">msg, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>...</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Causes a debug-only runtime error. </p>
-<p >Printf-like functionality which sends a formatted error message to stderr. </p>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga69aa7ed0761668b917bb5a365fa45b04" name="ga69aa7ed0761668b917bb5a365fa45b04"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga69aa7ed0761668b917bb5a365fa45b04">&#9670;&nbsp;</a></span>info()</h2>
+<a id="gad8c086b02e15683e53043941a5dd228b" name="gad8c086b02e15683e53043941a5dd228b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad8c086b02e15683e53043941a5dd228b">&#9670;&nbsp;</a></span>info()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -334,7 +248,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr <a class="el" href="structtz_1_1_engine_info.html">EngineInfo</a> info </td>
+          <td class="memname"><a class="el" href="structtz_1_1_engine_info.html">EngineInfo</a> info </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

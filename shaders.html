@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -174,17 +174,18 @@ Preprocessor Definitions</h2>
 <h3><a class="anchor" id="ex0"></a>
 Example Fragment Shader</h3>
 <div class="fragment"><div class="line">shader(type = fragment);</div>
-<div class="line">output(<span class="keywordtype">id</span> = 0) vec4 frag_colour;</div>
+<div class="line">output(<span class="keywordtype">id</span> = 0) <a class="code hl_typedef" href="group__hdk.html#gaca4df2eedb730b2fdee828a3c73aebde">vec4</a> frag_colour;</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span> main()</div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// Output is a solid colour. Red if we&#39;re on Vulkan, otherwise white.</span></div>
 <div class="line"><span class="preprocessor"> #if TZ_VULKAN</span></div>
-<div class="line">    frag_colour = vec4(1.0, 0.0, 0.0, 1.0);</div>
+<div class="line">    frag_colour = <a class="code hl_typedef" href="group__hdk.html#gaca4df2eedb730b2fdee828a3c73aebde">vec4</a>(1.0, 0.0, 0.0, 1.0);</div>
 <div class="line"><span class="preprocessor"> #else</span></div>
-<div class="line">    frag_colour = vec4(1.0, 1.0, 1.0, 1.0);</div>
+<div class="line">    frag_colour = <a class="code hl_typedef" href="group__hdk.html#gaca4df2eedb730b2fdee828a3c73aebde">vec4</a>(1.0, 1.0, 1.0, 1.0);</div>
 <div class="line"><span class="preprocessor"> #endif</span></div>
 <div class="line">}</div>
+<div class="ttc" id="agroup__hdk_html_gaca4df2eedb730b2fdee828a3c73aebde"><div class="ttname"><a href="group__hdk.html#gaca4df2eedb730b2fdee828a3c73aebde">hdk::vec4</a></div><div class="ttdeci">vector&lt; float, 4 &gt; vec4</div><div class="ttdoc">A vector of four floats.</div><div class="ttdef"><b>Definition:</b> vector.hpp:207</div></div>
 </div><!-- fragment --> <h1><a class="anchor" id="stypes"></a>
 IO Blocks</h1>
 <p >Below are the input and output blocks for each programmable shader type. Each shader stage has a fixed-set of input and output variables, in the <code>in::</code> and <code>out::</code> namespaces respectively. These are not the same as input and output language specifiers. <details>
@@ -307,13 +308,14 @@ Example Shader: tz_dynamic_triangle_demo.fragment.tzsl</h1>
 <p >The following is the fragment shader used by <code>tz_dynamic_triangle_demo</code>: </p><div class="fragment"><div class="line">shader(type = fragment);</div>
 <div class="line"> </div>
 <div class="line">resource(<span class="keywordtype">id</span> = 1) const texture tex_sampler[1];</div>
-<div class="line">input(<span class="keywordtype">id</span> = 0) vec2 texcoord;</div>
-<div class="line">output(<span class="keywordtype">id</span> = 0) vec4 output_colour;</div>
+<div class="line">input(<span class="keywordtype">id</span> = 0) <a class="code hl_typedef" href="group__hdk.html#ga812c67201ad613747ba1687d9244d50d">vec2</a> texcoord;</div>
+<div class="line">output(<span class="keywordtype">id</span> = 0) <a class="code hl_typedef" href="group__hdk.html#gaca4df2eedb730b2fdee828a3c73aebde">vec4</a> output_colour;</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span> main()</div>
 <div class="line">{</div>
 <div class="line">    output_colour = texture(tex_sampler[0], texcoord);</div>
 <div class="line">}</div>
+<div class="ttc" id="agroup__hdk_html_ga812c67201ad613747ba1687d9244d50d"><div class="ttname"><a href="group__hdk.html#ga812c67201ad613747ba1687d9244d50d">hdk::vec2</a></div><div class="ttdeci">vector&lt; float, 2 &gt; vec2</div><div class="ttdoc">A vector of two floats.</div><div class="ttdef"><b>Definition:</b> vector.hpp:203</div></div>
 </div><!-- fragment --><h2><a class="anchor" id="rwe_analysis"></a>
 Analysis</h2>
 <ul>

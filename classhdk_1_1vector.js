@@ -1,0 +1,27 @@
+var classhdk_1_1vector =
+[
+    [ "vector", "classhdk_1_1vector.html#a1fe8df2bfc62515514188f49462e4585", null ],
+    [ "vector", "classhdk_1_1vector.html#a2b3072bf8bf2399fd06e9ebec99b5dfd", null ],
+    [ "vector", "classhdk_1_1vector.html#acee45ebc0460f346f8199ed843e78645", null ],
+    [ "data", "classhdk_1_1vector.html#a1dc673662fdd73ce0ab2ca9780465f54", null ],
+    [ "data", "classhdk_1_1vector.html#a541e74aaec98fd516955e32e46b93921", null ],
+    [ "dot", "classhdk_1_1vector.html#a146db0db4b0c4b41b0cc0c9b1dfda277", null ],
+    [ "length", "classhdk_1_1vector.html#ace6fc9335bf1b70e71f18e765efa54d7", null ],
+    [ "normalise", "classhdk_1_1vector.html#ae82b3f8bd12fdb7a1824f78485481d30", null ],
+    [ "normalised", "classhdk_1_1vector.html#a16dbc6279bfded4acbbe7d0975ca4ce7", null ],
+    [ "operator vector< X, S >", "classhdk_1_1vector.html#aa9411527e71f39810cfb68d837ef8ba5", null ],
+    [ "operator*", "classhdk_1_1vector.html#ab389c1fa7aec0b908e1108c256a88cac", null ],
+    [ "operator*=", "classhdk_1_1vector.html#a18a142e207f8a042380dec2e547871b3", null ],
+    [ "operator+", "classhdk_1_1vector.html#af1be68d0cacbe5f4f94466be86891fac", null ],
+    [ "operator+=", "classhdk_1_1vector.html#a6db64bb3f592a225ddcc2342c169c400", null ],
+    [ "operator-", "classhdk_1_1vector.html#a786e92534bee63acfe2460ea64e045a3", null ],
+    [ "operator-=", "classhdk_1_1vector.html#a0a6b747c97a9870f7997acf0fe8fd140", null ],
+    [ "operator/", "classhdk_1_1vector.html#a393e0f8370ef41bd824172952661d285", null ],
+    [ "operator/=", "classhdk_1_1vector.html#a3fa4b21167ed51ac27b872f8d68a292a", null ],
+    [ "operator==", "classhdk_1_1vector.html#abff7b65f4395fb58a7954511c18e7c99", null ],
+    [ "operator[]", "classhdk_1_1vector.html#a73186fc9353ccdece8579f0eceb1f6df", null ],
+    [ "operator[]", "classhdk_1_1vector.html#a0ea79ee43984b511b5df5247c20c1485", null ],
+    [ "swizzle", "classhdk_1_1vector.html#a8abe91c5754cfdaacde5d77605e8867e", null ],
+    [ "with_more", "classhdk_1_1vector.html#a623ebc948f46f052467275b3876255b2", null ],
+    [ "with_more", "classhdk_1_1vector.html#a9552e3e4da7cd572bdfe1292e1a6b09f", null ]
+];

@@ -38,6 +38,8 @@ var group__tz__gl__vk__commands =
         [ "vertex_count", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html#aa20ea4668944d738431db311f2a67ea5", null ]
       ] ],
       [ "DrawIndexed", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed.html", null ],
+      [ "DrawIndexedIndirect", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed_indirect.html", null ],
+      [ "DrawIndirect", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indirect.html", null ],
       [ "EndRenderPass", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_end_render_pass.html", [
         [ "framebuffer", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_end_render_pass.html#ac32dec8f9c51d60004dd2844a17a3692", null ]
       ] ],
@@ -58,7 +60,7 @@ var group__tz__gl__vk__commands =
         [ "source_stage", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a51d5bddfc6bee5894166f297d44def18", null ],
         [ "target_layout", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a8094be6bc811b9a3b58e1277bc2cd303", null ]
       ] ],
-      [ "Variant", "structtz_1_1gl_1_1vk2_1_1_vulkan_command.html#a769b7e5acb1a26e1037c70d3d6622edf", null ]
+      [ "Variant", "structtz_1_1gl_1_1vk2_1_1_vulkan_command.html#ae8c9a21cc5ef8f99c1a6d8be8521756e", null ]
     ] ],
     [ "tz::gl::vk2::CommandPoolInfo", "structtz_1_1gl_1_1vk2_1_1_command_pool_info.html", [
       [ "flags", "structtz_1_1gl_1_1vk2_1_1_command_pool_info.html#a65a1ed6987db2de397e3131ee431a7ca", null ],
@@ -66,7 +68,7 @@ var group__tz__gl__vk__commands =
     ] ],
     [ "tz::gl::vk2::CommandBufferRecording", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html", [
       [ "RenderPassRun", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording_1_1_render_pass_run.html", [
-        [ "RenderPassRun", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording_1_1_render_pass_run.html#a0d3262f04167d4a6b246f93f2cda069f", null ]
+        [ "RenderPassRun", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording_1_1_render_pass_run.html#a5f4ba3da3b553d4fa50f048d8c7b7251", null ]
       ] ],
       [ "bind_buffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#aa015012eda3e9de92f3a5adbaff798bd", null ],
       [ "bind_descriptor_sets", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ac9e417b34e2a883b34ab2099a82acd54", null ],
@@ -76,6 +78,8 @@ var group__tz__gl__vk__commands =
       [ "dispatch", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3c305e3576f093dad51bd911c6dbab60", null ],
       [ "draw", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf", null ],
       [ "draw_indexed", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c", null ],
+      [ "draw_indexed_indirect", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a883d311ab6e1f1c1f29260129179d0e0", null ],
+      [ "draw_indirect", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3eebf5124e99fc760f29698edcda6577", null ],
       [ "get_command_buffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a6678f3d4ee65c534f273547942dbc208", null ],
       [ "image_copy_image", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a25b7a8e42401dd2af896c3c9459e112e", null ]
     ] ],

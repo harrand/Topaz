@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -129,7 +129,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:gab7716704ffbd5839510574eb73a285c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines how sub-pixel colours are filtered.  <a href="group__tz__gl__ogl2__image.html#gab7716704ffbd5839510574eb73a285c2">More...</a><br /></td></tr>
 <tr class="separator:gab7716704ffbd5839510574eb73a285c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae9066aa292c2622d60979f6083a611a9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl__ogl2__image.html#gae9066aa292c2622d60979f6083a611a9">tz::gl::ogl2::AddressMode</a> : GLint { <a class="el" href="group__tz__gl__ogl2__image.html#ggae9066aa292c2622d60979f6083a611a9a74556551231333c36debc3d373261134">AddressMode::ClampToEdge</a> = GL_CLAMP_TO_EDGE
+<tr class="memitem:gae9066aa292c2622d60979f6083a611a9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl__ogl2__image.html#gae9066aa292c2622d60979f6083a611a9">tz::gl::ogl2::AddressMode</a> : GLint { <br />
+&#160;&#160;<a class="el" href="group__tz__gl__ogl2__image.html#ggae9066aa292c2622d60979f6083a611a9a74556551231333c36debc3d373261134">AddressMode::ClampToEdge</a> = GL_CLAMP_TO_EDGE
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl__ogl2__image.html#ggae9066aa292c2622d60979f6083a611a9a7020426cfb0a204051be4b3053d2acc8">AddressMode::Repeat</a> = GL_REPEAT
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl__ogl2__image.html#ggae9066aa292c2622d60979f6083a611a9a12ce4a5977988214a6b098b8cb0bf695">AddressMode::MirroredRepeat</a> = GL_MIRRORED_REPEAT
+<br />
  }</td></tr>
 <tr class="memdesc:gae9066aa292c2622d60979f6083a611a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the value retrieved from a texture lookup if the texture coordinate is out of range.  <a href="group__tz__gl__ogl2__image.html#gae9066aa292c2622d60979f6083a611a9">More...</a><br /></td></tr>
 <tr class="separator:gae9066aa292c2622d60979f6083a611a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,6 +167,14 @@ Enumerations</h2></td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggae9066aa292c2622d60979f6083a611a9a74556551231333c36debc3d373261134" name="ggae9066aa292c2622d60979f6083a611a9a74556551231333c36debc3d373261134"></a>ClampToEdge&#160;</td><td class="fielddoc"><ul>
 <li>An imaginary line is drawn from the out-of-bounds-coordinate back to the edge of the sampled image. The colour of the texel that it meets is used. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="ggae9066aa292c2622d60979f6083a611a9a7020426cfb0a204051be4b3053d2acc8" name="ggae9066aa292c2622d60979f6083a611a9a7020426cfb0a204051be4b3053d2acc8"></a>Repeat&#160;</td><td class="fielddoc"><ul>
+<li>The texcoord is essentially modulo'd with the image dimensions. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="ggae9066aa292c2622d60979f6083a611a9a12ce4a5977988214a6b098b8cb0bf695" name="ggae9066aa292c2622d60979f6083a611a9a12ce4a5977988214a6b098b8cb0bf695"></a>MirroredRepeat&#160;</td><td class="fielddoc"><ul>
+<li>Just like Repeat, except mirrored. </li>
 </ul>
 </td></tr>
 </table>

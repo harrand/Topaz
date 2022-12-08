@@ -1,23 +1,8 @@
 var searchData=
 [
-  ['rasteriserstate_0',['RasteriserState',['../structtz_1_1gl_1_1vk2_1_1_rasteriser_state.html',1,'tz::gl::vk2']]],
-  ['renderbuffer_1',['Renderbuffer',['../classtz_1_1gl_1_1ogl2_1_1_renderbuffer.html',1,'tz::gl::ogl2']]],
-  ['renderbufferinfo_2',['RenderbufferInfo',['../structtz_1_1gl_1_1ogl2_1_1_renderbuffer_info.html',1,'tz::gl::ogl2']]],
-  ['renderconfig_3',['RenderConfig',['../structtz_1_1gl_1_1_renderer_edit_1_1_render_config.html',1,'tz::gl::RendererEdit']]],
-  ['renderer_4',['Renderer',['../class_renderer.html',1,'']]],
-  ['rendererdeviceinfovulkan_5',['RendererDeviceInfoVulkan',['../structtz_1_1gl_1_1_renderer_device_info_vulkan.html',1,'tz::gl']]],
-  ['rendereredit_6',['RendererEdit',['../structtz_1_1gl_1_1_renderer_edit.html',1,'tz::gl']]],
-  ['renderereditbuilder_7',['RendererEditBuilder',['../classtz_1_1gl_1_1_renderer_edit_builder.html',1,'tz::gl']]],
-  ['rendererinfocommon_8',['RendererInfoCommon',['../classtz_1_1gl_1_1_renderer_info_common.html',1,'tz::gl']]],
-  ['rendererogl_9',['RendererOGL',['../classtz_1_1gl_1_1_renderer_o_g_l.html',1,'tz::gl']]],
-  ['rendererresizeinfovulkan_10',['RendererResizeInfoVulkan',['../structtz_1_1gl_1_1_renderer_resize_info_vulkan.html',1,'tz::gl']]],
-  ['renderervulkan_11',['RendererVulkan',['../classtz_1_1gl_1_1_renderer_vulkan.html',1,'tz::gl']]],
-  ['renderpass_12',['RenderPass',['../classtz_1_1gl_1_1vk2_1_1_render_pass.html',1,'tz::gl::vk2']]],
-  ['renderpassbuilder_13',['RenderPassBuilder',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html',1,'tz::gl::vk2']]],
-  ['renderpassinfo_14',['RenderPassInfo',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html',1,'tz::gl::vk2']]],
-  ['renderpassrun_15',['RenderPassRun',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording_1_1_render_pass_run.html',1,'tz::gl::vk2::CommandBufferRecording']]],
-  ['renderworksubmitresult_16',['RenderWorkSubmitResult',['../structtz_1_1gl_1_1_command_processor_1_1_render_work_submit_result.html',1,'tz::gl::CommandProcessor']]],
-  ['resource_17',['Resource',['../classtz_1_1gl_1_1_resource.html',1,'tz::gl']]],
-  ['resourcestorage_18',['ResourceStorage',['../classtz_1_1gl_1_1_resource_storage.html',1,'tz::gl']]],
-  ['resourcewrite_19',['ResourceWrite',['../structtz_1_1gl_1_1_renderer_edit_1_1_resource_write.html',1,'tz::gl::RendererEdit']]]
+  ['queue_0',['Queue',['../classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html',1,'tz::gl::vk2::hardware']]],
+  ['queuefamilyinfo_1',['QueueFamilyInfo',['../structtz_1_1gl_1_1vk2_1_1_queue_family_info.html',1,'tz::gl::vk2']]],
+  ['queueinfo_2',['QueueInfo',['../structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_info.html',1,'tz::gl::vk2::hardware']]],
+  ['queuerequest_3',['QueueRequest',['../structtz_1_1gl_1_1vk2_1_1_queue_request.html',1,'tz::gl::vk2']]],
+  ['queuestorage_4',['QueueStorage',['../classtz_1_1gl_1_1vk2_1_1_queue_storage.html',1,'tz::gl::vk2']]]
 ];

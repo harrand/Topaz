@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -98,7 +98,8 @@ $(document).ready(function(){initNavTree('group__tz__gl2__renderer.html',''); in
 <a href="#concepts">Concepts</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Renderers<div class="ingroups"><a class="el" href="group__tz__gl2.html">Graphics Library (tz::gl)</a></div></div></div>
 </div><!--header-->
 <div class="contents">
@@ -114,6 +115,9 @@ Concepts</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1gl_1_1_render_state.html">tz::gl::RenderState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores renderer-specific state, which drives the behaviour of the rendering.  <a href="structtz_1_1gl_1_1_render_state.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_renderer_edit_builder.html">tz::gl::RendererEditBuilder</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper class which can be used to generate a RendererEditRequest.  <a href="classtz_1_1gl_1_1_renderer_edit_builder.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +130,10 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:gac268657354562d9bfefd90beb18f4d23"><td class="memItemLeft" align="right" valign="top"><a id="gac268657354562d9bfefd90beb18f4d23" name="gac268657354562d9bfefd90beb18f4d23"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>tz::gl::RendererHandle</b> = <a class="el" href="classhdk_1_1handle.html">hdk::handle</a>&lt; <a class="el" href="structtz_1_1gl_1_1detail_1_1_renderer_tag.html">detail::RendererTag</a> &gt;</td></tr>
+<tr class="memdesc:gac268657354562d9bfefd90beb18f4d23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a handle for a renderer owned by an existing device. <br /></td></tr>
+<tr class="separator:gac268657354562d9bfefd90beb18f4d23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga554dd35b24386d751b1c6dc2a379a3d6"><td class="memItemLeft" align="right" valign="top"><a id="ga554dd35b24386d751b1c6dc2a379a3d6" name="ga554dd35b24386d751b1c6dc2a379a3d6"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>tz::gl::RendererOptions</b> = <a class="el" href="classtz_1_1_enum_field.html">tz::EnumField</a>&lt; <a class="el" href="group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce">RendererOption</a> &gt;</td></tr>
 <tr class="memdesc:ga554dd35b24386d751b1c6dc2a379a3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a collection of renderer options. <br /></td></tr>
@@ -148,10 +156,21 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#gga3f915e283a9998c54f738b2735c206cead2a93656f89c95f1bb0f72060946cbba">RendererOption::NoPresent</a>
 , <br />
 &#160;&#160;<b>Internal_FinalDebugUIRenderer</b>
+, <br />
+&#160;&#160;<b>Internal</b>
+, <br />
+&#160;&#160;<b>Count</b>
 <br />
  }</td></tr>
 <tr class="memdesc:ga3f915e283a9998c54f738b2735c206ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies options to enable extra functionality within Renderers.  <a href="group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce">More...</a><br /></td></tr>
 <tr class="separator:ga3f915e283a9998c54f738b2735c206ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ga1cfcf79376a56c6a33dbcafc5fc66860"><td class="memItemLeft" align="right" valign="top"><a id="ga1cfcf79376a56c6a33dbcafc5fc66860" name="ga1cfcf79376a56c6a33dbcafc5fc66860"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>tz::gl::common_renderer_dbgui</b> (RendererType auto &amp;renderer)</td></tr>
+<tr class="memdesc:ga1cfcf79376a56c6a33dbcafc5fc66860"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function which displays render-api-agnostic information about renderers. <br /></td></tr>
+<tr class="separator:ga1cfcf79376a56c6a33dbcafc5fc66860"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >Documentation for Renderers. </p>

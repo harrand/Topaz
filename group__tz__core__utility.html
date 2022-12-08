@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -96,8 +96,7 @@ $(document).ready(function(){initNavTree('group__tz__core__utility.html',''); in
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle"><div class="title">Utility Helpers<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a></div></div></div>
 </div><!--header-->
 <div class="contents">
@@ -110,52 +109,17 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_callback.html">tz::Callback&lt; Args &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a centralised storage/management of callback functions of a common signature <code>void(Args...)</code>.  <a href="classtz_1_1_callback.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_handle.html">tz::Handle&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a generic opaque handle.  <a href="classtz_1_1_handle.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ga26662a2be9776f8a55bd18ded868d84a"><td class="memItemLeft" align="right" valign="top"><a id="ga26662a2be9776f8a55bd18ded868d84a" name="ga26662a2be9776f8a55bd18ded868d84a"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>tz::CallbackHandle</b> = <a class="el" href="classtz_1_1_handle.html">tz::Handle</a>&lt; <a class="el" href="structtz_1_1detail_1_1_callback_type.html">detail::CallbackType</a> &gt;</td></tr>
-<tr class="memdesc:ga26662a2be9776f8a55bd18ded868d84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque handle representing a reference to an existing <a class="el" href="classtz_1_1_callback.html">tz::Callback</a> function. <br /></td></tr>
-<tr class="separator:ga26662a2be9776f8a55bd18ded868d84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:gac7ea0910b66986864e3463748d8bd94a"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structtz_1_1nullhand__t.html">nullhand_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core__utility.html#gac7ea0910b66986864e3463748d8bd94a">tz::nullhand</a></td></tr>
-<tr class="memdesc:gac7ea0910b66986864e3463748d8bd94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the null <a class="el" href="classtz_1_1_handle.html" title="Represents a generic opaque handle.">Handle</a>.  <a href="group__tz__core__utility.html#gac7ea0910b66986864e3463748d8bd94a">More...</a><br /></td></tr>
-<tr class="separator:gac7ea0910b66986864e3463748d8bd94a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga887abc6adc988df49c131db3abd4274f"><td class="memItemLeft" align="right" valign="top"><a id="ga887abc6adc988df49c131db3abd4274f" name="ga887abc6adc988df49c131db3abd4274f"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>tz::CallbackHandle</b> = <a class="el" href="classhdk_1_1handle.html">hdk::handle</a>&lt; <a class="el" href="structtz_1_1detail_1_1_callback_type.html">detail::CallbackType</a> &gt;</td></tr>
+<tr class="memdesc:ga887abc6adc988df49c131db3abd4274f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque handle representing a reference to an existing <a class="el" href="classtz_1_1_callback.html">tz::Callback</a> function. <br /></td></tr>
+<tr class="separator:ga887abc6adc988df49c131db3abd4274f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >Documentation for utility helper functions and types. </p>
 <p >This includes 'general' style usage such as handles and callbacks. </p>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="gac7ea0910b66986864e3463748d8bd94a" name="gac7ea0910b66986864e3463748d8bd94a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac7ea0910b66986864e3463748d8bd94a">&#9670;&nbsp;</a></span>nullhand</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">constexpr <a class="el" href="structtz_1_1nullhand__t.html">nullhand_t</a> tz::nullhand</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Represents the null <a class="el" href="classtz_1_1_handle.html" title="Represents a generic opaque handle.">Handle</a>. </p>
-<p >Convertible to any handle type. </p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -3,8 +3,9 @@ var group__tz__gl2__graphicsapi__vk__frontend__renderer =
     [ "tz::gl::ResourceStorage", "classtz_1_1gl_1_1_resource_storage.html", [
       [ "ResourceStorage", "classtz_1_1gl_1_1_resource_storage.html#ab8eedf45c9147a02ee1af0ae6c7951cf", null ],
       [ "ResourceStorage", "classtz_1_1gl_1_1_resource_storage.html#af01111f8a9e475eda5c82c3487237745", null ],
-      [ "bind_buffers", "classtz_1_1gl_1_1_resource_storage.html#a3ec6a817308661b6e404db1babb18a86", null ],
-      [ "bind_image_buffer", "classtz_1_1gl_1_1_resource_storage.html#a9b2bd3c377b64494f7058a0e44174e49", null ],
+      [ "bind_buffers", "classtz_1_1gl_1_1_resource_storage.html#aa92288d0a3edb48c743370dc1add3d6f", null ],
+      [ "bind_image_buffer", "classtz_1_1gl_1_1_resource_storage.html#a71e4a2bb72688cea1a4849a8f0705a42", null ],
+      [ "descriptor_empty", "classtz_1_1gl_1_1_resource_storage.html#a9b7cb231c3cc10e99798a636f70f8d5c", null ],
       [ "empty", "classtz_1_1gl_1_1_resource_storage.html#ac9dd63dc7c7a8635aa6cfc4c4b2c5c40", null ],
       [ "get_component", "classtz_1_1gl_1_1_resource_storage.html#af857b06a412725bf9e9e930ad07cce34", null ],
       [ "get_component", "classtz_1_1gl_1_1_resource_storage.html#af857b06a412725bf9e9e930ad07cce34", null ],
@@ -14,13 +15,13 @@ var group__tz__gl2__graphicsapi__vk__frontend__renderer =
       [ "get_descriptor_sets", "classtz_1_1gl_1_1_resource_storage.html#a9becf5414f35a43f1df800c958d66f59", null ],
       [ "notify_image_recreated", "classtz_1_1gl_1_1_resource_storage.html#a2b90cf9f961f2fbd7816aa1e49b5de4e", null ],
       [ "resource_count_of", "classtz_1_1gl_1_1_resource_storage.html#a3143c4d36dea17caa0dd161babdbdc11", null ],
-      [ "sync_descriptors", "classtz_1_1gl_1_1_resource_storage.html#af37cf96b627821f52dfecb161470b186", null ],
+      [ "sync_descriptors", "classtz_1_1gl_1_1_resource_storage.html#a65e57f6332390c5dfe66c380b10a499b", null ],
       [ "write_padded_image_data", "classtz_1_1gl_1_1_resource_storage.html#a99fc67dff012a832a3180cccfc328be7", null ]
     ] ],
     [ "tz::gl::OutputManager", "classtz_1_1gl_1_1_output_manager.html", [
       [ "OutputManager", "classtz_1_1gl_1_1_output_manager.html#a847cfc78fffa1b5a5199441a9246ea8b", null ],
       [ "OutputManager", "classtz_1_1gl_1_1_output_manager.html#a07722ce2da028327cb0473ae682c27b7", null ],
-      [ "get_output_dimensions", "classtz_1_1gl_1_1_output_manager.html#aa3868005d4452edaecf7662f0c5abca1", null ],
+      [ "get_output_dimensions", "classtz_1_1gl_1_1_output_manager.html#a7d78af82e7c73f26df0d39839f8e66dc", null ],
       [ "get_output_framebuffers", "classtz_1_1gl_1_1_output_manager.html#ab4aa066e406ff01bbd113df2fecb0a25", null ],
       [ "get_output_framebuffers", "classtz_1_1gl_1_1_output_manager.html#a9c63508e58a76c0ea35b331710305eea", null ],
       [ "get_output_images", "classtz_1_1gl_1_1_output_manager.html#afbf4636eef1f5ee2baed2db8587fdd98", null ],
@@ -28,7 +29,7 @@ var group__tz__gl2__graphicsapi__vk__frontend__renderer =
       [ "set_render_target", "classtz_1_1gl_1_1_output_manager.html#aab56ee1c79ecceba987b04b8e28b873b", null ]
     ] ],
     [ "tz::gl::GraphicsPipelineManager", "classtz_1_1gl_1_1_graphics_pipeline_manager.html", [
-      [ "GraphicsPipelineManager", "classtz_1_1gl_1_1_graphics_pipeline_manager.html#ac1af9a276ec4d78aa302429e4e710abf", null ],
+      [ "GraphicsPipelineManager", "classtz_1_1gl_1_1_graphics_pipeline_manager.html#a2beef30531d852c26cf2456fb58e2368", null ],
       [ "get_pipeline", "classtz_1_1gl_1_1_graphics_pipeline_manager.html#a58f154d49cb699069c9c38a903153bd5", null ]
     ] ],
     [ "tz::gl::CommandProcessor", "classtz_1_1gl_1_1_command_processor.html", [

@@ -4,5 +4,6 @@ var structtz_1_1gl_1_1_renderer_edit =
     [ "ComputeConfig", "structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html", "structtz_1_1gl_1_1_renderer_edit_1_1_compute_config" ],
     [ "ImageResize", "structtz_1_1gl_1_1_renderer_edit_1_1_image_resize.html", "structtz_1_1gl_1_1_renderer_edit_1_1_image_resize" ],
     [ "RenderConfig", "structtz_1_1gl_1_1_renderer_edit_1_1_render_config.html", "structtz_1_1gl_1_1_renderer_edit_1_1_render_config" ],
+    [ "ResourceReference", "structtz_1_1gl_1_1_renderer_edit_1_1_resource_reference.html", null ],
     [ "ResourceWrite", "structtz_1_1gl_1_1_renderer_edit_1_1_resource_write.html", null ]
 ];

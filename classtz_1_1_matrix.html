@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -174,9 +174,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aeb8420f51cda401b0b723fd731e90e22"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_matrix.html">Matrix</a>&lt; T, R, C &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_matrix.html#aeb8420f51cda401b0b723fd731e90e22">operator*</a> (const <a class="el" href="classtz_1_1_matrix.html">Matrix</a>&lt; T, R, C &gt; &amp;matrix) const</td></tr>
 <tr class="memdesc:aeb8420f51cda401b0b723fd731e90e22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiply the given matrix with the current matrix.  <a href="classtz_1_1_matrix.html#aeb8420f51cda401b0b723fd731e90e22">More...</a><br /></td></tr>
 <tr class="separator:aeb8420f51cda401b0b723fd731e90e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55d4686bfbf945691ee40baf96297fd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, R &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_matrix.html#a55d4686bfbf945691ee40baf96297fd6">operator*</a> (const <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, C &gt; &amp;vec) const</td></tr>
-<tr class="memdesc:a55d4686bfbf945691ee40baf96297fd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiply the given vector (column-matrix) with the current matrix and return the resultant vector (row-matrix).  <a href="classtz_1_1_matrix.html#a55d4686bfbf945691ee40baf96297fd6">More...</a><br /></td></tr>
-<tr class="separator:a55d4686bfbf945691ee40baf96297fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2e92a524a4d7bf7515671d0d82fb7f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classhdk_1_1vector.html">hdk::vector</a>&lt; T, R &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_matrix.html#af2e92a524a4d7bf7515671d0d82fb7f8">operator*</a> (const <a class="el" href="classhdk_1_1vector.html">hdk::vector</a>&lt; T, C &gt; &amp;vec) const</td></tr>
+<tr class="memdesc:af2e92a524a4d7bf7515671d0d82fb7f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiply the given vector (column-matrix) with the current matrix and return the resultant vector (row-matrix).  <a href="classtz_1_1_matrix.html#af2e92a524a4d7bf7515671d0d82fb7f8">More...</a><br /></td></tr>
+<tr class="separator:af2e92a524a4d7bf7515671d0d82fb7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc994caf998d5d7a23d14a349aa6e3ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_matrix.html#adc994caf998d5d7a23d14a349aa6e3ab">operator==</a> (T scalar) const</td></tr>
 <tr class="memdesc:adc994caf998d5d7a23d14a349aa6e3ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equate the given scalar with each value of the matrix.  <a href="classtz_1_1_matrix.html#adc994caf998d5d7a23d14a349aa6e3ab">More...</a><br /></td></tr>
 <tr class="separator:adc994caf998d5d7a23d14a349aa6e3ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -389,8 +389,37 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
 
 </div>
 </div>
+<a id="af2e92a524a4d7bf7515671d0d82fb7f8" name="af2e92a524a4d7bf7515671d0d82fb7f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2e92a524a4d7bf7515671d0d82fb7f8">&#9670;&nbsp;</a></span>operator*() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t R, std::size_t C&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classhdk_1_1vector.html">hdk::vector</a>&lt; T, R &gt; <a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::operator* </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classhdk_1_1vector.html">hdk::vector</a>&lt; T, C &gt; &amp;&#160;</td>
+          <td class="paramname"><em>vec</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Multiply the given vector (column-matrix) with the current matrix and return the resultant vector (row-matrix). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vec</td><td>Column matrix to multiply with the current matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A row-matrix representing the resultant multiplication. </dd></dl>
+
+</div>
+</div>
 <a id="aeb8420f51cda401b0b723fd731e90e22" name="aeb8420f51cda401b0b723fd731e90e22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb8420f51cda401b0b723fd731e90e22">&#9670;&nbsp;</a></span>operator*() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb8420f51cda401b0b723fd731e90e22">&#9670;&nbsp;</a></span>operator*() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -415,35 +444,6 @@ template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A modified copy of the original matrix. The original matrix is unchanged. </dd></dl>
-
-</div>
-</div>
-<a id="a55d4686bfbf945691ee40baf96297fd6" name="a55d4686bfbf945691ee40baf96297fd6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a55d4686bfbf945691ee40baf96297fd6">&#9670;&nbsp;</a></span>operator*() <span class="overload">[2/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;<a class="el" href="concepttz_1_1_number.html">tz::Number</a> T, std::size_t R, std::size_t C&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, R &gt; <a class="el" href="classtz_1_1_matrix.html">tz::Matrix</a>&lt; T, R, C &gt;::operator* </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classtz_1_1_vector.html">Vector</a>&lt; T, C &gt; &amp;&#160;</td>
-          <td class="paramname"><em>vec</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Multiply the given vector (column-matrix) with the current matrix and return the resultant vector (row-matrix). </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">vec</td><td>Column matrix to multiply with the current matrix. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A row-matrix representing the resultant multiplication. </dd></dl>
 
 </div>
 </div>

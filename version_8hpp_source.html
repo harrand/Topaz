@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: src/tz/core/version.hpp Source File</title>
+<title>Topaz: lib/HDK/src/hdk/data/version.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -97,34 +97,80 @@ $(document).ready(function(){initNavTree('version_8hpp_source.html',''); initRes
   <div class="headertitle"><div class="title">version.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_CORE_VERSION_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_CORE_VERSION_HPP</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef HDK_DATA_VERSION_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define HDK_DATA_VERSION_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>tz</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structtz_1_1_version.html">    7</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1_version.html">Version</a></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    {</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> major;</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> minor;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> patch;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keyword">auto</span> operator&lt;=&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structtz_1_1_version.html">Version</a>&amp; rhs) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    };</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">constexpr</span> <a class="code hl_struct" href="structtz_1_1_version.html">Version</a> parse_version(<span class="keyword">const</span> <span class="keywordtype">char</span>* version_string);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    std::string stringify_version(<a class="code hl_struct" href="structtz_1_1_version.html">Version</a> version);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;tz/core/version.inl&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>hdk</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">enum class</span> version_type</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        normal,</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        alpha,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        beta,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        rc</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    };</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structhdk_1_1version.html">   16</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structhdk_1_1version.html">version</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> major, minor, patch;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        version_type type;</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_VERSION_HPP</span></div>
-<div class="ttc" id="astructtz_1_1_version_html"><div class="ttname"><a href="structtz_1_1_version.html">tz::Version</a></div><div class="ttdef"><b>Definition:</b> version.hpp:8</div></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        std::string to_string()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keyword">const</span> <span class="keywordtype">char</span>* suffix;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">switch</span>(this-&gt;type)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <span class="keywordflow">case</span> version_type::alpha:</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                    suffix = <span class="stringliteral">&quot;alpha&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                <span class="keywordflow">case</span> version_type::beta:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                    suffix = <span class="stringliteral">&quot;beta&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                <span class="keywordflow">case</span> version_type::rc:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                    suffix = <span class="stringliteral">&quot;rc&quot;</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                    suffix = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">return</span> std::to_string(this-&gt;major) + <span class="stringliteral">&quot;.&quot;</span> + std::to_string(this-&gt;minor) + <span class="stringliteral">&quot;.&quot;</span> + std::to_string(this-&gt;patch) + std::string{<span class="stringliteral">&quot; &quot;</span>} + suffix;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">static</span> <a class="code hl_struct" href="structhdk_1_1version.html">version</a> from_string(std::string_view sv)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <a class="code hl_struct" href="structhdk_1_1version.html">version</a> ret;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            std::sscanf(sv.data(), <span class="stringliteral">&quot;%u.%u.%u&quot;</span>, &amp;ret.major, &amp;ret.minor, &amp;ret.patch);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">return</span> ret;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">static</span> <a class="code hl_struct" href="structhdk_1_1version.html">version</a> from_binary_string(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> ver_numeral)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                .major = (ver_numeral &gt;&gt; 12) &amp; 0xF,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                .minor = (ver_numeral &gt;&gt; 8) &amp; 0xF,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                .patch = (ver_numeral &gt;&gt; 4) &amp; 0xF,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                .type = <span class="keyword">static_cast&lt;</span>version_type<span class="keyword">&gt;</span>(ver_numeral &amp; 0xF)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code hl_struct" href="structhdk_1_1version.html">version</a>&amp; rhs) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    };</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_struct" href="structhdk_1_1version.html">version</a> get_version();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="preprocessor">#endif </span><span class="comment">// HDK_DATA_VERSION_HPP</span></div>
+<div class="ttc" id="astructhdk_1_1version_html"><div class="ttname"><a href="structhdk_1_1version.html">hdk::version</a></div><div class="ttdef"><b>Definition:</b> version.hpp:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_08a9ab9f761476898a1bf8c3b193f50f.html">core</a></li><li class="navelem"><b>version.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_97aefd0d527b934f1d99a682da8fe6a9.html">lib</a></li><li class="navelem"><a class="el" href="dir_0bf67179c60e4569704d51a1f1fc1757.html">HDK</a></li><li class="navelem"><a class="el" href="dir_2b37cbbeec97dfe6cbab7ab20de7ff6a.html">src</a></li><li class="navelem"><a class="el" href="dir_3a77dfa1cb50dd595e4a3cc6c9ab8710.html">hdk</a></li><li class="navelem"><a class="el" href="dir_b973d001d0119ed294b01988fb4e8aa8.html">data</a></li><li class="navelem"><b>version.hpp</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
   </ul>
 </div>

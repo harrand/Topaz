@@ -25,6 +25,7 @@ var group__tz__gl__ogl2__buffers =
     ] ],
     [ "tz::gl::ogl2::BufferTarget", "group__tz__gl__ogl2__buffers.html#ga62375fb48066dfa27e61f36abdf95d56", [
       [ "tz::gl::ogl2::BufferTarget::Index", "group__tz__gl__ogl2__buffers.html#gga62375fb48066dfa27e61f36abdf95d56a88fa71f0a6e0dfedbb46d91cc0b37a50", null ],
+      [ "tz::gl::ogl2::BufferTarget::DrawIndirect", "group__tz__gl__ogl2__buffers.html#gga62375fb48066dfa27e61f36abdf95d56a95b0e6b8c7aa6af632295afda7a926bc", null ],
       [ "tz::gl::ogl2::BufferTarget::Uniform", "group__tz__gl__ogl2__buffers.html#gga62375fb48066dfa27e61f36abdf95d56af19516d11f2946f894070e92fcb56b6d", null ],
       [ "tz::gl::ogl2::BufferTarget::ShaderStorage", "group__tz__gl__ogl2__buffers.html#gga62375fb48066dfa27e61f36abdf95d56a63d204f04170f5bbf958083589f6572f", null ]
     ] ],

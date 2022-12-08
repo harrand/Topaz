@@ -9,6 +9,8 @@ var classtz_1_1gl_1_1vk2_1_1_command_buffer_recording =
     [ "dispatch", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3c305e3576f093dad51bd911c6dbab60", null ],
     [ "draw", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf", null ],
     [ "draw_indexed", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c", null ],
+    [ "draw_indexed_indirect", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a883d311ab6e1f1c1f29260129179d0e0", null ],
+    [ "draw_indirect", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3eebf5124e99fc760f29698edcda6577", null ],
     [ "get_command_buffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a6678f3d4ee65c534f273547942dbc208", null ],
     [ "image_copy_image", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a25b7a8e42401dd2af896c3c9459e112e", null ]
 ];

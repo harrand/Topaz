@@ -3,14 +3,14 @@ var group__tz__gl__vk__graphics__pipeline__render__pass =
     [ "tz::gl::vk2::FramebufferInfo", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html", [
       [ "valid", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#a13d747ebb95030a11b81a5b8ada449a0", null ],
       [ "attachments", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#acb89c1a109015291b8128c562ca2d223", null ],
-      [ "dimensions", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#a52446181ca68262103ae103b0e3831a5", null ],
+      [ "dimensions", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#a9ccc5b792156a21ff31a3c6ef484731a", null ],
       [ "render_pass", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#ad7c9e83c24d89ff033a20bb08e07de8c", null ]
     ] ],
     [ "tz::gl::vk2::Framebuffer", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html", [
       [ "get_attachment_views", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html#a7dbdc965f8cf95e13a9a0d752e407a4e", null ],
       [ "get_attachment_views", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html#ab44c9ebe357dff3d89030dd465ebd2c1", null ],
       [ "get_device", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html#a5ac49b6a1f5126e55e2d44e86733aea2", null ],
-      [ "get_dimensions", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html#aab4cfdb7324a80b83b84249bd80e2610", null ],
+      [ "get_dimensions", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html#a6b4de2ba322517e41986b946221404ac", null ],
       [ "get_pass", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html#ab59610c1f9b168a6f133232a0e6d98b9", null ]
     ] ],
     [ "tz::gl::vk2::Attachment", "structtz_1_1gl_1_1vk2_1_1_attachment.html", [

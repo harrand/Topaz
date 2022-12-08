@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -95,43 +95,20 @@ $(document).ready(function(){initNavTree('group__tz__core__allocators.html','');
 
 <div class="header">
   <div class="summary">
-<a href="#concepts">Concepts</a> &#124;
-<a href="#nested-classes">Data Structures</a>  </div>
+<a href="#concepts">Concepts</a>  </div>
   <div class="headertitle"><div class="title">Allocators<div class="ingroups"><a class="el" href="group__tz__core.html">Core Libraries (tz)</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Documentation for custom Topaz allocators.  
-<a href="#details">More...</a></p>
+</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="concepts" name="concepts"></a>
 Concepts</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">concept &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="concepttz_1_1_allocator.html">tz::Allocator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Named requirement for topaz allocators. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_allocator_adapter.html">tz::AllocatorAdapter&lt; T, A &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A meta-allocator which allows a topaz allocator to be used as if it were a <code>std::allocator</code>.  <a href="classtz_1_1_allocator_adapter.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_fallback_allocator.html">tz::FallbackAllocator&lt; Primary, Secondary &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements <a class="el" href="concepttz_1_1_allocator.html">tz::Allocator</a>.  <a href="classtz_1_1_fallback_allocator.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_linear_allocator.html">tz::LinearAllocator</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An allocator which operates on a pre-allocated buffer of variable size.  <a href="classtz_1_1_linear_allocator.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_mallocator.html">tz::Mallocator</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements tz:Allocator.  <a href="classtz_1_1_mallocator.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_null_allocator.html">tz::NullAllocator</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An allocator which always returns nullptr.  <a href="classtz_1_1_null_allocator.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1_stack_allocator.html">tz::StackAllocator&lt; S &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An allocator which has its own fixed-size buffer on the stack from which memory is sub-allocated.  <a href="classtz_1_1_stack_allocator.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p >Documentation for custom Topaz allocators. </p>
 <p >All allocators satisfy <code>std::allocator_traits</code>. </p>
 </div><!-- contents -->

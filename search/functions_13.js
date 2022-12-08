@@ -1,17 +1,9 @@
 var searchData=
 [
-  ['wait_5ffor_0',['wait_for',['../classtz_1_1gl_1_1vk2_1_1_timeline_semaphore.html#a2e0c459f3ba40c42be24886a3ee51102',1,'tz::gl::vk2::TimelineSemaphore']]],
-  ['wait_5funtil_5fidle_1',['wait_until_idle',['../classtz_1_1gl_1_1vk2_1_1_logical_device.html#a467dc1131247e4bb9e97e5274e860bc7',1,'tz::gl::vk2::LogicalDevice']]],
-  ['wait_5funtil_5fsignalled_2',['wait_until_signalled',['../classtz_1_1gl_1_1vk2_1_1_fence.html#a89b2a5c13856021cc045c2223d4d9539',1,'tz::gl::vk2::Fence']]],
-  ['window_3',['Window',['../classtz_1_1_window.html#a158ddaaf0778fb18d4ac4a6e25252fce',1,'tz::Window']]],
-  ['window_4',['window',['../group__tz__core__init.html#ga9500b9261ba3dc96ecf053d40c9b0f71',1,'tz']]],
-  ['windowsurface_5',['WindowSurface',['../classtz_1_1gl_1_1vk2_1_1_window_surface.html#abf4f7f1c08cb7ed2b166a613caaf1b7f',1,'tz::gl::vk2::WindowSurface']]],
-  ['with_5fattachment_6',['with_attachment',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#aacae02f036f07e6f321ac35420819ffe',1,'tz::gl::vk2::RenderPassBuilder']]],
-  ['with_5fbinding_7',['with_binding',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a35bee4b07c0c343b53520a5f9c693691',1,'tz::gl::vk2::DescriptorLayoutBuilder']]],
-  ['with_5fcolour_5fattachment_8',['with_colour_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#ae944eb1b322cc08eb4a9f7105cdab265',1,'tz::gl::vk2::SubpassBuilder']]],
-  ['with_5fdepth_5fstencil_5fattachment_9',['with_depth_stencil_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#af3b5e86fed158d329db4b084556eab85',1,'tz::gl::vk2::SubpassBuilder']]],
-  ['with_5finput_5fattachment_10',['with_input_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#a732e8dc67451e314bae38faf24cd1fa6',1,'tz::gl::vk2::SubpassBuilder']]],
-  ['with_5fmore_11',['with_more',['../classtz_1_1_vector.html#af5e9cbbcaf12c92ad1e9effc6005824b',1,'tz::Vector::with_more(T &amp;&amp;end) const'],['../classtz_1_1_vector.html#a1b69907c426096c14929e4d5332cb236',1,'tz::Vector::with_more(const Vector&lt; T, S2 &gt; &amp;end) const']]],
-  ['with_5fsubpass_12',['with_subpass',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#a2d7d398247571d6314e727923d8f7160',1,'tz::gl::vk2::RenderPassBuilder']]],
-  ['write_5fpadded_5fimage_5fdata_13',['write_padded_image_data',['../classtz_1_1gl_1_1_resource_storage.html#a99fc67dff012a832a3180cccfc328be7',1,'tz::gl::ResourceStorage']]]
+  ['valid_0',['valid',['../structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html#a13d747ebb95030a11b81a5b8ada449a0',1,'tz::gl::vk2::FramebufferInfo::valid()'],['../structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html#ac8f560b25cb670c3cb4a41121c542d5c',1,'tz::gl::vk2::GraphicsPipelineInfo::valid() const']]],
+  ['valid_5fdevice_1',['valid_device',['../structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html#a8537647952eb07d190af2c496290435c',1,'tz::gl::vk2::GraphicsPipelineInfo']]],
+  ['values_5fmake_5fsense_2',['values_make_sense',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html#a6e0f6d3e4801750361964ec51d5f3072',1,'tz::gl::vk2::RenderPassInfo']]],
+  ['vector_3',['vector',['../classhdk_1_1vector.html#a1fe8df2bfc62515514188f49462e4585',1,'hdk::vector::vector(Ts &amp;&amp;... ts)'],['../classhdk_1_1vector.html#a2b3072bf8bf2399fd06e9ebec99b5dfd',1,'hdk::vector::vector(std::array&lt; T, S &gt; data)'],['../classhdk_1_1vector.html#acee45ebc0460f346f8199ed843e78645',1,'hdk::vector::vector()=default']]],
+  ['vertexarray_4',['VertexArray',['../classtz_1_1gl_1_1ogl2_1_1_vertex_array.html#acc8af9008c23bcddce89e5378c845f00',1,'tz::gl::ogl2::VertexArray']]],
+  ['view_5',['view',['../group__tz__core__vecmat__transform.html#ga0e1e9281ca62a31f0a3384ad5a8dbb28',1,'tz']]]
 ];

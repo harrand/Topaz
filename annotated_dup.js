@@ -1,8 +1,31 @@
 var annotated_dup =
 [
+    [ "hdk", null, [
+      [ "detail", null, [
+        [ "format_string", "structhdk_1_1detail_1_1format__string.html", null ],
+        [ "init_state", "structhdk_1_1detail_1_1init__state.html", null ],
+        [ "job_handle_tag", "structhdk_1_1detail_1_1job__handle__tag.html", null ],
+        [ "source_loc", "structhdk_1_1detail_1_1source__loc.html", null ]
+      ] ],
+      [ "impl", null, [
+        [ "job_system_stdasync", "classhdk_1_1impl_1_1job__system__stdasync.html", null ],
+        [ "job_system_threadpool_lfq", "classhdk_1_1impl_1_1job__system__threadpool__lfq.html", null ]
+      ] ],
+      [ "allocator_adapter", "classhdk_1_1allocator__adapter.html", null ],
+      [ "fallback_allocator", "classhdk_1_1fallback__allocator.html", null ],
+      [ "handle", "classhdk_1_1handle.html", null ],
+      [ "linear_allocator", "classhdk_1_1linear__allocator.html", null ],
+      [ "mallocator", "classhdk_1_1mallocator.html", null ],
+      [ "memblk", "structhdk_1_1memblk.html", "structhdk_1_1memblk" ],
+      [ "null_allocator", "classhdk_1_1null__allocator.html", null ],
+      [ "nullhand_t", "structhdk_1_1nullhand__t.html", null ],
+      [ "stack_allocator", "classhdk_1_1stack__allocator.html", null ],
+      [ "unique_cloneable", "classhdk_1_1unique__cloneable.html", null ],
+      [ "vector", "classhdk_1_1vector.html", "classhdk_1_1vector" ],
+      [ "version", "structhdk_1_1version.html", null ]
+    ] ],
     [ "std", null, [
-      [ "hash< tz::Handle< T > >", "structstd_1_1hash_3_01tz_1_1_handle_3_01_t_01_4_01_4.html", null ],
-      [ "hash< tz::Vector< T, S > >", "structstd_1_1hash_3_01tz_1_1_vector_3_01_t_00_01_s_01_4_01_4.html", null ]
+      [ "hash< hdk::vector< T, S > >", "structstd_1_1hash_3_01hdk_1_1vector_3_01_t_00_01_s_01_4_01_4.html", null ]
     ] ],
     [ "tz", null, [
       [ "dbgui", null, [
@@ -16,10 +39,19 @@ var annotated_dup =
       [ "detail", null, [
         [ "CallbackType", "structtz_1_1detail_1_1_callback_type.html", null ]
       ] ],
+      [ "draw", null, [
+        [ "DrawIndexedIndirectCommand", "structtz_1_1draw_1_1_draw_indexed_indirect_command.html", null ],
+        [ "DrawIndirectCommand", "structtz_1_1draw_1_1_draw_indirect_command.html", null ]
+      ] ],
       [ "gl", null, [
+        [ "detail", null, [
+          [ "RendererTag", "structtz_1_1gl_1_1detail_1_1_renderer_tag.html", null ]
+        ] ],
         [ "ogl2", null, [
           [ "Buffer", "classtz_1_1gl_1_1ogl2_1_1_buffer.html", "classtz_1_1gl_1_1ogl2_1_1_buffer" ],
           [ "BufferInfo", "structtz_1_1gl_1_1ogl2_1_1_buffer_info.html", "structtz_1_1gl_1_1ogl2_1_1_buffer_info" ],
+          [ "DrawIndexedIndirectCommand", "structtz_1_1gl_1_1ogl2_1_1_draw_indexed_indirect_command.html", null ],
+          [ "DrawIndirectCommand", "structtz_1_1gl_1_1ogl2_1_1_draw_indirect_command.html", null ],
           [ "FormatData", "structtz_1_1gl_1_1ogl2_1_1_format_data.html", null ],
           [ "Framebuffer", "classtz_1_1gl_1_1ogl2_1_1_framebuffer.html", "classtz_1_1gl_1_1ogl2_1_1_framebuffer" ],
           [ "FramebufferInfo", "structtz_1_1gl_1_1ogl2_1_1_framebuffer_info.html", "structtz_1_1gl_1_1ogl2_1_1_framebuffer_info" ],
@@ -113,8 +145,10 @@ var annotated_dup =
         [ "AssetStorageCommon", "classtz_1_1gl_1_1_asset_storage_common.html", null ],
         [ "BufferComponentOGL", "classtz_1_1gl_1_1_buffer_component_o_g_l.html", null ],
         [ "BufferComponentVulkan", "classtz_1_1gl_1_1_buffer_component_vulkan.html", null ],
-        [ "BufferResource", "classtz_1_1gl_1_1_buffer_resource.html", null ],
+        [ "BufferInfo", "structtz_1_1gl_1_1_buffer_info.html", null ],
+        [ "BufferResource", "classtz_1_1gl_1_1_buffer_resource.html", "classtz_1_1gl_1_1_buffer_resource" ],
         [ "CommandProcessor", "classtz_1_1gl_1_1_command_processor.html", "classtz_1_1gl_1_1_command_processor" ],
+        [ "DeviceCommon", "classtz_1_1gl_1_1_device_common.html", null ],
         [ "DeviceOGL", "classtz_1_1gl_1_1_device_o_g_l.html", null ],
         [ "DeviceRenderSchedulerVulkan", "classtz_1_1gl_1_1_device_render_scheduler_vulkan.html", null ],
         [ "DeviceVulkan", "classtz_1_1gl_1_1_device_vulkan.html", null ],
@@ -123,9 +157,10 @@ var annotated_dup =
         [ "IComponent", "classtz_1_1gl_1_1_i_component.html", null ],
         [ "ImageComponentOGL", "classtz_1_1gl_1_1_image_component_o_g_l.html", null ],
         [ "ImageComponentVulkan", "classtz_1_1gl_1_1_image_component_vulkan.html", null ],
+        [ "ImageInfo", "structtz_1_1gl_1_1_image_info.html", "structtz_1_1gl_1_1_image_info" ],
         [ "ImageOutput", "classtz_1_1gl_1_1_image_output.html", null ],
         [ "ImageOutputInfo", "structtz_1_1gl_1_1_image_output_info.html", null ],
-        [ "ImageResource", "classtz_1_1gl_1_1_image_resource.html", null ],
+        [ "ImageResource", "classtz_1_1gl_1_1_image_resource.html", "classtz_1_1gl_1_1_image_resource" ],
         [ "IOutput", "classtz_1_1gl_1_1_i_output.html", null ],
         [ "IResource", "classtz_1_1gl_1_1_i_resource.html", "classtz_1_1gl_1_1_i_resource" ],
         [ "OutputImageState", "structtz_1_1gl_1_1_output_image_state.html", null ],
@@ -138,6 +173,7 @@ var annotated_dup =
         [ "RendererOGL", "classtz_1_1gl_1_1_renderer_o_g_l.html", "classtz_1_1gl_1_1_renderer_o_g_l" ],
         [ "RendererResizeInfoVulkan", "structtz_1_1gl_1_1_renderer_resize_info_vulkan.html", null ],
         [ "RendererVulkan", "classtz_1_1gl_1_1_renderer_vulkan.html", "classtz_1_1gl_1_1_renderer_vulkan" ],
+        [ "RenderState", "structtz_1_1gl_1_1_render_state.html", "structtz_1_1gl_1_1_render_state" ],
         [ "Resource", "classtz_1_1gl_1_1_resource.html", "classtz_1_1gl_1_1_resource" ],
         [ "ResourceStorage", "classtz_1_1gl_1_1_resource_storage.html", "classtz_1_1gl_1_1_resource_storage" ],
         [ "ScissorRegion", "structtz_1_1gl_1_1_scissor_region.html", null ],
@@ -150,7 +186,6 @@ var annotated_dup =
       [ "space", null, [
         [ "MVP", "structtz_1_1space_1_1_m_v_p.html", null ]
       ] ],
-      [ "AllocatorAdapter", "classtz_1_1_allocator_adapter.html", null ],
       [ "BasicList", "classtz_1_1_basic_list.html", "classtz_1_1_basic_list" ],
       [ "Blk", "structtz_1_1_blk.html", "structtz_1_1_blk" ],
       [ "Callback", "classtz_1_1_callback.html", "classtz_1_1_callback" ],
@@ -158,18 +193,13 @@ var annotated_dup =
       [ "Duration", "classtz_1_1_duration.html", "classtz_1_1_duration" ],
       [ "EngineInfo", "structtz_1_1_engine_info.html", "structtz_1_1_engine_info" ],
       [ "EnumField", "classtz_1_1_enum_field.html", "classtz_1_1_enum_field" ],
-      [ "FallbackAllocator", "classtz_1_1_fallback_allocator.html", null ],
       [ "GameInfo", "structtz_1_1_game_info.html", "structtz_1_1_game_info" ],
       [ "GridView", "classtz_1_1_grid_view.html", "classtz_1_1_grid_view" ],
-      [ "Handle", "classtz_1_1_handle.html", "classtz_1_1_handle" ],
       [ "InitialiseInfo", "structtz_1_1_initialise_info.html", "structtz_1_1_initialise_info" ],
       [ "InterfaceIterator", "classtz_1_1_interface_iterator.html", null ],
-      [ "IUniqueCloneable", "classtz_1_1_i_unique_cloneable.html", null ],
       [ "KeyboardState", "classtz_1_1_keyboard_state.html", "classtz_1_1_keyboard_state" ],
       [ "KeyInfo", "structtz_1_1_key_info.html", "structtz_1_1_key_info" ],
       [ "KeyPressInfo", "structtz_1_1_key_press_info.html", "structtz_1_1_key_press_info" ],
-      [ "LinearAllocator", "classtz_1_1_linear_allocator.html", null ],
-      [ "Mallocator", "classtz_1_1_mallocator.html", null ],
       [ "Matrix", "classtz_1_1_matrix.html", "classtz_1_1_matrix" ],
       [ "MaybeOwnedPtr", "classtz_1_1_maybe_owned_ptr.html", null ],
       [ "MonitorInfo", "structtz_1_1_monitor_info.html", "structtz_1_1_monitor_info" ],
@@ -178,12 +208,7 @@ var annotated_dup =
       [ "MouseButtonState", "classtz_1_1_mouse_button_state.html", "classtz_1_1_mouse_button_state" ],
       [ "MousePositionInfo", "structtz_1_1_mouse_position_info.html", null ],
       [ "MousePositionState", "classtz_1_1_mouse_position_state.html", "classtz_1_1_mouse_position_state" ],
-      [ "NullAllocator", "classtz_1_1_null_allocator.html", null ],
-      [ "nullhand_t", "structtz_1_1nullhand__t.html", null ],
       [ "PolymorphicList", "classtz_1_1_polymorphic_list.html", "classtz_1_1_polymorphic_list" ],
-      [ "StackAllocator", "classtz_1_1_stack_allocator.html", null ],
-      [ "Vector", "classtz_1_1_vector.html", "classtz_1_1_vector" ],
-      [ "Version", "structtz_1_1_version.html", null ],
       [ "Window", "classtz_1_1_window.html", "classtz_1_1_window" ],
       [ "WindowExtraFlags", "structtz_1_1_window_extra_flags.html", "structtz_1_1_window_extra_flags" ],
       [ "WindowFunctionality", "classtz_1_1_window_functionality.html", "classtz_1_1_window_functionality" ],

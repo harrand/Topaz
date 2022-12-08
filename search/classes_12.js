@@ -1,8 +1,23 @@
 var searchData=
 [
-  ['timelinesemaphore_0',['TimelineSemaphore',['../classtz_1_1gl_1_1vk2_1_1_timeline_semaphore.html',1,'tz::gl::vk2']]],
-  ['topazplatformdata_1',['TopazPlatformData',['../structtz_1_1dbgui_1_1_topaz_platform_data.html',1,'tz::dbgui']]],
-  ['topazrenderdata_2',['TopazRenderData',['../structtz_1_1dbgui_1_1_topaz_render_data.html',1,'tz::dbgui']]],
-  ['topazshaderrenderdata_3',['TopazShaderRenderData',['../structtz_1_1dbgui_1_1_topaz_shader_render_data.html',1,'tz::dbgui']]],
-  ['transitionimagelayout_4',['TransitionImageLayout',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html',1,'tz::gl::vk2::VulkanCommand']]]
+  ['sampler_0',['Sampler',['../structtz_1_1gl_1_1ogl2_1_1_sampler.html',1,'tz::gl::ogl2::Sampler'],['../classtz_1_1gl_1_1vk2_1_1_sampler.html',1,'tz::gl::vk2::Sampler']]],
+  ['samplerinfo_1',['SamplerInfo',['../structtz_1_1gl_1_1vk2_1_1_sampler_info.html',1,'tz::gl::vk2']]],
+  ['scissorregion_2',['ScissorRegion',['../structtz_1_1gl_1_1_scissor_region.html',1,'tz::gl']]],
+  ['setscissordynamic_3',['SetScissorDynamic',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_set_scissor_dynamic.html',1,'tz::gl::vk2::VulkanCommand']]],
+  ['shader_4',['Shader',['../classtz_1_1gl_1_1ogl2_1_1_shader.html',1,'tz::gl::ogl2::Shader'],['../classtz_1_1gl_1_1vk2_1_1_shader.html',1,'tz::gl::vk2::Shader']]],
+  ['shaderinfo_5',['ShaderInfo',['../structtz_1_1gl_1_1ogl2_1_1_shader_info.html',1,'tz::gl::ogl2::ShaderInfo'],['../classtz_1_1gl_1_1_shader_info.html',1,'tz::gl::ShaderInfo'],['../structtz_1_1gl_1_1vk2_1_1_shader_info.html',1,'tz::gl::vk2::ShaderInfo']]],
+  ['shadermanager_6',['ShaderManager',['../classtz_1_1gl_1_1_shader_manager.html',1,'tz::gl']]],
+  ['shadermeta_7',['ShaderMeta',['../structtz_1_1gl_1_1_shader_meta.html',1,'tz::gl']]],
+  ['shadermodule_8',['ShaderModule',['../classtz_1_1gl_1_1ogl2_1_1_shader_module.html',1,'tz::gl::ogl2::ShaderModule'],['../classtz_1_1gl_1_1vk2_1_1_shader_module.html',1,'tz::gl::vk2::ShaderModule']]],
+  ['shadermoduleinfo_9',['ShaderModuleInfo',['../structtz_1_1gl_1_1ogl2_1_1_shader_module_info.html',1,'tz::gl::ogl2::ShaderModuleInfo'],['../structtz_1_1gl_1_1vk2_1_1_shader_module_info.html',1,'tz::gl::vk2::ShaderModuleInfo']]],
+  ['shaderpipelinedata_10',['ShaderPipelineData',['../structtz_1_1gl_1_1vk2_1_1_shader_pipeline_data.html',1,'tz::gl::vk2']]],
+  ['source_5floc_11',['source_loc',['../structhdk_1_1detail_1_1source__loc.html',1,'hdk::detail']]],
+  ['stack_5fallocator_12',['stack_allocator',['../classhdk_1_1stack__allocator.html',1,'hdk']]],
+  ['submitinfo_13',['SubmitInfo',['../structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html',1,'tz::gl::vk2::hardware::Queue']]],
+  ['subpass_14',['Subpass',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info_1_1_subpass.html',1,'tz::gl::vk2::RenderPassInfo']]],
+  ['subpassbuilder_15',['SubpassBuilder',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html',1,'tz::gl::vk2']]],
+  ['swapchain_16',['Swapchain',['../classtz_1_1gl_1_1vk2_1_1_swapchain.html',1,'tz::gl::vk2']]],
+  ['swapchainextent_17',['SwapchainExtent',['../structtz_1_1gl_1_1vk2_1_1_physical_device_surface_capability_info_1_1_swapchain_extent.html',1,'tz::gl::vk2::PhysicalDeviceSurfaceCapabilityInfo']]],
+  ['swapchainimageinfo_18',['SwapchainImageInfo',['../structtz_1_1gl_1_1vk2_1_1_swapchain_image_info.html',1,'tz::gl::vk2']]],
+  ['swapchaininfo_19',['SwapchainInfo',['../structtz_1_1gl_1_1vk2_1_1_swapchain_info.html',1,'tz::gl::vk2']]]
 ];

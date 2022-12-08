@@ -8,7 +8,7 @@ var group__tz__gl__vk__image =
     [ "tz::gl::vk2::ImageInfo", "structtz_1_1gl_1_1vk2_1_1_image_info.html", [
       [ "array_layers", "structtz_1_1gl_1_1vk2_1_1_image_info.html#a67bbc897a20870d0bb9073899a73bd3f", null ],
       [ "device", "structtz_1_1gl_1_1vk2_1_1_image_info.html#afe7f9ff33dc26c2ace59e95993fbe513", null ],
-      [ "dimensions", "structtz_1_1gl_1_1vk2_1_1_image_info.html#ac6779cb1903574257c5ce37a0261ab51", null ],
+      [ "dimensions", "structtz_1_1gl_1_1vk2_1_1_image_info.html#a1b0df93739863f9bf552d908a9edeb74", null ],
       [ "format", "structtz_1_1gl_1_1vk2_1_1_image_info.html#aa1d4030a457666c883c2a66bbc5c955f", null ],
       [ "image_tiling", "structtz_1_1gl_1_1vk2_1_1_image_info.html#a9f618dfe82120aff7f84746ec7eecf0f", null ],
       [ "mip_levels", "structtz_1_1gl_1_1vk2_1_1_image_info.html#a56e2574360c9dcf40f93ff41868a144d", null ],
@@ -19,7 +19,7 @@ var group__tz__gl__vk__image =
     [ "tz::gl::vk2::Image", "classtz_1_1gl_1_1vk2_1_1_image.html", [
       [ "Image", "classtz_1_1gl_1_1vk2_1_1_image.html#a9749cb054c3afbc18d56331793c7c247", null ],
       [ "get_device", "classtz_1_1gl_1_1vk2_1_1_image.html#a049cd08ea548cf18a48359df5439f790", null ],
-      [ "get_dimensions", "classtz_1_1gl_1_1vk2_1_1_image.html#adbf0f890ba7447627ae6c9b2bb797f2e", null ],
+      [ "get_dimensions", "classtz_1_1gl_1_1vk2_1_1_image.html#a350ddb9a8d556be7ab5067e268b7b729", null ],
       [ "get_format", "classtz_1_1gl_1_1vk2_1_1_image.html#a36e838a90601ab6d711cd16b221fcb68", null ],
       [ "get_layout", "classtz_1_1gl_1_1vk2_1_1_image.html#a245936d112b069e1e36da99391af5476", null ]
     ] ],

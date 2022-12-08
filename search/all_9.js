@@ -1,13 +1,11 @@
 var searchData=
 [
-  ['kernel_0',['kernel',['../structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html#a66af36f36ad50f6d04383cb39879d3c7',1,'tz::gl::RendererEdit::ComputeConfig']]],
-  ['key_1',['key',['../structtz_1_1_key_press_info.html#a60a404a510b48d5106bf2813405c71b0',1,'tz::KeyPressInfo']]],
-  ['key_5fname_2',['key_name',['../structtz_1_1_key_info.html#ae1ba153fc018c099f11d07f572de5d0d',1,'tz::KeyInfo']]],
-  ['key_5fnull_3',['key_null',['../group__tz__core__peripherals__keyboard.html#gad7a3112931627390745e976cb762e5f8',1,'tz::peripherals::keyboard']]],
-  ['keyboards_4',['Keyboards',['../group__tz__core__peripherals__keyboard.html',1,'']]],
-  ['keyboardstate_5',['KeyboardState',['../classtz_1_1_keyboard_state.html',1,'tz']]],
-  ['keycode_6',['KeyCode',['../group__tz__core__peripherals__keyboard.html#gab9503db6c504e1839d2f88d4912f2f83',1,'tz']]],
-  ['keyinfo_7',['KeyInfo',['../structtz_1_1_key_info.html',1,'tz']]],
-  ['keypressinfo_8',['KeyPressInfo',['../structtz_1_1_key_press_info.html',1,'tz']]],
-  ['keypresstype_9',['KeyPressType',['../group__tz__core__peripherals__keyboard.html#ga2a5c5d9eaa96e125a641c7aa72ce4106',1,'tz']]]
+  ['job_20system_0',['Job System',['../group__hdk__job.html',1,'']]],
+  ['job_5fhandle_1',['job_handle',['../group__hdk__job.html#gaa8e4ec508da15a8cd54c060ab7237f9a',1,'hdk']]],
+  ['job_5fhandle_5ftag_2',['job_handle_tag',['../structhdk_1_1detail_1_1job__handle__tag.html',1,'hdk::detail']]],
+  ['job_5fsystem_3',['job_system',['../group__hdk__job.html#gaf09a860e5cd14ed5fd1b909468d6a027',1,'hdk']]],
+  ['job_5fsystem_5fstdasync_4',['job_system_stdasync',['../classhdk_1_1impl_1_1job__system__stdasync.html',1,'hdk::impl']]],
+  ['job_5fsystem_5ft_5',['job_system_t',['../group__hdk__job.html#gaf34af3cdbe06b9f9a2f74e043a88f63a',1,'hdk']]],
+  ['job_5fsystem_5fthreadpool_5flfq_6',['job_system_threadpool_lfq',['../classhdk_1_1impl_1_1job__system__threadpool__lfq.html',1,'hdk::impl']]],
+  ['job_5ft_7',['job_t',['../group__hdk__job.html#ga0a94925d03b2175259a4f97630d6ec29',1,'hdk']]]
 ];

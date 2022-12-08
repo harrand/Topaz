@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -126,6 +126,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad5539795d16fdb9fc6d507d38a45123c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c">draw_indexed</a> (<a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed.html">VulkanCommand::DrawIndexed</a> <a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf">draw</a>)</td></tr>
 <tr class="memdesc:ad5539795d16fdb9fc6d507d38a45123c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform an indexed draw.  <a href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c">More...</a><br /></td></tr>
 <tr class="separator:ad5539795d16fdb9fc6d507d38a45123c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eebf5124e99fc760f29698edcda6577"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3eebf5124e99fc760f29698edcda6577">draw_indirect</a> (<a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indirect.html">VulkanCommand::DrawIndirect</a> <a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf">draw</a>)</td></tr>
+<tr class="memdesc:a3eebf5124e99fc760f29698edcda6577"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform some indirect, non-indexed draws.  <a href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3eebf5124e99fc760f29698edcda6577">More...</a><br /></td></tr>
+<tr class="separator:a3eebf5124e99fc760f29698edcda6577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a883d311ab6e1f1c1f29260129179d0e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a883d311ab6e1f1c1f29260129179d0e0">draw_indexed_indirect</a> (<a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed_indirect.html">VulkanCommand::DrawIndexedIndirect</a> <a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf">draw</a>)</td></tr>
+<tr class="memdesc:a883d311ab6e1f1c1f29260129179d0e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform some indirect, indexed draws.  <a href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a883d311ab6e1f1c1f29260129179d0e0">More...</a><br /></td></tr>
+<tr class="separator:a883d311ab6e1f1c1f29260129179d0e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9e417b34e2a883b34ab2099a82acd54"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ac9e417b34e2a883b34ab2099a82acd54">bind_descriptor_sets</a> (<a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_bind_descriptor_sets.html">VulkanCommand::BindDescriptorSets</a> command)</td></tr>
 <tr class="memdesc:ac9e417b34e2a883b34ab2099a82acd54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind a list of <a class="el" href="classtz_1_1gl_1_1vk2_1_1_descriptor_set.html">DescriptorSet</a>.  <a href="classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ac9e417b34e2a883b34ab2099a82acd54">More...</a><br /></td></tr>
 <tr class="separator:ac9e417b34e2a883b34ab2099a82acd54"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -313,6 +319,48 @@ Public Member Functions</h2></td></tr>
 
 <p>Perform an indexed draw. </p>
 <p >See <a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html">VulkanCommand::Draw</a> for details. </p>
+
+</div>
+</div>
+<a id="a883d311ab6e1f1c1f29260129179d0e0" name="a883d311ab6e1f1c1f29260129179d0e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a883d311ab6e1f1c1f29260129179d0e0">&#9670;&nbsp;</a></span>draw_indexed_indirect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tz::gl::vk2::CommandBufferRecording::draw_indexed_indirect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed_indirect.html">VulkanCommand::DrawIndexedIndirect</a>&#160;</td>
+          <td class="paramname"><em>draw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform some indirect, indexed draws. </p>
+<p >See <a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed_indirect.html">VulkanCommand::DrawIndexedIndirect</a> for details. </p>
+
+</div>
+</div>
+<a id="a3eebf5124e99fc760f29698edcda6577" name="a3eebf5124e99fc760f29698edcda6577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3eebf5124e99fc760f29698edcda6577">&#9670;&nbsp;</a></span>draw_indirect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tz::gl::vk2::CommandBufferRecording::draw_indirect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indirect.html">VulkanCommand::DrawIndirect</a>&#160;</td>
+          <td class="paramname"><em>draw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perform some indirect, non-indexed draws. </p>
+<p >See <a class="el" href="structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indirect.html">VulkanCommand::DrawIndirect</a> for details. </p>
 
 </div>
 </div>

@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -107,19 +107,24 @@ $(document).ready(function(){initNavTree('api_2device_8hpp_source.html',''); ini
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>tz::gl</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> RendererInfo&gt;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="concepttz_1_1gl_1_1_device_type.html">   19</a></span>    <span class="keyword">concept </span><a class="code hl_concept" href="concepttz_1_1gl_1_1_device_type.html">DeviceType</a> = <span class="keyword">requires</span>(T t, RendererInfo&amp; rinfo)</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="concepttz_1_1gl_1_1_device_type.html">   19</a></span>    <span class="keyword">concept </span><a class="code hl_concept" href="concepttz_1_1gl_1_1_device_type.html">DeviceType</a> = <span class="keyword">requires</span>(T t, RendererInfo&amp; rinfo, <a class="code hl_typedef" href="group__tz__gl2__renderer.html#gac268657354562d9bfefd90beb18f4d23">RendererHandle</a> h)</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    {</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">requires</span> std::is_default_constructible_v&lt;std::decay_t&lt;T&gt;&gt;;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">requires</span> RendererInfoType&lt;RendererInfo&gt;;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        {t.create_renderer(rinfo)} -&gt; <a class="code hl_concept" href="concepttz_1_1gl_1_1_renderer_type.html">RendererType</a>;</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        {t.get_window_format()} -&gt; std::same_as&lt;ImageFormat&gt;;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    };</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_2_API_DEVICE_HPP</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        {t.create_renderer(rinfo)} -&gt; std::same_as&lt;RendererHandle&gt;;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        {t.destroy_renderer(h)} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        {t.renderer_count()} -&gt; std::convertible_to&lt;std::size_t&gt;;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        {t.get_renderer(h)} -&gt; <a class="code hl_concept" href="concepttz_1_1gl_1_1_renderer_type.html">RendererType</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        {t.get_window_format()} -&gt; std::same_as&lt;ImageFormat&gt;;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        {t.dbgui()} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    };</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_2_API_DEVICE_HPP</span></div>
 <div class="ttc" id="aconcepttz_1_1gl_1_1_device_type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1_device_type.html">tz::gl::DeviceType</a></div><div class="ttdoc">Named Requirement: Device.</div><div class="ttdef"><b>Definition:</b> device.hpp:19</div></div>
-<div class="ttc" id="aconcepttz_1_1gl_1_1_renderer_type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1_renderer_type.html">tz::gl::RendererType</a></div><div class="ttdoc">Named requirement for a Renderer.</div><div class="ttdef"><b>Definition:</b> renderer.hpp:135</div></div>
+<div class="ttc" id="aconcepttz_1_1gl_1_1_renderer_type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1_renderer_type.html">tz::gl::RendererType</a></div><div class="ttdoc">Named requirement for a Renderer.</div><div class="ttdef"><b>Definition:</b> renderer.hpp:184</div></div>
+<div class="ttc" id="agroup__tz__gl2__renderer_html_gac268657354562d9bfefd90beb18f4d23"><div class="ttname"><a href="group__tz__gl2__renderer.html#gac268657354562d9bfefd90beb18f4d23">tz::gl::RendererHandle</a></div><div class="ttdeci">hdk::handle&lt; detail::RendererTag &gt; RendererHandle</div><div class="ttdoc">Represents a handle for a renderer owned by an existing device.</div><div class="ttdef"><b>Definition:</b> renderer.hpp:27</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

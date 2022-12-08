@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -106,7 +106,7 @@ $(document).ready(function(){initNavTree('group__tz__dbgui.html',''); initResiza
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:gabac431fa9ab1d80ebee5208e3f56d04a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__dbgui.html#gabac431fa9ab1d80ebee5208e3f56d04a">tz::dbgui::run</a> (<a class="el" href="concepttz_1_1_action.html">tz::Action</a> auto action)</td></tr>
-<tr class="memdesc:gabac431fa9ab1d80ebee5208e3f56d04a"><td class="mdescLeft">&#160;</td><td class="mdescRight">As dbgui is only available on TZ_DEBUG, calling ImGui functions directly in game-code will yield runtime errors on non-debug builds.  <a href="group__tz__dbgui.html#gabac431fa9ab1d80ebee5208e3f56d04a">More...</a><br /></td></tr>
+<tr class="memdesc:gabac431fa9ab1d80ebee5208e3f56d04a"><td class="mdescLeft">&#160;</td><td class="mdescRight">As dbgui is only available on HDK_DEBUG, calling ImGui functions directly in game-code will yield runtime errors on non-debug builds.  <a href="group__tz__dbgui.html#gabac431fa9ab1d80ebee5208e3f56d04a">More...</a><br /></td></tr>
 <tr class="separator:gabac431fa9ab1d80ebee5208e3f56d04a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga664b530e9454d6ee21ba98ee1de51ee1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtz_1_1_callback.html">GameMenuCallbackType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__dbgui.html#ga664b530e9454d6ee21ba98ee1de51ee1">tz::dbgui::game_menu</a> ()</td></tr>
 <tr class="memdesc:ga664b530e9454d6ee21ba98ee1de51ee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the game menu callback.  <a href="group__tz__dbgui.html#ga664b530e9454d6ee21ba98ee1de51ee1">More...</a><br /></td></tr>
@@ -190,7 +190,7 @@ Functions</h2></td></tr>
 <div class="line">});</div>
 <div class="line"><span class="keywordflow">if</span>(game_menu_enabled){...}</div>
 <div class="ttc" id="aclasstz_1_1_callback_html_a9d053c8675bb946ab7aaf10e54e4170b"><div class="ttname"><a href="classtz_1_1_callback.html#a9d053c8675bb946ab7aaf10e54e4170b">tz::Callback::add_callback</a></div><div class="ttdeci">CallbackHandle add_callback(tz::Action&lt; Args... &gt; auto &amp;&amp;callback_function)</div><div class="ttdoc">Register a new callable with this callback object.</div><div class="ttdef"><b>Definition:</b> callback.hpp:42</div></div>
-<div class="ttc" id="agroup__tz__dbgui_html_ga664b530e9454d6ee21ba98ee1de51ee1"><div class="ttname"><a href="group__tz__dbgui.html#ga664b530e9454d6ee21ba98ee1de51ee1">tz::dbgui::game_menu</a></div><div class="ttdeci">GameMenuCallbackType &amp; game_menu()</div><div class="ttdoc">Retrieve the game menu callback.</div><div class="ttdef"><b>Definition:</b> dbgui.cpp:109</div></div>
+<div class="ttc" id="agroup__tz__dbgui_html_ga664b530e9454d6ee21ba98ee1de51ee1"><div class="ttname"><a href="group__tz__dbgui.html#ga664b530e9454d6ee21ba98ee1de51ee1">tz::dbgui::game_menu</a></div><div class="ttdeci">GameMenuCallbackType &amp; game_menu()</div><div class="ttdoc">Retrieve the game menu callback.</div><div class="ttdef"><b>Definition:</b> dbgui.cpp:118</div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -218,13 +218,13 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>As dbgui is only available on TZ_DEBUG, calling ImGui functions directly in game-code will yield runtime errors on non-debug builds. </p>
+<p>As dbgui is only available on HDK_DEBUG, calling ImGui functions directly in game-code will yield runtime errors on non-debug builds. </p>
 <p >ImGui function invocations should instead be stored within a lambda and passed to this function, which will do nothing on non-debug builds, and can do extra debug-only state checks.</p>
 <p >Example: </p><div class="fragment"><div class="line"><a class="code hl_function" href="group__tz__dbgui.html#gabac431fa9ab1d80ebee5208e3f56d04a">tz::dbgui::run</a>([]()</div>
 <div class="line">{</div>
 <div class="line">   ImGui::Text(<span class="stringliteral">&quot;This is some text.&quot;</span>);</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__tz__dbgui_html_gabac431fa9ab1d80ebee5208e3f56d04a"><div class="ttname"><a href="group__tz__dbgui.html#gabac431fa9ab1d80ebee5208e3f56d04a">tz::dbgui::run</a></div><div class="ttdeci">void run(tz::Action auto action)</div><div class="ttdoc">As dbgui is only available on TZ_DEBUG, calling ImGui functions directly in game-code will yield runt...</div><div class="ttdef"><b>Definition:</b> dbgui.hpp:65</div></div>
+<div class="ttc" id="agroup__tz__dbgui_html_gabac431fa9ab1d80ebee5208e3f56d04a"><div class="ttname"><a href="group__tz__dbgui.html#gabac431fa9ab1d80ebee5208e3f56d04a">tz::dbgui::run</a></div><div class="ttdeci">void run(tz::Action auto action)</div><div class="ttdoc">As dbgui is only available on HDK_DEBUG, calling ImGui functions directly in game-code will yield run...</div><div class="ttdef"><b>Definition:</b> dbgui.hpp:67</div></div>
 </div><!-- fragment --> 
 </div>
 </div>

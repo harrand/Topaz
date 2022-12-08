@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -104,15 +104,20 @@ $(document).ready(function(){initNavTree('concepttz_1_1gl_1_1_device_type.html',
 <p><code>#include &lt;<a class="el" href="api_2device_8hpp_source.html">device.hpp</a>&gt;</code></p>
 <h2 class="groupheader">Concept definition</h2>
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T, <span class="keyword">typename</span> RendererInfo&gt;</div>
-<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="concepttz_1_1gl_1_1_device_type.html">tz::gl::DeviceType</a> =  <span class="keyword">requires</span>(T t, <a class="code hl_class" href="classtz_1_1gl_1_1_renderer_info_common.html">RendererInfo</a>&amp; rinfo)</div>
+<div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="concepttz_1_1gl_1_1_device_type.html">tz::gl::DeviceType</a> =  <span class="keyword">requires</span>(T t, <a class="code hl_class" href="classtz_1_1gl_1_1_renderer_info_common.html">RendererInfo</a>&amp; rinfo, <a class="code hl_class" href="classhdk_1_1handle.html">RendererHandle</a> h)</div>
 <div class="line">    {</div>
 <div class="line">        <span class="keyword">requires</span> std::is_default_constructible_v&lt;std::decay_t&lt;T&gt;&gt;;</div>
 <div class="line">        <span class="keyword">requires</span> RendererInfoType&lt;RendererInfo&gt;;</div>
 <div class="line"> </div>
-<div class="line">        {t.create_renderer(rinfo)} -&gt; RendererType;</div>
+<div class="line">        {t.create_renderer(rinfo)} -&gt; std::same_as&lt;RendererHandle&gt;;</div>
+<div class="line">        {t.destroy_renderer(h)} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line">        {t.renderer_count()} -&gt; std::convertible_to&lt;std::size_t&gt;;</div>
+<div class="line">        {t.get_renderer(h)} -&gt; RendererType;</div>
 <div class="line">        {t.get_window_format()} -&gt; std::same_as&lt;ImageFormat&gt;;</div>
+<div class="line">        {t.dbgui()} -&gt; std::same_as&lt;void&gt;;</div>
 <div class="line">    }</div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html">tz::gl::RendererInfoCommon</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition:</b> renderer.hpp:46</div></div>
+<div class="ttc" id="aclasshdk_1_1handle_html"><div class="ttname"><a href="classhdk_1_1handle.html">hdk::handle&lt; detail::RendererTag &gt;</a></div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_info_common_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_info_common.html">tz::gl::RendererInfoCommon</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition:</b> renderer.hpp:61</div></div>
 <div class="ttc" id="aconcepttz_1_1gl_1_1_device_type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1_device_type.html">tz::gl::DeviceType</a></div><div class="ttdoc">Named Requirement: Device.</div><div class="ttdef"><b>Definition:</b> device.hpp:19</div></div>
 </div><!-- fragment --><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Named Requirement: Device. </p>

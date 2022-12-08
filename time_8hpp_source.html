@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -100,7 +100,7 @@ $(document).ready(function(){initNavTree('time_8hpp_source.html',''); initResiza
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_CORE_TIME_HPP</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_CORE_TIME_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;tz/core/types.hpp&quot;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/core/assert.hpp&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;hdk/debug.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;compare&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
@@ -166,7 +166,7 @@ $(document).ready(function(){initNavTree('time_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        {</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            <span class="keywordflow">if</span>(!std::is_constant_evaluated())</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <a class="code hl_define" href="group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd">tz_assert</a>(this-&gt;duration_nanos &gt;= rhs.duration_nanos, <span class="stringliteral">&quot;Cannot subtract a larger duration from a smaller duration, because durations cannot be negative. Please submit a bug report.&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <a class="code hl_function" href="group__tzsl__debug.html#ga46aa856e72453e84675e0a867438b8d0">hdk::assert</a>(this-&gt;duration_nanos &gt;= rhs.duration_nanos, <span class="stringliteral">&quot;Cannot subtract a larger duration from a smaller duration, because durations cannot be negative. Please submit a bug report.&quot;</span>);</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            }</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            this-&gt;duration_nanos -= rhs.duration_nanos;</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
@@ -238,7 +238,7 @@ $(document).ready(function(){initNavTree('time_8hpp_source.html',''); initResiza
 <div class="ttc" id="aclasstz_1_1_duration_html_acdf730a8e828568f1c8a9021fe27391e"><div class="ttname"><a href="classtz_1_1_duration.html#acdf730a8e828568f1c8a9021fe27391e">tz::Duration::millis</a></div><div class="ttdeci">constexpr N millis() const</div><div class="ttdoc">Express the duration as some number of milliseconds.</div><div class="ttdef"><b>Definition:</b> time.hpp:46</div></div>
 <div class="ttc" id="aclasstz_1_1_duration_html_afb1f5cc8cf8a1bf311a7dca792d69d1d"><div class="ttname"><a href="classtz_1_1_duration.html#afb1f5cc8cf8a1bf311a7dca792d69d1d">tz::Duration::micros</a></div><div class="ttdeci">constexpr N micros() const</div><div class="ttdoc">Express the duration as some number of microseconds.</div><div class="ttdef"><b>Definition:</b> time.hpp:36</div></div>
 <div class="ttc" id="agroup__tz__core__time_html_ga0b858abf13685554015e3ed4668a1ba7"><div class="ttname"><a href="group__tz__core__time.html#ga0b858abf13685554015e3ed4668a1ba7">tz::system_time</a></div><div class="ttdeci">Duration system_time()</div><div class="ttdoc">Retrieve a duration corresponding to the time passed since epoch.</div><div class="ttdef"><b>Definition:</b> time.cpp:6</div></div>
-<div class="ttc" id="agroup__tz__core_html_ga3cd9aafb91fe073ccf575281a4ed7acd"><div class="ttname"><a href="group__tz__core.html#ga3cd9aafb91fe073ccf575281a4ed7acd">tz_assert</a></div><div class="ttdeci">#define tz_assert(eval, msg,...)</div><div class="ttdoc">Debug-only assert on some condition.</div><div class="ttdef"><b>Definition:</b> assert.hpp:57</div></div>
+<div class="ttc" id="agroup__tzsl__debug_html_ga46aa856e72453e84675e0a867438b8d0"><div class="ttname"><a href="group__tzsl__debug.html#ga46aa856e72453e84675e0a867438b8d0">tz::debug::assert</a></div><div class="ttdeci">void assert(bool condition)</div><div class="ttdoc">Assert that a condition is true.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

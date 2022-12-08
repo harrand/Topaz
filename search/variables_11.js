@@ -2,7 +2,7 @@ var searchData=
 [
   ['sample_5fcount_0',['sample_count',['../structtz_1_1gl_1_1vk2_1_1_image_info.html#a2db5201e88567d786e8d502650f95bed',1,'tz::gl::vk2::ImageInfo::sample_count()'],['../structtz_1_1gl_1_1vk2_1_1_attachment.html#a3a45dac8d5587c7161a69f2e4431076e',1,'tz::gl::vk2::Attachment::sample_count()']]],
   ['sampler_1',['sampler',['../structtz_1_1gl_1_1ogl2_1_1_image_info.html#ab67123c0a8be01ad4008fdf75e00e9f3',1,'tz::gl::ogl2::ImageInfo::sampler()'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write_1_1_image_write_info.html#a40c1f226010688408a26dd6eeef1957e',1,'tz::gl::vk2::DescriptorSet::Write::ImageWriteInfo::sampler()']]],
-  ['screen_5fdimensions_2',['screen_dimensions',['../structtz_1_1_monitor_info.html#a83326318e3c8bd779dc4ea016577bd25',1,'tz::MonitorInfo']]],
+  ['screen_5fdimensions_2',['screen_dimensions',['../structtz_1_1_monitor_info.html#a70c4546ef7ea0478aa66a7af997b841b',1,'tz::MonitorInfo']]],
   ['set_3',['set',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html#a5c2a25ebc211daec9185f1079cb3eeb1',1,'tz::gl::vk2::DescriptorSet::Write']]],
   ['set_5flayouts_4',['set_layouts',['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_1_1_allocation.html#ad0e364a5afa4d301e139a4c107cdd24d',1,'tz::gl::vk2::DescriptorPool::Allocation']]],
   ['sets_5',['sets',['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_1_1_allocation_result.html#a9447ec7a1213edb2943a983e8f01068b',1,'tz::gl::vk2::DescriptorPool::AllocationResult']]],
@@ -10,7 +10,7 @@ var searchData=
   ['signal_5ffence_7',['signal_fence',['../structtz_1_1gl_1_1vk2_1_1_swapchain_1_1_image_acquisition.html#a647f591e840a676dbcb5755ec6c0f940',1,'tz::gl::vk2::Swapchain::ImageAcquisition']]],
   ['signal_5fsemaphore_8',['signal_semaphore',['../structtz_1_1gl_1_1vk2_1_1_swapchain_1_1_image_acquisition.html#ae57cd3f44536e214c569b1dc0e12a672',1,'tz::gl::vk2::Swapchain::ImageAcquisition']]],
   ['signal_5fsemaphores_9',['signal_semaphores',['../structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html#af0063a74319745f3e0e489641dfa199b',1,'tz::gl::vk2::hardware::Queue::SubmitInfo']]],
-  ['size_10',['size',['../structtz_1_1_blk.html#a86e7dd32d729010af0af78bb4d7a5579',1,'tz::Blk::size()'],['../structtz_1_1gl_1_1_renderer_edit_1_1_buffer_resize.html#a6f72f80a17fddabbc23b4cd799df5ef5',1,'tz::gl::RendererEdit::BufferResize::size()']]],
+  ['size_10',['size',['../structtz_1_1_blk.html#a86e7dd32d729010af0af78bb4d7a5579',1,'tz::Blk::size()'],['../structtz_1_1gl_1_1_renderer_edit_1_1_buffer_resize.html#a6f72f80a17fddabbc23b4cd799df5ef5',1,'tz::gl::RendererEdit::BufferResize::size()'],['../structhdk_1_1memblk.html#a15dd29b173b132dd830fc2a952161f41',1,'hdk::memblk::size()']]],
   ['size_5fbytes_11',['size_bytes',['../structtz_1_1gl_1_1ogl2_1_1_buffer_info.html#a0cf290ba7dcacc73de31059d1c4208ca',1,'tz::gl::ogl2::BufferInfo::size_bytes()'],['../structtz_1_1gl_1_1vk2_1_1_buffer_info.html#a29c5b130de1cf4beae3e87da42b66cd1',1,'tz::gl::vk2::BufferInfo::size_bytes()']]],
   ['source_5faccess_12',['source_access',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a16a08625b895a4a444b66e53a5a23410',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout']]],
   ['source_5fstage_13',['source_stage',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html#a51d5bddfc6bee5894166f297d44def18',1,'tz::gl::vk2::VulkanCommand::TransitionImageLayout']]],

@@ -51,9 +51,9 @@ var group__tz__core__containers =
       [ "remove", "classtz_1_1_enum_field.html#a567b7d5179a479018149d1830123652c", null ]
     ] ],
     [ "tz::GridView< T, N >", "classtz_1_1_grid_view.html", [
-      [ "GridView", "classtz_1_1_grid_view.html#a74661037720634e2964bbc1dc882403e", null ],
+      [ "GridView", "classtz_1_1_grid_view.html#a4de4defff169acfce0b45cf25101cbdd", null ],
       [ "GridView", "classtz_1_1_grid_view.html#a7ef1ec7798a11cee47f420476528893b", null ],
-      [ "get_dimensions", "classtz_1_1_grid_view.html#a9bad2aa78b78a96005047d29ef48e878", null ],
+      [ "get_dimensions", "classtz_1_1_grid_view.html#a9667069c4ee3786afc9cb0e0a25bf5ef", null ],
       [ "operator()", "classtz_1_1_grid_view.html#a8bb9ec3d722e0a088d3a2a28ec401be8", null ],
       [ "span", "classtz_1_1_grid_view.html#ac613cc853e6c5eb0e172be8dd79f9920", null ],
       [ "span", "classtz_1_1_grid_view.html#af0c72591ec4a98311636e39d6afdafc2", null ]

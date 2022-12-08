@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['renderereditrequest_0',['RendererEditRequest',['../group__tz__gl2__renderer.html#ga53143e1ce3567a5f1b619d8277d3950f',1,'tz::gl']]],
-  ['rendereroptions_1',['RendererOptions',['../group__tz__gl2__renderer.html#ga554dd35b24386d751b1c6dc2a379a3d6',1,'tz::gl']]],
-  ['row_2',['Row',['../classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612',1,'tz::Matrix']]]
+  ['mat2_0',['Mat2',['../group__tz__core__vecmat.html#ga9d3c1ed62232ca6932fc42a8d030d1d6',1,'tz']]],
+  ['mat3_1',['Mat3',['../group__tz__core__vecmat.html#ga9730329c4ea0d8dcc0ea4bfee3d4735b',1,'tz']]],
+  ['mat4_2',['Mat4',['../group__tz__core__vecmat.html#ga8cfb113cdb198fe50c0e74a721575b51',1,'tz']]]
 ];

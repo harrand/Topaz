@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -129,7 +129,25 @@ Enumerations</h2></td></tr>
 <tr class="memitem:ga49d5e99134986b45c3e73f9c2e3f3c31"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2__res.html#ga49d5e99134986b45c3e73f9c2e3f3c31">tz::gl::ResourceFlag</a> { <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a7c3895116254ff0417e58b6286de27c0">ResourceFlag::IndexBuffer</a>
 , <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31ae2fcc057580dac072b13a3b121167d95">ResourceFlag::DrawIndirectBuffer</a>
+, <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a9b684106a7d819f0f033820570aa1e80">ResourceFlag::RendererOutput</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31ac82a1ada82ec11604926b68a0a5a81ac">ResourceFlag::ImageFilterNearest</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a795a9babaa052b5dc196c69328076e32">ResourceFlag::ImageFilterLinear</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a6dae246709cef7c6efa55853cac266a0">ResourceFlag::ImageMipNearest</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a03b7fa87827755145a22db1ec7feef2f">ResourceFlag::ImageMipLinear</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31ae0ccacb7b1cd45c43985b9c7b9ff10f2">ResourceFlag::ImageWrapClampEdge</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31aeec7b15d5088bd6dd9c05e86deff543f">ResourceFlag::ImageWrapRepeat</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__res.html#gga49d5e99134986b45c3e73f9c2e3f3c31a23c60107ec95d97a47c2db09fa7ffce0">ResourceFlag::ImageWrapMirroredRepeat</a>
+, <br />
+&#160;&#160;<b>Count</b>
 <br />
  }</td></tr>
 <tr class="memdesc:ga49d5e99134986b45c3e73f9c2e3f3c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies optional flags which affect the behaviour of a resource in some way.  <a href="group__tz__gl2__res.html#ga49d5e99134986b45c3e73f9c2e3f3c31">More...</a><br /></td></tr>
@@ -140,6 +158,8 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="group__tz__gl2__res.html#ggaac6c9b5f2142e64f58da44ba1b7dedcaa423193eec104eaf530d2ff93fea39656">ResourceAccess::DynamicFixed</a>
 , <br />
 &#160;&#160;<a class="el" href="group__tz__gl2__res.html#ggaac6c9b5f2142e64f58da44ba1b7dedcaa21f8913440ad1edc3ddaa47d14b54811">ResourceAccess::DynamicVariable</a>
+, <br />
+&#160;&#160;<b>Count</b>
 <br />
  }</td></tr>
 <tr class="memdesc:gaac6c9b5f2142e64f58da44ba1b7dedca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describes the manner in which a resource can be read or written to, when owned by a <a class="el" href="class_renderer.html" title="Implementation of tz::gl::RendererType.">Renderer</a> or Processor.  <a href="group__tz__gl2__res.html#gaac6c9b5f2142e64f58da44ba1b7dedca">More...</a><br /></td></tr>
@@ -213,8 +233,42 @@ Enumerations</h2></td></tr>
 <li>Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as <code>unsigned int[]</code>. Can only be applied to buffer resources. </li>
 </ul>
 </td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31ae2fcc057580dac072b13a3b121167d95" name="gga49d5e99134986b45c3e73f9c2e3f3c31ae2fcc057580dac072b13a3b121167d95"></a>DrawIndirectBuffer&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that the buffer should contain draw commands which will be used in a render invocation. </li>
+</ul>
+</td></tr>
 <tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a9b684106a7d819f0f033820570aa1e80" name="gga49d5e99134986b45c3e73f9c2e3f3c31a9b684106a7d819f0f033820570aa1e80"></a>RendererOutput&#160;</td><td class="fielddoc"><ul>
 <li>Indicates that the image can be used as an <a class="el" href="classtz_1_1gl_1_1_image_output.html">ImageOutput</a> for another renderer. Can only be applied to image resources. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31ac82a1ada82ec11604926b68a0a5a81ac" name="gga49d5e99134986b45c3e73f9c2e3f3c31ac82a1ada82ec11604926b68a0a5a81ac"></a>ImageFilterNearest&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a795a9babaa052b5dc196c69328076e32" name="gga49d5e99134986b45c3e73f9c2e3f3c31a795a9babaa052b5dc196c69328076e32"></a>ImageFilterLinear&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that when doing min/mag on the image, the value of the weighted average of the nearest texels is retrieved. This is the default filter. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a6dae246709cef7c6efa55853cac266a0" name="gga49d5e99134986b45c3e73f9c2e3f3c31a6dae246709cef7c6efa55853cac266a0"></a>ImageMipNearest&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that the chosen mip will have the closest match of size to the texture pixel. <dl class="section note"><dt>Note</dt><dd>Not yet implemented. </dd></dl>
+</li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a03b7fa87827755145a22db1ec7feef2f" name="gga49d5e99134986b45c3e73f9c2e3f3c31a03b7fa87827755145a22db1ec7feef2f"></a>ImageMipLinear&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that a mip computed from the weighted average of the next and previous mip will be chosen. <dl class="section note"><dt>Note</dt><dd>Not yet implemented. </dd></dl>
+</li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31ae0ccacb7b1cd45c43985b9c7b9ff10f2" name="gga49d5e99134986b45c3e73f9c2e3f3c31ae0ccacb7b1cd45c43985b9c7b9ff10f2"></a>ImageWrapClampEdge&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will match that of the closest axis-aligned texel. This is the default wrap mode. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31aeec7b15d5088bd6dd9c05e86deff543f" name="gga49d5e99134986b45c3e73f9c2e3f3c31aeec7b15d5088bd6dd9c05e86deff543f"></a>ImageWrapRepeat&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will begin repeating as if from zero. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="gga49d5e99134986b45c3e73f9c2e3f3c31a23c60107ec95d97a47c2db09fa7ffce0" name="gga49d5e99134986b45c3e73f9c2e3f3c31a23c60107ec95d97a47c2db09fa7ffce0"></a>ImageWrapMirroredRepeat&#160;</td><td class="fielddoc"><ul>
+<li>Indicates that if sampled outside of this dimensions, the colour of the sampled pixel will begin repeating as if from zero, except each time the image will look mirrored. </li>
 </ul>
 </td></tr>
 </table>

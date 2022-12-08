@@ -53,13 +53,14 @@ var hierarchy =
     [ "tz::gl::ogl2::Buffer", "classtz_1_1gl_1_1ogl2_1_1_buffer.html", null ],
     [ "tz::gl::vk2::VulkanCommand::BufferCopyBuffer", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_buffer.html", null ],
     [ "tz::gl::vk2::VulkanCommand::BufferCopyImage", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_buffer_copy_image.html", null ],
+    [ "tz::gl::BufferInfo", "structtz_1_1gl_1_1_buffer_info.html", null ],
     [ "tz::gl::ogl2::BufferInfo", "structtz_1_1gl_1_1ogl2_1_1_buffer_info.html", null ],
     [ "tz::gl::vk2::BufferInfo", "structtz_1_1gl_1_1vk2_1_1_buffer_info.html", null ],
     [ "tz::gl::RendererEdit::BufferResize", "structtz_1_1gl_1_1_renderer_edit_1_1_buffer_resize.html", null ],
     [ "tz::gl::vk2::DescriptorSet::Write::BufferWriteInfo", "structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write_1_1_buffer_write_info.html", null ],
     [ "tz::Callback< Args >", "classtz_1_1_callback.html", null ],
+    [ "tz::Callback< hdk::vec2ui >", "classtz_1_1_callback.html", null ],
     [ "tz::Callback< RendererResizeInfoVulkan >", "classtz_1_1_callback.html", null ],
-    [ "tz::Callback< tz::Vec2ui >", "classtz_1_1_callback.html", null ],
     [ "tz::detail::CallbackType", "structtz_1_1detail_1_1_callback_type.html", null ],
     [ "tz::gl::vk2::ColourBlendState", "structtz_1_1gl_1_1vk2_1_1_colour_blend_state.html", null ],
     [ "tz::gl::vk2::CommandBuffer", "classtz_1_1gl_1_1vk2_1_1_command_buffer.html", null ],
@@ -68,6 +69,7 @@ var hierarchy =
     [ "tz::gl::vk2::CommandPoolInfo", "structtz_1_1gl_1_1vk2_1_1_command_pool_info.html", null ],
     [ "tz::gl::CommandProcessor", "classtz_1_1gl_1_1_command_processor.html", null ],
     [ "tz::gl::ogl2::ShaderModule::CompileResult", "structtz_1_1gl_1_1ogl2_1_1_shader_module_1_1_compile_result.html", null ],
+    [ "tz::gl::RenderState::Compute", "structtz_1_1gl_1_1_render_state_1_1_compute.html", null ],
     [ "tz::gl::RendererEdit::ComputeConfig", "structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html", null ],
     [ "tz::gl::vk2::ComputePipeline", "classtz_1_1gl_1_1vk2_1_1_compute_pipeline.html", null ],
     [ "tz::gl::vk2::ComputePipelineInfo", "structtz_1_1gl_1_1vk2_1_1_compute_pipeline_info.html", null ],
@@ -99,14 +101,25 @@ var hierarchy =
     [ "tz::gl::vk2::DescriptorPool", "classtz_1_1gl_1_1vk2_1_1_descriptor_pool.html", null ],
     [ "tz::gl::vk2::DescriptorPoolInfo", "structtz_1_1gl_1_1vk2_1_1_descriptor_pool_info.html", null ],
     [ "tz::gl::vk2::DescriptorSet", "classtz_1_1gl_1_1vk2_1_1_descriptor_set.html", null ],
+    [ "tz::gl::DeviceCommon< R >", "classtz_1_1gl_1_1_device_common.html", null ],
+    [ "tz::gl::DeviceCommon< RendererOGL >", "classtz_1_1gl_1_1_device_common.html", [
+      [ "tz::gl::DeviceOGL", "classtz_1_1gl_1_1_device_o_g_l.html", null ]
+    ] ],
+    [ "tz::gl::DeviceCommon< RendererVulkan >", "classtz_1_1gl_1_1_device_common.html", [
+      [ "tz::gl::DeviceVulkan", "classtz_1_1gl_1_1_device_vulkan.html", null ]
+    ] ],
     [ "tz::gl::vk2::detail::DeviceFeatureInfo", "structtz_1_1gl_1_1vk2_1_1detail_1_1_device_feature_info.html", null ],
-    [ "tz::gl::DeviceOGL", "classtz_1_1gl_1_1_device_o_g_l.html", null ],
     [ "tz::gl::DeviceRenderSchedulerVulkan", "classtz_1_1gl_1_1_device_render_scheduler_vulkan.html", null ],
-    [ "tz::gl::DeviceVulkan", "classtz_1_1gl_1_1_device_vulkan.html", null ],
     [ "tz::gl::DeviceWindowVulkan", "classtz_1_1gl_1_1_device_window_vulkan.html", null ],
     [ "tz::gl::vk2::VulkanCommand::Dispatch", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_dispatch.html", null ],
     [ "tz::gl::vk2::VulkanCommand::Draw", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html", null ],
     [ "tz::gl::vk2::VulkanCommand::DrawIndexed", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed.html", null ],
+    [ "tz::gl::vk2::VulkanCommand::DrawIndexedIndirect", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indexed_indirect.html", null ],
+    [ "tz::draw::DrawIndexedIndirectCommand", "structtz_1_1draw_1_1_draw_indexed_indirect_command.html", null ],
+    [ "tz::gl::ogl2::DrawIndexedIndirectCommand", "structtz_1_1gl_1_1ogl2_1_1_draw_indexed_indirect_command.html", null ],
+    [ "tz::gl::vk2::VulkanCommand::DrawIndirect", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw_indirect.html", null ],
+    [ "tz::draw::DrawIndirectCommand", "structtz_1_1draw_1_1_draw_indirect_command.html", null ],
+    [ "tz::gl::ogl2::DrawIndirectCommand", "structtz_1_1gl_1_1ogl2_1_1_draw_indirect_command.html", null ],
     [ "tz::Duration", "classtz_1_1_duration.html", null ],
     [ "tz::gl::vk2::DynamicState", "structtz_1_1gl_1_1vk2_1_1_dynamic_state.html", null ],
     [ "tz::gl::vk2::DescriptorSet::EditRequest", "classtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_edit_request.html", null ],
@@ -128,21 +141,23 @@ var hierarchy =
     [ "tz::EnumField< RendererOption >", "classtz_1_1_enum_field.html", null ],
     [ "tz::EnumField< ResourceFlag >", "classtz_1_1_enum_field.html", null ],
     [ "tz::gl::vk2::FenceInfo", "structtz_1_1gl_1_1vk2_1_1_fence_info.html", null ],
+    [ "hdk::detail::format_string", "structhdk_1_1detail_1_1format__string.html", null ],
     [ "tz::gl::ogl2::FormatData", "structtz_1_1gl_1_1ogl2_1_1_format_data.html", null ],
     [ "tz::gl::ogl2::Framebuffer", "classtz_1_1gl_1_1ogl2_1_1_framebuffer.html", null ],
     [ "tz::gl::vk2::Framebuffer", "classtz_1_1gl_1_1vk2_1_1_framebuffer.html", null ],
     [ "tz::gl::ogl2::FramebufferInfo", "structtz_1_1gl_1_1ogl2_1_1_framebuffer_info.html", null ],
     [ "tz::gl::vk2::FramebufferInfo", "structtz_1_1gl_1_1vk2_1_1_framebuffer_info.html", null ],
     [ "tz::GameInfo", "structtz_1_1_game_info.html", null ],
+    [ "tz::gl::RenderState::Graphics", "structtz_1_1gl_1_1_render_state_1_1_graphics.html", null ],
     [ "tz::gl::vk2::GraphicsPipeline", "classtz_1_1gl_1_1vk2_1_1_graphics_pipeline.html", null ],
     [ "tz::gl::vk2::GraphicsPipelineInfo", "structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html", null ],
     [ "tz::gl::GraphicsPipelineManager", "classtz_1_1gl_1_1_graphics_pipeline_manager.html", null ],
     [ "tz::GridView< T, N >", "classtz_1_1_grid_view.html", null ],
-    [ "tz::Handle< T >", "classtz_1_1_handle.html", null ],
-    [ "tz::Handle< detail::CallbackType >", "classtz_1_1_handle.html", null ],
-    [ "tz::Handle< IResource >", "classtz_1_1_handle.html", null ],
-    [ "std::hash< tz::Handle< T > >", "structstd_1_1hash_3_01tz_1_1_handle_3_01_t_01_4_01_4.html", null ],
-    [ "std::hash< tz::Vector< T, S > >", "structstd_1_1hash_3_01tz_1_1_vector_3_01_t_00_01_s_01_4_01_4.html", null ],
+    [ "hdk::handle< T >", "classhdk_1_1handle.html", null ],
+    [ "hdk::handle< detail::CallbackType >", "classhdk_1_1handle.html", null ],
+    [ "hdk::handle< detail::RendererTag >", "classhdk_1_1handle.html", null ],
+    [ "hdk::handle< IResource >", "classhdk_1_1handle.html", null ],
+    [ "std::hash< hdk::vector< T, S > >", "structstd_1_1hash_3_01hdk_1_1vector_3_01_t_00_01_s_01_4_01_4.html", null ],
     [ "tz::gl::IComponent", "classtz_1_1gl_1_1_i_component.html", [
       [ "tz::gl::BufferComponentOGL", "classtz_1_1gl_1_1_buffer_component_o_g_l.html", null ],
       [ "tz::gl::BufferComponentVulkan", "classtz_1_1gl_1_1_buffer_component_vulkan.html", null ],
@@ -153,6 +168,7 @@ var hierarchy =
     [ "tz::gl::vk2::Swapchain::ImageAcquisition", "structtz_1_1gl_1_1vk2_1_1_swapchain_1_1_image_acquisition.html", null ],
     [ "tz::gl::vk2::Swapchain::ImageAcquisitionResult", "structtz_1_1gl_1_1vk2_1_1_swapchain_1_1_image_acquisition_result.html", null ],
     [ "tz::gl::vk2::VulkanCommand::ImageCopyImage", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_image_copy_image.html", null ],
+    [ "tz::gl::ImageInfo", "structtz_1_1gl_1_1_image_info.html", null ],
     [ "tz::gl::ogl2::ImageInfo", "structtz_1_1gl_1_1ogl2_1_1_image_info.html", null ],
     [ "tz::gl::vk2::ImageInfo", "structtz_1_1gl_1_1vk2_1_1_image_info.html", null ],
     [ "tz::gl::ImageOutputInfo", "structtz_1_1gl_1_1_image_output_info.html", null ],
@@ -161,38 +177,30 @@ var hierarchy =
     [ "tz::gl::vk2::DescriptorSet::Write::ImageWriteInfo", "structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write_1_1_image_write_info.html", null ],
     [ "tz::dbgui::ImGuiTabTZ", "structtz_1_1dbgui_1_1_im_gui_tab_t_z.html", null ],
     [ "ImGuiVertex", "struct_im_gui_vertex.html", null ],
+    [ "hdk::detail::init_state", "structhdk_1_1detail_1_1init__state.html", null ],
     [ "tz::InitialiseInfo", "structtz_1_1_initialise_info.html", null ],
     [ "tz::dbgui::InitInfo", "structtz_1_1dbgui_1_1_init_info.html", null ],
     [ "tz::gl::vk2::RenderPassInfo::InputAttachmentReference", "structtz_1_1gl_1_1vk2_1_1_render_pass_info_1_1_input_attachment_reference.html", null ],
     [ "tz::dbgui::InputDelta", "structtz_1_1dbgui_1_1_input_delta.html", null ],
     [ "tz::InterfaceIterator< T >", "classtz_1_1_interface_iterator.html", null ],
     [ "tz::gl::vk2::InternalDeviceInfo", "structtz_1_1gl_1_1vk2_1_1_internal_device_info.html", null ],
-    [ "tz::gl::IResource", "classtz_1_1gl_1_1_i_resource.html", [
-      [ "tz::gl::Resource", "classtz_1_1gl_1_1_resource.html", [
-        [ "tz::gl::BufferResource", "classtz_1_1gl_1_1_buffer_resource.html", null ],
-        [ "tz::gl::ImageResource", "classtz_1_1gl_1_1_image_resource.html", null ]
-      ] ]
-    ] ],
-    [ "tz::IUniqueCloneable< T >", "classtz_1_1_i_unique_cloneable.html", null ],
-    [ "tz::IUniqueCloneable< IOutput >", "classtz_1_1_i_unique_cloneable.html", [
-      [ "tz::gl::IOutput", "classtz_1_1gl_1_1_i_output.html", [
-        [ "tz::gl::ImageOutput", "classtz_1_1gl_1_1_image_output.html", null ],
-        [ "tz::gl::WindowOutput", "classtz_1_1gl_1_1_window_output.html", null ]
-      ] ]
-    ] ],
+    [ "hdk::detail::job_handle_tag", "structhdk_1_1detail_1_1job__handle__tag.html", null ],
+    [ "hdk::impl::job_system_stdasync", "classhdk_1_1impl_1_1job__system__stdasync.html", null ],
+    [ "hdk::impl::job_system_threadpool_lfq", "classhdk_1_1impl_1_1job__system__threadpool__lfq.html", null ],
     [ "tz::KeyboardState", "classtz_1_1_keyboard_state.html", null ],
     [ "tz::KeyInfo", "structtz_1_1_key_info.html", null ],
     [ "tz::KeyPressInfo", "structtz_1_1_key_press_info.html", null ],
-    [ "tz::LinearAllocator", "classtz_1_1_linear_allocator.html", [
-      [ "tz::StackAllocator< S >", "classtz_1_1_stack_allocator.html", null ]
+    [ "hdk::linear_allocator", "classhdk_1_1linear__allocator.html", [
+      [ "hdk::stack_allocator< S >", "classhdk_1_1stack__allocator.html", null ]
     ] ],
     [ "tz::gl::ogl2::Shader::LinkResult", "structtz_1_1gl_1_1ogl2_1_1_shader_1_1_link_result.html", null ],
     [ "tz::gl::vk2::LogicalDevice", "classtz_1_1gl_1_1vk2_1_1_logical_device.html", null ],
     [ "tz::gl::vk2::LogicalDeviceInfo", "structtz_1_1gl_1_1vk2_1_1_logical_device_info.html", null ],
-    [ "tz::Mallocator", "classtz_1_1_mallocator.html", null ],
+    [ "hdk::mallocator", "classhdk_1_1mallocator.html", null ],
     [ "tz::Matrix< T, R, C >", "classtz_1_1_matrix.html", null ],
     [ "tz::Matrix< float, 4, 4 >", "classtz_1_1_matrix.html", null ],
     [ "tz::MaybeOwnedPtr< T >", "classtz_1_1_maybe_owned_ptr.html", null ],
+    [ "hdk::memblk", "structhdk_1_1memblk.html", null ],
     [ "tz::MonitorInfo", "structtz_1_1_monitor_info.html", null ],
     [ "tz::MouseButtonInfo", "structtz_1_1_mouse_button_info.html", null ],
     [ "tz::MouseButtonPressInfo", "structtz_1_1_mouse_button_press_info.html", null ],
@@ -201,8 +209,8 @@ var hierarchy =
     [ "tz::MousePositionState", "classtz_1_1_mouse_position_state.html", null ],
     [ "tz::gl::vk2::MultisampleState", "structtz_1_1gl_1_1vk2_1_1_multisample_state.html", null ],
     [ "tz::space::MVP", "structtz_1_1space_1_1_m_v_p.html", null ],
-    [ "tz::NullAllocator", "classtz_1_1_null_allocator.html", null ],
-    [ "tz::nullhand_t", "structtz_1_1nullhand__t.html", null ],
+    [ "hdk::null_allocator", "classhdk_1_1null__allocator.html", null ],
+    [ "hdk::nullhand_t", "structhdk_1_1nullhand__t.html", null ],
     [ "tz::gl::OutputImageState", "structtz_1_1gl_1_1_output_image_state.html", null ],
     [ "tz::gl::OutputImageViewState", "structtz_1_1gl_1_1_output_image_view_state.html", null ],
     [ "tz::gl::OutputManager", "classtz_1_1gl_1_1_output_manager.html", null ],
@@ -232,12 +240,15 @@ var hierarchy =
     [ "tz::gl::RendererInfoCommon", "classtz_1_1gl_1_1_renderer_info_common.html", null ],
     [ "tz::gl::RendererOGL", "classtz_1_1gl_1_1_renderer_o_g_l.html", null ],
     [ "tz::gl::RendererResizeInfoVulkan", "structtz_1_1gl_1_1_renderer_resize_info_vulkan.html", null ],
+    [ "tz::gl::detail::RendererTag", "structtz_1_1gl_1_1detail_1_1_renderer_tag.html", null ],
     [ "tz::gl::RendererVulkan", "classtz_1_1gl_1_1_renderer_vulkan.html", null ],
     [ "tz::gl::vk2::RenderPass", "classtz_1_1gl_1_1vk2_1_1_render_pass.html", null ],
     [ "tz::gl::vk2::RenderPassBuilder", "classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html", null ],
     [ "tz::gl::vk2::RenderPassInfo", "structtz_1_1gl_1_1vk2_1_1_render_pass_info.html", null ],
     [ "tz::gl::vk2::CommandBufferRecording::RenderPassRun", "classtz_1_1gl_1_1vk2_1_1_command_buffer_recording_1_1_render_pass_run.html", null ],
+    [ "tz::gl::RenderState", "structtz_1_1gl_1_1_render_state.html", null ],
     [ "tz::gl::CommandProcessor::RenderWorkSubmitResult", "structtz_1_1gl_1_1_command_processor_1_1_render_work_submit_result.html", null ],
+    [ "tz::gl::RendererEdit::ResourceReference", "structtz_1_1gl_1_1_renderer_edit_1_1_resource_reference.html", null ],
     [ "tz::gl::RendererEdit::ResourceWrite", "structtz_1_1gl_1_1_renderer_edit_1_1_resource_write.html", null ],
     [ "tz::gl::ogl2::Sampler", "structtz_1_1gl_1_1ogl2_1_1_sampler.html", null ],
     [ "tz::gl::vk2::Sampler", "classtz_1_1gl_1_1vk2_1_1_sampler.html", null ],
@@ -256,6 +267,7 @@ var hierarchy =
     [ "tz::gl::ogl2::ShaderModuleInfo", "structtz_1_1gl_1_1ogl2_1_1_shader_module_info.html", null ],
     [ "tz::gl::vk2::ShaderModuleInfo", "structtz_1_1gl_1_1vk2_1_1_shader_module_info.html", null ],
     [ "tz::gl::vk2::ShaderPipelineData", "structtz_1_1gl_1_1vk2_1_1_shader_pipeline_data.html", null ],
+    [ "hdk::detail::source_loc", "structhdk_1_1detail_1_1source__loc.html", null ],
     [ "tz::gl::vk2::hardware::Queue::SubmitInfo", "structtz_1_1gl_1_1vk2_1_1hardware_1_1_queue_1_1_submit_info.html", null ],
     [ "tz::gl::vk2::RenderPassInfo::Subpass", "structtz_1_1gl_1_1vk2_1_1_render_pass_info_1_1_subpass.html", null ],
     [ "tz::gl::vk2::SubpassBuilder", "classtz_1_1gl_1_1vk2_1_1_subpass_builder.html", null ],
@@ -267,14 +279,25 @@ var hierarchy =
     [ "tz::dbgui::TopazRenderData", "structtz_1_1dbgui_1_1_topaz_render_data.html", null ],
     [ "tz::dbgui::TopazShaderRenderData", "structtz_1_1dbgui_1_1_topaz_shader_render_data.html", null ],
     [ "tz::gl::vk2::VulkanCommand::TransitionImageLayout", "structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_transition_image_layout.html", null ],
+    [ "hdk::unique_cloneable< T >", "classhdk_1_1unique__cloneable.html", null ],
+    [ "hdk::unique_cloneable< IOutput >", "classhdk_1_1unique__cloneable.html", [
+      [ "tz::gl::IOutput", "classtz_1_1gl_1_1_i_output.html", [
+        [ "tz::gl::ImageOutput", "classtz_1_1gl_1_1_image_output.html", null ],
+        [ "tz::gl::WindowOutput", "classtz_1_1gl_1_1_window_output.html", null ]
+      ] ]
+    ] ],
+    [ "hdk::unique_cloneable< IResource >", "classhdk_1_1unique__cloneable.html", [
+      [ "tz::gl::IResource", "classtz_1_1gl_1_1_i_resource.html", [
+        [ "tz::gl::Resource", "classtz_1_1gl_1_1_resource.html", [
+          [ "tz::gl::BufferResource", "classtz_1_1gl_1_1_buffer_resource.html", null ],
+          [ "tz::gl::ImageResource", "classtz_1_1gl_1_1_image_resource.html", null ]
+        ] ]
+      ] ]
+    ] ],
     [ "tz::gl::vk2::DescriptorPool::UpdateRequest", "classtz_1_1gl_1_1vk2_1_1_descriptor_pool_1_1_update_request.html", null ],
-    [ "tz::Vector< T, S >", "classtz_1_1_vector.html", null ],
-    [ "tz::Vector< float, 2 >", "classtz_1_1_vector.html", null ],
-    [ "tz::Vector< float, 4 >", "classtz_1_1_vector.html", null ],
-    [ "tz::Vector< std::uint32_t, 2 >", "classtz_1_1_vector.html", null ],
-    [ "tz::Vector< unsigned int, 2 >", "classtz_1_1_vector.html", null ],
-    [ "tz::Vector< unsigned int, 3 >", "classtz_1_1_vector.html", null ],
-    [ "tz::Version", "structtz_1_1_version.html", null ],
+    [ "hdk::vector< T, S >", "classhdk_1_1vector.html", null ],
+    [ "hdk::vector< std::uint32_t, 2 >", "classhdk_1_1vector.html", null ],
+    [ "hdk::version", "structhdk_1_1version.html", null ],
     [ "tz::gl::ogl2::VertexArray", "classtz_1_1gl_1_1ogl2_1_1_vertex_array.html", null ],
     [ "tz::gl::vk2::VertexInputState", "structtz_1_1gl_1_1vk2_1_1_vertex_input_state.html", null ],
     [ "tz::gl::ViewportRegion", "structtz_1_1gl_1_1_viewport_region.html", null ],
@@ -291,13 +314,13 @@ var hierarchy =
     [ "tz::WindowInitArgs", "structtz_1_1_window_init_args.html", null ],
     [ "tz::gl::vk2::WindowSurface", "classtz_1_1gl_1_1vk2_1_1_window_surface.html", null ],
     [ "tz::gl::vk2::DescriptorSet::Write", "structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html", null ],
-    [ "tz::A", null, [
-      [ "tz::AllocatorAdapter< T, A >", "classtz_1_1_allocator_adapter.html", null ]
+    [ "hdk::A", null, [
+      [ "hdk::allocator_adapter< T, A >", "classhdk_1_1allocator__adapter.html", null ]
     ] ],
-    [ "tz::Primary", null, [
-      [ "tz::FallbackAllocator< Primary, Secondary >", "classtz_1_1_fallback_allocator.html", null ]
+    [ "hdk::P", null, [
+      [ "hdk::fallback_allocator< P, S >", "classhdk_1_1fallback__allocator.html", null ]
     ] ],
-    [ "tz::Secondary", null, [
-      [ "tz::FallbackAllocator< Primary, Secondary >", "classtz_1_1_fallback_allocator.html", null ]
+    [ "hdk::S", null, [
+      [ "hdk::fallback_allocator< P, S >", "classhdk_1_1fallback__allocator.html", null ]
     ] ]
 ];

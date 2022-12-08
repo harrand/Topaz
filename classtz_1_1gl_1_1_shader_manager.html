@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -111,6 +111,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ShaderManager</b> (const <a class="el" href="classtz_1_1gl_1_1_shader_info.html">ShaderInfo</a> &amp;sinfo)</td></tr>
 <tr class="memdesc:a849b6046d6b3ce2fe2512a647cf7bfca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct the shader program from the information provided. <br /></td></tr>
 <tr class="separator:a849b6046d6b3ce2fe2512a647cf7bfca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2b9fa51036eab3ed06803a31cdd3278"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1_shader_manager.html#ae2b9fa51036eab3ed06803a31cdd3278">ShaderManager</a> ()</td></tr>
+<tr class="memdesc:ae2b9fa51036eab3ed06803a31cdd3278"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a null shader manager.  <a href="classtz_1_1gl_1_1_shader_manager.html#ae2b9fa51036eab3ed06803a31cdd3278">More...</a><br /></td></tr>
+<tr class="separator:ae2b9fa51036eab3ed06803a31cdd3278"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e03637f5d12b0734ec1688442e757a0"><td class="memItemLeft" align="right" valign="top"><a id="a5e03637f5d12b0734ec1688442e757a0" name="a5e03637f5d12b0734ec1688442e757a0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>use</b> ()</td></tr>
 <tr class="memdesc:a5e03637f5d12b0734ec1688442e757a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use the shader program, meaning it will be used in the next draw call. <br /></td></tr>
@@ -118,7 +121,28 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>use</b> ()</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Stores the shader program and allows the renderer to use it before emitting a draw call. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ae2b9fa51036eab3ed06803a31cdd3278" name="ae2b9fa51036eab3ed06803a31cdd3278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b9fa51036eab3ed06803a31cdd3278">&#9670;&nbsp;</a></span>ShaderManager()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">tz::gl::ShaderManager::ShaderManager </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a null shader manager. </p>
+<p >It is an error to do any render/compute work with a null shader manager. </p>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

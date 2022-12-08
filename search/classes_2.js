@@ -1,8 +1,8 @@
 var searchData=
 [
   ['callback_0',['Callback',['../classtz_1_1_callback.html',1,'tz']]],
-  ['callback_3c_20rendererresizeinfovulkan_20_3e_1',['Callback&lt; RendererResizeInfoVulkan &gt;',['../classtz_1_1_callback.html',1,'tz']]],
-  ['callback_3c_20tz_3a_3avec2ui_20_3e_2',['Callback&lt; tz::Vec2ui &gt;',['../classtz_1_1_callback.html',1,'tz']]],
+  ['callback_3c_20hdk_3a_3avec2ui_20_3e_1',['Callback&lt; hdk::vec2ui &gt;',['../classtz_1_1_callback.html',1,'tz']]],
+  ['callback_3c_20rendererresizeinfovulkan_20_3e_2',['Callback&lt; RendererResizeInfoVulkan &gt;',['../classtz_1_1_callback.html',1,'tz']]],
   ['callbacktype_3',['CallbackType',['../structtz_1_1detail_1_1_callback_type.html',1,'tz::detail']]],
   ['colourblendstate_4',['ColourBlendState',['../structtz_1_1gl_1_1vk2_1_1_colour_blend_state.html',1,'tz::gl::vk2']]],
   ['commandbuffer_5',['CommandBuffer',['../classtz_1_1gl_1_1vk2_1_1_command_buffer.html',1,'tz::gl::vk2']]],
@@ -11,7 +11,8 @@ var searchData=
   ['commandpoolinfo_8',['CommandPoolInfo',['../structtz_1_1gl_1_1vk2_1_1_command_pool_info.html',1,'tz::gl::vk2']]],
   ['commandprocessor_9',['CommandProcessor',['../classtz_1_1gl_1_1_command_processor.html',1,'tz::gl']]],
   ['compileresult_10',['CompileResult',['../structtz_1_1gl_1_1ogl2_1_1_shader_module_1_1_compile_result.html',1,'tz::gl::ogl2::ShaderModule']]],
-  ['computeconfig_11',['ComputeConfig',['../structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html',1,'tz::gl::RendererEdit']]],
-  ['computepipeline_12',['ComputePipeline',['../classtz_1_1gl_1_1vk2_1_1_compute_pipeline.html',1,'tz::gl::vk2']]],
-  ['computepipelineinfo_13',['ComputePipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_compute_pipeline_info.html',1,'tz::gl::vk2']]]
+  ['compute_11',['Compute',['../structtz_1_1gl_1_1_render_state_1_1_compute.html',1,'tz::gl::RenderState']]],
+  ['computeconfig_12',['ComputeConfig',['../structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html',1,'tz::gl::RendererEdit']]],
+  ['computepipeline_13',['ComputePipeline',['../classtz_1_1gl_1_1vk2_1_1_compute_pipeline.html',1,'tz::gl::vk2']]],
+  ['computepipelineinfo_14',['ComputePipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_compute_pipeline_info.html',1,'tz::gl::vk2']]]
 ];

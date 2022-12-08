@@ -1,4 +1,9 @@
 var searchData=
 [
-  ['noise_20functions_0',['Noise Functions',['../group__tzsl__noise.html',1,'']]]
+  ['mathematical_20operations_0',['Mathematical Operations',['../group__tzsl__math.html',1,'']]],
+  ['matrix_20operations_1',['Matrix Operations',['../group__tzsl__matrix.html',1,'']]],
+  ['matrix_20transformations_2',['Matrix Transformations',['../group__tz__core__vecmat__transform.html',1,'']]],
+  ['memory_20utility_3',['Memory Utility',['../group__hdk__memory.html',1,'']]],
+  ['monitors_4',['Monitors',['../group__tz__core__peripherals__monitor.html',1,'']]],
+  ['mouse_5',['Mouse',['../group__tz__core__peripherals__mouse.html',1,'']]]
 ];

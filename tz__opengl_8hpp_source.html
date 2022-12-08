@@ -32,7 +32,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;3.5</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;3.6.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -102,9 +102,9 @@ $(document).ready(function(){initNavTree('tz__opengl_8hpp_source.html',''); init
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#if TZ_OGL</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;tz/core/tz.hpp&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;glad/glad.h&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#if TZ_PROFILE</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#if HDK_PROFILE</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;TracyOpenGL.hpp&quot;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#endif </span><span class="comment">// TZ_PROFILE</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#endif </span><span class="comment">// HDK_PROFILE</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>tz::gl::ogl2</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
@@ -112,7 +112,7 @@ $(document).ready(function(){initNavTree('tz__opengl_8hpp_source.html',''); init
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">terminate</a>();</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="group__tz__core__init.html#ga4197bca3cce79edb5652963d5bd7c1f0">is_initialised</a>();</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">constexpr</span> <a class="code hl_struct" href="structtz_1_1_version.html">tz::Version</a> ogl_version{4, 5, 0};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">constexpr</span> <a class="code hl_struct" href="structhdk_1_1version.html">hdk::version</a> ogl_version{4, 5, 0, hdk::version_type::normal};</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">using</span> OGLString = std::basic_string&lt;GLchar&gt;;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">using</span> OGLStringView = std::basic_string_view&lt;GLchar&gt;;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
@@ -121,10 +121,10 @@ $(document).ready(function(){initNavTree('tz__opengl_8hpp_source.html',''); init
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif </span><span class="comment">// TZ_OGL</span></div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL_IMPL_BACKEND_OGL2_TZ_OPENGL_HPP</span></div>
-<div class="ttc" id="agroup__tz__core__init_html_ga0a5d1e375e7e82fcd12a8b74b8012bae"><div class="ttname"><a href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate</a></div><div class="ttdeci">void terminate()</div><div class="ttdoc">Terminate Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:75</div></div>
-<div class="ttc" id="agroup__tz__core__init_html_ga4197bca3cce79edb5652963d5bd7c1f0"><div class="ttname"><a href="group__tz__core__init.html#ga4197bca3cce79edb5652963d5bd7c1f0">tz::is_initialised</a></div><div class="ttdeci">bool is_initialised()</div><div class="ttdoc">Query as to whether Topaz is initialised.</div><div class="ttdef"><b>Definition:</b> tz.cpp:103</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_ga0a5d1e375e7e82fcd12a8b74b8012bae"><div class="ttname"><a href="group__tz__core__init.html#ga0a5d1e375e7e82fcd12a8b74b8012bae">tz::terminate</a></div><div class="ttdeci">void terminate()</div><div class="ttdoc">Terminate Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:76</div></div>
+<div class="ttc" id="agroup__tz__core__init_html_ga4197bca3cce79edb5652963d5bd7c1f0"><div class="ttname"><a href="group__tz__core__init.html#ga4197bca3cce79edb5652963d5bd7c1f0">tz::is_initialised</a></div><div class="ttdeci">bool is_initialised()</div><div class="ttdoc">Query as to whether Topaz is initialised.</div><div class="ttdef"><b>Definition:</b> tz.cpp:105</div></div>
 <div class="ttc" id="agroup__tz__core__init_html_gadc2dcae2bdcef568206f55a9f48d6658"><div class="ttname"><a href="group__tz__core__init.html#gadc2dcae2bdcef568206f55a9f48d6658">tz::initialise</a></div><div class="ttdeci">void initialise(InitialiseInfo init)</div><div class="ttdoc">Initialise Topaz.</div><div class="ttdef"><b>Definition:</b> tz.cpp:22</div></div>
-<div class="ttc" id="astructtz_1_1_version_html"><div class="ttname"><a href="structtz_1_1_version.html">tz::Version</a></div><div class="ttdef"><b>Definition:</b> version.hpp:8</div></div>
+<div class="ttc" id="astructhdk_1_1version_html"><div class="ttname"><a href="structhdk_1_1version.html">hdk::version</a></div><div class="ttdef"><b>Definition:</b> version.hpp:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
