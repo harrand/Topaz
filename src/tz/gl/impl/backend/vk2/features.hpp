@@ -37,19 +37,10 @@ namespace tz::gl::vk2
 
 	namespace detail
 	{
-		constexpr VkPhysicalDeviceDescriptorIndexingFeatures empty_descriptor_indexing_features()
-		{
-			VkPhysicalDeviceDescriptorIndexingFeatures feats{};
-			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-			feats.pNext = nullptr;
-			return feats;
-		}
-	
-		constexpr VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceDescriptorIndexingFeatures& next)
+		constexpr VkPhysicalDeviceVulkan12Features empty_12_features()
 		{
 			VkPhysicalDeviceVulkan12Features feats{};
 			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-			feats.pNext = &next;
 			return feats;
 		}
 
@@ -63,8 +54,7 @@ namespace tz::gl::vk2
 
 		struct DeviceFeatureInfo
 		{
-			VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features = empty_descriptor_indexing_features();
-			VkPhysicalDeviceVulkan12Features features12 = empty_12_features(descriptor_indexing_features);
+			VkPhysicalDeviceVulkan12Features features12 = empty_12_features();
 			VkPhysicalDeviceFeatures2 features = empty_features2(features12);
 		};
 	}

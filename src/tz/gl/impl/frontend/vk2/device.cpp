@@ -1,8 +1,8 @@
-#include "tz/gl/impl/frontend/common/device.hpp"
 #if TZ_VULKAN
 #include "hdk/profile.hpp"
 #include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/gl/impl/frontend/common/device.hpp"
 #include "tz/gl/impl/frontend/vk2/renderer.hpp"
 #include "tz/gl/impl/frontend/vk2/device.hpp"
 #include "tz/gl/impl/frontend/vk2/convert.hpp"
@@ -273,6 +273,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	DeviceRenderSchedulerVulkan::DeviceRenderSchedulerVulkan(const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count):
+	ldev(&ldev),
 	image_available(),
 	render_work_done(),
 	frame_work()
@@ -293,6 +294,16 @@ namespace tz::gl
 			});
 			fence.debug_set_name("Device Frame Fence " + std::to_string(i));
 		}
+	}
+
+	void DeviceRenderSchedulerVulkan::notify_renderer_added()
+	{
+		this->renderer_timelines.emplace_back(*this->ldev, 0);
+	}
+
+	void DeviceRenderSchedulerVulkan::notify_renderer_removed(std::size_t renderer_id)
+	{
+		this->renderer_timelines.erase(this->renderer_timelines.begin() + renderer_id);
 	}
 
 	std::span<const vk2::BinarySemaphore> DeviceRenderSchedulerVulkan::get_image_signals() const
@@ -320,12 +331,27 @@ namespace tz::gl
 		return this->frame_work;
 	}
 
+	std::span<const vk2::TimelineSemaphore> DeviceRenderSchedulerVulkan::get_renderer_timelines() const
+	{
+		return this->renderer_timelines;
+	}
+
+	std::span<vk2::TimelineSemaphore> DeviceRenderSchedulerVulkan::get_renderer_timelines()
+	{
+		return this->renderer_timelines;
+	}
+
 	void DeviceRenderSchedulerVulkan::wait_frame_work_complete() const
 	{
 		for(const vk2::Fence& fence : this->frame_work)
 		{
 			fence.wait_until_signalled();
 		}
+	}
+
+	void DeviceRenderSchedulerVulkan::clear_renderers()
+	{
+		this->renderer_timelines.clear();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -347,12 +373,14 @@ namespace tz::gl
 	DeviceVulkan::~DeviceVulkan()
 	{
 		this->scheduler.wait_frame_work_complete();
+		this->scheduler.clear_renderers();
 		DeviceCommon<RendererVulkan>::internal_clear();
 	}
 
 	tz::gl::RendererHandle DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
 	{
 		HDK_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", 0xFFAAAA00);
+		this->scheduler.notify_renderer_added();
 		return DeviceCommon<RendererVulkan>::emplace_renderer(info, 
 		tz::gl::RendererDeviceInfoVulkan{
 			.device = &this->device,
@@ -361,6 +389,12 @@ namespace tz::gl
 			.device_scheduler = &this->scheduler,
 			.resize_callback = &this->window_storage.resize_callback()
 		});
+	}
+
+	void DeviceVulkan::destroy_renderer(tz::gl::RendererHandle handle)
+	{
+		this->scheduler.notify_renderer_removed(static_cast<std::size_t>(static_cast<hdk::hanval>(handle)));
+		DeviceCommon<RendererVulkan>::destroy_renderer(handle);
 	}
 
 	ImageFormat DeviceVulkan::get_window_format() const
@@ -419,7 +453,8 @@ namespace tz::gl
 			vk2::DeviceFeature::NonSolidFillRasteriser,
 			vk2::DeviceFeature::TessellationShaders,
 			vk2::DeviceFeature::VertexPipelineResourceWrite,
-			vk2::DeviceFeature::FragmentShaderResourceWrite
+			vk2::DeviceFeature::FragmentShaderResourceWrite,
+			vk2::DeviceFeature::TimelineSemaphores
 		};
 		hdk::assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'ColourBlendLogicalOperations' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
 		dev_exts = {vk2::DeviceExtension::Swapchain};
