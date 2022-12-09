@@ -1005,52 +1005,36 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& device_scheduler):
-	requires_present(output_target == OutputTarget::Window),
-	instant_compute_enabled(instant_compute_enabled),
-	graphics_queue(ldev.get_hardware_queue
-	({
-		.field = {vk2::QueueFamilyType::Graphics},
-		.present_support = this->requires_present
-	})),
-	compute_queue(ldev.get_hardware_queue
-	({
-		.field = {vk2::QueueFamilyType::Compute},
-		.present_support = false
-	})),
-	command_pool
-	({
-		.queue = this->graphics_queue,
-		.flags = {vk2::CommandPoolFlag::Reusable}
-	}),
-	commands(this->command_pool.allocate_buffers
-	({
-		.buffer_count = static_cast<std::uint32_t>(frame_in_flight_count + 1)
-	})),
-	frame_in_flight_count(frame_in_flight_count),
-	images_in_flight(this->frame_in_flight_count, nullptr),
-	options(options),
-	device_scheduler(&device_scheduler)
+	CommandProcessor::CommandProcessor(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info)
 	{
+		if(info.get_output() == nullptr || info.get_output()->get_target() == tz::gl::OutputTarget::Window)
+		{
+			this->requires_present = true;
+		}
+		this->instant_compute_enabled = info.get_options().contains(tz::gl::RendererOption::RenderWait);
+		this->graphics_queue = device_info.device->get_hardware_queue
+		({
+			.field = {vk2::QueueFamilyType::Graphics},
+			.present_support = this->requires_present
+		});
+		this->compute_queue = device_info.device->get_hardware_queue
+		({
+			.field = {vk2::QueueFamilyType::Compute},
+			.present_support = false
+		});
+		this->command_pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
+		this->frame_in_flight_count = device_info.device_window->get_output_images().size();
+		this->commands = this->command_pool.allocate_buffers
+		({
+			.buffer_count = static_cast<std::uint32_t>(this->frame_in_flight_count + 1)
+		});
+		this->images_in_flight.resize(this->frame_in_flight_count, nullptr);
+		this->options = info.get_options();
+		this->device_scheduler = device_info.device_scheduler;
+
 		hdk::assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		hdk::assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
-		hdk::assert(output_framebuffers.size() == this->frame_in_flight_count, "Provided incorrect number of output framebuffers. We must have enough framebuffers for each frame we have in flight. Provided %zu framebuffers, but need %zu because that's how many frames we have in flight.", output_framebuffers.size(), this->frame_in_flight_count);
 		hdk::assert(this->commands.success(), "Failed to allocate from CommandPool");
-	}
-
-	CommandProcessor::CommandProcessor():
-	requires_present(false),
-	instant_compute_enabled(false),
-	graphics_queue(nullptr),
-	compute_queue(nullptr),
-	command_pool(vk2::CommandPool::null()),
-	commands(),
-	frame_in_flight_count(0),
-	images_in_flight(),
-	options(),
-	device_scheduler(nullptr)
-	{
-
 	}
 
 	CommandProcessor::CommandProcessor(CommandProcessor&& move):
@@ -1226,7 +1210,7 @@ namespace tz::gl
 	resources(info, device_info),
 	output(info, device_info),
 	pipeline(info, device_info, resources, output),
-	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::RenderWait), info.get_options(), *device_info.device_scheduler),
+	command(info, device_info),
 	debug_name(info.debug_get_name())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Create", 0xFFAAAA00);

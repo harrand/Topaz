@@ -312,8 +312,9 @@ namespace tz::gl
 		 * @param output_framebuffers Array of framebuffers belonging to the output manager which will act as our render targets. The array should have length equal to `frame_in_flight_count`.
 		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
 		 */
+		CommandProcessor(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
-		CommandProcessor();
+		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
 		CommandProcessor(CommandProcessor&& move);
 		~CommandProcessor() = default;
@@ -351,24 +352,24 @@ namespace tz::gl
 		void wait_pending_commands_complete();
 	private:
 		/// Stores whether we expect to present submitted results to a swapchain.
-		bool requires_present;
-		bool instant_compute_enabled;
+		bool requires_present = false;
+		bool instant_compute_enabled = false;
 		/// Hardware queue which will be used for the render work submission (and presentation, if we need to do so).
-		vk2::hardware::Queue* graphics_queue;
+		vk2::hardware::Queue* graphics_queue = nullptr;
 		/// Hardware queue which will be used for any compute work that needs to be done.
-		vk2::hardware::Queue* compute_queue;
+		vk2::hardware::Queue* compute_queue = nullptr;
 		/// Pool which handles allocation of command buffers.
-		vk2::CommandPool command_pool;
+		vk2::CommandPool command_pool = vk2::CommandPool::null();
 		/// Stores allocated command buffers.
-		vk2::CommandPool::AllocationResult commands;
+		vk2::CommandPool::AllocationResult commands = {};
 		/// Stores the number of frames we expect to have in flight.
-		std::size_t frame_in_flight_count;
+		std::size_t frame_in_flight_count = 0;
 		/// Helper list which refers to each in-flight-fence, but in an order useful to the swapchain image acquisition logic.
-		std::vector<const vk2::Fence*> images_in_flight;
+		std::vector<const vk2::Fence*> images_in_flight = {};
 		/// Copy of all renderer options specified.
-		tz::gl::RendererOptions options;
+		tz::gl::RendererOptions options = {};
 		/// Scheduler object belonging to the parent device. We retrieve scheduling primitives from here, such as semaphores and fences.
-		DeviceRenderSchedulerVulkan* device_scheduler;
+		DeviceRenderSchedulerVulkan* device_scheduler = nullptr;
 		/// The image index most recently acquired from the swapchain.
 		std::uint32_t output_image_index = 0;
 		/// Represents the current index of the frame (between 0 and frame_in_flight_count - 1).
