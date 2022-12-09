@@ -73,8 +73,9 @@ namespace tz::gl::vk2
 	device(nullptr){}
 
 	TimelineSemaphore::TimelineSemaphore(const LogicalDevice& device, std::uint64_t value):
-	BinarySemaphore(device)
+	BinarySemaphore()
 	{
+		this->device = &device;
 		hdk::assert(TimelineSemaphore::supported(device), "TimelineSemaphores are not supported by the LogicalDevice, but tried to create one. Please submit a bug report.");
 		VkSemaphoreTypeCreateInfo create_type
 		{

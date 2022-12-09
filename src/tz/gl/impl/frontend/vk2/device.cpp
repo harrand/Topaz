@@ -349,6 +349,11 @@ namespace tz::gl
 		}
 	}
 
+	void DeviceRenderSchedulerVulkan::clear_renderers()
+	{
+		this->renderer_timelines.clear();
+	}
+
 //--------------------------------------------------------------------------------------------------
 
 	DeviceVulkan::DeviceVulkan():
@@ -368,6 +373,7 @@ namespace tz::gl
 	DeviceVulkan::~DeviceVulkan()
 	{
 		this->scheduler.wait_frame_work_complete();
+		this->scheduler.clear_renderers();
 		DeviceCommon<RendererVulkan>::internal_clear();
 	}
 
