@@ -432,7 +432,7 @@ namespace tz::gl
 		static RendererVulkan null();
 		bool is_null() const;
 	private:
-		RendererVulkan();
+		RendererVulkan() = default;
 
 		void setup_static_resources();
 		void setup_render_commands();
@@ -441,22 +441,22 @@ namespace tz::gl
 		void handle_resize(const RendererResizeInfoVulkan& resize_info);
 
 		// LogicalDevice that every vulkan backend object will use.
-		vk2::LogicalDevice* ldev;
+		vk2::LogicalDevice* ldev = nullptr;
 		// Stores information about the window e.g swapchain images.
-		DeviceWindowVulkan* device_window;
+		DeviceWindowVulkan* device_window = nullptr;
 		// Contains which renderer options were enabled.
-		RendererOptions options;
+		RendererOptions options = {};
 		// Current state of the renderer.
-		RenderState state;
+		RenderState state = {};
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
-		ResourceStorage resources;
+		ResourceStorage resources = {};
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.
-		OutputManager output;
+		OutputManager output = {};
 		/// Helper object for managing the underlying graphics/compute pipeline.
-		GraphicsPipelineManager pipeline;
+		GraphicsPipelineManager pipeline = {};
 		/// Helper object for managing/executing/scheduling GPU work.
-		CommandProcessor command;
-		std::string debug_name;
+		CommandProcessor command = {};
+		std::string debug_name = "Null Renderer";
 		/// Callback object which we attach to listen for when the device has been informed that the window is resized.
 		RendererResizeCallbackType* device_resize_callback = nullptr;
 		/// Handle representing the registration of our callback function from `device_resize_callback`.

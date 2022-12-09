@@ -1604,20 +1604,6 @@ namespace tz::gl
 		return this->ldev == nullptr;
 	}
 
-	RendererVulkan::RendererVulkan():
-	ldev(nullptr),
-	device_window(nullptr),
-	options(),
-	state(),
-	resources(),
-	output(),
-	pipeline(),
-	command(),
-	debug_name("Null Renderer")
-	{
-
-	}
-
 	void RendererVulkan::setup_static_resources()
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Static Resources", 0xFFAAAA00);
