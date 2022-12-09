@@ -263,8 +263,8 @@ namespace tz::gl
 		 * @param viewport_dimensions Dimensions of the viewport, in pixels. Output images associated with the render pass may need to match these dimensions.
 		 * @param depth_testing_enabled Specifies whether we want to create a graphics pipeline which will perform depth tests or not. If the output manager was told to create depth images, this should be enabled (otherwise the framebuffer will not match the provided render pass).
 		 */
-		GraphicsPipelineManager(const ShaderInfo& sinfo, const vk2::DescriptorLayout& dlayout, const vk2::RenderPass& render_pass, std::size_t frame_in_flight_count, hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled);
-		GraphicsPipelineManager();
+		GraphicsPipelineManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan&, const ResourceStorage& resources, const OutputManager& output);
+		GraphicsPipelineManager() = default;
 		GraphicsPipelineManager(GraphicsPipelineManager&& move);
 		~GraphicsPipelineManager() = default;
 		GraphicsPipelineManager& operator=(GraphicsPipelineManager&& rhs);
@@ -286,10 +286,10 @@ namespace tz::gl
 		vk2::ComputePipelineInfo make_compute_pipeline() const;
 		vk2::Pipeline make_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 
-		vk2::Shader shader;
-		vk2::PipelineLayout pipeline_layout;
-		vk2::Pipeline graphics_pipeline;
-		bool depth_testing_enabled;
+		vk2::Shader shader = vk2::Shader::null();
+		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
+		vk2::Pipeline graphics_pipeline = vk2::Pipeline::null();
+		bool depth_testing_enabled = false;
 		bool wireframe_mode = false;
 	};
 

@@ -757,31 +757,13 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	GraphicsPipelineManager::GraphicsPipelineManager
-	(
-		const ShaderInfo& sinfo,
-		const vk2::DescriptorLayout& dlayout,
-		const vk2::RenderPass& render_pass,
-		std::size_t frame_in_flight_count,
-		hdk::vec2ui viewport_dimensions,
-		bool depth_testing_enabled,
-		bool alpha_blending_enabled
-	):
-	shader(this->make_shader(dlayout.get_device(), sinfo)),
-	pipeline_layout(this->make_pipeline_layout(dlayout, frame_in_flight_count)),
-	graphics_pipeline(this->make_pipeline(viewport_dimensions, depth_testing_enabled, alpha_blending_enabled, render_pass)),
-	depth_testing_enabled(depth_testing_enabled)
+	GraphicsPipelineManager::GraphicsPipelineManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info, const ResourceStorage& resources, const OutputManager& output)
 	{
-		hdk::assert(dlayout.get_device() == render_pass.get_device(), "DescriptorLayout and RenderPass were not made by the same LogicalDevice. This is likely to cause issues, please submit a bug report.");
-	}
-
-	GraphicsPipelineManager::GraphicsPipelineManager():
-	shader(vk2::Shader::null()),
-	pipeline_layout(vk2::PipelineLayout::null()),
-	graphics_pipeline(vk2::Pipeline::null()),
-	depth_testing_enabled(false)
-	{
-
+		this->shader = this->make_shader(*device_info.device, info.shader());
+		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), device_info.device_window->get_output_images().size());
+		this->depth_testing_enabled = !info.get_options().contains(tz::gl::RendererOption::NoDepthTesting);
+		const bool alpha_blending_enabled = info.get_options().contains(tz::gl::RendererOption::AlphaBlending);
+		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
 	}
 
 	GraphicsPipelineManager::GraphicsPipelineManager(GraphicsPipelineManager&& move):
@@ -1243,7 +1225,7 @@ namespace tz::gl
 	state(info.state()),
 	resources(info, device_info),
 	output(info, device_info),
-	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
+	pipeline(info, device_info, resources, output),
 	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::RenderWait), info.get_options(), *device_info.device_scheduler),
 	debug_name(info.debug_get_name())
 	{
