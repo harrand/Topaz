@@ -485,32 +485,15 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const IOutput* output, DeviceWindowVulkan* device_window, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev):
-	output(output != nullptr ? output->unique_clone() : nullptr),
-	ldev(&ldev),
-	swapchain_images(device_window->get_output_images()),
-	swapchain_depth_images(&device_window->get_depth_image()),
-	output_imageviews(),
-	render_pass(vk2::RenderPass::null()),
-	output_framebuffers(),
-	options(options)
+	OutputManager::OutputManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
+	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
+	ldev(device_info.device),
+	swapchain_images(device_info.device_window->get_output_images()),
+	swapchain_depth_images(&device_info.device_window->get_depth_image()),
+	options(info.get_options())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", 0xFFAAAA00);
 		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images);
-	}
-
-	OutputManager::OutputManager():
-	output(nullptr),
-	ldev(nullptr),
-	swapchain_images({}),
-	swapchain_depth_images(nullptr),
-	output_imageviews(),
-	output_depth_imageviews(),
-	render_pass(vk2::RenderPass::null()),
-	output_framebuffers(),
-	options()
-	{
-
 	}
 
 	OutputManager::OutputManager(OutputManager&& move):
@@ -518,11 +501,11 @@ namespace tz::gl
 	ldev(move.ldev),
 	swapchain_images(std::move(move.swapchain_images)),
 	swapchain_depth_images(std::move(move.swapchain_depth_images)),
+	options(std::move(move.options)),
 	output_imageviews(std::move(move.output_imageviews)),
 	output_depth_imageviews(std::move(move.output_depth_imageviews)),
 	render_pass(std::move(move.render_pass)),
-	output_framebuffers(std::move(move.output_framebuffers)),
-	options(std::move(move.options))
+	output_framebuffers(std::move(move.output_framebuffers))
 	{
 		for(auto& fb : this->output_framebuffers)
 		{
@@ -536,11 +519,11 @@ namespace tz::gl
 		std::swap(this->ldev, rhs.ldev);
 		std::swap(this->swapchain_images, rhs.swapchain_images);
 		std::swap(this->swapchain_depth_images, rhs.swapchain_depth_images);
+		std::swap(this->options, rhs.options);
 		std::swap(this->output_imageviews, rhs.output_imageviews);
 		std::swap(this->output_depth_imageviews, rhs.output_depth_imageviews);
 		std::swap(this->render_pass, rhs.render_pass);
 		std::swap(this->output_framebuffers, rhs.output_framebuffers);
-		std::swap(this->options, rhs.options);
 		if(!this->render_pass.is_null())
 		{
 			for(auto& fb : this->output_framebuffers)
@@ -1259,7 +1242,7 @@ namespace tz::gl
 	options(info.get_options()),
 	state(info.state()),
 	resources(info, device_info),
-	output(info.get_output(), device_info.device_window, info.get_options(), *this->ldev),
+	output(info, device_info),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::RenderWait), info.get_options(), *device_info.device_scheduler),
 	debug_name(info.debug_get_name())

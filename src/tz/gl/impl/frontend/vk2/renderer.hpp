@@ -180,8 +180,8 @@ namespace tz::gl
 		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
 		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
-		OutputManager(const IOutput* output, DeviceWindowVulkan* device_window, tz::gl::RendererOptions options, const vk2::LogicalDevice& ldev);
-		OutputManager();
+		OutputManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		OutputManager() = default;
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
 		OutputManager& operator=(OutputManager&& rhs);
@@ -230,22 +230,22 @@ namespace tz::gl
 		void make_render_pass();
 		void populate_framebuffers();
 		/// Output provided by the RendererVulkan.
-		std::unique_ptr<IOutput> output;
+		std::unique_ptr<IOutput> output = nullptr;
 		/// Logical device used to create depth images, render passes and framebuffers.
-		const vk2::LogicalDevice* ldev;
+		const vk2::LogicalDevice* ldev = nullptr;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
-		std::span<vk2::Image> swapchain_images;
+		std::span<vk2::Image> swapchain_images = {};
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
-		vk2::Image* swapchain_depth_images;
+		vk2::Image* swapchain_depth_images = {};
+		tz::gl::RendererOptions options = {};
 		/// List of image-views, one for each output image. These haven't been re-ordered in any way FYI.
-		std::vector<OutputImageViewState> output_imageviews;
+		std::vector<OutputImageViewState> output_imageviews = {};
 		/// List of depth-image-views, one for each output image.
-		std::vector<vk2::ImageView> output_depth_imageviews;
+		std::vector<vk2::ImageView> output_depth_imageviews = {};
 		/// We don't support multiple sub-passes, so this is a run-of-the-mill basic-bitch render pass.
-		vk2::RenderPass render_pass;
+		vk2::RenderPass render_pass = vk2::RenderPass::null();
 		/// List of framebuffers, one for each output image. These also haven't been re-ordered in any way FYI.
-		std::vector<vk2::Framebuffer> output_framebuffers;
-		tz::gl::RendererOptions options;
+		std::vector<vk2::Framebuffer> output_framebuffers = {};
 	};
 
 	/**
