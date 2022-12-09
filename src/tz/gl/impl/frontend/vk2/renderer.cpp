@@ -20,19 +20,14 @@ namespace tz::gl
 	using namespace tz::gl;
 
 //--------------------------------------------------------------------------------------------------
-	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count):
+	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
 	AssetStorageCommon<IResource>(info.get_resources()),
-	components(),
-	image_component_views(),
-	samplers(),
-	descriptor_layout(vk2::DescriptorLayout::null()),
-	descriptor_pool(vk2::DescriptorPool::null()),
-	descriptors(),
-	frame_in_flight_count(frame_in_flight_count)
+	frame_in_flight_count(device_info.device_window->get_output_images().size())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
+		const vk2::LogicalDevice& ldev = *device_info.device;	
 		this->samplers.reserve(this->count());
-
+		
 		auto get_fitting_sampler = [&ldev](const IResource& res) -> vk2::SamplerInfo
 		{
 			vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
@@ -1263,7 +1258,7 @@ namespace tz::gl
 	device_window(device_info.device_window),
 	options(info.get_options()),
 	state(info.state()),
-	resources(info, *this->ldev, this->get_frame_in_flight_count()),
+	resources(info, device_info),
 	output(info.get_output(), device_info.device_window, info.get_options(), *this->ldev),
 	pipeline(info.shader(), this->resources.get_descriptor_layout(), this->output.get_render_pass(), this->get_frame_in_flight_count(), output.get_output_dimensions(), !info.get_options().contains(RendererOption::NoDepthTesting), info.get_options().contains(RendererOption::AlphaBlending)),
 	command(*this->ldev, this->get_frame_in_flight_count(), info.get_output() != nullptr ? info.get_output()->get_target() : OutputTarget::Window, this->output.get_output_framebuffers(), info.get_options().contains(RendererOption::RenderWait), info.get_options(), *device_info.device_scheduler),

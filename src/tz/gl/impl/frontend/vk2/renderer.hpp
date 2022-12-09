@@ -27,6 +27,34 @@ namespace tz::gl
 	using namespace tz::gl;
 	using RendererInfoVulkan = RendererInfoCommon;
 
+	struct RendererResizeInfoVulkan
+	{
+		hdk::vec2ui new_dimensions;
+		std::span<vk2::Image> new_output_images;
+		vk2::Image* new_depth_image;
+	};
+
+	using RendererResizeCallbackType = tz::Callback<RendererResizeInfoVulkan>;
+
+	/**
+	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
+	 * When the Device wants to create a RendererVulkan, we need to know a little bit about the Device's internals (such as the swapchain images).
+	 */
+	struct RendererDeviceInfoVulkan
+	{
+		/// LogicalDevice used to create VKAPI objects. Most likely comes from a DeviceVulkan.
+		vk2::LogicalDevice* device;
+		/// List of output images. These are going to be swapchain images.
+		std::span<vk2::Image> output_images;
+		/// Window information belonging to the parent device.
+		DeviceWindowVulkan* device_window;
+		/// Scheduler belonging to the parent device.
+		DeviceRenderSchedulerVulkan* device_scheduler;
+		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null.
+		RendererResizeCallbackType* resize_callback;
+	};
+
+
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend
@@ -49,7 +77,7 @@ namespace tz::gl
 		 * @param resources A view into an array of existing resources. All of these will be copied into separate store, meaning the lifetime of the elements of the span need not last beyond this constructor's execution.
 		 * @param ldev Vulkan LogicalDevice, this will be used to handle the various components and vulkan descriptor shenanigans.
 		 */
-		ResourceStorage(const RendererInfoVulkan& info, const vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count);
+		ResourceStorage(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		ResourceStorage();
 		ResourceStorage(ResourceStorage&& move);
 		~ResourceStorage() = default;
@@ -101,17 +129,17 @@ namespace tz::gl
 	private:
 
 		/// Storage for all cloned resource's components.
-		std::vector<tz::MaybeOwnedPtr<IComponent>> components;
+		std::vector<tz::MaybeOwnedPtr<IComponent>> components = {};
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
-		std::vector<vk2::ImageView> image_component_views;
+		std::vector<vk2::ImageView> image_component_views = {};
 		// A unique sampler for every single image. There is no duplicate checking, so there may be redundant samplers in here. However, it's not trivial to fix this because we use combined image sampling - to use separate image and samplers requires shader source changes, which means big tzslc changes for vulkan only. Looks like it could end up changing syntax so we avoid this for the time being.
-		std::vector<vk2::Sampler> samplers;
+		std::vector<vk2::Sampler> samplers = {};
 		/// Vulkan Descriptor Set layout, which matches the layout of the provided buffer and image resources. Note that buffer resources get their own binding, but all image resources are a single descriptor array.
-		vk2::DescriptorLayout descriptor_layout;
+		vk2::DescriptorLayout descriptor_layout = vk2::DescriptorLayout::null();
 		/// Storage for DescriptorSets.
-		vk2::DescriptorPool descriptor_pool;
+		vk2::DescriptorPool descriptor_pool = vk2::DescriptorPool::null();
 		/// Stores the above pool's allocation result. We know the exact number of descriptors/sets etc that we need, so we only ever need a single allocation for now.
-		vk2::DescriptorPool::AllocationResult descriptors;
+		vk2::DescriptorPool::AllocationResult descriptors = {};
 		/// Describes the number of frames that are in-flight at once.
 		std::size_t frame_in_flight_count;
 	};
@@ -346,33 +374,6 @@ namespace tz::gl
 		/// Represents the current index of the frame (between 0 and frame_in_flight_count - 1).
 		std::size_t current_frame = 0;
 
-	};
-
-	struct RendererResizeInfoVulkan
-	{
-		hdk::vec2ui new_dimensions;
-		std::span<vk2::Image> new_output_images;
-		vk2::Image* new_depth_image;
-	};
-
-	using RendererResizeCallbackType = tz::Callback<RendererResizeInfoVulkan>;
-
-	/**
-	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * When the Device wants to create a RendererVulkan, we need to know a little bit about the Device's internals (such as the swapchain images).
-	 */
-	struct RendererDeviceInfoVulkan
-	{
-		/// LogicalDevice used to create VKAPI objects. Most likely comes from a DeviceVulkan.
-		vk2::LogicalDevice* device;
-		/// List of output images. These are going to be swapchain images.
-		std::span<vk2::Image> output_images;
-		/// Window information belonging to the parent device.
-		DeviceWindowVulkan* device_window;
-		/// Scheduler belonging to the parent device.
-		DeviceRenderSchedulerVulkan* device_scheduler;
-		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null.
-		RendererResizeCallbackType* resize_callback;
 	};
 
 	/**
