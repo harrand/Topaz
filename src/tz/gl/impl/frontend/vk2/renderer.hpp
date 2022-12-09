@@ -73,7 +73,7 @@ namespace tz::gl
 		 * Create storage for a set of existing resources.
 		 */
 		ResourceStorage(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
-		ResourceStorage();
+		ResourceStorage() = default;
 		ResourceStorage(ResourceStorage&& move);
 		~ResourceStorage() = default;
 		ResourceStorage& operator=(ResourceStorage&& rhs);
@@ -136,7 +136,7 @@ namespace tz::gl
 		/// Stores the above pool's allocation result. We know the exact number of descriptors/sets etc that we need, so we only ever need a single allocation for now.
 		vk2::DescriptorPool::AllocationResult descriptors = {};
 		/// Describes the number of frames that are in-flight at once.
-		std::size_t frame_in_flight_count;
+		std::size_t frame_in_flight_count = 0;
 	};
 
 	/**

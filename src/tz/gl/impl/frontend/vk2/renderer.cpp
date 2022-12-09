@@ -261,17 +261,6 @@ namespace tz::gl
 		this->sync_descriptors(true, info.state());
 	}
 
-	ResourceStorage::ResourceStorage():
-	AssetStorageCommon<IResource>({}),
-	components(),
-	image_component_views(),
-	samplers(),
-	descriptor_layout(vk2::DescriptorLayout::null()),
-	descriptor_pool(vk2::DescriptorPool::null()),
-	descriptors(),
-	frame_in_flight_count(0)
-	{}
-
 	ResourceStorage::ResourceStorage(ResourceStorage&& move):
 	AssetStorageCommon<IResource>(static_cast<AssetStorageCommon<IResource>&&>(move)),
 	components(std::move(move.components)),

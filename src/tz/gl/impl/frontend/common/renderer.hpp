@@ -154,7 +154,7 @@ namespace tz::gl
 	{
 	public:
 		using AssetHandle = hdk::handle<Asset>;
-		AssetStorageCommon(std::span<const Asset* const> assets):
+		AssetStorageCommon(std::span<const Asset* const> assets = {}):
 		asset_storage()
 		{
 			for(const Asset* asset : assets)
