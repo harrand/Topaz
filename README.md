@@ -14,12 +14,9 @@
 ## About
 
  Topaz is a 3D graphics engine.
- * C++20
- * Very high-level API, very low-level features.
-	* API is specifically designed to allow you to concise define your rendering targets, and which GPU resources you use.
-	* This means that you are expected to implement high-level features such as shadow-mapping, SSAO etc... yourself. However, you have absolute control over your GPU buffers and textures.
- * Configurable render backend, currently supporting Vulkan and OpenGL
-	* Not coming anytime soon, but planned backends include DX12 and Metal
+ * C++20 (no modules)
+ * High-level declarative graphics API.
+ * Supports OpenGL/Vulkan, Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
  
  [Topaz 3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6) is the most recent release of the Topaz Engine. The next version will be version 3.7.
 
@@ -39,6 +36,28 @@ Each major version is a total rewrite and thus completely different from the pre
 | 3.0.0           |Sep 17, 2021| [Topaz3.0](https://github.com/Harrand/Topaz/tree/Topaz3.0)|[Branch: gh-pages-tz3](https://github.com/Harrand/Topaz/tree/gh-pages-tz3)|
 | 2.0.0           |May 9, 2021|[Topaz2.0](https://github.com/Harrand/Topaz/tree/Topaz2.0)|[Branch: gh-pages-tz2](https://github.com/Harrand/Topaz/tree/gh-pages-tz2)|
 | 1.0.0            |Sep 25, 2020|[Topaz1.0](https://github.com/Harrand/Topaz/tree/Topaz1.0)|[Branch: gh-pages-tz1](https://github.com/Harrand/Topaz/tree/gh-pages-tz1)|
+<details>
+<summary>More Releases</summary>
+
+### Note: I do not recommend any of these. These are listed just for completeness.
+
+| Topaz Version | Release Date | Release      |
+|:-------------:|:-------------|--------------|
+| 0.7.0			|Apr 10, 2019  |	[Raycasts, Octrees & Improved Utility](https://github.com/Harrand/Topaz/releases/tag/0.7.0)	  |
+| 0.6.0			|Jul 18, 2018  |	[Shadow Mapping & Physics](https://github.com/Harrand/Topaz/releases/tag/0.6.0)	  |
+| 0.5.1			|Dec 12, 2017  |	[Refactoring 1](https://github.com/Harrand/Topaz/releases/tag/0.5.1)	  |
+| 0.5.0			|Oct 8, 2017  |	[Physics & Collision](https://github.com/Harrand/Topaz/releases/tag/0.5.0)	  |
+| 0.4.0			|Sep 25, 2017  |	[Displacement Maps & Skyboxes](https://github.com/Harrand/Topaz/releases/tag/0.4.0)	  |
+| 0.3.0			|Sep 21, 2017  |	[GUI & Flexible](https://github.com/Harrand/Topaz/releases/tag/0.3.0)	  |
+| 0.2.0			|Jun 5, 2017  |	[Prettier, faster and more features](https://github.com/Harrand/Topaz/releases/tag/0.2.0)	  |
+| 0.1.6			|Apr 16, 2017  |	[Skybox & Audio](https://github.com/Harrand/Topaz/releases/tag/0.1.6)	  |
+| 0.1.5			|Apr 11, 2017  |	[Dynamic Lighting](https://github.com/Harrand/Topaz/releases/tag/0.1.5)	  |
+| 0.1.4			|Apr 9, 2017  |	[Audio](https://github.com/Harrand/Topaz/releases/tag/0.1.4)	  |
+| 0.1.3			|Mar 29, 2017  |	[World Construction](https://github.com/Harrand/Topaz/releases/tag/0.1.3)	  |
+| 0.1.2			|Mar 25, 2017  |	[Hightail House Construction](https://github.com/Harrand/Topaz/releases/tag/0.1.2)	  |
+| 0.1.1			|Mar 24, 2017  |	[Parallax Displacement Mapping](https://github.com/Harrand/Topaz/releases/tag/0.1.1)	  |
+| 0.1.0			|Mar 21, 2017  |	[Dev Test](https://github.com/Harrand/Topaz/releases/tag/0.1)	  |
+</details>
 
 ## Build Instructions
 1. Checkout the repository resursively.
