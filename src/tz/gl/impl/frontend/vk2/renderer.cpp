@@ -1894,14 +1894,10 @@ namespace tz::gl
 					.first_set_id = 0
 				});
 			}
-
-			//hdk::assert(!this->resources.try_get_index_buffer(), "Compute Renderer has an index buffer applied. This doesn't make any sense. Please submit a bug report.");
-			{
-				recording.dispatch
-				({
-					.groups = this->state.compute.kernel
-				});
-			}
+			recording.dispatch
+			({
+				.groups = this->state.compute.kernel
+			});
 
 			recording.debug_end_label({});
 		});
@@ -1927,12 +1923,6 @@ namespace tz::gl
 		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image);
 		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions, this->pipeline.is_wireframe_mode());
 		this->setup_work_commands();
-	}
-
-	std::size_t RendererVulkan::get_frame_in_flight_count() const
-	{
-		hdk::assert(this->device_window != nullptr, "DeviceWindow was nullptr. Please submit a bug report.");
-		return this->device_window->get_output_images().size();
 	}
 }
 

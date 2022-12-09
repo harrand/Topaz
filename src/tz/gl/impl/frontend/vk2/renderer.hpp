@@ -71,11 +71,6 @@ namespace tz::gl
 	public:
 		/**
 		 * Create storage for a set of existing resources.
-		 *
-		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the RendererVulkan. However, it will reference the copy of said resource which is created during construction. This means users are able and encouraged to cache their ResourceHandles when populating RendererInfoVulkan.
-		 *
-		 * @param resources A view into an array of existing resources. All of these will be copied into separate store, meaning the lifetime of the elements of the span need not last beyond this constructor's execution.
-		 * @param ldev Vulkan LogicalDevice, this will be used to handle the various components and vulkan descriptor shenanigans.
 		 */
 		ResourceStorage(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		ResourceStorage();
@@ -175,10 +170,6 @@ namespace tz::gl
 	public:
 		/**
 		 * Construct the manager to deal with this brain-knot of output components.
-		 * @param output Output which is either going to be a WindowOutput (containing swapchain images) or a TextureOutput which owns its own TextureComponent which we will need to extract.
-		 * @param swapchain_images View into the array of WindowOutput images. These all belong to the creator Device. It's going to be the swapchain images. If the output is a TextureOutput then we're not going to use any of these.
-		 * @param create_depth_images Whether we should create depth images or not. If so, they will also be passed into the framebuffer. This means that the graphics pipeline the renderer ends up using will also need to know that we're using a depth attachment.
-		 * @param ldev Vulkan LogicalDevice which will be used to construct the render-pass and framebuffers etc. Right now we expect this to be the exact same LogicalDevice everywhere throughout this RendererVulkan. However this may change in the future (albeit unlikely tbh).
 		 */
 		OutputManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		OutputManager() = default;
@@ -256,12 +247,7 @@ namespace tz::gl
 	{
 	public:
 		/**
-		 * Construct the pipeline manager using all the necessary shader sources aswell as resource state and output information.
-		 * @param sinfo Information about the shader which will be used.
-		 * @param dlayout Describes the shader resource format used by the renderer.
-		 * @param frame_in_flight_count Describes the number of frames we have in flight. The descriptor layout will need to copy the format this amount of times.
-		 * @param viewport_dimensions Dimensions of the viewport, in pixels. Output images associated with the render pass may need to match these dimensions.
-		 * @param depth_testing_enabled Specifies whether we want to create a graphics pipeline which will perform depth tests or not. If the output manager was told to create depth images, this should be enabled (otherwise the framebuffer will not match the provided render pass).
+		 * Construct the graphics/compute pipeline manager using all the necessary shader sources aswell as resource state and output information.
 		 */
 		GraphicsPipelineManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan&, const ResourceStorage& resources, const OutputManager& output);
 		GraphicsPipelineManager() = default;
@@ -306,11 +292,6 @@ namespace tz::gl
 		};
 		/**
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
-		 * @param ldev LogicalDevice used to create command state.
-		 * @param frame_in_flight_count Number of frames to be doing work on in parallel.
-		 * @param output_target Describes what it is we are actually trying to render into, i.e a Window of offscreen Image.
-		 * @param output_framebuffers Array of framebuffers belonging to the output manager which will act as our render targets. The array should have length equal to `frame_in_flight_count`.
-		 * @pre `output_framebuffers.size() == frame_in_flight_count`, otherwise the behaviour is undefined.
 		 */
 		CommandProcessor(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
@@ -458,7 +439,6 @@ namespace tz::gl
 		void setup_compute_commands();
 		void setup_work_commands();
 		void handle_resize(const RendererResizeInfoVulkan& resize_info);
-		std::size_t get_frame_in_flight_count() const;
 
 		// LogicalDevice that every vulkan backend object will use.
 		vk2::LogicalDevice* ldev;
