@@ -83,9 +83,9 @@ function(add_shader)
 	)
 
 	foreach(SHADER ${ADD_SHADER_SHADERS})
-		if(${TOPAZ_RENDERAPI} MATCHES "opengl")
+		if(${TOPAZ_RENDER_API} MATCHES "OpenGL")
 			add_shader_opengl()
-		elseif(${TOPAZ_RENDERAPI} MATCHES "vulkan")
+		elseif(${TOPAZ_RENDER_API} MATCHES "Vulkan")
 			add_shader_vulkan()
 		endif()
 		# `output_path` is the path to the built shader (i.e glsl (ogl) or spv (vk)).
