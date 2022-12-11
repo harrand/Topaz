@@ -108,7 +108,7 @@ jobs:
           #        with:
           #          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           #          cmakeGenerator: UnixMakefiles
-          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/opengl_release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=opengl"
+          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/opengl_release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDER_API=opengl"
           #          buildWithCMake: true
           #          buildWithCMakeArgs: "--target tztest_build --parallel 4"
           #          buildDirectory: "${{ github.workspace }}/build/opengl_release"
@@ -122,7 +122,7 @@ jobs:
           #        with:
           #          cmakeListsOrSettingsJson: "CMakeListsTxtAdvanced"
           #          cmakeGenerator: UnixMakefiles
-          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/opengl_release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDERAPI=opengl"
+          #          cmakeAppendedArgs: "-B \"${{ github.workspace }}/build/opengl_release\" -DTOPAZ_BUILDCONFIG=release -DTOPAZ_RENDER_API=opengl"
           #          buildWithCMake: true
           #          buildWithCMakeArgs: "--target tztest --parallel 4"
           #          buildDirectory: "${{ github.workspace }}/build/opengl_release"

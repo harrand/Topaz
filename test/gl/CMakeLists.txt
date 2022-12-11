@@ -1,4 +1,4 @@
-if(${TOPAZ_RENDERAPI} MATCHES "opengl")
+if(${TOPAZ_RENDER_API} MATCHES "OpenGL")
 	add_subdirectory(ogl2)
 endif()
 

@@ -35,7 +35,7 @@ def configure():
 	build_config_str = build_type.build_config.name
 	render_api_str = build_type.render_api.name
 	build_dir = build_type.render_api.name + "_" + build_type.build_config.name
-	cmd = "cmake -B \"build/{0}\" -DTOPAZ_BUILDCONFIG={1} -DTOPAZ_RENDERAPI={2} -G \"{3}\"".format(build_dir, build_config_str, render_api_str, build_type.generator)
+	cmd = "cmake -B \"build/{0}\" -DTOPAZ_BUILDCONFIG={1} -DTOPAZ_RENDER_API={2} -G \"{3}\"".format(build_dir, build_config_str, render_api_str, build_type.generator)
 	print("Configuring Topaz build system generation with default settings...")
 	subprocess.call(cmd + " -S .")
 

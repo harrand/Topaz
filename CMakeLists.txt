@@ -173,29 +173,23 @@ set_target_properties(topaz PROPERTIES
 	CXX_STANDARD ${TZ_CXX_STANDARD}
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF)
-# New Cmake presets code:
-if(${TOPAZ_RENDER_API} MATCHES "Vulkan")
-	set(TOPAZ_RENDERAPI "vulkan")
-elseif(${TOPAZ_RENDER_API} MATCHES "OpenGL")
-	set(TOPAZ_RENDERAPI "opengl")
-endif()
 
-if(${TOPAZ_RENDERAPI} MATCHES "vulkan")
+if(${TOPAZ_RENDER_API} MATCHES "Vulkan")
 	configure_vulkan(topaz)
-elseif(${TOPAZ_RENDERAPI} MATCHES "opengl")
+elseif(${TOPAZ_RENDER_API} MATCHES "OpenGL")
 	configure_opengl(topaz)
 else()
-	if(${TOPAZ_RENDERAPI})
+	if(${TOPAZ_RENDER_API})
 		message(SEND_ERROR "Render API \"${TOPAZ_BUILDCONFIG}\" not recognised.")
 	else()
 		message(SEND_ERROR "Render API not specified.")
 	endif()
-	message(FATAL_ERROR "Invalid render API. Values can be \"vulkan\" or \"opengl\"")
+	message(FATAL_ERROR "Invalid render API. Values can be \"Vulkan\" or \"OpenGL\"")
 endif()
 
 configure_common(topaz)
 
-message(STATUS "Render API: ${TOPAZ_RENDERAPI}")
+message(STATUS "Render API: ${TOPAZ_RENDER_API}")
 
 add_subdirectory(lib)
 
