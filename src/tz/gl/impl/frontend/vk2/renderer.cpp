@@ -80,23 +80,15 @@ namespace tz::gl
 		this->samplers.reserve(this->count());
 
 		auto resources = info.get_resources();
-		std::vector<bool> buffer_id_to_variable_access;
-		std::vector<bool> buffer_id_to_descriptor_visibility;
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this, &info, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility](IComponent* cmp)
+		auto retrieve_resource_metadata = [this, &info](IComponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
 			{
 				case ResourceType::Buffer:
 				{
-					//auto buf = static_cast<BufferComponentVulkan*>(cmp);
-					// We need to know this when creating the descriptors.
-					buffer_id_to_variable_access.push_back(res->get_access() == ResourceAccess::DynamicVariable);
-					bool is_special_case = this->get(info.state().graphics.index_buffer) == cmp->get_resource()
-										|| this->get(info.state().graphics.draw_buffer) == cmp->get_resource();
-					buffer_id_to_descriptor_visibility.push_back(!is_special_case);
 					// If the buffer is dynamic, let's link up the resource data span now.
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
 					{
@@ -172,32 +164,23 @@ namespace tz::gl
 			retrieve_resource_metadata(comp);
 		}
 
-		std::size_t buffer_count = this->resource_count_of(ResourceType::Buffer);
-		std::size_t descriptor_buffer_count = std::count(buffer_id_to_descriptor_visibility.begin(), buffer_id_to_descriptor_visibility.end(), true);
-		// So buffer_id_to_variable_access stores a bool for each buffer (in-order). True if the access is variable, false otherwise. However, if any buffer at all is variable, we will unfortunately try to write to them all in sync_descriptors.
-		// Until we fix sync_descriptors to be a little less cavalier, we must add the descriptor-indexing flags and take the perf loss if there are *any* variable-sized buffer resources at all.
+		std::size_t descriptor_buffer_count = this->resource_count_of(ResourceType::Buffer);
+		if(info.state().graphics.index_buffer != hdk::nullhand)
+		{
+			descriptor_buffer_count--;
+		}
+		if(info.state().graphics.draw_buffer != hdk::nullhand)
+		{
+			descriptor_buffer_count--;
+		}
 		{
 			vk2::DescriptorLayoutBuilder lbuilder;
 			lbuilder.set_device(ldev);
 			// Each buffer gets their own binding id.
-			for(std::size_t i = 0; i < buffer_count; i++)
+			for(std::size_t i = 0; i < descriptor_buffer_count; i++)
 			{
-				// If the buffer shouldn't be visible to descriptors (e.g it is an index buffer) then skip it.
-				if(!buffer_id_to_descriptor_visibility[i])
-				{
-					continue;
-				}
 				// TODO: Only add the necessary flags to the buffers with variable access instead of all of them if any have it. Dependent on changes to sync_descriptors.
-				vk2::DescriptorFlags desc_flags;
-				if(std::any_of(buffer_id_to_variable_access.begin(), buffer_id_to_variable_access.end(),
-				[](bool b){return b;}))
-				{
-					desc_flags = 
-					{
-						vk2::DescriptorFlag::UpdateAfterBind,
-						vk2::DescriptorFlag::UpdateUnusedWhilePending
-					};
-				}
+				vk2::DescriptorFlags desc_flags = {vk2::DescriptorFlag::UpdateAfterBind, vk2::DescriptorFlag::UpdateUnusedWhilePending};
 
 				lbuilder.with_binding
 				({
