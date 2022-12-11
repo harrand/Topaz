@@ -87,6 +87,35 @@ namespace tz::gl::vk2
 
 	using ImageUsageField = tz::EnumField<ImageUsage>;
 
+	/**
+	 * @ingroup tz_gl_vk_image
+	 * Specifies which aspects of the image are included within a view.
+	 */
+	enum class ImageAspectFlag
+	{
+		Colour = VK_IMAGE_ASPECT_COLOR_BIT,
+		Depth = VK_IMAGE_ASPECT_DEPTH_BIT,
+		Stencil = VK_IMAGE_ASPECT_STENCIL_BIT
+	};
+
+	using ImageAspectFlags = tz::EnumField<ImageAspectFlag>;
+
+	constexpr ImageAspectFlags derive_aspect_from_format(ImageFormat fmt)
+	{
+		switch(fmt)
+		{
+			case ImageFormat::Depth16_UNorm:
+			[[fallthrough]];
+			case ImageFormat::Depth32_SFloat:
+				return {ImageAspectFlag::Depth};
+			break;
+			default:
+				return {ImageAspectFlag::Colour};
+			break;
+		}
+	}
+
+
 	class Swapchain;
 	class LogicalDevice;
 	namespace hardware

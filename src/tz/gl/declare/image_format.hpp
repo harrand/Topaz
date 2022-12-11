@@ -91,7 +91,6 @@ namespace tz::gl
 		switch(fmt)
 		{
 			case ImageFormat::Depth16:
-			[[fallthrough]];
 				return true;
 			break;
 			default:
