@@ -109,7 +109,7 @@ namespace tz::gl
 					this->image_component_views.emplace_back
 						(vk2::ImageViewInfo{
 							.image = &underlying_image,
-							.aspect = vk2::ImageAspectFlag::Colour
+							.aspect = vk2::derive_aspect_from_format(underlying_image.get_format())
 						 });
 					// If the image is dynamic, let's link up the resource data span now.
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
@@ -330,10 +330,11 @@ namespace tz::gl
 				img_view_idx++;
 			}
 		}
+		auto& img = static_cast<ImageComponentVulkan*>(this->get_component(image_resource_handle))->vk_get_image();
 		this->image_component_views[img_view_idx] =
 		{{
-			.image = &(static_cast<ImageComponentVulkan*>(this->get_component(image_resource_handle))->vk_get_image()),
-			.aspect = vk2::ImageAspectFlag::Colour
+			.image = &img,
+			.aspect = vk2::derive_aspect_from_format(img.get_format())
 		}};
 	}
 
