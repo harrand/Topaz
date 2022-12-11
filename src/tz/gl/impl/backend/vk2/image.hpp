@@ -100,21 +100,7 @@ namespace tz::gl::vk2
 
 	using ImageAspectFlags = tz::EnumField<ImageAspectFlag>;
 
-	constexpr ImageAspectFlags derive_aspect_from_format(ImageFormat fmt)
-	{
-		switch(fmt)
-		{
-			case ImageFormat::Depth16_UNorm:
-			[[fallthrough]];
-			case ImageFormat::Depth32_SFloat:
-				return {ImageAspectFlag::Depth};
-			break;
-			default:
-				return {ImageAspectFlag::Colour};
-			break;
-		}
-	}
-
+	ImageAspectFlags derive_aspect_from_format(ImageFormat fmt);
 
 	class Swapchain;
 	class LogicalDevice;

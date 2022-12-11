@@ -7,6 +7,20 @@
 
 namespace tz::gl::vk2
 {
+	ImageAspectFlags derive_aspect_from_format(ImageFormat fmt)
+	{
+		switch(fmt)
+		{
+			case ImageFormat::Depth16_UNorm:
+			[[fallthrough]];
+			case ImageFormat::Depth32_SFloat:
+				return {ImageAspectFlag::Depth};
+			break;
+			default:
+				return {ImageAspectFlag::Colour};
+			break;
+		}
+	}
 	Image::Image(SwapchainImageInfo sinfo):
 	DebugNameable<VK_OBJECT_TYPE_IMAGE>(sinfo.swapchain->get_device()),
 	image(VK_NULL_HANDLE),

@@ -1,7 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
 #if TZ_VULKAN
-#include "tz/core/containers/enum_field.hpp"
 #include "vulkan/vulkan.h"
 #include <algorithm>
 #include <array>
