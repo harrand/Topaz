@@ -82,7 +82,7 @@ namespace tz::gl
 		auto resources = info.get_resources();
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this, &info](IComponent* cmp)
+		auto retrieve_resource_metadata = [this](IComponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
@@ -128,6 +128,7 @@ namespace tz::gl
 			}
 		};
 
+		this->components.reserve(this->count());
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<hdk::hanval>(i));
@@ -340,6 +341,7 @@ namespace tz::gl
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
 		std::vector<BufferComponentVulkan*> buffers;
+		buffers.reserve(this->components.size());
 		for(auto& component_ptr : this->components)
 		{
 			if(component_ptr->get_resource()->get_type() == ResourceType::Buffer)
@@ -347,15 +349,15 @@ namespace tz::gl
 				buffers.push_back(component_ptr.as<BufferComponentVulkan>());
 			}
 		}
-
-		auto comp_is_descriptor_relevant = [&state, this](const BufferComponentVulkan& bcomp)
+		std::size_t descriptor_buffer_count = buffers.size();
+		if(state.graphics.index_buffer != hdk::nullhand)
 		{
-			return this->get(state.graphics.index_buffer) != bcomp.get_resource() && this->get(state.graphics.draw_buffer) != bcomp.get_resource();
-		};
-		std::size_t descriptor_buffer_count = std::count_if(buffers.begin(), buffers.end(), [&comp_is_descriptor_relevant](BufferComponentVulkan* buf)
+			descriptor_buffer_count--;
+		}
+		if(state.graphics.draw_buffer != hdk::nullhand)
 		{
-			return comp_is_descriptor_relevant(*buf);
-		});
+			descriptor_buffer_count--;
+		}
 
 		// Now write the initial resources into their descriptors.
 		vk2::DescriptorPool::UpdateRequest update = this->descriptor_pool.make_update_request();
@@ -367,19 +369,16 @@ namespace tz::gl
 			// Now update each binding corresponding to a buffer resource.
 			for(std::size_t j = 0; j < buffers.size(); j++)
 			{
-				//if(!buffers[j]->vk_is_descriptor_relevant())
-				//{
-				//	continue;
-				//}
-				if(!comp_is_descriptor_relevant(*buffers[j]))
+				BufferComponentVulkan& comp = *buffers[j];
+				if(comp.get_resource() == this->get(state.graphics.index_buffer) || comp.get_resource() == this->get(state.graphics.draw_buffer))
 				{
 					continue;
 				}
 				set_edit.set_buffer(j,
 				{
-					.buffer = &buffers[j]->vk_get_buffer(),
+					.buffer = &comp.vk_get_buffer(),
 					.buffer_offset = 0,
-					.buffer_write_size = buffers[j]->vk_get_buffer().size()
+					.buffer_write_size = comp.vk_get_buffer().size()
 				});
 			}
 			// And finally the binding corresponding to the texture resource descriptor array
