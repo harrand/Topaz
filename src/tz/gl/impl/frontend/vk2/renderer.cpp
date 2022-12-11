@@ -109,7 +109,7 @@ namespace tz::gl
 					this->image_component_views.emplace_back
 						(vk2::ImageViewInfo{
 							.image = &underlying_image,
-							.aspect = vk2::derive_aspect_from_format(underlying_image.get_format())
+							.aspect = vk2::derive_aspect_from_format(underlying_image.get_format()).front()
 						 });
 					// If the image is dynamic, let's link up the resource data span now.
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
@@ -334,7 +334,7 @@ namespace tz::gl
 		this->image_component_views[img_view_idx] =
 		{{
 			.image = &img,
-			.aspect = vk2::derive_aspect_from_format(img.get_format())
+			.aspect = vk2::derive_aspect_from_format(img.get_format()).front()
 		}};
 	}
 
