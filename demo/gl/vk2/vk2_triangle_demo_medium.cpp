@@ -100,7 +100,7 @@ int main()
 		ImageView triangle_texture_view
 		{{
 			.image = &triangle_texture,
-			.aspect = ImageAspect::Colour
+			.aspect = ImageAspectFlag::Colour
 		}};
 		Sampler basic_sampler
 		{{

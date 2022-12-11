@@ -17,12 +17,13 @@ namespace tz::gl::vk2
 		{
 			switch(framebuffer.get_attachment_views()[i]->get_aspect())
 			{
-				case ImageAspect::Colour:
+				case ImageAspectFlag::Colour:
 					clear_values[i] = colour_clear;
 				break;
-				case ImageAspect::Depth:
+				case ImageAspectFlag::Depth:
 					clear_values[i] = depth_clear;
 				break;
+				case ImageAspectFlag::Stencil: break;
 			}
 		}
 		VkRenderPassBeginInfo begin

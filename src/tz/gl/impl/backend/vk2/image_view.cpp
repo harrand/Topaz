@@ -19,14 +19,14 @@ namespace tz::gl::vk2
 		create.format = static_cast<VkFormat>(this->info.image->get_format());
 		switch(info.aspect)
 		{
-			case ImageAspect::Colour:
+			case ImageAspectFlag::Colour:
 				create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			break;
-			case ImageAspect::Depth:
+			case ImageAspectFlag::Depth:
 				create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 			break;
 			default:
-				hdk::error("Unknown ImageAspect");
+				hdk::error("Unknown ImageAspectFlag");
 			break;
 		}
 		create.subresourceRange.baseMipLevel = 0;
@@ -94,7 +94,7 @@ namespace tz::gl::vk2
 		return *this->info.image;
 	}
 
-	ImageAspect ImageView::get_aspect() const
+	ImageAspectFlag ImageView::get_aspect() const
 	{
 		return this->info.aspect;
 	}

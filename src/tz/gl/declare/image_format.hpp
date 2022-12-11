@@ -81,9 +81,24 @@ namespace tz::gl
 		BGRA32_sRGB,
 		RGBA64_SFloat,
 		RGBA128_SFloat,
-		Depth16_UNorm,
+		Depth16,
+		Depth16_UNorm = Depth16,
 		Count
 	};
+
+	constexpr bool is_depth_format(ImageFormat fmt)
+	{
+		switch(fmt)
+		{
+			case ImageFormat::Depth16:
+			[[fallthrough]];
+				return true;
+			break;
+			default:
+				return false;
+			break;
+		}
+	}
 
 	constexpr std::size_t pixel_size_bytes(ImageFormat fmt)
 	{

@@ -42,18 +42,6 @@ namespace tz::gl::vk2
 		Compute = VK_PIPELINE_BIND_POINT_COMPUTE,
 	};
 
-	/**
-	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
-	 * Specifies which aspects of the image are included within a view.
-	 */
-	enum class ImageAspectFlag
-	{
-		Colour = VK_IMAGE_ASPECT_COLOR_BIT,
-		Depth = VK_IMAGE_ASPECT_DEPTH_BIT,
-		Stencil = VK_IMAGE_ASPECT_STENCIL_BIT
-	};
-
-	using ImageAspectFlags = tz::EnumField<ImageAspectFlag>;
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
@@ -305,6 +293,7 @@ namespace tz::gl::vk2
 	private:
 		RenderPassInfo info;
 	};
+
 }
 
 #endif // TZ_VULKAN

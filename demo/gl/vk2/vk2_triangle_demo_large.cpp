@@ -103,7 +103,7 @@ int main()
 		ImageView on_texture_view
 		{{
 			.image = &on_texture,
-			.aspect = ImageAspect::Colour
+			.aspect = ImageAspectFlag::Colour
 		}};
 		Image off_texture
 		{{
@@ -117,7 +117,7 @@ int main()
 		ImageView off_texture_view
 		{{
 			.image = &off_texture,
-			.aspect = ImageAspect::Colour
+			.aspect = ImageAspectFlag::Colour
 		}};
 		Sampler basic_sampler
 		{{

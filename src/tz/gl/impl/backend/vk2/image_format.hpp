@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_FORMAT_HPP
 #if TZ_VULKAN
+#include "tz/core/containers/enum_field.hpp"
 #include "vulkan/vulkan.h"
 #include <algorithm>
 #include <array>
@@ -96,6 +97,34 @@ namespace tz::gl::vk2
 		Depth16_UNorm = VK_FORMAT_D16_UNORM,
 		Depth32_SFloat = VK_FORMAT_D32_SFLOAT
 	};
+
+	/**
+	 * @ingroup tz_gl_vk_image
+	 * Specifies which aspects of the image are included within a view.
+	 */
+	enum class ImageAspectFlag
+	{
+		Colour = VK_IMAGE_ASPECT_COLOR_BIT,
+		Depth = VK_IMAGE_ASPECT_DEPTH_BIT,
+		Stencil = VK_IMAGE_ASPECT_STENCIL_BIT
+	};
+
+	using ImageAspectFlags = tz::EnumField<ImageAspectFlag>;
+
+	constexpr ImageAspectFlags derive_aspect_from_format(ImageFormat fmt)
+	{
+		switch(fmt)
+		{
+			case ImageFormat::Depth16_UNorm:
+			[[fallthrough]];
+			case ImageFormat::Depth32_SFloat:
+				return {ImageAspectFlag::Depth};
+			break;
+			default:
+				return {ImageAspectFlag::Colour};
+			break;
+		}
+	}
 
 	/*
 	 * https://www.khronos.org/registry/vulkan/specs/1.2/pdf/vkspec.pdf

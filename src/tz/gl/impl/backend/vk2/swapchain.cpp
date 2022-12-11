@@ -238,7 +238,7 @@ namespace tz::gl::vk2
 
 			ImageViewInfo view_info;
 			view_info.image = &img;
-			view_info.aspect = ImageAspect::Colour;
+			view_info.aspect = ImageAspectFlag::Colour;
 			this->swapchain_image_views.emplace_back(view_info);
 		}
 	}

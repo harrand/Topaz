@@ -109,7 +109,7 @@ namespace tz::gl
 					this->image_component_views.emplace_back
 						(vk2::ImageViewInfo{
 							.image = &underlying_image,
-							.aspect = vk2::ImageAspect::Colour
+							.aspect = vk2::ImageAspectFlag::Colour
 						 });
 					// If the image is dynamic, let's link up the resource data span now.
 					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
@@ -333,7 +333,7 @@ namespace tz::gl
 		this->image_component_views[img_view_idx] =
 		{{
 			.image = &(static_cast<ImageComponentVulkan*>(this->get_component(image_resource_handle))->vk_get_image()),
-			.aspect = vk2::ImageAspect::Colour
+			.aspect = vk2::ImageAspectFlag::Colour
 		}};
 	}
 
@@ -627,7 +627,7 @@ namespace tz::gl
 			{
 				out_view.colour_views.add({vk2::ImageViewInfo{
 					.image = colour_img,
-					.aspect = vk2::ImageAspect::Colour
+					.aspect = vk2::ImageAspectFlag::Colour
 				}});
 			}
 			this->output_imageviews.push_back(std::move(out_view));
@@ -637,7 +637,7 @@ namespace tz::gl
 				this->output_depth_imageviews.push_back
 				(vk2::ImageViewInfo{
 					.image = out_image.depth_attachment,
-					.aspect = vk2::ImageAspect::Depth
+					.aspect = vk2::ImageAspectFlag::Depth
 				});
 			}
 		}
@@ -1512,9 +1512,8 @@ namespace tz::gl
 		}
 	}
 	
-	void RendererVulkan::edit_resource_write(RendererEdit::ResourceWrite arg, EditData& data)
+	void RendererVulkan::edit_resource_write(RendererEdit::ResourceWrite arg, [[maybe_unused]] EditData& data)
 	{
-		(void)data;
 		IComponent* comp = this->get_component(arg.resource);
 		IResource* res = comp->get_resource();
 		// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
@@ -1563,7 +1562,8 @@ namespace tz::gl
 							hdk::report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
 						}
 						vk2::ImageLayout cur_layout = image.get_layout();
-						this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
+						vk2::ImageAspectFlags aspect = vk2::derive_aspect_from_format(image.get_format());
+						this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout, aspect](vk2::CommandBufferRecording& record)
 						{
 							// Need to be transfer destination layout. After that we go back to what we were.	
 							record.transition_image_layout
@@ -1574,14 +1574,14 @@ namespace tz::gl
 								.destination_access = {vk2::AccessFlag::TransferOperationWrite},
 								.source_stage = vk2::PipelineStage::Top,
 								.destination_stage = vk2::PipelineStage::TransferCommands,
-								.image_aspects = {vk2::ImageAspectFlag::Colour}
+								.image_aspects = aspect
 							});
 
 							record.buffer_copy_image
 							({
 								.src = &staging_buffer,
 								.dst = &image,
-								.image_aspects = {vk2::ImageAspectFlag::Colour}
+								.image_aspects = aspect
 							});
 
 							record.transition_image_layout
@@ -1592,7 +1592,7 @@ namespace tz::gl
 								.destination_access = {vk2::AccessFlag::ShaderResourceRead},
 								.source_stage = vk2::PipelineStage::TransferCommands,
 								.destination_stage = vk2::PipelineStage::FragmentShader,
-								.image_aspects = {vk2::ImageAspectFlag::Colour}
+								.image_aspects = aspect
 							});
 
 						});
@@ -1712,6 +1712,7 @@ namespace tz::gl
 					std::memcpy(ptr, res->data().data(), res->data().size_bytes());
 					staging_image_buffers[i].unmap();
 				}
+				vk2::ImageAspectFlags aspect = vk2::derive_aspect_from_format(image_components[i]->vk_get_image().get_format());
 				// Record the command to transfer to the texture resource.
 				// Image will initially be in undefined layout. We need to:
 				// - Transition the texture component to TransferDestination
@@ -1725,13 +1726,13 @@ namespace tz::gl
 					.destination_access = {vk2::AccessFlag::TransferOperationWrite},
 					.source_stage = vk2::PipelineStage::Top,
 					.destination_stage = vk2::PipelineStage::TransferCommands,
-					.image_aspects = {vk2::ImageAspectFlag::Colour}
+					.image_aspects = aspect
 				});
 				recording.buffer_copy_image
 				({
 					.src = &staging_image_buffers[i],
 					.dst = &image_components[i]->vk_get_image(),
-					.image_aspects = {vk2::ImageAspectFlag::Colour}
+					.image_aspects = aspect
 				});
 				recording.transition_image_layout
 				({
@@ -1741,7 +1742,7 @@ namespace tz::gl
 					.destination_access = {vk2::AccessFlag::ShaderResourceRead},
 					.source_stage = vk2::PipelineStage::TransferCommands,
 					.destination_stage = vk2::PipelineStage::FragmentShader,
-					.image_aspects = {vk2::ImageAspectFlag::Colour}
+					.image_aspects = aspect
 				});
 			}
 		});

@@ -5,16 +5,10 @@
 
 namespace tz::gl::vk2
 {
-	enum class ImageAspect
-	{
-		Colour,
-		Depth
-	};
-
 	struct ImageViewInfo
 	{
 		Image* image;
-		ImageAspect aspect;
+		ImageAspectFlag aspect;
 	};
 
 	/**
@@ -34,7 +28,7 @@ namespace tz::gl::vk2
 		const Image& get_image() const;
 		Image& get_image();
 
-		ImageAspect get_aspect() const;
+		ImageAspectFlag get_aspect() const;
 
 		using NativeType = VkImageView;
 		NativeType native() const;
