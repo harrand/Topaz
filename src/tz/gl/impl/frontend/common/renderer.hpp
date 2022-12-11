@@ -76,6 +76,7 @@ namespace tz::gl
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
 		std::vector<const IResource*> get_resources() const;
+		std::span<const RendererHandle> get_dependencies() const;
 		std::span<const IComponent* const> get_components() const;
 		/**
 		 * Add a new resource, which will be used by a Renderer which is created from this helper struct.
@@ -102,6 +103,12 @@ namespace tz::gl
 		 * Set the currently specified options which will be used by the renderer.
 		 */
 		void set_options(RendererOptions options);
+		/**
+		 * Set the pending renderer to be dependent on the specified renderer.
+		 *
+		 * This means that when render() is invoked, the GPU will wait on completion of render-work of the specified renderer before the render work of this renderer begins. This also means that the specified renderer *must* run each time this is ran, ahead-of-time.
+		 */
+		void add_dependency(RendererHandle dependency);
 		/**
 		 * Read/write information about the state of the renderer when it is created.
 		 */
@@ -139,6 +146,8 @@ namespace tz::gl
 		RendererOptions options = {};
 		/// Describes render state. It could change.
 		RenderState renderer_state = {};
+		/// List of renderers we are dependent on.
+		std::vector<RendererHandle> dependencies = {};
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 		/// The clear value for colour attachments.

@@ -69,6 +69,11 @@ namespace tz::gl
 		return ret;
 	}
 
+	std::span<const RendererHandle> RendererInfoCommon::get_dependencies() const
+	{
+		return this->dependencies;
+	}
+
 	std::span<const IComponent* const> RendererInfoCommon::get_components() const
 	{
 		return this->components;
@@ -123,6 +128,11 @@ namespace tz::gl
 			}
 		#endif
 		this->options = options;
+	}
+
+	void RendererInfoCommon::add_dependency(RendererHandle dependency)
+	{
+		this->dependencies.push_back(dependency);
 	}
 
 	RenderState& RendererInfoCommon::state()

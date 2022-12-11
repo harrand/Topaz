@@ -93,6 +93,7 @@ namespace tz::gl
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
 		{t.get_resources()} -> std::same_as<std::vector<const IResource*>>;
+		{t.get_dependencies()} -> std::same_as<std::span<const RendererHandle>>;
 
 		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
 		{t.ref_resource(component)} -> std::same_as<ResourceHandle>;
@@ -102,6 +103,8 @@ namespace tz::gl
 
 		{t.set_options(options)} -> std::same_as<void>;
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
+
+		{t.add_dependency(ren)} -> std::same_as<void>;
 
 		{t.state()} -> std::convertible_to<RenderState>;
 		{t.shader()} -> ShaderInfoType;
