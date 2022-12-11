@@ -12,7 +12,7 @@ namespace tz::gl
 	class BufferComponentVulkan : public IComponent
 	{
 	public:
-		BufferComponentVulkan(IResource& resource, const vk2::LogicalDevice& ldev);
+		BufferComponentVulkan(IResource& resource);
 		virtual const IResource* get_resource() const final;
 		virtual IResource* get_resource() final;
 		// Satisfy BufferComponentType
@@ -23,7 +23,7 @@ namespace tz::gl
 		vk2::Buffer& vk_get_buffer();
 		bool vk_is_descriptor_relevant() const;
 	private:
-		vk2::Buffer make_buffer(const vk2::LogicalDevice& ldev) const;
+		vk2::Buffer make_buffer() const;
 
 		IResource* resource;
 		vk2::Buffer buffer;
@@ -33,7 +33,7 @@ namespace tz::gl
 	class ImageComponentVulkan : public IComponent
 	{
 	public:
-		ImageComponentVulkan(IResource& resource, const vk2::LogicalDevice& ldev);
+		ImageComponentVulkan(IResource& resource);
 		virtual const IResource* get_resource() const final;
 		virtual IResource* get_resource() final;
 		// Satisfy ImageComponentType
@@ -44,7 +44,7 @@ namespace tz::gl
 		const vk2::Image& vk_get_image() const;
 		vk2::Image& vk_get_image();
 	private:
-		vk2::Image make_image(const vk2::LogicalDevice& ldev) const;
+		vk2::Image make_image() const;
 
 		IResource* resource;
 		vk2::Image image;

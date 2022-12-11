@@ -3,14 +3,15 @@
 #include "tz/gl/impl/frontend/vk2/component.hpp"
 #include "tz/gl/impl/frontend/vk2/convert.hpp"
 #include "tz/gl/resource.hpp"
+#include "tz/gl/device.hpp"
 #include "hdk/debug.hpp"
 
 namespace tz::gl
 {
 	using namespace tz::gl;
-	BufferComponentVulkan::BufferComponentVulkan(IResource& resource, const vk2::LogicalDevice& ldev):
+	BufferComponentVulkan::BufferComponentVulkan(IResource& resource):
 	resource(&resource),
-	buffer(this->make_buffer(ldev))
+	buffer(this->make_buffer())
 	{}
 
 	const IResource* BufferComponentVulkan::get_resource() const
@@ -68,7 +69,7 @@ namespace tz::gl
 		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer) && !this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
 	}
 
-	vk2::Buffer BufferComponentVulkan::make_buffer(const vk2::LogicalDevice& ldev) const
+	vk2::Buffer BufferComponentVulkan::make_buffer() const
 	{
 		vk2::BufferUsageField usage_field{vk2::BufferUsage::StorageBuffer};
 		vk2::MemoryResidency residency;
@@ -99,16 +100,16 @@ namespace tz::gl
 		}
 		return
 		{{
-			.device = &ldev,
+			.device = &tz::gl::device().vk_get_logical_device(),
 			.size_bytes = this->resource->data().size_bytes(),
 			.usage = usage_field,
 			.residency = residency
 		}};
 	}
 
-	ImageComponentVulkan::ImageComponentVulkan(IResource& resource, const vk2::LogicalDevice& ldev):
+	ImageComponentVulkan::ImageComponentVulkan(IResource& resource):
 	resource(&resource),
-	image(this->make_image(ldev)){}
+	image(this->make_image()){}
 
 	const IResource* ImageComponentVulkan::get_resource() const
 	{
@@ -146,7 +147,7 @@ namespace tz::gl
 		ires->set_dimensions(new_dimensions);
 		// Then, recreate the image. The image will have the new dimensions but undefined data contents.
 		std::string debug_name = this->image.debug_get_name();
-		this->image = make_image(this->image.get_device());
+		this->image = make_image();
 		this->image.debug_set_name(debug_name);
 		// After that, let's re-validate the resource data span. It will still have undefined contents for now.
 		auto new_data = this->vk_get_image().map_as<std::byte>();
@@ -170,7 +171,7 @@ namespace tz::gl
 		return this->image;
 	}
 
-	vk2::Image ImageComponentVulkan::make_image(const vk2::LogicalDevice& ldev) const
+	vk2::Image ImageComponentVulkan::make_image() const
 	{
 		hdk::assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
@@ -204,7 +205,7 @@ namespace tz::gl
 		}
 		return
 		{{
-			.device = &ldev,
+			.device = &tz::gl::device().vk_get_logical_device(),
 			.format = to_vk2(img_res->get_format()),
 			.dimensions = img_res->get_dimensions(),
 			.usage = usage_field,

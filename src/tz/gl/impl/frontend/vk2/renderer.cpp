@@ -155,11 +155,11 @@ namespace tz::gl
 				{
 					case ResourceType::Buffer:
 					{
-						this->components.push_back(tz::make_owned<BufferComponentVulkan>(*res, ldev));
+						this->components.push_back(tz::make_owned<BufferComponentVulkan>(*res));
 					}
 					break;
 					case ResourceType::Image:
-						this->components.push_back(tz::make_owned<ImageComponentVulkan>(*res, ldev));
+						this->components.push_back(tz::make_owned<ImageComponentVulkan>(*res));
 					break;
 					default:
 						hdk::error("Unrecognised ResourceType. Please submit a bug report.");
