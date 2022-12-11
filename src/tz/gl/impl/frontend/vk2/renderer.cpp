@@ -1,18 +1,18 @@
 #if TZ_VULKAN
-#include "tz/gl/impl/backend/vk2/sampler.hpp"
-#include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
-#include "tz/gl/impl/frontend/vk2/device.hpp"
 #include "hdk/profile.hpp"
 #include "hdk/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/declare/image_format.hpp"
+#include "tz/gl/impl/frontend/vk2/device.hpp"
+#include "tz/gl/impl/frontend/vk2/renderer.hpp"
+#include "tz/gl/impl/frontend/vk2/component.hpp"
+#include "tz/gl/impl/frontend/vk2/convert.hpp"
+#include "tz/gl/impl/backend/vk2/sampler.hpp"
+#include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
 #include "tz/gl/impl/backend/vk2/fixed_function.hpp"
 #include "tz/gl/impl/backend/vk2/gpu_mem.hpp"
 #include "tz/gl/impl/backend/vk2/descriptors.hpp"
 #include "tz/gl/impl/backend/vk2/image_view.hpp"
-#include "tz/gl/impl/frontend/vk2/renderer.hpp"
-#include "tz/gl/impl/frontend/vk2/component.hpp"
-#include "tz/gl/impl/frontend/vk2/convert.hpp"
 #include "tz/gl/output.hpp"
 
 namespace tz::gl
@@ -22,10 +22,10 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info):
 	AssetStorageCommon<IResource>(info.get_resources()),
-	frame_in_flight_count(tz::gl::device().get_device_window().get_output_images().size())
+	frame_in_flight_count(device().get_device_window().get_output_images().size())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
-		const vk2::LogicalDevice& ldev = tz::gl::device().vk_get_logical_device();
+		const vk2::LogicalDevice& ldev = device().vk_get_logical_device();
 		this->samplers.reserve(this->count());
 		
 		auto get_fitting_sampler = [&ldev](const IResource& res) -> vk2::SamplerInfo
@@ -332,7 +332,7 @@ namespace tz::gl
 		});
 	}
 
-	void ResourceStorage::notify_image_recreated(tz::gl::ResourceHandle image_resource_handle)
+	void ResourceStorage::notify_image_recreated(ResourceHandle image_resource_handle)
 	{
 		// ImageComponent's underlying vk2::Image was recently replaced with another. This means this->image_component_views[id corresponding to handle] is wrong and needs to be remade.
 		std::size_t img_view_idx = 0;
@@ -476,9 +476,9 @@ namespace tz::gl
 
 	OutputManager::OutputManager(const RendererInfoVulkan& info):
 	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
-	ldev(&tz::gl::device().vk_get_logical_device()),
-	swapchain_images(tz::gl::device().get_device_window().get_output_images()),
-	swapchain_depth_images(&tz::gl::device().get_device_window().get_depth_image()),
+	ldev(&device().vk_get_logical_device()),
+	swapchain_images(device().get_device_window().get_output_images()),
+	swapchain_depth_images(&device().get_device_window().get_depth_image()),
 	options(info.get_options())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", 0xFFAAAA00);
@@ -603,7 +603,7 @@ namespace tz::gl
 	
 	bool OutputManager::has_depth_images() const
 	{
-		return !this->options.contains(tz::gl::RendererOption::NoDepthTesting);
+		return !this->options.contains(RendererOption::NoDepthTesting);
 	}
 
 	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image)
@@ -690,9 +690,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = colour_image->get_format(),
-				.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_load = this->options.contains(RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 				.colour_depth_store = vk2::StoreOp::Store,
-				.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
+				.initial_layout = this->options.contains(RendererOption::NoClearOutput) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
 				.final_layout = final_layout
 			});
 		}
@@ -702,9 +702,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = output_image_copy.front().depth_attachment->get_format(),
-				.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
-				.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
-				.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
+				.colour_depth_load = this->options.contains(RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_store = this->options.contains(RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
+				.initial_layout = this->options.contains(RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
 				.final_layout = vk2::ImageLayout::DepthStencilAttachment
 			});
 		}
@@ -766,10 +766,10 @@ namespace tz::gl
 
 	GraphicsPipelineManager::GraphicsPipelineManager(const RendererInfoVulkan& info, const ResourceStorage& resources, const OutputManager& output)
 	{
-		this->shader = this->make_shader(tz::gl::device().vk_get_logical_device(), info.shader());
-		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), tz::gl::device().get_device_window().get_output_images().size());
-		this->depth_testing_enabled = !info.get_options().contains(tz::gl::RendererOption::NoDepthTesting);
-		const bool alpha_blending_enabled = info.get_options().contains(tz::gl::RendererOption::AlphaBlending);
+		this->shader = this->make_shader(device().vk_get_logical_device(), info.shader());
+		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), device().get_device_window().get_output_images().size());
+		this->depth_testing_enabled = !info.get_options().contains(RendererOption::NoDepthTesting);
+		const bool alpha_blending_enabled = info.get_options().contains(RendererOption::AlphaBlending);
 		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
 	}
 
@@ -1014,30 +1014,30 @@ namespace tz::gl
 
 	CommandProcessor::CommandProcessor(const RendererInfoVulkan& info)
 	{
-		if(info.get_output() == nullptr || info.get_output()->get_target() == tz::gl::OutputTarget::Window)
+		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
 			this->requires_present = true;
 		}
-		this->instant_compute_enabled = info.get_options().contains(tz::gl::RendererOption::RenderWait);
-		this->graphics_queue = tz::gl::device().vk_get_logical_device().get_hardware_queue
+		this->instant_compute_enabled = info.get_options().contains(RendererOption::RenderWait);
+		this->graphics_queue = device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::Graphics},
 			.present_support = this->requires_present
 		});
-		this->compute_queue = tz::gl::device().vk_get_logical_device().get_hardware_queue
+		this->compute_queue = device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::Compute},
 			.present_support = false
 		});
 		this->command_pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
-		this->frame_in_flight_count = tz::gl::device().get_device_window().get_output_images().size();
+		this->frame_in_flight_count = device().get_device_window().get_output_images().size();
 		this->commands = this->command_pool.allocate_buffers
 		({
 			.buffer_count = static_cast<std::uint32_t>(this->frame_in_flight_count + 1)
 		});
 		this->images_in_flight.resize(this->frame_in_flight_count, nullptr);
 		this->options = info.get_options();
-		this->device_scheduler = &tz::gl::device().get_render_scheduler();
+		this->device_scheduler = &device().get_render_scheduler();
 
 		hdk::assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		hdk::assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
@@ -1102,7 +1102,7 @@ namespace tz::gl
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work()
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
-		auto& device_window = tz::gl::device().get_device_window();
+		auto& device_window = device().get_device_window();
 		// Submit & Present
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		bool already_have_image = device_window.has_unused_image();
@@ -1144,7 +1144,7 @@ namespace tz::gl
 			};
 		}
 		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
-		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
+		if(requires_present && !this->options.contains(RendererOption::NoPresent))
 		{
 			sem_signals = {&this->device_scheduler->get_render_work_signals()[this->current_frame]};
 		}
@@ -1163,7 +1163,7 @@ namespace tz::gl
 
 		CommandProcessor::RenderWorkSubmitResult result;
 
-		if(requires_present && !this->options.contains(tz::gl::RendererOption::NoPresent))
+		if(requires_present && !this->options.contains(RendererOption::NoPresent))
 		{
 			result.present = this->graphics_queue->present
 			({
@@ -1211,7 +1211,7 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info):
-	ldev(&tz::gl::device().vk_get_logical_device()),
+	ldev(&device().vk_get_logical_device()),
 	options(info.get_options()),
 	state(info.state()),
 	resources(info),
@@ -1225,7 +1225,7 @@ namespace tz::gl
 		// If we're not headless, we should register a callback for our lifetime.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
-			this->window_resize_callback = tz::gl::device().get_device_window().resize_callback().add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+			this->window_resize_callback = device().get_device_window().resize_callback().add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		}
 
 		this->setup_static_resources();
@@ -1265,7 +1265,7 @@ namespace tz::gl
 	window_resize_callback(move.window_resize_callback),
 	scissor_cache(move.scissor_cache)
 	{
-		auto& callback = tz::gl::device().get_device_window().resize_callback();
+		auto& callback = device().get_device_window().resize_callback();
 		callback.remove_callback(move.window_resize_callback);
 		callback.remove_callback(this->window_resize_callback);
 		this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
@@ -1277,7 +1277,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		tz::gl::device().get_device_window().resize_callback().remove_callback(this->window_resize_callback);
+		device().get_device_window().resize_callback().remove_callback(this->window_resize_callback);
 		this->window_resize_callback = hdk::nullhand;
 		this->ldev->wait_until_idle();
 	}
@@ -1294,7 +1294,7 @@ namespace tz::gl
 		std::swap(this->debug_name, rhs.debug_name);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
 		std::swap(this->scissor_cache, rhs.scissor_cache);
-		auto& callback = tz::gl::device().get_device_window().resize_callback();
+		auto& callback = device().get_device_window().resize_callback();
 		if(this->is_null() && rhs.is_null())
 		{
 
@@ -1598,7 +1598,7 @@ namespace tz::gl
 
 	void RendererVulkan::dbgui()
 	{
-		tz::gl::common_renderer_dbgui(*this);
+		common_renderer_dbgui(*this);
 	}
 
 	std::string_view RendererVulkan::debug_get_name() const
@@ -1663,7 +1663,7 @@ namespace tz::gl
 			return
 			{{
 				.device = &img->vk_get_image().get_device(),
-				.size_bytes = tz::gl::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
+				.size_bytes = pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
 				.usage = {vk2::BufferUsage::TransferSource},
 				.residency = vk2::MemoryResidency::CPU
 			}};
@@ -1782,7 +1782,7 @@ namespace tz::gl
 
 				if(this->get_output() != nullptr)
 				{
-					if(this->get_output()->scissor != tz::gl::ScissorRegion::null())
+					if(this->get_output()->scissor != ScissorRegion::null())
 					{
 						offset = this->get_output()->scissor.offset;
 						extent = this->get_output()->scissor.extent;
