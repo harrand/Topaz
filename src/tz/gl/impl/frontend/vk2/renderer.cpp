@@ -20,6 +20,57 @@ namespace tz::gl
 	using namespace tz::gl;
 
 //--------------------------------------------------------------------------------------------------
+	// Utility free-functions.
+	vk2::SamplerInfo make_fitting_sampler(const IResource& res)
+	{
+		vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
+		vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
+		vk2::SamplerAddressMode mode = vk2::SamplerAddressMode::ClampToEdge;
+#if HDK_DEBUG
+		if(res.get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
+		{
+			hdk::error("ImageResource contained both ResourceFlags ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
+		}
+#endif // HDK_DEBUG
+		if(res.get_flags().contains(ResourceFlag::ImageFilterNearest))
+		{
+			filter = vk2::LookupFilter::Nearest;
+		}
+		else if(res.get_flags().contains(ResourceFlag::ImageFilterLinear))
+		{
+			filter = vk2::LookupFilter::Linear;
+		}
+
+		if(res.get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
+		{
+			hdk::error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
+		}
+		if(res.get_flags().contains(ResourceFlag::ImageWrapClampEdge))
+		{
+			mode = vk2::SamplerAddressMode::ClampToEdge;
+		}
+		if(res.get_flags().contains(ResourceFlag::ImageWrapRepeat))
+		{
+			mode = vk2::SamplerAddressMode::Repeat;
+		}
+		if(res.get_flags().contains(ResourceFlag::ImageWrapMirroredRepeat))
+		{
+			mode = vk2::SamplerAddressMode::MirroredRepeat;
+		}
+		
+		return
+		{
+			.device = &tz::gl::device().vk_get_logical_device(),
+			.min_filter = filter,
+			.mag_filter = filter,
+			.mipmap_mode = mip_filter,
+			.address_mode_u = mode,
+			.address_mode_v = mode,
+			.address_mode_w = mode
+		};
+	}
+
+//--------------------------------------------------------------------------------------------------
 	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info):
 	AssetStorageCommon<IResource>(info.get_resources()),
 	frame_in_flight_count(device().get_device_window().get_output_images().size())
@@ -27,62 +78,13 @@ namespace tz::gl
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
 		const vk2::LogicalDevice& ldev = device().vk_get_logical_device();
 		this->samplers.reserve(this->count());
-		
-		auto get_fitting_sampler = [&ldev](const IResource& res) -> vk2::SamplerInfo
-		{
-			vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
-			vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
-			vk2::SamplerAddressMode mode = vk2::SamplerAddressMode::ClampToEdge;
-#if HDK_DEBUG
-			if(res.get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
-			{
-				hdk::error("ImageResource contained both ResourceFlags ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
-			}
-#endif // HDK_DEBUG
-			if(res.get_flags().contains(ResourceFlag::ImageFilterNearest))
-			{
-				filter = vk2::LookupFilter::Nearest;
-			}
-			else if(res.get_flags().contains(ResourceFlag::ImageFilterLinear))
-			{
-				filter = vk2::LookupFilter::Linear;
-			}
-
-			if(res.get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
-			{
-				hdk::error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
-			}
-			if(res.get_flags().contains(ResourceFlag::ImageWrapClampEdge))
-			{
-				mode = vk2::SamplerAddressMode::ClampToEdge;
-			}
-			if(res.get_flags().contains(ResourceFlag::ImageWrapRepeat))
-			{
-				mode = vk2::SamplerAddressMode::Repeat;
-			}
-			if(res.get_flags().contains(ResourceFlag::ImageWrapMirroredRepeat))
-			{
-				mode = vk2::SamplerAddressMode::MirroredRepeat;
-			}
-			
-			return
-			{
-				.device = &ldev,
-				.min_filter = filter,
-				.mag_filter = filter,
-				.mipmap_mode = mip_filter,
-				.address_mode_u = mode,
-				.address_mode_v = mode,
-				.address_mode_w = mode
-			};
-		};
 
 		auto resources = info.get_resources();
 		std::vector<bool> buffer_id_to_variable_access;
 		std::vector<bool> buffer_id_to_descriptor_visibility;
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this, &info, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility, get_fitting_sampler](IComponent* cmp)
+		auto retrieve_resource_metadata = [this, &info, &buffer_id_to_variable_access, &buffer_id_to_descriptor_visibility](IComponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
@@ -107,7 +109,7 @@ namespace tz::gl
 				break;
 				case ResourceType::Image:
 				{
-					this->samplers.emplace_back(get_fitting_sampler(*res));
+					this->samplers.emplace_back(make_fitting_sampler(*res));
 
 					auto* img = static_cast<ImageComponentVulkan*>(cmp);
 					// We will need to create an image view. Let's get that out-of-the-way-now.
