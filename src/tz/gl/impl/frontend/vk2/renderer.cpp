@@ -1398,183 +1398,63 @@ namespace tz::gl
 	void RendererVulkan::edit(const RendererEditRequest& edit_request)
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Edit", 0xFFAAAA00);
-		bool work_commands_need_recording = false;
-		bool pipeline_needs_recreating = false;
-		bool resized_static_resources = false;
 
 		bool final_wireframe_mode_state = this->pipeline.is_wireframe_mode();
 		if(edit_request.empty())
 		{
 			return;
 		}
+		RendererVulkan::EditData data;
 		this->command.wait_pending_commands_complete();
 		for(const RendererEdit::Variant& req : edit_request)
 		{
-			std::visit([this, &work_commands_need_recording, &pipeline_needs_recreating, /*&resized_static_resources, */&final_wireframe_mode_state](auto&& arg)
+			std::visit([this, &data, &final_wireframe_mode_state](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
 				{
-					auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
-					hdk::assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
-					if(bufcomp->size() != arg.size)
-					{
-						bufcomp->resize(arg.size);
-
-						if(bufcomp == this->get_component(this->state.graphics.index_buffer)
-						|| bufcomp == this->get_component(this->state.graphics.draw_buffer))
-						{
-							// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
-							work_commands_need_recording = true;
-						}
-						// Now update all descriptors.
-						this->resources.sync_descriptors(false, this->state);
-					}
+					  this->edit_buffer_resize(arg, data);
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
-
-					auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
-					hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
-					if(imgcomp->get_dimensions() != arg.dimensions)
-					{
-						imgcomp->resize(arg.dimensions);
-						// An imageview was looking at the old image, let's update that.
-						this->resources.notify_image_recreated(arg.image_handle);
-						// New image so descriptor array needs to be re-written to.
-						this->resources.sync_descriptors(true, this->state);
-					}
+					this->edit_image_resize(arg, data);
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
-					IComponent* comp = this->get_component(arg.resource);
-					IResource* res = comp->get_resource();
-					// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
-					switch(res->get_access())
-					{
-						case ResourceAccess::StaticFixed:
-						{
-							// Create staging buffer.
-							vk2::Buffer staging_buffer
-							{{
-								.device = this->ldev,
-								.size_bytes = arg.offset + arg.data.size_bytes(),
-								.usage = {vk2::BufferUsage::TransferSource},
-								.residency = vk2::MemoryResidency::CPU
-							}};
-							// Write data into staging buffer.
-							{
-								void* ptr = staging_buffer.map();
-								std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
-								staging_buffer.unmap();
-							}
-							// Schedule work to transfer.
-							switch(res->get_type())
-							{
-								case ResourceType::Buffer:
-								{
-									vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
-									this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
-									{
-										record.buffer_copy_buffer
-										({
-											.src = &staging_buffer,
-											.dst = &buffer,
-											.src_offset = 0,
-											.dst_offset = arg.offset
-										});
-									});
-
-								}
-								break;
-								case ResourceType::Image:
-								{
-									vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
-									if(arg.offset != 0)
-									{
-										hdk::report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
-									}
-									vk2::ImageLayout cur_layout = image.get_layout();
-									this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
-									{
-										// Need to be transfer destination layout. After that we go back to what we were.	
-										record.transition_image_layout
-										({
-											.image = &image,
-											.target_layout = vk2::ImageLayout::TransferDestination,
-											.source_access = {vk2::AccessFlag::None},
-											.destination_access = {vk2::AccessFlag::TransferOperationWrite},
-											.source_stage = vk2::PipelineStage::Top,
-											.destination_stage = vk2::PipelineStage::TransferCommands,
-											.image_aspects = {vk2::ImageAspectFlag::Colour}
-										});
-
-										record.buffer_copy_image
-										({
-											.src = &staging_buffer,
-											.dst = &image,
-											.image_aspects = {vk2::ImageAspectFlag::Colour}
-										});
-
-										record.transition_image_layout
-										({
-											.image = &image,
-											.target_layout = cur_layout,
-											.source_access = {vk2::AccessFlag::TransferOperationWrite} /*todo: correct values?*/,
-											.destination_access = {vk2::AccessFlag::ShaderResourceRead},
-											.source_stage = vk2::PipelineStage::TransferCommands,
-											.destination_stage = vk2::PipelineStage::FragmentShader,
-											.image_aspects = {vk2::ImageAspectFlag::Colour}
-										});
-
-									});
-								}
-								break;
-							}
-						}
-						break;
-						default:
-						{
-							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<hdk::hanval>(arg.resource)));
-							std::span<std::byte> data = res->data_as<std::byte>();
-							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
-						}
-						break;
-					}
+					this->edit_resource_write(arg, data);
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
-					if(arg.kernel != this->state.compute.kernel)
-					{
-						this->state.compute.kernel = arg.kernel;
-						work_commands_need_recording = true;
-					}
+					this->edit_compute_config(arg, data);
 				}
 				if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
 				{
 					if(arg.wireframe_mode != this->pipeline.is_wireframe_mode())
 					{
-						pipeline_needs_recreating = true;
+						data.pipeline_recreate = true;
 						final_wireframe_mode_state = arg.wireframe_mode;
 					}
 				}
 			}, req);
 		}
-		// Firstly make sure all render work is done, then we need to update the resource storage and then write new descriptors for resized resources.
-		if(!pipeline_needs_recreating && !work_commands_need_recording && !resized_static_resources)
+		if(data == EditData{})
 		{
 			return;
 		}
-		if(pipeline_needs_recreating)
+		if(data.descriptor_resync != 0)
+		{
+			this->resources.sync_descriptors(data.descriptor_resync & EditData::descriptor_resync_full, state);
+		}
+		if(data.pipeline_recreate)
 		{
 			this->pipeline.recreate(this->output.get_render_pass(), this->output.get_output_dimensions(), final_wireframe_mode_state);
-			work_commands_need_recording = true;
+			data.commands_rerecord = true;
 		}
-		if(work_commands_need_recording)
+		if(data.commands_rerecord)
 		{
 			this->setup_work_commands();
 		}
-		if(resized_static_resources)
+		if(data.static_resources_rewrite)
 		{
 			this->setup_static_resources();
 		}
@@ -1598,6 +1478,146 @@ namespace tz::gl
 	bool RendererVulkan::is_null() const
 	{
 		return this->ldev == nullptr;
+	}
+
+	void RendererVulkan::edit_buffer_resize(RendererEdit::BufferResize arg, EditData& data)
+	{
+		auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
+		hdk::assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+		if(bufcomp->size() != arg.size)
+		{
+			bufcomp->resize(arg.size);
+
+			if(bufcomp == this->get_component(this->state.graphics.index_buffer)
+			|| bufcomp == this->get_component(this->state.graphics.draw_buffer))
+			{
+				// Index buffer has resized, meaning there will be a new underlying buffer object. This means the rendering commands need to be recorded because the bind command for the index buffer now references the dead old buffer.
+				data.commands_rerecord = true;
+			}
+			data.descriptor_resync |= EditData::descriptor_resync_partial;
+		}
+	}
+
+	void RendererVulkan::edit_image_resize(RendererEdit::ImageResize arg, EditData& data)
+	{
+		auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
+		hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+		if(imgcomp->get_dimensions() != arg.dimensions)
+		{
+			imgcomp->resize(arg.dimensions);
+			// An imageview was looking at the old image, let's update that.
+			this->resources.notify_image_recreated(arg.image_handle);
+			// New image so descriptor array needs to be re-written to.
+			data.descriptor_resync |= EditData::descriptor_resync_full;
+		}
+	}
+	
+	void RendererVulkan::edit_resource_write(RendererEdit::ResourceWrite arg, EditData& data)
+	{
+		(void)data;
+		IComponent* comp = this->get_component(arg.resource);
+		IResource* res = comp->get_resource();
+		// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
+		switch(res->get_access())
+		{
+			case ResourceAccess::StaticFixed:
+			{
+				// Create staging buffer.
+				vk2::Buffer staging_buffer
+				{{
+					.device = this->ldev,
+					.size_bytes = arg.offset + arg.data.size_bytes(),
+					.usage = {vk2::BufferUsage::TransferSource},
+					.residency = vk2::MemoryResidency::CPU
+				}};
+				// Write data into staging buffer.
+				{
+					void* ptr = staging_buffer.map();
+					std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
+					staging_buffer.unmap();
+				}
+				// Schedule work to transfer.
+				switch(res->get_type())
+				{
+					case ResourceType::Buffer:
+					{
+						vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
+						this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
+						{
+							record.buffer_copy_buffer
+							({
+								.src = &staging_buffer,
+								.dst = &buffer,
+								.src_offset = 0,
+								.dst_offset = arg.offset
+							});
+						});
+
+					}
+					break;
+					case ResourceType::Image:
+					{
+						vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
+						if(arg.offset != 0)
+						{
+							hdk::report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
+						}
+						vk2::ImageLayout cur_layout = image.get_layout();
+						this->command.do_scratch_operations([&image, &staging_buffer, &cur_layout](vk2::CommandBufferRecording& record)
+						{
+							// Need to be transfer destination layout. After that we go back to what we were.	
+							record.transition_image_layout
+							({
+								.image = &image,
+								.target_layout = vk2::ImageLayout::TransferDestination,
+								.source_access = {vk2::AccessFlag::None},
+								.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+								.source_stage = vk2::PipelineStage::Top,
+								.destination_stage = vk2::PipelineStage::TransferCommands,
+								.image_aspects = {vk2::ImageAspectFlag::Colour}
+							});
+
+							record.buffer_copy_image
+							({
+								.src = &staging_buffer,
+								.dst = &image,
+								.image_aspects = {vk2::ImageAspectFlag::Colour}
+							});
+
+							record.transition_image_layout
+							({
+								.image = &image,
+								.target_layout = cur_layout,
+								.source_access = {vk2::AccessFlag::TransferOperationWrite} /*todo: correct values?*/,
+								.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+								.source_stage = vk2::PipelineStage::TransferCommands,
+								.destination_stage = vk2::PipelineStage::FragmentShader,
+								.image_aspects = {vk2::ImageAspectFlag::Colour}
+							});
+
+						});
+					}
+					break;
+				}
+			}
+			break;
+			default:
+			{
+				hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<hdk::hanval>(arg.resource)));
+				std::span<std::byte> resdata = res->data_as<std::byte>();
+				std::copy(arg.data.begin(), arg.data.end(), resdata.begin() + arg.offset);
+			}
+			break;
+		}
+	}
+
+	void RendererVulkan::edit_compute_config(RendererEdit::ComputeConfig arg, EditData& data)
+	{
+		if(arg.kernel != this->state.compute.kernel)
+		{
+			this->state.compute.kernel = arg.kernel;
+			data.commands_rerecord = true;
+		}
 	}
 
 	void RendererVulkan::setup_static_resources()
@@ -1779,7 +1799,6 @@ namespace tz::gl
 					.extent = extent
 				});
 
-				//const IComponent* idx_buf = this->resources.try_get_index_buffer();
 				const IComponent* idx_buf = this->get_component(this->state.graphics.index_buffer);
 				const IComponent* ind_buf_gen = this->get_component(this->state.graphics.draw_buffer);;
 				const auto* ind_buf = static_cast<const BufferComponentVulkan*>(ind_buf_gen);

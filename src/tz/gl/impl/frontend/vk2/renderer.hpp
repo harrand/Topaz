@@ -414,6 +414,22 @@ namespace tz::gl
 	private:
 		RendererVulkan() = default;
 
+		struct EditData
+		{
+			constexpr static int descriptor_resync_partial = 0x01;
+			constexpr static int descriptor_resync_full = 0x11;
+			int descriptor_resync = 0;
+			bool pipeline_recreate = false;
+			bool commands_rerecord = false;
+			bool static_resources_rewrite = false;
+			bool operator==(const EditData& rhs) const = default;
+		};
+
+		void edit_buffer_resize(RendererEdit::BufferResize arg, EditData& data);
+		void edit_image_resize(RendererEdit::ImageResize arg, EditData& data);
+		void edit_resource_write(RendererEdit::ResourceWrite arg, EditData& data);
+		void edit_compute_config(RendererEdit::ComputeConfig arg, EditData& data);
+
 		void setup_static_resources();
 		void setup_render_commands();
 		void setup_compute_commands();
