@@ -20,12 +20,12 @@ namespace tz::gl
 	using namespace tz::gl;
 
 //--------------------------------------------------------------------------------------------------
-	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
+	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info):
 	AssetStorageCommon<IResource>(info.get_resources()),
-	frame_in_flight_count(device_info.device_window->get_output_images().size())
+	frame_in_flight_count(tz::gl::device().get_device_window().get_output_images().size())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
-		const vk2::LogicalDevice& ldev = *device_info.device;	
+		const vk2::LogicalDevice& ldev = tz::gl::device().vk_get_logical_device();
 		this->samplers.reserve(this->count());
 		
 		auto get_fitting_sampler = [&ldev](const IResource& res) -> vk2::SamplerInfo
@@ -474,11 +474,11 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
+	OutputManager::OutputManager(const RendererInfoVulkan& info):
 	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
-	ldev(device_info.device),
-	swapchain_images(device_info.device_window->get_output_images()),
-	swapchain_depth_images(&device_info.device_window->get_depth_image()),
+	ldev(&tz::gl::device().vk_get_logical_device()),
+	swapchain_images(tz::gl::device().get_device_window().get_output_images()),
+	swapchain_depth_images(&tz::gl::device().get_device_window().get_depth_image()),
 	options(info.get_options())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", 0xFFAAAA00);
@@ -648,11 +648,14 @@ namespace tz::gl
 			}
 			this->output_imageviews.push_back(std::move(out_view));
 
-			this->output_depth_imageviews.push_back
-			(vk2::ImageViewInfo{
-				.image = out_image.depth_attachment,
-				.aspect = vk2::ImageAspect::Depth
-			});
+			if(out_image.depth_attachment != nullptr)
+			{
+				this->output_depth_imageviews.push_back
+				(vk2::ImageViewInfo{
+					.image = out_image.depth_attachment,
+					.aspect = vk2::ImageAspect::Depth
+				});
+			}
 		}
 	}
 
@@ -678,6 +681,7 @@ namespace tz::gl
 		auto output_image_copy = this->get_output_images();
 		// Our renderpass is no longer so simple with the possibilty of multiple colour outputs.
 		std::uint32_t colour_output_length = output_image_copy.front().colour_attachments.length();
+		const bool use_depth_output = output_image_copy.front().depth_attachment != nullptr;
 
 		vk2::RenderPassBuilder rbuilder;
 		rbuilder.set_device(*this->ldev);
@@ -693,14 +697,17 @@ namespace tz::gl
 			});
 		}
 
-		rbuilder.with_attachment
-		({
-			.format = output_image_copy.front().depth_attachment->get_format(),
-			.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
-			.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
-			.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
-			.final_layout = vk2::ImageLayout::DepthStencilAttachment
-		});
+		if(use_depth_output)
+		{
+			rbuilder.with_attachment
+			({
+				.format = output_image_copy.front().depth_attachment->get_format(),
+				.colour_depth_load = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_store = this->options.contains(tz::gl::RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
+				.initial_layout = this->options.contains(tz::gl::RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
+				.final_layout = vk2::ImageLayout::DepthStencilAttachment
+			});
+		}
 
 		vk2::SubpassBuilder sbuilder;
 		sbuilder.set_pipeline_context(vk2::PipelineContext::Graphics);
@@ -712,11 +719,14 @@ namespace tz::gl
 				.current_layout = vk2::ImageLayout::ColourAttachment
 			});
 		}
-		sbuilder.with_depth_stencil_attachment
-		({
-			.attachment_idx = colour_output_length,
-			.current_layout = vk2::ImageLayout::DepthStencilAttachment
-		});
+		if(use_depth_output)
+		{
+			sbuilder.with_depth_stencil_attachment
+			({
+				.attachment_idx = colour_output_length,
+				.current_layout = vk2::ImageLayout::DepthStencilAttachment
+			});
+		}
 
 		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
 
@@ -724,6 +734,11 @@ namespace tz::gl
 
 	void OutputManager::populate_framebuffers()
 	{
+		const bool has_depth = !this->output_depth_imageviews.empty();
+		if(has_depth)
+		{
+			hdk::assert(this->output_imageviews.size() == this->output_depth_imageviews.size(), "Detected at least 1 output depth image views (%zu), but that doesn't match the number of output colour imageviews (%zu). Please submit a bug report", this->output_depth_imageviews.size(), this->output_imageviews.size());
+		}
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
 			hdk::vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
@@ -734,7 +749,10 @@ namespace tz::gl
 			{
 				return &colour_view;
 			});
-			attachments.add(&this->output_depth_imageviews[i]);
+			if(has_depth)
+			{
+				attachments.add(&this->output_depth_imageviews[i]);
+			}
 			this->output_framebuffers.push_back
 			(vk2::FramebufferInfo{
 				.render_pass = &this->render_pass,
@@ -746,10 +764,10 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	GraphicsPipelineManager::GraphicsPipelineManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info, const ResourceStorage& resources, const OutputManager& output)
+	GraphicsPipelineManager::GraphicsPipelineManager(const RendererInfoVulkan& info, const ResourceStorage& resources, const OutputManager& output)
 	{
-		this->shader = this->make_shader(*device_info.device, info.shader());
-		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), device_info.device_window->get_output_images().size());
+		this->shader = this->make_shader(tz::gl::device().vk_get_logical_device(), info.shader());
+		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), tz::gl::device().get_device_window().get_output_images().size());
 		this->depth_testing_enabled = !info.get_options().contains(tz::gl::RendererOption::NoDepthTesting);
 		const bool alpha_blending_enabled = info.get_options().contains(tz::gl::RendererOption::AlphaBlending);
 		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
@@ -994,32 +1012,32 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info)
+	CommandProcessor::CommandProcessor(const RendererInfoVulkan& info)
 	{
 		if(info.get_output() == nullptr || info.get_output()->get_target() == tz::gl::OutputTarget::Window)
 		{
 			this->requires_present = true;
 		}
 		this->instant_compute_enabled = info.get_options().contains(tz::gl::RendererOption::RenderWait);
-		this->graphics_queue = device_info.device->get_hardware_queue
+		this->graphics_queue = tz::gl::device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::Graphics},
 			.present_support = this->requires_present
 		});
-		this->compute_queue = device_info.device->get_hardware_queue
+		this->compute_queue = tz::gl::device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::Compute},
 			.present_support = false
 		});
 		this->command_pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
-		this->frame_in_flight_count = device_info.device_window->get_output_images().size();
+		this->frame_in_flight_count = tz::gl::device().get_device_window().get_output_images().size();
 		this->commands = this->command_pool.allocate_buffers
 		({
 			.buffer_count = static_cast<std::uint32_t>(this->frame_in_flight_count + 1)
 		});
 		this->images_in_flight.resize(this->frame_in_flight_count, nullptr);
 		this->options = info.get_options();
-		this->device_scheduler = device_info.device_scheduler;
+		this->device_scheduler = &tz::gl::device().get_render_scheduler();
 
 		hdk::assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		hdk::assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
@@ -1081,9 +1099,10 @@ namespace tz::gl
 		return {this->commands.buffers.begin(), this->frame_in_flight_count};
 	}
 
-	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work(DeviceWindowVulkan& device_window)
+	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work()
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
+		auto& device_window = tz::gl::device().get_device_window();
 		// Submit & Present
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		bool already_have_image = device_window.has_unused_image();
@@ -1191,15 +1210,14 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info):
-	ldev(device_info.device),
-	device_window(device_info.device_window),
+	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info):
+	ldev(&tz::gl::device().vk_get_logical_device()),
 	options(info.get_options()),
 	state(info.state()),
-	resources(info, device_info),
-	output(info, device_info),
-	pipeline(info, device_info, resources, output),
-	command(info, device_info),
+	resources(info),
+	output(info),
+	pipeline(info, resources, output),
+	command(info),
 	debug_name(info.debug_get_name())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Create", 0xFFAAAA00);
@@ -1207,8 +1225,7 @@ namespace tz::gl
 		// If we're not headless, we should register a callback for our lifetime.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
-			this->device_resize_callback = device_info.resize_callback;
-			this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+			this->window_resize_callback = tz::gl::device().get_device_window().resize_callback().add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		}
 
 		this->setup_static_resources();
@@ -1239,20 +1256,19 @@ namespace tz::gl
 
 	RendererVulkan::RendererVulkan(RendererVulkan&& move):
 	ldev(move.ldev),
-	device_window(move.device_window),
 	options(move.options),
 	resources(std::move(move.resources)),
 	output(std::move(move.output)),
 	pipeline(std::move(move.pipeline)),
 	command(std::move(move.command)),
 	debug_name(std::move(move.debug_name)),
-	device_resize_callback(move.device_resize_callback),
 	window_resize_callback(move.window_resize_callback),
 	scissor_cache(move.scissor_cache)
 	{
-		this->device_resize_callback->remove_callback(move.window_resize_callback);
-		this->device_resize_callback->remove_callback(this->window_resize_callback);
-		this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+		auto& callback = tz::gl::device().get_device_window().resize_callback();
+		callback.remove_callback(move.window_resize_callback);
+		callback.remove_callback(this->window_resize_callback);
+		this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 	}
 
 	RendererVulkan::~RendererVulkan()
@@ -1261,18 +1277,14 @@ namespace tz::gl
 		{
 			return;
 		}
-		if(this->device_resize_callback != nullptr)
-		{
-			this->device_resize_callback->remove_callback(this->window_resize_callback);
-			this->window_resize_callback = hdk::nullhand;
-		}
+		tz::gl::device().get_device_window().resize_callback().remove_callback(this->window_resize_callback);
+		this->window_resize_callback = hdk::nullhand;
 		this->ldev->wait_until_idle();
 	}
 
 	RendererVulkan& RendererVulkan::operator=(RendererVulkan&& rhs)
 	{
 		std::swap(this->ldev, rhs.ldev);
-		std::swap(this->device_window, rhs.device_window);
 		std::swap(this->options, rhs.options);
 		std::swap(this->state, rhs.state);
 		std::swap(this->resources, rhs.resources);
@@ -1280,28 +1292,28 @@ namespace tz::gl
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->command, rhs.command);
 		std::swap(this->debug_name, rhs.debug_name);
-		std::swap(this->device_resize_callback, rhs.device_resize_callback);
 		std::swap(this->window_resize_callback, rhs.window_resize_callback);
 		std::swap(this->scissor_cache, rhs.scissor_cache);
+		auto& callback = tz::gl::device().get_device_window().resize_callback();
 		if(this->is_null() && rhs.is_null())
 		{
 
 		}
 		else if(this->is_null() && !rhs.is_null())
 		{
-			rhs.device_resize_callback->remove_callback(rhs.window_resize_callback);
-			rhs.window_resize_callback = rhs.device_resize_callback->add_callback([&rhs](RendererResizeInfoVulkan resize_info){rhs.handle_resize(resize_info);});
+			callback.remove_callback(rhs.window_resize_callback);
+			rhs.window_resize_callback = callback.add_callback([&rhs](RendererResizeInfoVulkan resize_info){rhs.handle_resize(resize_info);});
 		}
 		else if(!this->is_null() && rhs.is_null())
 		{
-			this->device_resize_callback->remove_callback(this->window_resize_callback);
-			this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+			callback.remove_callback(this->window_resize_callback);
+			this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		}
 		else
 		{
-			this->device_resize_callback->remove_callback(rhs.window_resize_callback);
-			this->device_resize_callback->remove_callback(this->window_resize_callback);
-			this->window_resize_callback = this->device_resize_callback->add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
+			callback.remove_callback(rhs.window_resize_callback);
+			callback.remove_callback(this->window_resize_callback);
+			this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		}
 		return *this;
 	}
@@ -1373,7 +1385,7 @@ namespace tz::gl
 		}
 		else
 		{
-			CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work(*this->device_window);
+			CommandProcessor::RenderWorkSubmitResult result = this->command.do_render_work();
 			switch(result.present)
 			{
 				case vk2::hardware::Queue::PresentResult::Success_Suboptimal:

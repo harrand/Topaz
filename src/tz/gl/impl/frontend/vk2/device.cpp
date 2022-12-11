@@ -381,14 +381,7 @@ namespace tz::gl
 	{
 		HDK_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", 0xFFAAAA00);
 		this->scheduler.notify_renderer_added();
-		return DeviceCommon<RendererVulkan>::emplace_renderer(info, 
-		tz::gl::RendererDeviceInfoVulkan{
-			.device = &this->device,
-			.output_images = this->window_storage.get_output_images(),
-			.device_window = &this->window_storage,
-			.device_scheduler = &this->scheduler,
-			.resize_callback = &this->window_storage.resize_callback()
-		});
+		return DeviceCommon<RendererVulkan>::emplace_renderer(info);
 	}
 
 	void DeviceVulkan::destroy_renderer(tz::gl::RendererHandle handle)
@@ -407,7 +400,32 @@ namespace tz::gl
 		tz::gl::common_device_dbgui(*this);
 	}
 
+	const DeviceWindowVulkan& DeviceVulkan::get_device_window() const
+	{
+		return this->window_storage;
+	}
+
+	DeviceWindowVulkan& DeviceVulkan::get_device_window()
+	{
+		return this->window_storage;
+	}
+
+	const DeviceRenderSchedulerVulkan& DeviceVulkan::get_render_scheduler() const
+	{
+		return this->scheduler;
+	}
+
+	DeviceRenderSchedulerVulkan& DeviceVulkan::get_render_scheduler()
+	{
+		return this->scheduler;
+	}
+
 	const vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device() const
+	{
+		return this->device;
+	}
+
+	vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device()
 	{
 		return this->device;
 	}

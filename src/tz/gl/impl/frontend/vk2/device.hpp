@@ -90,7 +90,12 @@ namespace tz::gl
 		void destroy_renderer(tz::gl::RendererHandle handle);
 		ImageFormat get_window_format() const;
 		void dbgui();
+		const DeviceWindowVulkan& get_device_window() const;
+		DeviceWindowVulkan& get_device_window();
+		const DeviceRenderSchedulerVulkan& get_render_scheduler() const;
+		DeviceRenderSchedulerVulkan& get_render_scheduler();
 		const vk2::LogicalDevice& vk_get_logical_device() const;
+		vk2::LogicalDevice& vk_get_logical_device();
 	private:
 		static vk2::LogicalDevice make_device(const vk2::VulkanInstance& instance);
 

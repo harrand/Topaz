@@ -37,26 +37,6 @@ namespace tz::gl
 	using RendererResizeCallbackType = tz::Callback<RendererResizeInfoVulkan>;
 
 	/**
-	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * When the Device wants to create a RendererVulkan, we need to know a little bit about the Device's internals (such as the swapchain images).
-	 */
-	struct RendererDeviceInfoVulkan
-	{
-		/// LogicalDevice used to create VKAPI objects. Most likely comes from a DeviceVulkan.
-		vk2::LogicalDevice* device;
-		/// List of output images. These are going to be swapchain images.
-		std::span<vk2::Image> output_images;
-		/// Window information belonging to the parent device.
-		DeviceWindowVulkan* device_window;
-		/// Scheduler belonging to the parent device.
-		DeviceRenderSchedulerVulkan* device_scheduler;
-		/// Callback for resizing which the renderer subscribes to for the duration of its lifetime. Assume this isn't null.
-		RendererResizeCallbackType* resize_callback;
-	};
-
-
-
-	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend
 	 * @defgroup tz_gl2_graphicsapi_vk_frontend_renderer Renderer Implementation
 	 * Documentation for the Vulkan Frontend implementation of @ref RendererType.
@@ -72,7 +52,7 @@ namespace tz::gl
 		/**
 		 * Create storage for a set of existing resources.
 		 */
-		ResourceStorage(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		ResourceStorage(const RendererInfoVulkan& info);
 		ResourceStorage() = default;
 		ResourceStorage(ResourceStorage&& move);
 		~ResourceStorage() = default;
@@ -171,7 +151,7 @@ namespace tz::gl
 		/**
 		 * Construct the manager to deal with this brain-knot of output components.
 		 */
-		OutputManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		OutputManager(const RendererInfoVulkan& info);
 		OutputManager() = default;
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
@@ -249,7 +229,7 @@ namespace tz::gl
 		/**
 		 * Construct the graphics/compute pipeline manager using all the necessary shader sources aswell as resource state and output information.
 		 */
-		GraphicsPipelineManager(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan&, const ResourceStorage& resources, const OutputManager& output);
+		GraphicsPipelineManager(const RendererInfoVulkan& info, const ResourceStorage& resources, const OutputManager& output);
 		GraphicsPipelineManager() = default;
 		GraphicsPipelineManager(GraphicsPipelineManager&& move);
 		~GraphicsPipelineManager() = default;
@@ -293,7 +273,7 @@ namespace tz::gl
 		/**
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
 		 */
-		CommandProcessor(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		CommandProcessor(const RendererInfoVulkan& info);
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
 		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
@@ -327,7 +307,7 @@ namespace tz::gl
 		 * @return Structure containing information about the results of the render work submission (and image presentation if applicable).
 		 * @pre `maybe_swapchain` must not be nullptr if the renderer is expected to present the result of the submitted work to the window.
 		 */
-		RenderWorkSubmitResult do_render_work(DeviceWindowVulkan& device_window);
+		RenderWorkSubmitResult do_render_work();
 		void do_compute_work();
 
 		void wait_pending_commands_complete();
@@ -370,7 +350,7 @@ namespace tz::gl
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
-		RendererVulkan(const RendererInfoVulkan& info, const RendererDeviceInfoVulkan& device_info);
+		RendererVulkan(const RendererInfoVulkan& info);
 		RendererVulkan(RendererVulkan&& move);
 		~RendererVulkan();
 		RendererVulkan& operator=(RendererVulkan&& rhs);
@@ -442,8 +422,6 @@ namespace tz::gl
 
 		// LogicalDevice that every vulkan backend object will use.
 		vk2::LogicalDevice* ldev = nullptr;
-		// Stores information about the window e.g swapchain images.
-		DeviceWindowVulkan* device_window = nullptr;
 		// Contains which renderer options were enabled.
 		RendererOptions options = {};
 		// Current state of the renderer.
@@ -457,8 +435,6 @@ namespace tz::gl
 		/// Helper object for managing/executing/scheduling GPU work.
 		CommandProcessor command = {};
 		std::string debug_name = "Null Renderer";
-		/// Callback object which we attach to listen for when the device has been informed that the window is resized.
-		RendererResizeCallbackType* device_resize_callback = nullptr;
 		/// Handle representing the registration of our callback function from `device_resize_callback`.
 		tz::CallbackHandle window_resize_callback = hdk::nullhand;
 		tz::gl::ScissorRegion scissor_cache = tz::gl::ScissorRegion::null();
