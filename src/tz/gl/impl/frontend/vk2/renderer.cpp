@@ -1251,8 +1251,11 @@ namespace tz::gl
 	scissor_cache(move.scissor_cache)
 	{
 		auto& callback = device().get_device_window().resize_callback();
-		callback.remove_callback(move.window_resize_callback);
-		callback.remove_callback(this->window_resize_callback);
+		
+		if(this->window_resize_callback != hdk::nullhand)
+		{
+			callback.remove_callback(this->window_resize_callback);
+		}
 		this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 	}
 
@@ -1262,8 +1265,11 @@ namespace tz::gl
 		{
 			return;
 		}
-		device().get_device_window().resize_callback().remove_callback(this->window_resize_callback);
-		this->window_resize_callback = hdk::nullhand;
+		if(this->window_resize_callback != hdk::nullhand)
+		{
+			device().get_device_window().resize_callback().remove_callback(this->window_resize_callback);
+			this->window_resize_callback = hdk::nullhand;
+		}
 		this->ldev->wait_until_idle();
 	}
 
