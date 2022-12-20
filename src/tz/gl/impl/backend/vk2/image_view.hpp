@@ -40,6 +40,7 @@ namespace tz::gl::vk2
 
 		VkImageView image_view;
 		ImageViewInfo info;
+		const LogicalDevice* ldev;
 	};
 }
 

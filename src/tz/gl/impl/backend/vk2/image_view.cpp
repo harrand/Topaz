@@ -8,7 +8,8 @@ namespace tz::gl::vk2
 	ImageView::ImageView(ImageViewInfo info):
 	DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>(info.image->get_device()),
 	image_view(VK_NULL_HANDLE),
-	info(info)
+	info(info),
+	ldev(&this->info.image->get_device())
 	{
 		HDK_PROFZONE("Vulkan Backend - ImageView Create", 0xFFAA0000);
 		hdk::assert(this->info.image != nullptr && !this->info.image->is_null(), "ImageViewInfo refers to nullptr or null Image");
@@ -60,7 +61,8 @@ namespace tz::gl::vk2
 
 	ImageView::ImageView(ImageView&& move):
 	image_view(VK_NULL_HANDLE),
-	info()
+	info(),
+	ldev(nullptr)
 	{
 		*this = std::move(move);
 	}
@@ -69,7 +71,8 @@ namespace tz::gl::vk2
 	{
 		if(this->image_view != VK_NULL_HANDLE)
 		{
-			vkDestroyImageView(this->get_image().get_device().native(), this->image_view, nullptr);
+			hdk::assert(this->ldev != nullptr);
+			vkDestroyImageView(this->ldev->native(), this->image_view, nullptr);
 			this->image_view = VK_NULL_HANDLE;
 		}
 	}
@@ -78,6 +81,7 @@ namespace tz::gl::vk2
 	{
 		std::swap(this->image_view, rhs.image_view);
 		std::swap(this->info, rhs.info);
+		std::swap(this->ldev, rhs.ldev);
 		DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>::debugname_swap(rhs);
 		return *this;
 	}
