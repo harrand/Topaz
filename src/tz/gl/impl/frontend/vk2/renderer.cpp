@@ -1207,8 +1207,20 @@ namespace tz::gl
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Create", 0xFFAAAA00);
 
-		// If we're not headless, we should register a callback for our lifetime.
+		//	By default, we don't need to know about resizes.	
+		bool care_about_resizes = false;
+		// If we render into a window, or there is no output, then we need to know about resizes.
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
+		{
+			care_about_resizes = true;
+		}
+		// If instead we're rendering into an image, and depth testing is enabled, *but* there is no depth image provided, then we're gonna use the device's depth image which can be resized, and thus we care about resizes.
+		else if(info.get_output() != nullptr && info.get_output()->get_target() == OutputTarget::OffscreenImage && !static_cast<const ImageOutput*>(info.get_output())->has_depth_attachment() && !info.get_options().contains(RendererOption::NoDepthTesting))
+		{
+			care_about_resizes = true;
+		}
+		
+		if(care_about_resizes)
 		{
 			this->window_resize_callback = device().get_device_window().resize_callback().add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		}
@@ -1292,11 +1304,12 @@ namespace tz::gl
 		}
 		else if(this->is_null() && !rhs.is_null())
 		{
+			hdk::assert(this->window_resize_callback == hdk::nullhand);
 			callback.remove_callback(rhs.window_resize_callback);
-			rhs.window_resize_callback = callback.add_callback([&rhs](RendererResizeInfoVulkan resize_info){rhs.handle_resize(resize_info);});
 		}
 		else if(!this->is_null() && rhs.is_null())
 		{
+			hdk::assert(rhs.window_resize_callback == hdk::nullhand);
 			callback.remove_callback(this->window_resize_callback);
 			this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 		}
