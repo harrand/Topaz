@@ -546,7 +546,15 @@ namespace tz::gl
 			}
 			else
 			{
-				out_image.depth_attachment = this->swapchain_depth_images;
+				// Now we weren't given a depth image. We should leave this nullptr, but only if NoDepthTesting was enabled. If we need to do depth testing but weren't given a depth image, we'll use the swapchain depth image.
+				if(this->options.contains(RendererOption::NoDepthTesting))
+				{
+					out_image.depth_attachment = nullptr;
+				}
+				else
+				{
+					out_image.depth_attachment = this->swapchain_depth_images;
+				}
 			}
 
 			std::vector<OutputImageState> ret(this->swapchain_images.size(), out_image);
