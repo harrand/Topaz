@@ -90,6 +90,7 @@ int main(int argc, char** argv)
 		tzslc::compile_to_glsl(buffer, tzsl_filename, dialect, build_config);
 		for(char c : buffer)
 		{
+			if(c == '\r') continue;
 			std::fprintf(out, "%c", c);
 		}
 	}
