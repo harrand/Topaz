@@ -52,6 +52,7 @@ namespace tz::dbgui
 	TopazRenderData* global_render_data = nullptr;
 	tz::GameInfo global_info;
 	GameMenuCallbackType game_menu_callback;
+	GameBarCallbackType game_bar_callback;
 
 	void imgui_impl_handle_inputs();
 
@@ -118,6 +119,11 @@ namespace tz::dbgui
 	GameMenuCallbackType& game_menu()
 	{
 		return game_menu_callback;
+	}
+
+	GameBarCallbackType& game_bar()
+	{
+		return game_bar_callback;
 	}
 
 	bool claims_keyboard()
@@ -690,6 +696,25 @@ namespace tz::dbgui
 				ImGui::PopStyleColor();
 				ImGui::End();
 			}
+
+			if(!game_bar_callback.empty())
+			{
+				ImGui::PushStyleColor(ImGuiCol_WindowBg, ImGui::GetStyleColorVec4(ImGuiCol_FrameBg));
+				ImGui::Begin("Game Runtime", nullptr,
+					//ImGuiWindowFlags_NoBackground |
+					ImGuiWindowFlags_NoDecoration |
+					ImGuiWindowFlags_NoMove |
+					ImGuiWindowFlags_NoInputs);
+				ImGui::SetWindowPos(ImVec2(0, ImGui::GetIO().DisplaySize.y - 32), true);
+				auto sz = ImGui::GetWindowSize();
+				sz.x = ImGui::GetIO().DisplaySize.x;
+				sz.y *= 0.5f;
+				ImGui::SetWindowSize(sz);
+				game_bar_callback();
+				ImGui::PopStyleColor();
+				ImGui::End();
+			}
+
 
 			if(tab_tz.show_window_info)
 			{

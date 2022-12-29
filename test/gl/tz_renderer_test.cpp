@@ -96,8 +96,9 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
 	{
-		.format = tz::gl::ImageFormat::RGBA32,
+		.format = tz::gl::ImageFormat::BGRA32,
 		.dimensions = {1u, 1u},
+		.flags = {tz::gl::ResourceFlag::RendererOutput}
 	}));
 	tz::gl::RendererHandle r1h = tz::gl::device().create_renderer(rinfo1);
 
