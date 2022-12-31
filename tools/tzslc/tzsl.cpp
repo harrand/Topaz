@@ -155,7 +155,7 @@ namespace tzslc
 
 	void evaluate_user_imports(std::string& shader_source, std::filesystem::path shader_filename)
 	{
-		constexpr char user_import_regex[] = "import \"([a-zA-Z0-9\\.\\s]+)\"";
+		constexpr char user_import_regex[] = "import \"([a-zA-Z0-9\\/\\.\\s]+)\"";
 		// User-defined imports
 		tzslc::transform(shader_source, std::regex{user_import_regex},
 		[shader_filename](auto beg, auto end)
