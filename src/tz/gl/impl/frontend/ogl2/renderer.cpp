@@ -664,7 +664,7 @@ namespace tz::gl
 						bufcomp->resize(arg.size);
 					}
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
+				else if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
 					auto imgcomp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
 					hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
@@ -680,7 +680,7 @@ namespace tz::gl
 						this->resources.set_image_handle(arg.image_handle, h);
 					}
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
+				else if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
 					IComponent* comp = this->get_component(arg.resource);
 					IResource* res = comp->get_resource();
@@ -727,13 +727,21 @@ namespace tz::gl
 						break;
 					}
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
+				else if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
 					this->state.compute.kernel = arg.kernel;
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
+				else if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
 				{
 					this->wireframe_mode = arg.wireframe_mode;
+				}
+				else if constexpr(std::is_same_v<T, RendererEdit::ResourceReference>)
+				{
+					hdk::error("RendererEdit Resource Reference re-seating is not yet implemented (OGL)");
+				}
+				else
+				{
+					hdk::error("RendererEdit requested that is not yet supported.");
 				}
 			}, req);
 		}

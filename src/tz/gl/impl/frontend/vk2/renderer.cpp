@@ -1443,25 +1443,33 @@ namespace tz::gl
 				{
 					  this->edit_buffer_resize(arg, data);
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
+				else if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
 				{
 					this->edit_image_resize(arg, data);
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
+				else if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
 					this->edit_resource_write(arg, data);
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
+				else if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
 				{
 					this->edit_compute_config(arg, data);
 				}
-				if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
+				else if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
 				{
 					if(arg.wireframe_mode != this->pipeline.is_wireframe_mode())
 					{
 						data.pipeline_recreate = true;
 						final_wireframe_mode_state = arg.wireframe_mode;
 					}
+				}
+				else if constexpr(std::is_same_v<T, RendererEdit::ResourceReference>)
+				{
+					this->edit_resource_reference(arg, data);
+				}
+				else
+				{
+					hdk::error("Renderer Edit that is not yet supported has been requested. Please submit a bug report.");
 				}
 			}, req);
 		}
@@ -1646,6 +1654,12 @@ namespace tz::gl
 			this->state.compute.kernel = arg.kernel;
 			data.commands_rerecord = true;
 		}
+	}
+
+	void RendererVulkan::edit_resource_reference(RendererEdit::ResourceReference arg, EditData& data)
+	{
+		(void)arg; (void)data;
+		hdk::error("Resource Reference re-seating is not yet implemented.");
 	}
 
 	void RendererVulkan::setup_static_resources()

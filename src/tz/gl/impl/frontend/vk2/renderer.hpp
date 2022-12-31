@@ -429,6 +429,7 @@ namespace tz::gl
 		void edit_image_resize(RendererEdit::ImageResize arg, EditData& data);
 		void edit_resource_write(RendererEdit::ResourceWrite arg, EditData& data);
 		void edit_compute_config(RendererEdit::ComputeConfig arg, EditData& data);
+		void edit_resource_reference(RendererEdit::ResourceReference arg, EditData& data);
 
 		void setup_static_resources();
 		void setup_render_commands();
