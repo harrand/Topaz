@@ -1,5 +1,5 @@
-#ifndef TANGLE_WINDOW_HPP
-#define TANGLE_WINDOW_HPP
+#ifndef TZ_WSI_WINDOW_HPP
+#define TZ_WSI_WINDOW_HPP
 #include "tz/wsi/impl/windows/window.hpp"
 #include "tz/wsi/impl/linux/window.hpp"
 #include "hdk/data/handle.hpp"
@@ -35,4 +35,4 @@ namespace tz::wsi
 	std::size_t window_count();
 }
 
-#endif // TANGLE_WINDOW_HPP
+#endif // TZ_WSI_WINDOW_HPP

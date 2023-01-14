@@ -1,5 +1,5 @@
-#ifndef TANGLE_IMPL_LINUX_WINDOW_HPP
-#define TANGLE_IMPL_LINUX_WINDOW_HPP
+#ifndef TZ_WSI_IMPL_LINUX_WINDOW_HPP
+#define TZ_WSI_IMPL_LINUX_WINDOW_HPP
 #ifdef __linux__
 #include "tz/wsi/api/window.hpp"
 #include "tz/wsi/impl/linux/tge_linux.hpp"
@@ -49,4 +49,4 @@ namespace tz::wsi::impl
 }
 
 #endif // __linux__
-#endif // TANGLE_IMPL_LINUX_WINDOW_HPP
+#endif // TZ_WSI_IMPL_LINUX_WINDOW_HPP

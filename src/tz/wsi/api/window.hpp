@@ -1,5 +1,5 @@
-#ifndef TANGLE_API_WINDOW_HPP
-#define TANGLE_API_WINDOW_HPP
+#ifndef TZ_WSI_API_WINDOW_HPP
+#define TZ_WSI_API_WINDOW_HPP
 #include "tz/wsi/api/keyboard.hpp"
 #include "tz/wsi/api/mouse.hpp"
 #include "hdk/data/vector.hpp"
@@ -56,4 +56,4 @@ namespace tz::wsi
 	};
 }
 
-#endif // TANGLE_API_WINDOW_HPP
+#endif // TZ_WSI_API_WINDOW_HPP

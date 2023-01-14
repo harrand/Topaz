@@ -1,5 +1,5 @@
-#ifndef TANGLE_API_MOUSE_HPP
-#define TANGLE_API_MOUSE_HPP
+#ifndef TZ_WSI_API_MOUSE_HPP
+#define TZ_WSI_API_MOUSE_HPP
 #include "hdk/data/vector.hpp"
 #include <array>
 
@@ -27,4 +27,4 @@ namespace tz::wsi
 	};
 }
 
-#endif // TANGLE_API_MOUSE_HPP
+#endif // TZ_WSI_API_MOUSE_HPP

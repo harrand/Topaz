@@ -1,5 +1,5 @@
-#ifndef TANGLE_IMPL_LINUX_MONITOR_HPP
-#define TANGLE_IMPL_LINUX_MONITOR_HPP 
+#ifndef TZ_WSI_IMPL_LINUX_MONITOR_HPP
+#define TZ_WSI_IMPL_LINUX_MONITOR_HPP 
 #ifdef __linux__
 #include "tz/wsi/api/monitor.hpp"
 #include <vector>
@@ -10,4 +10,4 @@ namespace tz::wsi::impl
 }
 
 #endif // __linux__
-#endif // TANGLE_IMPL_LINUX_MONITOR_HPP
+#endif // TZ_WSI_IMPL_LINUX_MONITOR_HPP

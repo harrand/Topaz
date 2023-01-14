@@ -1,5 +1,5 @@
-#ifndef TANGLE_IMPL_WINDOWS_KEYBOARD_HPP
-#define TANGLE_IMPL_WINDOWS_KEYBOARD_HPP
+#ifndef TZ_WSI_IMPL_WINDOWS_KEYBOARD_HPP
+#define TZ_WSI_IMPL_WINDOWS_KEYBOARD_HPP
 #ifdef _WIN32
 #include "tz/wsi/api/keyboard.hpp"
 #include <string>
@@ -15,4 +15,4 @@ namespace tz::wsi::impl
 #include "tz/wsi/impl/windows/keyboard.inl"
 
 #endif // _WIN32
-#endif // TANGLE_IMPL_WINDOWS_KEYBOARD_HPP
+#endif // TZ_WSI_IMPL_WINDOWS_KEYBOARD_HPP

@@ -1,5 +1,5 @@
-#ifndef TANGLE_TGE_HPP
-#define TANGLE_TGE_HPP
+#ifndef TZ_WSI_TGE_HPP
+#define TZ_WSI_TGE_HPP
 #include "hdk/data/handle.hpp"
 
 namespace tz::wsi
@@ -9,4 +9,4 @@ namespace tz::wsi
 	void update();
 }
 
-#endif // TANGLE_TGE_HPP
+#endif // TZ_WSI_TGE_HPP

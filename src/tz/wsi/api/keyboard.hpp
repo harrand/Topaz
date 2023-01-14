@@ -1,5 +1,5 @@
-#ifndef TANGLE_API_KEYBOARD_HPP
-#define TANGLE_API_KEYBOARD_HPP
+#ifndef TZ_WSI_API_KEYBOARD_HPP
+#define TZ_WSI_API_KEYBOARD_HPP
 #include <array>
 
 namespace tz::wsi
@@ -22,4 +22,4 @@ namespace tz::wsi
 	};
 }
 
-#endif // TANGLE_API_KEYBOARD_HPP
+#endif // TZ_WSI_API_KEYBOARD_HPP

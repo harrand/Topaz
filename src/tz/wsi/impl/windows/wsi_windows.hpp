@@ -1,5 +1,5 @@
-#ifndef TANGLE_IMPL_WINDOWS_TGE_HPP
-#define TANGLE_IMPL_WINDOWS_TGE_HPP
+#ifndef TZ_WSI_IMPL_WINDOWS_TGE_HPP
+#define TZ_WSI_IMPL_WINDOWS_TGE_HPP
 #ifdef _WIN32
 #include "tz/wsi/impl/windows/detail/winapi.hpp"
 #include <gl/GL.h>
@@ -25,4 +25,4 @@ namespace tz::wsi::impl
 }
 
 #endif // _WIN32
-#endif // TANGLE_IMPL_WINDOWS_TGE_HPP
+#endif // TZ_WSI_IMPL_WINDOWS_TGE_HPP

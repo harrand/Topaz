@@ -1,5 +1,5 @@
-#ifndef TANGLE_KEYBOARD_HPP
-#define TANGLE_KEYBOARD_HPP
+#ifndef TZ_WSI_KEYBOARD_HPP
+#define TZ_WSI_KEYBOARD_HPP
 #include "tz/wsi/api/keyboard.hpp"
 #include <string>
 
@@ -9,4 +9,4 @@ namespace tz::wsi
 	std::string get_chars_typed(tz::wsi::key key, const keyboard_state& state);
 }
 
-#endif // TANGLE_KEYBOARD_HPP
+#endif // TZ_WSI_KEYBOARD_HPP

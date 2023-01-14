@@ -1,4 +1,4 @@
-#ifndef TANGLE_IMPL_LINUX_KEYBOARD_HPP
+#ifndef TZ_WSI_IMPL_LINUX_KEYBOARD_HPP
 #ifdef __linux__
 #include "tz/wsi/api/keyboard.hpp"
 #include <string>
@@ -10,4 +10,4 @@ namespace tz::wsi::impl
 }
 
 #endif // __linux__
-#endif // TANGLE_IMPL_LINUX_KEYBOARD_HPP
+#endif // TZ_WSI_IMPL_LINUX_KEYBOARD_HPP

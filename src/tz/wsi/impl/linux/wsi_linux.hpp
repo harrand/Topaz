@@ -1,5 +1,5 @@
-#ifndef TANGLE_IMPL_LINUX_TGE_LINUX_HPP
-#define TANGLE_IMPL_LINUX_TGE_LINUX_HPP
+#ifndef TZ_WSI_IMPL_LINUX_TGE_LINUX_HPP
+#define TZ_WSI_IMPL_LINUX_TGE_LINUX_HPP
 #ifdef __linux__
 #include <X11/Xlib.h>
 
@@ -19,4 +19,4 @@ namespace tz::wsi::impl
 }
 
 #endif // __linux__
-#endif // TANGLE_IMPL_LINUX_TGE_LINUX_HPP
+#endif // TZ_WSI_IMPL_LINUX_TGE_LINUX_HPP
