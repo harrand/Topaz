@@ -4,7 +4,6 @@
 #include "tz/core/time.hpp"
 #include "hdk/debug.hpp"
 #include "hdk/job/job.hpp"
-#include "tz/core/window.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "hdk/profile.hpp"
 #include "tz/gl/output.hpp"

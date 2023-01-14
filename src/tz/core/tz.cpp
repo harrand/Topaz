@@ -2,7 +2,6 @@
 #include "tz/wsi/wsi.hpp"
 #include "hdk/hdk.hpp"
 #include "hdk/debug.hpp"
-#include "tz/core/peripherals/monitor.hpp"
 #include "hdk/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 

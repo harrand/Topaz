@@ -30,12 +30,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/containers/polymorphic_list.hpp
 	src/tz/core/containers/polymorphic_list.inl
 	src/tz/core/algorithms/static.hpp
-	src/tz/core/peripherals/keyboard.cpp
-	src/tz/core/peripherals/keyboard.hpp
-	src/tz/core/peripherals/monitor.cpp
-	src/tz/core/peripherals/monitor.hpp
-	src/tz/core/peripherals/mouse.cpp
-	src/tz/core/peripherals/mouse.hpp
 	src/tz/core/callback.hpp
 	src/tz/core/engine_info.cpp
 	src/tz/core/engine_info.hpp
@@ -53,11 +47,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/tz.cpp
 	src/tz/core/tz.hpp
 	src/tz/core/tz.inl
-	src/tz/core/window_functionality.cpp
-	src/tz/core/window_functionality.hpp
-	src/tz/core/window_functionality.inl
-	src/tz/core/window.cpp
-	src/tz/core/window.hpp
 	# tz::wsi
 	src/tz/wsi/keyboard.cpp
 	src/tz/wsi/keyboard.hpp

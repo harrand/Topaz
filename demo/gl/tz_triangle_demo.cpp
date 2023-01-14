@@ -1,5 +1,4 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/window.hpp"
 #include "tz/wsi/wsi.hpp"
 #include "hdk/profile.hpp"
 #include "tz/gl/device.hpp"
