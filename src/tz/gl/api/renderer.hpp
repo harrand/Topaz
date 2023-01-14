@@ -62,7 +62,7 @@ namespace tz::gl
 			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have ResourceFlag::DrawIndirectBuffer. If there is no draw buffer, this is nullhand.
 			ResourceHandle draw_buffer = hdk::nullhand;
 			/// Normalised RGBA floating point colour.
-			hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+			hdk::vec4 clear_colour = hdk::vec4::zero();
 			/// Number of triangles to be rendered in the next draw call.
 			std::size_t tri_count = 0;
 			bool operator==(const Graphics& rhs) const = default;

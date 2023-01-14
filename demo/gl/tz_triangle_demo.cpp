@@ -20,7 +20,6 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
-		rinfo.state().graphics.clear_colour = hdk::vec4::filled(0.0f);
 
 		tz::gl::RendererHandle renh = tz::gl::device().create_renderer(rinfo);
 
