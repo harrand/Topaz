@@ -24,6 +24,7 @@ namespace tz::wsi::impl
 		void set_dimensions(hdk::vec2ui dimensions);
 		std::string get_title() const;
 		void set_title(std::string title);
+		window_flag::flag_bit get_flags() const;
 		void update();
 		bool make_opengl_context_current();
 		const keyboard_state& get_keyboard_state() const;
@@ -42,6 +43,7 @@ namespace tz::wsi::impl
 		HWND hwnd = nullptr;
 		HDC hdc = nullptr;
 		HGLRC opengl_rc = nullptr;
+		window_flag::flag_bit flags = {};
 		bool close_requested = false;
 		keyboard_state key_state = {};
 		mouse_state mouse_state = {};

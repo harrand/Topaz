@@ -59,10 +59,10 @@ namespace tz::gl
 		return *this->depth_attachment;
 	}
 
-	WindowOutput::WindowOutput(const tz::Window& window):
+	WindowOutput::WindowOutput(const tz::wsi::window& window):
 	wnd(&window){}
 
-	const tz::Window& WindowOutput::get_window() const
+	const tz::wsi::window& WindowOutput::get_window() const
 	{
 		return *this->wnd;
 	}

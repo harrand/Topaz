@@ -47,6 +47,7 @@ namespace tz::wsi
 		{t.set_dimensions(dims)} -> std::same_as<void>;
 		{t.get_title()} -> std::convertible_to<std::string>;
 		{t.set_title(str)} -> std::same_as<void>;
+		{t.get_flags()} -> std::convertible_to<window_flag::flag_bit>;
 		{t.update()} -> std::same_as<void>;
 		{t.make_opengl_context_current()} -> std::same_as<bool>;
 		{t.get_keyboard_state()} -> std::convertible_to<keyboard_state>;

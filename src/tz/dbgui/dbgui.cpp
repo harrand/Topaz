@@ -1,4 +1,6 @@
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/wsi/keyboard.hpp"
+#include "tz/wsi/mouse.hpp"
 #include "tz/core/time.hpp"
 #include "hdk/debug.hpp"
 #include "hdk/job/job.hpp"
@@ -29,9 +31,8 @@ namespace tz::dbgui
 	struct TopazPlatformData
 	{
 		tz::GameInfo game_info;
-		tz::KeyboardState kb_state;
-		tz::MousePositionState mouse_pos_state;
-		tz::MouseButtonState mouse_button_state;
+		tz::wsi::keyboard_state kb_state;
+		tz::wsi::mouse_state mouse_state;
 
 		std::size_t frame_counter = 0;
 		tz::Duration last_update;
@@ -62,8 +63,8 @@ namespace tz::dbgui
 	void imgui_impl_begin_commands();
 	void imgui_impl_style_colours_purple();
 
-	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code);
-	ImGuiMouseButton tz_btn_to_imgui(tz::MouseButton btn);
+	ImGuiKey tz_key_to_imgui(tz::wsi::key key_code);
+	ImGuiMouseButton tz_btn_to_imgui(tz::wsi::mouse_button btn);
 
 	ImTextureID handle_to_texid(tz::gl::ResourceHandle handle)
 	{
@@ -93,10 +94,10 @@ namespace tz::dbgui
 		HDK_PROFZONE("tz::dbgui::begin_frame", 0xFFAA00AA);
 		#if HDK_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
+			auto dims = tz::window().get_dimensions();
 			io.DisplaySize = ImVec2
 			{
-				static_cast<float>(tz::window().get_width()),
-				static_cast<float>(tz::window().get_height())
+				(float)dims[0], (float)dims[1]
 			};
 			ImGui::NewFrame();
 			imgui_impl_begin_commands();
@@ -160,10 +161,10 @@ namespace tz::dbgui
 
 	struct InputDelta
 	{
-		std::vector<tz::KeyPressInfo> newly_pressed = {};
-		std::vector<tz::KeyPressInfo> newly_released = {};
-		std::vector<tz::MouseButtonPressInfo> newly_pressed_buttons = {};
-		std::vector<tz::MouseButtonPressInfo> newly_released_buttons = {};
+		std::vector<tz::wsi::key> newly_pressed = {};
+		std::vector<tz::wsi::key> newly_released = {};
+		std::vector<tz::wsi::mouse_button> newly_pressed_buttons = {};
+		std::vector<tz::wsi::mouse_button> newly_released_buttons = {};
 		bool mouse_position_changed = false;
 		MouseWheelDirection mouse_wheel_dir = MouseWheelDirection::Same;
 	};
@@ -171,67 +172,72 @@ namespace tz::dbgui
 	InputDelta imgui_impl_get_input_delta()
 	{
 		#if HDK_DEBUG
-			// Get keyboard pressed/released deltas.
-			std::span<const tz::KeyPressInfo> before_span = global_platform_data->kb_state.get_pressed_keys();
-			std::span<const tz::KeyPressInfo> after_span = tz::window().get_keyboard_state().get_pressed_keys();
-			std::vector<tz::KeyPressInfo> before{ before_span.begin(), before_span.end() };
-			std::vector<tz::KeyPressInfo> after{ after_span.begin(), after_span.end() };
-			std::sort(before.begin(), before.end());
-			std::sort(after.begin(), after.end());
-			std::vector<tz::KeyPressInfo> newly_pressed;
-			std::vector<tz::KeyPressInfo> newly_released;
-
-			std::size_t x = std::max(before.size(), after.size());
-			if(x > 0)
+			auto before_keys = global_platform_data->kb_state.keys_down;
+			auto after_keys = tz::window().get_keyboard_state().keys_down;
+			std::vector<tz::wsi::key> newly_pressed;
+			std::vector<tz::wsi::key> newly_released;
+			for(tz::wsi::key k : before_keys)
 			{
-				newly_pressed.resize(x);
-				newly_released.resize(x);
-
-				auto keypress_comp = [](const tz::KeyPressInfo& a, const tz::KeyPressInfo& b){return static_cast<int>(a.key.code) < static_cast<int>(b.key.code);};
-				auto released_end = std::set_difference(before.begin(), before.end(), after.begin(), after.end(), newly_released.begin(), keypress_comp);
-				auto pressed_end = std::set_difference(after.begin(), after.end(), before.begin(), before.end(), newly_pressed.begin(), keypress_comp);
-				
-				newly_pressed.erase(pressed_end, newly_pressed.end());
-				newly_released.erase(released_end, newly_released.end());
+				if(k == tz::wsi::key::unknown)
+					continue;
+				// Anything that was down before but no longer is has been released.
+				if(std::find(after_keys.begin(), after_keys.end(), k) == after_keys.end())
+				{
+					newly_released.push_back(k);
+				}
+			}
+			for(tz::wsi::key k : after_keys)
+			{
+				if(k == tz::wsi::key::unknown)
+					continue;
+				// Anything that was not down before but is now down has been pressed.
+				if(std::find(before_keys.begin(), before_keys.end(), k) == before_keys.end())
+				{
+					newly_pressed.push_back(k);
+				}
 			}
 
 			// Mouse position and buttons
-			bool mouse_moved = tz::window().get_mouse_position_state().get_mouse_position() != global_platform_data->mouse_pos_state.get_mouse_position();
-			std::span<const tz::MouseButtonPressInfo> before_buttons = global_platform_data->mouse_button_state.get_pressed_buttons();
-			std::span<const tz::MouseButtonPressInfo> after_buttons = tz::window().get_mouse_button_state().get_pressed_buttons();
-			std::vector<tz::MouseButtonPressInfo> newly_pressed_buttons;
-			std::vector<tz::MouseButtonPressInfo> newly_released_buttons;
-			
-			float ybefore = global_platform_data->mouse_button_state.get_scroll_offset()[1];
-			float ynow = tz::window().get_mouse_button_state().get_scroll_offset()[1];
+			bool mouse_moved = tz::window().get_mouse_state().mouse_position != global_platform_data->mouse_state.mouse_position;
+			auto before_buttons = global_platform_data->mouse_state.button_state;
+			auto after_buttons = tz::window().get_mouse_state().button_state;
+			std::vector<tz::wsi::mouse_button> newly_pressed_buttons;
+			std::vector<tz::wsi::mouse_button> newly_released_buttons;
+			for(std::size_t i = 0; i < static_cast<int>(tz::wsi::mouse_button::_count); i++)
+			{
+				if(before_buttons[i] != tz::wsi::mouse_button_state::noclicked)
+				{
+					if(after_buttons[i] == tz::wsi::mouse_button_state::noclicked)
+					{
+						// This button was released.
+						newly_released_buttons.push_back(static_cast<tz::wsi::mouse_button>(i));
+					}
+				}
+				else
+				{
+					if(after_buttons[i] != tz::wsi::mouse_button_state::noclicked)
+					{
+						// This button was pressed.
+						newly_pressed_buttons.push_back(static_cast<tz::wsi::mouse_button>(i));
+					}
+				}
+			}
+		
+			int before_wheel_position = global_platform_data->mouse_state.wheel_position;
+			int after_wheel_position = tz::window().get_mouse_state().wheel_position;
 			MouseWheelDirection mdir = MouseWheelDirection::Same;
-			if(ynow > ybefore)
+			if(after_wheel_position > before_wheel_position)
 			{
 				mdir = MouseWheelDirection::Up;
 			}
-			else if(ynow < ybefore)
+			else if(before_wheel_position > after_wheel_position)
 			{
 				mdir = MouseWheelDirection::Down;
 			}
 
-			x = std::max(before_buttons.size(), after_buttons.size());
-			if(x > 0)
-			{
-				newly_pressed_buttons.resize(x);
-				newly_released_buttons.resize(x);
-				auto btnpress_comp = [](const tz::MouseButtonPressInfo& a, const tz::MouseButtonPressInfo& b){return static_cast<int>(a.button.button) < static_cast<int>(b.button.button);};
-				auto released_end = std::set_difference(before_buttons.begin(), before_buttons.end(), after_buttons.begin(), after_buttons.end(), newly_released_buttons.begin(), btnpress_comp);
-				auto pressed_end = std::set_difference(after_buttons.begin(), after_buttons.end(), before_buttons.begin(), before_buttons.end(), newly_pressed_buttons.begin(), btnpress_comp);
-				
-				newly_pressed_buttons.erase(pressed_end, newly_pressed_buttons.end());
-				newly_released_buttons.erase(released_end, newly_released_buttons.end());
-			}
-
-
 			// Update global platform data.
 			global_platform_data->kb_state = tz::window().get_keyboard_state();
-			global_platform_data->mouse_pos_state = tz::window().get_mouse_position_state();
-			global_platform_data->mouse_button_state = tz::window().get_mouse_button_state();
+			global_platform_data->mouse_state = tz::window().get_mouse_state();
 
 			// Return results.
 			return
@@ -255,18 +261,21 @@ namespace tz::dbgui
 			// Pass to imgui.
 			for(const auto& press : delta.newly_pressed)
 			{
-				io.AddKeyEvent(tz_key_to_imgui(press.key.code), true);
-				// TODO: Proper text parsing
-				io.AddInputCharacter(press.key.representation);
+				io.AddKeyEvent(tz_key_to_imgui(press), true);
+			}
+			if(!delta.newly_pressed.empty())
+			{
+				// Note: This might be wrong.
+				io.AddInputCharacter(tz::wsi::get_chars_typed(delta.newly_pressed.back(), global_platform_data->kb_state).back());
 			}
 			for(const auto& release : delta.newly_released)
 			{
-				io.AddKeyEvent(tz_key_to_imgui(release.key.code), false);
+				io.AddKeyEvent(tz_key_to_imgui(release), false);
 			}
 
 			for(const auto& btn_press : delta.newly_pressed_buttons)
 			{
-				ImGuiMouseButton btn = tz_btn_to_imgui(btn_press.button.button);
+				ImGuiMouseButton btn = tz_btn_to_imgui(btn_press);
 				if(btn == ImGuiMouseButton_COUNT)
 				{
 					continue;
@@ -275,7 +284,7 @@ namespace tz::dbgui
 			}
 			for(const auto& btn_release : delta.newly_released_buttons)
 			{
-				ImGuiMouseButton btn = tz_btn_to_imgui(btn_release.button.button);
+				ImGuiMouseButton btn = tz_btn_to_imgui(btn_release);
 				if(btn == ImGuiMouseButton_COUNT)
 				{
 					continue;
@@ -285,7 +294,7 @@ namespace tz::dbgui
 
 			if(delta.mouse_position_changed)
 			{
-				const auto mpos = static_cast<hdk::vec2>(tz::window().get_mouse_position_state().get_mouse_position());
+				const hdk::vec2ui mpos = tz::window().get_mouse_state().mouse_position;
 				io.AddMousePosEvent(mpos[0], mpos[1]);
 			}
 			if(delta.mouse_wheel_dir != MouseWheelDirection::Same)
@@ -620,29 +629,22 @@ namespace tz::dbgui
 		if(ImGui::Begin("Window", &tab_tz.show_window_info))
 		{
 			auto& wnd = tz::window();
-			if(wnd.is_null())
+			if(!(wnd.get_flags() & tz::wsi::window_flag::noresize))
 			{
-				ImGui::Text("Detected that `tz::window().is_null()`. Cannot display window diagnostics, you're probably in a really weird state.");
+				hdk::vec2ui xy = wnd.get_dimensions();
+				if(ImGui::DragInt2("Dimensions", reinterpret_cast<int*>(xy.data().data()), 3, 1, 4192, "%u"))
+				{
+					wnd.set_dimensions(xy);
+				}
 			}
 			else
 			{
-				if(wnd.is_resizeable())
-				{
-					int xy[] = {static_cast<int>(wnd.get_width()), static_cast<int>(wnd.get_height())};
-					if(ImGui::DragInt2("Dimensions", xy, 3, 1, 4192))
-					{
-						wnd.set_width(static_cast<float>(xy[0]));
-						wnd.set_height(static_cast<float>(xy[1]));
-					}
-				}
-				else
-				{
-					ImGui::Text("Dimensions = {%u, %u} - Fixed-size window", static_cast<unsigned int>(wnd.get_width()), static_cast<unsigned int>(wnd.get_height()));
-				}
-				ImGui::Text("Minimised = %s", wnd.is_minimised() ? "true" : "false");
-				ImGui::Text("Maximised = %s", wnd.is_maximised() ? "true" : "false");
-				ImGui::Text("Focused = %s", wnd.is_focused() ? "true" : "false");
+				hdk::vec2ui dims = wnd.get_dimensions();
+				ImGui::Text("Dimensions = {%u, %u} - Fixed-size window", dims[0], dims[1]);
 			}
+			//ImGui::Text("Minimised = %s", wnd.is_minimised() ? "true" : "false");
+			//ImGui::Text("Maximised = %s", wnd.is_maximised() ? "true" : "false");
+			//ImGui::Text("Focused = %s", wnd.is_focused() ? "true" : "false");
 			ImGui::End();
 		}
 
@@ -753,17 +755,17 @@ namespace tz::dbgui
 		colours[ImGuiCol_CheckMark].z *= 2.0f;
 	}
 
-	ImGuiMouseButton tz_btn_to_imgui(tz::MouseButton button)
+	ImGuiMouseButton tz_btn_to_imgui(tz::wsi::mouse_button button)
 	{
 		switch(button)
 		{
-			case tz::MouseButton::Left:
+			case tz::wsi::mouse_button::left:
 				return ImGuiMouseButton_Left;
 			break;
-			case tz::MouseButton::Right:
+			case tz::wsi::mouse_button::right:
 				return ImGuiMouseButton_Right;
 			break;
-			case tz::MouseButton::Middle:
+			case tz::wsi::mouse_button::middle:
 				return ImGuiMouseButton_Middle;
 			break;
 			default:
@@ -772,173 +774,250 @@ namespace tz::dbgui
 		}
 	}
 
-	ImGuiKey tz_key_to_imgui(tz::KeyCode key_code)
+	ImGuiKey tz_key_to_imgui(tz::wsi::key key_code)
 	{
 		switch(key_code)
 		{
-			case tz::KeyCode::Space:
-				return ImGuiKey_Space;
+			default:
 			break;
-			case tz::KeyCode::Backspace:
-				return ImGuiKey_Backspace;
+			case tz::wsi::key::esc:
+				return ImGuiKey_Escape;
 			break;
-			case tz::KeyCode::Apostrophe:
-				return ImGuiKey_Apostrophe;
+			case tz::wsi::key::f1:
+				return ImGuiKey_F1;
 			break;
-			case tz::KeyCode::Comma:
-				return ImGuiKey_Comma;
+			case tz::wsi::key::f2:
+				return ImGuiKey_F2;
 			break;
-			case tz::KeyCode::Period:
-				return ImGuiKey_Period;
+			case tz::wsi::key::f3:
+				return ImGuiKey_F3;
 			break;
-			case tz::KeyCode::Minus:
-				return ImGuiKey_Minus;
+			case tz::wsi::key::f4:
+				return ImGuiKey_F4;
 			break;
-			//case Plus:
-			//	return ImGuiKey_Plus;
-			//break;
-			case tz::KeyCode::ForwardSlash:
-				return ImGuiKey_Slash;
+			case tz::wsi::key::f5:
+				return ImGuiKey_F5;
 			break;
-			case tz::KeyCode::BackSlash:
-				return ImGuiKey_Backslash;
+			case tz::wsi::key::f6:
+				return ImGuiKey_F6;
 			break;
-			case tz::KeyCode::Zero:
-				return ImGuiKey_0;
+			case tz::wsi::key::f7:
+				return ImGuiKey_F7;
 			break;
-			case tz::KeyCode::One:
+			case tz::wsi::key::f8:
+				return ImGuiKey_F8;
+			break;
+			case tz::wsi::key::f9:
+				return ImGuiKey_F9;
+			break;
+			case tz::wsi::key::f10:
+				return ImGuiKey_F10;
+			break;
+			case tz::wsi::key::f11:
+				return ImGuiKey_F11;
+			break;
+			case tz::wsi::key::f12:
+				return ImGuiKey_F12;
+			break;
+			case tz::wsi::key::del:
+				return ImGuiKey_Delete;
+			break;
+			case tz::wsi::key::page_up:
+				return ImGuiKey_PageUp;
+			break;
+			case tz::wsi::key::page_down:
+				return ImGuiKey_PageDown;
+			break;
+			case tz::wsi::key::print_screen:
+				return ImGuiKey_PrintScreen;
+			break;
+			case tz::wsi::key::scroll_lock:
+				return ImGuiKey_ScrollLock;
+			break;
+			case tz::wsi::key::pause:
+				return ImGuiKey_Pause;
+			break;
+			case tz::wsi::key::insert:
+				return ImGuiKey_Insert;
+			break;
+			case tz::wsi::key::one:
 				return ImGuiKey_1;
 			break;
-			case tz::KeyCode::Two:
+			case tz::wsi::key::two:
 				return ImGuiKey_2;
 			break;
-			case tz::KeyCode::Three:
+			case tz::wsi::key::three:
 				return ImGuiKey_3;
 			break;
-			case tz::KeyCode::Four:
+			case tz::wsi::key::four:
 				return ImGuiKey_4;
 			break;
-			case tz::KeyCode::Five:
+			case tz::wsi::key::five:
 				return ImGuiKey_5;
 			break;
-			case tz::KeyCode::Six:
+			case tz::wsi::key::six:
 				return ImGuiKey_6;
 			break;
-			case tz::KeyCode::Seven:
+			case tz::wsi::key::seven:
 				return ImGuiKey_7;
 			break;
-			case tz::KeyCode::Eight:
+			case tz::wsi::key::eight:
 				return ImGuiKey_8;
 			break;
-			case tz::KeyCode::Nine:
+			case tz::wsi::key::nine:
 				return ImGuiKey_9;
 			break;
-			case tz::KeyCode::Semicolon:
-				return ImGuiKey_Semicolon;
+			case tz::wsi::key::zero:
+				return ImGuiKey_0;
 			break;
-			case tz::KeyCode::Equals:
+			case tz::wsi::key::minus:
+				return ImGuiKey_Minus;
+			break;
+			case tz::wsi::key::equals:
 				return ImGuiKey_Equal;
 			break;
-			case tz::KeyCode::A:
-				return ImGuiKey_A;
+			case tz::wsi::key::backspace:
+				return ImGuiKey_Backspace;
 			break;
-			case tz::KeyCode::B:
-				return ImGuiKey_B;
+			case tz::wsi::key::tab:
+				return ImGuiKey_Tab;
 			break;
-			case tz::KeyCode::C:
-				return ImGuiKey_C;
-			break;
-			case tz::KeyCode::D:
-				return ImGuiKey_D;
-			break;
-			case tz::KeyCode::E:
-				return ImGuiKey_E;
-			break;
-			case tz::KeyCode::F:
-				return ImGuiKey_F;
-			break;
-			case tz::KeyCode::G:
-				return ImGuiKey_G;
-			break;
-			case tz::KeyCode::H:
-				return ImGuiKey_H;
-			break;
-			case tz::KeyCode::I:
-				return ImGuiKey_I;
-			break;
-			case tz::KeyCode::J:
-				return ImGuiKey_J;
-			break;
-			case tz::KeyCode::K:
-				return ImGuiKey_K;
-			break;
-			case tz::KeyCode::L:
-				return ImGuiKey_L;
-			break;
-			case tz::KeyCode::M:
-				return ImGuiKey_M;
-			break;
-			case tz::KeyCode::N:
-				return ImGuiKey_N;
-			break;
-			case tz::KeyCode::O:
-				return ImGuiKey_O;
-			break;
-			case tz::KeyCode::P:
-				return ImGuiKey_P;
-			break;
-			case tz::KeyCode::Q:
+			case tz::wsi::key::q:
 				return ImGuiKey_Q;
 			break;
-			case tz::KeyCode::R:
-				return ImGuiKey_R;
-			break;
-			case tz::KeyCode::S:
-				return ImGuiKey_S;
-			break;
-			case tz::KeyCode::T:
-				return ImGuiKey_T;
-			break;
-			case tz::KeyCode::U:
-				return ImGuiKey_U;
-			break;
-			case tz::KeyCode::V:
-				return ImGuiKey_V;
-			break;
-			case tz::KeyCode::W:
+			case tz::wsi::key::w:
 				return ImGuiKey_W;
 			break;
-			case tz::KeyCode::X:
-				return ImGuiKey_X;
+			case tz::wsi::key::e:
+				return ImGuiKey_E;
 			break;
-			case tz::KeyCode::Y:
+			case tz::wsi::key::r:
+				return ImGuiKey_R;
+			break;
+			case tz::wsi::key::t:
+				return ImGuiKey_T;
+			break;
+			case tz::wsi::key::y:
 				return ImGuiKey_Y;
 			break;
-			case tz::KeyCode::Z:
-				return ImGuiKey_Z;
+			case tz::wsi::key::u:
+				return ImGuiKey_U;
 			break;
-			case tz::KeyCode::LeftBracket:
+			case tz::wsi::key::i:
+				return ImGuiKey_I;
+			break;
+			case tz::wsi::key::o:
+				return ImGuiKey_O;
+			break;
+			case tz::wsi::key::p:
+				return ImGuiKey_P;
+			break;
+			case tz::wsi::key::left_bracket:
 				return ImGuiKey_LeftBracket;
 			break;
-			case tz::KeyCode::RightBracket:
+			case tz::wsi::key::right_bracket:
 				return ImGuiKey_RightBracket;
 			break;
-			//case LeftParenthesis:
-			//	return ImGuiKey_LeftParenthesis;
-			//break;
-			//case RightParenthesis:
-			//	return ImGuiKey_RightParenthesis;
-			//break;
-			//case LeftBrace:
-			//	return ImGuiKey_LeftBrace;
-			//break;
-			//case RightBrace:
-			//	return ImGuiKey_RightBrace;
-			//break;
-
-			default:
-				return ImGuiKey_None;
+			case tz::wsi::key::enter:
+				return ImGuiKey_Enter;
+			break;
+			case tz::wsi::key::caps_lock:
+				return ImGuiKey_CapsLock;
+			break;
+			case tz::wsi::key::a:
+				return ImGuiKey_A;
+			break;
+			case tz::wsi::key::s:
+				return ImGuiKey_S;
+			break;
+			case tz::wsi::key::d:
+				return ImGuiKey_D;
+			break;
+			case tz::wsi::key::f:
+				return ImGuiKey_F;
+			break;
+			case tz::wsi::key::g:
+				return ImGuiKey_G;
+			break;
+			case tz::wsi::key::h:
+				return ImGuiKey_H;
+			break;
+			case tz::wsi::key::j:
+				return ImGuiKey_J;
+			break;
+			case tz::wsi::key::k:
+				return ImGuiKey_K;
+			break;
+			case tz::wsi::key::l:
+				return ImGuiKey_L;
+			break;
+			case tz::wsi::key::semi_colon:
+				return ImGuiKey_Semicolon;
+			break;
+			case tz::wsi::key::apostrophe:
+				return ImGuiKey_Apostrophe;
+			break;
+			case tz::wsi::key::hash:
+				// none?
+			break;
+			case tz::wsi::key::left_shift:
+				return ImGuiKey_LeftShift;
+			break;
+			case tz::wsi::key::backslash:
+				return ImGuiKey_Backslash;
+			break;
+			case tz::wsi::key::z:
+				return ImGuiKey_Z;
+			break;
+			case tz::wsi::key::x:
+				return ImGuiKey_X;
+			break;
+			case tz::wsi::key::c:
+				return ImGuiKey_C;
+			break;
+			case tz::wsi::key::v:
+				return ImGuiKey_V;
+			break;
+			case tz::wsi::key::b:
+				return ImGuiKey_B;
+			break;
+			case tz::wsi::key::n:
+				return ImGuiKey_N;
+			break;
+			case tz::wsi::key::m:
+				return ImGuiKey_M;
+			break;
+			case tz::wsi::key::comma:
+				return ImGuiKey_Comma;
+			break;
+			case tz::wsi::key::period:
+				return ImGuiKey_Period;
+			break;
+			case tz::wsi::key::forward_slash:
+				return ImGuiKey_Slash;
+			break;
+			case tz::wsi::key::right_shift:
+				return ImGuiKey_RightShift;
+			break;
+			case tz::wsi::key::left_ctrl:
+				return ImGuiKey_LeftCtrl;
+			break;
+			case tz::wsi::key::win_key:
+				// none?
+			break;
+			case tz::wsi::key::alt:
+				return ImGuiKey_LeftAlt;
+			break;
+			case tz::wsi::key::space:
+				return ImGuiKey_Space;
+			break;
+			case tz::wsi::key::alt_gr:
+				return ImGuiKey_RightAlt;
+			break;
+			case tz::wsi::key::right_ctrl:
+				return ImGuiKey_RightCtrl;
 			break;
 		}
+		return ImGuiKey_None;
 	}
 }

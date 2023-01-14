@@ -2,7 +2,7 @@
 #define TZ_CORE_TZ_HPP
 #include "tz/core/containers/enum_field.hpp"
 #include "tz/core/game_info.hpp"
-#include "tz/core/window.hpp"
+#include "tz/wsi/window.hpp"
 
 static_assert(TZ_VULKAN || TZ_OGL, "No graphics API detected. You have not configured CMake correctly.");
 
@@ -134,7 +134,7 @@ namespace tz
 	 * @post @ref tz::terminate() has not yet been invoked.
 	 * @return Window& Reference to the application window.
 	 */
-	Window& window();
+	tz::wsi::window& window();
 	/**
 	 * @ingroup tz_core_init
 	 * @brief Query as to whether Topaz is initialised.

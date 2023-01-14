@@ -16,7 +16,7 @@
 
 namespace tz
 {
-	tz::Window* wnd = nullptr;
+	tz::wsi::window_handle wnd = hdk::nullhand;
 	bool initialised = false;
 	InitialiseInfo init_info = {};
 
@@ -28,18 +28,8 @@ namespace tz
 		tz::wsi::initialise();
 		[[maybe_unused]] tz::GameInfo game_info{.name = init.name, .version = init.version, .engine = tz::info()};
 		// Ensure we're not already initialised before doing anything.
-		hdk::assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
+		hdk::assert(wnd == hdk::nullhand && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
 
-		// Firstly, initialise GLFW.
-		{
-			HDK_PROFZONE("GLFW Initialise", 0xFF0000AA);
-			[[maybe_unused]] int glfw_ret = glfwInit();
-			hdk::assert(glfw_ret == GLFW_TRUE, "GLFW initialisation returned without crashing, but we still failed to initialise. Most likely a platform-specific error has occurred. Does your machine support window creation?");
-		}
-		// Then, initialise peripherals.
-		{
-			tz::detail::peripherals::monitor::initialise();
-		}
 		// After that, create the window.
 		{
 			std::string window_title = init.name;
@@ -47,19 +37,14 @@ namespace tz
 				window_title = game_info.to_string();
 			#endif // HDK_DEBUG
 
-			WindowInitArgs wargs
-			{
-				.width = static_cast<int>(init.dimensions[0]),
-				.height = static_cast<int>(init.dimensions[1]),
+			wnd = tz::wsi::create_window
+			({
 				.title = window_title.c_str(),
-				.flags =
-				{
-					.resizeable = !init.flags.contains(ApplicationFlag::UnresizeableWindow),
-					.invisible = init.flags.contains(ApplicationFlag::HiddenWindow)
-				}
-			};
-
-			wnd = new tz::Window{wargs};
+				.dimensions = init.dimensions,
+				#if TZ_OGL
+				.window_flags = tz::wsi::window_flag::opengl
+				#endif
+			});
 		}
 		// Finally, initialise render backends.
 		{
@@ -78,7 +63,7 @@ namespace tz
 	void terminate()
 	{
 		HDK_PROFZONE("Topaz Terminate", 0xFF0000AA);
-		hdk::assert(wnd != nullptr && initialised, "tz::terminate(): Not initialised");
+		hdk::assert(wnd != hdk::nullhand && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
 		tz::gl::destroy_device();
 		#if TZ_VULKAN
@@ -87,22 +72,16 @@ namespace tz
 			tz::gl::ogl2::terminate();
 		#endif
 
-		delete wnd;
-
-		tz::detail::peripherals::monitor::terminate();
-		{
-			HDK_PROFZONE("GLFW Terminate", 0xFF0000AA);
-			glfwTerminate();
-		}
+		tz::wsi::destroy_window(wnd);
+		wnd = hdk::nullhand;
 		tz::wsi::terminate();
 		hdk::terminate();
 		initialised = false;
 	}
 
-	Window& window()
+	tz::wsi::window& window()
 	{
-		hdk::assert(wnd != nullptr, "tz::window(): Not initialised");
-		return *wnd;
+		return tz::wsi::get_window(wnd);
 	}
 
 	bool is_initialised()

@@ -93,7 +93,7 @@ namespace tz::gl::ogl2
 	{
 		if(this->is_null())
 		{
-			return {static_cast<unsigned int>(tz::window().get_width()), static_cast<unsigned int>(tz::window().get_height())};
+			return tz::window().get_dimensions();
 		}
 		return this->info.dimensions;
 	}

@@ -7,7 +7,8 @@
 
 namespace tz::wsi::impl
 {
-	window_x11::window_x11(window_info info)
+	window_x11::window_x11(window_info info):
+	flags(info.window_flags)
 	{
 		const x11_display_data x11d = impl::x11_display();
 		this->wnd = XCreateSimpleWindow(x11d.display, RootWindow(x11d.display, x11d.screen), 0, 0, info.dimensions[0], info.dimensions[1], 1, BlackPixel(x11d.display, x11d.screen), WhitePixel(x11d.display, x11d.screen));
@@ -66,6 +67,11 @@ namespace tz::wsi::impl
 	void window_x11::set_title(std::string title)
 	{
 		XStoreName(impl::x11_display().display, this->wnd, title.c_str());
+	}
+
+	window_flag::flag_bit window_x11::get_flags() const
+	{
+		return this->flags;
 	}
 
 	void window_x11::update()

@@ -623,7 +623,7 @@ namespace tz::gl
 			}
 			if(!this->options.contains(tz::gl::RendererOption::NoPresent))
 			{
-				glfwSwapBuffers(tz::window().get_middleware_handle());
+				tz::window().update();
 			}
 		}
 		#if HDK_DEBUG

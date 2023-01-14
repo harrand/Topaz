@@ -1,5 +1,6 @@
 #if TZ_OGL
 #include "tz/core/containers/basic_list.hpp"
+#include "tz/wsi/window.hpp"
 #include "hdk/debug.hpp"
 #include "hdk/profile.hpp"
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
@@ -22,7 +23,7 @@ namespace tz::gl::ogl2
 	{
 		HDK_PROFZONE("OpenGL Backend - Backend Initialise", 0xFFAA0000);
 		hdk::assert(!initialised, "Already initialised OpenGL but trying to do it again. Please submit a bug report.");
-		int res = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		int res = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(tz::wsi::get_opengl_proc_address));
 		#if HDK_PROFILE
 			TracyGpuContext;
 		#endif // HDK_PROFILE

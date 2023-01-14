@@ -8,7 +8,8 @@
 
 namespace tz::wsi::impl
 {
-	window_winapi::window_winapi(window_info info)
+	window_winapi::window_winapi(window_info info):
+	flags(info.window_flags)
 	{
 		DWORD style = WS_OVERLAPPEDWINDOW;
 		if(info.window_flags & window_flag::undecorated)
@@ -130,6 +131,13 @@ namespace tz::wsi::impl
 	{
 		[[maybe_unused]] bool ok = SetWindowTextA(this->hwnd, title.data());	
 		hdk::assert(ok, "Failed to set window title to \"%s\", GetLastError() returned %lu", title.data(), GetLastError());
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	window_flag::flag_bit window_winapi::get_flags() const
+	{
+		return this->flags;
 	}
 
 //--------------------------------------------------------------------------------------------------

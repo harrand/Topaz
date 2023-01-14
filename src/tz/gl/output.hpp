@@ -2,6 +2,7 @@
 #define TOPAZ_GL2_OUTPUT_HPP
 #include "tz/core/window.hpp"
 #include "tz/core/containers/basic_list.hpp"
+#include "tz/wsi/window.hpp"
 #include "tz/gl/api/output.hpp"
 #include "tz/gl/component.hpp"
 
@@ -43,7 +44,7 @@ namespace tz::gl
 	class WindowOutput final : public IOutput
 	{
 	public:
-		WindowOutput(const tz::Window& window);
+		WindowOutput(const tz::wsi::window& window);
 		constexpr virtual OutputTarget get_target() const override
 		{
 			return OutputTarget::Window;
@@ -54,9 +55,9 @@ namespace tz::gl
 			return std::make_unique<WindowOutput>(*this);
 		}
 
-		const tz::Window& get_window() const;
+		const tz::wsi::window& get_window() const;
 	private:
-		const tz::Window* wnd;
+		const tz::wsi::window* wnd;
 	};
 }
 
