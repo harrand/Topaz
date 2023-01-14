@@ -475,8 +475,8 @@ namespace tz::dbgui
 				hdk::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
-				output->scissor.offset = static_cast<hdk::vec2ui>(hdk::vec2{min.x, min.y} - hdk::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
-				output->scissor.extent = static_cast<hdk::vec2ui>(hdk::vec2{max.x, max.y + shader_data.global_offset});
+				output->scissor.offset = static_cast<hdk::vec2ui>(hdk::vec2{min.x, min.y + shader_data.global_offset} - hdk::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
+				output->scissor.extent = static_cast<hdk::vec2ui>(hdk::vec2{max.x, max.y});
 #if TZ_OGL
 				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif
