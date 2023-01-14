@@ -148,7 +148,7 @@ namespace tz::dbgui
 		std::uint32_t texture_id;
 		std::uint32_t index_offset;
 		std::uint32_t vertex_offset;
-		float pad[1];
+		float global_offset = 0.0f;
 	};
 
 	enum class MouseWheelDirection
@@ -446,6 +446,15 @@ namespace tz::dbgui
 			std::memcpy(vertices.data() + vertex_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
 			// Set shader data (view-projection and texture-id)
 			TopazShaderRenderData& shader_data = renderer.get_resource(global_render_data->shader_data_buffer)->data_as<TopazShaderRenderData>().front();
+			if(tz::window().get_flags() & tz::wsi::window_flag::bare)
+			{
+				shader_data.global_offset = 0.0f;
+			}
+			else
+			{
+				// Offset everything due to the window title bar. No need to do this if we're a bare window (or fullscreen). Really ought not to hard-code this.
+				shader_data.global_offset = 40.0f;
+			}
 			const ImGuiIO& io = ImGui::GetIO();
 			shader_data.vp = tz::orthographic(
 				0,
@@ -467,7 +476,7 @@ namespace tz::dbgui
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
 				output->scissor.offset = static_cast<hdk::vec2ui>(hdk::vec2{min.x, min.y} - hdk::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
-				output->scissor.extent = static_cast<hdk::vec2ui>(hdk::vec2{max.x, max.y});
+				output->scissor.extent = static_cast<hdk::vec2ui>(hdk::vec2{max.x, max.y + shader_data.global_offset});
 #if TZ_OGL
 				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif
@@ -688,7 +697,7 @@ namespace tz::dbgui
 					ImGuiWindowFlags_NoDecoration |
 					ImGuiWindowFlags_NoMove |
 					ImGuiWindowFlags_NoInputs);
-				ImGui::SetWindowPos(ImVec2(0, 18), true);
+				ImGui::SetWindowPos(ImVec2(0, ImGui::GetFrameHeight()), true);
 				auto sz = ImGui::GetWindowSize();
 				sz.x = ImGui::GetIO().DisplaySize.x;
 				sz.y *= 0.5f;
