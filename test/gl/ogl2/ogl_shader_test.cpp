@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
-#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
-#include "tz/gl/impl/backend/ogl2/shader.hpp"
+#include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
+#include "tz/gl/impl/opengl/detail/shader.hpp"
 
 void create_empty_shader()
 {

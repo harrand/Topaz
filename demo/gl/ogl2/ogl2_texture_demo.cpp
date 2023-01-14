@@ -1,11 +1,11 @@
 #include "tz/core/tz.hpp"
 #include "tz/gl/imported_shaders.hpp"
-#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
-#include "tz/gl/impl/backend/ogl2/framebuffer.hpp"
-#include "tz/gl/impl/backend/ogl2/shader.hpp"
-#include "tz/gl/impl/backend/ogl2/image.hpp"
-#include "tz/gl/impl/backend/ogl2/buffer.hpp"
-#include "tz/gl/impl/backend/ogl2/vertex_array.hpp"
+#include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
+#include "tz/gl/impl/opengl/detail/framebuffer.hpp"
+#include "tz/gl/impl/opengl/detail/shader.hpp"
+#include "tz/gl/impl/opengl/detail/image.hpp"
+#include "tz/gl/impl/opengl/detail/buffer.hpp"
+#include "tz/gl/impl/opengl/detail/vertex_array.hpp"
 
 #include ImportedShaderHeader(texture_demo, vertex)
 #include ImportedShaderHeader(texture_demo, fragment)

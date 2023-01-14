@@ -2,9 +2,9 @@
 #define TOPAZ_GL2_DEVICE_HPP
 
 #if TZ_VULKAN
-#include "tz/gl/impl/frontend/vk2/device.hpp"
+#include "tz/gl/impl/vulkan/device.hpp"
 #elif TZ_OGL
-#include "tz/gl/impl/frontend/ogl2/device.hpp"
+#include "tz/gl/impl/opengl/device.hpp"
 #endif
 namespace tz::gl
 {

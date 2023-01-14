@@ -2,9 +2,9 @@
 #define TOPAZ_GL2_COMPONENT_HPP
 
 #if TZ_VULKAN
-#include "tz/gl/impl/frontend/vk2/component.hpp"
+#include "tz/gl/impl/vulkan/component.hpp"
 #elif TZ_OGL
-#include "tz/gl/impl/frontend/ogl2/component.hpp"
+#include "tz/gl/impl/opengl/component.hpp"
 #endif
 
 namespace tz::gl

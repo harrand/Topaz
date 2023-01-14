@@ -1,9 +1,9 @@
 #ifndef TOPAZ_GL_DRAW_HPP
 #define TOPAZ_GL_DRAW_HPP
 #if TZ_VULKAN
-#include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
 #elif TZ_OGL
-#include "tz/gl/impl/backend/ogl2/draw.hpp"
+#include "tz/gl/impl/opengl/detail/draw.hpp"
 #endif
 
 namespace tz::gl

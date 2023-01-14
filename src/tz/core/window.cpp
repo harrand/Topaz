@@ -1,7 +1,7 @@
 #include "tz/core/window.hpp"
 #include "GLFW/glfw3.h"
 #include "hdk/profile.hpp"
-#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
+#include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include <utility>
 
 namespace tz

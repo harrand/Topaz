@@ -6,9 +6,9 @@
 #include "tz/dbgui/dbgui.hpp"
 
 #if TZ_VULKAN
-#include "tz/gl/impl/backend/vk2/tz_vulkan.hpp"
+#include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
 #elif TZ_OGL
-#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
+#include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #endif
 
 #include <cstdio>

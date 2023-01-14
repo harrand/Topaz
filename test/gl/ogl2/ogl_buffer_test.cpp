@@ -1,6 +1,6 @@
 #include "tz/core/tz.hpp"
-#include "tz/gl/impl/backend/ogl2/tz_opengl.hpp"
-#include "tz/gl/impl/backend/ogl2/buffer.hpp"
+#include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
+#include "tz/gl/impl/opengl/detail/buffer.hpp"
 #include <numeric>
 
 tz::gl::ogl2::Buffer make_dynamic_copy(const tz::gl::ogl2::Buffer& buf)

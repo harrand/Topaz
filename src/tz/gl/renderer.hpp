@@ -2,9 +2,9 @@
 #define TOPAZ_GL2_RENDERER_HPP
 
 #if TZ_VULKAN
-#include "tz/gl/impl/frontend/vk2/renderer.hpp"
+#include "tz/gl/impl/vulkan/renderer.hpp"
 #elif TZ_OGL
-#include "tz/gl/impl/frontend/ogl2/renderer.hpp"
+#include "tz/gl/impl/opengl/renderer.hpp"
 #endif
 
 namespace tz::gl
