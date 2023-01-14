@@ -226,7 +226,7 @@ message(STATUS "Render API: ${TOPAZ_RENDER_API}")
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC glfw imgui)
+target_link_libraries(topaz PUBLIC imgui)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)
