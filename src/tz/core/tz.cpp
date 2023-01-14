@@ -1,4 +1,5 @@
 #include "tz/core/tz.hpp"
+#include "tz/wsi/wsi.hpp"
 #include "hdk/hdk.hpp"
 #include "hdk/debug.hpp"
 #include "tz/core/peripherals/monitor.hpp"
@@ -24,6 +25,7 @@ namespace tz
 		HDK_PROFZONE("Topaz Initialise", 0xFF0000AA);
 		hdk::initialise();
 		hdk::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
+		tz::wsi::initialise();
 		[[maybe_unused]] tz::GameInfo game_info{.name = init.name, .version = init.version, .engine = tz::info()};
 		// Ensure we're not already initialised before doing anything.
 		hdk::assert(wnd == nullptr && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
@@ -92,6 +94,7 @@ namespace tz
 			HDK_PROFZONE("GLFW Terminate", 0xFF0000AA);
 			glfwTerminate();
 		}
+		tz::wsi::terminate();
 		hdk::terminate();
 		initialised = false;
 	}

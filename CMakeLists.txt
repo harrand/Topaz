@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 include(cmake/util.cmake)
 include(cmake/exe_config.cmake)
 include(cmake/setup_configs.cmake)
+include(cmake/platform.cmake)
 
 configure_file(version.txt version_txt_dummy.xml)
 file(READ version.txt TZ_VERSION_TXT)
@@ -57,6 +58,40 @@ hdk_add_library(TARGET topaz
 	src/tz/core/window_functionality.inl
 	src/tz/core/window.cpp
 	src/tz/core/window.hpp
+	# tz::wsi
+	src/tz/wsi/keyboard.cpp
+	src/tz/wsi/keyboard.hpp
+	src/tz/wsi/monitor.cpp
+	src/tz/wsi/monitor.hpp
+	src/tz/wsi/wsi.hpp
+	src/tz/wsi/wsi.cpp
+	src/tz/wsi/window.cpp
+	src/tz/wsi/window.hpp
+	# tz/wsi api
+	src/tz/wsi/api/keyboard.hpp
+	src/tz/wsi/api/mouse.hpp
+	src/tz/wsi/api/window.hpp
+
+	# tz/wsi impl (linux)
+	src/tz/wsi/impl/linux/keyboard.cpp
+	src/tz/wsi/impl/linux/keyboard.hpp
+	src/tz/wsi/impl/linux/monitor.cpp
+	src/tz/wsi/impl/linux/monitor.hpp
+	src/tz/wsi/impl/linux/wsi_linux.cpp
+	src/tz/wsi/impl/linux/wsi_linux.hpp
+	src/tz/wsi/impl/linux/window.cpp
+	src/tz/wsi/impl/linux/window.hpp
+	# tz/wsi impl (windows)
+	src/tz/wsi/impl/windows/detail/winapi.hpp
+	src/tz/wsi/impl/windows/keyboard.cpp
+	src/tz/wsi/impl/windows/keyboard.hpp
+	src/tz/wsi/impl/windows/keyboard.inl
+	src/tz/wsi/impl/windows/monitor.cpp
+	src/tz/wsi/impl/windows/monitor.hpp
+	src/tz/wsi/impl/windows/wsi_windows.cpp
+	src/tz/wsi/impl/windows/wsi_windows.hpp
+	src/tz/wsi/impl/windows/window.cpp
+	src/tz/wsi/impl/windows/window.hpp
 	# tz::dbgui
 	src/tz/dbgui/dbgui.cpp
 	src/tz/dbgui/dbgui.hpp
@@ -167,6 +202,14 @@ hdk_add_library(TARGET topaz
 	src/tz/gl/impl/opengl/detail/vertex_array.cpp
 	src/tz/gl/impl/opengl/detail/vertex_array.hpp
 	)
+
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+	configure_windows(topaz)
+elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+	configure_linux(topaz)
+else()
+	message(FATAL_ERROR "Unrecognised Platform ${CMAKE_HOST_SYSTEM_NAME}")
+endif()
 
 message(STATUS "Topaz v${TZ_VERSION}")
 set_target_properties(topaz PROPERTIES
