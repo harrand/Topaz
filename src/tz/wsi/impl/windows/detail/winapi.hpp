@@ -3,3 +3,5 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#undef min
+#undef max

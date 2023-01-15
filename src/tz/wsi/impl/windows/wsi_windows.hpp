@@ -2,8 +2,8 @@
 #define TZ_WSI_IMPL_WINDOWS_TGE_HPP
 #ifdef _WIN32
 #include "tz/wsi/impl/windows/detail/winapi.hpp"
+#include "tz/wsi/impl/windows/detail/wgl_ext.hpp"
 #include <gl/GL.h>
-#include <gl/wglext.h>
 
 namespace tz::wsi::impl
 {

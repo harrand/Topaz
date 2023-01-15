@@ -73,6 +73,7 @@ hdk_add_library(TARGET topaz
 	src/tz/wsi/impl/linux/window.cpp
 	src/tz/wsi/impl/linux/window.hpp
 	# tz/wsi impl (windows)
+	src/tz/wsi/impl/windows/detail/wgl_ext.hpp
 	src/tz/wsi/impl/windows/detail/winapi.hpp
 	src/tz/wsi/impl/windows/keyboard.cpp
 	src/tz/wsi/impl/windows/keyboard.hpp
