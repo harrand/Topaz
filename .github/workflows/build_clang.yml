@@ -29,5 +29,5 @@ jobs:
         run: cmake --preset host_${{inputs.render_api}}_${{inputs.build_config}} -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12
 
       - name: 'Build Topaz ${{inputs.render_api}}_clang_${{inputs.build_config}}'
-        run: cmake --build ./build/${{inputs.render_api}}_${{inputs.build_config}} --target topaz
+        run: cmake --build ./build/Linux_${{inputs.render_api}}_${{inputs.build_config}} --target topaz
 

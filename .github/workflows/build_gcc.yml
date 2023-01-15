@@ -15,7 +15,8 @@ jobs:
     steps:
       - name: Install necessary linux dependencies
         run:   |
-          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev gcc-11 g++-11
+          sudo apt-get update
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev 
       - uses: actions/checkout@v2
         with:
           submodules: recursive
@@ -28,4 +29,4 @@ jobs:
         run: cmake --preset host_${{inputs.render_api}}_${{inputs.build_config}} -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_C_COMPILER=gcc-11
 
       - name: 'Build Topaz ${{inputs.render_api}}_gcc_${{inputs.build_config}}'
-        run: cmake --build ./build/${{inputs.render_api}}_${{inputs.build_config}} --target topaz
+        run: cmake --build ./build/Linux_${{inputs.render_api}}_${{inputs.build_config}} --target topaz
