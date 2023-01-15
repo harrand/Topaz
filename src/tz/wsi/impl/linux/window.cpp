@@ -112,6 +112,26 @@ namespace tz::wsi::impl
 		return glXMakeCurrent(impl::x11_display().display, this->wnd, this->ctx);
 	}
 
+	#if TZ_VULKAN
+	VkSurfaceKHR window_x11::make_vulkan_surface(VkInstance vkinst) const
+	{
+		VkSurfaceKHR surf;
+		VkXlibSurfaceCreateInfoKHR create
+		{
+			.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+			.pNext = nullptr,
+			.flags = 0,
+			.dpy = impl::x11_display().display,
+			.window = this->wnd
+		};
+		auto fn = reinterpret_cast<PFN_vkCreateXlibSurfaceKHR>(vkGetInstanceProcAddr(vkinst, "vkCreateXlibSurfaceKHR"));
+		hdk::assert(fn != nullptr);
+		VkResult res = fn(vkinst, &create, nullptr, &surf);
+		hdk::assert(res == VK_SUCCESS);
+		return surf;
+	}
+	#endif // TZ_VULKAN
+
 	const keyboard_state& window_x11::get_keyboard_state() const
 	{
 		return this->kb_state;

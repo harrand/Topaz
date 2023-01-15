@@ -222,7 +222,7 @@ namespace tz::gl
 		if(dims[0] == 0 || dims[1] == 0)
 		{
 			// Cannot create a swapchain, We just hold off on rendering.
-			tz::WindowFunctionality::block_until_event_happens();
+			//tz::WindowFunctionality::block_until_event_happens();
 			return;
 		}
 		vk2::Swapchain new_swapchain
@@ -248,16 +248,16 @@ namespace tz::gl
 
 	void DeviceWindowVulkan::register_resize()
 	{
-		this->on_resize_handle = tz::window().on_resize().add_callback([this](hdk::vec2ui dims){this->on_resize(dims);});
+		//this->on_resize_handle = tz::window().on_resize().add_callback([this](hdk::vec2ui dims){this->on_resize(dims);});
 	}
 
 	void DeviceWindowVulkan::unregister_resize()
 	{
-		if(this->is_resize_registered())
-		{
-			tz::window().on_resize().remove_callback(this->on_resize_handle);
-			this->on_resize_handle = hdk::nullhand;
-		}
+		//if(this->is_resize_registered())
+		//{
+		//	tz::window().on_resize().remove_callback(this->on_resize_handle);
+		//	this->on_resize_handle = hdk::nullhand;
+		//}
 	}
 
 	bool DeviceWindowVulkan::is_resize_registered() const
@@ -267,8 +267,8 @@ namespace tz::gl
 	
 	void DeviceWindowVulkan::reregister_resize()
 	{
-		this->unregister_resize();
-		this->register_resize();
+		//this->unregister_resize();
+		//this->register_resize();
 	}
 
 //--------------------------------------------------------------------------------------------------

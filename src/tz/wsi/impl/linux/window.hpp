@@ -29,6 +29,9 @@ namespace tz::wsi::impl
 		window_flag::flag_bit get_flags() const;
 		void update();
 		bool make_opengl_context_current();
+		#if TZ_VULKAN
+		VkSurfaceKHR make_vulkan_surface(VkInstance vkinst) const;
+		#endif // TZ_VULKAN
 		const keyboard_state& get_keyboard_state() const;
 		const mouse_state& get_mouse_state() const;
 		void* get_user_data() const;

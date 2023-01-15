@@ -45,6 +45,10 @@ namespace tz
 			{
 				flags |= tz::wsi::window_flag::invisible;
 			}
+			if(init.flags.contains(tz::ApplicationFlag::TransparentWindow))
+			{
+				flags |= tz::wsi::window_flag::transparent;
+			}
 			wnd = tz::wsi::create_window
 			({
 				.title = window_title.c_str(),

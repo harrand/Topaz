@@ -204,32 +204,33 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::Window& window):
+	WindowSurface::WindowSurface(const VulkanInstance& instance, const tz::wsi::window& window):
 	surface(VK_NULL_HANDLE),
 	instance(&instance),
 	window(&window)
 	{
-		hdk::assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. Please submit a bug report.");
+		//hdk::assert(!this->window->is_null(), "Cannot create WindowSurface off of a null window. GLFW has likely failed. Please submit a bug report.");
 
-		VkResult res = glfwCreateWindowSurface(this->instance->native(), this->window->get_middleware_handle(), nullptr, &this->surface);
-		switch(res)
-		{
-			case VK_SUCCESS:
+		this->surface = this->window->make_vulkan_surface(this->instance->native());
+		//VkResult res = glfwCreateWindowSurface(this->instance->native(), this->window->get_middleware_handle(), nullptr, &this->surface);
+		//switch(res)
+		//{
+		//	case VK_SUCCESS:
 
-			break;
-			case VK_ERROR_INITIALIZATION_FAILED:
-				hdk::error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
-			break;
-			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				hdk::error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
-			break;
-			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
-				hdk::error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
-			break;
-			default:
-				hdk::error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
-			break;
-		}
+		//	break;
+		//	case VK_ERROR_INITIALIZATION_FAILED:
+		//		hdk::error("Failed to find either a Vulkan loader or a minimally functional ICD (installable client driver), cannot create Window Surface. If you're an end-user, please ensure your drivers are upto-date -- Note that while this is almost certainly *not* a bug, this is a fatal error and the application must crash.");
+		//	break;
+		//	case VK_ERROR_EXTENSION_NOT_PRESENT:
+		//		hdk::error("The provided VulkanInstance does not support window surface creation. Please submit a bug report.");
+		//	break;
+		//	case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+		//		hdk::error("Window was not created to be used for Vulkan (client api hint wasn't set to GLFW_NO_API). Please submit a bug report.");
+		//	break;
+		//	default:
+		//		hdk::error("Window surface creation failed, but for an unknown reason. Please ensure your computer meets the minimum requirements for this program. If you are absolutely sure that your machine is valid, please submit a bug report.");
+		//	break;
+		//}
 	}
 
 	WindowSurface::WindowSurface(WindowSurface&& move):
@@ -262,9 +263,9 @@ namespace tz::gl::vk2
 		return *this->instance;
 	}
 
-	const tz::Window& WindowSurface::get_window() const
+	const tz::wsi::window& WindowSurface::get_window() const
 	{
-		hdk::assert(this->window != nullptr && !this->window->is_null(), "WindowSurface had nullptr or null tz::Window. Please submit a bug report.");
+		hdk::assert(this->window != nullptr, "WindowSurface had nullptr or null tz::Window. Please submit a bug report.");
 		return *this->window;
 	}
 
@@ -301,22 +302,18 @@ namespace tz::gl::vk2
 
 		// Extensions (Specified from VulkanInstanceInfo + GLFW)
 		util::VkExtensionList extension_natives;
-		// Use what we asked for, plus everything GLFW wants.
-		std::uint32_t glfw_extension_count;
-		const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-
-		extension_natives.resize(info.extensions.count() + glfw_extension_count);
+		extension_natives.resize(info.extensions.count() + 2);
 		std::transform(info.extensions.begin(), info.extensions.end(), extension_natives.begin(), [](InstanceExtension ext){return util::to_vk_extension(ext);});
-		for(std::size_t i = 0; std::cmp_less(i, glfw_extension_count); i++)
-		{
-			std::size_t idx = i + info.extensions.count();
-			extension_natives[idx] = glfw_extensions[i];
-		}
+		extension_natives[info.extensions.count()] = "VK_KHR_surface";
+		// VK_KHR_XLIB_SURFACE_EXTENSION_NAME
+		//
+		extension_natives[info.extensions.count() + 1] = TZ_WSI_VULKAN_EXTENSION_NAME;
+		// Use what we asked for, plus everything GLFW wants.
 
 		void* inst_create_pnext = nullptr;
 		// Debug Messenger
 		const bool create_debug_validation = info.extensions.contains(InstanceExtension::DebugMessenger) && HDK_DEBUG;
-		hdk::assert(info.window != nullptr && !info.window->is_null(), "Null window provided. Please submit a bug report.");
+		hdk::assert(info.window != nullptr, "Null window provided. Please submit a bug report.");
 		VkDebugUtilsMessengerCreateInfoEXT debug_validation_create;
 		if(create_debug_validation)
 		{

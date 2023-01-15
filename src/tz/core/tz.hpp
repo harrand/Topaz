@@ -94,7 +94,8 @@ namespace tz
 	enum class ApplicationFlag
 	{
 		HiddenWindow,
-		UnresizeableWindow
+		UnresizeableWindow,
+		TransparentWindow,
 	};
 
 	using ApplicationFlags = tz::EnumField<ApplicationFlag>;

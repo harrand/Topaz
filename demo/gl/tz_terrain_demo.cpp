@@ -20,6 +20,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_terrain_demo",
+		.flags = {tz::ApplicationFlag::TransparentWindow}
 	});
 	{
 		struct BufferData
@@ -52,7 +53,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationControl, ImportedShaderSource(tz_terrain_demo, tesscon));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationEvaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_terrain_demo, fragment));
-		rinfo.state().graphics.clear_colour = {0.0f, 0.765f, 1.0f, 1.0f};
+		//rinfo.state().graphics.clear_colour = {0.0f, 0.765f, 1.0f, 1.0f};
 
 		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);

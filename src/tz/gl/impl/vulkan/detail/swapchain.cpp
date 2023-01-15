@@ -43,8 +43,9 @@ namespace tz::gl::vk2
 			}
 			else
 			{
-				extent.width = static_cast<std::uint32_t>(surface.get_window().get_width());
-				extent.height = static_cast<std::uint32_t>(surface.get_window().get_height());
+				auto dims = surface.get_window().get_dimensions();
+				extent.width = static_cast<std::uint32_t>(dims[0]);
+				extent.height = static_cast<std::uint32_t>(dims[1]);
 			}
 		}
 

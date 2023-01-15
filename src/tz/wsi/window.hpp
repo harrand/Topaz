@@ -14,12 +14,18 @@ namespace tz::wsi
 
 	#ifdef _WIN32
 		using window = impl::window_winapi;
+		#if TZ_VULKAN
+			#define TZ_WSI_VULKAN_EXTENSION_NAME VK_KHR_WIN32_SURFACE_EXTENSION_NAME
+		#endif
 		inline void* get_opengl_proc_address(const char* name)
 		{
 			return impl::get_opengl_proc_address_windows(name);
 		}
 	#elif defined(__linux__)
 		using window = impl::window_x11;
+		#if TZ_VULKAN
+			#define TZ_WSI_VULKAN_EXTENSION_NAME VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
+		#endif
 		inline void* get_opengl_proc_address(const char* name)
 		{
 			return impl::get_opengl_proc_address_linux(name);

@@ -3,6 +3,16 @@
 #include "tz/wsi/api/keyboard.hpp"
 #include "tz/wsi/api/mouse.hpp"
 #include "hdk/data/vector.hpp"
+#if TZ_VULKAN
+#ifdef _WIN32
+#define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(__linux__)
+#define VK_USE_PLATFORM_XLIB_KHR
+#else
+static_assert("Platform not supported for a vulkan build.");
+#endif
+#include <vulkan/vulkan.h>
+#endif // TZ_VULKAN
 
 namespace tz::wsi
 {
@@ -40,7 +50,11 @@ namespace tz::wsi
 	};
 
 	template<typename T>
-	concept window_api = requires(T t, hdk::vec2ui dims, void* addr, std::string str)
+	concept window_api = requires(T t, hdk::vec2ui dims, void* addr, std::string str
+	#if TZ_VULKAN
+	, VkInstance vkinst
+	#endif
+	)
 	{
 		typename T::native;
 		{t.get_native()} -> std::convertible_to<typename T::native>;
@@ -52,6 +66,9 @@ namespace tz::wsi
 		{t.get_flags()} -> std::convertible_to<window_flag::flag_bit>;
 		{t.update()} -> std::same_as<void>;
 		{t.make_opengl_context_current()} -> std::same_as<bool>;
+		#if TZ_VULKAN
+		{t.make_vulkan_surface(vkinst)} -> std::convertible_to<VkSurfaceKHR>;
+		#endif // TZ_VULKAN
 		{t.get_keyboard_state()} -> std::convertible_to<keyboard_state>;
 		{t.get_mouse_state()} -> std::convertible_to<mouse_state>;
 		{t.get_user_data()} -> std::convertible_to<void*>;

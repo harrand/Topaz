@@ -169,6 +169,28 @@ namespace tz::wsi::impl
 
 //--------------------------------------------------------------------------------------------------
 
+	#if TZ_VULKAN
+	VkSurfaceKHR window_winapi::make_vulkan_surface(VkInstance vkinst) const
+	{
+		VkSurfaceKHR surf;
+		VkWin32SurfaceCreateInfoKHR create
+		{
+			.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR ,
+			.pNext = nullptr,
+			.flags = 0,
+			.hinstance = (HINSTANCE)GetWindowLongPtrA(this->hwnd, GWLP_HINSTANCE),
+			.hwnd = this->hwnd
+		};
+		auto fn = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>(vkGetInstanceProcAddr(vkinst, "vkCreateWin32SurfaceKHR"));
+		hdk::assert(fn != nullptr);
+		VkResult res = fn(vkinst, &create, nullptr, &surf);
+		hdk::assert(res == VK_SUCCESS);
+		return surf;
+	}
+	#endif // TZ_VULKAN
+
+//--------------------------------------------------------------------------------------------------
+
 	const keyboard_state& window_winapi::get_keyboard_state() const
 	{
 		return this->key_state;

@@ -1,7 +1,6 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_RENDERER_HPP
 #if TZ_VULKAN
-#include "tz/core/window_functionality.hpp"
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/api/component.hpp"
 #include "tz/gl/impl/common/renderer.hpp"
@@ -19,6 +18,7 @@
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 #include "tz/gl/impl/vulkan/detail/fence.hpp"
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
+#include "tz/core/callback.hpp"
 
 namespace tz::gl
 {

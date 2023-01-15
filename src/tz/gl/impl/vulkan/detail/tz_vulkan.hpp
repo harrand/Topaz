@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_TZ_VULKAN_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_TZ_VULKAN_HPP
 #if TZ_VULKAN
-#include "tz/core/window.hpp"
+#include "tz/wsi/window.hpp"
 #include "hdk/data/version.hpp"
 #include "tz/core/game_info.hpp"
 #include "tz/core/tz.hpp"
@@ -155,7 +155,7 @@ namespace tz::gl::vk2
 		/**
 		 * Create a WindowSurface for a given window via an existing VulkanInstance.
 		 */
-		WindowSurface(const VulkanInstance& instance, const tz::Window& window);	
+		WindowSurface(const VulkanInstance& instance, const tz::wsi::window& window);	
 		WindowSurface(const WindowSurface& copy) = delete;
 		WindowSurface(WindowSurface&& move);
 		~WindowSurface();
@@ -164,14 +164,14 @@ namespace tz::gl::vk2
 		WindowSurface& operator=(WindowSurface&& rhs);
 
 		const VulkanInstance& get_instance() const;
-		const tz::Window& get_window() const;
+		const tz::wsi::window& get_window() const;
 
 		using NativeType = VkSurfaceKHR;
 		NativeType native() const;
 	private:
 		VkSurfaceKHR surface;
 		const VulkanInstance* instance;
-		const tz::Window* window;
+		const tz::wsi::window* window;
 	};
 
 	/**
@@ -185,7 +185,7 @@ namespace tz::gl::vk2
 		/// List of extensions to enable. Empty by default.
 		InstanceExtensionList extensions = {};
 		/// Window from which to create a @ref WindowSurface. If nullptr is passed, no @ref WindowSurface is created. Defaults to nullptr.
-		const tz::Window* window = nullptr;
+		const tz::wsi::window* window = nullptr;
 		/// Whether we should attempt to load validation layers or not.
 		bool enable_validation_layers = true;
 	};
