@@ -15,7 +15,8 @@ jobs:
     steps:
       - name: Install necessary linux dependencies
         run:   |
-          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev mesa-common-dev 
+          sudo apt-get update
+          sudo apt-get install libxrandr-dev libxinerama-dev x11-xkb-utils libxcursor-dev libxi-dev mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev 
       - uses: actions/checkout@v2
         with:
           submodules: recursive
