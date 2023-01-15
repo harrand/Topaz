@@ -62,7 +62,10 @@ namespace tz::wsi::impl
 			hdk::report("Setting up window for modern opengl.");
 			this->impl_init_opengl();
 		}
-		ShowWindow(this->hwnd, SW_SHOW);
+		if(!(info.window_flags & window_flag::invisible))
+		{
+			ShowWindow(this->hwnd, SW_SHOW);
+		}
 
 		// Empty keyboard state.
 		std::fill(this->key_state.keys_down.begin(), this->key_state.keys_down.end(), key::unknown);

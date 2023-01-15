@@ -36,13 +36,20 @@ namespace tz
 				window_title = game_info.to_string();
 			#endif // HDK_DEBUG
 
+			tz::wsi::window_flag::flag_bit flags = 0;
+			if(TZ_OGL)
+			{
+				flags |= tz::wsi::window_flag::opengl;
+			}
+			if(init.flags.contains(tz::ApplicationFlag::HiddenWindow))
+			{
+				flags |= tz::wsi::window_flag::invisible;
+			}
 			wnd = tz::wsi::create_window
 			({
 				.title = window_title.c_str(),
 				.dimensions = init.dimensions,
-				#if TZ_OGL
-				.window_flags = tz::wsi::window_flag::opengl
-				#endif
+				.window_flags = flags
 			});
 		}
 		// Finally, initialise render backends.

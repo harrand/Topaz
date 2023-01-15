@@ -72,7 +72,6 @@ The table below shows all the engine's dependencies.
 
 | Dependency                                      |  Render API	 | Build Config  | Dependency Type |
 |-------------------------------------------------|:------------:|:-------------:|-----------------|
-[GLFW](https://www.glfw.org/)                      | Both   | All       | Git Submodule
 |[GLAD](https://github.com/Dav1dde/glad)           | OpenGL | All       | Included in repository
 |[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)  | Vulkan | All       | Requires pre-installation
 |[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)| Vulkan | All       | Git Submodule

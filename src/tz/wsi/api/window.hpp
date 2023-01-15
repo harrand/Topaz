@@ -28,7 +28,9 @@ namespace tz::wsi
 		/// Window cannot be maximised.
 		nomaximise = 0x01 << 5,
 		/// Window cannot be minimised.
-		nominimise = 0x01 << 6;
+		nominimise = 0x01 << 6,
+		/// Window is invisible.
+		invisible = 0x01 << 7;
 	}
 	struct window_info
 	{
