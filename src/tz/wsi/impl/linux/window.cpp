@@ -26,10 +26,10 @@ namespace tz::wsi::impl
 
 	window_x11::~window_x11()
 	{
-		if(this->wnd != -1)
+		if(this->wnd != static_cast<unsigned int>(-1))
 		{
 			this->impl_request_close();
-			this->wnd = -1;
+			this->wnd = static_cast<unsigned int>(-1);
 		}
 	}
 
@@ -50,7 +50,7 @@ namespace tz::wsi::impl
 		return static_cast<hdk::vec2ui>(hdk::vec2i{attr.width, attr.height});
 	}
 
-	void window_x11::set_dimensions(hdk::vec2ui dimensions)
+	void window_x11::set_dimensions([[maybe_unused]] hdk::vec2ui dimensions)
 	{
 		hdk::report("warning: NYI set_dimensions linux");
 	}
@@ -76,7 +76,6 @@ namespace tz::wsi::impl
 
 	void window_x11::update()
 	{
-		const auto& x11d = impl::x11_display();
 		XEvent* evt = impl::get_current_event();
 		if(evt == nullptr || evt->xclient.window != this->wnd) return;
 		XEvent e = *evt;
@@ -227,7 +226,7 @@ namespace tz::wsi::impl
 			None
 		};
 		const char *glx_exts = glXQueryExtensionsString(x11d.display, x11d.screen);
-		if(!is_extension_supported(glx_exts, "GLX_ARB_create_context") || !glXCreateContextAttribsARB)
+		if(!is_extension_supported(glx_exts, "GLX_ARB_create_context"))
 		{
 			hdk::error("glXCreateContextAttribsARB is not supported/available. Cannot create OpenGL context.");
 		}

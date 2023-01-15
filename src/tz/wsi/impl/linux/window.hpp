@@ -2,7 +2,9 @@
 #define TZ_WSI_IMPL_LINUX_WINDOW_HPP
 #ifdef __linux__
 #include "tz/wsi/api/window.hpp"
-#include "tz/wsi/impl/linux/tge_linux.hpp"
+#include "tz/wsi/impl/linux/wsi_linux.hpp"
+// glx includes gl.h, and glad.h does aswell, but will complain if gl.h is already included elsewhere aside from glad.h. For this reason, we include glad.h even though we don't need it, so glx.h has access to ogl types without defining it itself. Now we can go on to include glad elsewhere in another including TU without errors.
+#include "glad/glad.h"
 #include <GL/glx.h>
 #include <optional>
 
