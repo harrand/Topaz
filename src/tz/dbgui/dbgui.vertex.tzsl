@@ -18,7 +18,6 @@ resource(id = 1) const buffer RenderData
 	uint texture_id;
 	uint index_offset;
 	uint vertex_offset;
-	float global_offset;
 } render;
 
 resource(id = 2) const buffer IndexData
@@ -34,7 +33,7 @@ void main()
 {
 	uint index = indices.data[in::vertex_id + render.index_offset];
 	ImGuiVertex vtx = vertices.data[index + render.vertex_offset];
-	out::position = render.vp * vec4(vtx.px, vtx.py + render.global_offset, 0.0f, 1.0f);
+	out::position = render.vp * vec4(vtx.px, vtx.py, 0.0f, 1.0f);
 	vertex_uv = vec2(vtx.uvx, vtx.uvy);
 	vertex_texture_id = render.texture_id;
 

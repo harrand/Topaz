@@ -100,7 +100,7 @@ namespace tz::wsi::impl
 	hdk::vec2ui window_winapi::get_dimensions() const
 	{
 		RECT rect;
-		[[maybe_unused]] bool ret = GetWindowRect(this->hwnd, &rect);
+		[[maybe_unused]] bool ret = GetClientRect(this->hwnd, &rect);
 		hdk::assert(ret, "Failed to retrieve window dimensions. GetLastError() returns %lu", GetLastError());
 		return static_cast<hdk::vec2ui>(hdk::vec2i{rect.right - rect.left, rect.bottom - rect.top});
 	}
