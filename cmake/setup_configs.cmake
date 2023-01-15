@@ -19,8 +19,6 @@ endfunction()
 
 function(configure_opengl target)
 	target_compile_definitions(${target} PUBLIC -DTZ_VULKAN=0 -DTZ_OGL=1)
-	
-	target_link_libraries(${target} PUBLIC glad)
 endfunction()
 
 function(configure_vulkan target)
