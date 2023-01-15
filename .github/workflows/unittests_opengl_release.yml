@@ -22,24 +22,24 @@ jobs:
         with:
           submodules: recursive
       - name: 'Configure Topaz Tests (ogl_gcc_release)'
-        run: cmake --preset opengl_release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_C_COMPILER=gcc-11
+        run: cmake --preset host_opengl_release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_C_COMPILER=gcc-11
       - name: 'Build Unit Tests (ogl_gcc_release)'
-        run: cmake --build ./build/opengl_release --target tztest_build
+        run: cmake --build ./build/Linux_opengl_release --target tztest_build
       - name: 'Check OpenGL Support'
         run:  |
-          cd ${{ github.workspace }}/build/opengl_release
+          cd ${{ github.workspace }}/build/Linux_opengl_release
           echo Retrieving OpenGL supported version...
           xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
-          cd ${{ github.workspace }}/build/opengl_release
+          cd ${{ github.workspace }}/build/Linux_opengl_release
           ctest -V | grep "Test command" | sed 's/[0-9]\+: Test command: \/home\/runner//' > unit_test_executables.txt
           echo Unit Test Executables:
           cat unit_test_executables.txt
       - name: 'Run Unit Tests via xvfb'
         run:  |
-          cd ${{ github.workspace }}/build/opengl_release
+          cd ${{ github.workspace }}/build/Linux_opengl_release
           echo Running all unit tests
           for i in $(cat unit_test_executables.txt)
           do
@@ -61,24 +61,24 @@ jobs:
         with:
           submodules: recursive
       - name: 'Configure Topaz Tests (ogl_clang_release)'
-        run: cmake --preset opengl_release -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12
+        run: cmake --preset host_opengl_release -DCMAKE_CXX_COMPILER=clang++-12 -DCMAKE_C_COMPILER=clang-12
       - name: 'Build Unit Tests (ogl_clang_release)'
-        run: cmake --build ./build/opengl_release --target tztest_build
+        run: cmake --build ./build/Linux_opengl_release --target tztest_build
       - name: 'Check OpenGL Support'
         run:  |
-          cd ${{ github.workspace }}/build/opengl_release
+          cd ${{ github.workspace }}/build/Linux_opengl_release
           echo Retrieving OpenGL supported version...
           xvfb-run -a -s '-screen 0 1024x768x24' glxinfo | grep -i "opengl core profile version" | sed 's/OpenGL core profile version string: //' | sed 's/ (Core Profile).*//' > ogl_version.txt
           cat ogl_version.txt
       - name: 'Collaborate unit test executables'
         run:  |
-          cd ${{ github.workspace }}/build/opengl_release
+          cd ${{ github.workspace }}/build/Linux_opengl_release
           ctest -V | grep "Test command" | sed 's/[0-9]\+: Test command: \/home\/runner//' > unit_test_executables.txt
           echo Unit Test Executables:
           cat unit_test_executables.txt
       - name: 'Run Unit Tests via xvfb'
         run:  |
-          cd ${{ github.workspace }}/build/opengl_release
+          cd ${{ github.workspace }}/build/Linux_opengl_release
           echo Running all unit tests
           for i in $(cat unit_test_executables.txt)
           do
