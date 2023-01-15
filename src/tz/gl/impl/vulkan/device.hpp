@@ -33,24 +33,19 @@ namespace tz::gl
 		bool has_unused_image() const;
 		void mark_image_used();
 
-		RendererResizeCallbackType& resize_callback();
 		std::span<vk2::Image> get_output_images();
 		vk2::Image& get_depth_image();
+		bool request_refresh();
 	private:
 		void set_swapchain_images_debug_name();
 		void make_depth_image();
 		void on_resize(hdk::vec2ui dims);
-		void register_resize();
-		void unregister_resize();
-		bool is_resize_registered() const;
-		void reregister_resize();
 
 		vk2::Swapchain window_buf = vk2::Swapchain::null();
 		vk2::Image old_depth_image = vk2::Image::null();
 		vk2::Image depth_image = vk2::Image::null();
-		tz::CallbackHandle on_resize_handle = hdk::nullhand;
-		RendererResizeCallbackType renderer_resize_callbacks = {};
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
+		hdk::vec2ui window_dims_cache = {};
 	};
 
 	class DeviceRenderSchedulerVulkan

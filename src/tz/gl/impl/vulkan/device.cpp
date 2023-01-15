@@ -96,10 +96,10 @@ namespace tz::gl
 			.image_format = device.get_hardware().get_supported_surface_formats().front(),
 			.present_mode = present_mode
 		}};
+		this->window_dims_cache = tz::window().get_dimensions();
 		this->set_swapchain_images_debug_name();
 
 		this->make_depth_image();
-		this->register_resize();
 	}
 
 	DeviceWindowVulkan::DeviceWindowVulkan(DeviceWindowVulkan&& move):
@@ -110,15 +110,11 @@ namespace tz::gl
 
 	DeviceWindowVulkan::~DeviceWindowVulkan()
 	{
-		this->unregister_resize();
 	}
 
 	DeviceWindowVulkan& DeviceWindowVulkan::operator=(DeviceWindowVulkan&& rhs)
 	{
 		std::swap(this->window_buf, rhs.window_buf);
-		std::swap(this->on_resize_handle, rhs.on_resize_handle);
-		this->reregister_resize();
-		rhs.unregister_resize();
 		return *this;
 	}
 
@@ -166,11 +162,6 @@ namespace tz::gl
 		this->recent_acquire = std::nullopt;
 	}
 
-	RendererResizeCallbackType& DeviceWindowVulkan::resize_callback()
-	{
-		return this->renderer_resize_callbacks;
-	}
-
 	std::span<vk2::Image> DeviceWindowVulkan::get_output_images()
 	{
 		return this->get_swapchain().get_images();
@@ -179,6 +170,18 @@ namespace tz::gl
 	vk2::Image& DeviceWindowVulkan::get_depth_image()
 	{
 		return this->depth_image;
+	}
+
+	bool DeviceWindowVulkan::request_refresh()
+	{
+		auto dims = tz::window().get_dimensions();
+		if(this->window_dims_cache != dims)
+		{
+			this->on_resize(dims);
+			this->window_dims_cache = dims;
+			return true;
+		}
+		return false;
 	}
 
 	void DeviceWindowVulkan::set_swapchain_images_debug_name()
@@ -222,7 +225,7 @@ namespace tz::gl
 		if(dims[0] == 0 || dims[1] == 0)
 		{
 			// Cannot create a swapchain, We just hold off on rendering.
-			//tz::WindowFunctionality::block_until_event_happens();
+			tz::wsi::wait_for_event();
 			return;
 		}
 		vk2::Swapchain new_swapchain
@@ -237,38 +240,6 @@ namespace tz::gl
 		this->old_depth_image = std::move(this->depth_image);
 		this->make_depth_image();
 		this->set_swapchain_images_debug_name();
-		// Now notify all renderers.
-		this->renderer_resize_callbacks
-		({
-			.new_dimensions = dims,
-			.new_output_images = this->get_output_images(),
-			.new_depth_image = &this->depth_image
-		});
-	}
-
-	void DeviceWindowVulkan::register_resize()
-	{
-		//this->on_resize_handle = tz::window().on_resize().add_callback([this](hdk::vec2ui dims){this->on_resize(dims);});
-	}
-
-	void DeviceWindowVulkan::unregister_resize()
-	{
-		//if(this->is_resize_registered())
-		//{
-		//	tz::window().on_resize().remove_callback(this->on_resize_handle);
-		//	this->on_resize_handle = hdk::nullhand;
-		//}
-	}
-
-	bool DeviceWindowVulkan::is_resize_registered() const
-	{
-		return this->on_resize_handle != hdk::nullhand;
-	}
-	
-	void DeviceWindowVulkan::reregister_resize()
-	{
-		//this->unregister_resize();
-		//this->register_resize();
 	}
 
 //--------------------------------------------------------------------------------------------------

@@ -1214,24 +1214,7 @@ namespace tz::gl
 	debug_name(info.debug_get_name())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Create", 0xFFAAAA00);
-
-		//	By default, we don't need to know about resizes.	
-		bool care_about_resizes = false;
-		// If we render into a window, or there is no output, then we need to know about resizes.
-		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
-		{
-			care_about_resizes = true;
-		}
-		// If instead we're rendering into an image, and depth testing is enabled, *but* there is no depth image provided, then we're gonna use the device's depth image which can be resized, and thus we care about resizes.
-		else if(info.get_output() != nullptr && info.get_output()->get_target() == OutputTarget::OffscreenImage && !static_cast<const ImageOutput*>(info.get_output())->has_depth_attachment() && !info.get_options().contains(RendererOption::NoDepthTesting))
-		{
-			care_about_resizes = true;
-		}
-		
-		if(care_about_resizes)
-		{
-			this->window_resize_callback = device().get_device_window().resize_callback().add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
-		}
+		this->window_dims_cache = tz::window().get_dimensions();
 
 		this->setup_static_resources();
 		this->setup_work_commands();
@@ -1267,16 +1250,8 @@ namespace tz::gl
 	pipeline(std::move(move.pipeline)),
 	command(std::move(move.command)),
 	debug_name(std::move(move.debug_name)),
-	window_resize_callback(move.window_resize_callback),
 	scissor_cache(move.scissor_cache)
 	{
-		auto& callback = device().get_device_window().resize_callback();
-		
-		if(this->window_resize_callback != hdk::nullhand)
-		{
-			callback.remove_callback(this->window_resize_callback);
-		}
-		this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
 	}
 
 	RendererVulkan::~RendererVulkan()
@@ -1284,11 +1259,6 @@ namespace tz::gl
 		if(this->is_null())
 		{
 			return;
-		}
-		if(this->window_resize_callback != hdk::nullhand)
-		{
-			device().get_device_window().resize_callback().remove_callback(this->window_resize_callback);
-			this->window_resize_callback = hdk::nullhand;
 		}
 		this->ldev->wait_until_idle();
 	}
@@ -1303,30 +1273,7 @@ namespace tz::gl
 		std::swap(this->pipeline, rhs.pipeline);
 		std::swap(this->command, rhs.command);
 		std::swap(this->debug_name, rhs.debug_name);
-		std::swap(this->window_resize_callback, rhs.window_resize_callback);
 		std::swap(this->scissor_cache, rhs.scissor_cache);
-		auto& callback = device().get_device_window().resize_callback();
-		if(this->is_null() && rhs.is_null())
-		{
-
-		}
-		else if(this->is_null() && !rhs.is_null())
-		{
-			hdk::assert(this->window_resize_callback == hdk::nullhand);
-			callback.remove_callback(rhs.window_resize_callback);
-		}
-		else if(!this->is_null() && rhs.is_null())
-		{
-			hdk::assert(rhs.window_resize_callback == hdk::nullhand);
-			callback.remove_callback(this->window_resize_callback);
-			this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
-		}
-		else
-		{
-			callback.remove_callback(rhs.window_resize_callback);
-			callback.remove_callback(this->window_resize_callback);
-			this->window_resize_callback = callback.add_callback([this](RendererResizeInfoVulkan resize_info){this->handle_resize(resize_info);});
-		}
 		return *this;
 	}
 
@@ -1378,6 +1325,15 @@ namespace tz::gl
 	void RendererVulkan::render()
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Render", 0xFFAAAA00);
+		if(tz::window().get_dimensions() == hdk::vec2ui::zero())
+		{
+			tz::wsi::wait_for_event();
+			return;
+		}
+		if(tz::window().get_dimensions() != this->window_dims_cache)
+		{
+			this->handle_swapchain_outdated();
+		}
 		
 		// If output scissor region has changed, we need to rerecord.
 		if(this->get_output() != nullptr)
@@ -1403,7 +1359,23 @@ namespace tz::gl
 				case vk2::hardware::Queue::PresentResult::Success_Suboptimal:
 				[[fallthrough]];
 				case vk2::hardware::Queue::PresentResult::Success:
-
+					this->present_failure_count = 0;
+				break;
+				case vk2::hardware::Queue::PresentResult::Fail_OutOfDate:
+				{
+					this->present_failure_count++;
+					[[maybe_unused]] bool success = this->handle_swapchain_outdated();
+					hdk::assert(success, "Presentation failed - swapchain was out of date and recreation didn't help after %zu attempts. Please submit a bug report.", this->present_failure_count);
+				}
+				break;
+				case vk2::hardware::Queue::PresentResult::Fail_AccessDenied:
+					hdk::error("Presentation failed - access denied. Please submit a bug report.");
+				break;
+				case vk2::hardware::Queue::PresentResult::Fail_SurfaceLost:
+					hdk::error("Presentation failed - surface lost. Please submit a bug report.");
+				break;
+				case vk2::hardware::Queue::PresentResult::Fail_FatalError:
+					hdk::error("Presentation failed - other fatal error. Please submit a bug report.");
 				break;
 				default:
 					hdk::error("Presentation failed, but for unknown reason. Please submit a bug report.");
@@ -1946,6 +1918,21 @@ namespace tz::gl
 		{
 			this->setup_render_commands();
 		}
+	}
+
+	bool RendererVulkan::handle_swapchain_outdated()
+	{
+		// Tell the DeviceWindow to update.
+		tz::gl::device().get_device_window().request_refresh();
+		auto& devwnd = tz::gl::device().get_device_window();
+		this->handle_resize
+		({
+			.new_dimensions = devwnd.get_swapchain().get_dimensions(),
+			.new_output_images = devwnd.get_output_images(),
+			.new_depth_image = &devwnd.get_depth_image()
+		});
+		this->window_dims_cache = tz::window().get_dimensions();
+		return this->present_failure_count <= 1;
 	}
 
 	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)

@@ -435,8 +435,10 @@ namespace tz::gl
 		void setup_render_commands();
 		void setup_compute_commands();
 		void setup_work_commands();
+		bool handle_swapchain_outdated();
 		void handle_resize(const RendererResizeInfoVulkan& resize_info);
 
+		std::size_t present_failure_count = 0;
 		// LogicalDevice that every vulkan backend object will use.
 		vk2::LogicalDevice* ldev = nullptr;
 		// Contains which renderer options were enabled.
@@ -452,9 +454,8 @@ namespace tz::gl
 		/// Helper object for managing/executing/scheduling GPU work.
 		CommandProcessor command = {};
 		std::string debug_name = "Null Renderer";
-		/// Handle representing the registration of our callback function from `device_resize_callback`.
-		tz::CallbackHandle window_resize_callback = hdk::nullhand;
 		tz::gl::ScissorRegion scissor_cache = tz::gl::ScissorRegion::null();
+		hdk::vec2ui window_dims_cache = {};
 	};
 
 	static_assert(RendererType<RendererVulkan>);

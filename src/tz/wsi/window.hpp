@@ -21,6 +21,10 @@ namespace tz::wsi
 		{
 			return impl::get_opengl_proc_address_windows(name);
 		}
+		inline void wait_for_event()
+		{
+			WaitMessage();
+		}
 	#elif defined(__linux__)
 		using window = impl::window_x11;
 		#if TZ_VULKAN
@@ -29,6 +33,10 @@ namespace tz::wsi
 		inline void* get_opengl_proc_address(const char* name)
 		{
 			return impl::get_opengl_proc_address_linux(name);
+		}
+		inline void wait_for_event()
+		{
+			hdk::error("wait_for_event on linux is NYI");
 		}
 	#else
 		static_assert(false, "Window Implementation does not seem to exist for this platform.");
