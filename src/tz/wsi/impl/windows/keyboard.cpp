@@ -2,6 +2,7 @@
 #include "tz/wsi/impl/windows/keyboard.hpp"
 #include "hdk/debug.hpp"
 #include <cstring>
+#include <algorithm>
 
 namespace tz::wsi::impl
 {
