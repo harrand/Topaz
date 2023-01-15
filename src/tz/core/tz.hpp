@@ -128,6 +128,8 @@ namespace tz
 	 * @details This destroys the render-api backend. If a window was created previously by `tz::initialise`, then it will be destroyed here.
 	 */
 	void terminate();
+	void begin_frame();
+	void end_frame();
 	/**
 	 * @ingroup tz_core_init
 	 * @brief Retrieve the application window.

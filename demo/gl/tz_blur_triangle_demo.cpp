@@ -1,5 +1,4 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/window.hpp"
 #include "hdk/profile.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
@@ -62,14 +61,14 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
-			tz::window().begin_frame();
+			tz::begin_frame();
 			renderer.render(1);
 			BlurData& blur = blur_renderer.get_resource(blur_buffer_handle)->data_as<BlurData>().front();
 			static float counter = 0.0f;
 			blur.direction = hdk::vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
 			counter += 0.0003f;
 			blur_renderer.render(1);
-			tz::window().end_frame();
+			tz::end_frame();
 		}
 	}
 	tz::terminate();

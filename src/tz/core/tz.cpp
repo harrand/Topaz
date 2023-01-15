@@ -78,6 +78,19 @@ namespace tz
 		initialised = false;
 	}
 
+	void begin_frame()
+	{
+		HDK_FRAME_BEGIN;
+		tz::dbgui::begin_frame();
+	}
+
+	void end_frame()
+	{
+		tz::dbgui::end_frame();
+		tz::wsi::update();
+		HDK_FRAME_END;
+	}
+
 	tz::wsi::window& window()
 	{
 		return tz::wsi::get_window(wnd);

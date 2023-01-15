@@ -1,5 +1,4 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/window.hpp"
 #include "hdk/profile.hpp"
 #include "tz/core/time.hpp"
 #include "tz/gl/device.hpp"
@@ -115,9 +114,9 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
-			tz::window().begin_frame();
+			tz::begin_frame();
 			renderer.render(triangle_count);
-			tz::window().end_frame();
+			tz::end_frame();
 
 			static bool up = true;
 			if(fixed_update.done())

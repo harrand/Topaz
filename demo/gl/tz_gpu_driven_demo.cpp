@@ -32,10 +32,10 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
-			tz::window().begin_frame();
+			tz::begin_frame();
 			tz::gl::device().get_renderer(ch).render();
 			tz::gl::device().get_renderer(rh).render(1);	
-			tz::window().end_frame();
+			tz::end_frame();
 		}
 	}
 	tz::terminate();

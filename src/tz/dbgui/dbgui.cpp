@@ -453,7 +453,7 @@ namespace tz::dbgui
 			else
 			{
 				// Offset everything due to the window title bar. No need to do this if we're a bare window (or fullscreen). Really ought not to hard-code this.
-				shader_data.global_offset = 40.0f;
+				shader_data.global_offset = 39.0f;
 			}
 			const ImGuiIO& io = ImGui::GetIO();
 			shader_data.vp = tz::orthographic(

@@ -52,10 +52,12 @@ hdk_add_library(TARGET topaz
 	src/tz/wsi/keyboard.hpp
 	src/tz/wsi/monitor.cpp
 	src/tz/wsi/monitor.hpp
-	src/tz/wsi/wsi.hpp
-	src/tz/wsi/wsi.cpp
+	src/tz/wsi/mouse.cpp
+	src/tz/wsi/mouse.hpp
 	src/tz/wsi/window.cpp
 	src/tz/wsi/window.hpp
+	src/tz/wsi/wsi.hpp
+	src/tz/wsi/wsi.cpp
 	# tz/wsi api
 	src/tz/wsi/api/keyboard.hpp
 	src/tz/wsi/api/mouse.hpp

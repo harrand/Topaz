@@ -1,6 +1,7 @@
 #include "tz/wsi/keyboard.hpp"
 #include "tz/wsi/impl/linux/keyboard.hpp"
 #include "tz/wsi/impl/windows/keyboard.hpp"
+#include <algorithm>
 
 namespace tz::wsi
 {
@@ -26,5 +27,10 @@ namespace tz::wsi
 			static_assert(false, "tz::wsi::get_chars_typed not implemented for target platform.");
 			return "";
 		#endif
+	}
+
+	bool is_key_down(const keyboard_state& kb, tz::wsi::key key)
+	{
+		return std::find(kb.keys_down.begin(), kb.keys_down.end(), key) != kb.keys_down.end();
 	}
 }

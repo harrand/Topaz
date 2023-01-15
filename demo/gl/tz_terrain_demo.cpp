@@ -1,5 +1,6 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/window.hpp"
+#include "tz/wsi/keyboard.hpp"
+#include "tz/wsi/mouse.hpp"
 #include "hdk/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "tz/core/time.hpp"
@@ -69,7 +70,7 @@ int main()
 		constexpr float multiplier = 3.5f;
 		while(!tz::window().is_close_requested())
 		{
-			tz::window().begin_frame();
+			tz::begin_frame();
 			renderer.render(4);
 
 			tz::dbgui::run([&flight_enabled, &game_menu_enabled]()
@@ -91,9 +92,10 @@ int main()
 				hdk::vec3& camera_position = bufd.camera_position;
 
 				// Dragging the mouse influences the camera rotation.
-				static hdk::vec2i mouse_position;
-				auto mpi = static_cast<hdk::vec2i>(tz::window().get_mouse_position_state().get_mouse_position());
-				if(tz::window().get_mouse_button_state().is_mouse_button_down(tz::MouseButton::Left) && !tz::dbgui::claims_mouse())
+				static hdk::vec2ui mouse_position;
+				const auto& ms = tz::window().get_mouse_state();
+				hdk::vec2ui mpi = ms.mouse_position;
+				if(tz::wsi::is_mouse_button_down(ms, tz::wsi::mouse_button::left) && !tz::dbgui::claims_mouse())
 				{
 					// Get mouse delta since last frame.
 					hdk::vec2i mouse_delta = mpi - mouse_position;
@@ -107,7 +109,8 @@ int main()
 				camera_position_height_only[0] = camera_position_height_only[2] = 0.0f;
 				bufd.view = tz::view(camera_position_height_only, cam_rot);
 				// Recalculate projection every fixed update. This is a massive waste of time but easily guarantees no distortion if the window is ever resized.
-				const float aspect_ratio = static_cast<float>(tz::window().get_width()) / tz::window().get_height();
+				auto fdims = static_cast<hdk::vec2>(tz::window().get_dimensions());
+				const float aspect_ratio = fdims[0] / fdims[1];
 				bufd.projection = tz::perspective(1.6f, aspect_ratio, 0.1f, 1000.0f);
 				// WASD move the camera position around. Space and LeftShift move camera directly up or down.
 
@@ -115,19 +118,20 @@ int main()
 				hdk::vec4 cam_right4 = bufd.view * hdk::vec4{-1.0f, 0.0f, 0.0f, 0.0f};
 				hdk::vec3 cam_forward = cam_forward4.swizzle<0, 1, 2>();
 				hdk::vec3 cam_right = cam_right4.swizzle<0, 1, 2>();
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::W))
+				const auto& kb = tz::window().get_keyboard_state();
+				if(tz::wsi::is_key_down(kb, tz::wsi::key::w))
 				{
 					camera_position += cam_forward * multiplier;
 				}
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::S))
+				if(tz::wsi::is_key_down(kb, tz::wsi::key::s))
 				{
 					camera_position -= cam_forward * multiplier;
 				}
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::A))
+				if(tz::wsi::is_key_down(kb, tz::wsi::key::a))
 				{
 					camera_position += cam_right * multiplier;
 				}
-				if(tz::window().get_keyboard_state().is_key_down(tz::KeyCode::D))
+				if(tz::wsi::is_key_down(kb, tz::wsi::key::d))
 				{
 					camera_position -= cam_right * multiplier;
 				}
@@ -139,7 +143,7 @@ int main()
 					camera_position[1] += std::clamp(dist_to_terrain * 0.3f, -5.0f, 5.0f);
 				}
 			}
-			tz::window().end_frame();
+			tz::end_frame();
 		}
 	}
 	tz::terminate();

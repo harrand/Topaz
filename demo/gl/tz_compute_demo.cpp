@@ -1,5 +1,4 @@
 #include "tz/core/tz.hpp"
-#include "tz/core/window.hpp"
 #include "hdk/profile.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
@@ -54,7 +53,7 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
-			tz::window().begin_frame();
+			tz::begin_frame();
 			compute_worker.render();
 			renderer.render(1);
 
@@ -80,7 +79,7 @@ int main()
 				}
 			});
 
-			tz::window().end_frame();
+			tz::end_frame();
 		}
 	}
 	tz::terminate();

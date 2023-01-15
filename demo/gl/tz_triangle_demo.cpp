@@ -22,15 +22,11 @@ int main()
 		rinfo.set_options({tz::gl::RendererOption::NoDepthTesting});
 
 		tz::gl::RendererHandle renh = tz::gl::device().create_renderer(rinfo);
-
 		while(!tz::window().is_close_requested())
 		{
-			HDK_FRAME_BEGIN;
-			tz::dbgui::begin_frame();
+			tz::begin_frame();
 			tz::gl::device().get_renderer(renh).render(1);
-			tz::dbgui::end_frame();
-			tz::wsi::update();
-			HDK_FRAME_END;
+			tz::end_frame();
 		}
 	}
 	tz::terminate();

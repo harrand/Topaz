@@ -119,7 +119,7 @@ int main()
 
 		while(!tz::window().is_close_requested())
 		{
-			tz::window().begin_frame();
+			tz::begin_frame();
 			renderer.render(3);
 			combine.render(1);
 
@@ -145,7 +145,7 @@ int main()
 					ImGui::End();
 				}
 			});
-			tz::window().end_frame();
+			tz::end_frame();
 		}
 	}
 	tz::terminate();
