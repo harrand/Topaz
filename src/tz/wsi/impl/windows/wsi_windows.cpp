@@ -12,7 +12,7 @@ namespace tz::wsi::impl
 	constexpr WNDCLASSEXA wndclass_gpuacc
 	{
 		.cbSize = sizeof(WNDCLASSEX),
-		.style = CS_OWNDC | CS_DBLCLKS,
+		.style = CS_OWNDC | CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW,
 		.lpfnWndProc = wndproc,
 		.cbClsExtra = 0,
 		.cbWndExtra = 0,
@@ -82,20 +82,6 @@ namespace tz::wsi::impl
 			case WM_CLOSE:
 				get_window()->impl_request_close();	
 				return FALSE;
-			break;
-			case WM_DESTROY:
-			break;
-			case WM_PAINT:
-			{
-				HDK_PROFZONE("Tangle - win32 wndproc paint", 0xffff00ff);
-				if(!get_window()->impl_is_opengl())
-				{
-					PAINTSTRUCT ps;
-					HDC hdc = BeginPaint(hwnd, &ps);
-					FillRect(hdc, &ps.rcPaint, CreateSolidBrush(RGB(0, 0, 0)));
-					EndPaint(hwnd, &ps);
-				}
-			}
 			break;
 			case WM_KEYDOWN:
 			{
