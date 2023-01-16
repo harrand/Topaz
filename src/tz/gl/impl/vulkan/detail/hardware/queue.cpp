@@ -123,7 +123,7 @@ namespace tz::gl::vk2::hardware
 		switch(res)
 		{
 			case VK_SUCCESS:
-				pres_result = PresentResult::Success;
+				pres_result = PresentResult::Success_NoIssue;
 			break;
 			case VK_SUBOPTIMAL_KHR:
 				pres_result = PresentResult::Success_Suboptimal;

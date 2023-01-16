@@ -1168,7 +1168,7 @@ namespace tz::gl
 		}
 		else
 		{
-			result.present = vk2::hardware::Queue::PresentResult::Success;
+			result.present = vk2::hardware::Queue::PresentResult::Success_NoIssue;
 		}
 
 		this->current_frame = (this->current_frame + 1) % this->frame_in_flight_count;
@@ -1358,7 +1358,7 @@ namespace tz::gl
 			{
 				case vk2::hardware::Queue::PresentResult::Success_Suboptimal:
 				[[fallthrough]];
-				case vk2::hardware::Queue::PresentResult::Success:
+				case vk2::hardware::Queue::PresentResult::Success_NoIssue:
 					this->present_failure_count = 0;
 				break;
 				case vk2::hardware::Queue::PresentResult::Fail_OutOfDate:

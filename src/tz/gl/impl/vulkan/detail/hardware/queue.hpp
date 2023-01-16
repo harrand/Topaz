@@ -96,7 +96,7 @@ namespace tz::gl::vk2
 			enum class PresentResult
 			{
 				/// - Presentation request succeeded without any issues.
-				Success,
+				Success_NoIssue,
 				/// - Presentation request succeeded, but swapchain no longer matches surface properly. It should be updated.
 				Success_Suboptimal,
 				/// - Presentation request failed because the swapchain is no longer comapatible with the surface. It should be updated.
