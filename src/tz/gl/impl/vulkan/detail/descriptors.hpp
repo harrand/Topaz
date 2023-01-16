@@ -354,7 +354,7 @@ namespace tz::gl::vk2
 			enum class AllocationResultType
 			{
 				/// - Allocation succeeded. Valid DescriptorSets available within the returned list.
-				Success,
+				AllocationSuccess,
 				/// - Allocation failed. Fatal error occurred. No way of recovery.
 				FatalError,
 				/// - Allocation failed. Pool technically had enough memory for the allocation, but it was fragmented.

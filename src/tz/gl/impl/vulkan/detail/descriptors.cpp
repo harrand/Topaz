@@ -370,7 +370,7 @@ namespace tz::gl::vk2
 
 	bool DescriptorPool::AllocationResult::success() const
 	{
-		return this->type == DescriptorPool::AllocationResult::AllocationResultType::Success;
+		return this->type == DescriptorPool::AllocationResult::AllocationResultType::AllocationSuccess;
 	}
 
 	void DescriptorPool::UpdateRequest::add_set_edit(DescriptorSet::EditRequest set_edit)
@@ -535,7 +535,7 @@ namespace tz::gl::vk2
 		switch(res)
 		{
 			case VK_SUCCESS:
-				ret.type = AllocationResult::AllocationResultType::Success;
+				ret.type = AllocationResult::AllocationResultType::AllocationSuccess;
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
 				hdk::error("Failed to allocate DescriptorSets because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
