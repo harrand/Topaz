@@ -748,6 +748,7 @@ namespace tz::dbgui
 			std::swap(colours[i].y, colours[i].x);
 			if(colours[i].x < 0.98f)
 				colours[i].x *= 0.5f;
+			colours[i].w = 1.0f;
 		}
 		colours[ImGuiCol_CheckMark].x *= 2.0f;
 		colours[ImGuiCol_CheckMark].y *= 2.0f;
