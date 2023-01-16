@@ -1578,7 +1578,7 @@ namespace tz::gl
 							({
 								.image = &image,
 								.target_layout = vk2::ImageLayout::TransferDestination,
-								.source_access = {vk2::AccessFlag::None},
+								.source_access = {vk2::AccessFlag::NoneNeeded},
 								.destination_access = {vk2::AccessFlag::TransferOperationWrite},
 								.source_stage = vk2::PipelineStage::Top,
 								.destination_stage = vk2::PipelineStage::TransferCommands,
@@ -1736,7 +1736,7 @@ namespace tz::gl
 				({
 					.image = &image_components[i]->vk_get_image(),
 					.target_layout = vk2::ImageLayout::TransferDestination,
-					.source_access = {vk2::AccessFlag::None},
+					.source_access = {vk2::AccessFlag::NoneNeeded},
 					.destination_access = {vk2::AccessFlag::TransferOperationWrite},
 					.source_stage = vk2::PipelineStage::Top,
 					.destination_stage = vk2::PipelineStage::TransferCommands,

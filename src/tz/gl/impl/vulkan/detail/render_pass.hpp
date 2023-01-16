@@ -50,7 +50,7 @@ namespace tz::gl::vk2
 	enum class AccessFlag
 	{
 		/// - Doesn't need to happen.
-		None = VK_ACCESS_NONE_KHR,
+		NoneNeeded = VK_ACCESS_NONE_KHR,
 		/// - Anytime any read is done.
 		AllReads = VK_ACCESS_MEMORY_READ_BIT,
 		/// - Anytime any write is done.
