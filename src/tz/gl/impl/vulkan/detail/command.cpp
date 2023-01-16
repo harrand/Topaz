@@ -472,7 +472,7 @@ namespace tz::gl::vk2
 
 	bool CommandPool::AllocationResult::success() const
 	{
-		return this->type == CommandPool::AllocationResult::AllocationResultType::Success;
+		return this->type == CommandPool::AllocationResult::AllocationResultType::AllocationSuccess;
 	}
 
 	CommandPool::CommandPool(CommandPoolInfo info):
@@ -551,7 +551,7 @@ namespace tz::gl::vk2
 		switch(res)
 		{
 			case VK_SUCCESS:
-				alloc_res.type = CommandPool::AllocationResult::AllocationResultType::Success;
+				alloc_res.type = CommandPool::AllocationResult::AllocationResultType::AllocationSuccess;
 				for(CommandBuffer::NativeType cmd_buf_native : cmd_buf_natives)
 				{
 					alloc_res.buffers.add({*this, cmd_buf_native});

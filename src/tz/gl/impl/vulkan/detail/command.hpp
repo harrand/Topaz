@@ -446,7 +446,7 @@ namespace tz::gl::vk2
 			/// Describes how well an allocation went.
 			enum class AllocationResultType
 			{
-				Success,
+				AllocationSuccess,
 				FatalError
 			};
 
