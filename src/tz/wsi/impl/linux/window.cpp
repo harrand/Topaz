@@ -230,6 +230,10 @@ namespace tz::wsi::impl
 		{
 			hdk::error("glXCreateContextAttribsARB is not supported/available. Cannot create OpenGL context.");
 		}
+		typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+
+		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = reinterpret_cast<glXCreateContextAttribsARBProc>(reinterpret_cast<void*>(glXGetProcAddressARB(reinterpret_cast<const GLubyte*>("glXCreateContextAttribsARB"))));
+		hdk::assert(glXCreateContextAttribsARB != nullptr);
 		this->ctx = glXCreateContextAttribsARB(x11d.display, best_config, nullptr, True, attribs);
 		hdk::assert(this->ctx != nullptr, "Could create OpenGL context :(");
 		this->make_opengl_context_current();	
