@@ -17,6 +17,7 @@ static_assert("Platform not supported for a vulkan build.");
 namespace tz::wsi
 {
 	/**
+	 * @ingroup tz_wsi_window
 	 * Represents an optional setting for a `tz::wsi::window`. For default behaviour, refer to @ref window_flag::none
 	 */
 	namespace window_flag
@@ -42,13 +43,25 @@ namespace tz::wsi
 		/// Window is invisible.
 		invisible = 0x01 << 7;
 	}
+
+	/**
+	 * @ingroup tz_wsi_window
+	 * Specifies creation flags for a `wsi::window`.
+	 */
 	struct window_info
 	{
+		/// Title of the window. Default is "Untitled".
 		const char* title = "Untitled";
+		/// Dimensions of the window, in pixels. Default is 800x600.
 		hdk::vec2ui dimensions = {800u, 600u};
+		/// Extra behaviour for the window. Default is none.
 		window_flag::flag_bit window_flags = window_flag::none;
 	};
 
+	/**
+	 * @ingroup tz_wsi_window
+	 * Represents an API for a window. `wsi::window` is implemented separately per platform, but all implementations are guaranteed to satisfy this api.
+	 */
 	template<typename T>
 	concept window_api = requires(T t, hdk::vec2ui dims, void* addr, std::string str
 	#if TZ_VULKAN

@@ -5,6 +5,11 @@
 
 namespace tz::wsi
 {
+	/**
+	 * @ingroup tz_wsi_monitor
+	 * Retrieve a list of all hardware monitors currently connected to the machine.
+	 * @note The primary monitor is guaranteed to be the first element of this list.
+ 	 */
 	std::vector<tz::wsi::monitor> get_monitors();
 }
 

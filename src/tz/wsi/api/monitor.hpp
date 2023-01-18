@@ -5,9 +5,15 @@
 
 namespace tz::wsi
 {
+	/**
+	 * @ingroup tz_wsi_monitor
+	 * Represents information about a monitor.
+	 */ 
 	struct monitor
 	{
+		/// Implementation-defined name. Not guaranteed to be unique.
 		std::string name;
+		/// Dimensions of the monitor, in pixels.
 		hdk::vec2ui dimensions;
 	};
 }
