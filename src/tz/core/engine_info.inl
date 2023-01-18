@@ -5,23 +5,23 @@
 
 namespace tz
 {
-	EngineInfo info()
+	engine_info info()
 	{
-		EngineInfo inf{};
+		engine_info inf{};
 		#if TZ_VULKAN
-			inf.renderer = EngineInfo::RenderAPI::Vulkan;
+			inf.renderer = engine_info::render_api::vulkan;
 		#elif TZ_OGL
-			inf.renderer = EngineInfo::RenderAPI::OpenGL;
+			inf.renderer = engine_info::render_api::opengl;
 		#else
-			static_assert(false, "tz::info(): No RenderAPI has been set. Can't build.");
+			static_assert(false, "tz::info(): No render_api has been set. Can't build.");
 		#endif
 
 		#if HDK_DEBUG
-			inf.build = EngineInfo::BuildConfig::Debug;
+			inf.build = engine_info::build_config::debug;
 		#elif HDK_PROFILE
-			inf.build = EngineInfo::BuildConfig::Profile;
+			inf.build = engine_info::build_config::profile;
 		#else
-			inf.build = EngineInfo::BuildConfig::Release;
+			inf.build = engine_info::build_config::release;
 		#endif
 		
 		inf.version = hdk::version::from_binary_string(TZ_VERSION);

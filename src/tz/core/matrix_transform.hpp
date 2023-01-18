@@ -11,7 +11,7 @@ namespace tz
 {
 	/**
 	 * @ingroup tz_core_vecmat
-	 * @defgroup tz_core_vecmat_transform Matrix Transformations
+	 * @defgroup tz_core_vecmat_transform matrix Transformations
 	 * Documentation for matrix transformation functions.
 	 */
 
@@ -22,7 +22,7 @@ namespace tz
 	 * - Translates the result position[1] units in the positive y-direction.
 	 * - Translates the result position[2] units in the positive z-direction.
 	 */
-	Mat4 translate(hdk::vec3 position);
+	mat4 translate(hdk::vec3 position);
 	/**
 	 * @ingroup tz_core_vecmat_transform
 	 * Generates a matrix which performs the following three transformations, in chronological order:
@@ -30,7 +30,7 @@ namespace tz
 	 * - Rotates the result rotation[1] radians about the y-axis.
 	 * - Rotates the result rotation[2] radians about the z-axis.
 	 */
-	Mat4 rotate(hdk::vec3 rotation);
+	mat4 rotate(hdk::vec3 rotation);
 	/**
 	 * @ingroup tz_core_vecmat_transform
 	 * Generates a matrix which performs the following transformations at once:
@@ -38,30 +38,30 @@ namespace tz
 	 * - Multiplies each value by scale[1] in the y-direction.
 	 * - Multiplies each value by scale[2] in the z-direction.
 	 */
-	Mat4 scale(hdk::vec3 scale);
+	mat4 scale(hdk::vec3 scale);
 	/**
 	 * @ingroup tz_core_vecmat_transform
 	 * Generates a model matrix using the given position, euler-rotation and scale vectors.
 	 * Note: This can be used to transform positions within model-space to world-space.
 	 */
-	Mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale);
+	mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale);
 	/**
 	 * @ingroup tz_core_vecmat_transform
 	 * Generates a view matrix using the given view position and rotation.
 	 * Note: This can be used to transform positions within world-space to camera-space.
 	 */
-	Mat4 view(hdk::vec3 position, hdk::vec3 rotation);
+	mat4 view(hdk::vec3 position, hdk::vec3 rotation);
 	/**
 	 * @ingroup tz_core_vecmat_transform
 	 * Generates a perspective projection matrix using the given camera properties. The properties generate a regular pyramidal-frustum-shaped projection.
 	 * Note: This can be used to transform positions within camera-space to clip-space.
 	 */
-	Mat4 perspective(float fov, float aspect_ratio, float near, float far);
+	mat4 perspective(float fov, float aspect_ratio, float near, float far);
 	/**
 	 * @ingroup tz_core_vecmat_transform
 	 * Generates an orthographic projection matrix using the given camera properties. The properties generate a cube-shaped projection.
 	 */
-	Mat4 orthographic(float left, float right, float top, float bottom, float near, float far);
+	mat4 orthographic(float left, float right, float top, float bottom, float near, float far);
 }
 
 #endif // TOPAZ_CORE_MATRIX_TRANSFORM_HPP

@@ -11,11 +11,11 @@ namespace tz
 	 * @ingroup tz_core_time
 	 * Represents some duration, expressable as a quantity of most time metrics.
 	 */
-	class Duration
+	class duration
 	{
 	public:
-		Duration() = default;
-		constexpr Duration(unsigned long long nanos):
+		duration() = default;
+		constexpr duration(unsigned long long nanos):
 		duration_nanos(nanos){}
 
 		/**
@@ -88,14 +88,14 @@ namespace tz
 			return this->hours<N>() / N{24};
 		}
 
-		constexpr auto operator<=>(const Duration& rhs) const = default;
-		constexpr Duration& operator+=(const Duration& rhs)
+		constexpr auto operator<=>(const duration& rhs) const = default;
+		constexpr duration& operator+=(const duration& rhs)
 		{
 			this->duration_nanos += rhs.duration_nanos;
 			return *this;
 		}
 
-		constexpr Duration& operator-=(const Duration& rhs)
+		constexpr duration& operator-=(const duration& rhs)
 		{
 			if(!std::is_constant_evaluated())
 			{
@@ -105,12 +105,12 @@ namespace tz
 			return *this;
 		}
 
-		constexpr Duration operator+(const Duration& rhs) const
+		constexpr duration operator+(const duration& rhs) const
 		{
 			return {this->duration_nanos + rhs.duration_nanos};
 		}
 
-		constexpr Duration operator-(const Duration& rhs) const
+		constexpr duration operator-(const duration& rhs) const
 		{
 			return {this->duration_nanos - rhs.duration_nanos};
 		}
@@ -120,22 +120,22 @@ namespace tz
 
 	namespace literals
 	{
-		constexpr Duration operator""_ns(unsigned long long count)
+		constexpr duration operator""_ns(unsigned long long count)
 		{
 			return {count};
 		}
 
-		constexpr Duration operator""_us(unsigned long long count)
+		constexpr duration operator""_us(unsigned long long count)
 		{
 			return {count * 1000ull};
 		}
 
-		constexpr Duration operator""_ms(unsigned long long count)
+		constexpr duration operator""_ms(unsigned long long count)
 		{
 			return {count * 1000000ull};
 		}
 
-		constexpr Duration operator""_s(unsigned long long count)
+		constexpr duration operator""_s(unsigned long long count)
 		{
 			return {count * 1000000000ull};
 		}
@@ -145,7 +145,7 @@ namespace tz
 	 * @ingroup tz_core_time
 	 * Retrieve a duration corresponding to the time passed since epoch.
 	 */
-	Duration system_time();
+	duration system_time();
 
 	/**
 	 * @ingroup tz_core_time
@@ -156,9 +156,9 @@ namespace tz
 	public:
 		/**
 		 * Create a new delay object. The current system time is used.
-		 * @param delay_length Duration of the delay which should pass after construction before becoming truthy.
+		 * @param delay_length duration of the delay which should pass after construction before becoming truthy.
 		 */
-		Delay(Duration delay_length);
+		Delay(duration delay_length);
 		/**
 		 * Query as to whether the delay length has passed since construction of the delay object.
 		 */
@@ -170,8 +170,8 @@ namespace tz
 
 		operator bool() const{return this->done();}
 	private:
-		Duration begin_systime;
-		Duration delay_length;
+		duration begin_systime;
+		duration delay_length;
 	};
 }
 

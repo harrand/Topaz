@@ -205,7 +205,7 @@ namespace tz::gl
 			this->asset_storage[handle_val] = value;
 		}
 	private:
-		std::vector<MaybeOwnedPtr<Asset>> asset_storage;
+		std::vector<maybe_owned_ptr<Asset>> asset_storage;
 	};
 
 	/**

@@ -74,9 +74,9 @@ namespace tz
 	 * Named requirement for topaz allocators. Not to be confused with the c++ standard library allocators.
 	 */
 	template<typename T>
-	concept Allocator = requires(T t, tz::Blk blk, std::size_t sz)
+	concept Allocator = requires(T t, tz::blk blk, std::size_t sz)
 	{
-		{t.allocate(sz)} -> std::same_as<tz::Blk>;
+		{t.allocate(sz)} -> std::same_as<tz::blk>;
 		{t.deallocate(blk)} -> std::same_as<void>;
 		{t.owns(blk)} -> std::same_as<bool>;
 	};

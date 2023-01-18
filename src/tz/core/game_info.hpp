@@ -14,12 +14,12 @@ namespace tz
 	 * Contains basic information about the target game/application.
 	 * @note This struct is within the Initial Group.
 	 */
-	struct GameInfo
+	struct game_info
 	{
 		/**
-		 * @brief Retrieve a string describing the GameInfo.
-		 * - See @ref EngineInfo::to_string() for `ENGINEINFO`
-		 * @return 'APPNAME vX.Y.Z (`ENGINEINFO`)'
+		 * @brief Retrieve a string describing the game_info.
+		 * - See @ref engine_info::to_string() for `engine_info`
+		 * @return 'APPNAME vX.Y.Z (`engine_info`)'
 		 */
 		inline std::string to_string() const
 		{
@@ -32,14 +32,14 @@ namespace tz
 			return res;
 		}
 
-		bool operator==(const GameInfo& rhs) const
+		bool operator==(const game_info& rhs) const
 		{
 			return std::strcmp(this->name, rhs.name) == 0 && version == rhs.version && engine == rhs.engine;
 		}
 
 		const char* name;
 		hdk::version version;
-		EngineInfo engine;
+		engine_info engine;
 	};
 	/**
 	 * @}

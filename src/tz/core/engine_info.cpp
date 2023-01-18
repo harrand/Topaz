@@ -2,15 +2,15 @@
 
 namespace tz
 {
-	std::string EngineInfo::to_string() const
+	std::string engine_info::to_string() const
 	{
 		const char* render_api;
 		switch(this->renderer)
 		{
-			case RenderAPI::OpenGL:
+			case render_api::opengl:
 				render_api = "OpenGL";
 			break;
-			case RenderAPI::Vulkan:
+			case render_api::vulkan:
 				render_api = "Vulkan";
 			break;
 			default:
@@ -21,13 +21,13 @@ namespace tz
 		const char* build_config;
 		switch(this->build)
 		{
-			case BuildConfig::Debug:
+			case build_config::debug:
 				build_config = "Debug";
 			break;
-			case BuildConfig::Profile:
+			case build_config::profile:
 				build_config = "Profile";
 			break;
-			case BuildConfig::Release:
+			case build_config::release:
 				build_config = "Release";
 			break;
 			default:

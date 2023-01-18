@@ -4,10 +4,10 @@
 
 namespace tz
 {
-	Mat4 translate(hdk::vec3 position)
+	mat4 translate(hdk::vec3 position)
 	{
 		HDK_PROFZONE("Matrix Translate", 0xFF0000AA);
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		m(0, 3) = position[0];
 		m(1, 3) = position[1];
 		m(2, 3) = position[2];
@@ -26,9 +26,9 @@ namespace tz
 				|  0  sin(A)  cos(A)  0 |
 				|  0  0       0       1 |
 	*/
-	Mat4 rotate_x(float angle)
+	mat4 rotate_x(float angle)
 	{
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		m(1, 1) = std::cos(angle);
 		m(1, 2) = -std::sin(angle);
 		m(2, 1) = std::sin(angle);
@@ -48,9 +48,9 @@ namespace tz
 				|  0       0   0       1 |
 	*/
 
-	Mat4 rotate_y(float angle)
+	mat4 rotate_y(float angle)
 	{
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		m(0, 0) = std::cos(angle);
 		m(0, 2) = std::sin(angle);
 		m(2, 0) = -std::sin(angle);
@@ -69,9 +69,9 @@ namespace tz
 				|  0        0        1   0 |
 				|  0        0        0   1 |
 	 */
-	Mat4 rotate_z(float angle)
+	mat4 rotate_z(float angle)
 	{
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		m(0, 0) = std::cos(angle);
 		m(0, 1) = -std::sin(angle);
 		m(1, 0) = std::sin(angle);
@@ -79,20 +79,20 @@ namespace tz
 		return m;
 	}
 
-	Mat4 rotate(hdk::vec3 rotation)
+	mat4 rotate(hdk::vec3 rotation)
 	{
 		HDK_PROFZONE("Matrix Rotate", 0xFF0000AA);
-		Mat4 x = rotate_x(rotation[0]);
-		Mat4 y = rotate_y(rotation[1]);
-		Mat4 z = rotate_z(rotation[2]);
-		Mat4 r = z * y * x;
+		mat4 x = rotate_x(rotation[0]);
+		mat4 y = rotate_y(rotation[1]);
+		mat4 z = rotate_z(rotation[2]);
+		mat4 r = z * y * x;
 		return r;
 	}
 
-	Mat4 scale(hdk::vec3 scale)
+	mat4 scale(hdk::vec3 scale)
 	{
 		HDK_PROFZONE("Matrix Scale", 0xFF0000AA);
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		for(std::size_t i = 0; i < 3; i++)
 		{
 			m(i, i) = scale[i];
@@ -100,23 +100,23 @@ namespace tz
 		return m;
 	}
 
-	Mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale)
+	mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale)
 	{
 		HDK_PROFZONE("Matrix Model", 0xFF0000AA);
 		return tz::translate(position) * tz::rotate(rotation) * tz::scale(scale);
 	}
 
-	Mat4 view(hdk::vec3 position, hdk::vec3 rotation)
+	mat4 view(hdk::vec3 position, hdk::vec3 rotation)
 	{
 		HDK_PROFZONE("Matrix View", 0xFF0000AA);
 		return (translate(position) * rotate(rotation)).inverse();
 	}
 
-	Mat4 perspective(float fov, float aspect_ratio, float near, float far)
+	mat4 perspective(float fov, float aspect_ratio, float near, float far)
 	{
 		HDK_PROFZONE("Matrix Perspective", 0xFF0000AA);
 		const float thf = std::tan(fov / 2.0f);
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		m(0, 0) = 1.0f / (aspect_ratio * thf);
 		m(1, 1) = 1.0f / thf;
 
@@ -128,15 +128,15 @@ namespace tz
 		return m;
 	}
 
-	Mat4 orthographic(float left, float right, float top, float bottom, float near, float far)
+	mat4 orthographic(float left, float right, float top, float bottom, float near, float far)
 	{
 		HDK_PROFZONE("Matrix Orthographic", 0xFF0000AA);
-		Mat4 m = Mat4::identity();
+		mat4 m = mat4::identity();
 		m(0, 0) = 2.0f / (right - left);
 		m(1, 1) = 2.0f / (top - bottom);
 		m(2, 2) = -2.0f / (far - near);
 
-		Mat4::Row& bottom_row = m[2];
+		mat4::Row& bottom_row = m[2];
 		bottom_row[0] = -(right + left) / (right - left);
 		bottom_row[1] = -(top + bottom) / (top - bottom);
 		bottom_row[2] = -(far + near) / (far - near);

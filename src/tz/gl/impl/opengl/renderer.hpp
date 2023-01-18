@@ -65,7 +65,7 @@ namespace tz::gl
 		void fill_bindless_image_buffer();
 
 		/// Stores components corresponding to each resource.
-		std::vector<tz::MaybeOwnedPtr<IComponent>> components;
+		std::vector<tz::maybe_owned_ptr<IComponent>> components;
 		/// Stores a bindless texture handle for each image resource.
 		std::vector<ogl2::Image::BindlessTextureHandle> image_handles;
 		// Shader has an array of texture samplers in tzsl. tzslc compiles this down to actually a storage buffer containing a variable array of texture samplers. This is that buffer.

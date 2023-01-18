@@ -14,19 +14,19 @@ namespace tz
 	 * Represents information about the current engine used.
 	 * @note This struct is within the Initial Group.
 	 */
-	struct EngineInfo
+	struct engine_info
 	{
-		enum class RenderAPI
+		enum class render_api
 		{
-			Vulkan,
-			OpenGL
+			vulkan,
+			opengl
 		};
 
-		enum class BuildConfig
+		enum class build_config
 		{
-			Debug,
-			Release,
-			Profile
+			debug,
+			release,
+			profile
 		};
 
 		/**
@@ -36,20 +36,20 @@ namespace tz
 		 * @return 'Topaz vX.Y.Z `RENDERAPI` `BUILDCONFIG`' 
 		 */
 		std::string to_string() const;
-		constexpr bool operator==(const EngineInfo& rhs) const = default;
+		constexpr bool operator==(const engine_info& rhs) const = default;
 
-		RenderAPI renderer;
-		BuildConfig build;
+		render_api renderer;
+		build_config build;
 		hdk::version version;
 	};
 
 	/**
-	 * @brief Retrieves the EngineInfo for this specific build of Topaz.
-	 * @relates EngineInfo
+	 * @brief Retrieves the engine_info for this specific build of Topaz.
+	 * @relates engine_info
 	 * 
 	 * @return Information about this Topaz build.
 	 */
-	inline EngineInfo info();
+	inline engine_info info();
 
 	/**
 	 * @}

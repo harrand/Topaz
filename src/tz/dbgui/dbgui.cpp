@@ -29,12 +29,12 @@ namespace tz::dbgui
 {
 	struct TopazPlatformData
 	{
-		tz::GameInfo game_info;
+		tz::game_info game_info;
 		tz::wsi::keyboard_state kb_state;
 		tz::wsi::mouse_state mouse_state;
 
 		std::size_t frame_counter = 0;
-		tz::Duration last_update;
+		tz::duration last_update;
 		float frame_period = 0.0f;
 		tz::Delay fps_update{tz::literals::operator""_ms(500.0f)};
 	};
@@ -50,7 +50,7 @@ namespace tz::dbgui
 
 	TopazPlatformData* global_platform_data = nullptr;
 	TopazRenderData* global_render_data = nullptr;
-	tz::GameInfo global_info;
+	tz::game_info global_info;
 	GameMenuCallbackType game_menu_callback;
 	GameBarCallbackType game_bar_callback;
 
@@ -144,7 +144,7 @@ namespace tz::dbgui
 
 	struct TopazShaderRenderData
 	{
-		tz::Mat4 vp;
+		tz::mat4 vp;
 		std::uint32_t texture_id;
 		std::uint32_t index_offset;
 		std::uint32_t vertex_offset;

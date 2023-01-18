@@ -3,27 +3,27 @@
 namespace tz
 {
 	template<typename T>
-	MaybeOwnedPtr<T>::MaybeOwnedPtr(std::nullptr_t):
+	maybe_owned_ptr<T>::maybe_owned_ptr(std::nullptr_t):
 	ptr(nullptr)
 	{
 
 	}
 
 	template<typename T>
-	MaybeOwnedPtr<T>::MaybeOwnedPtr(T* ptr):
+	maybe_owned_ptr<T>::maybe_owned_ptr(T* ptr):
 	ptr(ptr)
 	{
 
 	}
 
 	template<typename T>
-	MaybeOwnedPtr<T>::MaybeOwnedPtr(std::unique_ptr<T> owned):
+	maybe_owned_ptr<T>::maybe_owned_ptr(std::unique_ptr<T> owned):
 	ptr(std::move(owned)){}
 
 	template<typename T>
 	template<typename P>
-	MaybeOwnedPtr<T>::MaybeOwnedPtr(MaybeOwnedPtr<P>&& move) requires std::derived_from<P, T>:
-	MaybeOwnedPtr<T>(nullptr)
+	maybe_owned_ptr<T>::maybe_owned_ptr(maybe_owned_ptr<P>&& move) requires std::derived_from<P, T>:
+	maybe_owned_ptr<T>(nullptr)
 	{
 		if(move.owning())
 		{
@@ -38,28 +38,28 @@ namespace tz
 	}
 
 	template<typename T>
-	MaybeOwnedPtr<T>& MaybeOwnedPtr<T>::operator=(std::nullptr_t)
+	maybe_owned_ptr<T>& maybe_owned_ptr<T>::operator=(std::nullptr_t)
 	{
 		this->ptr = nullptr;
 		return *this;
 	}
 
 	template<typename T>
-	MaybeOwnedPtr<T>& MaybeOwnedPtr<T>::operator=(T* ptr)
+	maybe_owned_ptr<T>& maybe_owned_ptr<T>::operator=(T* ptr)
 	{
 		this->ptr = ptr;
 		return *this;
 	}
 
 	template<typename T>
-	MaybeOwnedPtr<T>& MaybeOwnedPtr<T>::operator=(std::unique_ptr<T> ptr)
+	maybe_owned_ptr<T>& maybe_owned_ptr<T>::operator=(std::unique_ptr<T> ptr)
 	{
 		this->ptr = std::move(ptr);
 		return *this;
 	}
 
 	template<typename T>
-	T* MaybeOwnedPtr<T>::get()
+	T* maybe_owned_ptr<T>::get()
 	{
 		if(this->owning())
 		{
@@ -69,7 +69,7 @@ namespace tz
 	}
 
 	template<typename T>
-	const T* MaybeOwnedPtr<T>::get() const
+	const T* maybe_owned_ptr<T>::get() const
 	{
 		if(this->owning())
 		{
@@ -79,13 +79,13 @@ namespace tz
 	}
 
 	template<typename T>
-	bool MaybeOwnedPtr<T>::owning() const
+	bool maybe_owned_ptr<T>::owning() const
 	{
 		return std::holds_alternative<std::unique_ptr<T>>(this->ptr);
 	}
 
 	template<typename T>
-	T* MaybeOwnedPtr<T>::release()
+	T* maybe_owned_ptr<T>::release()
 	{
 		if(this->owning())
 		{
@@ -97,13 +97,13 @@ namespace tz
 	}
 
 	template<typename T>
-	void MaybeOwnedPtr<T>::reset()
+	void maybe_owned_ptr<T>::reset()
 	{
 		*this = nullptr;
 	}
 
 	template<typename T>
-	void MaybeOwnedPtr<T>::set_owning(bool should_own)
+	void maybe_owned_ptr<T>::set_owning(bool should_own)
 	{
 		if(should_own == this->owning())
 		{
@@ -121,25 +121,25 @@ namespace tz
 	}
 
 	template<typename T>
-	T* MaybeOwnedPtr<T>::operator->()
+	T* maybe_owned_ptr<T>::operator->()
 	{
 		return this->get();
 	}
 
 	template<typename T>
-	const T* MaybeOwnedPtr<T>::operator->() const
+	const T* maybe_owned_ptr<T>::operator->() const
 	{
 		return this->get();
 	}
 
 	template<typename T>
-	bool MaybeOwnedPtr<T>::operator==(const T* t) const
+	bool maybe_owned_ptr<T>::operator==(const T* t) const
 	{
 		return this->get() == t;
 	}
 
 	template<typename T, typename... Args>
-	MaybeOwnedPtr<T> make_owned(Args&&... args)
+	maybe_owned_ptr<T> make_owned(Args&&... args)
 	{
 		return {std::make_unique<T>(std::forward<Args>(args)...)};
 	}

@@ -23,7 +23,7 @@ namespace tz::dbgui
 	struct InitInfo
 	{
 		/// Information about the running application.
-		tz::GameInfo game_info;
+		tz::game_info game_info;
 	};
 
 	/**

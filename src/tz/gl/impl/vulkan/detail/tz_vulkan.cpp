@@ -12,7 +12,7 @@ namespace tz::gl::vk2
 {
 	VulkanInstance* inst = nullptr;
 
-	void initialise(tz::GameInfo game_info)
+	void initialise(tz::game_info game_info)
 	{
 		HDK_PROFZONE("Vulkan Backend - Backend Initialise", 0xFFAA0000);
 		hdk::assert(inst == nullptr, "Vulkan Backend already initialised");

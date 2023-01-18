@@ -95,7 +95,7 @@ namespace tz::gl::vk2
 	 * @brief Initialise the vulkan backend.
 	 * @note This is intended to be invoked automatically by @ref tz::initialise however this is not yet implemented - You should invoke this yourself at the start of your program directly after `tz::initialise`
 	 */
-	void initialise(tz::GameInfo game_info);
+	void initialise(tz::game_info game_info);
 	/**
 	 * @brief Terminate the vulkan backend
 	 */
@@ -181,7 +181,7 @@ namespace tz::gl::vk2
 	struct VulkanInstanceInfo
 	{
 		/// Information about the application.
-		tz::GameInfo game_info;
+		tz::game_info game_info;
 		/// List of extensions to enable. Empty by default.
 		InstanceExtensionList extensions = {};
 		/// Window from which to create a @ref WindowSurface. If nullptr is passed, no @ref WindowSurface is created. Defaults to nullptr.

@@ -12,28 +12,28 @@ namespace tz
 	 * The value type of a matrix is typically a float or double, but for this implementation it is templated on T.
 	 */
 	template<tz::Number T, std::size_t R, std::size_t C>
-	class Matrix
+	class matrix
 	{
 	public:
 		/**
 		 * Default-intialised matrices have indeterminate values.
-		 * To initialise the values, assign them or simply assign to Matrix<T, R, C>::identity().
+		 * To initialise the values, assign them or simply assign to matrix<T, R, C>::identity().
 		 */
-		Matrix() = default;
+		matrix() = default;
 		/**
 		 * Initialise a matrix from a multi-dimensional array.
 		 * @param data An array of array of values to construct the row-major matrix.
 		 */
-		Matrix(std::array<std::array<T, R>, C> data);
+		matrix(std::array<std::array<T, R>, C> data);
 		/**
 		 * Retrieve the identity matrix.
 		 * 
 		 * High values (1) are constructed via T{1} and low values (0) are constructed via T{0}.
 		 * @return The identity matrix for the given dimensions.
 		 */
-		static constexpr Matrix<T, R, C> identity()
+		static constexpr matrix<T, R, C> identity()
 		{
-			Matrix<T, R, C> mat{{}};
+			matrix<T, R, C> mat{{}};
 			for(std::size_t i = 0; i < R; i++)
 			{
 				for(std::size_t j = 0; j < C; j++)
@@ -85,73 +85,73 @@ namespace tz
 		 * @param scalar Value to add to each element.
 		 * @return Reference to the current matrix.
 		 */
-		Matrix<T, R, C>& operator+=(T scalar);
+		matrix<T, R, C>& operator+=(T scalar);
 		/**
 		 * Add the given matrix to the current matrix. This is done by adding the current value in the same row and column.
-		 * @param matrix Matrix to add to the current matrix.
+		 * @param matrix matrix to add to the current matrix.
 		 * @return Reference to the current matrix.
 		 */
-		Matrix<T, R, C>& operator+=(const Matrix<T, R, C>& matrix);
+		matrix<T, R, C>& operator+=(const matrix<T, R, C>& matrix);
 		/**
 		 * Add the scalar value to each element of the current matrix.
 		 * @param scalar Value to add to each element.
 		 * @return A modified copy of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> operator+(T scalar) const;
+		matrix<T, R, C> operator+(T scalar) const;
 		/**
 		 * Add the given matrix to the current matrix. This is done by adding the current value in the same row and column.
-		 * @param matrix Matrix to add to the current matrix.
+		 * @param matrix matrix to add to the current matrix.
 		 * @return A modified copy of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> operator+(const Matrix<T, R, C>& matrix) const;
+		matrix<T, R, C> operator+(const matrix<T, R, C>& matrix) const;
 		/**
 		 * Subtract the scalar value from each element of the current matrix.
 		 * @param scalar Value to subtract from each element.
 		 * @return Reference to the current matrix.
 		 */
-		Matrix<T, R, C>& operator-=(T scalar);
+		matrix<T, R, C>& operator-=(T scalar);
 		/**
 		 * Subtract the given matrix from the current matrix. This is done by subtracting the current value in the same row and column.
-		 * @param matrix Matrix to subtract from the current matrix.
+		 * @param matrix matrix to subtract from the current matrix.
 		 * @return Reference to the current matrix.
 		 */
-		Matrix<T, R, C>& operator-=(const Matrix<T, R, C>& matrix);
+		matrix<T, R, C>& operator-=(const matrix<T, R, C>& matrix);
 		/**
 		 * Subtract the scalar value from each element of the current matrix.
 		 * @param scalar Value to subtract from each element.
 		 * @return A modified copy of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> operator-(T scalar) const;
+		matrix<T, R, C> operator-(T scalar) const;
 		/**
 		 * Subtract the given matrix from the current matrix. This is done by subtracting the current value in the same row and column.
-		 * @param matrix Matrix to subtract from the current matrix.
+		 * @param matrix matrix to subtract from the current matrix.
 		 * @return A modified copy of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> operator-(const Matrix<T, R, C>& matrix) const;
+		matrix<T, R, C> operator-(const matrix<T, R, C>& matrix) const;
 		/**
 		 * Multiply the scalar value with each element of the current matrix.
 		 * @param scalar Value to multiply with each element.
 		 * @return Reference to the current matrix.
 		 */
-		Matrix<T, R, C>& operator*=(T scalar);
+		matrix<T, R, C>& operator*=(T scalar);
 		/**
 		 * Multiply the given matrix with the current matrix. This is done naively and is unsuitable for very large values of R or C.
-		 * @param matrix Matrix to multiply with the current matrix.
+		 * @param matrix matrix to multiply with the current matrix.
 		 * @return Reference to the current matrix.
 		 */
-		Matrix<T, R, C>& operator*=(const Matrix<T, R, C>& matrix);
+		matrix<T, R, C>& operator*=(const matrix<T, R, C>& matrix);
 		/**
 		 * Multiply the scalar value with each element of the current matrix.
 		 * @param scalar Value to multiply with each element.
 		 * @return A modified copy of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> operator*(T scalar) const;
+		matrix<T, R, C> operator*(T scalar) const;
 		/**
 		 * Multiply the given matrix with the current matrix. This is done naively and is unsuitable for very large values of R or C.
-		 * @param matrix Matrix to multiply with the current matrix.
+		 * @param matrix matrix to multiply with the current matrix.
 		 * @return A modified copy of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> operator*(const Matrix<T, R, C>& matrix) const;
+		matrix<T, R, C> operator*(const matrix<T, R, C>& matrix) const;
 		/**
 		 * Multiply the given vector (column-matrix) with the current matrix and return the resultant vector (row-matrix).
 		 * @param vec Column matrix to multiply with the current matrix.
@@ -167,24 +167,24 @@ namespace tz
 		bool operator==(T scalar) const;
 		/**
 		 * Equate the given matrix with the current. Matrices are equal if-and-only-if each element at a given row and column of the current matrix is equal to the corresponding value of the given matrix.
-		 * @param matrix Matrix to equate with the current matrix.
+		 * @param matrix matrix to equate with the current matrix.
 		 * @return True if each value in the given matrix are equal to that of the current matrix. Otherwise, false.
 		 */
-		bool operator==(const Matrix<T, R, C>& matrix) const;
+		bool operator==(const matrix<T, R, C>& matrix) const;
 		/**
-		 * Retrieves a new matrix such that the resultant matrix could be multiplied by the original matrix to result in the identity matrix (See Matrix<T, R, C>::identity()).
+		 * Retrieves a new matrix such that the resultant matrix could be multiplied by the original matrix to result in the identity matrix (See matrix<T, R, C>::identity()).
 		 * 
-		 * If the current matrix is orthogonal, it is an optimisation to prefer the use of Matrix<T, R, C>::transpose() instead.
+		 * If the current matrix is orthogonal, it is an optimisation to prefer the use of matrix<T, R, C>::transpose() instead.
 		 * @return Inverse of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> inverse() const;
+		matrix<T, R, C> inverse() const;
 		//template<std::size_t X = R, std::size_t Y = C, typename std::enable_if_t<std::conditional_t<X == Y>>>
 		/**
 		 * Create a copy of the current matrix, and transpose the copy. Transposing the matrix is to flip the matrix values over its diagonal.
 		 * Note: If `mymatrix` is orthogonal, then `mymatrix.transpose() == mymatrix.inverse()`.
 		 * @return Transpose of the original matrix. The original matrix is unchanged.
 		 */
-		Matrix<T, R, C> transpose() const;
+		matrix<T, R, C> transpose() const;
 		#if HDK_DEBUG
 		/**
 		 * Pretty-print each value of the given matrix. If T is not printable, then the program is ill-formed.
@@ -204,11 +204,11 @@ namespace tz
 	 */
 
 	/// A 4x4 row-major matrix of floats.
-	using Mat4 = Matrix<float, 4, 4>;
+	using mat4 = matrix<float, 4, 4>;
 	/// A 3x3 row-major matrix of floats.
-	using Mat3 = Matrix<float, 3, 3>;
+	using mat3 = matrix<float, 3, 3>;
 	/// A 2x2 row-major matrix of floats.
-	using Mat2 = Matrix<float, 2, 2>;
+	using mat2 = matrix<float, 2, 2>;
 
 	/**
 	 * @}

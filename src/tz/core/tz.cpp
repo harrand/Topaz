@@ -25,7 +25,7 @@ namespace tz
 		hdk::initialise();
 		hdk::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
 		tz::wsi::initialise();
-		[[maybe_unused]] tz::GameInfo game_info{.name = init.name, .version = init.version, .engine = tz::info()};
+		[[maybe_unused]] tz::game_info game_info{.name = init.name, .version = init.version, .engine = tz::info()};
 		// Ensure we're not already initialised before doing anything.
 		hdk::assert(wnd == hdk::nullhand && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
 

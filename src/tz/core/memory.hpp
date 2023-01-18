@@ -9,34 +9,34 @@ namespace tz
 	 * @ingroup tz_core
 	 * Represents an arbitrary, non-owning block of memory.
 	 */
-	struct Blk
+	struct blk
 	{
 		/// Pointer to the start of the memory block.
 		void* ptr;
 		/// Size of the block, in bytes.
 		std::size_t size;
 
-		bool operator==(const Blk& rhs) const = default;
+		bool operator==(const blk& rhs) const = default;
 	};
-	constexpr Blk nullblk{.ptr = nullptr, .size = 0};
+	constexpr blk nullblk{.ptr = nullptr, .size = 0};
 
 	template<typename T>
-	class MaybeOwnedPtr
+	class maybe_owned_ptr
 	{
 	public:
-		MaybeOwnedPtr(std::nullptr_t);
-		MaybeOwnedPtr(T* ptr);
-		MaybeOwnedPtr(std::unique_ptr<T> owned);
+		maybe_owned_ptr(std::nullptr_t);
+		maybe_owned_ptr(T* ptr);
+		maybe_owned_ptr(std::unique_ptr<T> owned);
 		template<typename P>
-		MaybeOwnedPtr(MaybeOwnedPtr<P>&& move) requires std::derived_from<P, T>;
+		maybe_owned_ptr(maybe_owned_ptr<P>&& move) requires std::derived_from<P, T>;
 
-		MaybeOwnedPtr(const MaybeOwnedPtr<T>& copy) = default;
-		MaybeOwnedPtr(MaybeOwnedPtr<T>&& move) = default;
-		MaybeOwnedPtr& operator=(const MaybeOwnedPtr<T>& rhs) = default;
-		MaybeOwnedPtr& operator=(MaybeOwnedPtr<T>&& rhs) = default;
-		MaybeOwnedPtr& operator=(std::nullptr_t);
-		MaybeOwnedPtr& operator=(T* ptr);
-		MaybeOwnedPtr& operator=(std::unique_ptr<T> ptr);
+		maybe_owned_ptr(const maybe_owned_ptr<T>& copy) = default;
+		maybe_owned_ptr(maybe_owned_ptr<T>&& move) = default;
+		maybe_owned_ptr& operator=(const maybe_owned_ptr<T>& rhs) = default;
+		maybe_owned_ptr& operator=(maybe_owned_ptr<T>&& rhs) = default;
+		maybe_owned_ptr& operator=(std::nullptr_t);
+		maybe_owned_ptr& operator=(T* ptr);
+		maybe_owned_ptr& operator=(std::unique_ptr<T> ptr);
 
 		T* get();
 		const T* get() const;
@@ -66,7 +66,7 @@ namespace tz
 	};
 
 	template<typename T, typename... Args>
-	MaybeOwnedPtr<T> make_owned(Args&&... args);
+	maybe_owned_ptr<T> make_owned(Args&&... args);
 }
 #include "tz/core/memory.inl"
 
