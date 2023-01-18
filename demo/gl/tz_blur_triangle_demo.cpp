@@ -16,7 +16,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_blur_triangle_demo",
-		.flags = {tz::ApplicationFlag::UnresizeableWindow}
+		.flags = {tz::application_flag::UnresizeableWindow}
 	});
 	{
 		// Create a renderer which just draws a square with a texture applied (fragment-shader post-processing does a blur)

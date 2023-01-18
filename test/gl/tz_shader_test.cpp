@@ -10,7 +10,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_shader_test",
-		.flags = {tz::ApplicationFlag::HiddenWindow}
+		.flags = {tz::application_flag::HiddenWindow}
 	});
 	{
 		tz::gl::RendererInfo rinfo;

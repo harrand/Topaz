@@ -17,9 +17,9 @@ namespace tz
 {
 	tz::wsi::window_handle wnd = hdk::nullhand;
 	bool initialised = false;
-	InitialiseInfo init_info = {};
+	initialise_info init_info = {};
 
-	void initialise(InitialiseInfo init)
+	void initialise(initialise_info init)
 	{
 		HDK_PROFZONE("Topaz Initialise", 0xFF0000AA);
 		hdk::initialise();
@@ -41,11 +41,11 @@ namespace tz
 			{
 				flags |= tz::wsi::window_flag::opengl;
 			}
-			if(init.flags.contains(tz::ApplicationFlag::HiddenWindow))
+			if(init.flags.contains(tz::application_flag::HiddenWindow))
 			{
 				flags |= tz::wsi::window_flag::invisible;
 			}
-			if(init.flags.contains(tz::ApplicationFlag::TransparentWindow))
+			if(init.flags.contains(tz::application_flag::TransparentWindow))
 			{
 				flags |= tz::wsi::window_flag::transparent;
 			}

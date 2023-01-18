@@ -51,8 +51,8 @@ namespace tz::dbgui
 	TopazPlatformData* global_platform_data = nullptr;
 	TopazRenderData* global_render_data = nullptr;
 	tz::game_info global_info;
-	GameMenuCallbackType game_menu_callback;
-	GameBarCallbackType game_bar_callback;
+	game_menu_callback_type game_menu_callback;
+	game_bar_callback_type game_bar_callback;
 
 	void imgui_impl_handle_inputs();
 
@@ -70,7 +70,7 @@ namespace tz::dbgui
 		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<hdk::hanval>(handle))));
 	}
 
-	void initialise([[maybe_unused]] InitInfo info)
+	void initialise([[maybe_unused]] init_info info)
 	{
 		HDK_PROFZONE("tz::dbgui::initialise", 0xFFAA00AA);
 		#if HDK_DEBUG
@@ -116,12 +116,12 @@ namespace tz::dbgui
 		#endif //HDK_DEBUG
 	}
 
-	GameMenuCallbackType& game_menu()
+	game_menu_callback_type& game_menu()
 	{
 		return game_menu_callback;
 	}
 
-	GameBarCallbackType& game_bar()
+	game_bar_callback_type& game_bar()
 	{
 		return game_bar_callback;
 	}

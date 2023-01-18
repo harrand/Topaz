@@ -20,7 +20,7 @@ namespace tz::dbgui
 	 *
 	 * @note Debug-ui functionality (and therefore imgui functions) cannot be used or invoked before @ref tz::initialise.
 	 */
-	struct InitInfo
+	struct init_info
 	{
 		/// Information about the running application.
 		tz::game_info game_info;
@@ -33,7 +33,7 @@ namespace tz::dbgui
 	 *
 	 * @note In non-debug builds, this does nothing and thus ImGui functions cannot be called.
 	 */
-	void initialise(InitInfo info);
+	void initialise(init_info info);
 	/**
 	 * Terminate dbgui. This must be done at the end of the program, after the debug-ui is ready to be shut down.
 	 *
@@ -72,8 +72,8 @@ namespace tz::dbgui
 	}
 
 	/// Represents a function taking no parameters and returning void.
-	using GameMenuCallbackType = tz::callback<>;
-	using GameBarCallbackType = GameMenuCallbackType;
+	using game_menu_callback_type = tz::callback<>;
+	using game_bar_callback_type = game_menu_callback_type;
 	/**
 	 * @ingroup tz_dbgui
 	 * Retrieve the game menu callback.
@@ -90,8 +90,8 @@ namespace tz::dbgui
 	 *	if(game_menu_enabled){...}
 	 * ```
 	 */
-	GameMenuCallbackType& game_menu();
-	GameBarCallbackType& game_bar();
+	game_menu_callback_type& game_menu();
+	game_bar_callback_type& game_bar();
 
 	/**
 	 * @ingroup tz_dbgui

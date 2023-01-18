@@ -91,20 +91,20 @@ namespace tz
 	 * Documentation for the TZSL language and standard library.
 	 */
 
-	enum class ApplicationFlag
+	enum class application_flag
 	{
 		HiddenWindow,
 		UnresizeableWindow,
 		TransparentWindow,
 	};
 
-	using ApplicationFlags = tz::EnumField<ApplicationFlag>;
+	using application_flags = tz::EnumField<application_flag>;
 
 	/**
 	 * @ingroup tz_core_init
 	 * Specifies everything needed to initialise the engine.
 	 */
-	struct InitialiseInfo
+	struct initialise_info
 	{
 		/// - Name of the application. If initialisation spawns a window, the title will contain this string. Defaults to 'Untitled'.
 		const char* name = "Untitled";
@@ -112,15 +112,15 @@ namespace tz
 		hdk::version version = {1, 0, 0, hdk::version_type::normal};
 		/// - Specifies dimensions of the window, in pixels.
 		hdk::vec2ui dimensions = {800u, 600u};
-		/// - Describes some optional behaviours for the application. See @ref ApplicationFlag for details.
-		ApplicationFlags flags = {};
+		/// - Describes some optional behaviours for the application. See @ref application_flag for details.
+		application_flags flags = {};
 	};
 	/**
 	 * @ingroup tz_core_init
 	 * Initialise Topaz.
 	 * @param init Information about how the application should be initialised.
 	 */
-	void initialise(InitialiseInfo init = {});
+	void initialise(initialise_info init = {});
 	/**
 	 * @ingroup tz_core_init
 	 * @brief Terminate Topaz.
