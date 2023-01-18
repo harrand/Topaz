@@ -71,13 +71,13 @@ int main()
 			.access = tz::gl::ResourceAccess::DynamicFixed
 		});
 
-		tz::gl::RendererInfo combine_info;
+		tz::gl::renderer_info combine_info;
 		tz::gl::ResourceHandle bloom_data_handle = combine_info.add_resource(bloom_data_buffer);
 		tz::gl::ResourceHandle iout0h = combine_info.add_resource(image_out0);
 		tz::gl::ResourceHandle iout1h = combine_info.add_resource(image_out1);
 		combine_info.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo_combine, vertex));
 		combine_info.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo_combine, fragment));
-		tz::gl::RendererHandle combineh = tz::gl::device().create_renderer(combine_info);
+		tz::gl::renderer_handle combineh = tz::gl::device().create_renderer(combine_info);
 
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{},
@@ -85,7 +85,7 @@ int main()
 			.access = tz::gl::ResourceAccess::DynamicFixed
 		});
 
-		tz::gl::RendererInfo rinfo;
+		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_bloom_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_bloom_demo, fragment));
 		tz::gl::ResourceHandle render_bufh = rinfo.add_resource(render_data);
@@ -97,7 +97,7 @@ int main()
 		{{
 			.colours = {combine_old.get_component(iout0h), combine_old.get_component(iout1h)}
 		}});
-		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+		tz::gl::renderer_handle rendererh = tz::gl::device().create_renderer(rinfo);
 
 		// Blur the second colour attachment
 		// TODO

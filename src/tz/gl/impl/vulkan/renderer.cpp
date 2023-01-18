@@ -71,7 +71,7 @@ namespace tz::gl
 	}
 
 //--------------------------------------------------------------------------------------------------
-	ResourceStorage::ResourceStorage(const RendererInfoVulkan& info):
+	ResourceStorage::ResourceStorage(const renderer_infoVulkan& info):
 	AssetStorageCommon<IResource>(info.get_resources()),
 	frame_in_flight_count(device().get_device_window().get_output_images().size())
 	{
@@ -82,7 +82,7 @@ namespace tz::gl
 		auto resources = info.get_resources();
 		std::size_t encountered_reference_count = 0;
 
-		auto retrieve_resource_metadata = [this](IComponent* cmp)
+		auto retrieve_resource_metadata = [this](icomponent* cmp)
 		{
 			IResource* res = cmp->get_resource();
 			switch(res->get_type())
@@ -132,11 +132,11 @@ namespace tz::gl
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<hdk::hanval>(i));
-			IComponent* comp = nullptr;
+			icomponent* comp = nullptr;
 			if(res == nullptr)
 			{
 				// If we see a null resource, it means we're looking for a component (resource reference).
-				comp = const_cast<IComponent*>(info.get_components()[encountered_reference_count]);
+				comp = const_cast<icomponent*>(info.get_components()[encountered_reference_count]);
 				this->components.push_back(comp);
 				encountered_reference_count++;
 
@@ -281,7 +281,7 @@ namespace tz::gl
 	}
 			
 
-	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
+	const icomponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -290,7 +290,7 @@ namespace tz::gl
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	IComponent* ResourceStorage::get_component(ResourceHandle handle)
+	icomponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -459,7 +459,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const RendererInfoVulkan& info):
+	OutputManager::OutputManager(const renderer_infoVulkan& info):
 	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
 	ldev(&device().vk_get_logical_device()),
 	swapchain_images(device().get_device_window().get_output_images()),
@@ -757,7 +757,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	GraphicsPipelineManager::GraphicsPipelineManager(const RendererInfoVulkan& info, const ResourceStorage& resources, const OutputManager& output)
+	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_infoVulkan& info, const ResourceStorage& resources, const OutputManager& output)
 	{
 		this->shader = this->make_shader(device().vk_get_logical_device(), info.shader());
 		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), device().get_device_window().get_output_images().size());
@@ -1005,7 +1005,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(const RendererInfoVulkan& info)
+	CommandProcessor::CommandProcessor(const renderer_infoVulkan& info)
 	{
 		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
 		{
@@ -1203,7 +1203,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	RendererVulkan::RendererVulkan(const RendererInfoVulkan& info):
+	RendererVulkan::RendererVulkan(const renderer_infoVulkan& info):
 	ldev(&device().vk_get_logical_device()),
 	options(info.get_options()),
 	state(info.state()),
@@ -1223,7 +1223,7 @@ namespace tz::gl
 		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
-				IComponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
+				icomponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
 				if(comp->get_resource()->get_type() == ResourceType::Buffer)
 				{
 					vk2::Buffer& buf = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
@@ -1292,12 +1292,12 @@ namespace tz::gl
 		return this->resources.get(handle);
 	}
 
-	const IComponent* RendererVulkan::get_component(ResourceHandle handle) const
+	const icomponent* RendererVulkan::get_component(ResourceHandle handle) const
 	{
 		return this->resources.get_component(handle);
 	}
 
-	IComponent* RendererVulkan::get_component(ResourceHandle handle)
+	icomponent* RendererVulkan::get_component(ResourceHandle handle)
 	{
 		return this->resources.get_component(handle);
 	}
@@ -1522,7 +1522,7 @@ namespace tz::gl
 	
 	void RendererVulkan::edit_resource_write(RendererEdit::ResourceWrite arg, [[maybe_unused]] EditData& data)
 	{
-		IComponent* comp = this->get_component(arg.resource);
+		icomponent* comp = this->get_component(arg.resource);
 		IResource* res = comp->get_resource();
 		// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
 		switch(res->get_access())
@@ -1642,7 +1642,7 @@ namespace tz::gl
 		std::vector<ImageComponentVulkan*> image_components;
 		for(std::size_t i = 0; i < this->resource_count(); i++)
 		{
-			IComponent* icomp = this->get_component(static_cast<hdk::hanval>(i));
+			icomponent* icomp = this->get_component(static_cast<hdk::hanval>(i));
 			switch(icomp->get_resource()->get_type())
 			{
 				case ResourceType::Buffer:
@@ -1814,8 +1814,8 @@ namespace tz::gl
 					.extent = extent
 				});
 
-				const IComponent* idx_buf = this->get_component(this->state.graphics.index_buffer);
-				const IComponent* ind_buf_gen = this->get_component(this->state.graphics.draw_buffer);;
+				const icomponent* idx_buf = this->get_component(this->state.graphics.index_buffer);
+				const icomponent* ind_buf_gen = this->get_component(this->state.graphics.draw_buffer);;
 				const auto* ind_buf = static_cast<const BufferComponentVulkan*>(ind_buf_gen);
 				if(idx_buf == nullptr)
 				{

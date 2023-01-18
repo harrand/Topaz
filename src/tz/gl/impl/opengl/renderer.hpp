@@ -30,21 +30,21 @@ namespace tz::gl
 		/**
 		 * Create storage for a set of existing resources.
 		 *
-		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the RendererOGL. However, it will reference the copy of said resource which is created during construction of this object. This means users are able to and encouraged to cache their ResourceHandles when populating RendererInfoOGL.
+		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the RendererOGL. However, it will reference the copy of said resource which is created during construction of this object. This means users are able to and encouraged to cache their ResourceHandles when populating renderer_infoOGL.
 		 *
 		 * @param resources A view into an array of existing resources. All of these will be copies into a separate storage, meaning the elements of the span are allowed to reach the end of their lifetime after the storage has been constructed, because they will have been cloned.
 		 */
-		ResourceStorage(std::span<const IResource* const> resources, std::span<const IComponent* const> components);
+		ResourceStorage(std::span<const IResource* const> resources, std::span<const icomponent* const> components);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding opengl backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		const IComponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(ResourceHandle handle) const;
 		/**
 		 * Retrieve the component which stores the corresponding opengl backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		IComponent* get_component(ResourceHandle handle);
+		icomponent* get_component(ResourceHandle handle);
 		/**
 		 * Retrieve the number of resources stored of the given type.
 		 * @param type Type whose quantity should be retrieved.
@@ -65,7 +65,7 @@ namespace tz::gl
 		void fill_bindless_image_buffer();
 
 		/// Stores components corresponding to each resource.
-		std::vector<tz::maybe_owned_ptr<IComponent>> components;
+		std::vector<tz::maybe_owned_ptr<icomponent>> components;
 		/// Stores a bindless texture handle for each image resource.
 		std::vector<ogl2::Image::BindlessTextureHandle> image_handles;
 		// Shader has an array of texture samplers in tzsl. tzslc compiles this down to actually a storage buffer containing a variable array of texture samplers. This is that buffer.
@@ -126,7 +126,7 @@ namespace tz::gl
 		tz::gl::RendererOptions options;
 	};
 
-	using RendererInfoOGL = RendererInfoCommon;
+	using renderer_infoOGL = renderer_infoCommon;
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
@@ -139,7 +139,7 @@ namespace tz::gl
 		 * Create a new Renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 */
-		RendererOGL(const RendererInfoOGL& info);
+		RendererOGL(const renderer_infoOGL& info);
 		// Satisfies RendererType.
 		/**
 		 * Retrieve the number of resources.
@@ -147,28 +147,28 @@ namespace tz::gl
 		unsigned int resource_count() const;
 		/**
 		 * Retrieve the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		const IResource* get_resource(ResourceHandle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		IResource* get_resource(ResourceHandle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		const IComponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(ResourceHandle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		IComponent* get_component(ResourceHandle handle);
+		icomponent* get_component(ResourceHandle handle);
 		IOutput* get_output();
 		const IOutput* get_output() const;
 		/**

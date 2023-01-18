@@ -42,24 +42,24 @@ namespace tz::gl
 	}
 
 //--------------------------------------------------------------------------------------------------
-	RendererInfoCommon::RendererInfoCommon()
+	renderer_infoCommon::renderer_infoCommon()
 	{
 		#if HDK_DEBUG
 			this->options |= tz::gl::RendererOption::NoPresent;
 		#endif // HDK_DEBUG
 	}
 
-	unsigned int RendererInfoCommon::resource_count() const
+	unsigned int renderer_infoCommon::resource_count() const
 	{
 		return this->resources.size();
 	}
 
-	const IResource* RendererInfoCommon::get_resource(ResourceHandle handle)
+	const IResource* renderer_infoCommon::get_resource(ResourceHandle handle)
 	{
 		return this->resources[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	std::vector<const IResource*> RendererInfoCommon::get_resources() const
+	std::vector<const IResource*> renderer_infoCommon::get_resources() const
 	{
 		std::vector<const IResource*> ret;
 		for(const auto& ptr : this->resources)
@@ -69,17 +69,17 @@ namespace tz::gl
 		return ret;
 	}
 
-	std::span<const RendererHandle> RendererInfoCommon::get_dependencies() const
+	std::span<const renderer_handle> renderer_infoCommon::get_dependencies() const
 	{
 		return this->dependencies;
 	}
 
-	std::span<const IComponent* const> RendererInfoCommon::get_components() const
+	std::span<const icomponent* const> renderer_infoCommon::get_components() const
 	{
 		return this->components;
 	}
 
-	ResourceHandle RendererInfoCommon::add_resource(const IResource& resource)
+	ResourceHandle renderer_infoCommon::add_resource(const IResource& resource)
 	{
 		#if HDK_DEBUG
 			if(resource.get_flags().contains(ResourceFlag::IndexBuffer))
@@ -92,34 +92,34 @@ namespace tz::gl
 		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
 	}
 
-	ResourceHandle RendererInfoCommon::ref_resource(IComponent* component)
+	ResourceHandle renderer_infoCommon::ref_resource(icomponent* component)
 	{
 		this->resources.push_back(nullptr);
 		this->components.push_back(component);
 		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
 	}
 
-	ResourceHandle RendererInfoCommon::ref_resource(RendererHandle ren, ResourceHandle res)
+	ResourceHandle renderer_infoCommon::ref_resource(renderer_handle ren, ResourceHandle res)
 	{
 		return this->ref_resource(tz::gl::device().get_renderer(ren).get_component(res));
 	}
 
-	void RendererInfoCommon::set_output(const IOutput& output)
+	void renderer_infoCommon::set_output(const IOutput& output)
 	{
 		this->output = output.unique_clone();
 	}
 
-	const IOutput* RendererInfoCommon::get_output() const
+	const IOutput* renderer_infoCommon::get_output() const
 	{
 		return this->output.get();
 	}
 
-	const RendererOptions& RendererInfoCommon::get_options() const
+	const RendererOptions& renderer_infoCommon::get_options() const
 	{
 		return this->options;
 	}
 
-	void RendererInfoCommon::set_options(RendererOptions options)
+	void renderer_infoCommon::set_options(RendererOptions options)
 	{
 		#if HDK_DEBUG
 			if(!options.contains(RendererOption::Internal_FinalDebugUIRenderer))
@@ -130,37 +130,37 @@ namespace tz::gl
 		this->options = options;
 	}
 
-	void RendererInfoCommon::add_dependency(RendererHandle dependency)
+	void renderer_infoCommon::add_dependency(renderer_handle dependency)
 	{
 		this->dependencies.push_back(dependency);
 	}
 
-	RenderState& RendererInfoCommon::state()
+	RenderState& renderer_infoCommon::state()
 	{
 		return this->renderer_state;
 	}
 
-	const RenderState& RendererInfoCommon::state() const
+	const RenderState& renderer_infoCommon::state() const
 	{
 		return this->renderer_state;
 	}
 
-	ShaderInfo& RendererInfoCommon::shader()
+	ShaderInfo& renderer_infoCommon::shader()
 	{
 		return this->shader_info;
 	}
 
-	const ShaderInfo& RendererInfoCommon::shader() const
+	const ShaderInfo& renderer_infoCommon::shader() const
 	{
 		return this->shader_info;
 	}
 
-	void RendererInfoCommon::debug_name(std::string debug_name)
+	void renderer_infoCommon::debug_name(std::string debug_name)
 	{
 		this->dbg_name = debug_name;
 	}
 
-	std::string RendererInfoCommon::debug_get_name() const
+	std::string renderer_infoCommon::debug_get_name() const
 	{
 		#if HDK_DEBUG
 			if(!this->dbg_name.empty())
@@ -174,7 +174,7 @@ namespace tz::gl
 				return res != nullptr && res->get_type() == ResourceType::Buffer;
 			}) +
 			std::count_if(this->components.begin(), this->components.end(),
-			[](const IComponent* comp)
+			[](const icomponent* comp)
 			{
 				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Buffer;
 			});
@@ -184,7 +184,7 @@ namespace tz::gl
 				return res != nullptr && res->get_type() == ResourceType::Image;
 			}) +
 			std::count_if(this->components.begin(), this->components.end(),
-			[](const IComponent* comp)
+			[](const icomponent* comp)
 			{
 				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
 			});
@@ -194,7 +194,7 @@ namespace tz::gl
 		#endif
 	}
 
-	std::size_t RendererInfoCommon::real_resource_count() const
+	std::size_t renderer_infoCommon::real_resource_count() const
 	{
 		return this->resources.size();
 	}

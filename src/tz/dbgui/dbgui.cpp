@@ -41,8 +41,8 @@ namespace tz::dbgui
 
 	struct TopazRenderData
 	{
-		tz::gl::RendererHandle renderer = hdk::nullhand;
-		tz::gl::RendererHandle final_renderer = hdk::nullhand;
+		tz::gl::renderer_handle renderer = hdk::nullhand;
+		tz::gl::renderer_handle final_renderer = hdk::nullhand;
 		tz::gl::ResourceHandle vertex_buffer = hdk::nullhand;
 		tz::gl::ResourceHandle index_buffer = hdk::nullhand;
 		tz::gl::ResourceHandle shader_data_buffer = hdk::nullhand;
@@ -357,7 +357,7 @@ namespace tz::dbgui
 
 		tz::gl::WindowOutput wout{tz::window()};
 
-		tz::gl::RendererInfo rinfo;
+		tz::gl::renderer_info rinfo;
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
@@ -370,7 +370,7 @@ namespace tz::dbgui
 		
 		global_render_data->renderer = tz::gl::device().create_renderer(rinfo);
 
-		tz::gl::RendererInfo empty;
+		tz::gl::renderer_info empty;
 		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::Internal_FinalDebugUIRenderer, tz::gl::RendererOption::Internal});

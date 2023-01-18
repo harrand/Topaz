@@ -17,17 +17,17 @@ namespace tz::gl
 	{
 	public:
 		DeviceCommon() = default;
-		const R& get_renderer(tz::gl::RendererHandle handle) const
+		const R& get_renderer(tz::gl::renderer_handle handle) const
 		{
 			return this->renderers[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))];
 		}
 
-		R& get_renderer(tz::gl::RendererHandle handle)
+		R& get_renderer(tz::gl::renderer_handle handle)
 		{
 			return this->renderers[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))];
 		}
 
-		void destroy_renderer(tz::gl::RendererHandle handle)
+		void destroy_renderer(tz::gl::renderer_handle handle)
 		{
 			std::size_t h = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 #if HDK_DEBUG
@@ -48,7 +48,7 @@ namespace tz::gl
 		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
 	protected:
 		template<typename... Args>
-		tz::gl::RendererHandle emplace_renderer(Args&&... args)
+		tz::gl::renderer_handle emplace_renderer(Args&&... args)
 		{
 			// If free list is empty, we need to expand our storage and retrieve a new handle.
 			if(this->free_list.empty())
@@ -60,7 +60,7 @@ namespace tz::gl
 			{
 				// We destroyed a renderer in the past and now the free list contains a reference to the null renderer at its place. We can re-use this position.
 				// If we destroyed a renderer in the past, let's re-use its handle. The renderer at the position will be a null renderer.
-				tz::gl::RendererHandle h = static_cast<hdk::hanval>(this->free_list.back());
+				tz::gl::renderer_handle h = static_cast<hdk::hanval>(this->free_list.back());
 				this->free_list.pop_back();
 				this->get_renderer(h) = R{std::forward<Args>(args)...};
 				return h;
@@ -77,7 +77,7 @@ namespace tz::gl
 	};
 
 
-	template<tz::gl::DeviceType<tz::gl::RendererInfoCommon> T>
+	template<tz::gl::device_type<tz::gl::renderer_infoCommon> T>
 	void common_device_dbgui(T& device)
 	{
 		const std::size_t renderer_count = device.renderer_count();

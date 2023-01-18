@@ -6,27 +6,27 @@
 
 namespace tz::gl
 {
-	class IComponent
+	class icomponent
 	{
 	public:
-		IComponent() = default;
-		virtual ~IComponent() = default;
+		icomponent() = default;
+		virtual ~icomponent() = default;
 		virtual const IResource* get_resource() const = 0;
 		virtual IResource* get_resource() = 0;
 	};
 
 	template<typename T>
-	concept BufferComponentType = requires(T t, std::size_t sz)
+	concept buffer_component_type = requires(T t, std::size_t sz)
 	{
-		requires std::derived_from<T, IComponent>;
+		requires std::derived_from<T, icomponent>;
 		{t.size()} -> std::convertible_to<std::size_t>;
 		{t.resize(sz)} -> std::same_as<void>;
 	};
 	
 	template<typename T>
-	concept ImageComponentType = requires(T t, hdk::vec2ui dims)
+	concept image_component_type = requires(T t, hdk::vec2ui dims)
 	{
-		requires std::derived_from<T, IComponent>;
+		requires std::derived_from<T, icomponent>;
 		{t.get_dimensions()[0]} -> std::convertible_to<unsigned int>;
 		{t.get_dimensions()[1]} -> std::convertible_to<unsigned int>;
 		{t.get_format()} -> std::convertible_to<image_format>;

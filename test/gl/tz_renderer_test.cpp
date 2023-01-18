@@ -28,16 +28,16 @@ bool image_resources_supported()
 TESTFUNC_BEGIN(create_destroy_empty_renderer)
 	// Both graphics and compute renderers.
 	// Start with graphics.
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	hdk::assert(!tz::gl::device().get_renderer(rh).is_null(), "Empty renderer (Graphics) is considered the null renderer.");
 	// Now compute.
-	tz::gl::RendererInfo cinfo;
+	tz::gl::renderer_info cinfo;
 	cinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
-	tz::gl::RendererHandle ch = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle ch = tz::gl::device().create_renderer(rinfo);
 
 	hdk::assert(!tz::gl::device().get_renderer(ch).is_null(), "Empty renderer (Compute) is considered the null renderer.");
 
@@ -53,19 +53,19 @@ TESTFUNC_END
 TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	// Create 2 renderers. One with a buffer resource, the other referencing that buffer resource.
 	constexpr float expected_value = 69.0f;
-	tz::gl::RendererInfo rinfo1;
+	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle r1bh = rinfo1.add_resource(tz::gl::BufferResource::from_one(expected_value));
-	tz::gl::RendererHandle r1h = tz::gl::device().create_renderer(rinfo1);
+	tz::gl::renderer_handle r1h = tz::gl::device().create_renderer(rinfo1);
 
 
-	tz::gl::RendererInfo rinfo2;
+	tz::gl::renderer_info rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle r2bh = rinfo2.ref_resource(r1h, r1bh);
 
-	tz::gl::RendererHandle r2h = tz::gl::device().create_renderer(rinfo2);
+	tz::gl::renderer_handle r2h = tz::gl::device().create_renderer(rinfo2);
 
 	// Try rendering with them as they shouldn't crash.
 	tz::gl::device().get_renderer(r1h).render();
@@ -91,7 +91,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 
 	// Create 2 renderers. One with an image resource, the other referencing that image resource.
 	constexpr std::uint32_t expected_value = 0xff0000ff;
-	tz::gl::RendererInfo rinfo1;
+	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
@@ -100,15 +100,15 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 		.dimensions = {1u, 1u},
 		.flags = {tz::gl::ResourceFlag::RendererOutput}
 	}));
-	tz::gl::RendererHandle r1h = tz::gl::device().create_renderer(rinfo1);
+	tz::gl::renderer_handle r1h = tz::gl::device().create_renderer(rinfo1);
 
 
-	tz::gl::RendererInfo rinfo2;
+	tz::gl::renderer_info rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle r2ih = rinfo2.ref_resource(r1h, r1ih);
 
-	tz::gl::RendererHandle r2h = tz::gl::device().create_renderer(rinfo2);
+	tz::gl::renderer_handle r2h = tz::gl::device().create_renderer(rinfo2);
 
 	// Try rendering with them as they shouldn't crash.
 	tz::gl::device().get_renderer(r1h).render();
@@ -127,14 +127,14 @@ TESTFUNC_END
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_bufferresize)
 	// Create a renderer with buffer containing {1.0f}, then resize it to {2.0f, 3.0f}
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
 	{
 		.access = tz::gl::ResourceAccess::DynamicVariable
 	}));
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::device().get_renderer(rh).render();
@@ -172,7 +172,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 		return;
 	}
 	// Create a renderer with image of dimensions {1, 1} and then resize to {2, 2}
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 
@@ -185,7 +185,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 		.dimensions = old_dims,
 		.access = tz::gl::ResourceAccess::DynamicVariable
 	}));
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::device().get_renderer(rh).render();
@@ -224,7 +224,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	constexpr std::array<float, 3> old_data{1.0f, 2.0f, 3.0f};
 	constexpr std::array<float, 3> new_data{4.0f, 5.0f, 6.0f};
 
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
@@ -232,7 +232,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 		.access = tz::gl::ResourceAccess::DynamicFixed
 		// TODO: Test should pass even if StaticFixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
 	}));
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::device().get_renderer(rh).render();
@@ -275,7 +275,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 		return;
 	}
 	// Create a renderer with image of dimensions {1, 1}, colour black.
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 
@@ -292,7 +292,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 		.dimensions = {2u, 2u},
 		.access = tz::gl::ResourceAccess::DynamicFixed
 	}));
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::device().get_renderer(rh).render();
@@ -323,10 +323,10 @@ TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_computeconfig)
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
 
-	tz::gl::RendererHandle ch = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle ch = tz::gl::device().create_renderer(rinfo);
 
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::device().get_renderer(ch).render();
@@ -350,11 +350,11 @@ TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_renderconfig)
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::device().get_renderer(rh).render();
@@ -379,7 +379,7 @@ TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(renderer_index_buffer)
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	rinfo.state().graphics.index_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
@@ -387,7 +387,7 @@ TESTFUNC_BEGIN(renderer_index_buffer)
 		.flags = {tz::gl::ResourceFlag::IndexBuffer}
 	}));
 
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 	tz::gl::device().get_renderer(rh).render();
 
 	tz::gl::device().destroy_renderer(rh);
@@ -395,7 +395,7 @@ TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(renderer_indirect_buffer)
-	tz::gl::RendererInfo rinfo;
+	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
@@ -403,7 +403,7 @@ TESTFUNC_BEGIN(renderer_indirect_buffer)
 		.flags = {tz::gl::ResourceFlag::DrawIndirectBuffer}
 	}));
 
-	tz::gl::RendererHandle rh = tz::gl::device().create_renderer(rinfo);
+	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 	tz::gl::device().get_renderer(rh).render();
 
 	tz::gl::device().destroy_renderer(rh);

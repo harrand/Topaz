@@ -40,7 +40,7 @@ int main()
 		using namespace tz::literals;
 		std::size_t triangle_count = 1;
 
-		tz::gl::RendererInfo rinfo;
+		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
 		tz::gl::ResourceHandle imgh = rinfo.add_resource
@@ -107,7 +107,7 @@ int main()
 		);
 		rinfo.state().graphics.index_buffer = ibufh;
 
-		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+		tz::gl::renderer_handle rendererh = tz::gl::device().create_renderer(rinfo);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 		std::default_random_engine rand;
 		tz::delay fixed_update{50_ms};

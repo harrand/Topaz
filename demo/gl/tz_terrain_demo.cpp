@@ -46,7 +46,7 @@ int main()
 			tz::gl::ResourceAccess::DynamicFixed
 		});
 
-		tz::gl::RendererInfo rinfo;
+		tz::gl::renderer_info rinfo;
 		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
 		tz::gl::ResourceHandle bufh2 = rinfo.add_resource(buf2);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_terrain_demo, vertex));
@@ -55,7 +55,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_terrain_demo, fragment));
 		//rinfo.state().graphics.clear_colour = {0.0f, 0.765f, 1.0f, 1.0f};
 
-		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+		tz::gl::renderer_handle rendererh = tz::gl::device().create_renderer(rinfo);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 		hdk::vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool flight_enabled = false;

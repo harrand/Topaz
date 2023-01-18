@@ -24,7 +24,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Represents a handle for a renderer owned by an existing device.
 	 */
-	using RendererHandle = hdk::handle<detail::RendererTag>;
+	using renderer_handle = hdk::handle<detail::RendererTag>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
@@ -88,12 +88,12 @@ namespace tz::gl
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>
-	concept RendererInfoType = requires(T t, RendererHandle ren, ResourceHandle r, const IResource& resource, IComponent* component, IOutput& output, RendererOptions options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
+	concept renderer_info_type = requires(T t, renderer_handle ren, ResourceHandle r, const IResource& resource, icomponent* component, IOutput& output, RendererOptions options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
 		{t.get_resources()} -> std::same_as<std::vector<const IResource*>>;
-		{t.get_dependencies()} -> std::same_as<std::span<const RendererHandle>>;
+		{t.get_dependencies()} -> std::same_as<std::span<const renderer_handle>>;
 
 		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
 		{t.ref_resource(component)} -> std::same_as<ResourceHandle>;
@@ -147,7 +147,7 @@ namespace tz::gl
 		struct ResourceReference
 		{
 			ResourceHandle resource;
-			IComponent* component;
+			icomponent* component;
 		};
 
 		/**
@@ -203,7 +203,7 @@ namespace tz::gl
 		 * @param r Handle corresponding to an existing resource. If the handle is not associated with this renderer, the behaviour is undefined.
 		 * @return Pointer to the component based upon the resource corresponding to the provided handle.
 		 */
-		{t.get_component(r)} -> std::convertible_to<const IComponent*>;
+		{t.get_component(r)} -> std::convertible_to<const icomponent*>;
 		/**
 		 * Retrieve the renderer output, if there is one.
 		 *

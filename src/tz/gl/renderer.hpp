@@ -21,10 +21,10 @@ namespace tz::gl
 	 */
 	#if TZ_VULKAN
 		using Renderer = RendererVulkan;
-		using RendererInfo = RendererInfoVulkan;
+		using renderer_info = renderer_infoVulkan;
 	#elif TZ_OGL
 		using Renderer = RendererOGL;
-		using RendererInfo = RendererInfoOGL;
+		using renderer_info = renderer_infoOGL;
 	#endif
 }
 

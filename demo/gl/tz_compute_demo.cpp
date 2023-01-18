@@ -28,19 +28,19 @@ int main()
 		);
 		tz::gl::BufferResource time_buffer = tz::gl::BufferResource::from_one(0u);
 
-		tz::gl::RendererInfo pinfo;
+		tz::gl::renderer_info pinfo;
 		pinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_compute_demo, compute));
 		auto cbuf = pinfo.add_resource(colour_buffer);
 		tz::gl::ResourceHandle tbufh = pinfo.add_resource(time_buffer);
 
-		tz::gl::RendererHandle compute_workerh = tz::gl::device().create_renderer(pinfo);
+		tz::gl::renderer_handle compute_workerh = tz::gl::device().create_renderer(pinfo);
 
-		tz::gl::RendererInfo rinfo;
+		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
 		tz::gl::ResourceHandle refbuf = rinfo.ref_resource(compute_workerh, cbuf);
 		rinfo.debug_name("Window Renderer");
-		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
+		tz::gl::renderer_handle rendererh = tz::gl::device().create_renderer(rinfo);
 
 		tz::gl::Renderer& compute_worker = tz::gl::device().get_renderer(compute_workerh);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);

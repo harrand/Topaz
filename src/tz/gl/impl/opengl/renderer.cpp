@@ -60,14 +60,14 @@ namespace tz::gl
 		}
 	}
 
-	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, std::span<const IComponent* const> components):
+	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, std::span<const icomponent* const> components):
 	AssetStorageCommon<IResource>(resources),
 	components(),
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
 	{
 		HDK_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", 0xFFAA0000);
-		auto do_metadata = [this](IComponent* comp)
+		auto do_metadata = [this](icomponent* comp)
 		{
 			IResource* res = comp->get_resource();
 			switch(res->get_type())
@@ -105,10 +105,10 @@ namespace tz::gl
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
 			IResource* res = this->get(static_cast<hdk::hanval>(i));
-			IComponent* comp = nullptr;
+			icomponent* comp = nullptr;
 			if(res == nullptr)
 			{
-				comp = const_cast<IComponent*>(components[encountered_reference_count]);
+				comp = const_cast<icomponent*>(components[encountered_reference_count]);
 				this->components.push_back(comp);
 				encountered_reference_count++;
 				res = comp->get_resource();
@@ -135,7 +135,7 @@ namespace tz::gl
 		this->fill_bindless_image_buffer();
 	}
 
-	const IComponent* ResourceStorage::get_component(ResourceHandle handle) const
+	const icomponent* ResourceStorage::get_component(ResourceHandle handle) const
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -144,7 +144,7 @@ namespace tz::gl
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	IComponent* ResourceStorage::get_component(ResourceHandle handle)
+	icomponent* ResourceStorage::get_component(ResourceHandle handle)
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -198,7 +198,7 @@ namespace tz::gl
 		std::size_t i = 0;
 		for(std::size_t j = 0; j < this->components.size(); j++)
 		{
-			IComponent* comp = this->components[j].get();
+			icomponent* comp = this->components[j].get();
 			if(comp->get_resource()->get_type() == ResourceType::Buffer)
 			{
 				auto bcomp = static_cast<BufferComponentOGL*>(comp);
@@ -456,7 +456,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	
-	RendererOGL::RendererOGL(const RendererInfoOGL& info):
+	RendererOGL::RendererOGL(const renderer_infoOGL& info):
 	vao(),
 	resources(info.get_resources(), info.get_components()),
 	shader(info.shader()),
@@ -469,7 +469,7 @@ namespace tz::gl
 		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
-				IComponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
+				icomponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
 				if(comp->get_resource()->get_type() == ResourceType::Buffer)
 				{
 					ogl2::Buffer& buf = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
@@ -502,12 +502,12 @@ namespace tz::gl
 		return this->resources.get(handle);
 	}
 
-	const IComponent* RendererOGL::get_component(ResourceHandle handle) const
+	const icomponent* RendererOGL::get_component(ResourceHandle handle) const
 	{
 		return this->resources.get_component(handle);
 	}
 
-	IComponent* RendererOGL::get_component(ResourceHandle handle)
+	icomponent* RendererOGL::get_component(ResourceHandle handle)
 	{
 		return this->resources.get_component(handle);
 	}
@@ -682,7 +682,7 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
 				{
-					IComponent* comp = this->get_component(arg.resource);
+					icomponent* comp = this->get_component(arg.resource);
 					IResource* res = comp->get_resource();
 					switch(res->get_access())
 					{

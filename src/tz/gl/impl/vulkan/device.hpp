@@ -79,10 +79,10 @@ namespace tz::gl
 		DeviceVulkan(const DeviceVulkan& copy) = delete;
 		~DeviceVulkan();
 
-		// Satisfies DeviceType.
-		tz::gl::RendererHandle create_renderer(const RendererInfoVulkan& info);
+		// Satisfies device_type.
+		tz::gl::renderer_handle create_renderer(const renderer_infoVulkan& info);
 		using DeviceCommon<RendererVulkan>::get_renderer;
-		void destroy_renderer(tz::gl::RendererHandle handle);
+		void destroy_renderer(tz::gl::renderer_handle handle);
 		image_format get_window_format() const;
 		void dbgui();
 		const DeviceWindowVulkan& get_device_window() const;
@@ -99,7 +99,7 @@ namespace tz::gl
 		DeviceRenderSchedulerVulkan scheduler;
 	};
 
-	static_assert(DeviceType<DeviceVulkan, RendererInfoVulkan>);
+	static_assert(device_type<DeviceVulkan, renderer_infoVulkan>);
 }
 
 #endif // TZ_VULKAN

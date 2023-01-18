@@ -9,13 +9,13 @@
 namespace tz::gl
 {
 	using namespace tz::gl;
-	class BufferComponentVulkan : public IComponent
+	class BufferComponentVulkan : public icomponent
 	{
 	public:
 		BufferComponentVulkan(IResource& resource);
 		virtual const IResource* get_resource() const final;
 		virtual IResource* get_resource() final;
-		// Satisfy BufferComponentType
+		// Satisfy buffer_component_type
 		std::size_t size() const;
 		void resize(std::size_t sz);
 
@@ -28,15 +28,15 @@ namespace tz::gl
 		IResource* resource;
 		vk2::Buffer buffer;
 	};
-	static_assert(BufferComponentType<BufferComponentVulkan>);
+	static_assert(buffer_component_type<BufferComponentVulkan>);
 
-	class ImageComponentVulkan : public IComponent
+	class ImageComponentVulkan : public icomponent
 	{
 	public:
 		ImageComponentVulkan(IResource& resource);
 		virtual const IResource* get_resource() const final;
 		virtual IResource* get_resource() final;
-		// Satisfy ImageComponentType
+		// Satisfy image_component_type
 		hdk::vec2ui get_dimensions() const;
 		image_format get_format() const;
 		void resize(hdk::vec2ui new_dimensions);
@@ -49,7 +49,7 @@ namespace tz::gl
 		IResource* resource;
 		vk2::Image image;
 	};
-	static_assert(ImageComponentType<ImageComponentVulkan>);
+	static_assert(image_component_type<ImageComponentVulkan>);
 }
 
 #endif // TZ_VULKAN

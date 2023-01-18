@@ -25,7 +25,7 @@ namespace tz::gl
 	class DeviceWindowVulkan;
 	class DeviceRenderSchedulerVulkan;
 	using namespace tz::gl;
-	using RendererInfoVulkan = RendererInfoCommon;
+	using renderer_infoVulkan = renderer_infoCommon;
 
 	struct RendererResizeInfoVulkan
 	{
@@ -52,7 +52,7 @@ namespace tz::gl
 		/**
 		 * Create storage for a set of existing resources.
 		 */
-		ResourceStorage(const RendererInfoVulkan& info);
+		ResourceStorage(const renderer_infoVulkan& info);
 		ResourceStorage() = default;
 		ResourceStorage(ResourceStorage&& move);
 		~ResourceStorage() = default;
@@ -61,12 +61,12 @@ namespace tz::gl
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		const IComponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(ResourceHandle handle) const;
 		/**
 		 * Retrieve the component which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		IComponent* get_component(ResourceHandle handle);
+		icomponent* get_component(ResourceHandle handle);
 		/**
 		 * Retrieve the descriptor layout representing the shader resources used by the renderer.
 		 */
@@ -104,7 +104,7 @@ namespace tz::gl
 	private:
 
 		/// Storage for all cloned resource's components.
-		std::vector<tz::maybe_owned_ptr<IComponent>> components = {};
+		std::vector<tz::maybe_owned_ptr<icomponent>> components = {};
 		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding ImageComponent to said resource.
 		std::vector<vk2::ImageView> image_component_views = {};
 		// A unique sampler for every single image. There is no duplicate checking, so there may be redundant samplers in here. However, it's not trivial to fix this because we use combined image sampling - to use separate image and samplers requires shader source changes, which means big tzslc changes for vulkan only. Looks like it could end up changing syntax so we avoid this for the time being.
@@ -151,7 +151,7 @@ namespace tz::gl
 		/**
 		 * Construct the manager to deal with this brain-knot of output components.
 		 */
-		OutputManager(const RendererInfoVulkan& info);
+		OutputManager(const renderer_infoVulkan& info);
 		OutputManager() = default;
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
@@ -229,7 +229,7 @@ namespace tz::gl
 		/**
 		 * Construct the graphics/compute pipeline manager using all the necessary shader sources aswell as resource state and output information.
 		 */
-		GraphicsPipelineManager(const RendererInfoVulkan& info, const ResourceStorage& resources, const OutputManager& output);
+		GraphicsPipelineManager(const renderer_infoVulkan& info, const ResourceStorage& resources, const OutputManager& output);
 		GraphicsPipelineManager() = default;
 		GraphicsPipelineManager(GraphicsPipelineManager&& move);
 		~GraphicsPipelineManager() = default;
@@ -273,7 +273,7 @@ namespace tz::gl
 		/**
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
 		 */
-		CommandProcessor(const RendererInfoVulkan& info);
+		CommandProcessor(const renderer_infoVulkan& info);
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
 		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
@@ -350,7 +350,7 @@ namespace tz::gl
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
 		 */
-		RendererVulkan(const RendererInfoVulkan& info);
+		RendererVulkan(const renderer_infoVulkan& info);
 		RendererVulkan(RendererVulkan&& move);
 		~RendererVulkan();
 		RendererVulkan& operator=(RendererVulkan&& rhs);
@@ -361,28 +361,28 @@ namespace tz::gl
 		unsigned int resource_count() const;
 		/**
 		 * Retrieve the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		const IResource* get_resource(ResourceHandle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		IResource* get_resource(ResourceHandle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		const IComponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(ResourceHandle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a RendererInfoVulkan's `add_resource`. If this handle came from a RendererInfoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		IComponent* get_component(ResourceHandle handle);
+		icomponent* get_component(ResourceHandle handle);
 		IOutput* get_output();
 		const IOutput* get_output() const;
 		/**

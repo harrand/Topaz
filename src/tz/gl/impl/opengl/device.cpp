@@ -12,7 +12,7 @@ namespace tz::gl
 		glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 	}
 
-	tz::gl::RendererHandle DeviceOGL::create_renderer(const RendererInfoOGL& info)
+	tz::gl::renderer_handle DeviceOGL::create_renderer(const renderer_infoOGL& info)
 	{
 		HDK_PROFZONE("OpenGL Frontend - Renderer Create (via Device)", 0xFFAA0000);
 		return DeviceCommon<RendererOGL>::emplace_renderer(info);

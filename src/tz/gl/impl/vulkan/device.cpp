@@ -348,14 +348,14 @@ namespace tz::gl
 		DeviceCommon<RendererVulkan>::internal_clear();
 	}
 
-	tz::gl::RendererHandle DeviceVulkan::create_renderer(const RendererInfoVulkan& info)
+	tz::gl::renderer_handle DeviceVulkan::create_renderer(const renderer_infoVulkan& info)
 	{
 		HDK_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", 0xFFAAAA00);
 		this->scheduler.notify_renderer_added();
 		return DeviceCommon<RendererVulkan>::emplace_renderer(info);
 	}
 
-	void DeviceVulkan::destroy_renderer(tz::gl::RendererHandle handle)
+	void DeviceVulkan::destroy_renderer(tz::gl::renderer_handle handle)
 	{
 		this->scheduler.notify_renderer_removed(static_cast<std::size_t>(static_cast<hdk::hanval>(handle)));
 		DeviceCommon<RendererVulkan>::destroy_renderer(handle);

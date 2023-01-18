@@ -15,13 +15,13 @@ namespace tz::gl
 	 * - Implement the factory pattern for various graphics library objects, such as @ref RendererType
 	 * - Have direct access to the window surface, and exposes relevant information about said surface.
 	 */
-	template<typename T, typename RendererInfo>
-	concept DeviceType = requires(T t, RendererInfo& rinfo, RendererHandle h)
+	template<typename T, typename R>
+	concept device_type = requires(T t, R& rinfo, renderer_handle h)
 	{
 		requires std::is_default_constructible_v<std::decay_t<T>>;
-		requires RendererInfoType<RendererInfo>;
+		requires renderer_info_type<R>;
 
-		{t.create_renderer(rinfo)} -> std::same_as<RendererHandle>;
+		{t.create_renderer(rinfo)} -> std::same_as<renderer_handle>;
 		{t.destroy_renderer(h)} -> std::same_as<void>;
 		{t.renderer_count()} -> std::convertible_to<std::size_t>;
 		{t.get_renderer(h)} -> RendererType;

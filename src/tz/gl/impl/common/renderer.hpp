@@ -57,18 +57,18 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Helper struct which the user can use to specify which inputs, resources they want and where they want a Renderer to render to. This is likely going to be refactored at some point because it doesn't do any Vulkan-specific magic.
 	 */
-	class RendererInfoCommon
+	class renderer_infoCommon
 	{
 	public:
-		RendererInfoCommon();
-		// Satisfies RendererInfoType.
+		renderer_infoCommon();
+		// Satisfies renderer_info_type.
 		/**
 		 * Retrieve the number of resources.
 		 */
 		unsigned int resource_count() const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
-		 * @param Handle handle returned from a previous call to `add_resource`. If this handle came from a different RendererInfo, the behaviour is undefined.
+		 * @param Handle handle returned from a previous call to `add_resource`. If this handle came from a different renderer_info, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		const IResource* get_resource(ResourceHandle handle);
@@ -76,8 +76,8 @@ namespace tz::gl
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
 		std::vector<const IResource*> get_resources() const;
-		std::span<const RendererHandle> get_dependencies() const;
-		std::span<const IComponent* const> get_components() const;
+		std::span<const renderer_handle> get_dependencies() const;
+		std::span<const icomponent* const> get_components() const;
 		/**
 		 * Add a new resource, which will be used by a Renderer which is created from this helper struct.
 		 *
@@ -85,8 +85,8 @@ namespace tz::gl
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
 		ResourceHandle add_resource(const IResource& resource);
-		ResourceHandle ref_resource(IComponent* component);
-		ResourceHandle ref_resource(RendererHandle ren, ResourceHandle res);
+		ResourceHandle ref_resource(icomponent* component);
+		ResourceHandle ref_resource(renderer_handle ren, ResourceHandle res);
 		/**
 		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another Renderer.
 		 */
@@ -108,7 +108,7 @@ namespace tz::gl
 		 *
 		 * This means that when render() is invoked, the GPU will wait on completion of render-work of the specified renderer before the render work of this renderer begins. This also means that the specified renderer *must* run each time this is ran, ahead-of-time.
 		 */
-		void add_dependency(RendererHandle dependency);
+		void add_dependency(renderer_handle dependency);
 		/**
 		 * Read/write information about the state of the renderer when it is created.
 		 */
@@ -139,7 +139,7 @@ namespace tz::gl
 		/// Stores all provided resources. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.
 		std::vector<std::unique_ptr<IResource>> resources = {};
 		/// Stores all provided components. In this context, components act as references to existing resources owned by another renderer.
-		std::vector<IComponent*> components = {};
+		std::vector<icomponent*> components = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
 		std::unique_ptr<IOutput> output = nullptr;
 		/// Specifies which extra features the Renderer will have.
@@ -147,7 +147,7 @@ namespace tz::gl
 		/// Describes render state. It could change.
 		RenderState renderer_state = {};
 		/// List of renderers we are dependent on.
-		std::vector<RendererHandle> dependencies = {};
+		std::vector<renderer_handle> dependencies = {};
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 		/// The clear value for colour attachments.
@@ -156,7 +156,7 @@ namespace tz::gl
 		hdk::vec3ui compute_kernel = {1u, 1u, 1u};
 		std::string dbg_name = "";
 	};
-	static_assert(RendererInfoType<RendererInfoCommon>);
+	static_assert(renderer_info_type<renderer_infoCommon>);
 
 	template<class Asset>
 	class AssetStorageCommon

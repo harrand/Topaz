@@ -16,7 +16,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2
-	 * Retrieve the global device. See @ref tz::gl::DeviceType for usage and functionality.
+	 * Retrieve the global device. See @ref tz::gl::device_type for usage and functionality.
 	 *
 	 * You should not be creating your own devices.
 	 */
