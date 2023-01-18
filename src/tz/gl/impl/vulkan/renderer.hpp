@@ -34,7 +34,7 @@ namespace tz::gl
 		vk2::Image* new_depth_image;
 	};
 
-	using RendererResizeCallbackType = tz::Callback<RendererResizeInfoVulkan>;
+	using RendererResizeCallbackType = tz::callback<RendererResizeInfoVulkan>;
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend

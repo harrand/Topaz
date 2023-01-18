@@ -72,7 +72,7 @@ namespace tz::dbgui
 	}
 
 	/// Represents a function taking no parameters and returning void.
-	using GameMenuCallbackType = tz::Callback<>;
+	using GameMenuCallbackType = tz::callback<>;
 	using GameBarCallbackType = GameMenuCallbackType;
 	/**
 	 * @ingroup tz_dbgui

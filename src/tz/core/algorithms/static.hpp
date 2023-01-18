@@ -11,36 +11,36 @@ namespace tz
 	 * 
 	 * Equivalent to:
 	 * ```
-	 * for(std::size_t i = Begin; i < End; i++)
+	 * for(std::size_t i = begin; i < end; i++)
 	 * {
 	 * 	function(i);
 	 * }
 	 * ```
 	 */
-	template<std::size_t Begin, std::size_t End>
+	template<std::size_t begin, std::size_t end>
 	constexpr void static_for(tz::Action<std::size_t> auto function)
 	{
-		if constexpr(Begin < End)
+		if constexpr(begin < end)
 		{
-			function(std::integral_constant<std::size_t, Begin>{});
-			static_for<Begin + 1, End>(function);
+			function(std::integral_constant<std::size_t, begin>{});
+			static_for<begin + 1, end>(function);
 		}
 	}
 
 	/**
 	 * @ingroup tz_core_algorithms
-	 * Check if a Needle is found in a Haystack at compile-time.
-	 * @tparam Needle Needle type to check exists within Haystack...
-	 * @tparam Haystack Parameter pack which may or may not contain the type Needle.
-	 * @return True if the template parameter pack 'Haystack' contains a type such that std::is_same<Needle, Type> is true. Otherwise, returns false.
+	 * Check if a needle is found in a haystack at compile-time.
+	 * @tparam needle needle type to check exists within haystack...
+	 * @tparam haystack Parameter pack which may or may not contain the type needle.
+	 * @return True if the template parameter pack 'haystack' contains a type such that std::is_same<needle, Type> is true. Otherwise, returns false.
 	 */
-	template<typename Needle, typename... Haystack>
+	template<typename needle, typename... haystack>
 	constexpr bool static_find()
 	{
 		bool b = false;
-		static_for<0, sizeof...(Haystack)>([&b]([[maybe_unused]] auto i) constexpr
+		static_for<0, sizeof...(haystack)>([&b]([[maybe_unused]] auto i) constexpr
 		{
-			if constexpr(std::is_same<std::decay_t<decltype(std::get<i.value>(std::declval<std::tuple<Haystack...>>()))>, Needle>::value)
+			if constexpr(std::is_same<std::decay_t<decltype(std::get<i.value>(std::declval<std::tuple<haystack...>>()))>, needle>::value)
 			{
 				b = true;
 			}

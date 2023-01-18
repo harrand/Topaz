@@ -9,13 +9,13 @@ namespace tz
 {
 	namespace detail
 	{
-		struct CallbackType{};
+		struct callback_type{};
 	}
 	/**
 	 * @ingroup tz_core_utility
-	 * Opaque handle representing a reference to an existing @ref tz::Callback function.
+	 * Opaque handle representing a reference to an existing @ref tz::callback function.
 	 */
-	using CallbackHandle = hdk::handle<detail::CallbackType>;
+	using callback_handle = hdk::handle<detail::callback_type>;
 
 	/**
 	 * @ingroup tz_core_utility
@@ -27,19 +27,19 @@ namespace tz
 	 *
 	 */
 	template<typename... Args>
-	class Callback
+	class callback
 	{
 	public:
 		/**
 		 * Create an empty callback object with no registered callables.
 		 */
-		Callback() = default;
+		callback() = default;
 		/**
 		 * Register a new callable with this callback object. The callable is assumed to remain valid until either the destruction of this callback object, or until it is manually deregistered.
 		 * @param callback_function Callable matching the given signature.
-		 * @return CallbackHandle corresponding to the registered callback. Cache this handle and use it to deregister the callable via @ref remove_callback once the lifetime of the provided callable reaches its end or the functionality is no longer required.
+		 * @return callback_handle corresponding to the registered callback. Cache this handle and use it to deregister the callable via @ref remove_callback once the lifetime of the provided callable reaches its end or the functionality is no longer required.
 		 */
-		CallbackHandle add_callback(tz::Action<Args...> auto&& callback_function)
+		callback_handle add_callback(tz::Action<Args...> auto&& callback_function)
 		{
 			this->callback_storage.push_back(callback_function);
 			return static_cast<hdk::hanval>(this->callback_storage.size() - 1);
@@ -47,9 +47,9 @@ namespace tz
 		/**
 		 * Deregister a callable that was registered by this callback object at some point in the past. The corresponding callable will no longer be invoked when the callback object is invoked.
 		 *
-		 * @param handle CallbackHandle corresponding to the result of a previous @ref add_callback invocation.
+		 * @param handle callback_handle corresponding to the result of a previous @ref add_callback invocation.
 		 */
-		void remove_callback(CallbackHandle handle)
+		void remove_callback(callback_handle handle)
 		{
 			std::size_t handle_value = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
 			this->callback_storage[handle_value] = nullptr;
