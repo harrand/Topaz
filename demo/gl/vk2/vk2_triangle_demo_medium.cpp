@@ -27,7 +27,7 @@ struct TriangleResourceData
 	float pad1;
 	hdk::vec3 scale;
 	float pad2;
-	tz::Mat4 mvp;
+	tz::mat4 mvp;
 };
 
 struct TriangleVertexData
@@ -384,10 +384,10 @@ int main()
 						.rotation = {0.0f, 0.0f, i * 1.5708f},
 						.scale = {0.4f, 0.4f, 0.4f},
 					};
-					tz::Mat4 m = tz::model(resources[i].position, resources[i].rotation, resources[i].scale);
+					tz::mat4 m = tz::model(resources[i].position, resources[i].rotation, resources[i].scale);
 
-					tz::Mat4 v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 3.14159f});
-					tz::Mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
+					tz::mat4 v = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 3.14159f});
+					tz::mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
 					resources[i].mvp = (p * v * m).transpose();
 				}
 				triangle_resource_buffer_staging.unmap();

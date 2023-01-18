@@ -27,7 +27,7 @@ struct TriangleResourceData
 	float pad1;
 	hdk::vec3 scale;
 	float pad2;
-	tz::Mat4 mvp;
+	tz::mat4 mvp;
 	std::uint32_t texture_id;
 	std::uint32_t pad3[3];
 };
@@ -532,10 +532,10 @@ int main()
 				.texture_id = texture_id
 			};
 			resources[triangle_idx].position[0] = (0.5f * triangle_idx) - 0.5f;
-			tz::Mat4 m = tz::model(resources[triangle_idx].position, resources[triangle_idx].rotation, resources[triangle_idx].scale);
+			tz::mat4 m = tz::model(resources[triangle_idx].position, resources[triangle_idx].rotation, resources[triangle_idx].scale);
 
-			tz::Mat4 v = tz::view({0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-			tz::Mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
+			tz::mat4 v = tz::view({0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+			tz::mat4 p = tz::perspective(1.27f, tz::window().get_width() / tz::window().get_height(), 0.1f, 1000.0f);
 			resources[triangle_idx].mvp = (p * v * m).transpose();
 		};
 

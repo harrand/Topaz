@@ -25,9 +25,9 @@ int main()
 	{
 		struct BufferData
 		{
-			tz::Mat4 model = tz::model({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
-			tz::Mat4 view = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
-			tz::Mat4 projection = tz::Mat4::identity();
+			tz::mat4 model = tz::model({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
+			tz::mat4 view = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
+			tz::mat4 projection = tz::mat4::identity();
 			hdk::vec3 camera_position{0.0f, 0.0f, 0.0f};
 		};
 
