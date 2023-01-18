@@ -7,13 +7,13 @@
 
 namespace tz::gl::vk2
 {
-	ImageAspectFlags derive_aspect_from_format(ImageFormat fmt)
+	ImageAspectFlags derive_aspect_from_format(image_format fmt)
 	{
 		switch(fmt)
 		{
-			case ImageFormat::Depth16_UNorm:
+			case image_format::Depth16_UNorm:
 			[[fallthrough]];
-			case ImageFormat::Depth32_SFloat:
+			case image_format::Depth32_SFloat:
 				return {ImageAspectFlag::Depth};
 			break;
 			default:
@@ -24,7 +24,7 @@ namespace tz::gl::vk2
 	Image::Image(SwapchainImageInfo sinfo):
 	DebugNameable<VK_OBJECT_TYPE_IMAGE>(sinfo.swapchain->get_device()),
 	image(VK_NULL_HANDLE),
-	format(ImageFormat::Undefined),
+	format(image_format::undefined),
 	layout(ImageLayout::Undefined),
 	tiling(ImageTiling::Optimal),
 	residency(MemoryResidency::GPU),
@@ -132,7 +132,7 @@ namespace tz::gl::vk2
 				hdk::error("Failed to create Image because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
-				hdk::error("Undocumented return value VK_ERROR_FEATURE_NOT_PRESENT from vmaCreateImage. TODO: Invoke vkGetPhysicalDeviceImageFormatProperties before trying to create the image to catch this early. The combination of format, tiling, residency etc are unsupported for this specific machine. Please submit a bug report.");
+				hdk::error("Undocumented return value VK_ERROR_FEATURE_NOT_PRESENT from vmaCreateImage. TODO: Invoke vkGetPhysicalDeviceimage_formatProperties before trying to create the image to catch this early. The combination of format, tiling, residency etc are unsupported for this specific machine. Please submit a bug report.");
 			break;
 			default:
 				hdk::error("Failed to create Image but cannot determine why. Please submit a bug report.");
@@ -143,7 +143,7 @@ namespace tz::gl::vk2
 
 	Image::Image(Image&& move):
 	image(VK_NULL_HANDLE),
-	format(ImageFormat::Undefined),
+	format(image_format::undefined),
 	layout(ImageLayout::Undefined),
 	tiling(),
 	residency(),
@@ -182,7 +182,7 @@ namespace tz::gl::vk2
 		return *this;
 	}
 
-	ImageFormat Image::get_format() const
+	image_format Image::get_format() const
 	{
 		return this->format;
 	}
@@ -276,7 +276,7 @@ namespace tz::gl::vk2
 
 	Image::Image():
 	image(VK_NULL_HANDLE),
-	format(ImageFormat::Undefined),
+	format(image_format::undefined),
 	layout(ImageLayout::Undefined),
 	dimensions{0u, 0u},
 	device(nullptr),

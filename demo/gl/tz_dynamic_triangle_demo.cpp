@@ -69,7 +69,7 @@ int main()
 					0b1111'1111_uc
 				},
 				{
-					.format = tz::gl::ImageFormat::RGBA32,
+					.format = tz::gl::image_format::RGBA32,
 					.dimensions = {2u, 2u},
 					.access = tz::gl::ResourceAccess::DynamicVariable,
 					.flags =

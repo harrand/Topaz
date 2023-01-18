@@ -30,7 +30,7 @@ namespace tz::gl::ogl2
 		return *this;
 	}
 
-	ImageFormat Renderbuffer::get_format() const
+	image_format Renderbuffer::get_format() const
 	{
 		return this->info.format;
 	}
@@ -57,7 +57,7 @@ namespace tz::gl::ogl2
 
 	Renderbuffer::Renderbuffer():
 	renderbuffer(0),
-	info{.format = ImageFormat::Undefined, .dimensions = {1u, 1u}}{}
+	info{.format = image_format::undefined, .dimensions = {1u, 1u}}{}
 }
 
 #endif // TZ_OGL

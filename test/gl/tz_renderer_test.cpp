@@ -96,7 +96,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::ResourceHandle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
 	{
-		.format = tz::gl::ImageFormat::BGRA32,
+		.format = tz::gl::image_format::BGRA32,
 		.dimensions = {1u, 1u},
 		.flags = {tz::gl::ResourceFlag::RendererOutput}
 	}));
@@ -181,7 +181,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 
 	tz::gl::ResourceHandle ih = rinfo.add_resource(tz::gl::ImageResource::from_uninitialised
 	({
-		.format = tz::gl::ImageFormat::RGBA32,
+		.format = tz::gl::image_format::RGBA32,
 		.dimensions = old_dims,
 		.access = tz::gl::ResourceAccess::DynamicVariable
 	}));
@@ -288,7 +288,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 		black_pixel
 	},
 	{
-		.format = tz::gl::ImageFormat::RGBA32,
+		.format = tz::gl::image_format::RGBA32,
 		.dimensions = {2u, 2u},
 		.access = tz::gl::ResourceAccess::DynamicFixed
 	}));

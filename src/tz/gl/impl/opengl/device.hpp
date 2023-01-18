@@ -17,7 +17,7 @@ namespace tz::gl
 		tz::gl::RendererHandle create_renderer(const RendererInfoOGL& info);
 		using DeviceCommon<RendererOGL>::get_renderer;
 		using DeviceCommon<RendererOGL>::destroy_renderer;
-		ImageFormat get_window_format() const;
+		image_format get_window_format() const;
 		void dbgui();
 	private:
 		std::vector<RendererOGL> renderers;

@@ -100,7 +100,7 @@ namespace tz::gl::vk2
 
 	using ImageAspectFlags = tz::EnumField<ImageAspectFlag>;
 
-	ImageAspectFlags derive_aspect_from_format(ImageFormat fmt);
+	ImageAspectFlags derive_aspect_from_format(image_format fmt);
 
 	class Swapchain;
 	class LogicalDevice;
@@ -130,7 +130,7 @@ namespace tz::gl::vk2
 		/// LogicalDevice owning this image. Must not be null.
 		const LogicalDevice* device;
 		/// Format of the image.
-		ImageFormat format;
+		image_format format;
 		/// Dimensions of the image, in pixels.
 		hdk::vec2ui dimensions;
 		/// Field of expected usages of the image. For example, if you wish to transition the image to @ref ImageLayout::TransferTo then this usage field must contain @ref ImageUsage::TransferDestination.
@@ -170,7 +170,7 @@ namespace tz::gl::vk2
 		/**
 		 * Retrieve the underlying format of the image.
 		 */
-		ImageFormat get_format() const;
+		image_format get_format() const;
 		/**
 		 * Retrieve the current layout of the image.
 		 */
@@ -216,7 +216,7 @@ namespace tz::gl::vk2
 		void set_layout(ImageLayout layout);
 
 		VkImage image;
-		ImageFormat format;
+		image_format format;
 		ImageLayout layout;
 		ImageTiling tiling;
 		MemoryResidency residency;

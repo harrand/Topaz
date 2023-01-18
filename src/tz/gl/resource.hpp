@@ -97,7 +97,7 @@ namespace tz::gl
 	struct ImageInfo
 	{
 		/// Image format.
-		ImageFormat format;
+		image_format format;
 		/// Image dimensions, in pixels.
 		hdk::vec2ui dimensions;
 		/// Access specifier. By default this is static fixed.
@@ -162,7 +162,7 @@ namespace tz::gl
 					(unsigned char)0b1111'1111,
 					(unsigned char)0b1111'1111
 				},
-				{.format = ImageFormat::RGBA32, .dimensions = {2u, 2u}}
+				{.format = image_format::RGBA32, .dimensions = {2u, 2u}}
 			);
 		}
 	
@@ -170,12 +170,12 @@ namespace tz::gl
 
 		virtual std::unique_ptr<IResource> unique_clone() const final;
 		virtual void dbgui() final;
-		ImageFormat get_format() const;
+		image_format get_format() const;
 		hdk::vec2ui get_dimensions() const;
 		void set_dimensions(hdk::vec2ui dims);
 	private:
-		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, hdk::vec2ui dimensions, ResourceFlags flags);
-		ImageFormat format;
+		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, ResourceFlags flags);
+		image_format format;
 		hdk::vec2ui dimensions;
 	};
 }

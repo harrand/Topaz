@@ -99,7 +99,7 @@ namespace tz::gl::vk2
 	struct Attachment
 	{
 		/// Specifies the format of the attachment. When used in a @ref RenderPass, its @ref LogicalDevice must support this format. See @ref PhysicalDevice::supports_image_colour_format
-		ImageFormat format = ImageFormat::Undefined;
+		image_format format = image_format::undefined;
 		/// Specifies the number of samples per pixel. See @ref SampleCount
 		SampleCount sample_count = SampleCount::One;
 		/// Specifies load operation for colour and depth when it is first used at the beginning of the subpass. See @ref LoadOp

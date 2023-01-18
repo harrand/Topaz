@@ -40,7 +40,7 @@ int main()
 		}};
 		Image image
 		{{
-			.format = ImageFormat::RGBA32,
+			.format = image_format::RGBA32,
 			.dimensions = {2u, 2u},
 			.sampler =
 			{

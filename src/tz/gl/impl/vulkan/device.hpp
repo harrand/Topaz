@@ -27,7 +27,7 @@ namespace tz::gl
 		vk2::Swapchain& get_swapchain();
 
 		hdk::vec2ui get_dimensions() const;
-		vk2::ImageFormat get_format() const;
+		vk2::image_format get_format() const;
 
 		vk2::Swapchain::ImageAcquisitionResult get_unused_image(const vk2::Swapchain::ImageAcquisition& acquire);
 		bool has_unused_image() const;
@@ -83,7 +83,7 @@ namespace tz::gl
 		tz::gl::RendererHandle create_renderer(const RendererInfoVulkan& info);
 		using DeviceCommon<RendererVulkan>::get_renderer;
 		void destroy_renderer(tz::gl::RendererHandle handle);
-		ImageFormat get_window_format() const;
+		image_format get_window_format() const;
 		void dbgui();
 		const DeviceWindowVulkan& get_device_window() const;
 		DeviceWindowVulkan& get_device_window();

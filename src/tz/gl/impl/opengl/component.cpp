@@ -91,7 +91,7 @@ namespace tz::gl
 		return this->image.get_dimensions();
 	}
 
-	ImageFormat ImageComponentOGL::get_format() const
+	image_format ImageComponentOGL::get_format() const
 	{
 		return from_ogl2(this->image.get_format());
 	}

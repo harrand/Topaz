@@ -47,7 +47,7 @@ void basic_image()
 		constexpr hdk::vec2ui dims{3u, 12u};
 		auto img = tz::gl::ImageResource::from_uninitialised
 		({
-			.format = tz::gl::ImageFormat::RGBA32,
+			.format = tz::gl::image_format::RGBA32,
 			.dimensions = dims
 		});
 		hdk::assert(!img.is_null(), "ImageResource::from_unitialised(...) is wrongly considered a null image resource.");
@@ -85,7 +85,7 @@ void default_arguments_image()
 	hdk::assert(nullimg.get_flags().empty(), "Null Image must not have any flags");
 
 	{
-		auto img = tz::gl::ImageResource::from_uninitialised({.format = tz::gl::ImageFormat::RGBA32, .dimensions = {1u, 1u}});
+		auto img = tz::gl::ImageResource::from_uninitialised({.format = tz::gl::image_format::RGBA32, .dimensions = {1u, 1u}});
 		hdk::assert(img.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Image must be ResourceAccess::StaticFixed, but it is not.");
 		hdk::assert(img.get_flags().empty(), "Defaulted Image must not have any flags");
 	}
@@ -95,7 +95,7 @@ void default_arguments_image()
 			std::byte{1},
 			std::byte{2},
 			std::byte{3}
-		}, {.format = tz::gl::ImageFormat::RGBA32, .dimensions = {1u, 1u}});
+		}, {.format = tz::gl::image_format::RGBA32, .dimensions = {1u, 1u}});
 		hdk::assert(img.get_access() == tz::gl::ResourceAccess::StaticFixed, "Defaulted Image must be ResourceAccess::StaticFixed, but it is not.");
 		hdk::assert(img.get_flags().empty(), "Defaulted Image must not have any flags");
 	}

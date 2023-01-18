@@ -24,7 +24,7 @@ namespace tz::gl::ogl2
 	/**
 	 * @ingroup tz_gl_ogl2
 	 * @defgroup tz_gl_ogl2_image Images, Samplers and Formats
-	 * Documentation for everything relating to Images, Samplers and ImageFormats.
+	 * Documentation for everything relating to Images, Samplers and image_formats.
 	 */
 
 	/**

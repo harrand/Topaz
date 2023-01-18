@@ -32,7 +32,7 @@ int main()
 		}};
 		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities();
 
-		ImageFormat swapchain_format = pdev.get_supported_surface_formats().front();
+		image_format swapchain_format = pdev.get_supported_surface_formats().front();
 
 		Swapchain swapchain
 		{{

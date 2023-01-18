@@ -17,7 +17,7 @@ namespace tz::gl::vk2
 		/// Minimum number of swapchain images. This must be satisfied by the @ref PhysicalDevice corresponding to `device.get_hardware()`. See @ref PhysicalDevice::get_surface_capabilities for more information. 
 		std::uint32_t swapchain_image_count_minimum;
 		/// Specifies the format the swapchain image(s) will be created with. 
-		ImageFormat image_format;
+		image_format image_format;
 		/// Specifies the presentation mode the @ref Swapchain will use. This must be satisfied by the @ref PhysicalDevice corresponding to `device.get_hardware()`. See @ref PhysicalDevice::get_supported_surface_present_modes for more information.
 		SurfacePresentMode present_mode;
 		/// Pointer to swapchain which this will replace, if any. Defaults to nullptr.
@@ -99,10 +99,10 @@ namespace tz::gl::vk2
 		 */
 		std::span<ImageView> get_image_views();
 		/**
-		 * Retrieve the ImageFormat of the swapchain images.
+		 * Retrieve the image_format of the swapchain images.
 		 * @return Swapchain format.
 		 */
-		ImageFormat get_image_format() const;
+		image_format get_image_format() const;
 		/**
 		 * Retrieve the present mode used by the swapchain.
 		 * @return Present mode for the window surface.

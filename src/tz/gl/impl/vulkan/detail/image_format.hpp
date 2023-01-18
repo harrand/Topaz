@@ -12,7 +12,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_image
 	 * Various image formats are supported. Note that PhysicalDevices may not support all formats listed here.
 	 *
-	 * ImageFormats are comprised of three properties.
+	 * image_formats are comprised of three properties.
 	 *
 	 * The enum values are named as `Components``Size``Internal` where:
 	 * - Components (R, RG, RGB, BGR, RGBA): number of components and order.
@@ -31,10 +31,10 @@ namespace tz::gl::vk2
 	 * - R8_SNorm = (R, 8 bit, SNORM)
 	 * - BGRA16_UInt = (BGRA, 16 bit, UINT)
 	 */
-	enum class ImageFormat
+	enum class image_format
 	{
 		/// - Undefined Format. It is mostly an error to use this.
-		Undefined = VK_FORMAT_UNDEFINED,
+		undefined = VK_FORMAT_UNDEFINED,
 		
 		R8 = VK_FORMAT_R8_UNORM,
 		R8_UNorm = R8,
@@ -101,84 +101,84 @@ namespace tz::gl::vk2
 	 * https://www.khronos.org/registry/vulkan/specs/1.2/pdf/vkspec.pdf
 	 * pg 1081-1090 (big tables of mandatory supported formats)
 	 */
-	constexpr ImageFormat safe_colour_attachment_formats[]
+	constexpr image_format safe_colour_attachment_formats[]
 	{
-		ImageFormat::RGBA32_UInt,
-		ImageFormat::RGBA32_SInt,
-		ImageFormat::RGBA32_sRGB,
+		image_format::RGBA32_UInt,
+		image_format::RGBA32_SInt,
+		image_format::RGBA32_sRGB,
 
-		ImageFormat::BGRA32,
-		ImageFormat::BGRA32_sRGB,
+		image_format::BGRA32,
+		image_format::BGRA32_sRGB,
 
-		ImageFormat::RG16_UInt,
-		ImageFormat::RG16_SInt,
+		image_format::RG16_UInt,
+		image_format::RG16_SInt,
 
-		ImageFormat::RG32_UInt,
-		ImageFormat::RG32_SInt,
+		image_format::RG32_UInt,
+		image_format::RG32_SInt,
 	};
 
-	constexpr ImageFormat safe_depth_attachment_formats[]
+	constexpr image_format safe_depth_attachment_formats[]
 	{
-		ImageFormat::Depth16_UNorm
+		image_format::Depth16_UNorm
 	};
 
-	constexpr ImageFormat safe_sampled_image_formats[]
+	constexpr image_format safe_sampled_image_formats[]
 	{
-		ImageFormat::R8,
-		ImageFormat::R8_SNorm,
-		ImageFormat::R8_UInt,
-		ImageFormat::R8_SInt,
+		image_format::R8,
+		image_format::R8_SNorm,
+		image_format::R8_UInt,
+		image_format::R8_SInt,
 
-		ImageFormat::R16_UInt,
-		ImageFormat::R16_SInt,
+		image_format::R16_UInt,
+		image_format::R16_SInt,
 
-		ImageFormat::RG16,
-		ImageFormat::RG16_SNorm,
-		ImageFormat::RG16_UInt,
-		ImageFormat::RG16_SInt,
+		image_format::RG16,
+		image_format::RG16_SNorm,
+		image_format::RG16_UInt,
+		image_format::RG16_SInt,
 
-		ImageFormat::RG32_UInt,
-		ImageFormat::RG32_SInt,
+		image_format::RG32_UInt,
+		image_format::RG32_SInt,
 
-		ImageFormat::RGBA32,
-		ImageFormat::RGBA32_SNorm,
-		ImageFormat::RGBA32_UInt,
-		ImageFormat::RGBA32_SInt,
-		ImageFormat::RGBA32_sRGB,
+		image_format::RGBA32,
+		image_format::RGBA32_SNorm,
+		image_format::RGBA32_UInt,
+		image_format::RGBA32_SInt,
+		image_format::RGBA32_sRGB,
 
-		ImageFormat::BGRA32,
-		ImageFormat::BGRA32_sRGB
+		image_format::BGRA32,
+		image_format::BGRA32_sRGB
 	};
 
 	/**
 	 * @ingroup tz_gl_vk_image
-	 * Meta information about ImageFormats.
+	 * Meta information about image_formats.
 	 */
 	namespace format_traits
 	{
 		/**
-		 * Retrieve a span of all ImageFormats which are guaranteed to be supported for a colour attachment for any framebuffer.
+		 * Retrieve a span of all image_formats which are guaranteed to be supported for a colour attachment for any framebuffer.
 		 * An @ref Image can safely use these as a @ref Framebuffer colour attachment format without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::supports_image_colour_format.
 		 */
-		constexpr std::span<const ImageFormat> get_mandatory_colour_attachment_formats()
+		constexpr std::span<const image_format> get_mandatory_colour_attachment_formats()
 		{
 			return {safe_colour_attachment_formats};
 		}
 
 		/**
-		 * Retrieve a span of all ImageFormats which are guaranteed to be supported for a depth attachment for any framebuffer.
+		 * Retrieve a span of all image_formats which are guaranteed to be supported for a depth attachment for any framebuffer.
 		 * An @ref Image can safely use these as a @ref Framebuffer depth attachment format without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::supports_image_depth_format.
 		 */
-		constexpr std::span<const ImageFormat> get_mandatory_depth_attachment_formats()
+		constexpr std::span<const image_format> get_mandatory_depth_attachment_formats()
 		{
 			return {safe_depth_attachment_formats};
 		}
 		
 		/**
-		 * Retrieve a span of all ImageFormats which are guaranteed to be supported for a sampled image within a shader resource.
+		 * Retrieve a span of all image_formats which are guaranteed to be supported for a sampled image within a shader resource.
 		 * An @ref Image can safely use these as a shader resource image format without ensuring its corresponding @ref PhysicalDevice supports it via @ref PhysicalDevice::supports_image_sampled_format.
 		 */
-		constexpr std::span<const ImageFormat> get_mandatory_sampled_image_formats()
+		constexpr std::span<const image_format> get_mandatory_sampled_image_formats()
 		{
 			return {safe_sampled_image_formats};
 		}

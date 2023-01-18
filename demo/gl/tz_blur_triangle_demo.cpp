@@ -32,7 +32,7 @@ int main()
 		});
 		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised
 		({
-			.format = tz::gl::ImageFormat::BGRA32,
+			.format = tz::gl::image_format::BGRA32,
 			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),
 			.flags = {tz::gl::ResourceFlag::RendererOutput}
 		});

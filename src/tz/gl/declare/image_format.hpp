@@ -10,7 +10,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2
 	 * Various image formats are supported in Topaz.
 	 *
-	 * ImageFormats are comprised of three properties.
+	 * image_formats are comprised of three properties.
 	 *
 	 * The enum values are named as `Components``Size``Internal` where:
 	 * - Components (R, RG, RGB, BGR, RGBA): number of components and order.
@@ -29,10 +29,10 @@ namespace tz::gl
 	 * - R8_SNorm = (R, 8 bit, SNORM)
 	 * - BGRA16_UInt = (BGRA, 16 bit, UINT)
 	 */
-	enum class ImageFormat
+	enum class image_format
 	{
 		/// - Undefined Format. It is mostly an error to use this.
-		Undefined,
+		undefined,
 		R8,
 		R8_UNorm = R8,
 		R8_SNorm,
@@ -86,11 +86,11 @@ namespace tz::gl
 		Count
 	};
 
-	constexpr bool is_depth_format(ImageFormat fmt)
+	constexpr bool is_depth_format(image_format fmt)
 	{
 		switch(fmt)
 		{
-			case ImageFormat::Depth16:
+			case image_format::Depth16:
 				return true;
 			break;
 			default:
@@ -99,66 +99,66 @@ namespace tz::gl
 		}
 	}
 
-	constexpr std::size_t pixel_size_bytes(ImageFormat fmt)
+	constexpr std::size_t pixel_size_bytes(image_format fmt)
 	{
 		static_assert(CHAR_BIT == 8, "Detected architecture where 1 byte != 8 bits. Topaz does not support this hardware.");
 		switch(fmt)
 		{
-		case ImageFormat::R8_UNorm:
-		case ImageFormat::R8_SNorm:
-		case ImageFormat::R8_UInt:
-		case ImageFormat::R8_SInt:
-		case ImageFormat::R8_sRGB:
+		case image_format::R8_UNorm:
+		case image_format::R8_SNorm:
+		case image_format::R8_UInt:
+		case image_format::R8_SInt:
+		case image_format::R8_sRGB:
 			return 1;
 		break;
-		case ImageFormat::R16_UNorm:
-		case ImageFormat::R16_SNorm:
-		case ImageFormat::R16_UInt:
-		case ImageFormat::R16_SInt:
-		case ImageFormat::RG16_UNorm:
-		case ImageFormat::RG16_SNorm:
-		case ImageFormat::RG16_UInt:
-		case ImageFormat::RG16_SInt:
-		case ImageFormat::RG16_sRGB:
-		case ImageFormat::Depth16_UNorm:
+		case image_format::R16_UNorm:
+		case image_format::R16_SNorm:
+		case image_format::R16_UInt:
+		case image_format::R16_SInt:
+		case image_format::RG16_UNorm:
+		case image_format::RG16_SNorm:
+		case image_format::RG16_UInt:
+		case image_format::RG16_SInt:
+		case image_format::RG16_sRGB:
+		case image_format::Depth16_UNorm:
 			return 2;
 		break;
-		case ImageFormat::RGB24_UNorm:
-		case ImageFormat::RGB24_SNorm:
-		case ImageFormat::RGB24_UInt:
-		case ImageFormat::RGB24_SInt:
-		case ImageFormat::RGB24_sRGB:
-		case ImageFormat::BGR24_UNorm:
-		case ImageFormat::BGR24_SNorm:
-		case ImageFormat::BGR24_UInt:
-		case ImageFormat::BGR24_SInt:
-		case ImageFormat::BGR24_sRGB:
+		case image_format::RGB24_UNorm:
+		case image_format::RGB24_SNorm:
+		case image_format::RGB24_UInt:
+		case image_format::RGB24_SInt:
+		case image_format::RGB24_sRGB:
+		case image_format::BGR24_UNorm:
+		case image_format::BGR24_SNorm:
+		case image_format::BGR24_UInt:
+		case image_format::BGR24_SInt:
+		case image_format::BGR24_sRGB:
 			return 3;
 		break;
-		case ImageFormat::RG32_UNorm:
-		case ImageFormat::RG32_SNorm:
-		case ImageFormat::RG32_UInt:
-		case ImageFormat::RG32_SInt:
-		case ImageFormat::RGBA32_UNorm:
-		case ImageFormat::RGBA32_SNorm:
-		case ImageFormat::RGBA32_UInt:
-		case ImageFormat::RGBA32_SInt:
-		case ImageFormat::RGBA32_sRGB:
-		case ImageFormat::BGRA32_UNorm:
-		case ImageFormat::BGRA32_SNorm:
-		case ImageFormat::BGRA32_UInt:
-		case ImageFormat::BGRA32_SInt:
-		case ImageFormat::BGRA32_sRGB:
+		case image_format::RG32_UNorm:
+		case image_format::RG32_SNorm:
+		case image_format::RG32_UInt:
+		case image_format::RG32_SInt:
+		case image_format::RGBA32_UNorm:
+		case image_format::RGBA32_SNorm:
+		case image_format::RGBA32_UInt:
+		case image_format::RGBA32_SInt:
+		case image_format::RGBA32_sRGB:
+		case image_format::BGRA32_UNorm:
+		case image_format::BGRA32_SNorm:
+		case image_format::BGRA32_UInt:
+		case image_format::BGRA32_SInt:
+		case image_format::BGRA32_sRGB:
 			return 4;
 		break;
-		case ImageFormat::RGBA64_SFloat:
+		case image_format::RGBA64_SFloat:
 			return 8;
 		break;
-		case ImageFormat::RGBA128_SFloat:
+		case image_format::RGBA128_SFloat:
 			return 16;
 		break;
 		default:
-			hdk::error("Unrecognised TZ ImageFormat");
+			hdk::error("Unrecognised TZ image_format");
 			return 0;
 		break;
 		}
@@ -167,7 +167,7 @@ namespace tz::gl
 
 	namespace detail
 	{
-		constexpr std::array<const char*, static_cast<int>(ImageFormat::Count)> image_format_strings =
+		constexpr std::array<const char*, static_cast<int>(image_format::Count)> image_format_strings =
 		{
 			"Undefined",
 			"R8",

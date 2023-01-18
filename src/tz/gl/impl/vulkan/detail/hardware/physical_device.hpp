@@ -103,10 +103,10 @@ namespace tz::gl::vk2
 		 */
 		PhysicalDeviceInfo get_info() const;
 		/**
-		 * Retrieve a list of all ImageFormats that could represent the given window surface.
-		 * @return List of acceptable ImageFormats for a window surface.
+		 * Retrieve a list of all image_formats that could represent the given window surface.
+		 * @return List of acceptable image_formats for a window surface.
 		 */
-		tz::BasicList<ImageFormat> get_supported_surface_formats() const;
+		tz::BasicList<image_format> get_supported_surface_formats() const;
 		/**
 		 * Retrieve a list of all SurfacePresentModes that could be used to present images to the @ref WindowSurface attached to the @ref VulkanInstance owning this device.
 		 * This is guaranteed to contain every element within @ref present_traits::get_mandatory_present_modes().
@@ -115,21 +115,21 @@ namespace tz::gl::vk2
 		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes() const;
 		PhysicalDeviceSurfaceCapabilityInfo get_surface_capabilities() const;
 		/**
-		 * Query as to whether the given ImageFormat can be used as a framebuffer colour attachment and as an input attachment format.
-		 * This is guaranteed to return true for any @ref ImageFormat within @ref format_traits::get_mandatory_colour_attachment_formats().
+		 * Query as to whether the given image_format can be used as a framebuffer colour attachment and as an input attachment format.
+		 * This is guaranteed to return true for any @ref image_format within @ref format_traits::get_mandatory_colour_attachment_formats().
 		 * @return true if `colour_format` can be a colour attachment, otherwise false.
 		 */
-		bool supports_image_colour_format(ImageFormat colour_format) const;
+		bool supports_image_colour_format(image_format colour_format) const;
 		/**
 		 * Query as to whether an ImageView using this format can be sampled from within a shader. 
 		 * @return true if `sampled_format` can be sampled in a shader, otherwise false.
 		 */
-		bool supports_image_sampled_format(ImageFormat sampled_format) const;
+		bool supports_image_sampled_format(image_format sampled_format) const;
 		/**
-		 * Query as to whether the given ImageFormat can be used as a framebuffer depth/stencil attachment and as an input attachment format.
+		 * Query as to whether the given image_format can be used as a framebuffer depth/stencil attachment and as an input attachment format.
 		 * @return true if `depth_format` can be a depth/stencil attachment, otherwise false.
 		 */
-		bool supports_image_depth_format(ImageFormat depth_format) const;
+		bool supports_image_depth_format(image_format depth_format) const;
 		/**
 		 * Retrieve the @ref VulkanInstance to which this physical device belongs.
 		 */
@@ -148,7 +148,7 @@ namespace tz::gl::vk2
 		};
 		PhysicalDevice();
 		DeviceProps get_internal_device_props() const;
-		bool supports_image_format(ImageFormat format, VkFormatFeatureFlagBits feature_type) const;
+		bool supports_image_format(image_format format, VkFormatFeatureFlagBits feature_type) const;
 
 		VkPhysicalDevice dev;
 		const VulkanInstance* instance;

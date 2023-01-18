@@ -387,7 +387,7 @@ namespace tz::gl
 
 				this->default_depth_renderbuffer =
 				{{
-					.format = ogl2::ImageFormat::Depth32_UNorm,
+					.format = ogl2::image_format::Depth32_UNorm,
 					.dimensions = out->get_colour_attachment(0).get_dimensions()
 				}};
 

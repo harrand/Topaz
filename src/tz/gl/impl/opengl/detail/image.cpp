@@ -48,7 +48,7 @@ namespace tz::gl::ogl2
 		return *this;
 	}
 
-	ImageFormat Image::get_format() const
+	image_format Image::get_format() const
 	{
 		return this->info.format;
 	}

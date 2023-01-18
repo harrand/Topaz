@@ -18,9 +18,9 @@ namespace tz::gl
 		return DeviceCommon<RendererOGL>::emplace_renderer(info);
 	}
 	
-	ImageFormat DeviceOGL::get_window_format() const
+	image_format DeviceOGL::get_window_format() const
 	{
-		return ImageFormat::RGBA32;
+		return image_format::RGBA32;
 	}
 
 	void DeviceOGL::dbgui()

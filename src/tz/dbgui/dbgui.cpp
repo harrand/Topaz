@@ -350,7 +350,7 @@ namespace tz::dbgui
 		(
 			font_data,
 			{
-				.format = tz::gl::ImageFormat::RGBA32,
+				.format = tz::gl::image_format::RGBA32,
 				.dimensions = hdk::vec2ui{static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}
 			}
 		);

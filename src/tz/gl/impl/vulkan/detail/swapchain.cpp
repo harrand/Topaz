@@ -27,8 +27,8 @@ namespace tz::gl::vk2
 		PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities();
 		hdk::assert(pdev_surface_cap.min_image_count <= info.swapchain_image_count_minimum, "Swapchain image count too low (hardware minimum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.min_image_count, info.swapchain_image_count_minimum);
 		hdk::assert(info.swapchain_image_count_minimum <= pdev_surface_cap.max_image_count, "Swapchain image count too high (hardware maximum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.max_image_count, info.swapchain_image_count_minimum);
-		// Now ensure the PhysicalDevice supports the provided ImageFormat
-		hdk::assert(pdev.get_supported_surface_formats().contains(this->info.image_format), "Swapchain provided ImageFormat which the PhysicalDevice does not support. Please submit a bug report.");
+		// Now ensure the PhysicalDevice supports the provided image_format
+		hdk::assert(pdev.get_supported_surface_formats().contains(this->info.image_format), "Swapchain provided image_format which the PhysicalDevice does not support. Please submit a bug report.");
 		const WindowSurface& surface = pdev.get_instance().get_surface();
 
 		// Once we're ready, find out the surface extent we want.
@@ -198,7 +198,7 @@ namespace tz::gl::vk2
 		return this->swapchain_image_views;
 	}
 
-	ImageFormat Swapchain::get_image_format() const
+	image_format Swapchain::get_image_format() const
 	{
 		return this->info.image_format;
 	}

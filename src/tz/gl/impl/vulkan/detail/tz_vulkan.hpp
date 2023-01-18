@@ -41,7 +41,7 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl_vk
 	 * @defgroup tz_gl_vk_image Images, Samplers and Formats
-	 * Documentation for everything relating to Images, Samplers and ImageFormats.
+	 * Documentation for everything relating to Images, Samplers and image_formats.
 	 */
 
 	/**

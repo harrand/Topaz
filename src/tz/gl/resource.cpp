@@ -178,7 +178,7 @@ namespace tz::gl
 		ImGui::Text("Image Format: %s", detail::image_format_strings[static_cast<int>(this->get_format())]);
 	}
 
-	ImageFormat ImageResource::get_format() const
+	image_format ImageResource::get_format() const
 	{
 		return this->format;
 	}
@@ -193,7 +193,7 @@ namespace tz::gl
 		this->dimensions = dims;
 	}
 
-	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ImageFormat format, hdk::vec2ui dimensions, ResourceFlags flags):
+	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, ResourceFlags flags):
 	Resource(access, resource_data, initial_alignment_offset, ResourceType::Image, flags),
 	format(format),
 	dimensions(dimensions){}

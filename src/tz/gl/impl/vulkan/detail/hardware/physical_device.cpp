@@ -207,14 +207,14 @@ namespace tz::gl::vk2
 		return ret;
 	}
 
-	tz::BasicList<ImageFormat> PhysicalDevice::get_supported_surface_formats() const
+	tz::BasicList<image_format> PhysicalDevice::get_supported_surface_formats() const
 	{
 		hdk::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		hdk::assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
 		hdk::assert(this->instance->has_surface(), "PhysicalDevice belongs to a VulkanInstance that does not have a WindowSurface attached. Please submit a bug report");
 		const WindowSurface& surface = this->instance->get_surface();
 		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
-		tz::BasicList<ImageFormat> fmts;
+		tz::BasicList<image_format> fmts;
 
 		std::vector<VkSurfaceFormatKHR> surf_fmts;
 		std::uint32_t num_supported_formats;
@@ -224,7 +224,7 @@ namespace tz::gl::vk2
 		
 		for(VkSurfaceFormatKHR surf_fmt : surf_fmts)
 		{
-			fmts.add(static_cast<ImageFormat>(surf_fmt.format));
+			fmts.add(static_cast<image_format>(surf_fmt.format));
 		}
 		return fmts;
 	}
@@ -263,19 +263,19 @@ namespace tz::gl::vk2
 		return {vk_caps};
 	}
 
-	bool PhysicalDevice::supports_image_colour_format(ImageFormat colour_format) const
+	bool PhysicalDevice::supports_image_colour_format(image_format colour_format) const
 	{
 		hdk::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		return this->supports_image_format(colour_format, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
 	}
 
-	bool PhysicalDevice::supports_image_sampled_format(ImageFormat sampled_format) const
+	bool PhysicalDevice::supports_image_sampled_format(image_format sampled_format) const
 	{
 		hdk::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		return this->supports_image_format(sampled_format, VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
 	}
 
-	bool PhysicalDevice::supports_image_depth_format(ImageFormat depth_format) const
+	bool PhysicalDevice::supports_image_depth_format(image_format depth_format) const
 	{
 		hdk::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		return this->supports_image_format(depth_format, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
@@ -326,7 +326,7 @@ namespace tz::gl::vk2
 
 	}
 
-	bool PhysicalDevice::supports_image_format(ImageFormat format,VkFormatFeatureFlagBits feature_type) const
+	bool PhysicalDevice::supports_image_format(image_format format,VkFormatFeatureFlagBits feature_type) const
 	{
 		hdk::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		VkFormatProperties props;

@@ -126,7 +126,7 @@ namespace tz::gl
 		return this->image.get_dimensions();
 	}
 
-	ImageFormat ImageComponentVulkan::get_format() const
+	image_format ImageComponentVulkan::get_format() const
 	{
 		return from_vk2(this->image.get_format());
 	}
@@ -183,7 +183,7 @@ namespace tz::gl
 			constexpr auto allowed = vk2::format_traits::get_mandatory_colour_attachment_formats();
 			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
 			{
-				hdk::error("Detected ResourceFlag::RendererOutput in combination with an ImageFormat that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
+				hdk::error("Detected ResourceFlag::RendererOutput in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
 			}
 		}
 		vk2::MemoryResidency residency;

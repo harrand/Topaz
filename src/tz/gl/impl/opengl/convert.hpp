@@ -6,8 +6,8 @@
 
 namespace tz::gl
 {
-	constexpr tz::gl::ogl2::ImageFormat to_ogl2(ImageFormat fmt);
-	constexpr ImageFormat from_ogl2(tz::gl::ogl2::ImageFormat fmt);
+	constexpr tz::gl::ogl2::image_format to_ogl2(image_format fmt);
+	constexpr image_format from_ogl2(tz::gl::ogl2::image_format fmt);
 }
 #include "tz/gl/impl/opengl/convert.inl"
 

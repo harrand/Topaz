@@ -655,7 +655,7 @@ namespace tz::gl
 	void OutputManager::make_render_pass()
 	{
 		// Now create an ultra-basic renderpass.
-		// We're matching the ImageFormat of the provided output image.
+		// We're matching the image_format of the provided output image.
 		vk2::ImageLayout final_layout;
 		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
 		{

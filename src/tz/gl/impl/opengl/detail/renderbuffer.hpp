@@ -10,7 +10,7 @@ namespace tz::gl::ogl2
 	struct RenderbufferInfo
 	{
 		/// Format of the image data.
-		ImageFormat format;
+		image_format format;
 		/// {Width, Height} of the image, in pixels.
 		hdk::vec2ui dimensions;
 	};
@@ -26,7 +26,7 @@ namespace tz::gl::ogl2
 		Renderbuffer& operator=(const Renderbuffer& rhs) = delete;
 		Renderbuffer& operator=(Renderbuffer&& rhs);
 
-		ImageFormat get_format() const;
+		image_format get_format() const;
 		hdk::vec2ui get_dimensions() const;
 		using NativeType = GLuint;
 		NativeType native() const;

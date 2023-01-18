@@ -16,7 +16,7 @@ namespace tz::gl::ogl2
 	struct ImageInfo
 	{
 		/// Format of the image data.
-		ImageFormat format;
+		image_format format;
 		/// {Width, Height} of the image, in pixels.
 		hdk::vec2ui dimensions;
 		/// Specifies how the image should be sampled in a shader.
@@ -44,9 +44,9 @@ namespace tz::gl::ogl2
 		Image& operator=(Image&& rhs);
 
 		/**
-		 * @return ImageFormat of the image's data.
+		 * @return image_format of the image's data.
 		 */
-		ImageFormat get_format() const;
+		image_format get_format() const;
 		/**
 		 * @return {width, height} of the image, in pixels.
 		 */

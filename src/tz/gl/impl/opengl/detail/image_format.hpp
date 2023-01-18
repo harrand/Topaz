@@ -16,9 +16,9 @@ namespace tz::gl::ogl2
 		GLenum type;
 	};
 
-	enum class ImageFormat
+	enum class image_format
 	{
-		Undefined,
+		undefined,
 		R8,
 		R8_UNorm = R8,
 		R8_SNorm,
@@ -81,7 +81,7 @@ namespace tz::gl::ogl2
 		Count
 	};
 
-	constexpr std::array<FormatData, static_cast<int>(ImageFormat::Count)> internal_fmts
+	constexpr std::array<FormatData, static_cast<int>(image_format::Count)> internal_fmts
 	{{
 		/* Undefined */ {.format = GL_INVALID_VALUE, .internal_format = GL_INVALID_VALUE, .type = GL_INVALID_VALUE},
 		/* R8, R8_UNorm */ {.format = GL_RED, .internal_format = GL_R8, .type = GL_UNSIGNED_BYTE},
@@ -136,7 +136,7 @@ namespace tz::gl::ogl2
 		/* Depth32_UNorm */ {.format = GL_DEPTH_COMPONENT, .internal_format = GL_DEPTH_COMPONENT32, .type = GL_UNSIGNED_BYTE}
 	}};
 
-	constexpr FormatData get_format_data(ImageFormat format)
+	constexpr FormatData get_format_data(image_format format)
 	{
 		return internal_fmts[static_cast<int>(format)];
 	}

@@ -60,7 +60,7 @@ int main()
 		// Renderer to combine two images into one and render it to the screen.
 		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised
 		({
-			.format = tz::gl::ImageFormat::BGRA32,
+			.format = tz::gl::image_format::BGRA32,
 			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),
 			.flags = {tz::gl::ResourceFlag::RendererOutput}
 		});

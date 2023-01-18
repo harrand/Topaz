@@ -62,7 +62,7 @@ int main()
 		}};
 		PhysicalDeviceSurfaceCapabilityInfo pdev_capability = pdev.get_surface_capabilities();
 
-		ImageFormat swapchain_format = pdev.get_supported_surface_formats().front();
+		image_format swapchain_format = pdev.get_supported_surface_formats().front();
 
 		Swapchain swapchain
 		{{
@@ -94,7 +94,7 @@ int main()
 		Image on_texture
 		{{
 			.device = &ldev,
-			.format = ImageFormat::RGBA32,
+			.format = image_format::RGBA32,
 			.dimensions = {32u, 32u},
 			.usage = {ImageUsage::SampledImage, ImageUsage::TransferDestination},
 			.residency = MemoryResidency::GPU
@@ -108,7 +108,7 @@ int main()
 		Image off_texture
 		{{
 			.device = &ldev,
-			.format = ImageFormat::RGBA32,
+			.format = image_format::RGBA32,
 			.dimensions = {32u, 32u},
 			.usage = {ImageUsage::SampledImage, ImageUsage::TransferDestination},
 			.residency = MemoryResidency::GPU

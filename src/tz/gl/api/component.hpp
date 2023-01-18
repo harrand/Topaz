@@ -29,7 +29,7 @@ namespace tz::gl
 		requires std::derived_from<T, IComponent>;
 		{t.get_dimensions()[0]} -> std::convertible_to<unsigned int>;
 		{t.get_dimensions()[1]} -> std::convertible_to<unsigned int>;
-		{t.get_format()} -> std::convertible_to<ImageFormat>;
+		{t.get_format()} -> std::convertible_to<image_format>;
 		{t.resize(dims)} -> std::same_as<void>;
 	};
 }

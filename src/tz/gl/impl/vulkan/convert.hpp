@@ -6,8 +6,8 @@
 
 namespace tz::gl
 {
-	constexpr tz::gl::vk2::ImageFormat to_vk2(ImageFormat fmt);
-	constexpr ImageFormat from_vk2(tz::gl::vk2::ImageFormat fmt);
+	constexpr tz::gl::vk2::image_format to_vk2(image_format fmt);
+	constexpr image_format from_vk2(tz::gl::vk2::image_format fmt);
 }
 
 #include "tz/gl/impl/vulkan/convert.inl"

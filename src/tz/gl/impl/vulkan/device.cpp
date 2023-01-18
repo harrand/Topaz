@@ -138,7 +138,7 @@ namespace tz::gl
 		return this->get_swapchain().get_dimensions();
 	}
 
-	vk2::ImageFormat DeviceWindowVulkan::get_format() const
+	vk2::image_format DeviceWindowVulkan::get_format() const
 	{
 		return this->get_swapchain().get_image_format();
 	}
@@ -200,7 +200,7 @@ namespace tz::gl
 		this->depth_image = vk2::Image
 		{vk2::ImageInfo{
 			.device = &this->get_swapchain().get_device(),
-			.format = vk2::ImageFormat::Depth32_SFloat,
+			.format = vk2::image_format::Depth32_SFloat,
 			.dimensions = this->get_swapchain().get_dimensions(),
 			.usage = {vk2::ImageUsage::DepthStencilAttachment},
 			.residency = vk2::MemoryResidency::GPU
@@ -361,7 +361,7 @@ namespace tz::gl
 		DeviceCommon<RendererVulkan>::destroy_renderer(handle);
 	}
 
-	ImageFormat DeviceVulkan::get_window_format() const
+	image_format DeviceVulkan::get_window_format() const
 	{
 		return from_vk2(this->window_storage.get_format());
 	}

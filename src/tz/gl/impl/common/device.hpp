@@ -86,7 +86,7 @@ namespace tz::gl
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Summary");
 		ImGui::Text("- The Device currently stores %zu renderers", renderer_count);
-		ImGui::Text("- The ImageFormat of the window is %s", detail::image_format_strings[static_cast<int>(device.get_window_format())]);
+		ImGui::Text("- The image_format of the window is %s", detail::image_format_strings[static_cast<int>(device.get_window_format())]);
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
 		static bool display_internal_renderers = false;
