@@ -110,7 +110,7 @@ int main()
 		tz::gl::RendererHandle rendererh = tz::gl::device().create_renderer(rinfo);
 		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
 		std::default_random_engine rand;
-		tz::Delay fixed_update{50_ms};
+		tz::delay fixed_update{50_ms};
 
 		while(!tz::window().is_close_requested())
 		{

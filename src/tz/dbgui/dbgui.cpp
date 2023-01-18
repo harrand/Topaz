@@ -36,7 +36,7 @@ namespace tz::dbgui
 		std::size_t frame_counter = 0;
 		tz::duration last_update;
 		float frame_period = 0.0f;
-		tz::Delay fps_update{tz::literals::operator""_ms(500.0f)};
+		tz::delay fps_update{tz::literals::operator""_ms(500.0f)};
 	};
 
 	struct TopazRenderData

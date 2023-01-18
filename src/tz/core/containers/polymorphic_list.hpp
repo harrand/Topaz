@@ -51,7 +51,7 @@ namespace tz
 		Iterator end() const;
 		/**
 		 * Retrieve the number of elements.
-		 * @return Number of elements within the list.
+		 * @return number of elements within the list.
 		 */
 		std::size_t size() const;
 		/**

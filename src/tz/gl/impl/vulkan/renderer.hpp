@@ -293,14 +293,14 @@ namespace tz::gl
 		std::span<vk2::CommandBuffer> get_render_command_buffers();
 		/**
 		 * Record all vulkan commands invoked in the provided function into the scratch command buffer, and submit it instantly. This function is synchronous so is guaranteed to return once the work is all done.
-		 * @param record_commands Function which will be invoked with the scratch buffer recording. The function should use the provided recording to invoke vulkan commands.
+		 * @param record_commands function which will be invoked with the scratch buffer recording. The function should use the provided recording to invoke vulkan commands.
 		 */
-		void do_scratch_operations(tz::Action<vk2::CommandBufferRecording&> auto record_commands);
+		void do_scratch_operations(tz::action<vk2::CommandBufferRecording&> auto record_commands);
 		/**
 		 * Record all vulkan commands invoked in the provided function into each of the rendering command buffers. The index of the current rendering command buffer is also passed to the provided function.
-		 * @param record_commands Function which will be invoked with a recording for each render command buffer, aswell as the index of the command buffer being recorded.
+		 * @param record_commands function which will be invoked with a recording for each render command buffer, aswell as the index of the command buffer being recorded.
 		 */
-		void set_rendering_commands(tz::Action<vk2::CommandBufferRecording&, std::size_t> auto record_commands);
+		void set_rendering_commands(tz::action<vk2::CommandBufferRecording&, std::size_t> auto record_commands);
 		/**
 		 * Submit the next render command buffer. If the output is presentable, it will also be presented. This function is asynchronous so you should not expect the submit/present work to be done upon return.
 		 * @param maybe_swapchain Pointer to the swapchain which will be presented to. If the renderer is not expected to perform any presentation, this can be nullptr.
@@ -396,7 +396,7 @@ namespace tz::gl
 		void render();
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
-		 * @param tri_count Number of triangles to render.
+		 * @param tri_count number of triangles to render.
 		 */
 		void render(unsigned int tri_count);
 		/**

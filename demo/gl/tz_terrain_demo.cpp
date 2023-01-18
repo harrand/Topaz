@@ -61,7 +61,7 @@ int main()
 		bool flight_enabled = false;
 		bool game_menu_enabled = false;
 		using namespace tz::literals;
-		tz::Delay fixed_update{25_ms};
+		tz::delay fixed_update{25_ms};
 
 		tz::dbgui::game_menu().add_callback([&game_menu_enabled]()
 		{

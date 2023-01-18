@@ -15,7 +15,7 @@ namespace tz::gl::vk2
 	 * ImageFormats are comprised of three properties.
 	 *
 	 * The enum values are named as `Components``Size``Internal` where:
-	 * - Components (R, RG, RGB, BGR, RGBA): Number of components and order.
+	 * - Components (R, RG, RGB, BGR, RGBA): number of components and order.
 	 * - Size (8, 16, 24, 32): Total size of the whole element, not just one component. Assume all components are equally-sized.
 	 * - Internal (UNORM, SNORM, UINT, SINT): Value type of the element. This can be ommitted, in which case the default is UNORM.
 	 * 	- UNORM = float [0 -> -1]

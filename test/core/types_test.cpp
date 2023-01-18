@@ -22,8 +22,8 @@ void sanity_check()
 	{
 		#ifndef _MSC_VER
 			// No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
-			constexpr bool satisfies = requires{requires tz::Number<T>;};
-			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Number<T>)");
+			constexpr bool satisfies = requires{requires tz::number<T>;};
+			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::number<T>)");
 		#endif
 	};
 	struct NotANumber
@@ -45,8 +45,8 @@ void sanity_check()
 	{
 		#ifndef _MSC_VER
 			// No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
-			constexpr bool satisfies = requires{requires tz::Action<F>;};
-			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Action<F> aka 'void()')");
+			constexpr bool satisfies = requires{requires tz::action<F>;};
+			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::action<F> aka 'void()')");
 		#endif
 	};
 
@@ -65,8 +65,8 @@ void sanity_check()
 	{
 		#ifndef _MSC_VER
 			// No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
-			constexpr bool satisfies = requires{requires tz::Function<F, int, int, int>;};
-			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::Function<F, int, int, int> aka 'int(int, int)')");
+			constexpr bool satisfies = requires{requires tz::function<F, int, int, int>;};
+			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::function<F, int, int, int> aka 'int(int, int)')");
 		#endif
 	};
 	struct MyAdderFunctor
@@ -74,7 +74,7 @@ void sanity_check()
 		int operator()(int a, int b){return a + b;}
 	};
 	auto adder_lambda = [](int a, int b)->int{return a + b;};
-	auto number_adder_lambda = [](tz::Number auto a, tz::Number auto b)->tz::Number auto{return a + b;};
+	auto number_adder_lambda = [](tz::number auto a, tz::number auto b)->tz::number auto{return a + b;};
 	expect_int_func_taking_two_ints(MyAdderFunctor{}, true);
 	expect_int_func_taking_two_ints(foo, false);
 	expect_int_func_taking_two_ints(print_something, false);
@@ -84,7 +84,7 @@ void sanity_check()
 
 void numeric()
 {
-	auto test = []<tz::Number T>(T t)
+	auto test = []<tz::number T>(T t)
 	{
 		T initial = t;
 		t *= 2;
@@ -99,7 +99,7 @@ void numeric()
 	test(-12345);
 }
 
-tz::Number auto multiply_em(tz::Number auto num1, tz::Number auto num2)
+tz::number auto multiply_em(tz::number auto num1, tz::number auto num2)
 {
 	return num1 * num2;
 }
@@ -109,19 +109,19 @@ int double_it(int x)
 	return x + x;
 }
 
-template<tz::Action Func>
+template<tz::action Func>
 void doit(Func f)
 {
 	f();
 }
 
-template<typename... Args, tz::Action<Args...> Func>
+template<typename... Args, tz::action<Args...> Func>
 void doit_withparams(Func f, Args&&... args)
 {
 	f(std::forward<Args>(args)...);
 }
 
-template<typename Return, typename... Args, tz::Function<Return, Args...> Func>
+template<typename Return, typename... Args, tz::function<Return, Args...> Func>
 Return doit_witheverything(Func f, Args&&... args)
 {
 	return f(std::forward<Args>(args)...);
@@ -129,18 +129,18 @@ Return doit_witheverything(Func f, Args&&... args)
 
 void functional_action()
 {
-	// Parameterless tz::Action
+	// Parameterless tz::action
 	int x = 1;
 	auto dubs = [&x](){x *= 2;};
 	doit(dubs);
 	hdk::assert(x == 2, "");
 
-	// Parameters tz::Action
+	// Parameters tz::action
 	auto muls = [&x](int mul){x *= mul;};
 	doit_withparams(muls, 5);
 	hdk::assert(x == 10, "");
 
-	// Parameters & Return tz::Function
+	// Parameters & Return tz::function
 	auto give_double = [](int x){return x*2;};
 	int res = doit_witheverything<int>(give_double, 10);
 	hdk::assert(res == 20, "");

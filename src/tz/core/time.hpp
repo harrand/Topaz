@@ -20,9 +20,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of nanoseconds. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of nanoseconds that this duration emcompasses.
+		 * @return number of nanoseconds that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N nanos() const
 		{
 			return static_cast<N>(this->duration_nanos);
@@ -30,9 +30,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of microseconds. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of microseconds that this duration emcompasses.
+		 * @return number of microseconds that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N micros() const
 		{
 			return this->nanos<N>() / N{1000};
@@ -40,9 +40,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of milliseconds. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of milliseconds that this duration emcompasses.
+		 * @return number of milliseconds that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N millis() const
 		{
 			return this->micros<N>() / N{1000};
@@ -50,9 +50,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of seconds. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of seconds that this duration emcompasses.
+		 * @return number of seconds that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N seconds() const
 		{
 			return this->millis<N>() / N{1000};
@@ -60,9 +60,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of minutes. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of minutes that this duration emcompasses.
+		 * @return number of minutes that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N minutes() const
 		{
 			return this->seconds<N>() / N{60};
@@ -70,9 +70,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of hours. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of hours that this duration emcompasses.
+		 * @return number of hours that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N hours() const
 		{
 			return this->minutes<N>() / N{60};
@@ -80,9 +80,9 @@ namespace tz
 
 		/**
 		 * Express the duration as some number of days. Please be aware of possible precision issues if you're using floating point types.
-		 * @return Number of days that this duration emcompasses.
+		 * @return number of days that this duration emcompasses.
 		 */
-		template<tz::Number N>
+		template<tz::number N>
 		constexpr N days() const
 		{
 			return this->hours<N>() / N{24};
@@ -151,14 +151,14 @@ namespace tz
 	 * @ingroup tz_core_time
 	 * An object which is falsy until a certain amount of time has passed since construction.
 	 */
-	class Delay
+	class delay
 	{
 	public:
 		/**
 		 * Create a new delay object. The current system time is used.
 		 * @param delay_length duration of the delay which should pass after construction before becoming truthy.
 		 */
-		Delay(duration delay_length);
+		delay(duration delay_length);
 		/**
 		 * Query as to whether the delay length has passed since construction of the delay object.
 		 */

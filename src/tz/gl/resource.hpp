@@ -51,15 +51,15 @@ namespace tz::gl
 		/**
 		 * Create a BufferResource where the underlying data is a single object.
 		 * @note You should be able to optionally pass in braced-initializer-list expressions in for the data, so long as the types of the elements are easily deduceable.
-		 * @tparam T Object type. It must be TriviallyCopyable.
+		 * @tparam T Object type. It must be trivially_copyable.
 		 * @param data Object value to store within the underlying data.
 		 * @param info Buffer info, see @ref BufferInfo for details.
 		 * @return BufferResource containing a copy of the provided object.
 		 */
-		template<tz::TriviallyCopyable T>
+		template<tz::trivially_copyable T>
 		static BufferResource from_one(const T& data, BufferInfo info = {});
 
-		template<tz::TriviallyCopyable T>
+		template<tz::trivially_copyable T>
 		static BufferResource from_many(std::initializer_list<T> ts, BufferInfo info = {})
 		{
 			return from_many(std::span<const T>(ts), info);
@@ -120,7 +120,7 @@ namespace tz::gl
 		 */
 		static ImageResource from_uninitialised(ImageInfo info = {});
 
-		template<tz::TriviallyCopyable T>
+		template<tz::trivially_copyable T>
 		static ImageResource from_memory(std::initializer_list<T> ts, ImageInfo info = {})
 		{
 			return from_memory(std::span<const T>(ts), info);

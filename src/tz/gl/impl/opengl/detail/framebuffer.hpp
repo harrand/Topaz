@@ -54,7 +54,7 @@ namespace tz::gl::ogl2
 		bool has_depth_attachment() const;
 		/**
 		 * Retrieve the number of colour attachments associated with the framebuffer.
-		 * @return Number of colour attachments.
+		 * @return number of colour attachments.
 		 */
 		unsigned int colour_attachment_count() const;
 		/**

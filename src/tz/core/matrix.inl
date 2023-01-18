@@ -5,24 +5,24 @@
 
 namespace tz
 {
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>::matrix(std::array<std::array<T, R>, C> data): mat(data){}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	const typename matrix<T, R, C>::Row& matrix<T, R, C>::operator[](std::size_t row_idx) const
 	{
 		hdk::assert(row_idx < R, "tz::matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
 		return this->mat[row_idx];
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	typename matrix<T, R, C>::Row& matrix<T, R, C>::operator[](std::size_t row_idx)
 	{
 		hdk::assert(row_idx < R, "tz::matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
 		return this->mat[row_idx];
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	const T& matrix<T, R, C>::operator()(std::size_t row, std::size_t column) const
 	{
 		hdk::assert(row < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
@@ -30,7 +30,7 @@ namespace tz
 		return (*this)[column][row];
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	T& matrix<T, R, C>::operator()(std::size_t row, std::size_t column)
 	{
 		hdk::assert(row < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
@@ -38,7 +38,7 @@ namespace tz
 		return (*this)[column][row];
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator+=(T scalar)
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -51,7 +51,7 @@ namespace tz
 		return *this;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator+=(const matrix<T, R, C>& matrix)
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -64,7 +64,7 @@ namespace tz
 		return *this;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::operator+(T scalar) const
 	{
 		matrix<T, R, C> copy = *this;
@@ -72,7 +72,7 @@ namespace tz
 		return std::move(copy);
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::operator+(const matrix<T, R, C>& mat) const
 	{
 		matrix<T, R, C> copy = *this;
@@ -80,7 +80,7 @@ namespace tz
 		return std::move(copy);
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator-=(T scalar)
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -93,7 +93,7 @@ namespace tz
 		return *this;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator-=(const matrix<T, R, C>& matrix)
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -106,7 +106,7 @@ namespace tz
 		return *this;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::operator-(T scalar) const
 	{
 		matrix<T, R, C> copy = *this;
@@ -114,7 +114,7 @@ namespace tz
 		return std::move(copy);
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::operator-(const matrix<T, R, C>& mat) const
 	{
 		matrix<T, R, C> copy = *this;
@@ -122,7 +122,7 @@ namespace tz
 		return std::move(copy);
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator*=(T scalar)
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -135,7 +135,7 @@ namespace tz
 		return *this;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator*=(const matrix<T, R, C>& mat)
 	{
 		matrix<T, R, C> m = *this;
@@ -154,7 +154,7 @@ namespace tz
 		return *this;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::operator*(T scalar) const
 	{
 		matrix<T, R, C> copy = *this;
@@ -162,7 +162,7 @@ namespace tz
 		return copy;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::operator*(const matrix<T, R, C>& mat) const
 	{
 		matrix<T, R, C> copy = *this;
@@ -170,7 +170,7 @@ namespace tz
 		return copy;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	hdk::vector<T, R> matrix<T, R, C>::operator*(const hdk::vector<T, C>& vec) const
 	{
 		hdk::vector<T, R> ret;
@@ -181,7 +181,7 @@ namespace tz
 		return ret;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	bool matrix<T, R, C>::operator==(T scalar) const
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -195,7 +195,7 @@ namespace tz
 		return true;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	bool matrix<T, R, C>::operator==(const matrix<T, R, C>& mat) const
 	{
 		for(std::size_t i = 0; i < R; i++)
@@ -209,7 +209,7 @@ namespace tz
 		return true;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::inverse() const
 	{
 		// Create copy of the current matrix to work with.
@@ -357,7 +357,7 @@ namespace tz
 		return mat;
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	//template<std::size_t X, std::size_t Y, typename std::enable_if_t<X == Y>>
 	matrix<T, R, C> matrix<T, R, C>::transpose() const
 	{
@@ -376,7 +376,7 @@ namespace tz
 	}
 
 	#if HDK_DEBUG
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	void matrix<T, R, C>::debug_print() const
 	{
 
@@ -397,13 +397,13 @@ namespace tz
 	}
 	#endif
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	const T& matrix<T, R, C>::internal_get(std::size_t row, std::size_t column) const
 	{
 		return this->mat[column][row];
 	}
 
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	T& matrix<T, R, C>::internal_get(std::size_t row, std::size_t column)
 	{
 		return this->mat[column][row];

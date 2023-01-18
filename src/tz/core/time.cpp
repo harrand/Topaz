@@ -9,17 +9,17 @@ namespace tz
 		return {static_cast<unsigned long long>(std::chrono::duration_cast<std::chrono::nanoseconds>(system).count())};
 	}
 
-	Delay::Delay(duration delay_length):
+	delay::delay(duration delay_length):
 	begin_systime(system_time()),
 	delay_length(delay_length)
 	{}
 
-	bool Delay::done() const
+	bool delay::done() const
 	{
 		return (this->begin_systime + this->delay_length) <= system_time();
 	}
 
-	void Delay::reset()
+	void delay::reset()
 	{
 		this->begin_systime = system_time();
 	}

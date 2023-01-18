@@ -29,12 +29,12 @@ namespace tz::gl::ogl2
 		void bind();
 		/**
 		 * Emit a single draw call, drawing a set number of triangles. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
-		 * @param triangle_count Number of triangles to draw.
+		 * @param triangle_count number of triangles to draw.
 		 */
 		void draw(unsigned int triangle_count, bool tessellation = false);
 		/**
 		 * Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
-		 * @param triangle_count Number of triangles to draw.
+		 * @param triangle_count number of triangles to draw.
 		 */
 		void draw_indexed(unsigned int triangle_count, const Buffer& index_buffer, bool tessellation = false);
 

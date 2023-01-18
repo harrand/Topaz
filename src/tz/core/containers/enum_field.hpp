@@ -11,7 +11,7 @@ namespace tz
 	 * Container for enum values, useful for vintage bitfield types.
 	 * @tparam E Enum class type.
 	 */
-	template<tz::EnumClass E>
+	template<tz::enum_class E>
 	class EnumField
 	{
 	public:
@@ -44,7 +44,7 @@ namespace tz
 		bool contains(const EnumField<E>& field) const;
 		/**
 		 * Retrieve the number of elements within the field.
-		 * @return Number of elements within the field.
+		 * @return number of elements within the field.
 		 */
 		std::size_t count() const;
 		/**

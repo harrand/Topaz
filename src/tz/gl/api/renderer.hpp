@@ -63,7 +63,7 @@ namespace tz::gl
 			ResourceHandle draw_buffer = hdk::nullhand;
 			/// Normalised RGBA floating point colour.
 			hdk::vec4 clear_colour = hdk::vec4::zero();
-			/// Number of triangles to be rendered in the next draw call.
+			/// number of triangles to be rendered in the next draw call.
 			std::size_t tri_count = 0;
 			bool operator==(const Graphics& rhs) const = default;
 		};
@@ -186,10 +186,10 @@ namespace tz::gl
 	template<typename T>
 	concept RendererType = requires(T t, ResourceHandle r, std::size_t tri_count, const RendererEditRequest& edit_request)
 	{
-		requires tz::Nullable<T>;
+		requires tz::nullable<T>;
 		/**
 		 * Retrieves the number of resources used by the renderer.
-		 * @return Number of resources of any type.
+		 * @return number of resources of any type.
 		 */
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		/**
@@ -222,7 +222,7 @@ namespace tz::gl
 		{t.render()} -> std::same_as<void>;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
-		 * @param tri_count Number of triangles to render.
+		 * @param tri_count number of triangles to render.
 		 */
 		{t.render(tri_count)} -> std::same_as<void>;
 		/**

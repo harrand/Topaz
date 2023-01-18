@@ -64,7 +64,7 @@ namespace tz::dbgui
 	 *	}
 	 * ```
 	 */
-	inline void run([[maybe_unused]] tz::Action auto action)
+	inline void run([[maybe_unused]] tz::action auto action)
 	{
 		#if HDK_DEBUG
 			action();

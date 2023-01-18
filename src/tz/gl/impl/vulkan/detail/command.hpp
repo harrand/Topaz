@@ -26,9 +26,9 @@ namespace tz::gl::vk2
 		 */
 		struct Draw
 		{
-			/// Number of vertices to draw.
+			/// number of vertices to draw.
 			std::uint32_t vertex_count;
-			/// Number of instances to draw (Default 1).
+			/// number of instances to draw (Default 1).
 			std::uint32_t instance_count = 1;
 			/// Index of the first vertex to draw (Default 0).
 			std::uint32_t first_vertex = 0;
@@ -397,7 +397,7 @@ namespace tz::gl::vk2
 		bool is_recording() const;
 		/**
 		 * Retrieve the number of commands recorded into the buffer.
-		 * @return Number of commands within the buffer.
+		 * @return number of commands within the buffer.
 		 */
 		std::size_t command_count() const;
 		std::span<const VulkanCommand::Variant> get_recorded_commands() const;
@@ -431,7 +431,7 @@ namespace tz::gl::vk2
 		 */
 		struct Allocation
 		{
-			/// Number of CommandBuffers to create.
+			/// number of CommandBuffers to create.
 			std::uint32_t buffer_count;
 		};
 

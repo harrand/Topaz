@@ -9,7 +9,7 @@
 
 void identity()
 {
-	tz::Mat4 m = tz::Mat4::identity();
+	tz::mat4 m = tz::mat4::identity();
 	for(std::size_t i = 0; i < 4; i++)
 	{
 		for(std::size_t j = 0; j < 4; j++)
@@ -28,7 +28,7 @@ void identity()
 
 void addition()
 {
-	tz::Mat4 m;
+	tz::mat4 m;
 	for(std::size_t i = 0; i < 4; i++)
 	{
 		for(std::size_t j = 0; j < 4; j++)
@@ -37,7 +37,7 @@ void addition()
 		}
 	}
 
-	tz::Mat4 n;
+	tz::mat4 n;
 	for(std::size_t i = 0; i < 4; i++)
 	{
 		for(std::size_t j = 0; j < 4; j++)
@@ -46,7 +46,7 @@ void addition()
 		}
 	}
 
-	tz::Mat4 o = m + n;
+	tz::mat4 o = m + n;
 
 	for(std::size_t i = 0; i < 4; i++)
 	{
@@ -60,11 +60,11 @@ void addition()
 void inversion()
 {	
 	// Get the identity matrix.
-	tz::Mat4 id = tz::Mat4::identity();
+	tz::mat4 id = tz::mat4::identity();
 	// Inverting the identity matrix must yield the identity matrix.
 	hdk::assert(id == id.inverse(), "Inverse of I != I... We have broken the rules of maths...");
 	
-	tz::Mat4 fours;
+	tz::mat4 fours;
 	for(std::size_t i = 0; i < 4; i++)
 	{
 		for(std::size_t j = 0; j < 4; j++)
@@ -92,7 +92,7 @@ void inversion()
 	 * |1/16   -1/16   -1/16   -1/16|
 	 */
 
-	tz::Mat4 sixteenths = fours.inverse();
+	tz::mat4 sixteenths = fours.inverse();
 	for(std::size_t i = 0; i < 4; i++)
 	{
 		for(std::size_t j = 0; j < 4; j++)
@@ -111,7 +111,7 @@ void inversion()
 
 void column_major()
 {
-	tz::Mat4 order{{std::array<float, 4>{0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}}};
+	tz::mat4 order{{std::array<float, 4>{0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}}};
 	/*
 	|0   4   8   12|
 	|1   5   9   13|

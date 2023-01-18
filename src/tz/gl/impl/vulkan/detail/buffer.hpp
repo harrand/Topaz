@@ -82,7 +82,7 @@ namespace tz::gl::vk2
 		void* map();
 		/**
 		 * Map the memory to a span of a given type.
-		 * @tparam T Type to map to. Must be TriviallyCopyable.
+		 * @tparam T Type to map to. Must be trivially_copyable.
 		 * @return Span of size @ref Buffer::size on success. The mapping can fail, in which case an invalid span of size 0 is returned.
 		 */
 		template<typename T>

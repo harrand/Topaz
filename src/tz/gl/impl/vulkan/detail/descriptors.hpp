@@ -97,7 +97,7 @@ namespace tz::gl::vk2
 
 		/**
 		 * Retrieve the number of bindings within the layout.
-		 * @return Number of bindings.
+		 * @return number of bindings.
 		 */
 		std::size_t binding_count() const;
 		/**
@@ -188,7 +188,7 @@ namespace tz::gl::vk2
 		/**
 		 * Create a PoolInfo large enough such that `quantity` descriptor sets each matching `layout` can be allocated.
 		 * @param descriptor_layout Layout from which the capacities of the pool will be specified.
-		 * @param quantity Number of sets using `layout` which can fit in the pool.
+		 * @param quantity number of sets using `layout` which can fit in the pool.
 		 */
 		static DescriptorPoolInfo to_fit_layout(const DescriptorLayout& descriptor_layout, std::size_t quantity);
 		/**
@@ -237,7 +237,7 @@ namespace tz::gl::vk2
 				const Buffer* buffer;
 				/// Offset, in bytes, from the start of the buffer data.
 				std::size_t buffer_offset;
-				/// Number of bytes from the buffer to associate with the descriptor.
+				/// number of bytes from the buffer to associate with the descriptor.
 				std::size_t buffer_write_size;
 			};
 

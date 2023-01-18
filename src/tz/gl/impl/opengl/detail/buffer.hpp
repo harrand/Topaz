@@ -113,7 +113,7 @@ namespace tz::gl::ogl2
 		 * @tparam T Type of which to retrieve an array of.
 		 * @return Span representing a view into an array of the provided type.
 		 */
-		template<tz::ConstType T>
+		template<tz::const_type T>
 		std::span<T> map_as() const
 		{
 			return {reinterpret_cast<T*>(this->map()), this->size() / sizeof(T)};

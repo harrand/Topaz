@@ -5,7 +5,7 @@
 
 namespace tz::gl
 {
-	template<tz::TriviallyCopyable T>
+	template<tz::trivially_copyable T>
 	BufferResource BufferResource::from_one(const T& data, BufferInfo info)
 	{
 		return BufferResource::from_many<T>({data}, info);

@@ -39,7 +39,7 @@ namespace tz
 		 * @param callback_function Callable matching the given signature.
 		 * @return callback_handle corresponding to the registered callback. Cache this handle and use it to deregister the callable via @ref remove_callback once the lifetime of the provided callable reaches its end or the functionality is no longer required.
 		 */
-		callback_handle add_callback(tz::Action<Args...> auto&& callback_function)
+		callback_handle add_callback(tz::action<Args...> auto&& callback_function)
 		{
 			this->callback_storage.push_back(callback_function);
 			return static_cast<hdk::hanval>(this->callback_storage.size() - 1);

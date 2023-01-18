@@ -13,33 +13,33 @@ void fimpl1(){}
 
 constexpr void traits()
 {
-	static_assert(tz::Arithmetic<int>);
-	static_assert(tz::Arithmetic<float>);
-	static_assert(tz::Arithmetic<char>);
-	static_assert(tz::Arithmetic<bool>);
-	static_assert(!tz::Arithmetic<int*>);
+	static_assert(tz::arithmetic<int>);
+	static_assert(tz::arithmetic<float>);
+	static_assert(tz::arithmetic<char>);
+	static_assert(tz::arithmetic<bool>);
+	static_assert(!tz::arithmetic<int*>);
 
-	static_assert(tz::ConstType<const int>);
-	static_assert(!tz::ConstType<int>);
-	static_assert(!tz::ConstType<const int*>);
-	static_assert(tz::ConstType<const int* const>);
+	static_assert(tz::const_type<const int>);
+	static_assert(!tz::const_type<int>);
+	static_assert(!tz::const_type<const int*>);
+	static_assert(tz::const_type<const int* const>);
 
 	enum class EC{};
 	enum E{};
-	static_assert(!tz::EnumClass<E>);
-	static_assert(tz::EnumClass<EC>);
+	static_assert(!tz::enum_class<E>);
+	static_assert(tz::enum_class<EC>);
 
-	static_assert(tz::Number<int>);
-	static_assert(tz::Number<float>);
-	static_assert(!tz::Number<int*>);
-	static_assert(!tz::Number<bool>);
-	static_assert(!tz::Number<char>);
+	static_assert(tz::number<int>);
+	static_assert(tz::number<float>);
+	static_assert(!tz::number<int*>);
+	static_assert(!tz::number<bool>);
+	static_assert(!tz::number<char>);
 
 	constexpr auto lambda0 = [](int x)constexpr->double{return x * 2;};
-	static_assert(tz::Function<decltype(lambda0), double, int>);
-	static_assert(tz::Function<decltype(fimpl0), double, int>);
+	static_assert(tz::function<decltype(lambda0), double, int>);
+	static_assert(tz::function<decltype(fimpl0), double, int>);
 
 	constexpr auto lambda1 = [](){};
-	static_assert(tz::Action<decltype(lambda1)>);
-	static_assert(tz::Action<decltype(fimpl1)>);
+	static_assert(tz::action<decltype(lambda1)>);
+	static_assert(tz::action<decltype(fimpl1)>);
 }

@@ -5,7 +5,7 @@
 int main()
 {
 	using namespace tz::literals;
-	constexpr tz::Duration s = 1_s;
+	constexpr tz::duration s = 1_s;
 	static_assert(s == 1000_ms);
 	static_assert(s == 1000000_us);
 	static_assert(s == 1000000000_ns);

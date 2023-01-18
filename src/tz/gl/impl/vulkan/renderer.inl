@@ -1,6 +1,6 @@
 namespace tz::gl
 {
-	void CommandProcessor::do_scratch_operations(tz::Action<vk2::CommandBufferRecording&> auto record_commands)
+	void CommandProcessor::do_scratch_operations(tz::action<vk2::CommandBufferRecording&> auto record_commands)
 	{
 		vk2::CommandBuffer& scratch_buf = this->commands.buffers.back();
 		{
@@ -21,7 +21,7 @@ namespace tz::gl
 		work_complete_fence.wait_until_signalled();
 	}
 
-	void CommandProcessor::set_rendering_commands(tz::Action<vk2::CommandBufferRecording&, std::size_t> auto record_commands)
+	void CommandProcessor::set_rendering_commands(tz::action<vk2::CommandBufferRecording&, std::size_t> auto record_commands)
 	{
 		for(std::size_t i = 0; i < this->get_render_command_buffers().size(); i++)
 		{

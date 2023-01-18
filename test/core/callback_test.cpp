@@ -13,7 +13,7 @@ int main()
 	auto increment_lambda = [](int& x){x++;};
 
 	// Empty callback shouldnt do anything
-	tz::Callback<int&> cb;
+	tz::callback<int&> cb;
 	cb(counter);
 	hdk::assert(counter == 0, "Callback logic failed (empty callback). Expected %d, got %d", 0, counter);
 

@@ -11,7 +11,7 @@ namespace tz
 	 * Represents a row-major matrix with R rows and C columns.
 	 * The value type of a matrix is typically a float or double, but for this implementation it is templated on T.
 	 */
-	template<tz::Number T, std::size_t R, std::size_t C>
+	template<tz::number T, std::size_t R, std::size_t C>
 	class matrix
 	{
 	public:

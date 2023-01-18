@@ -12,7 +12,7 @@ namespace tz
 	 *
 	 * Elements are interpreted as a tightly-packed array of rows. Each element is expected to be equivalent to a T[N]. For example, GridView on an RGBA32 image might be a `GridView<std::byte, 4>`.
 	 * @tparam T Underlying type of the element.
-	 * @tparam N Number of T's per element. Default 1.
+	 * @tparam N number of T's per element. Default 1.
 	 */
 	template<typename T, std::size_t N = 1>
 	class GridView

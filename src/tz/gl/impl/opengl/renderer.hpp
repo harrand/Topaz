@@ -48,7 +48,7 @@ namespace tz::gl
 		/**
 		 * Retrieve the number of resources stored of the given type.
 		 * @param type Type whose quantity should be retrieved.
-		 * @return Number of resources matching the provided type.
+		 * @return number of resources matching the provided type.
 		 */
 		unsigned int resource_count_of(ResourceType type) const;
 		/**
@@ -185,7 +185,7 @@ namespace tz::gl
 		void render();
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
-		 * @param tri_count Number of triangles to render.
+		 * @param tri_count number of triangles to render.
 		 */
 		void render(unsigned int tri_count);
 		/**
@@ -199,7 +199,7 @@ namespace tz::gl
 		void dbgui();
 		std::string_view debug_get_name() const;
 
-		// Satisfies Nullable.
+		// Satisfies nullable.
 		static RendererOGL null();
 		bool is_null() const;
 	private:
