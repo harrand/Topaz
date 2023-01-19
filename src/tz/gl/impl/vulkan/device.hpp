@@ -71,17 +71,17 @@ namespace tz::gl
 		std::vector<vk2::TimelineSemaphore> renderer_timelines;
 	};
 
-	class DeviceVulkan : public DeviceCommon<RendererVulkan>
+	class device_vulkan : public DeviceCommon<renderer_vulkan>
 	{
 	public:
-		DeviceVulkan();
-		DeviceVulkan(const vk2::VulkanInstance& instance);
-		DeviceVulkan(const DeviceVulkan& copy) = delete;
-		~DeviceVulkan();
+		device_vulkan();
+		device_vulkan(const vk2::VulkanInstance& instance);
+		device_vulkan(const device_vulkan& copy) = delete;
+		~device_vulkan();
 
 		// Satisfies device_type.
-		tz::gl::renderer_handle create_renderer(const renderer_infoVulkan& info);
-		using DeviceCommon<RendererVulkan>::get_renderer;
+		tz::gl::renderer_handle create_renderer(const renderer_info_vulkan& info);
+		using DeviceCommon<renderer_vulkan>::get_renderer;
 		void destroy_renderer(tz::gl::renderer_handle handle);
 		image_format get_window_format() const;
 		void dbgui();
@@ -99,7 +99,7 @@ namespace tz::gl
 		DeviceRenderSchedulerVulkan scheduler;
 	};
 
-	static_assert(device_type<DeviceVulkan, renderer_infoVulkan>);
+	static_assert(device_type<device_vulkan, renderer_info_vulkan>);
 }
 
 #endif // TZ_VULKAN

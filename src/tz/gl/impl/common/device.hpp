@@ -96,12 +96,12 @@ namespace tz::gl
 		{
 			return;
 		}
-		ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
+		ImGui::SliderInt("renderer ID", &id, 0, renderer_count - 1);
 		ImGui::Indent();
 		const auto& renderer = device.get_renderer(static_cast<hdk::hanval>(id));
 		if(renderer.get_options().contains(tz::gl::renderer_option::Internal) && !display_internal_renderers)
 		{
-			ImGui::Text("Internal Renderer");
+			ImGui::Text("Internal renderer");
 			ImGui::Spacing();
 			if(id > 0)
 			{

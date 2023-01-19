@@ -7,23 +7,23 @@
 namespace tz::gl
 {
 
-	DeviceOGL::DeviceOGL()
+	device_ogl::device_ogl()
 	{
 		glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 	}
 
-	tz::gl::renderer_handle DeviceOGL::create_renderer(const renderer_infoOGL& info)
+	tz::gl::renderer_handle device_ogl::create_renderer(const renderer_info_ogl& info)
 	{
-		HDK_PROFZONE("OpenGL Frontend - Renderer Create (via device)", 0xFFAA0000);
-		return DeviceCommon<RendererOGL>::emplace_renderer(info);
+		HDK_PROFZONE("OpenGL Frontend - renderer Create (via device)", 0xFFAA0000);
+		return DeviceCommon<renderer_ogl>::emplace_renderer(info);
 	}
 	
-	image_format DeviceOGL::get_window_format() const
+	image_format device_ogl::get_window_format() const
 	{
 		return image_format::RGBA32;
 	}
 
-	void DeviceOGL::dbgui()
+	void device_ogl::dbgui()
 	{
 		tz::gl::common_device_dbgui(*this);
 	}

@@ -9,9 +9,9 @@
 namespace tz::gl
 {
 	#if TZ_VULKAN
-		using device = DeviceVulkan;
+		using device = device_vulkan;
 	#elif TZ_OGL
-		using device = DeviceOGL;
+		using device = device_ogl;
 	#endif
 
 	/**

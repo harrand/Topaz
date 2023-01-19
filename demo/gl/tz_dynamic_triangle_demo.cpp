@@ -108,7 +108,7 @@ int main()
 		rinfo.state().graphics.index_buffer = ibufh;
 
 		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
-		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 		std::default_random_engine rand;
 		tz::delay fixed_update{50_ms};
 

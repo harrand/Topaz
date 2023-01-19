@@ -49,15 +49,15 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.set_options({tz::gl::renderer_option::NoDepthTesting});
-		rinfo.set_output(tz::gl::ImageOutput
+		rinfo.set_output(tz::gl::image_output
 		{{
 			.colours = {tz::gl::get_device().get_renderer(blur_rendererh).get_component(colour_target_handle)}
 		}});
 
 		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
 		
-		tz::gl::Renderer& blur_renderer = tz::gl::get_device().get_renderer(blur_rendererh);
-		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
+		tz::gl::renderer& blur_renderer = tz::gl::get_device().get_renderer(blur_rendererh);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 
 		while(!tz::window().is_close_requested())
 		{

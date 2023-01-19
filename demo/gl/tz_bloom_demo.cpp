@@ -57,7 +57,7 @@ int main()
 			float pad0;
 		};
 		// This demo uses the following
-		// Renderer to combine two images into one and render it to the screen.
+		// renderer to combine two images into one and render it to the screen.
 		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised
 		({
 			.format = tz::gl::image_format::BGRA32,
@@ -90,10 +90,10 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_bloom_demo, fragment));
 		tz::gl::resource_handle render_bufh = rinfo.add_resource(render_data);
 
-		tz::gl::Renderer& combine_old = tz::gl::get_device().get_renderer(combineh);
+		tz::gl::renderer& combine_old = tz::gl::get_device().get_renderer(combineh);
 
 		tz::gl::resource_handle bloom_bufh = rinfo.ref_resource(combine_old.get_component(bloom_data_handle));
-		rinfo.set_output(tz::gl::ImageOutput
+		rinfo.set_output(tz::gl::image_output
 		{{
 			.colours = {combine_old.get_component(iout0h), combine_old.get_component(iout1h)}
 		}});
@@ -114,8 +114,8 @@ int main()
 			ImGui::MenuItem("Bloom", nullptr, &bloom_menu_enabled);
 		});
 
-		tz::gl::Renderer& combine = tz::gl::get_device().get_renderer(combineh);
-		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
+		tz::gl::renderer& combine = tz::gl::get_device().get_renderer(combineh);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 
 		while(!tz::window().is_close_requested())
 		{

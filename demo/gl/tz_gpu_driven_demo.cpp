@@ -14,7 +14,7 @@ int main()
 	tz::initialise();
 	{
 		tz::gl::renderer_info cinfo;
-		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
+		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::draw_indirect_command{},
 		{
 			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 		}));
@@ -23,7 +23,7 @@ int main()
 		tz::gl::renderer_handle ch = tz::gl::get_device().create_renderer(cinfo);
 
 		tz::gl::renderer_info rinfo;
-		rinfo.debug_name("Triangle Renderer");
+		rinfo.debug_name("Triangle renderer");
 		tz::gl::resource_handle dbufh_ref = rinfo.ref_resource(ch, dbufh);
 		rinfo.state().graphics.draw_buffer = dbufh_ref;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_gpu_driven_demo_render, vertex));

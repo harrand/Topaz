@@ -11,7 +11,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_res
-	 * Specifies the type of the resource; which is how a Renderer or Processor will interpret the usage of the resource within a shader.
+	 * Specifies the type of the resource; which is how a renderer or Processor will interpret the usage of the resource within a shader.
 	 */
 	enum class resource_type
 	{
@@ -31,7 +31,7 @@ namespace tz::gl
 		index_buffer,
 		/// - Indicates that the buffer should contain draw commands which will be used in a render invocation.
 		draw_indirect_buffer,
-		/// - Indicates that the image can be used as an ImageOutput for another renderer. Can only be applied to image resources.
+		/// - Indicates that the image can be used as an image_output for another renderer. Can only be applied to image resources.
 		renderer_output,
 		/// - Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved.
 		image_filter_nearest,
@@ -55,7 +55,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_res
-	 * Describes the manner in which a resource can be read or written to, when owned by a Renderer or Processor.
+	 * Describes the manner in which a resource can be read or written to, when owned by a renderer or Processor.
 	 */
 	enum class resource_access
 	{
@@ -70,7 +70,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_res
-	 * Interface for a Renderer or Processor resource.
+	 * Interface for a renderer or Processor resource.
 	 *
 	 * Resources are subsidiary blocks of either buffer or image data which are used as assets within a shader. Shaders are used by either Renderers or Preprocessors.
 	 *
@@ -88,8 +88,8 @@ namespace tz::gl
 		 */
 		virtual resource_type get_type() const = 0;
 		/**
-		 * Retrieve access information about this resource when used in a Renderer or Processor.
-		 * @return resource_access corresponding to usage in a Renderer or Processor.
+		 * Retrieve access information about this resource when used in a renderer or Processor.
+		 * @return resource_access corresponding to usage in a renderer or Processor.
 		 */
 		virtual resource_access get_access() const = 0;
 		/**
@@ -98,7 +98,7 @@ namespace tz::gl
 		virtual std::span<const std::byte> data() const = 0;
 		/**
 		 * Retrieve a read+write view into the resource data.
-		 * @pre If this resource is owned by a Renderer or Processor, `get_access()` must return any of the dynamic values. Otherwise, the behaviour of a write is undefined.
+		 * @pre If this resource is owned by a renderer or Processor, `get_access()` must return any of the dynamic values. Otherwise, the behaviour of a write is undefined.
 		 */
 		virtual std::span<std::byte> data() = 0;
 
@@ -135,7 +135,7 @@ namespace tz::gl
 		virtual void dbgui() = 0;
 	};
 
-	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
+	/// Opaque handle which is used to refer to an existing Resource within a renderer or Processor.
 	using resource_handle = hdk::handle<iresource>;
 }
 

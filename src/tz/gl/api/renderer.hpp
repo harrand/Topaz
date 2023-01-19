@@ -40,7 +40,7 @@ namespace tz::gl
 		RenderWait,
 		/// - When a renderer is invoked, the output image is not cleared before being rendered to. If nothing has been rendered into the output this frame, then the behaviour is undefined.
 		NoClearOutput,
-		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an ImageOutput, this has no effect.
+		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an image_output, this has no effect.
 		NoPresent,
 		// Final debug ui renderer. Do not use.
 		Internal_FinalDebugUIRenderer,
@@ -181,7 +181,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_renderer
-	 * Named requirement for a Renderer.
+	 * Named requirement for a renderer.
 	 */
 	template<typename T>
 	concept renderer_type = requires(T t, resource_handle r, std::size_t tri_count, const renderer_edit_request& edit_request)

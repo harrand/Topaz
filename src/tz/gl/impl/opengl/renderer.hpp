@@ -16,7 +16,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend
-	 * @defgroup tz_gl2_graphicsapi_ogl_frontend_renderer Renderer Implementation
+	 * @defgroup tz_gl2_graphicsapi_ogl_frontend_renderer renderer Implementation
 	 * Documentation for the OpenGL Frontend implementation of @ref renderer_type.
 	 */
 
@@ -30,7 +30,7 @@ namespace tz::gl
 		/**
 		 * Create storage for a set of existing resources.
 		 *
-		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the RendererOGL. However, it will reference the copy of said resource which is created during construction of this object. This means users are able to and encouraged to cache their ResourceHandles when populating renderer_infoOGL.
+		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the renderer_ogl. However, it will reference the copy of said resource which is created during construction of this object. This means users are able to and encouraged to cache their ResourceHandles when populating renderer_info_ogl.
 		 *
 		 * @param resources A view into an array of existing resources. All of these will be copies into a separate storage, meaning the elements of the span are allowed to reach the end of their lifetime after the storage has been constructed, because they will have been cloned.
 		 */
@@ -126,20 +126,20 @@ namespace tz::gl
 		tz::gl::renderer_options options;
 	};
 
-	using renderer_infoOGL = renderer_infoCommon;
+	using renderer_info_ogl = renderer_infoCommon;
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
-	 * Renderer implementation which heavily calls into the backend at @ref tz_gl_ogl2.
+	 * renderer implementation which heavily calls into the backend at @ref tz_gl_ogl2.
 	 */
-	class RendererOGL
+	class renderer_ogl
 	{
 	public:
 		/**
-		 * Create a new Renderer.
+		 * Create a new renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 */
-		RendererOGL(const renderer_infoOGL& info);
+		renderer_ogl(const renderer_info_ogl& info);
 		// Satisfies renderer_type.
 		/**
 		 * Retrieve the number of resources.
@@ -147,25 +147,25 @@ namespace tz::gl
 		unsigned int resource_count() const;
 		/**
 		 * Retrieve the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		const iresource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		iresource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
 		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
 		icomponent* get_component(resource_handle handle);
@@ -200,10 +200,10 @@ namespace tz::gl
 		std::string_view debug_get_name() const;
 
 		// Satisfies nullable.
-		static RendererOGL null();
+		static renderer_ogl null();
 		bool is_null() const;
 	private:
-		RendererOGL();
+		renderer_ogl();
 
 		ogl2::VertexArray vao;
 		ResourceStorage resources;
@@ -215,7 +215,7 @@ namespace tz::gl
 		bool wireframe_mode = false;
 		bool is_null_value = false;
 	};
-	static_assert(renderer_type<RendererOGL>);
+	static_assert(renderer_type<renderer_ogl>);
 }
 
 #endif // TZ_OGL

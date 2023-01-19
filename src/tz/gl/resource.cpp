@@ -17,7 +17,7 @@ namespace tz::gl
 		std::array<const char*, static_cast<int>(resource_flag::Count)> resource_flag_strings
 		{
 			"Index Buffer",
-			"Renderer Output",
+			"renderer Output",
 			"Image Filter: Nearest",
 			"Image Filter: Linear",
 			"Image Mip Filter: Nearest",

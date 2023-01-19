@@ -66,7 +66,7 @@ namespace tz::gl
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
 	{
-		HDK_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", 0xFFAA0000);
+		HDK_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage Create", 0xFFAA0000);
 		auto do_metadata = [this](icomponent* comp)
 		{
 			iresource* res = comp->get_resource();
@@ -164,7 +164,7 @@ namespace tz::gl
 
 	void ResourceStorage::fill_bindless_image_buffer()
 	{
-		HDK_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage (Fill bindless image buffer)", 0xFFAA0000);
+		HDK_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage (Fill bindless image buffer)", 0xFFAA0000);
 		if(this->image_handles.empty() || !ogl2::supports_bindless_textures())
 		{
 			return;
@@ -376,8 +376,8 @@ namespace tz::gl
 			{
 			case output_target::offscreen_image:
 			{
-				auto* out = static_cast<ImageOutput*>(this->output.get());
-				hdk::assert(!out->has_depth_attachment(), "ImageOutput with depth attachment is not yet implemented.");
+				auto* out = static_cast<image_output*>(this->output.get());
+				hdk::assert(!out->has_depth_attachment(), "image_output with depth attachment is not yet implemented.");
 				tz::BasicList<ogl2::FramebufferTexture> colour_attachments;
 				colour_attachments.resize(out->colour_attachment_count());
 				for(std::size_t i = 0; i < colour_attachments.length(); i++)
@@ -411,7 +411,7 @@ namespace tz::gl
 
 	void OutputManager::set_render_target() const
 	{
-		HDK_PROFZONE("OpenGL Frontend - RendererOGL OutputManager (Set Render Target)", 0xFFAA0000);
+		HDK_PROFZONE("OpenGL Frontend - renderer_ogl OutputManager (Set Render Target)", 0xFFAA0000);
 		this->framebuffer.bind();
 		if(!this->options.contains(tz::gl::renderer_option::NoClearOutput))
 		{
@@ -456,7 +456,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	
-	RendererOGL::RendererOGL(const renderer_infoOGL& info):
+	renderer_ogl::renderer_ogl(const renderer_info_ogl& info):
 	vao(),
 	resources(info.get_resources(), info.get_components()),
 	shader(info.shader()),
@@ -487,54 +487,54 @@ namespace tz::gl
 		#endif // HDK_DEBUG
 	}
 
-	unsigned int RendererOGL::resource_count() const
+	unsigned int renderer_ogl::resource_count() const
 	{
 		return this->resources.count();
 	}
 
-	const iresource* RendererOGL::get_resource(resource_handle handle) const
+	const iresource* renderer_ogl::get_resource(resource_handle handle) const
 	{
 		return this->resources.get(handle);
 	}
 
-	iresource* RendererOGL::get_resource(resource_handle handle)
+	iresource* renderer_ogl::get_resource(resource_handle handle)
 	{
 		return this->resources.get(handle);
 	}
 
-	const icomponent* RendererOGL::get_component(resource_handle handle) const
+	const icomponent* renderer_ogl::get_component(resource_handle handle) const
 	{
 		return this->resources.get_component(handle);
 	}
 
-	icomponent* RendererOGL::get_component(resource_handle handle)
+	icomponent* renderer_ogl::get_component(resource_handle handle)
 	{
 		return this->resources.get_component(handle);
 	}
 
-	ioutput* RendererOGL::get_output()
+	ioutput* renderer_ogl::get_output()
 	{
 		return this->output.get_output();
 	}
 
-	const ioutput* RendererOGL::get_output() const
+	const ioutput* renderer_ogl::get_output() const
 	{
 		return this->output.get_output();
 	}
 
-	const renderer_options& RendererOGL::get_options() const
+	const renderer_options& renderer_ogl::get_options() const
 	{
 		return this->options;
 	}
 
-	const render_state& RendererOGL::get_state() const
+	const render_state& renderer_ogl::get_state() const
 	{
 		return this->state;
 	}
 
-	void RendererOGL::render()
+	void renderer_ogl::render()
 	{
-		HDK_PROFZONE("OpenGL Frontend - RendererOGL Render", 0xFFAA0000);
+		HDK_PROFZONE("OpenGL Frontend - renderer_ogl Render", 0xFFAA0000);
 		hdk::assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
 		#if HDK_DEBUG
 		{
@@ -640,15 +640,15 @@ namespace tz::gl
 		}
 	}
 
-	void RendererOGL::render(unsigned int tri_count)
+	void renderer_ogl::render(unsigned int tri_count)
 	{
 		this->state.graphics.tri_count = tri_count;
 		this->render();
 	}
 
-	void RendererOGL::edit(const renderer_edit_request& edit_request)
+	void renderer_ogl::edit(const renderer_edit_request& edit_request)
 	{
-		HDK_PROFZONE("OpenGL Backend - RendererOGL Edit", 0xFFAA0000);
+		HDK_PROFZONE("OpenGL Backend - renderer_ogl Edit", 0xFFAA0000);
 		hdk::assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
 		for(const renderer_edit::variant& req : edit_request)
 		{
@@ -747,34 +747,34 @@ namespace tz::gl
 		}
 	}
 
-	void RendererOGL::dbgui()
+	void renderer_ogl::dbgui()
 	{
 		common_renderer_dbgui(*this);
 	}
 
-	std::string_view RendererOGL::debug_get_name() const
+	std::string_view renderer_ogl::debug_get_name() const
 	{
 		return this->debug_name;
 	}
 
-	RendererOGL RendererOGL::null()
+	renderer_ogl renderer_ogl::null()
 	{
 		return {};
 	}
 
-	bool RendererOGL::is_null() const
+	bool renderer_ogl::is_null() const
 	{
 		return this->is_null_value;
 	}
 
-	RendererOGL::RendererOGL():
+	renderer_ogl::renderer_ogl():
 	vao(),
 	resources({}, {}),
 	shader(),
 	output(nullptr, {}),
 	options(),
 	state(),
-	debug_name("Null Renderer")
+	debug_name("Null renderer")
 	{
 		this->is_null_value = true;
 	}

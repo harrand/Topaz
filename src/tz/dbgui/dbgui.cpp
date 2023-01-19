@@ -355,7 +355,7 @@ namespace tz::dbgui
 			}
 		);
 
-		tz::gl::WindowOutput wout{tz::window()};
+		tz::gl::window_output wout{tz::window()};
 
 		tz::gl::renderer_info rinfo;
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
@@ -366,7 +366,7 @@ namespace tz::dbgui
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::NoPresent, tz::gl::renderer_option::RenderWait, tz::gl::renderer_option::Internal});
 		rinfo.set_output(wout);
-		rinfo.debug_name("ImGui Intermediate Renderer");
+		rinfo.debug_name("ImGui Intermediate renderer");
 		
 		global_render_data->renderer = tz::gl::get_device().create_renderer(rinfo);
 
@@ -374,7 +374,7 @@ namespace tz::dbgui
 		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::Internal_FinalDebugUIRenderer, tz::gl::renderer_option::Internal});
-		empty.debug_name("ImGui Final Renderer");
+		empty.debug_name("ImGui Final renderer");
 		global_render_data->final_renderer = tz::gl::get_device().create_renderer(empty);
 
 		io.Fonts->SetTexID(0);
@@ -404,7 +404,7 @@ namespace tz::dbgui
 
 		hdk::assert(global_render_data->renderer != hdk::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
-		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(global_render_data->renderer);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);

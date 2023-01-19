@@ -8,21 +8,21 @@
 
 namespace tz::gl
 {
-	class DeviceOGL : public DeviceCommon<RendererOGL>
+	class device_ogl : public DeviceCommon<renderer_ogl>
 	{
 	public:
-		DeviceOGL();
+		device_ogl();
 
 		// Satisfies device_type.
-		tz::gl::renderer_handle create_renderer(const renderer_infoOGL& info);
-		using DeviceCommon<RendererOGL>::get_renderer;
-		using DeviceCommon<RendererOGL>::destroy_renderer;
+		tz::gl::renderer_handle create_renderer(const renderer_info_ogl& info);
+		using DeviceCommon<renderer_ogl>::get_renderer;
+		using DeviceCommon<renderer_ogl>::destroy_renderer;
 		image_format get_window_format() const;
 		void dbgui();
 	private:
-		std::vector<RendererOGL> renderers;
+		std::vector<renderer_ogl> renderers;
 	};
-	static_assert(device_type<DeviceOGL, renderer_infoOGL>);
+	static_assert(device_type<device_ogl, renderer_info_ogl>);
 }
 
 #endif // TZ_OGL

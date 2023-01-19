@@ -25,7 +25,7 @@ namespace tz::gl
 	class DeviceWindowVulkan;
 	class DeviceRenderSchedulerVulkan;
 	using namespace tz::gl;
-	using renderer_infoVulkan = renderer_infoCommon;
+	using renderer_info_vulkan = renderer_infoCommon;
 
 	struct RendererResizeInfoVulkan
 	{
@@ -38,13 +38,13 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend
-	 * @defgroup tz_gl2_graphicsapi_vk_frontend_renderer Renderer Implementation
+	 * @defgroup tz_gl2_graphicsapi_vk_frontend_renderer renderer Implementation
 	 * Documentation for the Vulkan Frontend implementation of @ref renderer_type.
 	 */
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * Copies all resource data from a RendererVulkan when it is created, and copies it into its own memory so that the user doesn't need to worry about resource lifetimes. Also exposes the copied resources to the RendererVulkan.
+	 * Copies all resource data from a renderer_vulkan when it is created, and copies it into its own memory so that the user doesn't need to worry about resource lifetimes. Also exposes the copied resources to the renderer_vulkan.
 	 */
 	class ResourceStorage : public AssetStorageCommon<iresource>
 	{
@@ -52,7 +52,7 @@ namespace tz::gl
 		/**
 		 * Create storage for a set of existing resources.
 		 */
-		ResourceStorage(const renderer_infoVulkan& info);
+		ResourceStorage(const renderer_info_vulkan& info);
 		ResourceStorage() = default;
 		ResourceStorage(ResourceStorage&& move);
 		~ResourceStorage() = default;
@@ -140,8 +140,8 @@ namespace tz::gl
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * Deciphering the actual render target is pretty complicated. There are various gotchas:
 	 * - If there is a swapchain, we don't have control over how many swapchain images are available. We need to be flexible as the device has sole control over this.
-	 * - If we're rendering into a separate image (most likely a texture resource belonging to another RendererVulkan), that RendererVulkan has ownership of the image component, not us.
-	 * - If we're rendering to the window, the device used to create this RendererVulkan has ownership of those image components. This should always be the case.
+	 * - If we're rendering into a separate image (most likely a texture resource belonging to another renderer_vulkan), that renderer_vulkan has ownership of the image component, not us.
+	 * - If we're rendering to the window, the device used to create this renderer_vulkan has ownership of those image components. This should always be the case.
 	 *
 	 * This class deals with all of those cases and exposes a list of output images, aswell as imageviews and framebuffers for them.
 	 */
@@ -151,7 +151,7 @@ namespace tz::gl
 		/**
 		 * Construct the manager to deal with this brain-knot of output components.
 		 */
-		OutputManager(const renderer_infoVulkan& info);
+		OutputManager(const renderer_info_vulkan& info);
 		OutputManager() = default;
 		OutputManager(OutputManager&& move);
 		~OutputManager() = default;
@@ -166,7 +166,7 @@ namespace tz::gl
 		 * There is no way to guarantee how many output images there are, but here is an explanation of what you might get:
 		 * - If the output is a window output:
 		 * 		- This is going to contain the swapchain images. Unfortunately this may vary depending on the machine running and what it supports, but in practice most likely this will be a couple (2-4).
-		 * - Otherwise if the output is an ImageOutput:
+		 * - Otherwise if the output is an image_output:
 		 *   		- This is going to contain the 0th colour attachment, with duplicates matching each frame-in-flight.
 		 * @return List of output images.
 		 */
@@ -200,7 +200,7 @@ namespace tz::gl
 		void populate_output_views();
 		void make_render_pass();
 		void populate_framebuffers();
-		/// Output provided by the RendererVulkan.
+		/// Output provided by the renderer_vulkan.
 		std::unique_ptr<ioutput> output = nullptr;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev = nullptr;
@@ -229,7 +229,7 @@ namespace tz::gl
 		/**
 		 * Construct the graphics/compute pipeline manager using all the necessary shader sources aswell as resource state and output information.
 		 */
-		GraphicsPipelineManager(const renderer_infoVulkan& info, const ResourceStorage& resources, const OutputManager& output);
+		GraphicsPipelineManager(const renderer_info_vulkan& info, const ResourceStorage& resources, const OutputManager& output);
 		GraphicsPipelineManager() = default;
 		GraphicsPipelineManager(GraphicsPipelineManager&& move);
 		~GraphicsPipelineManager() = default;
@@ -261,7 +261,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * Responsible for all required command-buffers and drawing/scratch commands. The Renderer should not need to worry about command pools/buffers at all, but instead ask the command processor to schedule work and it can do so.
+	 * Responsible for all required command-buffers and drawing/scratch commands. The renderer should not need to worry about command pools/buffers at all, but instead ask the command processor to schedule work and it can do so.
 	 */
 	class CommandProcessor
 	{
@@ -273,7 +273,7 @@ namespace tz::gl
 		/**
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
 		 */
-		CommandProcessor(const renderer_infoVulkan& info);
+		CommandProcessor(const renderer_info_vulkan& info);
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, output_target output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::renderer_options options, DeviceRenderSchedulerVulkan& scheduler);
 		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
@@ -340,20 +340,20 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
-	 * Renderer implementation which heavily calls into the backend at @ref tz_gl_vk.
+	 * renderer implementation which heavily calls into the backend at @ref tz_gl_vk.
 	 */
-	class RendererVulkan
+	class renderer_vulkan
 	{
 	public:
 		/**
-		 * Create a new Renderer.
+		 * Create a new renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 * @param device_info A renderer is always created by a device - This constructor is not invoked manually. When the device does this, it provides some information about the internals; this.
 		 */
-		RendererVulkan(const renderer_infoVulkan& info);
-		RendererVulkan(RendererVulkan&& move);
-		~RendererVulkan();
-		RendererVulkan& operator=(RendererVulkan&& rhs);
+		renderer_vulkan(const renderer_info_vulkan& info);
+		renderer_vulkan(renderer_vulkan&& move);
+		~renderer_vulkan();
+		renderer_vulkan& operator=(renderer_vulkan&& rhs);
 		// Satisfies renderer_type
 		/**
 		 * Retrieve the number of resources.
@@ -361,25 +361,25 @@ namespace tz::gl
 		unsigned int resource_count() const;
 		/**
 		 * Retrieve the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		const iresource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		iresource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
 		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
 		icomponent* get_component(resource_handle handle);
@@ -409,10 +409,10 @@ namespace tz::gl
 		void dbgui();
 		std::string_view debug_get_name() const;
 
-		static RendererVulkan null();
+		static renderer_vulkan null();
 		bool is_null() const;
 	private:
-		RendererVulkan() = default;
+		renderer_vulkan() = default;
 
 		struct EditData
 		{
@@ -453,12 +453,12 @@ namespace tz::gl
 		GraphicsPipelineManager pipeline = {};
 		/// Helper object for managing/executing/scheduling GPU work.
 		CommandProcessor command = {};
-		std::string debug_name = "Null Renderer";
+		std::string debug_name = "Null renderer";
 		tz::gl::scissor_region scissor_cache = tz::gl::scissor_region::null();
 		hdk::vec2ui window_dims_cache = {};
 	};
 
-	static_assert(renderer_type<RendererVulkan>);
+	static_assert(renderer_type<renderer_vulkan>);
 }
 
 #include "tz/gl/impl/vulkan/renderer.inl"

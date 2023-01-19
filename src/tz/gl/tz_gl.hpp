@@ -19,7 +19,7 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2
 	 * @defgroup tz_gl2_res Resources
-	 * Documentation for Renderer and Processor resources. Namely, buffers and images.
+	 * Documentation for renderer and Processor resources. Namely, buffers and images.
 	 */
 
 	/**

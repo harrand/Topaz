@@ -71,11 +71,11 @@ namespace tz::gl
 	}
 
 //--------------------------------------------------------------------------------------------------
-	ResourceStorage::ResourceStorage(const renderer_infoVulkan& info):
+	ResourceStorage::ResourceStorage(const renderer_info_vulkan& info):
 	AssetStorageCommon<iresource>(info.get_resources()),
 	frame_in_flight_count(get_device().get_device_window().get_output_images().size())
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan ResourceStorage Create", 0xFFAAAA00);
 		const vk2::LogicalDevice& ldev = get_device().vk_get_logical_device();
 		this->samplers.reserve(this->count());
 
@@ -340,7 +340,7 @@ namespace tz::gl
 
 	void ResourceStorage::sync_descriptors(bool write_everything, const render_state& state)
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
 		std::vector<buffer_component_vulkan*> buffers;
 		buffers.reserve(this->components.size());
 		for(auto& component_ptr : this->components)
@@ -459,14 +459,14 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const renderer_infoVulkan& info):
+	OutputManager::OutputManager(const renderer_info_vulkan& info):
 	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
 	ldev(&get_device().vk_get_logical_device()),
 	swapchain_images(get_device().get_device_window().get_output_images()),
 	swapchain_depth_images(&get_device().get_device_window().get_depth_image()),
 	options(info.get_options())
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan OutputManager Create", 0xFFAAAA00);
 		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images);
 	}
 
@@ -532,8 +532,8 @@ namespace tz::gl
 		}
 		else if(this->output->get_target() == output_target::offscreen_image)
 		{
-			// We have been provided an ImageOutput which will contain an image_component_vulkan. We need to retrieve that image and return a span covering it.
-			auto& out = static_cast<ImageOutput&>(*this->output);
+			// We have been provided an image_output which will contain an image_component_vulkan. We need to retrieve that image and return a span covering it.
+			auto& out = static_cast<image_output&>(*this->output);
 
 			OutputImageState out_image;
 			for(std::size_t i = 0; i < out.colour_attachment_count(); i++)
@@ -558,7 +558,7 @@ namespace tz::gl
 			}
 
 			std::vector<OutputImageState> ret(this->swapchain_images.size(), out_image);
-			hdk::assert(!out.has_depth_attachment(), "Depth attachment on an ImageOutput is not yet implemented");
+			hdk::assert(!out.has_depth_attachment(), "Depth attachment on an image_output is not yet implemented");
 			return ret;
 		}
 		else
@@ -601,7 +601,7 @@ namespace tz::gl
 
 	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image)
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager (Output Resources Creation)", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan OutputManager (Output Resources Creation)", 0xFFAAAA00);
 		this->swapchain_images = swapchain_images;
 		this->output_imageviews.clear();
 		this->output_depth_imageviews.clear();
@@ -615,7 +615,7 @@ namespace tz::gl
 		#if HDK_DEBUG
 			for(const OutputImageViewState& out_view : this->output_imageviews)
 			{
-				hdk::assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a RendererVulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
+				hdk::assert(std::equal(out_view.colour_views.begin(), out_view.colour_views.end(), out_view.colour_views.begin(), [](const vk2::ImageView& a, const vk2::ImageView& b){return a.get_image().get_format() == b.get_image().get_format();}), "Detected that not every output image in a renderer_vulkan has the same format. This is not permitted as RenderPasses would not be compatible. Please submit a bug report.");
 			}
 		#endif // HDK_DEBUG
 
@@ -757,7 +757,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_infoVulkan& info, const ResourceStorage& resources, const OutputManager& output)
+	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_info_vulkan& info, const ResourceStorage& resources, const OutputManager& output)
 	{
 		this->shader = this->make_shader(get_device().vk_get_logical_device(), info.shader());
 		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), get_device().get_device_window().get_output_images().size());
@@ -811,7 +811,7 @@ namespace tz::gl
 	void GraphicsPipelineManager::recreate(const vk2::RenderPass& new_render_pass, hdk::vec2ui new_viewport_dimensions, bool wireframe_mode)
 	{
 		this->wireframe_mode = wireframe_mode;
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager Recreate", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan GraphicsPipelineManager Recreate", 0xFFAAAA00);
 		if(this->is_compute())
 		{
 			this->graphics_pipeline =
@@ -859,7 +859,7 @@ namespace tz::gl
 
 	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan GraphicsPipelineManager (Shader Create)", 0xFFAAAA00);
 		std::vector<char> vtx_src, frg_src, tesscon_src, tesseval_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(shader_stage::compute))
@@ -1005,7 +1005,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(const renderer_infoVulkan& info)
+	CommandProcessor::CommandProcessor(const renderer_info_vulkan& info)
 	{
 		if(info.get_output() == nullptr || info.get_output()->get_target() == output_target::window)
 		{
@@ -1094,7 +1094,7 @@ namespace tz::gl
 
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
 		auto& device_window = get_device().get_device_window();
 		// Submit & Present
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
@@ -1177,7 +1177,7 @@ namespace tz::gl
 
 	void CommandProcessor::do_compute_work()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Compute Work)", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan CommandProcessor (Do Compute Work)", 0xFFAAAA00);
 
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		this->device_scheduler->get_frame_fences()[this->current_frame].unsignal();
@@ -1197,13 +1197,13 @@ namespace tz::gl
 
 	void CommandProcessor::wait_pending_commands_complete()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Waiting on commands to complete)", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan CommandProcessor (Waiting on commands to complete)", 0xFFAAAA00);
 		this->device_scheduler->wait_frame_work_complete();
 	}
 
 //--------------------------------------------------------------------------------------------------
 
-	RendererVulkan::RendererVulkan(const renderer_infoVulkan& info):
+	renderer_vulkan::renderer_vulkan(const renderer_info_vulkan& info):
 	ldev(&get_device().vk_get_logical_device()),
 	options(info.get_options()),
 	state(info.state()),
@@ -1213,7 +1213,7 @@ namespace tz::gl
 	command(info),
 	debug_name(info.debug_get_name())
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Create", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Create", 0xFFAAAA00);
 		this->window_dims_cache = tz::window().get_dimensions();
 
 		this->setup_static_resources();
@@ -1242,7 +1242,7 @@ namespace tz::gl
 		#endif
 	}
 
-	RendererVulkan::RendererVulkan(RendererVulkan&& move):
+	renderer_vulkan::renderer_vulkan(renderer_vulkan&& move):
 	ldev(move.ldev),
 	options(move.options),
 	resources(std::move(move.resources)),
@@ -1254,7 +1254,7 @@ namespace tz::gl
 	{
 	}
 
-	RendererVulkan::~RendererVulkan()
+	renderer_vulkan::~renderer_vulkan()
 	{
 		if(this->is_null())
 		{
@@ -1263,7 +1263,7 @@ namespace tz::gl
 		this->ldev->wait_until_idle();
 	}
 
-	RendererVulkan& RendererVulkan::operator=(RendererVulkan&& rhs)
+	renderer_vulkan& renderer_vulkan::operator=(renderer_vulkan&& rhs)
 	{
 		std::swap(this->ldev, rhs.ldev);
 		std::swap(this->options, rhs.options);
@@ -1277,54 +1277,54 @@ namespace tz::gl
 		return *this;
 	}
 
-	unsigned int RendererVulkan::resource_count() const
+	unsigned int renderer_vulkan::resource_count() const
 	{
 		return this->resources.count();
 	}
 
-	const iresource* RendererVulkan::get_resource(resource_handle handle) const
+	const iresource* renderer_vulkan::get_resource(resource_handle handle) const
 	{
 		return this->resources.get(handle);
 	}
 
-	iresource* RendererVulkan::get_resource(resource_handle handle)
+	iresource* renderer_vulkan::get_resource(resource_handle handle)
 	{
 		return this->resources.get(handle);
 	}
 
-	const icomponent* RendererVulkan::get_component(resource_handle handle) const
+	const icomponent* renderer_vulkan::get_component(resource_handle handle) const
 	{
 		return this->resources.get_component(handle);
 	}
 
-	icomponent* RendererVulkan::get_component(resource_handle handle)
+	icomponent* renderer_vulkan::get_component(resource_handle handle)
 	{
 		return this->resources.get_component(handle);
 	}
 
-	ioutput* RendererVulkan::get_output()
+	ioutput* renderer_vulkan::get_output()
 	{
 		return this->output.get_output();
 	}
 
-	const ioutput* RendererVulkan::get_output() const
+	const ioutput* renderer_vulkan::get_output() const
 	{
 		return this->output.get_output();
 	}
 
-	const renderer_options& RendererVulkan::get_options() const
+	const renderer_options& renderer_vulkan::get_options() const
 	{
 		return this->options;
 	}
 
-	const render_state& RendererVulkan::get_state() const
+	const render_state& renderer_vulkan::get_state() const
 	{
 		return this->state;
 	}
 
-	void RendererVulkan::render()
+	void renderer_vulkan::render()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Render", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Render", 0xFFAAAA00);
 		if(tz::window().get_dimensions() == hdk::vec2ui::zero())
 		{
 			tz::wsi::wait_for_event();
@@ -1338,7 +1338,7 @@ namespace tz::gl
 		// If output scissor region has changed, we need to rerecord.
 		if(this->get_output() != nullptr)
 		{
-			HDK_PROFZONE("Vulkan Frontend - RendererVulkan Scissor Cache Miss", 0xFFAA0000);
+			HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Scissor Cache Miss", 0xFFAA0000);
 			if(this->get_output()->scissor != this->scissor_cache)
 			{
 				this->scissor_cache = this->get_output()->scissor;
@@ -1384,7 +1384,7 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::render(unsigned int tri_count)
+	void renderer_vulkan::render(unsigned int tri_count)
 	{
 		if(this->state.graphics.tri_count != tri_count)
 		{
@@ -1395,16 +1395,16 @@ namespace tz::gl
 		this->render();
 	}
 
-	void RendererVulkan::edit(const renderer_edit_request& edit_request)
+	void renderer_vulkan::edit(const renderer_edit_request& edit_request)
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Edit", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Edit", 0xFFAAAA00);
 
 		bool final_wireframe_mode_state = this->pipeline.is_wireframe_mode();
 		if(edit_request.empty())
 		{
 			return;
 		}
-		RendererVulkan::EditData data;
+		renderer_vulkan::EditData data;
 		this->command.wait_pending_commands_complete();
 		for(const renderer_edit::variant& req : edit_request)
 		{
@@ -1441,7 +1441,7 @@ namespace tz::gl
 				}
 				else
 				{
-					hdk::error("Renderer Edit that is not yet supported has been requested. Please submit a bug report.");
+					hdk::error("renderer Edit that is not yet supported has been requested. Please submit a bug report.");
 				}
 			}, req);
 		}
@@ -1468,27 +1468,27 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::dbgui()
+	void renderer_vulkan::dbgui()
 	{
 		common_renderer_dbgui(*this);
 	}
 
-	std::string_view RendererVulkan::debug_get_name() const
+	std::string_view renderer_vulkan::debug_get_name() const
 	{
 		return this->debug_name;
 	}
 
-	RendererVulkan RendererVulkan::null()
+	renderer_vulkan renderer_vulkan::null()
 	{
 		return {};
 	}
 	
-	bool RendererVulkan::is_null() const
+	bool renderer_vulkan::is_null() const
 	{
 		return this->ldev == nullptr;
 	}
 
-	void RendererVulkan::edit_buffer_resize(renderer_edit::buffer_resize arg, EditData& data)
+	void renderer_vulkan::edit_buffer_resize(renderer_edit::buffer_resize arg, EditData& data)
 	{
 		auto bufcomp = static_cast<buffer_component_vulkan*>(this->get_component(arg.buffer_handle));
 		hdk::assert(bufcomp != nullptr, "Invalid buffer handle in renderer_edit::buffer_resize");
@@ -1506,7 +1506,7 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::edit_image_resize(renderer_edit::image_resize arg, EditData& data)
+	void renderer_vulkan::edit_image_resize(renderer_edit::image_resize arg, EditData& data)
 	{
 		auto imgcomp = static_cast<image_component_vulkan*>(this->get_component(arg.image_handle));
 		hdk::assert(imgcomp != nullptr, "Invalid image handle in renderer_edit::image_resize");
@@ -1520,7 +1520,7 @@ namespace tz::gl
 		}
 	}
 	
-	void RendererVulkan::edit_resource_write(renderer_edit::resource_write arg, [[maybe_unused]] EditData& data)
+	void renderer_vulkan::edit_resource_write(renderer_edit::resource_write arg, [[maybe_unused]] EditData& data)
 	{
 		icomponent* comp = this->get_component(arg.resource);
 		iresource* res = comp->get_resource();
@@ -1619,7 +1619,7 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::edit_compute_config(renderer_edit::compute_config arg, EditData& data)
+	void renderer_vulkan::edit_compute_config(renderer_edit::compute_config arg, EditData& data)
 	{
 		if(arg.kernel != this->state.compute.kernel)
 		{
@@ -1628,15 +1628,15 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::edit_resource_reference(renderer_edit::resource_reference arg, EditData& data)
+	void renderer_vulkan::edit_resource_reference(renderer_edit::resource_reference arg, EditData& data)
 	{
 		(void)arg; (void)data;
 		hdk::error("Resource Reference re-seating is not yet implemented.");
 	}
 
-	void RendererVulkan::setup_static_resources()
+	void renderer_vulkan::setup_static_resources()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Static Resources", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Setup Static Resources", 0xFFAAAA00);
 		// Create staging buffers for each buffer and texture resource, and then fill the data with the resource data.
 		std::vector<buffer_component_vulkan*> buffer_components;
 		std::vector<image_component_vulkan*> image_components;
@@ -1762,9 +1762,9 @@ namespace tz::gl
 		});
 	}
 
-	void RendererVulkan::setup_render_commands()
+	void renderer_vulkan::setup_render_commands()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Render Commands", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Setup Render Commands", 0xFFAAAA00);
 		hdk::assert(!this->pipeline.is_compute(), "Running render command recording path, but pipeline is a compute pipeline. Logic error, please submit a bug report.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
@@ -1869,9 +1869,9 @@ namespace tz::gl
 		});
 	}
 	
-	void RendererVulkan::setup_compute_commands()
+	void renderer_vulkan::setup_compute_commands()
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Compute Commands", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Setup Compute Commands", 0xFFAAAA00);
 		hdk::assert(this->pipeline.is_compute(), "Running compute command recording path, but pipeline is a graphics pipeline. Logic error, please submit a bug report.");
 
 		this->command.set_rendering_commands([this](vk2::CommandBufferRecording& recording, std::size_t framebuffer_id)
@@ -1908,7 +1908,7 @@ namespace tz::gl
 		});
 	}
 
-	void RendererVulkan::setup_work_commands()
+	void renderer_vulkan::setup_work_commands()
 	{
 		if(this->pipeline.is_compute())
 		{
@@ -1920,7 +1920,7 @@ namespace tz::gl
 		}
 	}
 
-	bool RendererVulkan::handle_swapchain_outdated()
+	bool renderer_vulkan::handle_swapchain_outdated()
 	{
 		// Tell the DeviceWindow to update.
 		tz::gl::get_device().get_device_window().request_refresh();
@@ -1935,9 +1935,9 @@ namespace tz::gl
 		return this->present_failure_count <= 1;
 	}
 
-	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)
+	void renderer_vulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)
 	{
-		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer_vulkan Handle Resize", 0xFFAAAA00);
 		// Context: The top-level gl::device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image);

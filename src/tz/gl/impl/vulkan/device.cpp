@@ -327,81 +327,81 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	DeviceVulkan::DeviceVulkan():
-	DeviceVulkan(vk2::get())
+	device_vulkan::device_vulkan():
+	device_vulkan(vk2::get())
 	{
 
 	}
 
-	DeviceVulkan::DeviceVulkan(const vk2::VulkanInstance& instance):
-	device(DeviceVulkan::make_device(instance)),
+	device_vulkan::device_vulkan(const vk2::VulkanInstance& instance):
+	device(device_vulkan::make_device(instance)),
 	window_storage(this->device),
 	scheduler(this->device, this->window_storage.get_output_images().size())
 	{
-		HDK_PROFZONE("Vulkan Frontend - DeviceVulkan Create", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - device_vulkan Create", 0xFFAAAA00);
 	}
 
-	DeviceVulkan::~DeviceVulkan()
+	device_vulkan::~device_vulkan()
 	{
 		this->scheduler.wait_frame_work_complete();
 		this->scheduler.clear_renderers();
-		DeviceCommon<RendererVulkan>::internal_clear();
+		DeviceCommon<renderer_vulkan>::internal_clear();
 	}
 
-	tz::gl::renderer_handle DeviceVulkan::create_renderer(const renderer_infoVulkan& info)
+	tz::gl::renderer_handle device_vulkan::create_renderer(const renderer_info_vulkan& info)
 	{
-		HDK_PROFZONE("Vulkan Frontend - Renderer Create (via DeviceVulkan)", 0xFFAAAA00);
+		HDK_PROFZONE("Vulkan Frontend - renderer Create (via device_vulkan)", 0xFFAAAA00);
 		this->scheduler.notify_renderer_added();
-		return DeviceCommon<RendererVulkan>::emplace_renderer(info);
+		return DeviceCommon<renderer_vulkan>::emplace_renderer(info);
 	}
 
-	void DeviceVulkan::destroy_renderer(tz::gl::renderer_handle handle)
+	void device_vulkan::destroy_renderer(tz::gl::renderer_handle handle)
 	{
 		this->scheduler.notify_renderer_removed(static_cast<std::size_t>(static_cast<hdk::hanval>(handle)));
-		DeviceCommon<RendererVulkan>::destroy_renderer(handle);
+		DeviceCommon<renderer_vulkan>::destroy_renderer(handle);
 	}
 
-	image_format DeviceVulkan::get_window_format() const
+	image_format device_vulkan::get_window_format() const
 	{
 		return from_vk2(this->window_storage.get_format());
 	}
 
-	void DeviceVulkan::dbgui()
+	void device_vulkan::dbgui()
 	{
 		tz::gl::common_device_dbgui(*this);
 	}
 
-	const DeviceWindowVulkan& DeviceVulkan::get_device_window() const
+	const DeviceWindowVulkan& device_vulkan::get_device_window() const
 	{
 		return this->window_storage;
 	}
 
-	DeviceWindowVulkan& DeviceVulkan::get_device_window()
+	DeviceWindowVulkan& device_vulkan::get_device_window()
 	{
 		return this->window_storage;
 	}
 
-	const DeviceRenderSchedulerVulkan& DeviceVulkan::get_render_scheduler() const
+	const DeviceRenderSchedulerVulkan& device_vulkan::get_render_scheduler() const
 	{
 		return this->scheduler;
 	}
 
-	DeviceRenderSchedulerVulkan& DeviceVulkan::get_render_scheduler()
+	DeviceRenderSchedulerVulkan& device_vulkan::get_render_scheduler()
 	{
 		return this->scheduler;
 	}
 
-	const vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device() const
+	const vk2::LogicalDevice& device_vulkan::vk_get_logical_device() const
 	{
 		return this->device;
 	}
 
-	vk2::LogicalDevice& DeviceVulkan::vk_get_logical_device()
+	vk2::LogicalDevice& device_vulkan::vk_get_logical_device()
 	{
 		return this->device;
 	}
 
-	/*static*/vk2::LogicalDevice DeviceVulkan::make_device(const vk2::VulkanInstance& instance)
+	/*static*/vk2::LogicalDevice device_vulkan::make_device(const vk2::VulkanInstance& instance)
 	{
 		// First, create a LogicalDevice.
 		// TODO: Don't just choose a device at random.

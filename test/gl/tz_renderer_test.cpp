@@ -74,7 +74,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	// Make sure the buffer resource reference contains the expected value.
 	{
 		float actual = tz::gl::get_device().get_renderer(r2h).get_resource(r2bh)->data_as<float>().front();
-		hdk::assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
+		hdk::assert(actual == expected_value, "renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
 	}
 	
 	tz::gl::get_device().destroy_renderer(r2h);
@@ -117,7 +117,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	// Make sure the image resource reference contains the expected value.
 	{
 		std::uint32_t actual = tz::gl::get_device().get_renderer(r2h).get_resource(r2ih)->data_as<std::uint32_t>().front();
-		hdk::assert(actual == expected_value, "Renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
+		hdk::assert(actual == expected_value, "renderer with buffer resource reference against buffer data {%g} did not have the same data, it had {%g}", expected_value, actual);
 	}
 	
 	tz::gl::get_device().destroy_renderer(r2h);
@@ -141,7 +141,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 
 	// Do the resize.
 	{
-		tz::gl::Renderer& ren = tz::gl::get_device().get_renderer(rh);
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(rh);
 		hdk::assert(ren.get_resource(bh)->data().size_bytes() == sizeof(float) * 1, "Buffer had unexpected size prior to bufferresize edit. Expected %d bytes, got %zu", sizeof(float) * 1, ren.get_resource(bh)->data().size_bytes());
 
 		ren.edit
@@ -192,7 +192,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 
 	// Do the resize.
 	{
-		tz::gl::Renderer& ren = tz::gl::get_device().get_renderer(rh);
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(rh);
 		const tz::gl::ImageResource* ires = static_cast<const tz::gl::ImageResource*>(ren.get_resource(ih));
 
 		hdk::assert(ires->get_dimensions() == old_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", old_dims[0], old_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
@@ -239,7 +239,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 
 	// Do the write.
 	{
-		tz::gl::Renderer& ren = tz::gl::get_device().get_renderer(rh);
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(rh);
 		{
 			std::span<const float> bufdata = ren.get_resource(bh)->data_as<const float>();
 			hdk::assert(std::equal(bufdata.begin(), bufdata.end(), old_data.begin()), "Buffer data did not match expected values prior to resource write.");
@@ -299,7 +299,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 
 	// Do the write.
 	{
-		tz::gl::Renderer& ren = tz::gl::get_device().get_renderer(rh);
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(rh);
 		hdk::assert(ren.get_resource(ih)->data_as<std::uint32_t>().front() == black_pixel, "Expected colour %x, got %x", black_pixel, ren.get_resource(ih)->data_as<std::uint32_t>().front());
 		ren.edit
 		(
@@ -331,7 +331,7 @@ TESTFUNC_BEGIN(rendereredit_computeconfig)
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::get_device().get_renderer(ch).render();
 	{
-		tz::gl::Renderer& ren = tz::gl::get_device().get_renderer(ch);
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(ch);
 		ren.edit
 		(
 			tz::gl::RendererEditBuilder{}
@@ -359,7 +359,7 @@ TESTFUNC_BEGIN(rendereredit_renderconfig)
 	// Try rendering and make sure it doesn't crash.
 	tz::gl::get_device().get_renderer(rh).render();
 	{
-		tz::gl::Renderer& ren = tz::gl::get_device().get_renderer(rh);
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(rh);
 		ren.edit
 		(
 			tz::gl::RendererEditBuilder{}
@@ -398,7 +398,7 @@ TESTFUNC_BEGIN(renderer_indirect_buffer)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
+	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::draw_indirect_command{},
 	{
 		.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 	}));

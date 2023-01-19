@@ -42,7 +42,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_res
-	 * Represents a fixed-size, static Buffer to be used by a Renderer or Processor.
+	 * Represents a fixed-size, static Buffer to be used by a renderer or Processor.
 	 */
 	class BufferResource : public Resource
 	{
@@ -108,7 +108,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_res
-	 * Represents a fixed-size, static Image to be used by a Renderer or Processor.
+	 * Represents a fixed-size, static Image to be used by a renderer or Processor.
 	 */
 	class ImageResource : public Resource
 	{

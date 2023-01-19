@@ -39,11 +39,11 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
 		tz::gl::resource_handle refbuf = rinfo.ref_resource(compute_workerh, cbuf);
-		rinfo.debug_name("Window Renderer");
+		rinfo.debug_name("Window renderer");
 		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
 
-		tz::gl::Renderer& compute_worker = tz::gl::get_device().get_renderer(compute_workerh);
-		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
+		tz::gl::renderer& compute_worker = tz::gl::get_device().get_renderer(compute_workerh);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 
 		bool game_menu_enabled = false;
 		tz::dbgui::game_menu().add_callback([&game_menu_enabled]()

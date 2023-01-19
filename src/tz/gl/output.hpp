@@ -7,16 +7,16 @@
 
 namespace tz::gl
 {
-	struct ImageOutputInfo
+	struct image_output_info
 	{
 		tz::BasicList<icomponent*> colours;
 		icomponent* depth = nullptr;
 	};
 
-	class ImageOutput final : public ioutput
+	class image_output final : public ioutput
 	{
 	public:
-		ImageOutput(ImageOutputInfo info);
+		image_output(image_output_info info);
 		constexpr virtual output_target get_target() const override
 		{
 			return output_target::offscreen_image;
@@ -24,7 +24,7 @@ namespace tz::gl
 
 		virtual std::unique_ptr<ioutput> unique_clone() const override
 		{
-			return std::make_unique<ImageOutput>(*this);
+			return std::make_unique<image_output>(*this);
 		}
 
 		std::size_t colour_attachment_count() const;
@@ -40,10 +40,10 @@ namespace tz::gl
 		image_component* depth_attachment;
 	};
 
-	class WindowOutput final : public ioutput
+	class window_output final : public ioutput
 	{
 	public:
-		WindowOutput(const tz::wsi::window& window);
+		window_output(const tz::wsi::window& window);
 		constexpr virtual output_target get_target() const override
 		{
 			return output_target::window;
@@ -51,7 +51,7 @@ namespace tz::gl
 
 		virtual std::unique_ptr<ioutput> unique_clone() const override
 		{
-			return std::make_unique<WindowOutput>(*this);
+			return std::make_unique<window_output>(*this);
 		}
 
 		const tz::wsi::window& get_window() const;

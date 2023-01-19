@@ -17,7 +17,7 @@ namespace tz::gl
 			"Render Wait",
 			"No Clear Output",
 			"No Present",
-			"Final Debug UI Renderer (Internal)",
+			"Final Debug UI renderer (Internal)",
 			"Internal",
 		};
 	}
@@ -55,7 +55,7 @@ namespace tz::gl
 	};
 	/**
 	 * @ingroup tz_gl2_renderer
-	 * Helper struct which the user can use to specify which inputs, resources they want and where they want a Renderer to render to. This is likely going to be refactored at some point because it doesn't do any Vulkan-specific magic.
+	 * Helper struct which the user can use to specify which inputs, resources they want and where they want a renderer to render to. This is likely going to be refactored at some point because it doesn't do any Vulkan-specific magic.
 	 */
 	class renderer_infoCommon
 	{
@@ -79,7 +79,7 @@ namespace tz::gl
 		std::span<const renderer_handle> get_dependencies() const;
 		std::span<const icomponent* const> get_components() const;
 		/**
-		 * Add a new resource, which will be used by a Renderer which is created from this helper struct.
+		 * Add a new resource, which will be used by a renderer which is created from this helper struct.
 		 *
 		 * @param resource Resource which will be owned by a renderer.
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
@@ -88,7 +88,7 @@ namespace tz::gl
 		resource_handle ref_resource(icomponent* component);
 		resource_handle ref_resource(renderer_handle ren, resource_handle res);
 		/**
-		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another Renderer.
+		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another renderer.
 		 */
 		void set_output(const ioutput& output);
 		/**
@@ -142,7 +142,7 @@ namespace tz::gl
 		std::vector<icomponent*> components = {};
 		/// Output. Can be null, which defaults to rendering into the main window.
 		std::unique_ptr<ioutput> output = nullptr;
-		/// Specifies which extra features the Renderer will have.
+		/// Specifies which extra features the renderer will have.
 		renderer_options options = {};
 		/// Describes render state. It could change.
 		render_state renderer_state = {};
@@ -216,11 +216,11 @@ namespace tz::gl
 	{
 		if(renderer.is_null())
 		{
-			ImGui::Text("Null Renderer");
+			ImGui::Text("Null renderer");
 			return;
 		}
 		ImGui::PushID(&renderer);
-		ImGui::Text("Renderer Name:");
+		ImGui::Text("renderer Name:");
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s", renderer.debug_get_name().data());
 		if(renderer.resource_count() > 0)
@@ -241,9 +241,9 @@ namespace tz::gl
 		}
 		else
 		{
-			ImGui::Text("Renderer has no resources.");
+			ImGui::Text("renderer has no resources.");
 		}
-		if(ImGui::CollapsingHeader("Renderer State"))
+		if(ImGui::CollapsingHeader("renderer State"))
 		{
 			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Graphics");
 			ImGui::Indent();
@@ -304,7 +304,7 @@ namespace tz::gl
 			}
 			ImGui::Unindent();
 		}
-		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("Renderer Options"))
+		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("renderer Options"))
 		{
 			for(renderer_option option : renderer.get_options())
 			{
