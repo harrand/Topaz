@@ -88,7 +88,7 @@ namespace tz::gl
 	using RendererOptions = tz::EnumField<RendererOption>;
 
 	template<typename T>
-	concept renderer_info_type = requires(T t, renderer_handle ren, ResourceHandle r, const IResource& resource, icomponent* component, IOutput& output, RendererOptions options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
+	concept renderer_info_type = requires(T t, renderer_handle ren, ResourceHandle r, const IResource& resource, icomponent* component, ioutput& output, RendererOptions options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
@@ -99,7 +99,7 @@ namespace tz::gl
 		{t.ref_resource(component)} -> std::same_as<ResourceHandle>;
 		{t.ref_resource(ren, r)} -> std::same_as<ResourceHandle>;
 		{t.set_output(output)} -> std::same_as<void>;
-		{t.get_output()} -> std::convertible_to<const IOutput*>;
+		{t.get_output()} -> std::convertible_to<const ioutput*>;
 
 		{t.set_options(options)} -> std::same_as<void>;
 		{t.get_options()} -> std::convertible_to<RendererOptions>;
@@ -209,7 +209,7 @@ namespace tz::gl
 		 *
 		 * @note This may return nullptr, in which case it is rendering directly into the window with no custom viewport/scissor.
 		 */
-		{t.get_output()} -> std::convertible_to<const IOutput*>;
+		{t.get_output()} -> std::convertible_to<const ioutput*>;
 		/**
 		 * Retrieve the options with which the renderer was constructed.
 		 * @return Options containing additional features used by the renderer.

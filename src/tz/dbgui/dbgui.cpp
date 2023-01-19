@@ -462,7 +462,7 @@ namespace tz::dbgui
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
 
-				tz::gl::IOutput* output = renderer.get_output();
+				tz::gl::ioutput* output = renderer.get_output();
 				hdk::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};

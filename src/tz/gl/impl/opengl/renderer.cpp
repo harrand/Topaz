@@ -364,7 +364,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const IOutput* output, tz::gl::RendererOptions options):
+	OutputManager::OutputManager(const ioutput* output, tz::gl::RendererOptions options):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	default_depth_renderbuffer(ogl2::Renderbuffer::null()),
 	framebuffer(ogl2::Framebuffer::null()),
@@ -374,7 +374,7 @@ namespace tz::gl
 		{
 			switch(this->output->get_target())
 			{
-			case OutputTarget::OffscreenImage:
+			case output_target::offscreen_image:
 			{
 				auto* out = static_cast<ImageOutput*>(this->output.get());
 				hdk::assert(!out->has_depth_attachment(), "ImageOutput with depth attachment is not yet implemented.");
@@ -399,11 +399,11 @@ namespace tz::gl
 				}};
 			}
 			break;
-			case OutputTarget::Window:
+			case output_target::window:
 				// Do nothing. We use null framebuffer.
 			break;
 			default:
-				hdk::error("Use of this specific OutputTarget is not yet implemented.");
+				hdk::error("Use of this specific output_target is not yet implemented.");
 			break;
 			}
 		}
@@ -417,7 +417,7 @@ namespace tz::gl
 		{
 			this->framebuffer.clear();
 		}
-		if(this->output != nullptr && this->output->viewport != tz::gl::ViewportRegion::null())
+		if(this->output != nullptr && this->output->viewport != tz::gl::viewport_region::null())
 		{
 			auto x = static_cast<GLint>(this->output->viewport.offset[0]);
 			auto y = static_cast<GLint>(this->output->viewport.offset[1]);
@@ -429,7 +429,7 @@ namespace tz::gl
 		{
 			glViewport(0, 0, this->framebuffer.get_dimensions()[0], this->framebuffer.get_dimensions()[1]);
 		}
-		if(this->output != nullptr && this->output->scissor != tz::gl::ScissorRegion::null())
+		if(this->output != nullptr && this->output->scissor != tz::gl::scissor_region::null())
 		{
 			glEnable(GL_SCISSOR_TEST);
 			auto x = static_cast<GLint>(this->output->scissor.offset[0]);
@@ -444,12 +444,12 @@ namespace tz::gl
 		}
 	}
 
-	IOutput* OutputManager::get_output()
+	ioutput* OutputManager::get_output()
 	{
 		return this->output.get();
 	}
 
-	const IOutput* OutputManager::get_output() const
+	const ioutput* OutputManager::get_output() const
 	{
 		return this->output.get();
 	}
@@ -512,12 +512,12 @@ namespace tz::gl
 		return this->resources.get_component(handle);
 	}
 
-	IOutput* RendererOGL::get_output()
+	ioutput* RendererOGL::get_output()
 	{
 		return this->output.get_output();
 	}
 
-	const IOutput* RendererOGL::get_output() const
+	const ioutput* RendererOGL::get_output() const
 	{
 		return this->output.get_output();
 	}

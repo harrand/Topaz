@@ -191,8 +191,8 @@ namespace tz::gl
 		 */
 		hdk::vec2ui get_output_dimensions() const;
 
-		IOutput* get_output();
-		const IOutput* get_output() const;
+		ioutput* get_output();
+		const ioutput* get_output() const;
 
 		bool has_depth_images() const;
 		void create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image);
@@ -201,7 +201,7 @@ namespace tz::gl
 		void make_render_pass();
 		void populate_framebuffers();
 		/// Output provided by the RendererVulkan.
-		std::unique_ptr<IOutput> output = nullptr;
+		std::unique_ptr<ioutput> output = nullptr;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev = nullptr;
 		/// List of window buffer images (offscreen image or swapchain images) from the Device.
@@ -274,7 +274,7 @@ namespace tz::gl
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
 		 */
 		CommandProcessor(const renderer_infoVulkan& info);
-		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, OutputTarget output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
+		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, output_target output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
 		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
 		CommandProcessor(CommandProcessor&& move);
@@ -383,8 +383,8 @@ namespace tz::gl
 		 * @return Pointer to the resource's underlying component.
 		 */
 		icomponent* get_component(ResourceHandle handle);
-		IOutput* get_output();
-		const IOutput* get_output() const;
+		ioutput* get_output();
+		const ioutput* get_output() const;
 		/**
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
@@ -454,7 +454,7 @@ namespace tz::gl
 		/// Helper object for managing/executing/scheduling GPU work.
 		CommandProcessor command = {};
 		std::string debug_name = "Null Renderer";
-		tz::gl::ScissorRegion scissor_cache = tz::gl::ScissorRegion::null();
+		tz::gl::scissor_region scissor_cache = tz::gl::scissor_region::null();
 		hdk::vec2ui window_dims_cache = {};
 	};
 

@@ -13,16 +13,16 @@ namespace tz::gl
 		icomponent* depth = nullptr;
 	};
 
-	class ImageOutput final : public IOutput
+	class ImageOutput final : public ioutput
 	{
 	public:
 		ImageOutput(ImageOutputInfo info);
-		constexpr virtual OutputTarget get_target() const override
+		constexpr virtual output_target get_target() const override
 		{
-			return OutputTarget::OffscreenImage;
+			return output_target::offscreen_image;
 		}
 
-		virtual std::unique_ptr<IOutput> unique_clone() const override
+		virtual std::unique_ptr<ioutput> unique_clone() const override
 		{
 			return std::make_unique<ImageOutput>(*this);
 		}
@@ -40,16 +40,16 @@ namespace tz::gl
 		ImageComponent* depth_attachment;
 	};
 
-	class WindowOutput final : public IOutput
+	class WindowOutput final : public ioutput
 	{
 	public:
 		WindowOutput(const tz::wsi::window& window);
-		constexpr virtual OutputTarget get_target() const override
+		constexpr virtual output_target get_target() const override
 		{
-			return OutputTarget::Window;
+			return output_target::window;
 		}
 
-		virtual std::unique_ptr<IOutput> unique_clone() const override
+		virtual std::unique_ptr<ioutput> unique_clone() const override
 		{
 			return std::make_unique<WindowOutput>(*this);
 		}

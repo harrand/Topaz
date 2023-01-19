@@ -104,12 +104,12 @@ namespace tz::gl
 		return this->ref_resource(tz::gl::device().get_renderer(ren).get_component(res));
 	}
 
-	void renderer_infoCommon::set_output(const IOutput& output)
+	void renderer_infoCommon::set_output(const ioutput& output)
 	{
 		this->output = output.unique_clone();
 	}
 
-	const IOutput* renderer_infoCommon::get_output() const
+	const ioutput* renderer_infoCommon::get_output() const
 	{
 		return this->output.get();
 	}
@@ -188,7 +188,7 @@ namespace tz::gl
 			{
 				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
 			});
-			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "C" : "R") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == OutputTarget::OffscreenImage ? "h" : "w");
+			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "C" : "R") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == output_target::offscreen_image ? "h" : "w");
 		#else
 			return "";
 		#endif

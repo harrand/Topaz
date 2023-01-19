@@ -516,7 +516,7 @@ namespace tz::gl
 	std::vector<OutputImageState> OutputManager::get_output_images()
 	{
 		// This depends on whether we're rendering into the window or we have an image output.
-		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
+		if(this->output == nullptr || this->output->get_target() == output_target::window)
 		{
 			// We're rendering directly into the window, so we just use the swapchain images.
 			std::vector<OutputImageState> ret(this->swapchain_images.size());
@@ -530,7 +530,7 @@ namespace tz::gl
 			}
 			return ret;
 		}
-		else if(this->output->get_target() == OutputTarget::OffscreenImage)
+		else if(this->output->get_target() == output_target::offscreen_image)
 		{
 			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
 			auto& out = static_cast<ImageOutput&>(*this->output);
@@ -563,7 +563,7 @@ namespace tz::gl
 		}
 		else
 		{
-			hdk::error("Unrecognised OutputTarget. Please submit a bug report.");
+			hdk::error("Unrecognised output_target. Please submit a bug report.");
 			return {};
 		}
 	}
@@ -584,12 +584,12 @@ namespace tz::gl
 		return this->output_imageviews.front().colour_views.front().get_image().get_dimensions();
 	}
 
-	IOutput* OutputManager::get_output()
+	ioutput* OutputManager::get_output()
 	{
 		return this->output.get();
 	}
 
-	const IOutput* OutputManager::get_output() const
+	const ioutput* OutputManager::get_output() const
 	{
 		return this->output.get();
 	}
@@ -657,11 +657,11 @@ namespace tz::gl
 		// Now create an ultra-basic renderpass.
 		// We're matching the image_format of the provided output image.
 		vk2::ImageLayout final_layout;
-		if(this->output == nullptr || this->output->get_target() == OutputTarget::Window)
+		if(this->output == nullptr || this->output->get_target() == output_target::window)
 		{
 			final_layout = vk2::ImageLayout::Present;
 		}
-		else if(this->output->get_target() == OutputTarget::OffscreenImage)
+		else if(this->output->get_target() == output_target::offscreen_image)
 		{
 			final_layout = vk2::ImageLayout::ShaderResource;
 		}
@@ -1007,7 +1007,7 @@ namespace tz::gl
 
 	CommandProcessor::CommandProcessor(const renderer_infoVulkan& info)
 	{
-		if(info.get_output() == nullptr || info.get_output()->get_target() == OutputTarget::Window)
+		if(info.get_output() == nullptr || info.get_output()->get_target() == output_target::window)
 		{
 			this->requires_present = true;
 		}
@@ -1302,12 +1302,12 @@ namespace tz::gl
 		return this->resources.get_component(handle);
 	}
 
-	IOutput* RendererVulkan::get_output()
+	ioutput* RendererVulkan::get_output()
 	{
 		return this->output.get_output();
 	}
 
-	const IOutput* RendererVulkan::get_output() const
+	const ioutput* RendererVulkan::get_output() const
 	{
 		return this->output.get_output();
 	}
@@ -1801,7 +1801,7 @@ namespace tz::gl
 
 				if(this->get_output() != nullptr)
 				{
-					if(this->get_output()->scissor != ScissorRegion::null())
+					if(this->get_output()->scissor != scissor_region::null())
 					{
 						offset = this->get_output()->scissor.offset;
 						extent = this->get_output()->scissor.extent;

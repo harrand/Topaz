@@ -7,46 +7,46 @@
 
 namespace tz::gl
 {
-	enum class OutputTarget
+	enum class output_target
 	{
-		Window,
-		OffscreenImage
+		window,
+		offscreen_image
 	};
 
-	struct ViewportRegion
-	{
-		hdk::vec2ui offset;
-		hdk::vec2ui extent;
-
-		static ViewportRegion null()
-		{
-			return {.offset = {0u, 0u}, .extent = {std::numeric_limits<unsigned int>::max(), std::numeric_limits<unsigned int>::max()}};
-		}
-
-		bool operator==(const ViewportRegion& rhs) const = default;
-	};
-
-	struct ScissorRegion
+	struct viewport_region
 	{
 		hdk::vec2ui offset;
 		hdk::vec2ui extent;
 
-		static ScissorRegion null()
+		static viewport_region null()
 		{
 			return {.offset = {0u, 0u}, .extent = {std::numeric_limits<unsigned int>::max(), std::numeric_limits<unsigned int>::max()}};
 		}
 
-		bool operator==(const ScissorRegion& rhs) const = default;
+		bool operator==(const viewport_region& rhs) const = default;
 	};
 
-	class IOutput : public hdk::unique_cloneable<IOutput>
+	struct scissor_region
+	{
+		hdk::vec2ui offset;
+		hdk::vec2ui extent;
+
+		static scissor_region null()
+		{
+			return {.offset = {0u, 0u}, .extent = {std::numeric_limits<unsigned int>::max(), std::numeric_limits<unsigned int>::max()}};
+		}
+
+		bool operator==(const scissor_region& rhs) const = default;
+	};
+
+	class ioutput : public hdk::unique_cloneable<ioutput>
 	{
 	public:
-		constexpr virtual OutputTarget get_target() const = 0;
-		virtual ~IOutput() = default;
+		constexpr virtual output_target get_target() const = 0;
+		virtual ~ioutput() = default;
 
-		ViewportRegion viewport = ViewportRegion::null();
-		ScissorRegion scissor = ScissorRegion::null();
+		viewport_region viewport = viewport_region::null();
+		scissor_region scissor = scissor_region::null();
 	};
 }
 
