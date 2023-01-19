@@ -124,6 +124,16 @@ namespace tz::wsi::impl
 			{
 				auto& state = get_window()->impl_mutable_mouse_state();
 				state.mouse_position = {static_cast<unsigned int>(LOWORD(lparam)), static_cast<unsigned int>(HIWORD(lparam))};
+				auto& wnd = *get_window();
+				if(!wnd.mouse_in_window)
+				{
+					wnd.impl_notify_mouse_enter_window();
+				}
+			}
+			break;
+			case WM_MOUSELEAVE:
+			{
+				get_window()->impl_notify_mouse_leave_window();
 			}
 			break;
 			case WM_LBUTTONDBLCLK:

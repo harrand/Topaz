@@ -40,6 +40,9 @@ namespace tz::wsi::impl
 		void impl_init_opengl();
 		bool impl_is_opengl() const;
 		void impl_request_close();
+		void impl_register_mouseleave();
+		void impl_notify_mouse_enter_window();
+		void impl_notify_mouse_leave_window();
 		keyboard_state& impl_mutable_keyboard_state();
 		mouse_state& impl_mutable_mouse_state();
 
@@ -50,6 +53,7 @@ namespace tz::wsi::impl
 		bool close_requested = false;
 		keyboard_state key_state = {};
 		mouse_state mouse_state = {};
+		bool mouse_in_window = false;
 		void* userdata = nullptr;
 	};
 	static_assert(tz::wsi::window_api<window_winapi>);

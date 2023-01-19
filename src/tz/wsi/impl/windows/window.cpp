@@ -62,6 +62,7 @@ namespace tz::wsi::impl
 			tz::report("Setting up window for modern opengl.");
 			this->impl_init_opengl();
 		}
+		this->impl_register_mouseleave();
 		if(!(info.window_flags & window_flag::invisible))
 		{
 			ShowWindow(this->hwnd, SW_SHOW);
@@ -300,6 +301,37 @@ namespace tz::wsi::impl
 	keyboard_state& window_winapi::impl_mutable_keyboard_state()
 	{
 		return this->key_state;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void window_winapi::impl_register_mouseleave()
+	{
+		TRACKMOUSEEVENT tme
+		{
+			.cbSize = sizeof(TRACKMOUSEEVENT),
+			.dwFlags = TME_LEAVE,
+			.hwndTrack = this->hwnd,
+			.dwHoverTime = HOVER_DEFAULT
+		};
+		TrackMouseEvent(&tme);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void window_winapi::impl_notify_mouse_enter_window()
+	{
+		this->mouse_in_window = true;
+		this->impl_register_mouseleave();
+	}
+
+	void window_winapi::impl_notify_mouse_leave_window()
+	{
+		this->mouse_in_window = false;
+		for(std::size_t i = 0; i < static_cast<std::size_t>(mouse_button::_count); i++)
+		{
+			this->mouse_state.button_state[i] = mouse_button_state::noclicked;
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
