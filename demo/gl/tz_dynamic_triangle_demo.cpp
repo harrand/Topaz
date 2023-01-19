@@ -125,7 +125,7 @@ int main()
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				fixed_update.reset();
 				triangle_count++;
-				auto img_comp = static_cast<tz::gl::ImageComponent*>(renderer.get_component(imgh));
+				auto img_comp = static_cast<tz::gl::image_component*>(renderer.get_component(imgh));
 				if(img_comp->get_dimensions()[0] > 49)
 				{
 					up = false;

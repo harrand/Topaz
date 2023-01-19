@@ -9,30 +9,30 @@
 namespace tz::gl
 {
 	using namespace tz::gl;
-	BufferComponentVulkan::BufferComponentVulkan(iresource& resource):
+	buffer_component_vulkan::buffer_component_vulkan(iresource& resource):
 	resource(&resource),
 	buffer(this->make_buffer())
 	{}
 
-	const iresource* BufferComponentVulkan::get_resource() const
+	const iresource* buffer_component_vulkan::get_resource() const
 	{
 		return this->resource;
 	}
 
-	iresource* BufferComponentVulkan::get_resource()
+	iresource* buffer_component_vulkan::get_resource()
 	{
 		return this->resource;
 	}
 
-	std::size_t BufferComponentVulkan::size() const
+	std::size_t buffer_component_vulkan::size() const
 	{
-		hdk::assert(this->resource->data().size_bytes() == this->buffer.size(), "BufferComponent Size does not match its iresource data size. Please submit a bug report.");
+		hdk::assert(this->resource->data().size_bytes() == this->buffer.size(), "buffer_component Size does not match its iresource data size. Please submit a bug report.");
 		return this->buffer.size();
 	}
 
-	void BufferComponentVulkan::resize(std::size_t sz)
+	void buffer_component_vulkan::resize(std::size_t sz)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize BufferComponentVulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize buffer_component_vulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -54,22 +54,22 @@ namespace tz::gl
 		std::swap(old_buf, new_buf);
 	}
 
-	const vk2::Buffer& BufferComponentVulkan::vk_get_buffer() const
+	const vk2::Buffer& buffer_component_vulkan::vk_get_buffer() const
 	{
 		return this->buffer;
 	}
 
-	vk2::Buffer& BufferComponentVulkan::vk_get_buffer()
+	vk2::Buffer& buffer_component_vulkan::vk_get_buffer()
 	{
 		return this->buffer;
 	}
 
-	bool BufferComponentVulkan::vk_is_descriptor_relevant() const
+	bool buffer_component_vulkan::vk_is_descriptor_relevant() const
 	{
 		return !this->resource->get_flags().contains(resource_flag::index_buffer) && !this->resource->get_flags().contains(resource_flag::draw_indirect_buffer);
 	}
 
-	vk2::Buffer BufferComponentVulkan::make_buffer() const
+	vk2::Buffer buffer_component_vulkan::make_buffer() const
 	{
 		vk2::BufferUsageField usage_field{vk2::BufferUsage::StorageBuffer};
 		vk2::MemoryResidency residency;
@@ -107,33 +107,33 @@ namespace tz::gl
 		}};
 	}
 
-	ImageComponentVulkan::ImageComponentVulkan(iresource& resource):
+	image_component_vulkan::image_component_vulkan(iresource& resource):
 	resource(&resource),
 	image(this->make_image()){}
 
-	const iresource* ImageComponentVulkan::get_resource() const
+	const iresource* image_component_vulkan::get_resource() const
 	{
 		return this->resource;
 	}
 
-	iresource* ImageComponentVulkan::get_resource()
+	iresource* image_component_vulkan::get_resource()
 	{
 		return this->resource;
 	}
 
-	hdk::vec2ui ImageComponentVulkan::get_dimensions() const
+	hdk::vec2ui image_component_vulkan::get_dimensions() const
 	{
 		return this->image.get_dimensions();
 	}
 
-	image_format ImageComponentVulkan::get_format() const
+	image_format image_component_vulkan::get_format() const
 	{
 		return from_vk2(this->image.get_format());
 	}
 
-	void ImageComponentVulkan::resize(hdk::vec2ui new_dimensions)
+	void image_component_vulkan::resize(hdk::vec2ui new_dimensions)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize an ImageComponentVulkan, but it does not have resource_access::dynamic_variable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize an image_component_vulkan, but it does not have resource_access::dynamic_variable. Please submit a bug report.");
 
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
@@ -161,19 +161,19 @@ namespace tz::gl
 		std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
 	}
 
-	const vk2::Image& ImageComponentVulkan::vk_get_image() const
+	const vk2::Image& image_component_vulkan::vk_get_image() const
 	{
 		return this->image;
 	}
 
-	vk2::Image& ImageComponentVulkan::vk_get_image()
+	vk2::Image& image_component_vulkan::vk_get_image()
 	{
 		return this->image;
 	}
 
-	vk2::Image ImageComponentVulkan::make_image() const
+	vk2::Image image_component_vulkan::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == resource_type::image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
+		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 		if(this->resource->get_flags().contains(resource_flag::renderer_output))

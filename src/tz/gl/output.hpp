@@ -30,14 +30,14 @@ namespace tz::gl
 		std::size_t colour_attachment_count() const;
 		bool has_depth_attachment() const;
 
-		const ImageComponent& get_colour_attachment(std::size_t colour_attachment_idx) const;
-		ImageComponent& get_colour_attachment(std::size_t colour_attachment_idx);
+		const image_component& get_colour_attachment(std::size_t colour_attachment_idx) const;
+		image_component& get_colour_attachment(std::size_t colour_attachment_idx);
 		
-		const ImageComponent& get_depth_attachment() const;
-		ImageComponent& get_depth_attachment();
+		const image_component& get_depth_attachment() const;
+		image_component& get_depth_attachment();
 	private:
-		std::vector<ImageComponent*> colour_attachments;
-		ImageComponent* depth_attachment;
+		std::vector<image_component*> colour_attachments;
+		image_component* depth_attachment;
 	};
 
 	class WindowOutput final : public ioutput

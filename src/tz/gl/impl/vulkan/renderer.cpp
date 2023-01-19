@@ -93,7 +93,7 @@ namespace tz::gl
 					if(res->get_access() == resource_access::dynamic_fixed || res->get_access() == resource_access::dynamic_variable)
 					{
 						std::span<const std::byte> initial_data = res->data();
-						std::span<std::byte> buffer_byte_data = this->components.back().as<BufferComponentVulkan>()->vk_get_buffer().map_as<std::byte>();
+						std::span<std::byte> buffer_byte_data = this->components.back().as<buffer_component_vulkan>()->vk_get_buffer().map_as<std::byte>();
 						std::copy(initial_data.begin(), initial_data.end(), buffer_byte_data.begin());
 						res->set_mapped_data(buffer_byte_data);
 					}
@@ -103,7 +103,7 @@ namespace tz::gl
 				{
 					this->samplers.emplace_back(make_fitting_sampler(*res));
 
-					auto* img = static_cast<ImageComponentVulkan*>(cmp);
+					auto* img = static_cast<image_component_vulkan*>(cmp);
 					// We will need to create an image view. Let's get that out-of-the-way-now.
 					vk2::Image& underlying_image = img->vk_get_image();
 					this->image_component_views.emplace_back
@@ -150,11 +150,11 @@ namespace tz::gl
 				{
 					case resource_type::buffer:
 					{
-						this->components.push_back(tz::make_owned<BufferComponentVulkan>(*res));
+						this->components.push_back(tz::make_owned<buffer_component_vulkan>(*res));
 					}
 					break;
 					case resource_type::image:
-						this->components.push_back(tz::make_owned<ImageComponentVulkan>(*res));
+						this->components.push_back(tz::make_owned<image_component_vulkan>(*res));
 					break;
 					default:
 						hdk::error("Unrecognised resource_type. Please submit a bug report.");
@@ -320,7 +320,7 @@ namespace tz::gl
 
 	void ResourceStorage::notify_image_recreated(resource_handle image_resource_handle)
 	{
-		// ImageComponent's underlying vk2::Image was recently replaced with another. This means this->image_component_views[id corresponding to handle] is wrong and needs to be remade.
+		// image_component's underlying vk2::Image was recently replaced with another. This means this->image_component_views[id corresponding to handle] is wrong and needs to be remade.
 		std::size_t img_view_idx = 0;
 		auto handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(image_resource_handle));
 		for(std::size_t i = 0; i < handle_val; i++)
@@ -330,7 +330,7 @@ namespace tz::gl
 				img_view_idx++;
 			}
 		}
-		auto& img = static_cast<ImageComponentVulkan*>(this->get_component(image_resource_handle))->vk_get_image();
+		auto& img = static_cast<image_component_vulkan*>(this->get_component(image_resource_handle))->vk_get_image();
 		this->image_component_views[img_view_idx] =
 		{{
 			.image = &img,
@@ -341,13 +341,13 @@ namespace tz::gl
 	void ResourceStorage::sync_descriptors(bool write_everything, const render_state& state)
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
-		std::vector<BufferComponentVulkan*> buffers;
+		std::vector<buffer_component_vulkan*> buffers;
 		buffers.reserve(this->components.size());
 		for(auto& component_ptr : this->components)
 		{
 			if(component_ptr->get_resource()->get_type() == resource_type::buffer)
 			{
-				buffers.push_back(component_ptr.as<BufferComponentVulkan>());
+				buffers.push_back(component_ptr.as<buffer_component_vulkan>());
 			}
 		}
 		std::size_t descriptor_buffer_count = buffers.size();
@@ -370,7 +370,7 @@ namespace tz::gl
 			// Now update each binding corresponding to a buffer resource.
 			for(std::size_t j = 0; j < buffers.size(); j++)
 			{
-				BufferComponentVulkan& comp = *buffers[j];
+				buffer_component_vulkan& comp = *buffers[j];
 				if(comp.get_resource() == this->get(state.graphics.index_buffer) || comp.get_resource() == this->get(state.graphics.draw_buffer))
 				{
 					continue;
@@ -417,7 +417,7 @@ namespace tz::gl
 			iresource* res = component_ptr->get_resource();
 			if(res->get_type() == resource_type::image && res->get_access() != resource_access::static_fixed)
 			{
-				const vk2::Image& img = component_ptr.as<const ImageComponentVulkan>()->vk_get_image();
+				const vk2::Image& img = component_ptr.as<const image_component_vulkan>()->vk_get_image();
 				// If it's dynamic in any way, the user might have written changes.
 				// The user writes image data assuming the rows are tightly-packed, but this is not at all guaranteed (infact its highly unlikely). We will correct the written data each time.
 				std::span<std::byte> d = res->data();
@@ -532,7 +532,7 @@ namespace tz::gl
 		}
 		else if(this->output->get_target() == output_target::offscreen_image)
 		{
-			// We have been provided an ImageOutput which will contain an ImageComponentVulkan. We need to retrieve that image and return a span covering it.
+			// We have been provided an ImageOutput which will contain an image_component_vulkan. We need to retrieve that image and return a span covering it.
 			auto& out = static_cast<ImageOutput&>(*this->output);
 
 			OutputImageState out_image;
@@ -1226,13 +1226,13 @@ namespace tz::gl
 				icomponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
 				if(comp->get_resource()->get_type() == resource_type::buffer)
 				{
-					vk2::Buffer& buf = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
+					vk2::Buffer& buf = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer();
 					std::string n = buf.debug_get_name();
 					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
 				}
 				if(comp->get_resource()->get_type() == resource_type::image)
 				{
-					vk2::Image& img = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
+					vk2::Image& img = static_cast<image_component_vulkan*>(comp)->vk_get_image();
 					std::string n = img.debug_get_name();
 					img.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":I" + std::to_string(i));
 				}
@@ -1490,7 +1490,7 @@ namespace tz::gl
 
 	void RendererVulkan::edit_buffer_resize(renderer_edit::buffer_resize arg, EditData& data)
 	{
-		auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
+		auto bufcomp = static_cast<buffer_component_vulkan*>(this->get_component(arg.buffer_handle));
 		hdk::assert(bufcomp != nullptr, "Invalid buffer handle in renderer_edit::buffer_resize");
 		if(bufcomp->size() != arg.size)
 		{
@@ -1508,7 +1508,7 @@ namespace tz::gl
 
 	void RendererVulkan::edit_image_resize(renderer_edit::image_resize arg, EditData& data)
 	{
-		auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
+		auto imgcomp = static_cast<image_component_vulkan*>(this->get_component(arg.image_handle));
 		hdk::assert(imgcomp != nullptr, "Invalid image handle in renderer_edit::image_resize");
 		if(imgcomp->get_dimensions() != arg.dimensions)
 		{
@@ -1548,7 +1548,7 @@ namespace tz::gl
 				{
 					case resource_type::buffer:
 					{
-						vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
+						vk2::Buffer& buffer = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer();
 						this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
 						{
 							record.buffer_copy_buffer
@@ -1564,7 +1564,7 @@ namespace tz::gl
 					break;
 					case resource_type::image:
 					{
-						vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
+						vk2::Image& image = static_cast<image_component_vulkan*>(comp)->vk_get_image();
 						if(arg.offset != 0)
 						{
 							hdk::report("renderer_edit::resource_write: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
@@ -1638,18 +1638,18 @@ namespace tz::gl
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Setup Static Resources", 0xFFAAAA00);
 		// Create staging buffers for each buffer and texture resource, and then fill the data with the resource data.
-		std::vector<BufferComponentVulkan*> buffer_components;
-		std::vector<ImageComponentVulkan*> image_components;
+		std::vector<buffer_component_vulkan*> buffer_components;
+		std::vector<image_component_vulkan*> image_components;
 		for(std::size_t i = 0; i < this->resource_count(); i++)
 		{
 			icomponent* icomp = this->get_component(static_cast<hdk::hanval>(i));
 			switch(icomp->get_resource()->get_type())
 			{
 				case resource_type::buffer:
-					buffer_components.push_back(static_cast<BufferComponentVulkan*>(icomp));
+					buffer_components.push_back(static_cast<buffer_component_vulkan*>(icomp));
 				break;
 				case resource_type::image:
-					image_components.push_back(static_cast<ImageComponentVulkan*>(icomp));
+					image_components.push_back(static_cast<image_component_vulkan*>(icomp));
 				break;
 				default:
 					hdk::error("Unknown resource_type.");
@@ -1664,7 +1664,7 @@ namespace tz::gl
 		staging_image_buffers.reserve(image_components.size());
 		// Fill buffers with resource data.
 		std::transform(buffer_components.begin(), buffer_components.end(), std::back_inserter(staging_buffers),
-		[](const BufferComponentVulkan* buf)->vk2::Buffer
+		[](const buffer_component_vulkan* buf)->vk2::Buffer
 		{
 			return
 			{{
@@ -1676,7 +1676,7 @@ namespace tz::gl
 		});
 		// Same with images.
 		std::transform(image_components.begin(), image_components.end(), std::back_inserter(staging_image_buffers),
-		[](const ImageComponentVulkan* img)->vk2::Buffer
+		[](const image_component_vulkan* img)->vk2::Buffer
 		{
 			return
 			{{
@@ -1816,7 +1816,7 @@ namespace tz::gl
 
 				const icomponent* idx_buf = this->get_component(this->state.graphics.index_buffer);
 				const icomponent* ind_buf_gen = this->get_component(this->state.graphics.draw_buffer);;
-				const auto* ind_buf = static_cast<const BufferComponentVulkan*>(ind_buf_gen);
+				const auto* ind_buf = static_cast<const buffer_component_vulkan*>(ind_buf_gen);
 				if(idx_buf == nullptr)
 				{
 					if(ind_buf == nullptr)
@@ -1844,7 +1844,7 @@ namespace tz::gl
 				{
 					recording.bind_index_buffer
 					({
-						.index_buffer = &static_cast<const BufferComponentVulkan*>(idx_buf)->vk_get_buffer()
+						.index_buffer = &static_cast<const buffer_component_vulkan*>(idx_buf)->vk_get_buffer()
 					});
 					if(ind_buf == nullptr)
 					{

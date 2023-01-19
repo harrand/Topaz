@@ -9,10 +9,10 @@
 namespace tz::gl
 {
 	using namespace tz::gl;
-	class BufferComponentVulkan : public icomponent
+	class buffer_component_vulkan : public icomponent
 	{
 	public:
-		BufferComponentVulkan(iresource& resource);
+		buffer_component_vulkan(iresource& resource);
 		virtual const iresource* get_resource() const final;
 		virtual iresource* get_resource() final;
 		// Satisfy buffer_component_type
@@ -28,12 +28,12 @@ namespace tz::gl
 		iresource* resource;
 		vk2::Buffer buffer;
 	};
-	static_assert(buffer_component_type<BufferComponentVulkan>);
+	static_assert(buffer_component_type<buffer_component_vulkan>);
 
-	class ImageComponentVulkan : public icomponent
+	class image_component_vulkan : public icomponent
 	{
 	public:
-		ImageComponentVulkan(iresource& resource);
+		image_component_vulkan(iresource& resource);
 		virtual const iresource* get_resource() const final;
 		virtual iresource* get_resource() final;
 		// Satisfy image_component_type
@@ -49,7 +49,7 @@ namespace tz::gl
 		iresource* resource;
 		vk2::Image image;
 	};
-	static_assert(image_component_type<ImageComponentVulkan>);
+	static_assert(image_component_type<image_component_vulkan>);
 }
 
 #endif // TZ_VULKAN

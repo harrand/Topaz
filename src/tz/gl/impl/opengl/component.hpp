@@ -9,10 +9,10 @@
 namespace tz::gl
 {
 	using namespace tz::gl;
-	class BufferComponentOGL : public icomponent
+	class buffer_component_ogl : public icomponent
 	{
 	public:
-		BufferComponentOGL(iresource& resource);
+		buffer_component_ogl(iresource& resource);
 		virtual const iresource* get_resource() const final;
 		virtual iresource* get_resource() final;
 		// Satisfy buffer_component_type
@@ -27,12 +27,12 @@ namespace tz::gl
 		iresource* resource;
 		ogl2::Buffer buffer;
 	};
-	static_assert(buffer_component_type<BufferComponentOGL>);
+	static_assert(buffer_component_type<buffer_component_ogl>);
 
-	class ImageComponentOGL : public icomponent
+	class image_component_ogl : public icomponent
 	{
 	public:
-		ImageComponentOGL(iresource& resource);
+		image_component_ogl(iresource& resource);
 		virtual const iresource* get_resource() const final;
 		virtual iresource* get_resource() final;
 		// Satisfy image_component_type
@@ -48,7 +48,7 @@ namespace tz::gl
 		iresource* resource;
 		ogl2::Image image;
 	};
-	static_assert(image_component_type<ImageComponentOGL>);
+	static_assert(image_component_type<image_component_ogl>);
 }
 
 #endif // TZ_OGL

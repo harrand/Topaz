@@ -6,29 +6,29 @@
 
 namespace tz::gl
 {
-	BufferComponentOGL::BufferComponentOGL(iresource& resource):
+	buffer_component_ogl::buffer_component_ogl(iresource& resource):
 	resource(&resource),
 	buffer(this->make_buffer())
 	{}
 
-	const iresource* BufferComponentOGL::get_resource() const
+	const iresource* buffer_component_ogl::get_resource() const
 	{
 		return this->resource;
 	}
 
-	iresource* BufferComponentOGL::get_resource()
+	iresource* buffer_component_ogl::get_resource()
 	{
 		return this->resource;
 	}
 
-	std::size_t BufferComponentOGL::size() const
+	std::size_t buffer_component_ogl::size() const
 	{
 		return this->buffer.size();
 	}
 
-	void BufferComponentOGL::resize(std::size_t sz)
+	void buffer_component_ogl::resize(std::size_t sz)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a BufferComponentOGL, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a buffer_component_ogl, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
 		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
 		// Just set the new buffer range, clone resized already sorts out the data for us.
@@ -36,17 +36,17 @@ namespace tz::gl
 		std::swap(old_buffer, new_buffer);
 	}
 
-	ogl2::Buffer& BufferComponentOGL::ogl_get_buffer()
+	ogl2::Buffer& buffer_component_ogl::ogl_get_buffer()
 	{
 		return this->buffer;
 	}
 
-	bool BufferComponentOGL::ogl_is_descriptor_stakeholder() const
+	bool buffer_component_ogl::ogl_is_descriptor_stakeholder() const
 	{
 		return !this->resource->get_flags().contains(resource_flag::index_buffer) && !this->resource->get_flags().contains(resource_flag::draw_indirect_buffer);
 	}
 
-	ogl2::Buffer BufferComponentOGL::make_buffer() const
+	ogl2::Buffer buffer_component_ogl::make_buffer() const
 	{
 		ogl2::BufferResidency residency;
 		switch(this->resource->get_access())
@@ -71,34 +71,34 @@ namespace tz::gl
 		}};
 	}
 
-	ImageComponentOGL::ImageComponentOGL(iresource& resource):
+	image_component_ogl::image_component_ogl(iresource& resource):
 	resource(&resource),
 	image(this->make_image())
 	{}
 
-	const iresource* ImageComponentOGL::get_resource() const
+	const iresource* image_component_ogl::get_resource() const
 	{
 		return this->resource;
 	}
 
-	iresource* ImageComponentOGL::get_resource()
+	iresource* image_component_ogl::get_resource()
 	{
 		return this->resource;
 	}
 
-	hdk::vec2ui ImageComponentOGL::get_dimensions() const
+	hdk::vec2ui image_component_ogl::get_dimensions() const
 	{
 		return this->image.get_dimensions();
 	}
 
-	image_format ImageComponentOGL::get_format() const
+	image_format image_component_ogl::get_format() const
 	{
 		return from_ogl2(this->image.get_format());
 	}
 
-	void ImageComponentOGL::resize(hdk::vec2ui dims)
+	void image_component_ogl::resize(hdk::vec2ui dims)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of ImageComponentOGL, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of image_component_ogl, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::Image& old_image = this->ogl_get_image();
 		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
 
@@ -108,19 +108,19 @@ namespace tz::gl
 		std::swap(old_image, new_image);
 	}
 
-	const ogl2::Image& ImageComponentOGL::ogl_get_image() const
+	const ogl2::Image& image_component_ogl::ogl_get_image() const
 	{
 		return this->image;
 	}
 
-	ogl2::Image& ImageComponentOGL::ogl_get_image()
+	ogl2::Image& image_component_ogl::ogl_get_image()
 	{
 		return this->image;
 	}
 
-	ogl2::Image ImageComponentOGL::make_image() const
+	ogl2::Image image_component_ogl::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == resource_type::image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
+		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
 		ogl2::AddressMode mode = ogl2::AddressMode::ClampToEdge;

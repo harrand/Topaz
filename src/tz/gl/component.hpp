@@ -10,11 +10,11 @@
 namespace tz::gl
 {
 	#if TZ_VULKAN
-		using BufferComponent = BufferComponentVulkan;
-		using ImageComponent = ImageComponentVulkan;
+		using buffer_component = buffer_component_vulkan;
+		using image_component = image_component_vulkan;
 	#elif TZ_OGL
-		using BufferComponent = BufferComponentOGL;
-		using ImageComponent = ImageComponentOGL;
+		using buffer_component = buffer_component_ogl;
+		using image_component = image_component_ogl;
 	#endif
 }
 
