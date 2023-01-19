@@ -93,7 +93,7 @@ namespace tz::gl
 		{{
 			.device = &device,
 			.swapchain_image_count_minimum = swapchain_img_count,
-			.image_format = device.get_hardware().get_supported_surface_formats().front(),
+			.format = device.get_hardware().get_supported_surface_formats().front(),
 			.present_mode = present_mode
 		}};
 		this->window_dims_cache = tz::window().get_dimensions();
@@ -232,7 +232,7 @@ namespace tz::gl
 		{{
 			.device = &old_swapchain.get_device(),
 			.swapchain_image_count_minimum = static_cast<std::uint32_t>(old_swapchain.get_image_views().size()),
-			.image_format = old_swapchain.get_image_format(),
+			.format = old_swapchain.get_image_format(),
 			.present_mode = old_swapchain.get_present_mode(),
 			.old_swapchain = &old_swapchain
 		}};

@@ -28,7 +28,7 @@ namespace tz::gl::vk2
 		hdk::assert(pdev_surface_cap.min_image_count <= info.swapchain_image_count_minimum, "Swapchain image count too low (hardware minimum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.min_image_count, info.swapchain_image_count_minimum);
 		hdk::assert(info.swapchain_image_count_minimum <= pdev_surface_cap.max_image_count, "Swapchain image count too high (hardware maximum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.max_image_count, info.swapchain_image_count_minimum);
 		// Now ensure the PhysicalDevice supports the provided image_format
-		hdk::assert(pdev.get_supported_surface_formats().contains(this->info.image_format), "Swapchain provided image_format which the PhysicalDevice does not support. Please submit a bug report.");
+		hdk::assert(pdev.get_supported_surface_formats().contains(this->info.format), "Swapchain provided image_format which the PhysicalDevice does not support. Please submit a bug report.");
 		const WindowSurface& surface = pdev.get_instance().get_surface();
 
 		// Once we're ready, find out the surface extent we want.
@@ -53,7 +53,7 @@ namespace tz::gl::vk2
 		create.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		create.surface = surface.native();
 		create.minImageCount = this->info.swapchain_image_count_minimum;
-		create.imageFormat = static_cast<VkFormat>(this->info.image_format);
+		create.imageFormat = static_cast<VkFormat>(this->info.format);
 		create.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR; 
 		create.imageExtent = extent;
 		create.imageArrayLayers = 1;
@@ -200,7 +200,7 @@ namespace tz::gl::vk2
 
 	image_format Swapchain::get_image_format() const
 	{
-		return this->info.image_format;
+		return this->info.format;
 	}
 
 	SurfacePresentMode Swapchain::get_present_mode() const
