@@ -58,16 +58,6 @@ namespace tz::gl
 			 * Documentation for the OpenGL Frontend, which connects the OpenGL Backend to the tz::gl API.
 			 */
 
-	/**
-	 * @ingroup tz_gl2
-	 * Topaz is built against exactly one graphics API, having a low-level graphics backedn for each supported API. This enum specifies all the supported graphics APIs with a corresponding render backend.
-	 */
-	enum class RenderBackend
-	{
-		OpenGL,
-		Vulkan
-	};
-
 	void initialise();
 	void terminate();
 }
