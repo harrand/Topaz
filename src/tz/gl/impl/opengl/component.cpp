@@ -6,17 +6,17 @@
 
 namespace tz::gl
 {
-	BufferComponentOGL::BufferComponentOGL(IResource& resource):
+	BufferComponentOGL::BufferComponentOGL(iresource& resource):
 	resource(&resource),
 	buffer(this->make_buffer())
 	{}
 
-	const IResource* BufferComponentOGL::get_resource() const
+	const iresource* BufferComponentOGL::get_resource() const
 	{
 		return this->resource;
 	}
 
-	IResource* BufferComponentOGL::get_resource()
+	iresource* BufferComponentOGL::get_resource()
 	{
 		return this->resource;
 	}
@@ -28,7 +28,7 @@ namespace tz::gl
 
 	void BufferComponentOGL::resize(std::size_t sz)
 	{
-		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize a BufferComponentOGL, but the underlying resource was not ResourceAccess::DynamicVariable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a BufferComponentOGL, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
 		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
 		// Just set the new buffer range, clone resized already sorts out the data for us.
@@ -43,7 +43,7 @@ namespace tz::gl
 
 	bool BufferComponentOGL::ogl_is_descriptor_stakeholder() const
 	{
-		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer) && !this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
+		return !this->resource->get_flags().contains(resource_flag::index_buffer) && !this->resource->get_flags().contains(resource_flag::draw_indirect_buffer);
 	}
 
 	ogl2::Buffer BufferComponentOGL::make_buffer() const
@@ -52,14 +52,14 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				hdk::error("Unknown ResourceAccess. Please submit a bug report.");
+				hdk::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
-			case ResourceAccess::StaticFixed:
+			case resource_access::static_fixed:
 				residency = ogl2::BufferResidency::Static;
 			break;
-			case ResourceAccess::DynamicFixed:
+			case resource_access::dynamic_fixed:
 			[[fallthrough]];
-			case ResourceAccess::DynamicVariable:
+			case resource_access::dynamic_variable:
 				residency = ogl2::BufferResidency::Dynamic;
 			break;
 		}
@@ -71,17 +71,17 @@ namespace tz::gl
 		}};
 	}
 
-	ImageComponentOGL::ImageComponentOGL(IResource& resource):
+	ImageComponentOGL::ImageComponentOGL(iresource& resource):
 	resource(&resource),
 	image(this->make_image())
 	{}
 
-	const IResource* ImageComponentOGL::get_resource() const
+	const iresource* ImageComponentOGL::get_resource() const
 	{
 		return this->resource;
 	}
 
-	IResource* ImageComponentOGL::get_resource()
+	iresource* ImageComponentOGL::get_resource()
 	{
 		return this->resource;
 	}
@@ -98,7 +98,7 @@ namespace tz::gl
 
 	void ImageComponentOGL::resize(hdk::vec2ui dims)
 	{
-		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested resize of ImageComponentOGL, but the underlying resource did not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of ImageComponentOGL, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::Image& old_image = this->ogl_get_image();
 		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
 
@@ -120,38 +120,38 @@ namespace tz::gl
 
 	ogl2::Image ImageComponentOGL::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
+		hdk::assert(this->resource->get_type() == resource_type::image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
 		ogl2::AddressMode mode = ogl2::AddressMode::ClampToEdge;
 #if HDK_DEBUG
-		if(img_res->get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
+		if(img_res->get_flags().contains({resource_flag::image_filter_nearest, resource_flag::image_filter_linear}))
 		{
-			hdk::error("ResourceFlags included both ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
+			hdk::error("resource_flags included both image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
 		}
 #endif
-		if(img_res->get_flags().contains(ResourceFlag::ImageFilterNearest))
+		if(img_res->get_flags().contains(resource_flag::image_filter_nearest))
 		{
 			filter = ogl2::LookupFilter::Nearest;
 		}
-		if(img_res->get_flags().contains(ResourceFlag::ImageFilterLinear))
+		if(img_res->get_flags().contains(resource_flag::image_filter_linear))
 		{
 			filter = ogl2::LookupFilter::Linear;
 		}
 
-		if(img_res->get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
+		if(img_res->get_flags().contains({resource_flag::image_wrap_clamp_edge, resource_flag::image_wrap_repeat, resource_flag::image_wrap_mirrored_repeat}))
 		{
-			hdk::error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
+			hdk::error("resource_flags included all 3 of image_wrap_clamp_edge, image_wrap_repeat and image_wrap_mirrored_repeat, all of which are mutually exclusive. Please submit a bug report.");
 		}
-		if(img_res->get_flags().contains(ResourceFlag::ImageWrapClampEdge))
+		if(img_res->get_flags().contains(resource_flag::image_wrap_clamp_edge))
 		{
 			mode = ogl2::AddressMode::ClampToEdge;
 		}
-		if(img_res->get_flags().contains(ResourceFlag::ImageWrapRepeat))
+		if(img_res->get_flags().contains(resource_flag::image_wrap_repeat))
 		{
 			mode = ogl2::AddressMode::Repeat;
 		}
-		if(img_res->get_flags().contains(ResourceFlag::ImageWrapMirroredRepeat))
+		if(img_res->get_flags().contains(resource_flag::image_wrap_mirrored_repeat))
 		{
 			mode = ogl2::AddressMode::MirroredRepeat;
 		}

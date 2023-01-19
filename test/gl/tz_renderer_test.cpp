@@ -98,7 +98,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	{
 		.format = tz::gl::image_format::BGRA32,
 		.dimensions = {1u, 1u},
-		.flags = {tz::gl::ResourceFlag::RendererOutput}
+		.flags = {tz::gl::resource_flag::renderer_output}
 	}));
 	tz::gl::renderer_handle r1h = tz::gl::device().create_renderer(rinfo1);
 
@@ -132,7 +132,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
 	{
-		.access = tz::gl::ResourceAccess::DynamicVariable
+		.access = tz::gl::resource_access::dynamic_variable
 	}));
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -183,7 +183,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	({
 		.format = tz::gl::image_format::RGBA32,
 		.dimensions = old_dims,
-		.access = tz::gl::ResourceAccess::DynamicVariable
+		.access = tz::gl::resource_access::dynamic_variable
 	}));
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -229,8 +229,8 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
 	{
-		.access = tz::gl::ResourceAccess::DynamicFixed
-		// TODO: Test should pass even if StaticFixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
+		.access = tz::gl::resource_access::dynamic_fixed
+		// TODO: Test should pass even if static_fixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
 	}));
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -290,7 +290,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	{
 		.format = tz::gl::image_format::RGBA32,
 		.dimensions = {2u, 2u},
-		.access = tz::gl::ResourceAccess::DynamicFixed
+		.access = tz::gl::resource_access::dynamic_fixed
 	}));
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -384,7 +384,7 @@ TESTFUNC_BEGIN(renderer_index_buffer)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	rinfo.state().graphics.index_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
 	{
-		.flags = {tz::gl::ResourceFlag::IndexBuffer}
+		.flags = {tz::gl::resource_flag::index_buffer}
 	}));
 
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
@@ -400,7 +400,7 @@ TESTFUNC_BEGIN(renderer_indirect_buffer)
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
 	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
 	{
-		.flags = {tz::gl::ResourceFlag::DrawIndirectBuffer}
+		.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 	}));
 
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);

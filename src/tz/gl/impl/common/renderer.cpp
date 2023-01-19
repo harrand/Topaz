@@ -54,14 +54,14 @@ namespace tz::gl
 		return this->resources.size();
 	}
 
-	const IResource* renderer_infoCommon::get_resource(resource_handle handle)
+	const iresource* renderer_infoCommon::get_resource(resource_handle handle)
 	{
 		return this->resources[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	std::vector<const IResource*> renderer_infoCommon::get_resources() const
+	std::vector<const iresource*> renderer_infoCommon::get_resources() const
 	{
-		std::vector<const IResource*> ret;
+		std::vector<const iresource*> ret;
 		for(const auto& ptr : this->resources)
 		{
 			ret.push_back(ptr.get());
@@ -79,13 +79,13 @@ namespace tz::gl
 		return this->components;
 	}
 
-	resource_handle renderer_infoCommon::add_resource(const IResource& resource)
+	resource_handle renderer_infoCommon::add_resource(const iresource& resource)
 	{
 		#if HDK_DEBUG
-			if(resource.get_flags().contains(ResourceFlag::IndexBuffer))
+			if(resource.get_flags().contains(resource_flag::index_buffer))
 			{
-				hdk::assert(resource.get_type() == ResourceType::Buffer, "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
-				hdk::assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(ResourceFlag::IndexBuffer);}), "Attempting to add a resource with ResourceFlag::IndexBuffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
+				hdk::assert(resource.get_type() == resource_type::buffer, "Attempting to add a resource with resource_flag::index_buffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
+				hdk::assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(resource_flag::index_buffer);}), "Attempting to add a resource with resource_flag::index_buffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
 			}
 		#endif
 		this->resources.push_back(resource.unique_clone());
@@ -171,22 +171,22 @@ namespace tz::gl
 			bufc = std::count_if(this->resources.begin(), this->resources.end(),
 			[](const auto& res)
 			{
-				return res != nullptr && res->get_type() == ResourceType::Buffer;
+				return res != nullptr && res->get_type() == resource_type::buffer;
 			}) +
 			std::count_if(this->components.begin(), this->components.end(),
 			[](const icomponent* comp)
 			{
-				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Buffer;
+				return comp != nullptr && comp->get_resource()->get_type() == resource_type::buffer;
 			});
 			imgc = std::count_if(this->resources.begin(), this->resources.end(),
 			[](const auto& res)
 			{
-				return res != nullptr && res->get_type() == ResourceType::Image;
+				return res != nullptr && res->get_type() == resource_type::image;
 			}) +
 			std::count_if(this->components.begin(), this->components.end(),
 			[](const icomponent* comp)
 			{
-				return comp != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
+				return comp != nullptr && comp->get_resource()->get_type() == resource_type::image;
 			});
 			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "C" : "R") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == output_target::offscreen_image ? "h" : "w");
 		#else

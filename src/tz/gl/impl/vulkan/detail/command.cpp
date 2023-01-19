@@ -255,13 +255,13 @@ namespace tz::gl::vk2
 		{
 			vkCmdBindVertexBuffers(this->get_command_buffer().native(), 0, 1, &buf_native, offsets);
 		}
-		else if(command.buffer->get_usage().contains(BufferUsage::IndexBuffer))
+		else if(command.buffer->get_usage().contains(BufferUsage::index_buffer))
 		{
 			vkCmdBindIndexBuffer(this->get_command_buffer().native(), buf_native, 0, VK_INDEX_TYPE_UINT32);
 		}
 		else
 		{
-			hdk::error("BindBuffer contained a Buffer that was not a VertexBuffer nor IndexBuffer. Please submit a bug report.");
+			hdk::error("BindBuffer contained a Buffer that was not a VertexBuffer nor index_buffer. Please submit a bug report.");
 			return;
 		}
 		this->register_command(command);

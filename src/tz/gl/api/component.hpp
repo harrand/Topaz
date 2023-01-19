@@ -11,8 +11,8 @@ namespace tz::gl
 	public:
 		icomponent() = default;
 		virtual ~icomponent() = default;
-		virtual const IResource* get_resource() const = 0;
-		virtual IResource* get_resource() = 0;
+		virtual const iresource* get_resource() const = 0;
+		virtual iresource* get_resource() = 0;
 	};
 
 	template<typename T>

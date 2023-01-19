@@ -71,11 +71,11 @@ int main()
 				{
 					.format = tz::gl::image_format::RGBA32,
 					.dimensions = {2u, 2u},
-					.access = tz::gl::ResourceAccess::DynamicVariable,
+					.access = tz::gl::resource_access::dynamic_variable,
 					.flags =
 					{
-						tz::gl::ResourceFlag::ImageFilterLinear,
-						tz::gl::ResourceFlag::ImageWrapRepeat
+						tz::gl::resource_flag::image_filter_linear,
+						tz::gl::resource_flag::image_wrap_repeat
 					}
 				}
 			)
@@ -90,7 +90,7 @@ int main()
 					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
 				}, 
 				{
-					.access = tz::gl::ResourceAccess::DynamicVariable
+					.access = tz::gl::resource_access::dynamic_variable
 				}
 			)
 		);
@@ -100,8 +100,8 @@ int main()
 			(
 				{0u, 1u, 2u},
 				{
-					.access = tz::gl::ResourceAccess::DynamicVariable,
-					.flags = {tz::gl::ResourceFlag::IndexBuffer}
+					.access = tz::gl::resource_access::dynamic_variable,
+					.flags = {tz::gl::resource_flag::index_buffer}
 				}
 			)
 		);

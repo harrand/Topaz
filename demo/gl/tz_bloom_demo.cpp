@@ -62,13 +62,13 @@ int main()
 		({
 			.format = tz::gl::image_format::BGRA32,
 			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),
-			.flags = {tz::gl::ResourceFlag::RendererOutput}
+			.flags = {tz::gl::resource_flag::renderer_output}
 		});
 		tz::gl::ImageResource image_out1 = image_out0;
 
 		tz::gl::BufferResource bloom_data_buffer = tz::gl::BufferResource::from_one(BloomOptions{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.access = tz::gl::resource_access::dynamic_fixed
 		});
 
 		tz::gl::renderer_info combine_info;
@@ -82,7 +82,7 @@ int main()
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{},
 		{
-			.access = tz::gl::ResourceAccess::DynamicFixed
+			.access = tz::gl::resource_access::dynamic_fixed
 		});
 
 		tz::gl::renderer_info rinfo;

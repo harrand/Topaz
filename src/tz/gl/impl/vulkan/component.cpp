@@ -9,30 +9,30 @@
 namespace tz::gl
 {
 	using namespace tz::gl;
-	BufferComponentVulkan::BufferComponentVulkan(IResource& resource):
+	BufferComponentVulkan::BufferComponentVulkan(iresource& resource):
 	resource(&resource),
 	buffer(this->make_buffer())
 	{}
 
-	const IResource* BufferComponentVulkan::get_resource() const
+	const iresource* BufferComponentVulkan::get_resource() const
 	{
 		return this->resource;
 	}
 
-	IResource* BufferComponentVulkan::get_resource()
+	iresource* BufferComponentVulkan::get_resource()
 	{
 		return this->resource;
 	}
 
 	std::size_t BufferComponentVulkan::size() const
 	{
-		hdk::assert(this->resource->data().size_bytes() == this->buffer.size(), "BufferComponent Size does not match its IResource data size. Please submit a bug report.");
+		hdk::assert(this->resource->data().size_bytes() == this->buffer.size(), "BufferComponent Size does not match its iresource data size. Please submit a bug report.");
 		return this->buffer.size();
 	}
 
 	void BufferComponentVulkan::resize(std::size_t sz)
 	{
-		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Attempted to resize BufferComponentVulkan, but it not ResourceAccess::DynamicVariable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize BufferComponentVulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -66,7 +66,7 @@ namespace tz::gl
 
 	bool BufferComponentVulkan::vk_is_descriptor_relevant() const
 	{
-		return !this->resource->get_flags().contains(ResourceFlag::IndexBuffer) && !this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer);
+		return !this->resource->get_flags().contains(resource_flag::index_buffer) && !this->resource->get_flags().contains(resource_flag::draw_indirect_buffer);
 	}
 
 	vk2::Buffer BufferComponentVulkan::make_buffer() const
@@ -74,27 +74,27 @@ namespace tz::gl
 		vk2::BufferUsageField usage_field{vk2::BufferUsage::StorageBuffer};
 		vk2::MemoryResidency residency;
 
-		if(this->resource->get_flags().contains(ResourceFlag::IndexBuffer))
+		if(this->resource->get_flags().contains(resource_flag::index_buffer))
 		{
-			usage_field |= vk2::BufferUsage::IndexBuffer;
+			usage_field |= vk2::BufferUsage::index_buffer;
 		}
-		else if(this->resource->get_flags().contains(ResourceFlag::DrawIndirectBuffer))
+		else if(this->resource->get_flags().contains(resource_flag::draw_indirect_buffer))
 		{
-			usage_field |= vk2::BufferUsage::DrawIndirectBuffer;
+			usage_field |= vk2::BufferUsage::draw_indirect_buffer;
 		}
 
 		switch(this->resource->get_access())
 		{
 			default:
-				hdk::error("Unrecognised ResourceAccess. Please submit a bug report.");
+				hdk::error("Unrecognised resource_access. Please submit a bug report.");
 			[[fallthrough]];
-			case ResourceAccess::StaticFixed:
+			case resource_access::static_fixed:
 				usage_field |= vk2::BufferUsage::TransferDestination;
 				residency = vk2::MemoryResidency::GPU;
 			break;
-			case ResourceAccess::DynamicFixed:
+			case resource_access::dynamic_fixed:
 			[[fallthrough]];
-			case ResourceAccess::DynamicVariable:
+			case resource_access::dynamic_variable:
 				residency = vk2::MemoryResidency::CPUPersistent;
 			break;
 		}
@@ -107,16 +107,16 @@ namespace tz::gl
 		}};
 	}
 
-	ImageComponentVulkan::ImageComponentVulkan(IResource& resource):
+	ImageComponentVulkan::ImageComponentVulkan(iresource& resource):
 	resource(&resource),
 	image(this->make_image()){}
 
-	const IResource* ImageComponentVulkan::get_resource() const
+	const iresource* ImageComponentVulkan::get_resource() const
 	{
 		return this->resource;
 	}
 
-	IResource* ImageComponentVulkan::get_resource()
+	iresource* ImageComponentVulkan::get_resource()
 	{
 		return this->resource;
 	}
@@ -133,7 +133,7 @@ namespace tz::gl
 
 	void ImageComponentVulkan::resize(hdk::vec2ui new_dimensions)
 	{
-		hdk::assert(this->resource->get_access() == ResourceAccess::DynamicVariable, "Requested to resize an ImageComponentVulkan, but it does not have ResourceAccess::DynamicVariable. Please submit a bug report.");
+		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize an ImageComponentVulkan, but it does not have resource_access::dynamic_variable. Please submit a bug report.");
 
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
@@ -173,17 +173,17 @@ namespace tz::gl
 
 	vk2::Image ImageComponentVulkan::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == ResourceType::Image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
+		hdk::assert(this->resource->get_type() == resource_type::image, "ImageComponent was provided a resource which was not an ImageResource. Please submit a bug report.");
 		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
-		if(this->resource->get_flags().contains(ResourceFlag::RendererOutput))
+		if(this->resource->get_flags().contains(resource_flag::renderer_output))
 		{
 			usage_field |= vk2::ImageUsage::ColourAttachment;
 			// Let's make sure the format is applicable. We will not allow the user to use an image format that isn't guaranteed to be safe as a colour attachment, even if the machine building the engine allows it. This prevents horrific runtime issues.
 			constexpr auto allowed = vk2::format_traits::get_mandatory_colour_attachment_formats();
 			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
 			{
-				hdk::error("Detected ResourceFlag::RendererOutput in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
+				hdk::error("Detected resource_flag::renderer_output in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
 			}
 		}
 		vk2::MemoryResidency residency;
@@ -191,14 +191,14 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				hdk::error("Unknown ResourceAccess. Please submit a bug report.");
+				hdk::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
-			case ResourceAccess::StaticFixed:
+			case resource_access::static_fixed:
 				residency = vk2::MemoryResidency::GPU;
 			break;
-			case ResourceAccess::DynamicFixed:
+			case resource_access::dynamic_fixed:
 			[[fallthrough]];
-			case ResourceAccess::DynamicVariable:
+			case resource_access::dynamic_variable:
 				residency = vk2::MemoryResidency::CPUPersistent;
 				tiling = vk2::ImageTiling::Linear;
 			break;

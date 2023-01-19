@@ -7,14 +7,14 @@ namespace tz::gl
 {
 	namespace detail
 	{
-		std::array<const char*, static_cast<int>(ResourceAccess::Count)> resource_access_strings
+		std::array<const char*, static_cast<int>(resource_access::Count)> resource_access_strings
 		{
 			"Static Fixed",
 			"Dynamic Fixed",
 			"Dynamic Variable"
 		};
 
-		std::array<const char*, static_cast<int>(ResourceFlag::Count)> resource_flag_strings
+		std::array<const char*, static_cast<int>(resource_flag::Count)> resource_flag_strings
 		{
 			"Index Buffer",
 			"Renderer Output",
@@ -28,17 +28,17 @@ namespace tz::gl
 		};
 	}
 
-	ResourceType Resource::get_type() const
+	resource_type Resource::get_type() const
 	{
 		return this->type;
 	}
 
-	ResourceAccess Resource::get_access() const
+	resource_access Resource::get_access() const
 	{
 		return this->access;
 	}
 
-	const ResourceFlags& Resource::get_flags() const
+	const resource_flags& Resource::get_flags() const
 	{
 		return this->flags;
 	}
@@ -68,10 +68,10 @@ namespace tz::gl
 		const char* type;
 		switch(this->get_type())
 		{
-			case ResourceType::Buffer:
+			case resource_type::buffer:
 				type = "Buffer";
 			break;
-			case ResourceType::Image:
+			case resource_type::image:
 				type = "Image";
 			break;
 			default:
@@ -83,7 +83,7 @@ namespace tz::gl
 		if(!this->get_flags().empty() && ImGui::CollapsingHeader("Resource Flags"))
 		{
 			ImGui::Indent();
-			for(tz::gl::ResourceFlag flag : this->get_flags())
+			for(tz::gl::resource_flag flag : this->get_flags())
 			{
 				ImGui::Text("%s", detail::resource_flag_strings[static_cast<int>(flag)]);
 			}
@@ -96,7 +96,7 @@ namespace tz::gl
 		this->resource_data.resize(new_size);
 	}
 
-	Resource::Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags):
+	Resource::Resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags):
 	access(access),
 	resource_data(resource_data),
 	mapped_resource_data(std::nullopt),
@@ -104,12 +104,12 @@ namespace tz::gl
 	type(type),
 	flags(flags)
 	{
-		hdk::assert(!flags.contains(ResourceFlag::ImageMipNearest) && !flags.contains(ResourceFlag::ImageMipLinear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
+		hdk::assert(!flags.contains(resource_flag::image_mip_nearest) && !flags.contains(resource_flag::image_mip_linear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
 	}
 
 	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
-		hdk::assert(this->get_access() == ResourceAccess::DynamicFixed || this->get_access() == ResourceAccess::DynamicVariable, "Cannot set mapped data on a static resource.");
+		hdk::assert(this->get_access() == resource_access::dynamic_fixed || this->get_access() == resource_access::dynamic_variable, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
 	}
 
@@ -118,7 +118,7 @@ namespace tz::gl
 		return this->data().size_bytes() == 1 && this->data_as<std::byte>().front() == std::byte{255};
 	}
 
-	std::unique_ptr<IResource> BufferResource::unique_clone() const
+	std::unique_ptr<iresource> BufferResource::unique_clone() const
 	{
 		return std::make_unique<BufferResource>(*this);
 	}
@@ -147,8 +147,8 @@ namespace tz::gl
 		}
 	}
 
-	BufferResource::BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags):
-	Resource(access, resource_data, initial_alignment_offset, ResourceType::Buffer, flags){}
+	BufferResource::BufferResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_flags flags):
+	Resource(access, resource_data, initial_alignment_offset, resource_type::buffer, flags){}
 			
 	ImageResource ImageResource::from_uninitialised(ImageInfo info)
 	{
@@ -166,7 +166,7 @@ namespace tz::gl
 		return this->get_dimensions() == null.get_dimensions() && this->get_format() == null.get_format() && std::equal(my_data.begin(), my_data.end(), null_data.begin());
 	}
 
-	std::unique_ptr<IResource> ImageResource::unique_clone() const
+	std::unique_ptr<iresource> ImageResource::unique_clone() const
 	{
 		return std::make_unique<ImageResource>(*this);
 	}
@@ -193,8 +193,8 @@ namespace tz::gl
 		this->dimensions = dims;
 	}
 
-	ImageResource::ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, ResourceFlags flags):
-	Resource(access, resource_data, initial_alignment_offset, ResourceType::Image, flags),
+	ImageResource::ImageResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags):
+	Resource(access, resource_data, initial_alignment_offset, resource_type::image, flags),
 	format(format),
 	dimensions(dimensions){}
 }

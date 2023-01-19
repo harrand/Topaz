@@ -181,7 +181,7 @@ namespace tz::gl::vk2
 		 */
 		struct BindBuffer
 		{
-			/// Buffer to bind, usage must contain *one* of @ref BufferUsage::VertexBuffer or @ref BufferUsage::IndexBuffer.
+			/// Buffer to bind, usage must contain *one* of @ref BufferUsage::VertexBuffer or @ref BufferUsage::index_buffer.
 			const Buffer* buffer;
 		};
 

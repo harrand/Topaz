@@ -17,15 +17,15 @@ namespace tz::gl
 		void initialise_buffer(BufferComponentOGL& bufcomp)
 		{
 			ogl2::Buffer& buffer = bufcomp.ogl_get_buffer();
-			IResource* res = bufcomp.get_resource();
+			iresource* res = bufcomp.get_resource();
 			hdk::assert(res != nullptr, "BufferComponent had null resource");
 			switch(res->get_access())
 			{
-				case ResourceAccess::StaticFixed:
+				case resource_access::static_fixed:
 				{
 					// Create a staging buffer, write the resource data into it, and then do a buffer copy to the component.
 					ogl2::BufferTarget tar = ogl2::BufferTarget::ShaderStorage;
-					if(res->get_flags().contains(ResourceFlag::IndexBuffer))
+					if(res->get_flags().contains(resource_flag::index_buffer))
 					{
 						tar = ogl2::BufferTarget::Index;
 					}
@@ -42,9 +42,9 @@ namespace tz::gl
 					ogl2::buffer::copy(staging_buffer, buffer);
 				}
 				break;
-				case ResourceAccess::DynamicFixed:
+				case resource_access::dynamic_fixed:
 				[[fallthrough]];
-				case ResourceAccess::DynamicVariable:
+				case resource_access::dynamic_variable:
 				{
 					// Map component buffer and write resource data directly into it, then pass the mapped ptr back into the resource to set it as the new data source.
 					auto resdata = res->data();
@@ -54,14 +54,14 @@ namespace tz::gl
 				}
 				break;
 				default:
-					hdk::error("ResourceAccess for this buffer is not yet implemented");	
+					hdk::error("resource_access for this buffer is not yet implemented");	
 				break;
 			}
 		}
 	}
 
-	ResourceStorage::ResourceStorage(std::span<const IResource* const> resources, std::span<const icomponent* const> components):
-	AssetStorageCommon<IResource>(resources),
+	ResourceStorage::ResourceStorage(std::span<const iresource* const> resources, std::span<const icomponent* const> components):
+	AssetStorageCommon<iresource>(resources),
 	components(),
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
@@ -69,13 +69,13 @@ namespace tz::gl
 		HDK_PROFZONE("OpenGL Frontend - RendererOGL ResourceStorage Create", 0xFFAA0000);
 		auto do_metadata = [this](icomponent* comp)
 		{
-			IResource* res = comp->get_resource();
+			iresource* res = comp->get_resource();
 			switch(res->get_type())
 			{
-				case ResourceType::Buffer:
+				case resource_type::buffer:
 					detail::initialise_buffer(*static_cast<BufferComponentOGL*>(comp));
 				break;
-				case ResourceType::Image:
+				case resource_type::image:
 					{
 						ImageComponentOGL& img = *static_cast<ImageComponentOGL*>(comp);
 						ogl2::Image& image = img.ogl_get_image();
@@ -96,7 +96,7 @@ namespace tz::gl
 					}
 				break;
 				default:
-					hdk::error("Unrecognised ResourceType. Please submit a bug report.");
+					hdk::error("Unrecognised resource_type. Please submit a bug report.");
 				break;
 			}
 		};
@@ -104,7 +104,7 @@ namespace tz::gl
 		std::size_t encountered_reference_count = 0;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
-			IResource* res = this->get(static_cast<hdk::hanval>(i));
+			iresource* res = this->get(static_cast<hdk::hanval>(i));
 			icomponent* comp = nullptr;
 			if(res == nullptr)
 			{
@@ -118,14 +118,14 @@ namespace tz::gl
 			{
 				switch(res->get_type())
 				{
-					case ResourceType::Buffer:
+					case resource_type::buffer:
 						this->components.push_back(tz::make_owned<BufferComponentOGL>(*res));
 					break;
-					case ResourceType::Image:
+					case resource_type::image:
 						this->components.push_back(tz::make_owned<ImageComponentOGL>(*res));
 					break;
 					default:
-						hdk::error("Unrecognised ResourceType. Please submit a bug report.");
+						hdk::error("Unrecognised resource_type. Please submit a bug report.");
 					break;
 				}
 				comp = this->components.back().get();
@@ -153,7 +153,7 @@ namespace tz::gl
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	unsigned int ResourceStorage::resource_count_of(ResourceType type) const
+	unsigned int ResourceStorage::resource_count_of(resource_type type) const
 	{
 		return std::count_if(this->components.begin(), this->components.end(),
 		[type](const auto& component_ptr)
@@ -191,7 +191,7 @@ namespace tz::gl
 
 	void ResourceStorage::bind_buffers(const render_state& state)
 	{
-		if(this->resource_count_of(ResourceType::Buffer) == 0)
+		if(this->resource_count_of(resource_type::buffer) == 0)
 		{
 			return;
 		}
@@ -199,7 +199,7 @@ namespace tz::gl
 		for(std::size_t j = 0; j < this->components.size(); j++)
 		{
 			icomponent* comp = this->components[j].get();
-			if(comp->get_resource()->get_type() == ResourceType::Buffer)
+			if(comp->get_resource()->get_type() == resource_type::buffer)
 			{
 				auto bcomp = static_cast<BufferComponentOGL*>(comp);
 				// If we're an index or draw-indirect buffer. Don't bind. The draw command will do that.
@@ -221,7 +221,7 @@ namespace tz::gl
 
 	void ResourceStorage::bind_image_buffer(bool has_index_buffer, bool has_draw_buffer)
 	{
-		auto buf_res_count = this->resource_count_of(ResourceType::Buffer);
+		auto buf_res_count = this->resource_count_of(resource_type::buffer);
 		if(has_index_buffer)
 		{
 			buf_res_count--;
@@ -260,8 +260,8 @@ namespace tz::gl
 	{
 		for(auto& component_ptr : this->components)
 		{
-			tz::gl::IResource* res = component_ptr->get_resource();
-			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			tz::gl::iresource* res = component_ptr->get_resource();
+			if(res->get_type() == resource_type::image && res->get_access() != resource_access::static_fixed)
 			{
 				// Get the underlying image, and set its data to whatever the span said it was.
 				ogl2::Image& img = static_cast<ImageComponentOGL*>(component_ptr.get())->ogl_get_image();
@@ -470,13 +470,13 @@ namespace tz::gl
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
 				icomponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
-				if(comp->get_resource()->get_type() == ResourceType::Buffer)
+				if(comp->get_resource()->get_type() == resource_type::buffer)
 				{
 					ogl2::Buffer& buf = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
 					std::string n = buf.debug_get_name();
 					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
 				}
-				if(comp->get_resource()->get_type() == ResourceType::Image)
+				if(comp->get_resource()->get_type() == resource_type::image)
 				{
 					ogl2::Image& img = static_cast<ImageComponentOGL*>(comp)->ogl_get_image();
 					std::string n = img.debug_get_name();
@@ -492,12 +492,12 @@ namespace tz::gl
 		return this->resources.count();
 	}
 
-	const IResource* RendererOGL::get_resource(resource_handle handle) const
+	const iresource* RendererOGL::get_resource(resource_handle handle) const
 	{
 		return this->resources.get(handle);
 	}
 
-	IResource* RendererOGL::get_resource(resource_handle handle)
+	iresource* RendererOGL::get_resource(resource_handle handle)
 	{
 		return this->resources.get(handle);
 	}
@@ -547,7 +547,7 @@ namespace tz::gl
 			this->resources.write_dynamic_images();
 			this->shader.use();
 			this->resources.bind_buffers(this->state);
-			if(this->resources.resource_count_of(ResourceType::Image) > 0)
+			if(this->resources.resource_count_of(resource_type::image) > 0)
 			{
 				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
 			}
@@ -586,7 +586,7 @@ namespace tz::gl
 
 			this->shader.use();
 			this->resources.bind_buffers(this->state);
-			if(this->resources.resource_count_of(ResourceType::Image) > 0)
+			if(this->resources.resource_count_of(resource_type::image) > 0)
 			{
 				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
 			}
@@ -683,13 +683,13 @@ namespace tz::gl
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_write>)
 				{
 					icomponent* comp = this->get_component(arg.resource);
-					IResource* res = comp->get_resource();
+					iresource* res = comp->get_resource();
 					switch(res->get_access())
 					{
-						case ResourceAccess::StaticFixed:
+						case resource_access::static_fixed:
 							switch(res->get_type())
 							{
-								case ResourceType::Buffer:
+								case resource_type::buffer:
 								{
 									ogl2::Buffer& buffer = static_cast<BufferComponentOGL*>(comp)->ogl_get_buffer();
 									ogl2::Buffer staging_buffer
@@ -706,7 +706,7 @@ namespace tz::gl
 									ogl2::buffer::copy(staging_buffer, buffer);
 								}
 								break;
-								case ResourceType::Image:
+								case resource_type::image:
 									ogl2::Image& image = static_cast<ImageComponentOGL*>(comp)->ogl_get_image();
 									ogl2::Image staging_image
 									{{

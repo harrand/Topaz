@@ -22,12 +22,12 @@ namespace tz::gl::vk2
 		/// - Is a StorageBuffer, which is a type of shader buffer resource.
 		StorageBuffer = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 		/// - Is a specialised buffer which specifically stores draw commands.
-		DrawIndirectBuffer = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
+		draw_indirect_buffer = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
 
 		/// - Is a VertexBuffer, which is used to store vertex input data.
 		VertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-		/// - Is an IndexBuffer, which is used to store index input data.
-		IndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT
+		/// - Is an index_buffer, which is used to store index input data.
+		index_buffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT
 	};
 
 	using BufferUsageField = tz::EnumField<BufferUsage>;

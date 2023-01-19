@@ -13,58 +13,58 @@ namespace tz::gl
 	 * @ingroup tz_gl2_res
 	 * Specifies the type of the resource; which is how a Renderer or Processor will interpret the usage of the resource within a shader.
 	 */
-	enum class ResourceType
+	enum class resource_type
 	{
 		/// - Resource is a buffer resource, which contains arbitrary data.
-		Buffer,
+		buffer,
 		/// - Resource is an image resource, of some format and dimensions.
-		Image
+		image
 	};
 
 	/**
 	 * @ingroup tz_gl2_res
 	 * Specifies optional flags which affect the behaviour of a resource in some way.
 	 */
-	enum class ResourceFlag
+	enum class resource_flag
 	{
 		/// - Indicates that the buffer should be treated as a hardware index buffer. It will act as a bespoke non-shader-resource buffer that must store indices encoded as `unsigned int[]`. Can only be applied to buffer resources.
-		IndexBuffer,
+		index_buffer,
 		/// - Indicates that the buffer should contain draw commands which will be used in a render invocation.
-		DrawIndirectBuffer,
+		draw_indirect_buffer,
 		/// - Indicates that the image can be used as an ImageOutput for another renderer. Can only be applied to image resources.
-		RendererOutput,
+		renderer_output,
 		/// - Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved.
-		ImageFilterNearest,
+		image_filter_nearest,
 		/// - Indicates that when doing min/mag on the image, the value of the weighted average of the nearest texels is retrieved. This is the default filter.
-		ImageFilterLinear,
+		image_filter_linear,
 		/// - Indicates that the chosen mip will have the closest match of size to the texture pixel. @note Not yet implemented.
-		ImageMipNearest,
+		image_mip_nearest,
 		/// - Indicates that a mip computed from the weighted average of the next and previous mip will be chosen. @note Not yet implemented.
-		ImageMipLinear,
+		image_mip_linear,
 		/// - Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will match that of the closest axis-aligned texel. This is the default wrap mode.
-		ImageWrapClampEdge,
+		image_wrap_clamp_edge,
 		/// - Indicates that if sampled outside of its dimensions, the colour of the sampled pixel will begin repeating as if from zero.
-		ImageWrapRepeat,
+		image_wrap_repeat,
 		/// - Indicates that if sampled outside of this dimensions, the colour of the sampled pixel will begin repeating as if from zero, except each time the image will look mirrored.
-		ImageWrapMirroredRepeat,
+		image_wrap_mirrored_repeat,
 
 		Count
 	};
 
-	using ResourceFlags = tz::EnumField<ResourceFlag>;
+	using resource_flags = tz::EnumField<resource_flag>;
 
 	/**
 	 * @ingroup tz_gl2_res
 	 * Describes the manner in which a resource can be read or written to, when owned by a Renderer or Processor.
 	 */
-	enum class ResourceAccess
+	enum class resource_access
 	{
 		/// - Resource data is written once initially, and cannot be resized.
-		StaticFixed,
+		static_fixed,
 		/// - Resource data is always writable, but cannot be resized.
-		DynamicFixed,
+		dynamic_fixed,
 		/// - Resource data is always writeable and resizeable.
-		DynamicVariable,
+		dynamic_variable,
 		Count
 	};
 
@@ -78,20 +78,20 @@ namespace tz::gl
 	 * - @ref BufferResource
 	 * - @ref ImageResource
 	 */
-	class IResource : public hdk::unique_cloneable<IResource>
+	class iresource : public hdk::unique_cloneable<iresource>
 	{
 	public:
-		IResource() = default;
-		virtual ~IResource() = default;
+		iresource() = default;
+		virtual ~iresource() = default;
 		/**
 		 * Retrieve the type of the resource.
 		 */
-		virtual ResourceType get_type() const = 0;
+		virtual resource_type get_type() const = 0;
 		/**
 		 * Retrieve access information about this resource when used in a Renderer or Processor.
-		 * @return ResourceAccess corresponding to usage in a Renderer or Processor.
+		 * @return resource_access corresponding to usage in a Renderer or Processor.
 		 */
-		virtual ResourceAccess get_access() const = 0;
+		virtual resource_access get_access() const = 0;
 		/**
 		 * Retrieve a read-only view into the resource data.
 		 */
@@ -127,7 +127,7 @@ namespace tz::gl
 		/**
 		 * Retrieve a field containing all flags applied to this resource. If you didn't specify any flags for this resource, it will be empty.
 		 */
-		virtual const ResourceFlags& get_flags() const = 0;
+		virtual const resource_flags& get_flags() const = 0;
 
 		/**
 		 * Display debug information about the resource.
@@ -136,7 +136,7 @@ namespace tz::gl
 	};
 
 	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
-	using resource_handle = hdk::handle<IResource>;
+	using resource_handle = hdk::handle<iresource>;
 }
 
 #endif // TOPAZ_GL2_API_RESOURCE_HPP

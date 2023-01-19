@@ -57,9 +57,9 @@ namespace tz::gl
 	{
 		struct Graphics
 		{
-			/// If an index buffer is used, this refers to the buffer resource. It must have ResourceFlag::IndexBuffer. If there is no index buffer, this is nullhand.
+			/// If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buffer. If there is no index buffer, this is nullhand.
 			resource_handle index_buffer = hdk::nullhand;
-			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have ResourceFlag::DrawIndirectBuffer. If there is no draw buffer, this is nullhand.
+			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::draw_indirect_buffer. If there is no draw buffer, this is nullhand.
 			resource_handle draw_buffer = hdk::nullhand;
 			/// Normalised RGBA floating point colour.
 			hdk::vec4 clear_colour = hdk::vec4::zero();
@@ -88,11 +88,11 @@ namespace tz::gl
 	using renderer_options = tz::EnumField<renderer_option>;
 
 	template<typename T>
-	concept renderer_info_type = requires(T t, renderer_handle ren, resource_handle r, const IResource& resource, icomponent* component, ioutput& output, renderer_options options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
+	concept renderer_info_type = requires(T t, renderer_handle ren, resource_handle r, const iresource& resource, icomponent* component, ioutput& output, renderer_options options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
-		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
-		{t.get_resources()} -> std::same_as<std::vector<const IResource*>>;
+		{t.get_resource(r)} -> std::convertible_to<const iresource*>;
+		{t.get_resources()} -> std::same_as<std::vector<const iresource*>>;
 		{t.get_dependencies()} -> std::same_as<std::span<const renderer_handle>>;
 
 		{t.add_resource(resource)} -> std::same_as<resource_handle>;
@@ -197,7 +197,7 @@ namespace tz::gl
 		 * @param r Handle corresponding to an existing resource. If the handle is not associated with this renderer, the behaviour is undefined.
 		 * @return Pointer to the resource corresponding to the provided handle.
 		 */
-		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
+		{t.get_resource(r)} -> std::convertible_to<const iresource*>;
 		/**
 		 * Retrieve an existing renderer component via an existing handle.
 		 * @param r Handle corresponding to an existing resource. If the handle is not associated with this renderer, the behaviour is undefined.

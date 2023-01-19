@@ -9,35 +9,35 @@
 
 namespace tz::gl
 {
-	class Resource : public IResource
+	class Resource : public iresource
 	{
 	public:
 		virtual ~Resource() = default;
-		// IResource
-		virtual ResourceType get_type() const final;
-		virtual ResourceAccess get_access() const final;
-		virtual const ResourceFlags& get_flags() const final;
+		// iresource
+		virtual resource_type get_type() const final;
+		virtual resource_access get_access() const final;
+		virtual const resource_flags& get_flags() const final;
 		virtual std::span<const std::byte> data() const final;
 		virtual std::span<std::byte> data() final;
 		virtual void dbgui() override;
 
 		void resize_data(std::size_t new_size);
 	protected:
-		Resource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceType type, ResourceFlags flags = {});
+		Resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;
 	private:
-		ResourceAccess access;
+		resource_access access;
 		std::vector<std::byte> resource_data;
 		std::optional<std::span<std::byte>> mapped_resource_data;
 		std::size_t initial_alignment_offset;
-		ResourceType type;
-		ResourceFlags flags;
+		resource_type type;
+		resource_flags flags;
 	};
 
 	struct BufferInfo
 	{
-		ResourceAccess access = ResourceAccess::StaticFixed;
-		ResourceFlags flags = {};
+		resource_access access = resource_access::static_fixed;
+		resource_flags flags = {};
 	};
 
 	/**
@@ -76,7 +76,7 @@ namespace tz::gl
 		/**
 		 * Create a null BufferResource. It is not practically useful, aside from as a placeholder.
 		 *
-		 * Null BufferResources are guaranteed to have size() == 1, not zero, but its contents and size are implementation-defined. It is also guaranteed to be StaticFixed and have no flags.
+		 * Null BufferResources are guaranteed to have size() == 1, not zero, but its contents and size are implementation-defined. It is also guaranteed to be static_fixed and have no flags.
 		 */
 		static BufferResource null()
 		{
@@ -84,10 +84,10 @@ namespace tz::gl
 		}
 
 		bool is_null() const;
-		virtual std::unique_ptr<IResource> unique_clone() const final;
+		virtual std::unique_ptr<iresource> unique_clone() const final;
 		virtual void dbgui() final;
 	private:
-		BufferResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, ResourceFlags flags);
+		BufferResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_flags flags);
 	};
 
 
@@ -101,9 +101,9 @@ namespace tz::gl
 		/// Image dimensions, in pixels.
 		hdk::vec2ui dimensions;
 		/// Access specifier. By default this is static fixed.
-		ResourceAccess access = ResourceAccess::StaticFixed;
+		resource_access access = resource_access::static_fixed;
 		/// Flags specifying any special usages for the image. By default there are no flags.
-		ResourceFlags flags = {};
+		resource_flags flags = {};
 	};
 
 	/**
@@ -134,7 +134,7 @@ namespace tz::gl
 		/**
 		 * Create a null ImageResource.
 		 *
-		 * The format, dimensions and image values are all implementation-defined, but the access is guaranteed to be StaticFixed.
+		 * The format, dimensions and image values are all implementation-defined, but the access is guaranteed to be static_fixed.
 		 */
 		static ImageResource null()
 		{
@@ -168,13 +168,13 @@ namespace tz::gl
 	
 		bool is_null() const;
 
-		virtual std::unique_ptr<IResource> unique_clone() const final;
+		virtual std::unique_ptr<iresource> unique_clone() const final;
 		virtual void dbgui() final;
 		image_format get_format() const;
 		hdk::vec2ui get_dimensions() const;
 		void set_dimensions(hdk::vec2ui dims);
 	private:
-		ImageResource(ResourceAccess access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, ResourceFlags flags);
+		ImageResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags);
 		image_format format;
 		hdk::vec2ui dimensions;
 	};

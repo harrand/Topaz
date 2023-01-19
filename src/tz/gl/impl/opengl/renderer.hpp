@@ -24,7 +24,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
 	 * Copies all resource data from upon creation and handles resource and component lifetimes. Also exposes said copied resources and components to the renderer.
 	 */
-	class ResourceStorage : public AssetStorageCommon<IResource>
+	class ResourceStorage : public AssetStorageCommon<iresource>
 	{
 	public:
 		/**
@@ -34,7 +34,7 @@ namespace tz::gl
 		 *
 		 * @param resources A view into an array of existing resources. All of these will be copies into a separate storage, meaning the elements of the span are allowed to reach the end of their lifetime after the storage has been constructed, because they will have been cloned.
 		 */
-		ResourceStorage(std::span<const IResource* const> resources, std::span<const icomponent* const> components);
+		ResourceStorage(std::span<const iresource* const> resources, std::span<const icomponent* const> components);
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding opengl backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
@@ -50,7 +50,7 @@ namespace tz::gl
 		 * @param type Type whose quantity should be retrieved.
 		 * @return number of resources matching the provided type.
 		 */
-		unsigned int resource_count_of(ResourceType type) const;
+		unsigned int resource_count_of(resource_type type) const;
 		/**
 		 * Bind all buffer resources to their expected resource ids.
 		 */
@@ -150,13 +150,13 @@ namespace tz::gl
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		const IResource* get_resource(resource_handle handle) const;
+		const iresource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		IResource* get_resource(resource_handle handle);
+		iresource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.

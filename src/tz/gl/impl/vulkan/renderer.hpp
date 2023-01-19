@@ -46,7 +46,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * Copies all resource data from a RendererVulkan when it is created, and copies it into its own memory so that the user doesn't need to worry about resource lifetimes. Also exposes the copied resources to the RendererVulkan.
 	 */
-	class ResourceStorage : public AssetStorageCommon<IResource>
+	class ResourceStorage : public AssetStorageCommon<iresource>
 	{
 	public:
 		/**
@@ -76,7 +76,7 @@ namespace tz::gl
 		 */
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 
-		std::size_t resource_count_of(ResourceType type) const;
+		std::size_t resource_count_of(resource_type type) const;
 		/**
 		 * Notifies that an ImageComponent at the provided handle has had its underlying vk2::Image re-seated. This recreates any necessary image views.
 		 */
@@ -364,13 +364,13 @@ namespace tz::gl
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		const IResource* get_resource(resource_handle handle) const;
+		const iresource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		IResource* get_resource(resource_handle handle);
+		iresource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.

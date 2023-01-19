@@ -16,7 +16,7 @@ int main()
 		tz::gl::renderer_info cinfo;
 		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
 		{
-			.flags = {tz::gl::ResourceFlag::DrawIndirectBuffer}
+			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 		}));
 		cinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_gpu_driven_demo, compute));
 		cinfo.debug_name("Compute Driver");

@@ -21,39 +21,39 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	// Utility free-functions.
-	vk2::SamplerInfo make_fitting_sampler(const IResource& res)
+	vk2::SamplerInfo make_fitting_sampler(const iresource& res)
 	{
 		vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
 		vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
 		vk2::SamplerAddressMode mode = vk2::SamplerAddressMode::ClampToEdge;
 #if HDK_DEBUG
-		if(res.get_flags().contains({ResourceFlag::ImageFilterNearest, ResourceFlag::ImageFilterLinear}))
+		if(res.get_flags().contains({resource_flag::image_filter_nearest, resource_flag::image_filter_linear}))
 		{
-			hdk::error("ImageResource contained both ResourceFlags ImageFilterNearest and ImageFilterLinear, which are mutually exclusive. Please submit a bug report.");
+			hdk::error("ImageResource contained both resource_flags image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
 		}
 #endif // HDK_DEBUG
-		if(res.get_flags().contains(ResourceFlag::ImageFilterNearest))
+		if(res.get_flags().contains(resource_flag::image_filter_nearest))
 		{
 			filter = vk2::LookupFilter::Nearest;
 		}
-		else if(res.get_flags().contains(ResourceFlag::ImageFilterLinear))
+		else if(res.get_flags().contains(resource_flag::image_filter_linear))
 		{
 			filter = vk2::LookupFilter::Linear;
 		}
 
-		if(res.get_flags().contains({ResourceFlag::ImageWrapClampEdge, ResourceFlag::ImageWrapRepeat, ResourceFlag::ImageWrapMirroredRepeat}))
+		if(res.get_flags().contains({resource_flag::image_wrap_clamp_edge, resource_flag::image_wrap_repeat, resource_flag::image_wrap_mirrored_repeat}))
 		{
-			hdk::error("ResourceFlags included all 3 of ImageWrapClampEdge, ImageWrapRepeat and ImageWrapMirroredRepeat, all of which are mutually exclusive. Please submit a bug report.");
+			hdk::error("resource_flags included all 3 of image_wrap_clamp_edge, image_wrap_repeat and image_wrap_mirrored_repeat, all of which are mutually exclusive. Please submit a bug report.");
 		}
-		if(res.get_flags().contains(ResourceFlag::ImageWrapClampEdge))
+		if(res.get_flags().contains(resource_flag::image_wrap_clamp_edge))
 		{
 			mode = vk2::SamplerAddressMode::ClampToEdge;
 		}
-		if(res.get_flags().contains(ResourceFlag::ImageWrapRepeat))
+		if(res.get_flags().contains(resource_flag::image_wrap_repeat))
 		{
 			mode = vk2::SamplerAddressMode::Repeat;
 		}
-		if(res.get_flags().contains(ResourceFlag::ImageWrapMirroredRepeat))
+		if(res.get_flags().contains(resource_flag::image_wrap_mirrored_repeat))
 		{
 			mode = vk2::SamplerAddressMode::MirroredRepeat;
 		}
@@ -72,7 +72,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	ResourceStorage::ResourceStorage(const renderer_infoVulkan& info):
-	AssetStorageCommon<IResource>(info.get_resources()),
+	AssetStorageCommon<iresource>(info.get_resources()),
 	frame_in_flight_count(device().get_device_window().get_output_images().size())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
@@ -84,13 +84,13 @@ namespace tz::gl
 
 		auto retrieve_resource_metadata = [this](icomponent* cmp)
 		{
-			IResource* res = cmp->get_resource();
+			iresource* res = cmp->get_resource();
 			switch(res->get_type())
 			{
-				case ResourceType::Buffer:
+				case resource_type::buffer:
 				{
 					// If the buffer is dynamic, let's link up the resource data span now.
-					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					if(res->get_access() == resource_access::dynamic_fixed || res->get_access() == resource_access::dynamic_variable)
 					{
 						std::span<const std::byte> initial_data = res->data();
 						std::span<std::byte> buffer_byte_data = this->components.back().as<BufferComponentVulkan>()->vk_get_buffer().map_as<std::byte>();
@@ -99,7 +99,7 @@ namespace tz::gl
 					}
 				}
 				break;
-				case ResourceType::Image:
+				case resource_type::image:
 				{
 					this->samplers.emplace_back(make_fitting_sampler(*res));
 
@@ -112,7 +112,7 @@ namespace tz::gl
 							.aspect = vk2::derive_aspect_from_format(underlying_image.get_format()).front()
 						 });
 					// If the image is dynamic, let's link up the resource data span now.
-					if(res->get_access() == ResourceAccess::DynamicFixed || res->get_access() == ResourceAccess::DynamicVariable)
+					if(res->get_access() == resource_access::dynamic_fixed || res->get_access() == resource_access::dynamic_variable)
 					{
 
 						std::span<const std::byte> initial_data = res->data();
@@ -123,7 +123,7 @@ namespace tz::gl
 				}
 				break;
 				default:
-					hdk::error("Unrecognised ResourceType. Please submit a bug report.");
+					hdk::error("Unrecognised resource_type. Please submit a bug report.");
 				break;
 			}
 		};
@@ -131,7 +131,7 @@ namespace tz::gl
 		this->components.reserve(this->count());
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
-			IResource* res = this->get(static_cast<hdk::hanval>(i));
+			iresource* res = this->get(static_cast<hdk::hanval>(i));
 			icomponent* comp = nullptr;
 			if(res == nullptr)
 			{
@@ -148,16 +148,16 @@ namespace tz::gl
 			{
 				switch(res->get_type())
 				{
-					case ResourceType::Buffer:
+					case resource_type::buffer:
 					{
 						this->components.push_back(tz::make_owned<BufferComponentVulkan>(*res));
 					}
 					break;
-					case ResourceType::Image:
+					case resource_type::image:
 						this->components.push_back(tz::make_owned<ImageComponentVulkan>(*res));
 					break;
 					default:
-						hdk::error("Unrecognised ResourceType. Please submit a bug report.");
+						hdk::error("Unrecognised resource_type. Please submit a bug report.");
 					break;
 				}
 				comp = this->components.back().get();
@@ -165,7 +165,7 @@ namespace tz::gl
 			retrieve_resource_metadata(comp);
 		}
 
-		std::size_t descriptor_buffer_count = this->resource_count_of(ResourceType::Buffer);
+		std::size_t descriptor_buffer_count = this->resource_count_of(resource_type::buffer);
 		if(info.state().graphics.index_buffer != hdk::nullhand)
 		{
 			descriptor_buffer_count--;
@@ -191,7 +191,7 @@ namespace tz::gl
 				});
 			}
 			// And one giant descriptor array for all textures. If there aren't any image resources though, we won't bother.
-			if(this->resource_count_of(ResourceType::Image))
+			if(this->resource_count_of(resource_type::image))
 			{
 				lbuilder.with_binding
 				({
@@ -248,7 +248,7 @@ namespace tz::gl
 	}
 
 	ResourceStorage::ResourceStorage(ResourceStorage&& move):
-	AssetStorageCommon<IResource>(static_cast<AssetStorageCommon<IResource>&&>(move)),
+	AssetStorageCommon<iresource>(static_cast<AssetStorageCommon<iresource>&&>(move)),
 	components(std::move(move.components)),
 	image_component_views(std::move(move.image_component_views)),
 	samplers(std::move(move.samplers)),
@@ -265,7 +265,7 @@ namespace tz::gl
 
 	ResourceStorage& ResourceStorage::operator=(ResourceStorage&& rhs)
 	{
-		AssetStorageCommon<IResource>::operator=(std::move(rhs));
+		AssetStorageCommon<iresource>::operator=(std::move(rhs));
 		std::swap(this->components, rhs.components);
 		std::swap(this->image_component_views, rhs.image_component_views);
 		std::swap(this->samplers, rhs.samplers);
@@ -309,7 +309,7 @@ namespace tz::gl
 		return this->descriptors.sets;
 	}
 
-	std::size_t ResourceStorage::resource_count_of(ResourceType type) const
+	std::size_t ResourceStorage::resource_count_of(resource_type type) const
 	{
 		return std::count_if(this->components.begin(), this->components.end(),
 		[type](const auto& component_ptr)
@@ -325,7 +325,7 @@ namespace tz::gl
 		auto handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(image_resource_handle));
 		for(std::size_t i = 0; i < handle_val; i++)
 		{
-			if(this->get(static_cast<hdk::hanval>(i))->get_type() == ResourceType::Image)
+			if(this->get(static_cast<hdk::hanval>(i))->get_type() == resource_type::image)
 			{
 				img_view_idx++;
 			}
@@ -345,7 +345,7 @@ namespace tz::gl
 		buffers.reserve(this->components.size());
 		for(auto& component_ptr : this->components)
 		{
-			if(component_ptr->get_resource()->get_type() == ResourceType::Buffer)
+			if(component_ptr->get_resource()->get_type() == resource_type::buffer)
 			{
 				buffers.push_back(component_ptr.as<BufferComponentVulkan>());
 			}
@@ -414,8 +414,8 @@ namespace tz::gl
 	{
 		for(auto& component_ptr : this->components)
 		{
-			IResource* res = component_ptr->get_resource();
-			if(res->get_type() == ResourceType::Image && res->get_access() != ResourceAccess::StaticFixed)
+			iresource* res = component_ptr->get_resource();
+			if(res->get_type() == resource_type::image && res->get_access() != resource_access::static_fixed)
 			{
 				const vk2::Image& img = component_ptr.as<const ImageComponentVulkan>()->vk_get_image();
 				// If it's dynamic in any way, the user might have written changes.
@@ -1224,13 +1224,13 @@ namespace tz::gl
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
 				icomponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
-				if(comp->get_resource()->get_type() == ResourceType::Buffer)
+				if(comp->get_resource()->get_type() == resource_type::buffer)
 				{
 					vk2::Buffer& buf = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
 					std::string n = buf.debug_get_name();
 					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
 				}
-				if(comp->get_resource()->get_type() == ResourceType::Image)
+				if(comp->get_resource()->get_type() == resource_type::image)
 				{
 					vk2::Image& img = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
 					std::string n = img.debug_get_name();
@@ -1282,12 +1282,12 @@ namespace tz::gl
 		return this->resources.count();
 	}
 
-	const IResource* RendererVulkan::get_resource(resource_handle handle) const
+	const iresource* RendererVulkan::get_resource(resource_handle handle) const
 	{
 		return this->resources.get(handle);
 	}
 
-	IResource* RendererVulkan::get_resource(resource_handle handle)
+	iresource* RendererVulkan::get_resource(resource_handle handle)
 	{
 		return this->resources.get(handle);
 	}
@@ -1523,11 +1523,11 @@ namespace tz::gl
 	void RendererVulkan::edit_resource_write(renderer_edit::resource_write arg, [[maybe_unused]] EditData& data)
 	{
 		icomponent* comp = this->get_component(arg.resource);
-		IResource* res = comp->get_resource();
+		iresource* res = comp->get_resource();
 		// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
 		switch(res->get_access())
 		{
-			case ResourceAccess::StaticFixed:
+			case resource_access::static_fixed:
 			{
 				// Create staging buffer.
 				vk2::Buffer staging_buffer
@@ -1546,7 +1546,7 @@ namespace tz::gl
 				// Schedule work to transfer.
 				switch(res->get_type())
 				{
-					case ResourceType::Buffer:
+					case resource_type::buffer:
 					{
 						vk2::Buffer& buffer = static_cast<BufferComponentVulkan*>(comp)->vk_get_buffer();
 						this->command.do_scratch_operations([&buffer, &staging_buffer, &arg](vk2::CommandBufferRecording& record)
@@ -1562,7 +1562,7 @@ namespace tz::gl
 
 					}
 					break;
-					case ResourceType::Image:
+					case resource_type::image:
 					{
 						vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
 						if(arg.offset != 0)
@@ -1645,14 +1645,14 @@ namespace tz::gl
 			icomponent* icomp = this->get_component(static_cast<hdk::hanval>(i));
 			switch(icomp->get_resource()->get_type())
 			{
-				case ResourceType::Buffer:
+				case resource_type::buffer:
 					buffer_components.push_back(static_cast<BufferComponentVulkan*>(icomp));
 				break;
-				case ResourceType::Image:
+				case resource_type::image:
 					image_components.push_back(static_cast<ImageComponentVulkan*>(icomp));
 				break;
 				default:
-					hdk::error("Unknown ResourceType.");
+					hdk::error("Unknown resource_type.");
 				break;
 			}
 		}
@@ -1691,9 +1691,9 @@ namespace tz::gl
 			// Finally, upload data for static resources.
 			for(std::size_t i = 0; i < buffer_components.size(); i++)
 			{
-				IResource* res = buffer_components[i]->get_resource();
-				hdk::assert(res->get_type() == ResourceType::Buffer, "Expected ResourceType of buffer, but is not a buffer. Please submit a bug report.");
-				if(res->get_access() != ResourceAccess::StaticFixed)
+				iresource* res = buffer_components[i]->get_resource();
+				hdk::assert(res->get_type() == resource_type::buffer, "Expected resource_type of buffer, but is not a buffer. Please submit a bug report.");
+				if(res->get_access() != resource_access::static_fixed)
 				{
 					continue;
 				}
@@ -1714,9 +1714,9 @@ namespace tz::gl
 			}
 			for(std::size_t i = 0; i < image_components.size(); i++)
 			{
-				IResource* res = image_components[i]->get_resource();
-				hdk::assert(res->get_type() == ResourceType::Image, "Expected ResourceType of Texture, but is not a texture. Please submit a bug report.");
-				if(res->get_access() != ResourceAccess::StaticFixed)
+				iresource* res = image_components[i]->get_resource();
+				hdk::assert(res->get_type() == resource_type::image, "Expected resource_type of Texture, but is not a texture. Please submit a bug report.");
+				if(res->get_access() != resource_access::static_fixed)
 				{
 					continue;
 				}

@@ -8,17 +8,17 @@ namespace tz::gl
 	{
 		hdk::assert(std::all_of(info.colours.begin(), info.colours.end(), [](icomponent* comp)
 		{
-			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_type() == ResourceType::Image;
+			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_type() == resource_type::image;
 		}), "Provided at least one icomponent to an ImageOutput colour attachment which was not an ImageResource. Please submit a bug report.");
 
 		hdk::assert(std::all_of(info.colours.begin(), info.colours.end(), [](icomponent* comp)
 		{
-			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_flags().contains(ResourceFlag::RendererOutput);
-		}), "ImageOutput contains colour attachments, but one or more of them is missing ResourceFlag::RendererOutput. An image resource cannot be an image output attachment unless it contains this flag.");
+			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_flags().contains(resource_flag::renderer_output);
+		}), "ImageOutput contains colour attachments, but one or more of them is missing resource_flag::renderer_output. An image resource cannot be an image output attachment unless it contains this flag.");
 
 		if(this->depth_attachment != nullptr)
 		{
-			hdk::assert(info.depth->get_resource() != nullptr && info.depth->get_resource()->get_type() == ResourceType::Image, "Provided an icomponent to an ImageOutput depth attachment which was not an ImageResource. Please submit a bug report.");
+			hdk::assert(info.depth->get_resource() != nullptr && info.depth->get_resource()->get_type() == resource_type::image, "Provided an icomponent to an ImageOutput depth attachment which was not an ImageResource. Please submit a bug report.");
 		}
 		std::transform(info.colours.begin(), info.colours.end(), this->colour_attachments.begin(),
 		[](icomponent* comp)

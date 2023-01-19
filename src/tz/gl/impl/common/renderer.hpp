@@ -71,11 +71,11 @@ namespace tz::gl
 		 * @param Handle handle returned from a previous call to `add_resource`. If this handle came from a different renderer_info, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		const IResource* get_resource(resource_handle handle);
+		const iresource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
-		std::vector<const IResource*> get_resources() const;
+		std::vector<const iresource*> get_resources() const;
 		std::span<const renderer_handle> get_dependencies() const;
 		std::span<const icomponent* const> get_components() const;
 		/**
@@ -84,7 +84,7 @@ namespace tz::gl
 		 * @param resource Resource which will be owned by a renderer.
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
-		resource_handle add_resource(const IResource& resource);
+		resource_handle add_resource(const iresource& resource);
 		resource_handle ref_resource(icomponent* component);
 		resource_handle ref_resource(renderer_handle ren, resource_handle res);
 		/**
@@ -137,7 +137,7 @@ namespace tz::gl
 	private:
 		std::size_t real_resource_count() const;
 		/// Stores all provided resources. It is assumed that their lifetime is valid for the entirety of this helper struct's lifetime.
-		std::vector<std::unique_ptr<IResource>> resources = {};
+		std::vector<std::unique_ptr<iresource>> resources = {};
 		/// Stores all provided components. In this context, components act as references to existing resources owned by another renderer.
 		std::vector<icomponent*> components = {};
 		/// Output. Can be null, which defaults to rendering into the main window.

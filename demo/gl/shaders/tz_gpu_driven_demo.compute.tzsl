@@ -3,7 +3,7 @@ kernel(1, 1, 1);
 
 import <draw>
 
-resource(id = 0) buffer DrawIndirectBuffer
+resource(id = 0) buffer draw_indirect_buffer
 {
 	tz::draw::DrawIndirectCommand command;
 } draw_buffer;
