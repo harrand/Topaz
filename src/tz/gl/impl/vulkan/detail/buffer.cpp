@@ -4,7 +4,7 @@
 
 namespace tz::gl::vk2
 {
-	Buffer::Buffer(BufferInfo info):
+	Buffer::Buffer(buffer_info info):
 	DebugNameable<VK_OBJECT_TYPE_BUFFER>(*info.device),
 	buffer(VK_NULL_HANDLE),
 	info(info),
@@ -108,7 +108,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Buffer::get_device() const
 	{
-		hdk::assert(this->info.device != nullptr && !this->info.device->is_null(), "BufferInfo contained nullptr or null LogicalDevice");
+		hdk::assert(this->info.device != nullptr && !this->info.device->is_null(), "buffer_info contained nullptr or null LogicalDevice");
 		return *this->info.device;
 	}
 

@@ -14,7 +14,7 @@ int main()
 	tz::initialise();
 	{
 		tz::gl::renderer_info cinfo;
-		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::draw_indirect_command{},
+		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command{},
 		{
 			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 		}));

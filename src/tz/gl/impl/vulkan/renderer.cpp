@@ -29,7 +29,7 @@ namespace tz::gl
 #if HDK_DEBUG
 		if(res.get_flags().contains({resource_flag::image_filter_nearest, resource_flag::image_filter_linear}))
 		{
-			hdk::error("ImageResource contained both resource_flags image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
+			hdk::error("image_resource contained both resource_flags image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
 		}
 #endif // HDK_DEBUG
 		if(res.get_flags().contains(resource_flag::image_filter_nearest))
@@ -431,7 +431,7 @@ namespace tz::gl
 					// Image row data really is tightly packed.
 					continue;
 				}
-				hdk::assert(row_pitch > resource_row_pitch, "Linear CPU vk2::Image row data is negatively-padded? Assuming ImageResource data is tightly-packed, it uses %zu bytes per row, but the actual image uses %zu? It should be using more, not less!", resource_row_pitch, row_pitch);
+				hdk::assert(row_pitch > resource_row_pitch, "Linear CPU vk2::Image row data is negatively-padded? Assuming image_resource data is tightly-packed, it uses %zu bytes per row, but the actual image uses %zu? It should be using more, not less!", resource_row_pitch, row_pitch);
 				/*
 					// Consider the image resource data for a 3x3 image, there are 2 extra padding bytes which we want to fix.
 					// The next row needs to start X padding bytes later.
@@ -1524,7 +1524,7 @@ namespace tz::gl
 	{
 		icomponent* comp = this->get_component(arg.resource);
 		iresource* res = comp->get_resource();
-		// Note: Resource data won't change even though we change the buffer/image component. We need to set that aswell!
+		// Note: resource data won't change even though we change the buffer/image component. We need to set that aswell!
 		switch(res->get_access())
 		{
 			case resource_access::static_fixed:
@@ -1631,7 +1631,7 @@ namespace tz::gl
 	void renderer_vulkan::edit_resource_reference(renderer_edit::resource_reference arg, EditData& data)
 	{
 		(void)arg; (void)data;
-		hdk::error("Resource Reference re-seating is not yet implemented.");
+		hdk::error("resource Reference re-seating is not yet implemented.");
 	}
 
 	void renderer_vulkan::setup_static_resources()

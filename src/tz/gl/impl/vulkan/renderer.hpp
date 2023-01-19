@@ -105,7 +105,7 @@ namespace tz::gl
 
 		/// Storage for all cloned resource's components.
 		std::vector<tz::maybe_owned_ptr<icomponent>> components = {};
-		/// An ImageView for each ImageResource that was passed to the constructor. These are views referring to the corresponding image_component to said resource.
+		/// An ImageView for each image_resource that was passed to the constructor. These are views referring to the corresponding image_component to said resource.
 		std::vector<vk2::ImageView> image_component_views = {};
 		// A unique sampler for every single image. There is no duplicate checking, so there may be redundant samplers in here. However, it's not trivial to fix this because we use combined image sampling - to use separate image and samplers requires shader source changes, which means big tzslc changes for vulkan only. Looks like it could end up changing syntax so we avoid this for the time being.
 		std::vector<vk2::Sampler> samplers = {};

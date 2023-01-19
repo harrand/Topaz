@@ -81,7 +81,7 @@ namespace tz::gl
 		/**
 		 * Add a new resource, which will be used by a renderer which is created from this helper struct.
 		 *
-		 * @param resource Resource which will be owned by a renderer.
+		 * @param resource resource which will be owned by a renderer.
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
 		resource_handle add_resource(const iresource& resource);
@@ -228,10 +228,10 @@ namespace tz::gl
 			if(ImGui::CollapsingHeader("Resources"))
 			{
 				unsigned int rcount = renderer.resource_count() - 1;
-				ImGui::Text("Resource Count: %u", renderer.resource_count());
+				ImGui::Text("resource Count: %u", renderer.resource_count());
 				static int res_id = 0;
 				res_id = std::clamp(res_id, 0, static_cast<int>(rcount));
-				ImGui::SliderInt("Resource ID:", &res_id, 0, rcount);
+				ImGui::SliderInt("resource ID:", &res_id, 0, rcount);
 
 				// Display information about current resource.
 				ImGui::Indent();
@@ -253,7 +253,7 @@ namespace tz::gl
 				auto* comp = renderer.get_component(han);
 				if(comp != nullptr && ImGui::CollapsingHeader("Index Buffer"))
 				{
-					ImGui::Text("[Resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Text("[resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
 					ImGui::Indent();
 					comp->get_resource()->dbgui();
 					ImGui::Unindent();
@@ -265,7 +265,7 @@ namespace tz::gl
 				auto* comp = renderer.get_component(han);
 				if(comp != nullptr && ImGui::CollapsingHeader("Draw Indirect Buffer"))
 				{
-					ImGui::Text("[Resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Text("[resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
 					ImGui::Indent();
 					comp->get_resource()->dbgui();
 					ImGui::Unindent();

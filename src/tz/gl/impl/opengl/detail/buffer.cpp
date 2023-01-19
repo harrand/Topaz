@@ -4,7 +4,7 @@
 
 namespace tz::gl::ogl2
 {
-	Buffer::Buffer(BufferInfo info):
+	Buffer::Buffer(buffer_info info):
 	buffer(0),
 	info(info)
 	{

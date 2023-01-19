@@ -55,7 +55,7 @@ namespace tz::gl::vk2
 		DebugNameable<VK_OBJECT_TYPE_IMAGE>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image));
 	}
 
-	Image::Image(ImageInfo info):
+	Image::Image(image_info info):
 	DebugNameable<VK_OBJECT_TYPE_IMAGE>(*info.device),
 	image(VK_NULL_HANDLE),
 	format(info.format),

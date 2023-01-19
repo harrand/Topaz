@@ -146,7 +146,7 @@ int main()
 			.count = 1
 		}).with_binding
 		({
-			// Vertex Resource Buffer
+			// Vertex resource Buffer
 			.type = DescriptorType::StorageBuffer,
 			.count = 1
 		}).with_binding

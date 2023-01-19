@@ -37,7 +37,7 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_buffers
 	 * Specifies creation flags for a @ref Buffer
 	 */
-	struct BufferInfo
+	struct buffer_info
 	{
 		/// Specifies the target to which the buffer is bound. Only one buffer can be bound to a target at a time.
 		BufferTarget target;
@@ -58,7 +58,7 @@ namespace tz::gl::ogl2
 		 * Create a new Buffer.
 		 * @param info Specifies creation flags for the buffer.
 		 */
-		Buffer(BufferInfo info);
+		Buffer(buffer_info info);
 		Buffer(const Buffer& copy) = delete;
 		Buffer(Buffer&& move);
 		~Buffer();
@@ -146,7 +146,7 @@ namespace tz::gl::ogl2
 		Buffer();
 
 		GLuint buffer;
-		BufferInfo info;
+		buffer_info info;
 		mutable void* mapped_ptr = nullptr;
 		std::string debug_name = "";
 	};

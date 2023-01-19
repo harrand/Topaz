@@ -737,7 +737,7 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{
-					hdk::error("renderer_edit Resource Reference re-seating is not yet implemented (OGL)");
+					hdk::error("renderer_edit resource Reference re-seating is not yet implemented (OGL)");
 				}
 				else
 				{

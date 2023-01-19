@@ -142,8 +142,8 @@ namespace tz::gl
 			old_data.resize(old_span.size_bytes());
 			std::copy(old_span.begin(), old_span.end(), old_data.begin());
 		}
-		// Secondly, let's tell the ImageResource the new dimensions. It's data will be invalidated as soon as we do this.
-		auto* ires = static_cast<ImageResource*>(this->resource);
+		// Secondly, let's tell the image_resource the new dimensions. It's data will be invalidated as soon as we do this.
+		auto* ires = static_cast<image_resource*>(this->resource);
 		ires->set_dimensions(new_dimensions);
 		// Then, recreate the image. The image will have the new dimensions but undefined data contents.
 		std::string debug_name = this->image.debug_get_name();
@@ -173,8 +173,8 @@ namespace tz::gl
 
 	vk2::Image image_component_vulkan::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an ImageResource. Please submit a bug report.");
-		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
+		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
+		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 		if(this->resource->get_flags().contains(resource_flag::renderer_output))
 		{

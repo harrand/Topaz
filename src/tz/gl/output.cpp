@@ -9,7 +9,7 @@ namespace tz::gl
 		hdk::assert(std::all_of(info.colours.begin(), info.colours.end(), [](icomponent* comp)
 		{
 			return comp != nullptr && comp->get_resource() != nullptr && comp->get_resource()->get_type() == resource_type::image;
-		}), "Provided at least one icomponent to an image_output colour attachment which was not an ImageResource. Please submit a bug report.");
+		}), "Provided at least one icomponent to an image_output colour attachment which was not an image_resource. Please submit a bug report.");
 
 		hdk::assert(std::all_of(info.colours.begin(), info.colours.end(), [](icomponent* comp)
 		{
@@ -18,7 +18,7 @@ namespace tz::gl
 
 		if(this->depth_attachment != nullptr)
 		{
-			hdk::assert(info.depth->get_resource() != nullptr && info.depth->get_resource()->get_type() == resource_type::image, "Provided an icomponent to an image_output depth attachment which was not an ImageResource. Please submit a bug report.");
+			hdk::assert(info.depth->get_resource() != nullptr && info.depth->get_resource()->get_type() == resource_type::image, "Provided an icomponent to an image_output depth attachment which was not an image_resource. Please submit a bug report.");
 		}
 		std::transform(info.colours.begin(), info.colours.end(), this->colour_attachments.begin(),
 		[](icomponent* comp)

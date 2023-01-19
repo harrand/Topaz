@@ -162,7 +162,7 @@ int main()
 			.count = 1
 		}).with_binding
 		({
-			// Triangle Resource Buffer
+			// Triangle resource Buffer
 			.type = DescriptorType::StorageBuffer,
 			.count = 1
 		}).with_binding
@@ -357,7 +357,7 @@ int main()
 				.usage = {BufferUsage::TransferSource},
 				.residency = MemoryResidency::CPU
 			}};
-			// Resource buffer is CPUPersistent, so we don't need to do any scratch commands for it.
+			// resource buffer is CPUPersistent, so we don't need to do any scratch commands for it.
 			// Now a buffer which we can transfer image data from is needed.
 			// RGBA32_UInt, so four uint8_ts per element. 32x32 elements
 			Buffer on_texture_staging_buffer

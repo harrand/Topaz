@@ -45,7 +45,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
 		tz::gl::resource_handle imgh = rinfo.add_resource
 		(
-			tz::gl::ImageResource::from_memory
+			tz::gl::image_resource::from_memory
 			(
 				{
 					0b1111'1111_uc,
@@ -82,7 +82,7 @@ int main()
 		);
 		tz::gl::resource_handle bufh = rinfo.add_resource
 		(
-			tz::gl::BufferResource::from_many
+			tz::gl::buffer_resource::from_many
 			(
 				{
 					TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
@@ -96,7 +96,7 @@ int main()
 		);
 		tz::gl::resource_handle ibufh = rinfo.add_resource
 		(
-			tz::gl::BufferResource::from_many
+			tz::gl::buffer_resource::from_many
 			(
 				{0u, 1u, 2u},
 				{

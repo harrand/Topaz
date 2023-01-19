@@ -37,11 +37,11 @@ int main()
 		};
 
 
-		tz::gl::BufferResource buf = tz::gl::BufferResource::from_one(BufferData{},
+		tz::gl::buffer_resource buf = tz::gl::buffer_resource::from_one(BufferData{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
 		});
-		tz::gl::BufferResource buf2 = tz::gl::BufferResource::from_one(FeedbackData{},
+		tz::gl::buffer_resource buf2 = tz::gl::buffer_resource::from_one(FeedbackData{},
 		{
 			tz::gl::resource_access::dynamic_fixed
 		});

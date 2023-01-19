@@ -17,7 +17,7 @@ int main()
 		.name = "tz_compute_demo",
 	});
 	{
-		tz::gl::BufferResource colour_buffer = tz::gl::BufferResource::from_many
+		tz::gl::buffer_resource colour_buffer = tz::gl::buffer_resource::from_many
 		(
 		 	{
 				hdk::vec4{0.0f, 0.0f, 0.0f, 1.0f},
@@ -26,7 +26,7 @@ int main()
 				hdk::vec4{0.0f, 0.0f, 1.0f, 1.0f}
 			}
 		);
-		tz::gl::BufferResource time_buffer = tz::gl::BufferResource::from_one(0u);
+		tz::gl::buffer_resource time_buffer = tz::gl::buffer_resource::from_one(0u);
 
 		tz::gl::renderer_info pinfo;
 		pinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(tz_compute_demo, compute));

@@ -58,15 +58,15 @@ int main()
 		};
 		// This demo uses the following
 		// renderer to combine two images into one and render it to the screen.
-		tz::gl::ImageResource image_out0 = tz::gl::ImageResource::from_uninitialised
+		tz::gl::image_resource image_out0 = tz::gl::image_resource::from_uninitialised
 		({
 			.format = tz::gl::image_format::BGRA32,
 			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),
 			.flags = {tz::gl::resource_flag::renderer_output}
 		});
-		tz::gl::ImageResource image_out1 = image_out0;
+		tz::gl::image_resource image_out1 = image_out0;
 
-		tz::gl::BufferResource bloom_data_buffer = tz::gl::BufferResource::from_one(BloomOptions{},
+		tz::gl::buffer_resource bloom_data_buffer = tz::gl::buffer_resource::from_one(BloomOptions{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
 		});
@@ -80,7 +80,7 @@ int main()
 		tz::gl::renderer_handle combineh = tz::gl::get_device().create_renderer(combine_info);
 
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
-		tz::gl::BufferResource render_data = tz::gl::BufferResource::from_one(RenderData{},
+		tz::gl::buffer_resource render_data = tz::gl::buffer_resource::from_one(RenderData{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
 		});

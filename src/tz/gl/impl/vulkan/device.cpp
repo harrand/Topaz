@@ -198,7 +198,7 @@ namespace tz::gl
 	void DeviceWindowVulkan::make_depth_image()
 	{
 		this->depth_image = vk2::Image
-		{vk2::ImageInfo{
+		{vk2::image_info{
 			.device = &this->get_swapchain().get_device(),
 			.format = vk2::image_format::Depth32_SFloat,
 			.dimensions = this->get_swapchain().get_dimensions(),

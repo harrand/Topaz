@@ -15,9 +15,9 @@ namespace tz::gl
 	 */
 	enum class resource_type
 	{
-		/// - Resource is a buffer resource, which contains arbitrary data.
+		/// - resource is a buffer resource, which contains arbitrary data.
 		buffer,
-		/// - Resource is an image resource, of some format and dimensions.
+		/// - resource is an image resource, of some format and dimensions.
 		image
 	};
 
@@ -59,11 +59,11 @@ namespace tz::gl
 	 */
 	enum class resource_access
 	{
-		/// - Resource data is written once initially, and cannot be resized.
+		/// - resource data is written once initially, and cannot be resized.
 		static_fixed,
-		/// - Resource data is always writable, but cannot be resized.
+		/// - resource data is always writable, but cannot be resized.
 		dynamic_fixed,
-		/// - Resource data is always writeable and resizeable.
+		/// - resource data is always writeable and resizeable.
 		dynamic_variable,
 		Count
 	};
@@ -75,8 +75,8 @@ namespace tz::gl
 	 * Resources are subsidiary blocks of either buffer or image data which are used as assets within a shader. Shaders are used by either Renderers or Preprocessors.
 	 *
 	 * Two concrete implementations of resources exist at present by default. These are:
-	 * - @ref BufferResource
-	 * - @ref ImageResource
+	 * - @ref buffer_resource
+	 * - @ref image_resource
 	 */
 	class iresource : public hdk::unique_cloneable<iresource>
 	{
@@ -135,7 +135,7 @@ namespace tz::gl
 		virtual void dbgui() = 0;
 	};
 
-	/// Opaque handle which is used to refer to an existing Resource within a renderer or Processor.
+	/// Opaque handle which is used to refer to an existing resource within a renderer or Processor.
 	using resource_handle = hdk::handle<iresource>;
 }
 

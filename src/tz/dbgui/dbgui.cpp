@@ -324,7 +324,7 @@ namespace tz::dbgui
 		io.BackendRendererUserData = global_render_data;
 
 		// Make renderer.
-		// - Font texture ImageResource.
+		// - Font texture image_resource.
 		unsigned char* font_pixels;
 		int font_width, font_height;
 		io.Fonts->GetTexDataAsRGBA32(&font_pixels, &font_width, &font_height);
@@ -333,20 +333,20 @@ namespace tz::dbgui
 		// IB and VB have initial size of 1KiB.
 		struct Kibibyte{char d[1024];};
 
-		tz::gl::BufferResource vertex_buffer = tz::gl::BufferResource::from_one(Kibibyte{},
+		tz::gl::buffer_resource vertex_buffer = tz::gl::buffer_resource::from_one(Kibibyte{},
 		{
 			.access = tz::gl::resource_access::dynamic_variable
 		});
-		tz::gl::BufferResource index_buffer = tz::gl::BufferResource::from_one(Kibibyte{},
+		tz::gl::buffer_resource index_buffer = tz::gl::buffer_resource::from_one(Kibibyte{},
 		{
 			.access = tz::gl::resource_access::dynamic_variable
 		});
-		tz::gl::BufferResource shader_data_buffer = tz::gl::BufferResource::from_one(TopazShaderRenderData{},
+		tz::gl::buffer_resource shader_data_buffer = tz::gl::buffer_resource::from_one(TopazShaderRenderData{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
 		});
 
-		tz::gl::ImageResource font_image = tz::gl::ImageResource::from_memory
+		tz::gl::image_resource font_image = tz::gl::image_resource::from_memory
 		(
 			font_data,
 			{

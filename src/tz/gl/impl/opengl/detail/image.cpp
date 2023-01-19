@@ -4,7 +4,7 @@
 
 namespace tz::gl::ogl2
 {
-	Image::Image(ImageInfo info):
+	Image::Image(image_info info):
 	image(0),
 	info(info),
 	maybe_bindless_handle(std::nullopt)

@@ -26,11 +26,11 @@ int main()
 			float pad0[2];
 		};
 
-		tz::gl::BufferResource blur_data = tz::gl::BufferResource::from_one(BlurData{},
+		tz::gl::buffer_resource blur_data = tz::gl::buffer_resource::from_one(BlurData{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
 		});
-		tz::gl::ImageResource blur_image = tz::gl::ImageResource::from_uninitialised
+		tz::gl::image_resource blur_image = tz::gl::image_resource::from_uninitialised
 		({
 			.format = tz::gl::image_format::BGRA32,
 			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),

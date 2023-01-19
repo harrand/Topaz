@@ -13,7 +13,7 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_image
 	 * Specifies creation flags for a @ref Image.
 	 */
-	struct ImageInfo
+	struct image_info
 	{
 		/// Format of the image data.
 		image_format format;
@@ -36,7 +36,7 @@ namespace tz::gl::ogl2
 		 * Create a new Image.
 		 * @param info Specifies creation flags for the image.
 		 */
-		Image(ImageInfo info);
+		Image(image_info info);
 		Image(const Image& copy) = delete;
 		Image(Image&& move);
 		~Image();
@@ -96,7 +96,7 @@ namespace tz::gl::ogl2
 		Image();
 
 		GLuint image;
-		ImageInfo info;
+		image_info info;
 		std::optional<BindlessTextureHandle> maybe_bindless_handle;
 		std::string debug_name = "";
 	};

@@ -28,22 +28,22 @@ namespace tz::gl
 		};
 	}
 
-	resource_type Resource::get_type() const
+	resource_type resource::get_type() const
 	{
 		return this->type;
 	}
 
-	resource_access Resource::get_access() const
+	resource_access resource::get_access() const
 	{
 		return this->access;
 	}
 
-	const resource_flags& Resource::get_flags() const
+	const resource_flags& resource::get_flags() const
 	{
 		return this->flags;
 	}
 
-	std::span<const std::byte> Resource::data() const
+	std::span<const std::byte> resource::data() const
 	{
 		if(this->mapped_resource_data.has_value())
 		{
@@ -53,7 +53,7 @@ namespace tz::gl
 		return {beg_offsetted, this->resource_data.end()};
 	}
 
-	std::span<std::byte> Resource::data()
+	std::span<std::byte> resource::data()
 	{
 		if(this->mapped_resource_data.has_value())
 		{
@@ -63,7 +63,7 @@ namespace tz::gl
 		return {beg_offsetted, this->resource_data.end()};
 	}
 
-	void Resource::dbgui()
+	void resource::dbgui()
 	{
 		const char* type;
 		switch(this->get_type())
@@ -78,9 +78,9 @@ namespace tz::gl
 				type = "Unknown";
 			break;
 		}
-		ImGui::Text("Resource Type: %s", type);
-		ImGui::Text("Resource Access: %s", detail::resource_access_strings[static_cast<int>(this->get_access())]);
-		if(!this->get_flags().empty() && ImGui::CollapsingHeader("Resource Flags"))
+		ImGui::Text("resource Type: %s", type);
+		ImGui::Text("resource Access: %s", detail::resource_access_strings[static_cast<int>(this->get_access())]);
+		if(!this->get_flags().empty() && ImGui::CollapsingHeader("resource Flags"))
 		{
 			ImGui::Indent();
 			for(tz::gl::resource_flag flag : this->get_flags())
@@ -91,12 +91,12 @@ namespace tz::gl
 		}
 	}
 
-	void Resource::resize_data(std::size_t new_size)
+	void resource::resize_data(std::size_t new_size)
 	{
 		this->resource_data.resize(new_size);
 	}
 
-	Resource::Resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags):
+	resource::resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags):
 	access(access),
 	resource_data(resource_data),
 	mapped_resource_data(std::nullopt),
@@ -107,25 +107,25 @@ namespace tz::gl
 		hdk::assert(!flags.contains(resource_flag::image_mip_nearest) && !flags.contains(resource_flag::image_mip_linear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
 	}
 
-	void Resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
+	void resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
 		hdk::assert(this->get_access() == resource_access::dynamic_fixed || this->get_access() == resource_access::dynamic_variable, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
 	}
 
-	bool BufferResource::is_null() const
+	bool buffer_resource::is_null() const
 	{
 		return this->data().size_bytes() == 1 && this->data_as<std::byte>().front() == std::byte{255};
 	}
 
-	std::unique_ptr<iresource> BufferResource::unique_clone() const
+	std::unique_ptr<iresource> buffer_resource::unique_clone() const
 	{
-		return std::make_unique<BufferResource>(*this);
+		return std::make_unique<buffer_resource>(*this);
 	}
 
-	void BufferResource::dbgui()
+	void buffer_resource::dbgui()
 	{
-		Resource::dbgui();
+		resource::dbgui();
 		auto size_bytes = this->data().size_bytes();
 		ImGui::Text("Buffer Size: ");
 		ImGui::SameLine();
@@ -147,10 +147,10 @@ namespace tz::gl
 		}
 	}
 
-	BufferResource::BufferResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_flags flags):
-	Resource(access, resource_data, initial_alignment_offset, resource_type::buffer, flags){}
+	buffer_resource::buffer_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_flags flags):
+	resource(access, resource_data, initial_alignment_offset, resource_type::buffer, flags){}
 			
-	ImageResource ImageResource::from_uninitialised(ImageInfo info)
+	image_resource image_resource::from_uninitialised(image_info info)
 	{
 		std::size_t pixel_size = tz::gl::pixel_size_bytes(info.format);
 		std::vector<std::byte> resource_data(pixel_size * info.dimensions[0] * info.dimensions[1]);
@@ -158,43 +158,43 @@ namespace tz::gl
 		return {info.access, resource_data, 0, info.format, info.dimensions, info.flags};
 	}
 
-	bool ImageResource::is_null() const
+	bool image_resource::is_null() const
 	{
-		const ImageResource null = ImageResource::null();
+		const image_resource null = image_resource::null();
 		auto null_data = null.data();
 		auto my_data = this->data();
 		return this->get_dimensions() == null.get_dimensions() && this->get_format() == null.get_format() && std::equal(my_data.begin(), my_data.end(), null_data.begin());
 	}
 
-	std::unique_ptr<iresource> ImageResource::unique_clone() const
+	std::unique_ptr<iresource> image_resource::unique_clone() const
 	{
-		return std::make_unique<ImageResource>(*this);
+		return std::make_unique<image_resource>(*this);
 	}
 
-	void ImageResource::dbgui()
+	void image_resource::dbgui()
 	{
-		Resource::dbgui();
+		resource::dbgui();
 		ImGui::Text("Image Dimensions: {%u, %u}", this->dimensions[0], this->dimensions[1]);
 		ImGui::Text("Image Format: %s", detail::image_format_strings[static_cast<int>(this->get_format())]);
 	}
 
-	image_format ImageResource::get_format() const
+	image_format image_resource::get_format() const
 	{
 		return this->format;
 	}
 
-	hdk::vec2ui ImageResource::get_dimensions() const
+	hdk::vec2ui image_resource::get_dimensions() const
 	{
 		return this->dimensions;
 	}
 
-	void ImageResource::set_dimensions(hdk::vec2ui dims)
+	void image_resource::set_dimensions(hdk::vec2ui dims)
 	{
 		this->dimensions = dims;
 	}
 
-	ImageResource::ImageResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags):
-	Resource(access, resource_data, initial_alignment_offset, resource_type::image, flags),
+	image_resource::image_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags):
+	resource(access, resource_data, initial_alignment_offset, resource_type::image, flags),
 	format(format),
 	dimensions(dimensions){}
 }

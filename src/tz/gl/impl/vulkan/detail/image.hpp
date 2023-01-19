@@ -125,7 +125,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_image
 	 * Specifies creation flags for an @ref Image.
 	 */
-	struct ImageInfo
+	struct image_info
 	{
 		/// LogicalDevice owning this image. Must not be null.
 		const LogicalDevice* device;
@@ -159,7 +159,7 @@ namespace tz::gl::vk2
 		 * @param info Information about the Swapchain and which image to refer to.
 		 */
 		Image(SwapchainImageInfo sinfo);
-		Image(ImageInfo info);
+		Image(image_info info);
 		Image(const Image& copy) = delete;
 		Image(Image&& move);
 		~Image();

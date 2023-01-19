@@ -6,13 +6,13 @@
 namespace tz::gl
 {
 	template<tz::trivially_copyable T>
-	BufferResource BufferResource::from_one(const T& data, BufferInfo info)
+	buffer_resource buffer_resource::from_one(const T& data, buffer_info info)
 	{
-		return BufferResource::from_many<T>({data}, info);
+		return buffer_resource::from_many<T>({data}, info);
 	}
 
 	template<std::ranges::contiguous_range R>
-	BufferResource BufferResource::from_many(R&& data, BufferInfo info)
+	buffer_resource buffer_resource::from_many(R&& data, buffer_info info)
 	{
 		using T = decltype(*std::ranges::begin(data));
 		auto size = std::distance(std::ranges::begin(data), std::ranges::end(data));
@@ -32,7 +32,7 @@ namespace tz::gl
 		return {info.access, resource_data, alignment_usage, info.flags};
 	}
 
-	ImageResource ImageResource::from_memory(std::ranges::contiguous_range auto data, ImageInfo info)
+	image_resource image_resource::from_memory(std::ranges::contiguous_range auto data, image_info info)
 	{
 		using T = std::decay_t<decltype(*std::ranges::begin(data))>;
 		auto size = std::distance(std::ranges::begin(data), std::ranges::end(data));

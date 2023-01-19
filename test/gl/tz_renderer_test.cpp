@@ -56,7 +56,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::resource_handle r1bh = rinfo1.add_resource(tz::gl::BufferResource::from_one(expected_value));
+	tz::gl::resource_handle r1bh = rinfo1.add_resource(tz::gl::buffer_resource::from_one(expected_value));
 	tz::gl::renderer_handle r1h = tz::gl::get_device().create_renderer(rinfo1);
 
 
@@ -94,7 +94,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::resource_handle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
+	tz::gl::resource_handle r1ih = rinfo1.add_resource(tz::gl::image_resource::from_memory({expected_value},
 	{
 		.format = tz::gl::image_format::BGRA32,
 		.dimensions = {1u, 1u},
@@ -130,7 +130,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
+	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::buffer_resource::from_one(1.0f,
 	{
 		.access = tz::gl::resource_access::dynamic_variable
 	}));
@@ -179,7 +179,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	constexpr hdk::vec2ui old_dims{1u, 1u};
 	constexpr hdk::vec2ui new_dims{2u, 2u};
 
-	tz::gl::resource_handle ih = rinfo.add_resource(tz::gl::ImageResource::from_uninitialised
+	tz::gl::resource_handle ih = rinfo.add_resource(tz::gl::image_resource::from_uninitialised
 	({
 		.format = tz::gl::image_format::RGBA32,
 		.dimensions = old_dims,
@@ -193,7 +193,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	// Do the resize.
 	{
 		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(rh);
-		const tz::gl::ImageResource* ires = static_cast<const tz::gl::ImageResource*>(ren.get_resource(ih));
+		const tz::gl::image_resource* ires = static_cast<const tz::gl::image_resource*>(ren.get_resource(ih));
 
 		hdk::assert(ires->get_dimensions() == old_dims, "Image had unexpected dimensions prior to imageresize edit. Expected {%u, %u}, got {%u, %u}", old_dims[0], old_dims[1], ires->get_dimensions()[0], ires->get_dimensions()[1]);
 
@@ -227,7 +227,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
+	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::buffer_resource::from_many(old_data,
 	{
 		.access = tz::gl::resource_access::dynamic_fixed
 		// TODO: Test should pass even if static_fixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
@@ -282,7 +282,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	constexpr std::uint32_t black_pixel = 0x000000ff;
 	constexpr std::uint32_t white_pixel = 0xffffffff;
 
-	tz::gl::resource_handle ih = rinfo.add_resource(tz::gl::ImageResource::from_memory
+	tz::gl::resource_handle ih = rinfo.add_resource(tz::gl::image_resource::from_memory
 	(
 	{
 		black_pixel
@@ -382,7 +382,7 @@ TESTFUNC_BEGIN(renderer_index_buffer)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	rinfo.state().graphics.index_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
+	rinfo.state().graphics.index_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(0u,
 	{
 		.flags = {tz::gl::resource_flag::index_buffer}
 	}));
@@ -398,7 +398,7 @@ TESTFUNC_BEGIN(renderer_indirect_buffer)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::draw_indirect_command{},
+	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command{},
 	{
 		.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 	}));

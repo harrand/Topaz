@@ -102,7 +102,7 @@ namespace tz::gl
 		ogl2::Image& old_image = this->ogl_get_image();
 		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
 
-		auto* ires = static_cast<ImageResource*>(this->resource);
+		auto* ires = static_cast<image_resource*>(this->resource);
 		ires->set_dimensions(dims);
 		ires->resize_data(tz::gl::pixel_size_bytes(ires->get_format()) * dims[0] * dims[1]);
 		std::swap(old_image, new_image);
@@ -120,8 +120,8 @@ namespace tz::gl
 
 	ogl2::Image image_component_ogl::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an ImageResource. Please submit a bug report.");
-		const ImageResource* img_res = static_cast<const ImageResource*>(this->resource);
+		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
+		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
 		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
 		ogl2::AddressMode mode = ogl2::AddressMode::ClampToEdge;
 #if HDK_DEBUG

@@ -36,7 +36,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk_buffer
 	 * Specifies creation flags for a @ref Buffer.
 	 */
-	struct BufferInfo
+	struct buffer_info
 	{
 		/// Owning device. Must not be nullptr or null.
 		const LogicalDevice* device;
@@ -55,7 +55,7 @@ namespace tz::gl::vk2
 	class Buffer : public DebugNameable<VK_OBJECT_TYPE_BUFFER>
 	{
 	public:
-		Buffer(BufferInfo info);
+		Buffer(buffer_info info);
 		Buffer(const Buffer& copy) = delete;
 		Buffer(Buffer&& move);
 		~Buffer();
@@ -114,7 +114,7 @@ namespace tz::gl::vk2
 		Buffer();
 
 		VkBuffer buffer;
-		BufferInfo info;
+		buffer_info info;
 		VmaAllocation vma_alloc;
 		VmaAllocationInfo vma_alloc_info;
 	};

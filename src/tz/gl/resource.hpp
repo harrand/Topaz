@@ -9,10 +9,10 @@
 
 namespace tz::gl
 {
-	class Resource : public iresource
+	class resource : public iresource
 	{
 	public:
-		virtual ~Resource() = default;
+		virtual ~resource() = default;
 		// iresource
 		virtual resource_type get_type() const final;
 		virtual resource_access get_access() const final;
@@ -23,7 +23,7 @@ namespace tz::gl
 
 		void resize_data(std::size_t new_size);
 	protected:
-		Resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags = {});
+		resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;
 	private:
 		resource_access access;
@@ -34,7 +34,7 @@ namespace tz::gl
 		resource_flags flags;
 	};
 
-	struct BufferInfo
+	struct buffer_info
 	{
 		resource_access access = resource_access::static_fixed;
 		resource_flags flags = {};
@@ -44,41 +44,41 @@ namespace tz::gl
 	 * @ingroup tz_gl2_res
 	 * Represents a fixed-size, static Buffer to be used by a renderer or Processor.
 	 */
-	class BufferResource : public Resource
+	class buffer_resource : public resource
 	{
 	public:
-		virtual ~BufferResource() = default;
+		virtual ~buffer_resource() = default;
 		/**
-		 * Create a BufferResource where the underlying data is a single object.
+		 * Create a buffer_resource where the underlying data is a single object.
 		 * @note You should be able to optionally pass in braced-initializer-list expressions in for the data, so long as the types of the elements are easily deduceable.
 		 * @tparam T Object type. It must be trivially_copyable.
 		 * @param data Object value to store within the underlying data.
-		 * @param info Buffer info, see @ref BufferInfo for details.
-		 * @return BufferResource containing a copy of the provided object.
+		 * @param info Buffer info, see @ref buffer_info for details.
+		 * @return buffer_resource containing a copy of the provided object.
 		 */
 		template<tz::trivially_copyable T>
-		static BufferResource from_one(const T& data, BufferInfo info = {});
+		static buffer_resource from_one(const T& data, buffer_info info = {});
 
 		template<tz::trivially_copyable T>
-		static BufferResource from_many(std::initializer_list<T> ts, BufferInfo info = {})
+		static buffer_resource from_many(std::initializer_list<T> ts, buffer_info info = {})
 		{
 			return from_many(std::span<const T>(ts), info);
 		}
 		/**
-		 * Create a BufferResource where the underlying data is an array of objects.
+		 * Create a buffer_resource where the underlying data is an array of objects.
 		 * @tparam R Type satisfying std::contiguous_range.
 		 * @param data A range of elements of some type.
-		 * @param info Buffer info. See @ref BufferInfo for details.
-		 * @return BufferResource containing a copy of the provided array.
+		 * @param info Buffer info. See @ref buffer_info for details.
+		 * @return buffer_resource containing a copy of the provided array.
 		 */
 		template<std::ranges::contiguous_range R>
-		static BufferResource from_many(R&& data, BufferInfo info = {});
+		static buffer_resource from_many(R&& data, buffer_info info = {});
 		/**
-		 * Create a null BufferResource. It is not practically useful, aside from as a placeholder.
+		 * Create a null buffer_resource. It is not practically useful, aside from as a placeholder.
 		 *
 		 * Null BufferResources are guaranteed to have size() == 1, not zero, but its contents and size are implementation-defined. It is also guaranteed to be static_fixed and have no flags.
 		 */
-		static BufferResource null()
+		static buffer_resource null()
 		{
 			return from_one(std::byte{255}, {});
 		}
@@ -87,14 +87,14 @@ namespace tz::gl
 		virtual std::unique_ptr<iresource> unique_clone() const final;
 		virtual void dbgui() final;
 	private:
-		BufferResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_flags flags);
+		buffer_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_flags flags);
 	};
 
 
 	/**
 	 * Represents creation flags for an image.
 	 */
-	struct ImageInfo
+	struct image_info
 	{
 		/// Image format.
 		image_format format;
@@ -110,33 +110,33 @@ namespace tz::gl
 	 * @ingroup tz_gl2_res
 	 * Represents a fixed-size, static Image to be used by a renderer or Processor.
 	 */
-	class ImageResource : public Resource
+	class image_resource : public resource
 	{
 	public:
-		virtual ~ImageResource() = default;
+		virtual ~image_resource() = default;
 		/**
-		 * Create an ImageResource where the image-data is uninitialised. See @ref ImageInfo for details.
-		 * @return ImageResource containing uninitialised image-data.
+		 * Create an image_resource where the image-data is uninitialised. See @ref image_info for details.
+		 * @return image_resource containing uninitialised image-data.
 		 */
-		static ImageResource from_uninitialised(ImageInfo info = {});
+		static image_resource from_uninitialised(image_info info = {});
 
 		template<tz::trivially_copyable T>
-		static ImageResource from_memory(std::initializer_list<T> ts, ImageInfo info = {})
+		static image_resource from_memory(std::initializer_list<T> ts, image_info info = {})
 		{
 			return from_memory(std::span<const T>(ts), info);
 		}
 		/**
-		 * Create an ImageResource using values existing in memory.
+		 * Create an image_resource using values existing in memory.
 		 * @note You should be able to optionally pass in braced-initializer-list expressions in for the data, so long as the types of the elements are easily deduceable.
 		 * @param data Range containing a block of memory representing the image data. The length of the block should exactly match that of the image's size in bytes, or the behaviour is undefined.
 		 */
-		static ImageResource from_memory(std::ranges::contiguous_range auto data, ImageInfo info = {});
+		static image_resource from_memory(std::ranges::contiguous_range auto data, image_info info = {});
 		/**
-		 * Create a null ImageResource.
+		 * Create a null image_resource.
 		 *
 		 * The format, dimensions and image values are all implementation-defined, but the access is guaranteed to be static_fixed.
 		 */
-		static ImageResource null()
+		static image_resource null()
 		{
 			return from_memory
 			(
@@ -174,7 +174,7 @@ namespace tz::gl
 		hdk::vec2ui get_dimensions() const;
 		void set_dimensions(hdk::vec2ui dims);
 	private:
-		ImageResource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags);
+		image_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags);
 		image_format format;
 		hdk::vec2ui dimensions;
 	};
