@@ -29,11 +29,11 @@ int main()
 			.modules =
 			{
 				{
-					.type = ShaderType::Vertex,
+					.type = ShaderType::vertex,
 					.code = vtx_src
 				},
 				{
-					.type = ShaderType::Fragment,
+					.type = ShaderType::fragment,
 					.code = frg_src
 				}
 			 }

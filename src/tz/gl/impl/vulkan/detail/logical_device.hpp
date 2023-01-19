@@ -13,11 +13,11 @@ namespace tz::gl::vk2
 	enum class QueueFamilyType
 	{
 		/// - Indicates that queues within this family are suitable for graphics operations.
-		Graphics,
+		graphics,
 		/// - Indicates that queues within this family are suitable for compute operations.
-		Compute,
+		compute,
 		/// - Indicates that queues within this family are suitable for transfer operations.
-		Transfer
+		transfer
 	};
 
 	/**

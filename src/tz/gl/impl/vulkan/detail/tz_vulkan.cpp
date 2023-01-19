@@ -73,7 +73,7 @@ namespace tz::gl::vk2
 					auto shadertype_index = static_cast<int>(callback_message[shadertype_loc]) - '0';
 					switch(shadertype_index)
 					{
-						// Note: These must match the order in tzslc::ShaderStage.
+						// Note: These must match the order in tzslc::shader_stage.
 						case 0:
 							shadertype = "Compute";
 						break;

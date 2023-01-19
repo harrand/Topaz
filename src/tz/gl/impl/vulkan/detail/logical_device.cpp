@@ -149,15 +149,15 @@ namespace tz::gl::vk2
 				info.present_support = false;
 				if(prop.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 				{
-					info.types |= QueueFamilyType::Graphics;
+					info.types |= QueueFamilyType::graphics;
 				}
 				if(prop.queueFlags & VK_QUEUE_COMPUTE_BIT)
 				{
-					info.types |= QueueFamilyType::Compute;
+					info.types |= QueueFamilyType::compute;
 				}
 				if(prop.queueFlags & VK_QUEUE_TRANSFER_BIT)
 				{
-					info.types |= QueueFamilyType::Transfer;
+					info.types |= QueueFamilyType::transfer;
 				}
 
 				const VulkanInstance& vk_inst = this->get_hardware().get_instance();

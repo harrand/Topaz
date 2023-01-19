@@ -18,7 +18,7 @@ int main()
 		{
 			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 		}));
-		cinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(tz_gpu_driven_demo, compute));
+		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(tz_gpu_driven_demo, compute));
 		cinfo.debug_name("Compute Driver");
 		tz::gl::renderer_handle ch = tz::gl::device().create_renderer(cinfo);
 
@@ -26,8 +26,8 @@ int main()
 		rinfo.debug_name("Triangle Renderer");
 		tz::gl::resource_handle dbufh_ref = rinfo.ref_resource(ch, dbufh);
 		rinfo.state().graphics.draw_buffer = dbufh_ref;
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_gpu_driven_demo_render, vertex));
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_gpu_driven_demo_render, fragment));
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_gpu_driven_demo_render, vertex));
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_gpu_driven_demo_render, fragment));
 		tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 		while(!tz::window().is_close_requested())

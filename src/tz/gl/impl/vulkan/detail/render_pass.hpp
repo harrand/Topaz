@@ -38,8 +38,8 @@ namespace tz::gl::vk2
 	 */
 	enum class PipelineContext
 	{
-		Graphics = VK_PIPELINE_BIND_POINT_GRAPHICS,
-		Compute = VK_PIPELINE_BIND_POINT_COMPUTE,
+		graphics = VK_PIPELINE_BIND_POINT_GRAPHICS,
+		compute = VK_PIPELINE_BIND_POINT_COMPUTE,
 	};
 
 
@@ -163,7 +163,7 @@ namespace tz::gl::vk2
 		struct Subpass
 		{
 			/// Specifies how this subpass binds to the graphics pipeline.
-			PipelineContext context = PipelineContext::Graphics;
+			PipelineContext context = PipelineContext::graphics;
 			/// List of all attachments which will be input attachments during this subpass.
 			tz::BasicList<InputAttachmentReference> input_attachments;
 			/// List of all attachments which will be colour attachments during this subpass.
@@ -243,7 +243,7 @@ namespace tz::gl::vk2
 		 */
 		void set_pipeline_context(PipelineContext context);
 		/**
-		 * Query what the current bind point to the graphics pipeline is. By default, this will be @ref PipelineContext::Graphics.
+		 * Query what the current bind point to the graphics pipeline is. By default, this will be @ref PipelineContext::graphics.
 		 */
 		const PipelineContext& get_pipeline_context() const;
 		/**

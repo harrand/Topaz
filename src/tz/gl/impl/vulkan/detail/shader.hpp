@@ -12,12 +12,12 @@ namespace tz::gl::vk2
 	 */
 	enum class ShaderType
 	{
-		Vertex = VK_SHADER_STAGE_VERTEX_BIT,
-		TessellationControl = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
-		TessellationEvaluation = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
-		Fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
+		vertex = VK_SHADER_STAGE_VERTEX_BIT,
+		tessellation_control = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
+		tessellation_evaluation = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
+		fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
 
-		Compute = VK_SHADER_STAGE_COMPUTE_BIT
+		compute = VK_SHADER_STAGE_COMPUTE_BIT
 	};
 	
 	using ShaderTypeField = tz::EnumField<ShaderType>;

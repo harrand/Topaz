@@ -156,7 +156,7 @@ namespace tz::gl::ogl2
 		return std::any_of(this->info.modules.begin(), this->info.modules.end(),
 		[](const ShaderModuleInfo& mod)
 		{
-			return mod.type == ShaderType::Compute;
+			return mod.type == ShaderType::compute;
 		});
 	}
 
@@ -165,7 +165,7 @@ namespace tz::gl::ogl2
 		return std::any_of(this->info.modules.begin(), this->info.modules.end(),
 		[](const ShaderModuleInfo& mod)
 		{
-			return mod.type == ShaderType::TessellationControl || mod.type == ShaderType::TessellationEvaluation;
+			return mod.type == ShaderType::tessellation_control || mod.type == ShaderType::tessellation_evaluation;
 		});
 	}
 
@@ -184,19 +184,19 @@ namespace tz::gl::ogl2
 				const char* extension;
 				switch(s_module.get_type())
 				{
-					case ShaderType::Vertex:
+					case ShaderType::vertex:
 						extension = "vertex";
 					break;
-					case ShaderType::TessellationControl:
+					case ShaderType::tessellation_control:
 						extension = "tesscon";
 					break;
-					case ShaderType::TessellationEvaluation:
+					case ShaderType::tessellation_evaluation:
 						extension = "tesseval";
 					break;
-					case ShaderType::Fragment:
+					case ShaderType::fragment:
 						extension = "fragment";
 					break;
-					case ShaderType::Compute:
+					case ShaderType::compute:
 						extension = "compute";
 					break;
 					default:

@@ -7,27 +7,27 @@ namespace tz::gl
 		std::fill(this->source_data.begin(), this->source_data.end(), "");
 	}
 
-	void ShaderInfo::set_shader(ShaderStage stage, std::string_view source)
+	void ShaderInfo::set_shader(shader_stage stage, std::string_view source)
 	{
 		this->source_data[static_cast<int>(stage)] = source;
 	}
 
-	std::string_view ShaderInfo::get_shader(ShaderStage stage) const
+	std::string_view ShaderInfo::get_shader(shader_stage stage) const
 	{
 		return this->source_data[static_cast<int>(stage)];
 	}
 
-	bool ShaderInfo::has_shader(ShaderStage stage) const
+	bool ShaderInfo::has_shader(shader_stage stage) const
 	{
 		return !this->get_shader(stage).empty();
 	}
 
-	void ShaderInfo::set_meta(ShaderStage stage, ShaderMeta meta)
+	void ShaderInfo::set_meta(shader_stage stage, shader_meta meta)
 	{
 		this->meta_data[static_cast<int>(stage)] = meta;
 	}
 
-	const ShaderMeta& ShaderInfo::get_meta(ShaderStage stage) const
+	const shader_meta& ShaderInfo::get_meta(shader_stage stage) const
 	{
 		return this->meta_data[static_cast<int>(stage)];
 	}

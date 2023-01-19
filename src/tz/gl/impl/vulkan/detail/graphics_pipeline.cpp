@@ -282,9 +282,9 @@ namespace tz::gl::vk2
 		hdk::assert(!std::holds_alternative<std::monostate>(this->pipeline_variant), "Cannot get context of the null pipeline!");
 		if(std::holds_alternative<GraphicsPipeline>(this->pipeline_variant))
 		{
-			return PipelineContext::Graphics;
+			return PipelineContext::graphics;
 		}
-		return PipelineContext::Compute;
+		return PipelineContext::compute;
 	}
 
 	const LogicalDevice& Pipeline::get_device() const

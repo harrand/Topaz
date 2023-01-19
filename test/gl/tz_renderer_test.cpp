@@ -29,14 +29,14 @@ TESTFUNC_BEGIN(create_destroy_empty_renderer)
 	// Both graphics and compute renderers.
 	// Start with graphics.
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
 	hdk::assert(!tz::gl::device().get_renderer(rh).is_null(), "Empty renderer (Graphics) is considered the null renderer.");
 	// Now compute.
 	tz::gl::renderer_info cinfo;
-	cinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
+	cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
 	tz::gl::renderer_handle ch = tz::gl::device().create_renderer(rinfo);
 
 	hdk::assert(!tz::gl::device().get_renderer(ch).is_null(), "Empty renderer (Compute) is considered the null renderer.");
@@ -54,15 +54,15 @@ TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	// Create 2 renderers. One with a buffer resource, the other referencing that buffer resource.
 	constexpr float expected_value = 69.0f;
 	tz::gl::renderer_info rinfo1;
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo1.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo1.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle r1bh = rinfo1.add_resource(tz::gl::BufferResource::from_one(expected_value));
 	tz::gl::renderer_handle r1h = tz::gl::device().create_renderer(rinfo1);
 
 
 	tz::gl::renderer_info rinfo2;
-	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo2.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo2.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle r2bh = rinfo2.ref_resource(r1h, r1bh);
 
 	tz::gl::renderer_handle r2h = tz::gl::device().create_renderer(rinfo2);
@@ -92,8 +92,8 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	// Create 2 renderers. One with an image resource, the other referencing that image resource.
 	constexpr std::uint32_t expected_value = 0xff0000ff;
 	tz::gl::renderer_info rinfo1;
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo1.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo1.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
 	{
 		.format = tz::gl::image_format::BGRA32,
@@ -104,8 +104,8 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 
 
 	tz::gl::renderer_info rinfo2;
-	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo2.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo2.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle r2ih = rinfo2.ref_resource(r1h, r1ih);
 
 	tz::gl::renderer_handle r2h = tz::gl::device().create_renderer(rinfo2);
@@ -128,8 +128,8 @@ TESTFUNC_END
 TESTFUNC_BEGIN(rendereredit_bufferresize)
 	// Create a renderer with buffer containing {1.0f}, then resize it to {2.0f, 3.0f}
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
 	{
 		.access = tz::gl::resource_access::dynamic_variable
@@ -173,8 +173,8 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	}
 	// Create a renderer with image of dimensions {1, 1} and then resize to {2, 2}
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 
 	constexpr hdk::vec2ui old_dims{1u, 1u};
 	constexpr hdk::vec2ui new_dims{2u, 2u};
@@ -225,8 +225,8 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	constexpr std::array<float, 3> new_data{4.0f, 5.0f, 6.0f};
 
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
 	{
 		.access = tz::gl::resource_access::dynamic_fixed
@@ -276,8 +276,8 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	}
 	// Create a renderer with image of dimensions {1, 1}, colour black.
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 
 	constexpr std::uint32_t black_pixel = 0x000000ff;
 	constexpr std::uint32_t white_pixel = 0xffffffff;
@@ -324,7 +324,7 @@ TESTFUNC_END
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_computeconfig)
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Compute, ImportedShaderSource(empty, compute));
+	rinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
 
 	tz::gl::renderer_handle ch = tz::gl::device().create_renderer(rinfo);
 
@@ -351,8 +351,8 @@ TESTFUNC_END
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_renderconfig)
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 
 	tz::gl::renderer_handle rh = tz::gl::device().create_renderer(rinfo);
 
@@ -380,8 +380,8 @@ TESTFUNC_END
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(renderer_index_buffer)
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	rinfo.state().graphics.index_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(0u,
 	{
 		.flags = {tz::gl::resource_flag::index_buffer}
@@ -396,8 +396,8 @@ TESTFUNC_END
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(renderer_indirect_buffer)
 	tz::gl::renderer_info rinfo;
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	rinfo.state().graphics.draw_buffer = rinfo.add_resource(tz::gl::BufferResource::from_one(tz::gl::DrawIndirectCommand{},
 	{
 		.flags = {tz::gl::resource_flag::draw_indirect_buffer}

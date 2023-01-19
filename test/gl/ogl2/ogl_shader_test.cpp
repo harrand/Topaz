@@ -10,11 +10,11 @@ void create_empty_shader()
 		.modules =
 		{
 			{
-				.type = ShaderType::Vertex,
+				.type = ShaderType::vertex,
 				.code = "#version 430\nvoid main(){}"
 			},
 			{
-				.type = ShaderType::Fragment,
+				.type = ShaderType::fragment,
 				.code = "#version 430\nvoid main(){}"
 			}
 		}

@@ -41,8 +41,8 @@ int main()
 		std::size_t triangle_count = 1;
 
 		tz::gl::renderer_info rinfo;
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
 		tz::gl::resource_handle imgh = rinfo.add_resource
 		(
 			tz::gl::ImageResource::from_memory

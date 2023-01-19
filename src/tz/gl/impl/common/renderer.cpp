@@ -188,7 +188,7 @@ namespace tz::gl
 			{
 				return comp != nullptr && comp->get_resource()->get_type() == resource_type::image;
 			});
-			return (this->shader().has_shader(tz::gl::ShaderStage::Compute) ? "C" : "R") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == output_target::offscreen_image ? "h" : "w");
+			return (this->shader().has_shader(tz::gl::shader_stage::compute) ? "C" : "R") + std::to_string(bufc) + "b" + std::to_string(imgc) + std::string("i") + (this->output != nullptr && this->output->get_target() == output_target::offscreen_image ? "h" : "w");
 		#else
 			return "";
 		#endif

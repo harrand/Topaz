@@ -362,8 +362,8 @@ namespace tz::dbgui
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
 		rinfo.add_resource(font_image);
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
-		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(dbgui, vertex));
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::NoPresent, tz::gl::renderer_option::RenderWait, tz::gl::renderer_option::Internal});
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
@@ -371,8 +371,8 @@ namespace tz::dbgui
 		global_render_data->renderer = tz::gl::device().create_renderer(rinfo);
 
 		tz::gl::renderer_info empty;
-		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
-		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
+		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
+		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::Internal_FinalDebugUIRenderer, tz::gl::renderer_option::Internal});
 		empty.debug_name("ImGui Final Renderer");
 		global_render_data->final_renderer = tz::gl::device().create_renderer(empty);

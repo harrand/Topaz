@@ -126,7 +126,7 @@ int main()
 		});
 		
 		SubpassBuilder sbuilder;
-		sbuilder.set_pipeline_context(PipelineContext::Graphics);
+		sbuilder.set_pipeline_context(PipelineContext::graphics);
 		sbuilder.with_colour_attachment
 		({
 			.attachment_idx = 0,
@@ -231,14 +231,14 @@ int main()
 				ShaderModuleInfo
 				{
 					.device = &ldev,
-					.type = ShaderType::Vertex,
+					.type = ShaderType::vertex,
 					.code = read_shader_code("demo/gl/vk2/shaders/triangle_demo_medium.vertex.tzsl.spv")
 				},
 				
 				ShaderModuleInfo
 				{
 					.device = &ldev,
-					.type = ShaderType::Fragment,
+					.type = ShaderType::fragment,
 					.code = read_shader_code("demo/gl/vk2/shaders/triangle_demo_medium.fragment.tzsl.spv")
 				}
 			}
@@ -275,7 +275,7 @@ int main()
 		// Retrieve a hardware queue which we can use.
 		hardware::Queue* queue = ldev.get_hardware_queue
 		({
-			.field = {QueueFamilyType::Graphics},
+			.field = {QueueFamilyType::graphics},
 			.present_support = true
 		});
 
@@ -300,7 +300,7 @@ int main()
 				recording.bind_pipeline
 				({
 					.pipeline = &graphics_pipeline,
-					.pipeline_context = PipelineContext::Graphics
+					.pipeline_context = PipelineContext::graphics
 				});
 				tz::BasicList<const DescriptorSet*> sets;
 				sets.resize(dpool_alloc.sets.length());
@@ -309,7 +309,7 @@ int main()
 				recording.bind_descriptor_sets
 				({
 					.pipeline_layout = &pipeline_layout,
-					.context = PipelineContext::Graphics,
+					.context = PipelineContext::graphics,
 					.descriptor_sets = sets,
 					.first_set_id = 0
 				});

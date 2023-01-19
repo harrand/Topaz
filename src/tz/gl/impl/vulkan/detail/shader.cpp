@@ -121,7 +121,7 @@ namespace tz::gl::vk2
 		return std::any_of(this->modules.begin(), this->modules.end(),
 		[](const ShaderModule& mod)
 		{
-			return mod.get_type() == ShaderType::Compute;
+			return mod.get_type() == ShaderType::compute;
 		});
 	}
 
@@ -139,19 +139,19 @@ namespace tz::gl::vk2
 				const char* ext;
 				switch(s_module.get_type())
 				{
-					case ShaderType::Vertex:
+					case ShaderType::vertex:
 						ext = "vertex";
 					break;
-					case ShaderType::TessellationControl:
+					case ShaderType::tessellation_control:
 						ext = "tesscon";
 					break;
-					case ShaderType::TessellationEvaluation:
+					case ShaderType::tessellation_evaluation:
 						ext = "tesseval";
 					break;
-					case ShaderType::Fragment:
+					case ShaderType::fragment:
 						ext = "fragment";
 					break;
-					case ShaderType::Compute:
+					case ShaderType::compute:
 						ext = "compute";
 					break;
 					default:

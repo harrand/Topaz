@@ -312,47 +312,47 @@ namespace tz::gl
 	ogl2::Shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
 	{
 		tz::BasicList<ogl2::ShaderModuleInfo> modules;
-		if(sinfo.has_shader(ShaderStage::Compute))
+		if(sinfo.has_shader(shader_stage::compute))
 		{
 			// Compute, we only care about the compute shader.
 			modules =
 			{
 				{
-					.type = ogl2::ShaderType::Compute,
-					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::Compute))
+					.type = ogl2::ShaderType::compute,
+					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::compute))
 				}
 			};
 		}
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			hdk::assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			hdk::assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
 			modules =
 			{
 				{
-					.type = ogl2::ShaderType::Vertex,
-					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::Vertex))
+					.type = ogl2::ShaderType::vertex,
+					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::vertex))
 				},
 				{
-					.type = ogl2::ShaderType::Fragment,
-					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::Fragment))
+					.type = ogl2::ShaderType::fragment,
+					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::fragment))
 				}
 			};
 
-			if(sinfo.has_shader(ShaderStage::TessellationControl) || sinfo.has_shader(ShaderStage::TessellationEvaluation))
+			if(sinfo.has_shader(shader_stage::tessellation_control) || sinfo.has_shader(shader_stage::tessellation_evaluation))
 			{
-				hdk::assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+				hdk::assert(sinfo.has_shader(shader_stage::tessellation_control) && sinfo.has_shader(shader_stage::tessellation_evaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
 				modules.add
 				({
-					.type = ogl2::ShaderType::TessellationControl,
-					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::TessellationControl))
+					.type = ogl2::ShaderType::tessellation_control,
+					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::tessellation_control))
 				});
 
 				modules.add
 				({
-					.type = ogl2::ShaderType::TessellationEvaluation,
-					.code = ogl2::OGLString(sinfo.get_shader(ShaderStage::TessellationEvaluation))
+					.type = ogl2::ShaderType::tessellation_evaluation,
+					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::tessellation_evaluation))
 				});
 			}
 		}

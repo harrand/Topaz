@@ -703,7 +703,7 @@ namespace tz::gl
 		}
 
 		vk2::SubpassBuilder sbuilder;
-		sbuilder.set_pipeline_context(vk2::PipelineContext::Graphics);
+		sbuilder.set_pipeline_context(vk2::PipelineContext::graphics);
 		for(std::uint32_t i = 0; i < colour_output_length; i++)
 		{
 			sbuilder.with_colour_attachment
@@ -862,13 +862,13 @@ namespace tz::gl
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan GraphicsPipelineManager (Shader Create)", 0xFFAAAA00);
 		std::vector<char> vtx_src, frg_src, tesscon_src, tesseval_src, cmp_src;
 		tz::BasicList<vk2::ShaderModuleInfo> modules;
-		if(sinfo.has_shader(ShaderStage::Compute))
+		if(sinfo.has_shader(shader_stage::compute))
 		{
-			hdk::assert(!sinfo.has_shader(ShaderStage::Vertex), "Shader has compute shader and vertex shader. These are mutually exclusive.");
-			hdk::assert(!sinfo.has_shader(ShaderStage::Fragment), "Shader has compute shader and fragment shader. These are mutually exclusive.");
+			hdk::assert(!sinfo.has_shader(shader_stage::vertex), "Shader has compute shader and vertex shader. These are mutually exclusive.");
+			hdk::assert(!sinfo.has_shader(shader_stage::fragment), "Shader has compute shader and fragment shader. These are mutually exclusive.");
 			// Compute, we only care about the compute shader.
 			{
-				std::string_view compute_source = sinfo.get_shader(ShaderStage::Compute);
+				std::string_view compute_source = sinfo.get_shader(shader_stage::compute);
 				cmp_src.resize(compute_source.length());
 				std::copy(compute_source.begin(), compute_source.end(), cmp_src.begin());
 			}
@@ -876,7 +876,7 @@ namespace tz::gl
 			{
 				{
 					.device = &ldev,
-					.type = vk2::ShaderType::Compute,
+					.type = vk2::ShaderType::compute,
 					.code = cmp_src
 				}
 			};
@@ -884,14 +884,14 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			hdk::assert(sinfo.has_shader(ShaderStage::Vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			hdk::assert(sinfo.has_shader(ShaderStage::Fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
+			hdk::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
 			{
-				std::string_view vertex_source = sinfo.get_shader(ShaderStage::Vertex);
+				std::string_view vertex_source = sinfo.get_shader(shader_stage::vertex);
 				vtx_src.resize(vertex_source.length());
 				std::copy(vertex_source.begin(), vertex_source.end(), vtx_src.begin());
 
-				std::string_view fragment_source = sinfo.get_shader(ShaderStage::Fragment);
+				std::string_view fragment_source = sinfo.get_shader(shader_stage::fragment);
 				frg_src.resize(fragment_source.length());
 				std::copy(fragment_source.begin(), fragment_source.end(), frg_src.begin());
 			}
@@ -899,37 +899,37 @@ namespace tz::gl
 			{
 				{
 					.device = &ldev,
-					.type = vk2::ShaderType::Vertex,
+					.type = vk2::ShaderType::vertex,
 					.code = vtx_src
 				},
 				{
 					.device = &ldev,
-					.type = vk2::ShaderType::Fragment,
+					.type = vk2::ShaderType::fragment,
 					.code = frg_src
 				}
 			};
 			// Add optional shader stages.
-			if(sinfo.has_shader(ShaderStage::TessellationControl) || sinfo.has_shader(ShaderStage::TessellationEvaluation))
+			if(sinfo.has_shader(shader_stage::tessellation_control) || sinfo.has_shader(shader_stage::tessellation_evaluation))
 			{
-				hdk::assert(sinfo.has_shader(ShaderStage::TessellationControl) && sinfo.has_shader(ShaderStage::TessellationEvaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+				hdk::assert(sinfo.has_shader(shader_stage::tessellation_control) && sinfo.has_shader(shader_stage::tessellation_evaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
 
-				std::string_view tesscon_source = sinfo.get_shader(ShaderStage::TessellationControl);
+				std::string_view tesscon_source = sinfo.get_shader(shader_stage::tessellation_control);
 				tesscon_src.resize(tesscon_source.length());
 				std::copy(tesscon_source.begin(), tesscon_source.end(), tesscon_src.begin());
 
-				std::string_view tesseval_source = sinfo.get_shader(ShaderStage::TessellationEvaluation);
+				std::string_view tesseval_source = sinfo.get_shader(shader_stage::tessellation_evaluation);
 				tesseval_src.resize(tesseval_source.length());
 				std::copy(tesseval_source.begin(), tesseval_source.end(), tesseval_src.begin());
 				modules.add(vk2::ShaderModuleInfo
 				{
 					.device = &ldev,
-					.type = vk2::ShaderType::TessellationControl,
+					.type = vk2::ShaderType::tessellation_control,
 					.code = tesscon_src
 				});
 				modules.add(vk2::ShaderModuleInfo
 				{
 					.device = &ldev,
-					.type = vk2::ShaderType::TessellationEvaluation,
+					.type = vk2::ShaderType::tessellation_evaluation,
 					.code = tesseval_src
 				});
 			}
@@ -1014,12 +1014,12 @@ namespace tz::gl
 		this->instant_compute_enabled = info.get_options().contains(renderer_option::RenderWait);
 		this->graphics_queue = device().vk_get_logical_device().get_hardware_queue
 		({
-			.field = {vk2::QueueFamilyType::Graphics},
+			.field = {vk2::QueueFamilyType::graphics},
 			.present_support = this->requires_present
 		});
 		this->compute_queue = device().vk_get_logical_device().get_hardware_queue
 		({
-			.field = {vk2::QueueFamilyType::Compute},
+			.field = {vk2::QueueFamilyType::compute},
 			.present_support = false
 		});
 		this->command_pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};

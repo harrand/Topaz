@@ -13,15 +13,15 @@ namespace tz::gl::ogl2
 	enum class ShaderType : GLenum
 	{
 		/// - Vertex Shader.
-		Vertex = GL_VERTEX_SHADER,
+		vertex = GL_VERTEX_SHADER,
 		/// - Tessellation Control Shader.
-		TessellationControl = GL_TESS_CONTROL_SHADER,
+		tessellation_control = GL_TESS_CONTROL_SHADER,
 		/// - Tessellation Evaluation Shader.
-		TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
+		tessellation_evaluation = GL_TESS_EVALUATION_SHADER,
 		/// - Fragment Shader.
-		Fragment = GL_FRAGMENT_SHADER,
+		fragment = GL_FRAGMENT_SHADER,
 		/// - Compute Shader.
-		Compute = GL_COMPUTE_SHADER
+		compute = GL_COMPUTE_SHADER
 	};
 
 	/**
