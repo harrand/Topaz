@@ -110,11 +110,22 @@ namespace tz::wsi::impl
 
 	void window_winapi::set_dimensions(tz::vec2ui dims)
 	{
+		// dims is the dimensions of the client rect, not the window size.
+		// we figure out the real window size and use that.
+		RECT rc_client, rc_wnd;
+		GetClientRect(this->hwnd, &rc_client);
+		GetWindowRect(this->hwnd, &rc_wnd);
+		tz::vec2i border_dims
+		{
+			(rc_wnd.right - rc_wnd.left) - rc_client.right,
+			(rc_wnd.bottom - rc_wnd.top) - rc_client.bottom
+		};
+		tz::vec2i real_dims = dims + border_dims;
 		SetWindowPos(
 			this->hwnd,
 			HWND_NOTOPMOST,
 			0, 0,
-			dims[0], dims[1],
+			real_dims[0], real_dims[1],
 			SWP_NOMOVE
 		);
 	}

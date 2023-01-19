@@ -630,10 +630,11 @@ namespace tz::dbgui
 			auto& wnd = tz::window();
 			if(!(wnd.get_flags() & tz::wsi::window_flag::noresize))
 			{
-				tz::vec2ui xy = wnd.get_dimensions();
-				if(ImGui::DragInt2("Dimensions", reinterpret_cast<int*>(xy.data().data()), 3, 1, 4192, "%u"))
+				auto xy = static_cast<tz::vec2i>(wnd.get_dimensions());
+				if(ImGui::DragInt2("Dimensions", xy.data().data(), 3, 1, 4192, "%u"))
 				{
-					wnd.set_dimensions(xy);
+					tz::assert(xy[0] > 0 && xy[1] > 0);
+					wnd.set_dimensions(static_cast<tz::vec2ui>(xy));
 				}
 			}
 			else
