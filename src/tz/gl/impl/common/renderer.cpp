@@ -6,37 +6,37 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	RendererEditBuilder& RendererEditBuilder::compute(RendererEdit::ComputeConfig req)
+	RendererEditBuilder& RendererEditBuilder::compute(renderer_edit::compute_config req)
 	{
 		this->request.push_back(req);
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::render_state(RendererEdit::RenderConfig req)
+	RendererEditBuilder& RendererEditBuilder::render_state(renderer_edit::render_config req)
 	{
 		this->request.push_back(req);
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::image_resize(RendererEdit::ImageResize req)
+	RendererEditBuilder& RendererEditBuilder::image_resize(renderer_edit::image_resize req)
 	{
 		this->request.push_back(req);
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::buffer_resize(RendererEdit::BufferResize req)
+	RendererEditBuilder& RendererEditBuilder::buffer_resize(renderer_edit::buffer_resize req)
 	{
 		this->request.push_back(req);
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::write(RendererEdit::ResourceWrite req)
+	RendererEditBuilder& RendererEditBuilder::write(renderer_edit::resource_write req)
 	{
 		this->request.push_back(req);
 		return *this;
 	}
 
-	RendererEditRequest RendererEditBuilder::build() const
+	renderer_edit_request RendererEditBuilder::build() const
 	{
 		return this->request;
 	}
@@ -45,7 +45,7 @@ namespace tz::gl
 	renderer_infoCommon::renderer_infoCommon()
 	{
 		#if HDK_DEBUG
-			this->options |= tz::gl::RendererOption::NoPresent;
+			this->options |= tz::gl::renderer_option::NoPresent;
 		#endif // HDK_DEBUG
 	}
 
@@ -54,7 +54,7 @@ namespace tz::gl
 		return this->resources.size();
 	}
 
-	const IResource* renderer_infoCommon::get_resource(ResourceHandle handle)
+	const IResource* renderer_infoCommon::get_resource(resource_handle handle)
 	{
 		return this->resources[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
@@ -79,7 +79,7 @@ namespace tz::gl
 		return this->components;
 	}
 
-	ResourceHandle renderer_infoCommon::add_resource(const IResource& resource)
+	resource_handle renderer_infoCommon::add_resource(const IResource& resource)
 	{
 		#if HDK_DEBUG
 			if(resource.get_flags().contains(ResourceFlag::IndexBuffer))
@@ -92,14 +92,14 @@ namespace tz::gl
 		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
 	}
 
-	ResourceHandle renderer_infoCommon::ref_resource(icomponent* component)
+	resource_handle renderer_infoCommon::ref_resource(icomponent* component)
 	{
 		this->resources.push_back(nullptr);
 		this->components.push_back(component);
 		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
 	}
 
-	ResourceHandle renderer_infoCommon::ref_resource(renderer_handle ren, ResourceHandle res)
+	resource_handle renderer_infoCommon::ref_resource(renderer_handle ren, resource_handle res)
 	{
 		return this->ref_resource(tz::gl::device().get_renderer(ren).get_component(res));
 	}
@@ -114,17 +114,17 @@ namespace tz::gl
 		return this->output.get();
 	}
 
-	const RendererOptions& renderer_infoCommon::get_options() const
+	const renderer_options& renderer_infoCommon::get_options() const
 	{
 		return this->options;
 	}
 
-	void renderer_infoCommon::set_options(RendererOptions options)
+	void renderer_infoCommon::set_options(renderer_options options)
 	{
 		#if HDK_DEBUG
-			if(!options.contains(RendererOption::Internal_FinalDebugUIRenderer))
+			if(!options.contains(renderer_option::Internal_FinalDebugUIRenderer))
 			{
-				options |= RendererOption::NoPresent;
+				options |= renderer_option::NoPresent;
 			}
 		#endif
 		this->options = options;
@@ -135,12 +135,12 @@ namespace tz::gl
 		this->dependencies.push_back(dependency);
 	}
 
-	RenderState& renderer_infoCommon::state()
+	render_state& renderer_infoCommon::state()
 	{
 		return this->renderer_state;
 	}
 
-	const RenderState& renderer_infoCommon::state() const
+	const render_state& renderer_infoCommon::state() const
 	{
 		return this->renderer_state;
 	}

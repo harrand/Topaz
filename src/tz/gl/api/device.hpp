@@ -12,7 +12,7 @@ namespace tz::gl
 	 * Named Requirement: Device
 	 *
 	 * Device types are types which:
-	 * - Implement the factory pattern for various graphics library objects, such as @ref RendererType
+	 * - Implement the factory pattern for various graphics library objects, such as @ref renderer_type
 	 * - Have direct access to the window surface, and exposes relevant information about said surface.
 	 */
 	template<typename T, typename R>
@@ -24,7 +24,7 @@ namespace tz::gl
 		{t.create_renderer(rinfo)} -> std::same_as<renderer_handle>;
 		{t.destroy_renderer(h)} -> std::same_as<void>;
 		{t.renderer_count()} -> std::convertible_to<std::size_t>;
-		{t.get_renderer(h)} -> RendererType;
+		{t.get_renderer(h)} -> renderer_type;
 		{t.get_window_format()} -> std::same_as<image_format>;
 		{t.dbgui()} -> std::same_as<void>;
 	};

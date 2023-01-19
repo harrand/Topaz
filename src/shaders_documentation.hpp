@@ -55,7 +55,7 @@
  * 	...
  * } buf;
  * ```
- * Note that specifying resource ids for shader resources is mandatory, regardless of resource type. The resource id is constant and corresponds to the @ref tz::gl::ResourceHandle when being specified to a renderer. This means that resources have unique identifiers. That is, if a vertex shader specifies an image resource at id 0, and again in a fragment shader (within the same shader program), they both refer to the same resource.
+ * Note that specifying resource ids for shader resources is mandatory, regardless of resource type. The resource id is constant and corresponds to the @ref tz::gl::resource_handle when being specified to a renderer. This means that resources have unique identifiers. That is, if a vertex shader specifies an image resource at id 0, and again in a fragment shader (within the same shader program), they both refer to the same resource.
  *
  * Note: The example above is actually ill-formed -- An image and buffer resource are specified, but they share the same id which is impossible; a resource is either a buffer or an image resource, never both.
  * @subsection preproc Preprocessor Definitions

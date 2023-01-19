@@ -281,7 +281,7 @@ namespace tz::gl
 	}
 			
 
-	const icomponent* ResourceStorage::get_component(ResourceHandle handle) const
+	const icomponent* ResourceStorage::get_component(resource_handle handle) const
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -290,7 +290,7 @@ namespace tz::gl
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	icomponent* ResourceStorage::get_component(ResourceHandle handle)
+	icomponent* ResourceStorage::get_component(resource_handle handle)
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -318,7 +318,7 @@ namespace tz::gl
 		});
 	}
 
-	void ResourceStorage::notify_image_recreated(ResourceHandle image_resource_handle)
+	void ResourceStorage::notify_image_recreated(resource_handle image_resource_handle)
 	{
 		// ImageComponent's underlying vk2::Image was recently replaced with another. This means this->image_component_views[id corresponding to handle] is wrong and needs to be remade.
 		std::size_t img_view_idx = 0;
@@ -338,7 +338,7 @@ namespace tz::gl
 		}};
 	}
 
-	void ResourceStorage::sync_descriptors(bool write_everything, const RenderState& state)
+	void ResourceStorage::sync_descriptors(bool write_everything, const render_state& state)
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Descriptor Sync", 0xFFAAAA00);
 		std::vector<BufferComponentVulkan*> buffers;
@@ -547,7 +547,7 @@ namespace tz::gl
 			else
 			{
 				// Now we weren't given a depth image. We should leave this nullptr, but only if NoDepthTesting was enabled. If we need to do depth testing but weren't given a depth image, we'll use the swapchain depth image.
-				if(this->options.contains(RendererOption::NoDepthTesting))
+				if(this->options.contains(renderer_option::NoDepthTesting))
 				{
 					out_image.depth_attachment = nullptr;
 				}
@@ -596,7 +596,7 @@ namespace tz::gl
 	
 	bool OutputManager::has_depth_images() const
 	{
-		return !this->options.contains(RendererOption::NoDepthTesting);
+		return !this->options.contains(renderer_option::NoDepthTesting);
 	}
 
 	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image)
@@ -683,9 +683,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = colour_image->get_format(),
-				.colour_depth_load = this->options.contains(RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_load = this->options.contains(renderer_option::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 				.colour_depth_store = vk2::StoreOp::Store,
-				.initial_layout = this->options.contains(RendererOption::NoClearOutput) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
+				.initial_layout = this->options.contains(renderer_option::NoClearOutput) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
 				.final_layout = final_layout
 			});
 		}
@@ -695,9 +695,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = output_image_copy.front().depth_attachment->get_format(),
-				.colour_depth_load = this->options.contains(RendererOption::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
-				.colour_depth_store = this->options.contains(RendererOption::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
-				.initial_layout = this->options.contains(RendererOption::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
+				.colour_depth_load = this->options.contains(renderer_option::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_store = this->options.contains(renderer_option::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
+				.initial_layout = this->options.contains(renderer_option::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
 				.final_layout = vk2::ImageLayout::DepthStencilAttachment
 			});
 		}
@@ -761,8 +761,8 @@ namespace tz::gl
 	{
 		this->shader = this->make_shader(device().vk_get_logical_device(), info.shader());
 		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), device().get_device_window().get_output_images().size());
-		this->depth_testing_enabled = !info.get_options().contains(RendererOption::NoDepthTesting);
-		const bool alpha_blending_enabled = info.get_options().contains(RendererOption::AlphaBlending);
+		this->depth_testing_enabled = !info.get_options().contains(renderer_option::NoDepthTesting);
+		const bool alpha_blending_enabled = info.get_options().contains(renderer_option::AlphaBlending);
 		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
 	}
 
@@ -1011,7 +1011,7 @@ namespace tz::gl
 		{
 			this->requires_present = true;
 		}
-		this->instant_compute_enabled = info.get_options().contains(RendererOption::RenderWait);
+		this->instant_compute_enabled = info.get_options().contains(renderer_option::RenderWait);
 		this->graphics_queue = device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::Graphics},
@@ -1137,7 +1137,7 @@ namespace tz::gl
 			};
 		}
 		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
-		if(requires_present && !this->options.contains(RendererOption::NoPresent))
+		if(requires_present && !this->options.contains(renderer_option::NoPresent))
 		{
 			sem_signals = {&this->device_scheduler->get_render_work_signals()[this->current_frame]};
 		}
@@ -1156,7 +1156,7 @@ namespace tz::gl
 
 		CommandProcessor::RenderWorkSubmitResult result;
 
-		if(requires_present && !this->options.contains(RendererOption::NoPresent))
+		if(requires_present && !this->options.contains(renderer_option::NoPresent))
 		{
 			result.present = this->graphics_queue->present
 			({
@@ -1282,22 +1282,22 @@ namespace tz::gl
 		return this->resources.count();
 	}
 
-	const IResource* RendererVulkan::get_resource(ResourceHandle handle) const
+	const IResource* RendererVulkan::get_resource(resource_handle handle) const
 	{
 		return this->resources.get(handle);
 	}
 
-	IResource* RendererVulkan::get_resource(ResourceHandle handle)
+	IResource* RendererVulkan::get_resource(resource_handle handle)
 	{
 		return this->resources.get(handle);
 	}
 
-	const icomponent* RendererVulkan::get_component(ResourceHandle handle) const
+	const icomponent* RendererVulkan::get_component(resource_handle handle) const
 	{
 		return this->resources.get_component(handle);
 	}
 
-	icomponent* RendererVulkan::get_component(ResourceHandle handle)
+	icomponent* RendererVulkan::get_component(resource_handle handle)
 	{
 		return this->resources.get_component(handle);
 	}
@@ -1312,12 +1312,12 @@ namespace tz::gl
 		return this->output.get_output();
 	}
 
-	const RendererOptions& RendererVulkan::get_options() const
+	const renderer_options& RendererVulkan::get_options() const
 	{
 		return this->options;
 	}
 
-	const RenderState& RendererVulkan::get_state() const
+	const render_state& RendererVulkan::get_state() const
 	{
 		return this->state;
 	}
@@ -1395,7 +1395,7 @@ namespace tz::gl
 		this->render();
 	}
 
-	void RendererVulkan::edit(const RendererEditRequest& edit_request)
+	void RendererVulkan::edit(const renderer_edit_request& edit_request)
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Edit", 0xFFAAAA00);
 
@@ -1406,28 +1406,28 @@ namespace tz::gl
 		}
 		RendererVulkan::EditData data;
 		this->command.wait_pending_commands_complete();
-		for(const RendererEdit::Variant& req : edit_request)
+		for(const renderer_edit::variant& req : edit_request)
 		{
 			std::visit([this, &data, &final_wireframe_mode_state](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
+				if constexpr(std::is_same_v<T, renderer_edit::buffer_resize>)
 				{
 					  this->edit_buffer_resize(arg, data);
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
+				else if constexpr(std::is_same_v<T, renderer_edit::image_resize>)
 				{
 					this->edit_image_resize(arg, data);
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
+				else if constexpr(std::is_same_v<T, renderer_edit::resource_write>)
 				{
 					this->edit_resource_write(arg, data);
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
+				else if constexpr(std::is_same_v<T, renderer_edit::compute_config>)
 				{
 					this->edit_compute_config(arg, data);
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
+				else if constexpr(std::is_same_v<T, renderer_edit::render_config>)
 				{
 					if(arg.wireframe_mode != this->pipeline.is_wireframe_mode())
 					{
@@ -1435,7 +1435,7 @@ namespace tz::gl
 						final_wireframe_mode_state = arg.wireframe_mode;
 					}
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ResourceReference>)
+				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{
 					this->edit_resource_reference(arg, data);
 				}
@@ -1488,10 +1488,10 @@ namespace tz::gl
 		return this->ldev == nullptr;
 	}
 
-	void RendererVulkan::edit_buffer_resize(RendererEdit::BufferResize arg, EditData& data)
+	void RendererVulkan::edit_buffer_resize(renderer_edit::buffer_resize arg, EditData& data)
 	{
 		auto bufcomp = static_cast<BufferComponentVulkan*>(this->get_component(arg.buffer_handle));
-		hdk::assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+		hdk::assert(bufcomp != nullptr, "Invalid buffer handle in renderer_edit::buffer_resize");
 		if(bufcomp->size() != arg.size)
 		{
 			bufcomp->resize(arg.size);
@@ -1506,10 +1506,10 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::edit_image_resize(RendererEdit::ImageResize arg, EditData& data)
+	void RendererVulkan::edit_image_resize(renderer_edit::image_resize arg, EditData& data)
 	{
 		auto imgcomp = static_cast<ImageComponentVulkan*>(this->get_component(arg.image_handle));
-		hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+		hdk::assert(imgcomp != nullptr, "Invalid image handle in renderer_edit::image_resize");
 		if(imgcomp->get_dimensions() != arg.dimensions)
 		{
 			imgcomp->resize(arg.dimensions);
@@ -1520,7 +1520,7 @@ namespace tz::gl
 		}
 	}
 	
-	void RendererVulkan::edit_resource_write(RendererEdit::ResourceWrite arg, [[maybe_unused]] EditData& data)
+	void RendererVulkan::edit_resource_write(renderer_edit::resource_write arg, [[maybe_unused]] EditData& data)
 	{
 		icomponent* comp = this->get_component(arg.resource);
 		IResource* res = comp->get_resource();
@@ -1567,7 +1567,7 @@ namespace tz::gl
 						vk2::Image& image = static_cast<ImageComponentVulkan*>(comp)->vk_get_image();
 						if(arg.offset != 0)
 						{
-							hdk::report("RendererEdit::ResourceWrite: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
+							hdk::report("renderer_edit::resource_write: Offset variable is detected to be %zu. Because the resource being written to is an image, this value has been ignored.", arg.offset);
 						}
 						vk2::ImageLayout cur_layout = image.get_layout();
 						vk2::ImageAspectFlags aspect = vk2::derive_aspect_from_format(image.get_format());
@@ -1619,7 +1619,7 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::edit_compute_config(RendererEdit::ComputeConfig arg, EditData& data)
+	void RendererVulkan::edit_compute_config(renderer_edit::compute_config arg, EditData& data)
 	{
 		if(arg.kernel != this->state.compute.kernel)
 		{
@@ -1628,7 +1628,7 @@ namespace tz::gl
 		}
 	}
 
-	void RendererVulkan::edit_resource_reference(RendererEdit::ResourceReference arg, EditData& data)
+	void RendererVulkan::edit_resource_reference(renderer_edit::resource_reference arg, EditData& data)
 	{
 		(void)arg; (void)data;
 		hdk::error("Resource Reference re-seating is not yet implemented.");

@@ -17,7 +17,7 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend
 	 * @defgroup tz_gl2_graphicsapi_ogl_frontend_renderer Renderer Implementation
-	 * Documentation for the OpenGL Frontend implementation of @ref RendererType.
+	 * Documentation for the OpenGL Frontend implementation of @ref renderer_type.
 	 */
 
 	/**
@@ -39,12 +39,12 @@ namespace tz::gl
 		 * Retrieve the component (read-only) which stores the corresponding opengl backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		const icomponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component which stores the corresponding opengl backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		icomponent* get_component(ResourceHandle handle);
+		icomponent* get_component(resource_handle handle);
 		/**
 		 * Retrieve the number of resources stored of the given type.
 		 * @param type Type whose quantity should be retrieved.
@@ -54,13 +54,13 @@ namespace tz::gl
 		/**
 		 * Bind all buffer resources to their expected resource ids.
 		 */
-		void bind_buffers(const RenderState& state);
+		void bind_buffers(const render_state& state);
 		/**
 		 * Images are converted into bindless texture handles which are then all stored within a secret bespoke SSBO (this does not count as a buffer resource however). This binds that SSBO to the resource id equal to the list of images (this will be equal to the total number of buffer resources).
 		 */
 		void bind_image_buffer(bool has_index_buffer, bool has_draw_buffer);
 		void write_dynamic_images();
-		void set_image_handle(tz::gl::ResourceHandle h, ogl2::Image::BindlessTextureHandle bindless_handle);
+		void set_image_handle(tz::gl::resource_handle h, ogl2::Image::BindlessTextureHandle bindless_handle);
 	private:
 		void fill_bindless_image_buffer();
 
@@ -112,7 +112,7 @@ namespace tz::gl
 		/**
 		 * Create the output target based upon the renderer information.
 		 */
-		OutputManager(const ioutput* output, tz::gl::RendererOptions options);
+		OutputManager(const ioutput* output, tz::gl::renderer_options options);
 		/**
 		 * Set this as the render target, causing subsequent draw calls to render into whatever the output is.
 		 */
@@ -123,7 +123,7 @@ namespace tz::gl
 		std::unique_ptr<ioutput> output;
 		ogl2::Renderbuffer default_depth_renderbuffer;
 		ogl2::Framebuffer framebuffer;
-		tz::gl::RendererOptions options;
+		tz::gl::renderer_options options;
 	};
 
 	using renderer_infoOGL = renderer_infoCommon;
@@ -140,7 +140,7 @@ namespace tz::gl
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 */
 		RendererOGL(const renderer_infoOGL& info);
-		// Satisfies RendererType.
+		// Satisfies renderer_type.
 		/**
 		 * Retrieve the number of resources.
 		 */
@@ -150,35 +150,35 @@ namespace tz::gl
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		const IResource* get_resource(ResourceHandle handle) const;
+		const IResource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		IResource* get_resource(ResourceHandle handle);
+		IResource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		const icomponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		icomponent* get_component(ResourceHandle handle);
+		icomponent* get_component(resource_handle handle);
 		ioutput* get_output();
 		const ioutput* get_output() const;
 		/**
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
-		const RendererOptions& get_options() const;
+		const renderer_options& get_options() const;
 		/**
 		 * Retrieve current state of the renderer.
 		 */
-		const RenderState& get_state() const;
+		const render_state& get_state() const;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles rendered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
@@ -194,7 +194,7 @@ namespace tz::gl
 		 * Editing renderers is expensive, so it should only be done if absolutely necessary. If you are editing renderers on a per-frame basis, consider creating multiple different renderers upfront for each hot-path and switching between them as necessary instead.
 		 * @param edit_request Structure specifying which edits to make.
 		 */
-		void edit(const RendererEditRequest& edit_request);
+		void edit(const renderer_edit_request& edit_request);
 
 		void dbgui();
 		std::string_view debug_get_name() const;
@@ -209,13 +209,13 @@ namespace tz::gl
 		ResourceStorage resources;
 		ShaderManager shader;
 		OutputManager output;
-		RendererOptions options;
-		RenderState state;
+		renderer_options options;
+		render_state state;
 		std::string debug_name;
 		bool wireframe_mode = false;
 		bool is_null_value = false;
 	};
-	static_assert(RendererType<RendererOGL>);
+	static_assert(renderer_type<RendererOGL>);
 }
 
 #endif // TZ_OGL

@@ -56,14 +56,14 @@ TESTFUNC_BEGIN(renderer_resource_reference_buffer)
 	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle r1bh = rinfo1.add_resource(tz::gl::BufferResource::from_one(expected_value));
+	tz::gl::resource_handle r1bh = rinfo1.add_resource(tz::gl::BufferResource::from_one(expected_value));
 	tz::gl::renderer_handle r1h = tz::gl::device().create_renderer(rinfo1);
 
 
 	tz::gl::renderer_info rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle r2bh = rinfo2.ref_resource(r1h, r1bh);
+	tz::gl::resource_handle r2bh = rinfo2.ref_resource(r1h, r1bh);
 
 	tz::gl::renderer_handle r2h = tz::gl::device().create_renderer(rinfo2);
 
@@ -94,7 +94,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo1.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
+	tz::gl::resource_handle r1ih = rinfo1.add_resource(tz::gl::ImageResource::from_memory({expected_value},
 	{
 		.format = tz::gl::image_format::BGRA32,
 		.dimensions = {1u, 1u},
@@ -106,7 +106,7 @@ TESTFUNC_BEGIN(renderer_resource_reference_image)
 	tz::gl::renderer_info rinfo2;
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo2.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle r2ih = rinfo2.ref_resource(r1h, r1ih);
+	tz::gl::resource_handle r2ih = rinfo2.ref_resource(r1h, r1ih);
 
 	tz::gl::renderer_handle r2h = tz::gl::device().create_renderer(rinfo2);
 
@@ -130,7 +130,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
+	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_one(1.0f,
 	{
 		.access = tz::gl::ResourceAccess::DynamicVariable
 	}));
@@ -179,7 +179,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	constexpr hdk::vec2ui old_dims{1u, 1u};
 	constexpr hdk::vec2ui new_dims{2u, 2u};
 
-	tz::gl::ResourceHandle ih = rinfo.add_resource(tz::gl::ImageResource::from_uninitialised
+	tz::gl::resource_handle ih = rinfo.add_resource(tz::gl::ImageResource::from_uninitialised
 	({
 		.format = tz::gl::image_format::RGBA32,
 		.dimensions = old_dims,
@@ -227,7 +227,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 	rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-	tz::gl::ResourceHandle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
+	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::BufferResource::from_many(old_data,
 	{
 		.access = tz::gl::ResourceAccess::DynamicFixed
 		// TODO: Test should pass even if StaticFixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
@@ -282,7 +282,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	constexpr std::uint32_t black_pixel = 0x000000ff;
 	constexpr std::uint32_t white_pixel = 0xffffffff;
 
-	tz::gl::ResourceHandle ih = rinfo.add_resource(tz::gl::ImageResource::from_memory
+	tz::gl::resource_handle ih = rinfo.add_resource(tz::gl::ImageResource::from_memory
 	(
 	{
 		black_pixel

@@ -39,7 +39,7 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend
 	 * @defgroup tz_gl2_graphicsapi_vk_frontend_renderer Renderer Implementation
-	 * Documentation for the Vulkan Frontend implementation of @ref RendererType.
+	 * Documentation for the Vulkan Frontend implementation of @ref renderer_type.
 	 */
 
 	/**
@@ -61,12 +61,12 @@ namespace tz::gl
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		const icomponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
 		 */
-		icomponent* get_component(ResourceHandle handle);
+		icomponent* get_component(resource_handle handle);
 		/**
 		 * Retrieve the descriptor layout representing the shader resources used by the renderer.
 		 */
@@ -80,12 +80,12 @@ namespace tz::gl
 		/**
 		 * Notifies that an ImageComponent at the provided handle has had its underlying vk2::Image re-seated. This recreates any necessary image views.
 		 */
-		void notify_image_recreated(tz::gl::ResourceHandle image_resource_handle);
+		void notify_image_recreated(tz::gl::resource_handle image_resource_handle);
 		/**
 		 * Updates all relevant descriptors. If buffers are resized for example, their underlying vk2::Buffer has been re-seated and thus the descriptors need to be re-synced.
 		 * @param write_everything If true, image component views are also written. This should only need to happen during renderer construction or if an image component renderer edit is being performed.
 		 */
-		void sync_descriptors(bool write_everything, const RenderState& state);
+		void sync_descriptors(bool write_everything, const render_state& state);
 		/**
 		 * Query as to whether there are any resources or not.
 		 * @return True if there is at least one buffer or image resource, otherwise false. This includes resource references.
@@ -208,7 +208,7 @@ namespace tz::gl
 		std::span<vk2::Image> swapchain_images = {};
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
 		vk2::Image* swapchain_depth_images = {};
-		tz::gl::RendererOptions options = {};
+		tz::gl::renderer_options options = {};
 		/// List of image-views, one for each output image. These haven't been re-ordered in any way FYI.
 		std::vector<OutputImageViewState> output_imageviews = {};
 		/// List of depth-image-views, one for each output image.
@@ -274,7 +274,7 @@ namespace tz::gl
 		 * Construct a command processor, which will render into the provided output framebuffers. A command buffer will be created for each frame-in-flight, aswell as an extra buffer for scratch commands.
 		 */
 		CommandProcessor(const renderer_infoVulkan& info);
-		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, output_target output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::RendererOptions options, DeviceRenderSchedulerVulkan& scheduler);
+		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, output_target output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::renderer_options options, DeviceRenderSchedulerVulkan& scheduler);
 		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
 		CommandProcessor(CommandProcessor&& move);
@@ -328,7 +328,7 @@ namespace tz::gl
 		/// Helper list which refers to each in-flight-fence, but in an order useful to the swapchain image acquisition logic.
 		std::vector<const vk2::Fence*> images_in_flight = {};
 		/// Copy of all renderer options specified.
-		tz::gl::RendererOptions options = {};
+		tz::gl::renderer_options options = {};
 		/// Scheduler object belonging to the parent device. We retrieve scheduling primitives from here, such as semaphores and fences.
 		DeviceRenderSchedulerVulkan* device_scheduler = nullptr;
 		/// The image index most recently acquired from the swapchain.
@@ -354,7 +354,7 @@ namespace tz::gl
 		RendererVulkan(RendererVulkan&& move);
 		~RendererVulkan();
 		RendererVulkan& operator=(RendererVulkan&& rhs);
-		// Satisfies RendererType
+		// Satisfies renderer_type
 		/**
 		 * Retrieve the number of resources.
 		 */
@@ -364,32 +364,32 @@ namespace tz::gl
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		const IResource* get_resource(ResourceHandle handle) const;
+		const IResource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		IResource* get_resource(ResourceHandle handle);
+		IResource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		const icomponent* get_component(ResourceHandle handle) const;
+		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
 		 * @param Handle handle returned from a call to a renderer_infoVulkan's `add_resource`. If this handle came from a renderer_infoVulkan different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
-		icomponent* get_component(ResourceHandle handle);
+		icomponent* get_component(resource_handle handle);
 		ioutput* get_output();
 		const ioutput* get_output() const;
 		/**
 		 * Retrieve options denoting extra features used by the renderer.
 		 */
-		const RendererOptions& get_options() const;
-		const RenderState& get_state() const;
+		const renderer_options& get_options() const;
+		const render_state& get_state() const;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
@@ -405,7 +405,7 @@ namespace tz::gl
 		 * Editing renderers is expensive, so it should only be done if absolutely necessary. If you are editing renderers on a per-frame basis, consider creating multiple different renderers upfront for each hot-path and switching between them as necessary instead.
 		 * @param edit_request Structure specifying which edits to make.
 		 */
-		void edit(const RendererEditRequest& edit_request);
+		void edit(const renderer_edit_request& edit_request);
 		void dbgui();
 		std::string_view debug_get_name() const;
 
@@ -425,11 +425,11 @@ namespace tz::gl
 			bool operator==(const EditData& rhs) const = default;
 		};
 
-		void edit_buffer_resize(RendererEdit::BufferResize arg, EditData& data);
-		void edit_image_resize(RendererEdit::ImageResize arg, EditData& data);
-		void edit_resource_write(RendererEdit::ResourceWrite arg, EditData& data);
-		void edit_compute_config(RendererEdit::ComputeConfig arg, EditData& data);
-		void edit_resource_reference(RendererEdit::ResourceReference arg, EditData& data);
+		void edit_buffer_resize(renderer_edit::buffer_resize arg, EditData& data);
+		void edit_image_resize(renderer_edit::image_resize arg, EditData& data);
+		void edit_resource_write(renderer_edit::resource_write arg, EditData& data);
+		void edit_compute_config(renderer_edit::compute_config arg, EditData& data);
+		void edit_resource_reference(renderer_edit::resource_reference arg, EditData& data);
 
 		void setup_static_resources();
 		void setup_render_commands();
@@ -442,9 +442,9 @@ namespace tz::gl
 		// LogicalDevice that every vulkan backend object will use.
 		vk2::LogicalDevice* ldev = nullptr;
 		// Contains which renderer options were enabled.
-		RendererOptions options = {};
+		renderer_options options = {};
 		// Current state of the renderer.
-		RenderState state = {};
+		render_state state = {};
 		/// Stores copies of all provided resources, and deals with all the vulkan descriptor magic. Exposes everything relevant to us when we want to draw.
 		ResourceStorage resources = {};
 		/// Handles output image component logic, and exposes a nice list of images/views/framebuffers into which we can render into without having to worry about the complicated logic behind the output wrangling.
@@ -458,7 +458,7 @@ namespace tz::gl
 		hdk::vec2ui window_dims_cache = {};
 	};
 
-	static_assert(RendererType<RendererVulkan>);
+	static_assert(renderer_type<RendererVulkan>);
 }
 
 #include "tz/gl/impl/vulkan/renderer.inl"

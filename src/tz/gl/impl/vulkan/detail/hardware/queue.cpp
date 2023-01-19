@@ -186,7 +186,7 @@ namespace tz::gl::vk2::hardware
 	void Queue::execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const
 	{
 		HDK_PROFZONE("Vulkan Backend - Command Buffer CPU Execute", 0xFFAA0000);
-		for(const VulkanCommand::Variant& cmd : command_buffer.get_recorded_commands())
+		for(const VulkanCommand::variant& cmd : command_buffer.get_recorded_commands())
 		{
 			std::visit([](auto&& val)
 			{

@@ -47,8 +47,8 @@ int main()
 		});
 
 		tz::gl::renderer_info rinfo;
-		tz::gl::ResourceHandle bufh = rinfo.add_resource(buf);
-		tz::gl::ResourceHandle bufh2 = rinfo.add_resource(buf2);
+		tz::gl::resource_handle bufh = rinfo.add_resource(buf);
+		tz::gl::resource_handle bufh2 = rinfo.add_resource(buf2);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_terrain_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationControl, ImportedShaderSource(tz_terrain_demo, tesscon));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::TessellationEvaluation, ImportedShaderSource(tz_terrain_demo, tesseval));

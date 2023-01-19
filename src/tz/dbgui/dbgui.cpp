@@ -43,9 +43,9 @@ namespace tz::dbgui
 	{
 		tz::gl::renderer_handle renderer = hdk::nullhand;
 		tz::gl::renderer_handle final_renderer = hdk::nullhand;
-		tz::gl::ResourceHandle vertex_buffer = hdk::nullhand;
-		tz::gl::ResourceHandle index_buffer = hdk::nullhand;
-		tz::gl::ResourceHandle shader_data_buffer = hdk::nullhand;
+		tz::gl::resource_handle vertex_buffer = hdk::nullhand;
+		tz::gl::resource_handle index_buffer = hdk::nullhand;
+		tz::gl::resource_handle shader_data_buffer = hdk::nullhand;
 	};
 
 	TopazPlatformData* global_platform_data = nullptr;
@@ -65,7 +65,7 @@ namespace tz::dbgui
 	ImGuiKey tz_key_to_imgui(tz::wsi::key key_code);
 	ImGuiMouseButton tz_btn_to_imgui(tz::wsi::mouse_button btn);
 
-	ImTextureID handle_to_texid(tz::gl::ResourceHandle handle)
+	ImTextureID handle_to_texid(tz::gl::resource_handle handle)
 	{
 		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<hdk::hanval>(handle))));
 	}
@@ -364,7 +364,7 @@ namespace tz::dbgui
 		rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(dbgui, fragment));
-		rinfo.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::NoPresent, tz::gl::RendererOption::RenderWait, tz::gl::RendererOption::Internal});
+		rinfo.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::NoPresent, tz::gl::renderer_option::RenderWait, tz::gl::renderer_option::Internal});
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
 		
@@ -373,7 +373,7 @@ namespace tz::dbgui
 		tz::gl::renderer_info empty;
 		empty.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(empty, fragment));
-		empty.set_options({tz::gl::RendererOption::NoClearOutput, tz::gl::RendererOption::NoDepthTesting, tz::gl::RendererOption::Internal_FinalDebugUIRenderer, tz::gl::RendererOption::Internal});
+		empty.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::Internal_FinalDebugUIRenderer, tz::gl::renderer_option::Internal});
 		empty.debug_name("ImGui Final Renderer");
 		global_render_data->final_renderer = tz::gl::device().create_renderer(empty);
 

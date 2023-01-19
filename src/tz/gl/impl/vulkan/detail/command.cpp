@@ -365,7 +365,7 @@ namespace tz::gl::vk2
 		return *this->command_buffer;
 	}
 
-	void CommandBufferRecording::register_command(VulkanCommand::Variant command)
+	void CommandBufferRecording::register_command(VulkanCommand::variant command)
 	{
 		CommandBuffer& buf = this->get_command_buffer();
 		hdk::assert(buf.is_recording(), "CommandBufferRecording tried to register a command, but the CommandBuffer isn't actually recording. Please submit a bug report.");
@@ -375,7 +375,7 @@ namespace tz::gl::vk2
 	ImageLayout CommandBufferRecording::get_layout_so_far(const Image& image) const
 	{
 		ImageLayout img_layout = image.get_layout();
-		for(const VulkanCommand::Variant& previous_command : this->get_command_buffer().get_recorded_commands())
+		for(const VulkanCommand::variant& previous_command : this->get_command_buffer().get_recorded_commands())
 		{
 			std::visit([&img_layout, &image](auto&& arg)
 			{
@@ -437,7 +437,7 @@ namespace tz::gl::vk2
 		return this->recorded_commands.size();
 	}
 
-	std::span<const VulkanCommand::Variant> CommandBuffer::get_recorded_commands() const
+	std::span<const VulkanCommand::variant> CommandBuffer::get_recorded_commands() const
 	{
 		return this->recorded_commands;
 	}
@@ -457,7 +457,7 @@ namespace tz::gl::vk2
 		this->recording = recording;
 	}
 
-	void CommandBuffer::add_command(VulkanCommand::Variant command)
+	void CommandBuffer::add_command(VulkanCommand::variant command)
 	{
 		this->recorded_commands.push_back(command);
 	}

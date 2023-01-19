@@ -61,8 +61,8 @@ namespace tz
 		const T* operator->() const;
 		bool operator==(const T* t) const;
 	private:
-		using Variant = std::variant<T*, std::unique_ptr<T>>;
-		Variant ptr;
+		using variant = std::variant<T*, std::unique_ptr<T>>;
+		variant ptr;
 	};
 
 	template<typename T, typename... Args>

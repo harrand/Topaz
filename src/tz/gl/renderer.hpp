@@ -13,7 +13,7 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * @class Renderer
-	 * Implementation of @ref tz::gl::RendererType. See concept for more info.
+	 * Implementation of @ref tz::gl::renderer_type. See concept for more info.
 	 *
 	 * Ideally there are no implementation details to concern yourself with. However, the implementations for each graphics API are implemented:
 	 * - Vulkan: @ref tz::gl::RendererVulkan

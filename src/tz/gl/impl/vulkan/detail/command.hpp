@@ -229,8 +229,8 @@ namespace tz::gl::vk2
 
 		struct DebugEndLabel{};
 
-		/// Variant type which has alternatives for every single possible recordable command type.
-		using Variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndexedIndirect, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
+		/// variant type which has alternatives for every single possible recordable command type.
+		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndexedIndirect, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -365,7 +365,7 @@ namespace tz::gl::vk2
 		friend class RenderPassRun;
 	private:
 		CommandBuffer& get_command_buffer();
-		void register_command(VulkanCommand::Variant command);
+		void register_command(VulkanCommand::variant command);
 		ImageLayout get_layout_so_far(const Image& image) const;
 
 		CommandBuffer* command_buffer;
@@ -400,7 +400,7 @@ namespace tz::gl::vk2
 		 * @return number of commands within the buffer.
 		 */
 		std::size_t command_count() const;
-		std::span<const VulkanCommand::Variant> get_recorded_commands() const;
+		std::span<const VulkanCommand::variant> get_recorded_commands() const;
 		void set_owner(const CommandPool& owner);
 
 		using NativeType = VkCommandBuffer;
@@ -409,14 +409,14 @@ namespace tz::gl::vk2
 		friend class CommandBufferRecording;
 	private:
 		void set_recording(bool recording);
-		void add_command(VulkanCommand::Variant command);
+		void add_command(VulkanCommand::variant command);
 
 		CommandBuffer(const CommandPool& owner_pool, CommandBuffer::NativeType native);
 
 		VkCommandBuffer command_buffer;
 		const CommandPool* owner_pool;
 		bool recording;
-		std::vector<VulkanCommand::Variant> recorded_commands;
+		std::vector<VulkanCommand::variant> recorded_commands;
 	};
 
 	/**

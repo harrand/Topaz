@@ -10,7 +10,7 @@ namespace tz::gl
 {
 	namespace detail
 	{
-		constexpr std::array<const char*, static_cast<int>(tz::gl::RendererOption::Count)> renderer_option_strings =
+		constexpr std::array<const char*, static_cast<int>(tz::gl::renderer_option::Count)> renderer_option_strings =
 		{
 			"No Depth Testing",
 			"Alpha Blending",
@@ -23,7 +23,7 @@ namespace tz::gl
 	}
 	/**
 	 * @ingroup tz_gl2_renderer
-	 * Helper class which can be used to generate a @ref RendererEditRequest.
+	 * Helper class which can be used to generate a @ref renderer_edit_request.
 	 */
 	class RendererEditBuilder
 	{
@@ -32,26 +32,26 @@ namespace tz::gl
 		/**
 		 * Make amendments to the compute configuration of the renderer. See @ref RendererComputeEditRequest for details.
 		 */
-		RendererEditBuilder& compute(RendererEdit::ComputeConfig req);
+		RendererEditBuilder& compute(renderer_edit::compute_config req);
 		/**
 		 * Make amendments to the current render state. See @ref RenderStateEditRequest for details.
 		 */
-		RendererEditBuilder& render_state(RendererEdit::RenderConfig req);
+		RendererEditBuilder& render_state(renderer_edit::render_config req);
 		/**
 		 * Make amendments to an existing image resource. See @ref RendererImageComponentResizeRequest for details.
 		 */
-		RendererEditBuilder& image_resize(RendererEdit::ImageResize req);
+		RendererEditBuilder& image_resize(renderer_edit::image_resize req);
 		/**
 		 * Make amendments to an existing buffer resource. See @ref RendererBufferComponentResizeRequest for details.
 		 */
-		RendererEditBuilder& buffer_resize(RendererEdit::BufferResize req);
-		RendererEditBuilder& write(RendererEdit::ResourceWrite req);
+		RendererEditBuilder& buffer_resize(renderer_edit::buffer_resize req);
+		RendererEditBuilder& write(renderer_edit::resource_write req);
 		/**
-		 * Retrieve a @ref RendererEditRequest corresponding to all edits specified within the builder so far.
+		 * Retrieve a @ref renderer_edit_request corresponding to all edits specified within the builder so far.
 		 */
-		RendererEditRequest build() const;
+		renderer_edit_request build() const;
 	private:
-		RendererEditRequest request = {};
+		renderer_edit_request request = {};
 	};
 	/**
 	 * @ingroup tz_gl2_renderer
@@ -71,7 +71,7 @@ namespace tz::gl
 		 * @param Handle handle returned from a previous call to `add_resource`. If this handle came from a different renderer_info, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
-		const IResource* get_resource(ResourceHandle handle);
+		const IResource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve a span containing all of the specified resources. Size of the span is guaranteed to be equal to @ref resource_count()
 		 */
@@ -84,9 +84,9 @@ namespace tz::gl
 		 * @param resource Resource which will be owned by a renderer.
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
-		ResourceHandle add_resource(const IResource& resource);
-		ResourceHandle ref_resource(icomponent* component);
-		ResourceHandle ref_resource(renderer_handle ren, ResourceHandle res);
+		resource_handle add_resource(const IResource& resource);
+		resource_handle ref_resource(icomponent* component);
+		resource_handle ref_resource(renderer_handle ren, resource_handle res);
 		/**
 		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another Renderer.
 		 */
@@ -98,11 +98,11 @@ namespace tz::gl
 		/**
 		 * Retrieve the currently specified options which will be used by the renderer.
 		 */
-		const RendererOptions& get_options() const;
+		const renderer_options& get_options() const;
 		/**
 		 * Set the currently specified options which will be used by the renderer.
 		 */
-		void set_options(RendererOptions options);
+		void set_options(renderer_options options);
 		/**
 		 * Set the pending renderer to be dependent on the specified renderer.
 		 *
@@ -112,11 +112,11 @@ namespace tz::gl
 		/**
 		 * Read/write information about the state of the renderer when it is created.
 		 */
-		RenderState& state();
+		render_state& state();
 		/**
 		 * Read-only information about the state of the renderer when it is created.
 		 */
-		const RenderState& state() const;
+		const render_state& state() const;
 		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
@@ -143,9 +143,9 @@ namespace tz::gl
 		/// Output. Can be null, which defaults to rendering into the main window.
 		std::unique_ptr<ioutput> output = nullptr;
 		/// Specifies which extra features the Renderer will have.
-		RendererOptions options = {};
+		renderer_options options = {};
 		/// Describes render state. It could change.
-		RenderState renderer_state = {};
+		render_state renderer_state = {};
 		/// List of renderers we are dependent on.
 		std::vector<renderer_handle> dependencies = {};
 		/// Describes the shader sources used.
@@ -212,7 +212,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Helper function which displays render-api-agnostic information about renderers.
 	 */
-	void common_renderer_dbgui(RendererType auto& renderer)
+	void common_renderer_dbgui(renderer_type auto& renderer)
 	{
 		if(renderer.is_null())
 		{
@@ -306,7 +306,7 @@ namespace tz::gl
 		}
 		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("Renderer Options"))
 		{
-			for(RendererOption option : renderer.get_options())
+			for(renderer_option option : renderer.get_options())
 			{
 				ImGui::Text("%s", detail::renderer_option_strings[static_cast<int>(option)]);
 			}

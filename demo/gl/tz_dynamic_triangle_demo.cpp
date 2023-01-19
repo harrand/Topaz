@@ -43,7 +43,7 @@ int main()
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::ShaderStage::Fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
-		tz::gl::ResourceHandle imgh = rinfo.add_resource
+		tz::gl::resource_handle imgh = rinfo.add_resource
 		(
 			tz::gl::ImageResource::from_memory
 			(
@@ -80,7 +80,7 @@ int main()
 				}
 			)
 		);
-		tz::gl::ResourceHandle bufh = rinfo.add_resource
+		tz::gl::resource_handle bufh = rinfo.add_resource
 		(
 			tz::gl::BufferResource::from_many
 			(
@@ -94,7 +94,7 @@ int main()
 				}
 			)
 		);
-		tz::gl::ResourceHandle ibufh = rinfo.add_resource
+		tz::gl::resource_handle ibufh = rinfo.add_resource
 		(
 			tz::gl::BufferResource::from_many
 			(

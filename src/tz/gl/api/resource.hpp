@@ -136,7 +136,7 @@ namespace tz::gl
 	};
 
 	/// Opaque handle which is used to refer to an existing Resource within a Renderer or Processor.
-	using ResourceHandle = hdk::handle<IResource>;
+	using resource_handle = hdk::handle<IResource>;
 }
 
 #endif // TOPAZ_GL2_API_RESOURCE_HPP

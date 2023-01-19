@@ -17,20 +17,20 @@ namespace tz::gl
 {
 	namespace detail
 	{
-		struct RendererTag{};
+		struct renderer_tag{};
 	}
 
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Represents a handle for a renderer owned by an existing device.
 	 */
-	using renderer_handle = hdk::handle<detail::RendererTag>;
+	using renderer_handle = hdk::handle<detail::renderer_tag>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Specifies options to enable extra functionality within Renderers.
 	 */
-	enum class RendererOption
+	enum class renderer_option
 	{
 		/// - Disables depth-testing and depth-writing.
 		NoDepthTesting,
@@ -53,14 +53,14 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Stores renderer-specific state, which drives the behaviour of the rendering.
 	 */
-	struct RenderState
+	struct render_state
 	{
 		struct Graphics
 		{
 			/// If an index buffer is used, this refers to the buffer resource. It must have ResourceFlag::IndexBuffer. If there is no index buffer, this is nullhand.
-			ResourceHandle index_buffer = hdk::nullhand;
+			resource_handle index_buffer = hdk::nullhand;
 			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have ResourceFlag::DrawIndirectBuffer. If there is no draw buffer, this is nullhand.
-			ResourceHandle draw_buffer = hdk::nullhand;
+			resource_handle draw_buffer = hdk::nullhand;
 			/// Normalised RGBA floating point colour.
 			hdk::vec4 clear_colour = hdk::vec4::zero();
 			/// number of triangles to be rendered in the next draw call.
@@ -78,50 +78,50 @@ namespace tz::gl
 		/// Compute state.
 		Compute compute;
 		
-		bool operator==(const RenderState& rhs) const = default;
+		bool operator==(const render_state& rhs) const = default;
 	};
 	
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Represents a collection of renderer options.
 	 */
-	using RendererOptions = tz::EnumField<RendererOption>;
+	using renderer_options = tz::EnumField<renderer_option>;
 
 	template<typename T>
-	concept renderer_info_type = requires(T t, renderer_handle ren, ResourceHandle r, const IResource& resource, icomponent* component, ioutput& output, RendererOptions options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
+	concept renderer_info_type = requires(T t, renderer_handle ren, resource_handle r, const IResource& resource, icomponent* component, ioutput& output, renderer_options options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const IResource*>;
 		{t.get_resources()} -> std::same_as<std::vector<const IResource*>>;
 		{t.get_dependencies()} -> std::same_as<std::span<const renderer_handle>>;
 
-		{t.add_resource(resource)} -> std::same_as<ResourceHandle>;
-		{t.ref_resource(component)} -> std::same_as<ResourceHandle>;
-		{t.ref_resource(ren, r)} -> std::same_as<ResourceHandle>;
+		{t.add_resource(resource)} -> std::same_as<resource_handle>;
+		{t.ref_resource(component)} -> std::same_as<resource_handle>;
+		{t.ref_resource(ren, r)} -> std::same_as<resource_handle>;
 		{t.set_output(output)} -> std::same_as<void>;
 		{t.get_output()} -> std::convertible_to<const ioutput*>;
 
 		{t.set_options(options)} -> std::same_as<void>;
-		{t.get_options()} -> std::convertible_to<RendererOptions>;
+		{t.get_options()} -> std::convertible_to<renderer_options>;
 
 		{t.add_dependency(ren)} -> std::same_as<void>;
 
-		{t.state()} -> std::convertible_to<RenderState>;
+		{t.state()} -> std::convertible_to<render_state>;
 		{t.shader()} -> ShaderInfoType;
 		{t.debug_name(str)} -> std::same_as<void>;
 		{t.debug_get_name()} -> std::same_as<std::string>;
 	};
 
-	struct RendererEdit
+	struct renderer_edit
 	{
 
 		/**
 		 * Represents a resize operation for an existing buffer component.
 		 */
-		struct BufferResize
+		struct buffer_resize
 		{
 			/// Handle corresponding to the buffer to edit.
-			ResourceHandle buffer_handle;
+			resource_handle buffer_handle;
 			/// New size of the buffer, in bytes.
 			std::size_t size;
 		};
@@ -129,31 +129,31 @@ namespace tz::gl
 		/**
 		 * Represents a resize operation for an existing image component.
 		 */
-		struct ImageResize
+		struct image_resize
 		{
 			/// Handle corresponding to the image to edit.
-			ResourceHandle image_handle;
+			resource_handle image_handle;
 			/// New dimensions of the image, in pixels.
 			hdk::vec2ui dimensions;
 		};
 
-		struct ResourceWrite
+		struct resource_write
 		{
-			ResourceHandle resource;
+			resource_handle resource;
 			std::span<const std::byte> data = {};
 			std::size_t offset = 0;
 		};
 
-		struct ResourceReference
+		struct resource_reference
 		{
-			ResourceHandle resource;
+			resource_handle resource;
 			icomponent* component;
 		};
 
 		/**
 		 * Represents an edit, setting a new value for the compute kernel for a renderer.
 		 */
-		struct ComputeConfig
+		struct compute_config
 		{
 			/// New compute kernel workgroup dimensions.
 			hdk::vec3ui kernel;
@@ -162,13 +162,13 @@ namespace tz::gl
 		/**
 		 * Represents an edit to the fixed-function renderer state.
 		 */
-		struct RenderConfig
+		struct render_config
 		{
 			/// Whether triangles should only have their outlines drawn, instead of filled.
 			bool wireframe_mode = false;
 		};
 
-		using Variant = std::variant<BufferResize, ImageResize, ResourceWrite, ResourceReference, ComputeConfig, RenderConfig>;
+		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config>;
 	};
 
 	/**
@@ -177,14 +177,14 @@ namespace tz::gl
 	 *
 	 * @note This is a large structure. You should use the helper class @ref RendererEditBuilder to create one of these instead of attempting to fill it directly.
 	 */
-	using RendererEditRequest = std::vector<RendererEdit::Variant>;
+	using renderer_edit_request = std::vector<renderer_edit::variant>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
 	 * Named requirement for a Renderer.
 	 */
 	template<typename T>
-	concept RendererType = requires(T t, ResourceHandle r, std::size_t tri_count, const RendererEditRequest& edit_request)
+	concept renderer_type = requires(T t, resource_handle r, std::size_t tri_count, const renderer_edit_request& edit_request)
 	{
 		requires tz::nullable<T>;
 		/**
@@ -214,8 +214,8 @@ namespace tz::gl
 		 * Retrieve the options with which the renderer was constructed.
 		 * @return Options containing additional features used by the renderer.
 		 */
-		{t.get_options()} -> std::convertible_to<RendererOptions>;
-		{t.get_state()} -> std::convertible_to<RenderState>;
+		{t.get_options()} -> std::convertible_to<renderer_options>;
+		{t.get_state()} -> std::convertible_to<render_state>;
 		/**
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */

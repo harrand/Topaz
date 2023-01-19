@@ -135,7 +135,7 @@ namespace tz::gl
 		this->fill_bindless_image_buffer();
 	}
 
-	const icomponent* ResourceStorage::get_component(ResourceHandle handle) const
+	const icomponent* ResourceStorage::get_component(resource_handle handle) const
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -144,7 +144,7 @@ namespace tz::gl
 		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
 	}
 
-	icomponent* ResourceStorage::get_component(ResourceHandle handle)
+	icomponent* ResourceStorage::get_component(resource_handle handle)
 	{
 		if(handle == hdk::nullhand)
 		{
@@ -189,7 +189,7 @@ namespace tz::gl
 		ogl2::buffer::copy(temp_copy_buffer, this->bindless_image_storage_buffer);
 	}
 
-	void ResourceStorage::bind_buffers(const RenderState& state)
+	void ResourceStorage::bind_buffers(const render_state& state)
 	{
 		if(this->resource_count_of(ResourceType::Buffer) == 0)
 		{
@@ -270,7 +270,7 @@ namespace tz::gl
 		}
 	}
 
-	void ResourceStorage::set_image_handle(tz::gl::ResourceHandle h, ogl2::Image::BindlessTextureHandle bindless_handle)
+	void ResourceStorage::set_image_handle(tz::gl::resource_handle h, ogl2::Image::BindlessTextureHandle bindless_handle)
 	{
 		this->image_handles[static_cast<std::size_t>(static_cast<hdk::hanval>(h))] = bindless_handle;
 	}
@@ -364,7 +364,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const ioutput* output, tz::gl::RendererOptions options):
+	OutputManager::OutputManager(const ioutput* output, tz::gl::renderer_options options):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	default_depth_renderbuffer(ogl2::Renderbuffer::null()),
 	framebuffer(ogl2::Framebuffer::null()),
@@ -413,7 +413,7 @@ namespace tz::gl
 	{
 		HDK_PROFZONE("OpenGL Frontend - RendererOGL OutputManager (Set Render Target)", 0xFFAA0000);
 		this->framebuffer.bind();
-		if(!this->options.contains(tz::gl::RendererOption::NoClearOutput))
+		if(!this->options.contains(tz::gl::renderer_option::NoClearOutput))
 		{
 			this->framebuffer.clear();
 		}
@@ -492,22 +492,22 @@ namespace tz::gl
 		return this->resources.count();
 	}
 
-	const IResource* RendererOGL::get_resource(ResourceHandle handle) const
+	const IResource* RendererOGL::get_resource(resource_handle handle) const
 	{
 		return this->resources.get(handle);
 	}
 
-	IResource* RendererOGL::get_resource(ResourceHandle handle)
+	IResource* RendererOGL::get_resource(resource_handle handle)
 	{
 		return this->resources.get(handle);
 	}
 
-	const icomponent* RendererOGL::get_component(ResourceHandle handle) const
+	const icomponent* RendererOGL::get_component(resource_handle handle) const
 	{
 		return this->resources.get_component(handle);
 	}
 
-	icomponent* RendererOGL::get_component(ResourceHandle handle)
+	icomponent* RendererOGL::get_component(resource_handle handle)
 	{
 		return this->resources.get_component(handle);
 	}
@@ -522,12 +522,12 @@ namespace tz::gl
 		return this->output.get_output();
 	}
 
-	const RendererOptions& RendererOGL::get_options() const
+	const renderer_options& RendererOGL::get_options() const
 	{
 		return this->options;
 	}
 
-	const RenderState& RendererOGL::get_state() const
+	const render_state& RendererOGL::get_state() const
 	{
 		return this->state;
 	}
@@ -564,7 +564,7 @@ namespace tz::gl
 				auto col = this->state.graphics.clear_colour;
 				glClearColor(col[0], col[1], col[2], col[3]);
 			}
-			if(this->options.contains(RendererOption::NoDepthTesting))
+			if(this->options.contains(renderer_option::NoDepthTesting))
 			{
 				glDisable(GL_DEPTH_TEST);
 			}
@@ -573,7 +573,7 @@ namespace tz::gl
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LESS);
 			}
-			if(this->options.contains(RendererOption::AlphaBlending))
+			if(this->options.contains(renderer_option::AlphaBlending))
 			{
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -621,7 +621,7 @@ namespace tz::gl
 					this->vao.draw(this->state.graphics.tri_count, this->shader.has_tessellation());
 				}
 			}
-			if(!this->options.contains(tz::gl::RendererOption::NoPresent))
+			if(!this->options.contains(tz::gl::renderer_option::NoPresent))
 			{
 				tz::window().update();
 			}
@@ -632,7 +632,7 @@ namespace tz::gl
 		}
 		#endif
 		// If we're doing instant render, block now.
-		if(this->get_options().contains(RendererOption::RenderWait))
+		if(this->get_options().contains(renderer_option::RenderWait))
 		{
 			auto fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 			glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());
@@ -646,28 +646,28 @@ namespace tz::gl
 		this->render();
 	}
 
-	void RendererOGL::edit(const RendererEditRequest& edit_request)
+	void RendererOGL::edit(const renderer_edit_request& edit_request)
 	{
 		HDK_PROFZONE("OpenGL Backend - RendererOGL Edit", 0xFFAA0000);
 		hdk::assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
-		for(const RendererEdit::Variant& req : edit_request)
+		for(const renderer_edit::variant& req : edit_request)
 		{
 			std::visit([this](auto&& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, RendererEdit::BufferResize>)
+				if constexpr(std::is_same_v<T, renderer_edit::buffer_resize>)
 				{
 					auto bufcomp = static_cast<BufferComponentOGL*>(this->get_component(arg.buffer_handle));
-					hdk::assert(bufcomp != nullptr, "Invalid buffer handle in RendererEdit::BufferResize");
+					hdk::assert(bufcomp != nullptr, "Invalid buffer handle in renderer_edit::buffer_resize");
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
 					}
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ImageResize>)
+				else if constexpr(std::is_same_v<T, renderer_edit::image_resize>)
 				{
 					auto imgcomp = static_cast<ImageComponentOGL*>(this->get_component(arg.image_handle));
-					hdk::assert(imgcomp != nullptr, "Invalid image handle in RendererEdit::ImageResize");
+					hdk::assert(imgcomp != nullptr, "Invalid image handle in renderer_edit::image_resize");
 					if(imgcomp->get_dimensions() != arg.dimensions)
 					{
 						imgcomp->resize(arg.dimensions);
@@ -680,7 +680,7 @@ namespace tz::gl
 						this->resources.set_image_handle(arg.image_handle, h);
 					}
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ResourceWrite>)
+				else if constexpr(std::is_same_v<T, renderer_edit::resource_write>)
 				{
 					icomponent* comp = this->get_component(arg.resource);
 					IResource* res = comp->get_resource();
@@ -727,21 +727,21 @@ namespace tz::gl
 						break;
 					}
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ComputeConfig>)
+				else if constexpr(std::is_same_v<T, renderer_edit::compute_config>)
 				{
 					this->state.compute.kernel = arg.kernel;
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::RenderConfig>)
+				else if constexpr(std::is_same_v<T, renderer_edit::render_config>)
 				{
 					this->wireframe_mode = arg.wireframe_mode;
 				}
-				else if constexpr(std::is_same_v<T, RendererEdit::ResourceReference>)
+				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{
-					hdk::error("RendererEdit Resource Reference re-seating is not yet implemented (OGL)");
+					hdk::error("renderer_edit Resource Reference re-seating is not yet implemented (OGL)");
 				}
 				else
 				{
-					hdk::error("RendererEdit requested that is not yet supported.");
+					hdk::error("renderer_edit requested that is not yet supported.");
 				}
 			}, req);
 		}
