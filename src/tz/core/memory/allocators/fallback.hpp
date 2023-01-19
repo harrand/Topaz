@@ -6,7 +6,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_memory_allocator
+	 * @ingroup tz_core_memory_allocator
 	 * Implements @ref tz::allocator
 	 *
 	 * A meta-allocator which will use a primary allocator, but fall-back to a secondary allocator upon failure. fallback_allocators can be chained together.

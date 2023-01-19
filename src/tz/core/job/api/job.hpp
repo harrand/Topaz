@@ -10,19 +10,19 @@ namespace tz
 		struct job_handle_tag{};
 	}
 	/**
-	 * @ingroup tz_job
+	 * @ingroup tz_core_job
 	 * Represents a job that has begun execution within a @ref job_system_type.
 	 */
 	using job_handle = tz::handle<detail::job_handle_tag>;
 
 	/**
-	 * @ingroup tz_job
+	 * @ingroup tz_core_job
 	 * Represents a job. Jobs have no arguments and no return value.
 	 */
 	using job_t = std::function<void()>;
 
 	/**
-	 * @ingroup tz_job
+	 * @ingroup tz_core_job
 	 * API for job system. See @ref tz::job_system() for usage.
 	 */
 	template<typename T>

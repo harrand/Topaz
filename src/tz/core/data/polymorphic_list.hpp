@@ -9,7 +9,7 @@ namespace tz
 	class InterfaceIterator;
 
 	/**
-	 * @ingroup tz_core_containers
+	 * @ingroup tz_core_data
 	 * @tparam T Common base type.
 	 * List of elements, where all elements inherit from a common type but may be different types within themselves.
 	 */

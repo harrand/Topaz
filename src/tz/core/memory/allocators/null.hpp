@@ -6,7 +6,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_memory_allocator
+	 * @ingroup tz_core_memory_allocator
 	 * An allocator which always returns nullptr.
 	 */
 	class null_allocator

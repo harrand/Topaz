@@ -26,14 +26,14 @@ add_library(topaz STATIC
 	src/tz/tz.inl
 	# tz::core
 	src/tz/core/algorithms/static.hpp
-	src/tz/core/containers/basic_list.hpp
-	src/tz/core/containers/enum_field.hpp
-	src/tz/core/containers/enum_field.inl
-	src/tz/core/containers/grid_view.hpp
-	src/tz/core/containers/grid_view.inl
-	src/tz/core/containers/polymorphic_list.hpp
-	src/tz/core/containers/polymorphic_list.inl
+	src/tz/core/data/basic_list.hpp
+	src/tz/core/data/enum_field.hpp
+	src/tz/core/data/enum_field.inl
+	src/tz/core/data/grid_view.hpp
+	src/tz/core/data/grid_view.inl
 	src/tz/core/data/handle.hpp
+	src/tz/core/data/polymorphic_list.hpp
+	src/tz/core/data/polymorphic_list.inl
 	src/tz/core/data/vector.cpp
 	src/tz/core/data/vector.hpp
 	src/tz/core/data/vector.inl

@@ -7,7 +7,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_core_containers
+	 * @ingroup tz_core_data
 	 * Container for enum values, useful for vintage bitfield types.
 	 * @tparam E Enum class type.
 	 */

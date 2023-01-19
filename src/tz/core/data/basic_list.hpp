@@ -9,7 +9,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_core_containers
+	 * @ingroup tz_core_data
 	 * Custom list, feature subset of `std::vector`.
 	 *
 	 * Should be used when a list of contiguous elements is required to be exposed via an API. We never want to expose standard library containers (aside from span).

@@ -5,7 +5,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_memory_allocator
+	 * @ingroup tz_core_memory_allocator
 	 * An allocator which has its own fixed-size buffer on the stack from which memory is sub-allocated. Aside from operating on its own stack arena, a stack allocator behaves identically to a @ref linear_allocator.
 	 *
 	 * stack_allocators are excellent candidates for fallback allocators. `fallback_allocator<stack_allocator<X>, mallocator>` allows you to have small-size optimisation for free, for example.

@@ -7,7 +7,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_memory_allocator
+	 * @ingroup tz_core_memory_allocator
 	 * A meta-allocator which allows a tz allocator to be used as if it were a `std::allocator`. This means it can be used for standard-library containers.
 	 *
 	 * For instance:

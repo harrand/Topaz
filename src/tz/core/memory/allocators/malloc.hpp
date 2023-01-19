@@ -6,7 +6,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_memory_allocator
+	 * @ingroup tz_core_memory_allocator
 	 * Implements @ref tz:allocator
 	 *
 	 * An allocator which simply calls malloc. It thinks it owns all memory, so if you're using this in a @ref tz::fallback_allocator make sure it is always used as a secondary allocator, never the primary (or you will `free()` no matter what).

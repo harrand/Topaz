@@ -10,7 +10,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz
+	 * @ingroup tz_core
 	 * @internal
 	 */
 	template<tz::number T, std::size_t S>
@@ -194,7 +194,7 @@ namespace tz
 	};
 
 	/**
-	 * @ingroup tz
+	 * @ingroup tz_core
 	 * @{
 	 */
 

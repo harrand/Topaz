@@ -7,7 +7,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_core_containers
+	 * @ingroup tz_core_data
 	 * A view into an array representing a flattened grid of data.
 	 *
 	 * Elements are interpreted as a tightly-packed array of rows. Each element is expected to be equivalent to a T[N]. For example, GridView on an RGBA32 image might be a `GridView<std::byte, 4>`.

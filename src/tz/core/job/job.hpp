@@ -9,7 +9,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_job
+	 * @ingroup tz_core_job
 	 * Underlying job system. See @ref tz::job_system_type for API.
 	 */
 	using job_system_t = tz::impl::job_system_threadpool_lfq;
@@ -21,7 +21,7 @@ namespace tz
 	}
 
 	/**
-	 * @ingroup tz_job
+	 * @ingroup tz_core_job
 	 * Retrieve the global job system.
 	 */
 	job_system_t& job_system();

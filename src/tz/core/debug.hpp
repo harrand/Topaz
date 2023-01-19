@@ -45,21 +45,21 @@ namespace tz
 	}
 
 	/**
- 	 * @ingroup tz
+ 	 * @ingroup tz_core
 	 * Assert on a condition. If the condition is false, `tz::error` is invoked. Only works on debug builds (aka `if TZ_DEBUG`).
 	 */
 	template<typename... Args>
 	void assert(bool condition, detail::format_string fmt = "<No message>", Args&&... args);
 
 	/**
-	 * @ingroup tz
+	 * @ingroup tz_core
 	 * Breakpoint if a debugger is present. If no debugger is present, terminate the application with the given message. Only works on debug builds (aka `if TZ_DEBUG`).
 	 */ 
 	template<typename... Args>
 	void error(detail::format_string fmt = "<No message>", Args&&... args);
 
 	/**
-	 * @ingroup tz
+	 * @ingroup tz_core
 	 * Print out the formatted message to standard output, including source location information. Only works on debug builds.
 	 */ 
 	template<typename... Args>

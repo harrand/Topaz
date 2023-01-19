@@ -38,8 +38,8 @@ namespace tz
 
 	/**
 	 * @ingroup tz_core
-	 * @defgroup tz_core_containers Containers
-	 * Documentation for some niché containers. These do not attempt to replace standard library containers - you should continue using those for the most part, although rarely one of these containers may be preferable.
+	 * @defgroup tz_core_data Data
+	 * Documentation for some niché data structures. These do not attempt to replace standard library containers - you should continue using those for the most part, although often one of these containers may be preferable.
 	 */
 
 	/**

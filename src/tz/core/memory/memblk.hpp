@@ -5,7 +5,7 @@
 namespace tz
 {
 	/**
-	* @ingroup tz
+	* @ingroup tz_core
 	* A non-owning, contiguous block of memory.
 	*/
 	struct memblk
