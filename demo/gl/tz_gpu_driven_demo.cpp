@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/draw.hpp"
 #include "tz/gl/device.hpp"

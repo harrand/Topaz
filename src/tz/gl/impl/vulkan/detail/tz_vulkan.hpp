@@ -4,7 +4,7 @@
 #include "tz/wsi/window.hpp"
 #include "hdk/data/version.hpp"
 #include "tz/core/game_info.hpp"
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "tz/gl/impl/vulkan/detail/extensions.hpp"
 #include "vk_mem_alloc.h"
 #include <cstdint>
@@ -17,7 +17,7 @@ namespace tz::gl::vk2
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk
 	 * @defgroup tz_gl_vk Vulkan Backend
-	 * Documentation for the Vulkan Backend, which acts as a large abstraction around the Vulkan API. This is a low-level module free of all context relevant to Topaz.
+	 * Documentation for the Vulkan backend, which acts as a large abstraction around Vulkan. This is a low-level module free of all context relevant to Topaz.
 	 */
 
 	/**

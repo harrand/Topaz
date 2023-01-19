@@ -77,7 +77,7 @@ namespace tz::gl
 	};
 
 
-	template<tz::gl::device_type<tz::gl::renderer_infoCommon> T>
+	template<tz::gl::device_type<tz::gl::renderer_info> T>
 	void common_device_dbgui(T& device)
 	{
 		const std::size_t renderer_count = device.renderer_count();

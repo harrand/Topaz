@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "tz/wsi/keyboard.hpp"
 #include "tz/wsi/mouse.hpp"
 #include "hdk/profile.hpp"

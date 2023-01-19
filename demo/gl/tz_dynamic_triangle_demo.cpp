@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "hdk/profile.hpp"
 #include "tz/core/time.hpp"
 #include "tz/gl/device.hpp"

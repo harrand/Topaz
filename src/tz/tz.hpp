@@ -22,6 +22,7 @@ namespace tz
 
 	/**
 	 * @defgroup tzsl TZSL API Reference
+	 * Topaz Shader Language (@ref shaders)
 	 */
 
 	/**
@@ -73,25 +74,34 @@ namespace tz
 	};
 	/**
 	 * @ingroup tz_core
-	 * Initialise Topaz.
+	 * Initialise Topaz, creating a main application window. The main application window is available via @ref tz::window() from now until @ref tz::terminate() is invoked.
 	 * @param init Information about how the application should be initialised.
 	 */
 	void initialise(initialise_info init = {});
 	/**
 	 * @ingroup tz_core
 	 * @brief Terminate Topaz.
-	 * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.
-	 * @post If anything in `tz` is invoked after this, then the behaviour of the program is undefined.
-	 * @details This destroys the render-api backend. If a window was created previously by `tz::initialise`, then it will be destroyed here.
+	 * @pre If @ref tz::initialise() has not been invoked before this, then the behaviour is undefined.
+	 * @details Just how @ref tz::initialise() automatically spawns the main window, `terminate` also automatically destroys the window.
 	 */
 	void terminate();
+	/**
+	 * @ingroup tz_core
+	 * @brief Begin a new frame.
+	 * @pre If @ref tz::initialise() has not been invoked before this, then the behaviour is undefined.
+	 */
 	void begin_frame();
+	/**
+	 * @ingroup tz_core
+	 * @brief End the current frame.
+	 * @pre @ref tz::begin_frame() must have been invoked prior to this, otherwise the behaviour is undefined.
+	 */
 	void end_frame();
 	/**
 	 * @ingroup tz_core
 	 * @brief Retrieve the application window.
-	 * @post @ref tz::terminate() has not yet been invoked.
-	 * @return Window& Reference to the application window.
+	 * @post @ref tz::initialise() has been invoked prior, but @ref tz::terminate() has not yet been invoked.
+	 * @return Reference to the main application window.
 	 */
 	tz::wsi::window& window();
 	/**
@@ -102,7 +112,7 @@ namespace tz
 	 */
 	bool is_initialised();
 }
-#include "tz/core/tz.inl"
+#include "tz/tz.inl"
 
 /*! @mainpage Home
  * ## Introduction

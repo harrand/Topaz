@@ -71,7 +71,7 @@ namespace tz::gl
 	}
 
 //--------------------------------------------------------------------------------------------------
-	ResourceStorage::ResourceStorage(const renderer_info_vulkan& info):
+	ResourceStorage::ResourceStorage(const renderer_info& info):
 	AssetStorageCommon<iresource>(info.get_resources()),
 	frame_in_flight_count(get_device().get_device_window().get_output_images().size())
 	{
@@ -459,7 +459,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	OutputManager::OutputManager(const renderer_info_vulkan& info):
+	OutputManager::OutputManager(const renderer_info& info):
 	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
 	ldev(&get_device().vk_get_logical_device()),
 	swapchain_images(get_device().get_device_window().get_output_images()),
@@ -757,7 +757,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_info_vulkan& info, const ResourceStorage& resources, const OutputManager& output)
+	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_info& info, const ResourceStorage& resources, const OutputManager& output)
 	{
 		this->shader = this->make_shader(get_device().vk_get_logical_device(), info.shader());
 		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), get_device().get_device_window().get_output_images().size());
@@ -1005,7 +1005,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	CommandProcessor::CommandProcessor(const renderer_info_vulkan& info)
+	CommandProcessor::CommandProcessor(const renderer_info& info)
 	{
 		if(info.get_output() == nullptr || info.get_output()->get_target() == output_target::window)
 		{
@@ -1203,7 +1203,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	renderer_vulkan::renderer_vulkan(const renderer_info_vulkan& info):
+	renderer_vulkan::renderer_vulkan(const renderer_info& info):
 	ldev(&get_device().vk_get_logical_device()),
 	options(info.get_options()),
 	state(info.state()),

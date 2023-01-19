@@ -30,7 +30,7 @@ namespace tz::gl
 		/**
 		 * Create storage for a set of existing resources.
 		 *
-		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the renderer_ogl. However, it will reference the copy of said resource which is created during construction of this object. This means users are able to and encouraged to cache their ResourceHandles when populating renderer_info_ogl.
+		 * All existing ResourceHandles referencing any of the provided resources will continue to be valid when passed to the renderer_ogl. However, it will reference the copy of said resource which is created during construction of this object. This means users are able to and encouraged to cache their ResourceHandles when populating renderer_info.
 		 *
 		 * @param resources A view into an array of existing resources. All of these will be copies into a separate storage, meaning the elements of the span are allowed to reach the end of their lifetime after the storage has been constructed, because they will have been cloned.
 		 */
@@ -126,8 +126,6 @@ namespace tz::gl
 		tz::gl::renderer_options options;
 	};
 
-	using renderer_info_ogl = renderer_infoCommon;
-
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
 	 * renderer implementation which heavily calls into the backend at @ref tz_gl_ogl2.
@@ -139,7 +137,7 @@ namespace tz::gl
 		 * Create a new renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
 		 */
-		renderer_ogl(const renderer_info_ogl& info);
+		renderer_ogl(const renderer_info& info);
 		// Satisfies renderer_type.
 		/**
 		 * Retrieve the number of resources.
@@ -147,25 +145,25 @@ namespace tz::gl
 		unsigned int resource_count() const;
 		/**
 		 * Retrieve the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info's `add_resource`. If this handle came from a renderer_info different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		const iresource* get_resource(resource_handle handle) const;
 		/**
 		 * Retrieve the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info's `add_resource`. If this handle came from a renderer_info different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource.
 		 */
 		iresource* get_resource(resource_handle handle);
 		/**
 		 * Retrieve the component sourcing the resource (read-only) corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info's `add_resource`. If this handle came from a renderer_info different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
 		const icomponent* get_component(resource_handle handle) const;
 		/**
 		 * Retrieve the component sourcing the resource corresponding to the given handle.
-		 * @param Handle handle returned from a call to a renderer_info_vulkan's `add_resource`. If this handle came from a renderer_info_vulkan different to the one we were provided, the behaviour is undefined.
+		 * @param Handle handle returned from a call to a renderer_info's `add_resource`. If this handle came from a renderer_info different to the one we were provided, the behaviour is undefined.
 		 * @return Pointer to the resource's underlying component.
 		 */
 		icomponent* get_component(resource_handle handle);

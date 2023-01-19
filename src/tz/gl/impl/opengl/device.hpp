@@ -14,7 +14,7 @@ namespace tz::gl
 		device_ogl();
 
 		// Satisfies device_type.
-		tz::gl::renderer_handle create_renderer(const renderer_info_ogl& info);
+		tz::gl::renderer_handle create_renderer(const renderer_info& info);
 		using DeviceCommon<renderer_ogl>::get_renderer;
 		using DeviceCommon<renderer_ogl>::destroy_renderer;
 		image_format get_window_format() const;
@@ -22,7 +22,7 @@ namespace tz::gl
 	private:
 		std::vector<renderer_ogl> renderers;
 	};
-	static_assert(device_type<device_ogl, renderer_info_ogl>);
+	static_assert(device_type<device_ogl, renderer_info>);
 }
 
 #endif // TZ_OGL

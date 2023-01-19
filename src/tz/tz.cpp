@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "tz/wsi/wsi.hpp"
 #include "hdk/hdk.hpp"
 #include "hdk/debug.hpp"

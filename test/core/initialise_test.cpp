@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 
 int main()
 {

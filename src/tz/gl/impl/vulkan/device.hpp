@@ -80,7 +80,7 @@ namespace tz::gl
 		~device_vulkan();
 
 		// Satisfies device_type.
-		tz::gl::renderer_handle create_renderer(const renderer_info_vulkan& info);
+		tz::gl::renderer_handle create_renderer(const renderer_info& info);
 		using DeviceCommon<renderer_vulkan>::get_renderer;
 		void destroy_renderer(tz::gl::renderer_handle handle);
 		image_format get_window_format() const;
@@ -99,7 +99,7 @@ namespace tz::gl
 		DeviceRenderSchedulerVulkan scheduler;
 	};
 
-	static_assert(device_type<device_vulkan, renderer_info_vulkan>);
+	static_assert(device_type<device_vulkan, renderer_info>);
 }
 
 #endif // TZ_VULKAN

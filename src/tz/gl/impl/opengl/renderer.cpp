@@ -456,7 +456,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	
-	renderer_ogl::renderer_ogl(const renderer_info_ogl& info):
+	renderer_ogl::renderer_ogl(const renderer_info& info):
 	vao(),
 	resources(info.get_resources(), info.get_components()),
 	shader(info.shader()),

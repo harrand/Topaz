@@ -348,7 +348,7 @@ namespace tz::gl
 		DeviceCommon<renderer_vulkan>::internal_clear();
 	}
 
-	tz::gl::renderer_handle device_vulkan::create_renderer(const renderer_info_vulkan& info)
+	tz::gl::renderer_handle device_vulkan::create_renderer(const renderer_info& info)
 	{
 		HDK_PROFZONE("Vulkan Frontend - renderer Create (via device_vulkan)", 0xFFAAAA00);
 		this->scheduler.notify_renderer_added();

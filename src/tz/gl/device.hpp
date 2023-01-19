@@ -8,6 +8,11 @@
 #endif
 namespace tz::gl
 {
+	/**
+	 * @ingroup tz_gl2
+	 * @class device
+	 * Implementation of @ref tz::gl::device_type.
+	 */
 	#if TZ_VULKAN
 		using device = device_vulkan;
 	#elif TZ_OGL

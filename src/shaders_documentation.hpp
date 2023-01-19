@@ -1,6 +1,6 @@
 /**
  * @page shaders Shaders
- * @section tzsl Topaz Shader Language
+ * @section tzslpage Topaz Shader Language
  * @section Introduction
  * TZSL is a high-level shader language with a syntax very similar to that of GLSL. A tool named tzslc ships with the engine, which can be used to build tzsl shaders to output SPIRV, GLSL shaders or SPIRV encoded within a C++ header.
  *
@@ -112,6 +112,8 @@
  *	#endif
  * }
  * ```
+ * @section TZSL Library API
+ * TZSL ships with a small library providing the essentials. It is a fully documented module: @ref tzsl
  * @section stypes IO Blocks
  * Below are the input and output blocks for each programmable shader type. Each shader stage has a fixed-set of input and output variables, in the `in::` and `out::` namespaces respectively. These are not the same as input and output language specifiers.
  * <details>

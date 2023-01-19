@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "hdk/debug.hpp"
 #include "hdk/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"

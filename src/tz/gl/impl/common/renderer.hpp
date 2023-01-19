@@ -57,10 +57,10 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Helper struct which the user can use to specify which inputs, resources they want and where they want a renderer to render to. This is likely going to be refactored at some point because it doesn't do any Vulkan-specific magic.
 	 */
-	class renderer_infoCommon
+	class renderer_info
 	{
 	public:
-		renderer_infoCommon();
+		renderer_info();
 		// Satisfies renderer_info_type.
 		/**
 		 * Retrieve the number of resources.
@@ -156,7 +156,7 @@ namespace tz::gl
 		hdk::vec3ui compute_kernel = {1u, 1u, 1u};
 		std::string dbg_name = "";
 	};
-	static_assert(renderer_info_type<renderer_infoCommon>);
+	static_assert(renderer_info_type<renderer_info>);
 
 	template<class Asset>
 	class AssetStorageCommon

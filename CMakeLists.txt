@@ -21,6 +21,9 @@ include(cmake/project.cmake)
 
 hdk_add_library(TARGET topaz
 	SOURCES
+	src/tz/tz.cpp
+	src/tz/tz.hpp
+	src/tz/tz.inl
 	# tz::core
 	src/tz/core/containers/basic_list.hpp
 	src/tz/core/containers/enum_field.hpp
@@ -44,9 +47,6 @@ hdk_add_library(TARGET topaz
 	src/tz/core/memory.inl
 	src/tz/core/time.cpp
 	src/tz/core/time.hpp
-	src/tz/core/tz.cpp
-	src/tz/core/tz.hpp
-	src/tz/core/tz.inl
 	# tz::wsi
 	src/tz/wsi/keyboard.cpp
 	src/tz/wsi/keyboard.hpp

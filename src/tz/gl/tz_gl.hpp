@@ -9,6 +9,12 @@ namespace tz::gl
 	 * @ingroup tz_cpp
 	 * @defgroup tz_gl2 Graphics Library
 	 * Hardware-accelerated 3D graphics library.
+	 *
+	 * Rendering 3D graphics in Topaz is achieved by doing the following:
+	 * - Populate a @ref tz::gl::renderer_info describing how to render what you want.
+	 * - Pass the info to `tz::gl::device::create_renderer()` via the global @ref tz::gl::get_device(). Save the returned renderer handle as a local variable.
+	 * - Every frame, use the global @ref tz::gl::get_device() via `tz::gl::device::get_renderer(handle)`, to invoke invoke `tz::gl::renderer::render()` to draw your graphics.
+	 *   - Don't forget to @ref tz::begin_frame() and @ref tz::end_frame()!
 	 */
 
 	/**
@@ -31,8 +37,10 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2
-	 * @defgroup tz_gl2_graphicsapi Graphics API Specifics
-	 * Documentation for implementation layers for the supported graphics APIs.
+	 * @defgroup tz_gl2_graphicsapi Maintainer Guide
+	 * For Topaz maintainers only.
+	 *
+	 * Here you will find implementation details for both of the graphics API backends (@ref tz_gl2_graphicsapi_ogl and @ref tz_gl2_graphicsapi_vk)
 	 */
 	
 		/**

@@ -2,7 +2,7 @@
 // Created by Harrand on 06/01/2020.
 //
 
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "tz/core/matrix.hpp"
 #include <string>
 #include <cstring>

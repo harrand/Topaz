@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/imported_shaders.hpp"

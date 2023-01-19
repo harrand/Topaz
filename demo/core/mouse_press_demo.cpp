@@ -1,5 +1,5 @@
 #include "tz/core/peripherals/mouse.hpp"
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "hdk/debug.hpp"
 
 int main()

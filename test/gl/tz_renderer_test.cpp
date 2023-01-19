@@ -1,4 +1,4 @@
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "hdk/debug.hpp"
 #include "hdk/debug.hpp"
 #include "tz/gl/renderer.hpp"

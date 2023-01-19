@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_TZ_OPENGL_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_TZ_OPENGL_HPP
 #if TZ_OGL
-#include "tz/core/tz.hpp"
+#include "tz/tz.hpp"
 #include "glad/glad.h"
 #if HDK_PROFILE
 #include "TracyOpenGL.hpp"
@@ -12,7 +12,7 @@ namespace tz::gl::ogl2
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl
 	 * @defgroup tz_gl_ogl2 OpenGL Backend
-	 * Documentation for the OpenGL Backend (4.6 Desktop), which acts as a large abstraction around the OpenGL API. This is a low-level module free of all context relevant to Topaz.
+	 * Documentation for the OpenGL backend, which acts as a large abstraction around OpenGL. This is a low-level module free of all context relevant to Topaz.
 	 */
 
 	/**
