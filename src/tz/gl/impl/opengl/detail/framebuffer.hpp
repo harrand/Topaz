@@ -2,7 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_FRAMEBUFFER_HPP
 #if TZ_OGL
 #include "tz/core/data/vector.hpp"
-#include "tz/core/containers/basic_list.hpp"
+#include "tz/core/data/basic_list.hpp"
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include "tz/gl/impl/opengl/detail/image.hpp"
 #include "tz/gl/impl/opengl/detail/renderbuffer.hpp"

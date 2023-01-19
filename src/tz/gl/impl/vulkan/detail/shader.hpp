@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_SHADER_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_SHADER_HPP  
 #if TZ_VULKAN
-#include "tz/core/containers/enum_field.hpp"
+#include "tz/core/data/enum_field.hpp"
 #include "tz/gl/impl/vulkan/detail/logical_device.hpp"
 
 namespace tz::gl::vk2

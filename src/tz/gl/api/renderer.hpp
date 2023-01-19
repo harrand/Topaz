@@ -6,8 +6,8 @@
 #include "tz/gl/api/resource.hpp"
 #include "tz/gl/api/component.hpp"
 #include "tz/gl/api/shader.hpp"
-#include "tz/core/containers/basic_list.hpp"
-#include "tz/core/containers/enum_field.hpp"
+#include "tz/core/data/basic_list.hpp"
+#include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
 #include <concepts>
 #include <variant>

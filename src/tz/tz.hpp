@@ -1,6 +1,6 @@
 #ifndef TZ_CORE_TZ_HPP
 #define TZ_CORE_TZ_HPP
-#include "tz/core/containers/enum_field.hpp"
+#include "tz/core/data/enum_field.hpp"
 #include "tz/core/game_info.hpp"
 #include "tz/wsi/window.hpp"
 

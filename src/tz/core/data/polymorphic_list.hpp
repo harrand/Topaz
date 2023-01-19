@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL_VK_COMMON_POLYMORPHIC_LIST_HPP
 #define TOPAZ_GL_VK_COMMON_POLYMORPHIC_LIST_HPP
-#include "tz/core/containers/basic_list.hpp"
+#include "tz/core/data/basic_list.hpp"
 #include <memory>
 
 namespace tz
@@ -92,5 +92,5 @@ namespace tz
 	};
 }
 
-#include "tz/core/containers/polymorphic_list.inl"
+#include "tz/core/data/polymorphic_list.inl"
 #endif // TOPAZ_GL_VK_COMMON_POLYMORPHIC_LIST_HPP

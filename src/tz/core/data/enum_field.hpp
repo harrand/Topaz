@@ -114,5 +114,5 @@ namespace tz
 	};
 }
 
-#include "tz/core/containers/enum_field.inl"
+#include "tz/core/data/enum_field.inl"
 #endif // TOPAZ_CORE_CONTAINERS_ENUM_FIELD_HPP

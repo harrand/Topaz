@@ -2,8 +2,8 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_HARDWARE_PHYSICAL_DEVICE_HPP
 #if TZ_VULKAN
 #include "tz/core/data/vector.hpp"
-#include "tz/core/containers/basic_list.hpp"
-#include "tz/core/containers/enum_field.hpp"
+#include "tz/core/data/basic_list.hpp"
+#include "tz/core/data/enum_field.hpp"
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
 #include "tz/gl/impl/vulkan/detail/image_format.hpp"
 #include "tz/gl/impl/vulkan/detail/features.hpp"

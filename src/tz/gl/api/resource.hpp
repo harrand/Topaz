@@ -2,7 +2,7 @@
 #define TOPAZ_GL2_API_RESOURCE_HPP
 #include "tz/core/memory/clone.hpp"
 #include "tz/core/data/handle.hpp"
-#include "tz/core/containers/enum_field.hpp"
+#include "tz/core/data/enum_field.hpp"
 #include <span>
 #include <memory>
 

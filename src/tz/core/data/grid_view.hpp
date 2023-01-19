@@ -59,6 +59,6 @@ namespace tz
 	};
 }
 
-#include "tz/core/containers/grid_view.inl"
+#include "tz/core/data/grid_view.inl"
 
 #endif // TOPAZ_CORE_CONTAINERS_GRID_VIEW_HPP

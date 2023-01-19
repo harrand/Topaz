@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
-#include "tz/core/containers/basic_list.hpp"
-#include "tz/core/containers/enum_field.hpp"
+#include "tz/core/data/basic_list.hpp"
+#include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
 #include "vulkan/vulkan.h"
 #include <optional>

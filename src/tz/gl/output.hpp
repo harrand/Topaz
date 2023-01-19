@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL2_OUTPUT_HPP
 #define TOPAZ_GL2_OUTPUT_HPP
-#include "tz/core/containers/basic_list.hpp"
+#include "tz/core/data/basic_list.hpp"
 #include "tz/wsi/window.hpp"
 #include "tz/gl/api/output.hpp"
 #include "tz/gl/component.hpp"
