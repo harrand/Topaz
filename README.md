@@ -18,7 +18,7 @@
  * High-level declarative graphics API.
  * Supports OpenGL/Vulkan, Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
  
- [Topaz 3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6) is the most recent release of the Topaz Engine. The next version will be version 3.7.
+ [Topaz 3.6.1](https://github.com/Harrand/Topaz/tree/Topaz3.6) is the most recent release of the Topaz Engine. The next version will be version 4.0.0.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
@@ -26,7 +26,7 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes. Patch versions are not formally shipped unless they contain emergency bugfixes for a flawed release.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| 3.7.0			|Feb 10, 2023 |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
+| 4.0.0			|TBA |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
 | 3.6.1			|Dec 10, 2022 |[Topaz3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6)	 | [Branch: gh-pages-tz3.6](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.6)
 | 3.6.0			|Dec 8, 2022 |[Topaz3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6)	 | [Branch: gh-pages-tz3.6](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.6)
 | 3.5.0			|Sep 22, 2022|[Topaz3.5](https://github.com/Harrand/Topaz/tree/Topaz3.5)	 | [Branch: gh-pages-tz3.5](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.5)
@@ -64,19 +64,22 @@ Each major version is a total rewrite and thus completely different from the pre
 1. Checkout the repository resursively.
 2. Configure CMake. It is recommended you use a preset.
 	
-	Example:  `cmake --preset vulkan_debug`
+	Example:  `cmake --preset host_vulkan_debug`
 3. Build the `topaz` target to build the engine. Run the `tztest` target to build and run all unit-tests.
 
 ## Dependencies
 The table below shows all the engine's dependencies.
 
-| Dependency                                      |  Render API	 | Build Config  | Dependency Type |
-|-------------------------------------------------|:------------:|:-------------:|-----------------|
-|[GLAD](https://github.com/Dav1dde/glad)           | OpenGL | All       | Included in repository
-|[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)  | Vulkan | All       | Requires pre-installation
-|[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator)| Vulkan | All       | Git Submodule
-|[HDK](https://github.com/Harrand/HDK)| Both   | All      | Git Submodule
-[imgui](https://github.com/ocornut/imgui)          | Both   | All    | Git Submodule
+| Dependency                                                                                |  Render API | Build Config  | Dependency Type         |
+|-------------------------------------------------------------------------------------------|:-----------:|:-------------:|-------------------------|
+|[concurrentqueue](https://github.com/cameron314/concurrentqueue)							| Both		  | All			  | Git Submodule			|
+|[debugbreak](https://github.com/scottt/debugbreak)											| Both		  | All			  | Git Submodule			|
+|[GLAD](https://github.com/Dav1dde/glad)													| OpenGL	  | All			  | Included in repository	|
+|[imgui](https://github.com/ocornut/imgui)													| Both		  | All			  | Git Submodule			|
+|[textc](https://github.com/Harrand/textc/)													| Both		  | All			  | Git Submodule			|
+|[tracy](https://github.com/wolfpld/tracy)													| Both		  | Profile		  | Git Submodule			|
+|[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)											| Vulkan	  | All			  | Needs pre-installation	|
+|[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) | Vulkan	  | All			  | Git Submodule			|
 
 ## Requirements
 The following requirements apply for all possible build configurations:

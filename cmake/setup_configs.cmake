@@ -1,10 +1,10 @@
 function(configure_common target)
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 		# GCC/Clang options
-		target_compile_options(${target} PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+		target_compile_options(${target} PRIVATE -Wall -Wextra -Werror -pedantic-errors -Wno-format-security)
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 			# Clang-only options
-			# Use GNU's `, __VA_ARGS__` extension (used for hdk::assert, hdk::error, hdk::report)
+			# Use GNU's `, __VA_ARGS__` extension (used for tz::assert, tz::error, tz::report)
 			target_compile_options(${target} PRIVATE -Wno-gnu-zero-variadic-macro-arguments)
 		elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			# GCC-only options

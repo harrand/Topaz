@@ -112,7 +112,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./src ./demo/gl/tz_triangle_demo.cpp ./tools/tzslc/shaders ./lib/HDK/src
+INPUT                  = ./src ./demo/gl/tz_triangle_demo.cpp ./tools/tzslc/shaders
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.c \
                          *.cc \

@@ -82,7 +82,7 @@ namespace tzslc
 		 * #version 450 core
 		 * #define TZ_OGL ?
 		 * #define TZ_VULKAN ?
-		 * #define HDK_DEBUG ?
+		 * #define TZ_DEBUG ?
 		 *
 		 * 5 lines total
 		 */
@@ -99,7 +99,7 @@ namespace tzslc
 		{
 			tzslc_error("ICE: Unrecognised GLSLDialect.");
 		}
-		ret += std::string("#define HDK_DEBUG ") + (build_config == BuildConfig::Debug ? "1\n" : "0\n");
+		ret += std::string("#define TZ_DEBUG ") + (build_config == BuildConfig::Debug ? "1\n" : "0\n");
 		return ret;
 	}
 
