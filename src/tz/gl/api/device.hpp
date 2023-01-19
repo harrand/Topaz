@@ -9,9 +9,9 @@ namespace tz::gl
 {
 	/**
 	 * @ingroup tz_gl2
-	 * Named Requirement: Device
+	 * Named Requirement: device
 	 *
-	 * Device types are types which:
+	 * device types are types which:
 	 * - Implement the factory pattern for various graphics library objects, such as @ref renderer_type
 	 * - Have direct access to the window surface, and exposes relevant information about said surface.
 	 */

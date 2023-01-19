@@ -60,7 +60,7 @@ namespace tz::gl
 		
 		return
 		{
-			.device = &tz::gl::device().vk_get_logical_device(),
+			.device = &tz::gl::get_device().vk_get_logical_device(),
 			.min_filter = filter,
 			.mag_filter = filter,
 			.mipmap_mode = mip_filter,
@@ -73,10 +73,10 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 	ResourceStorage::ResourceStorage(const renderer_infoVulkan& info):
 	AssetStorageCommon<iresource>(info.get_resources()),
-	frame_in_flight_count(device().get_device_window().get_output_images().size())
+	frame_in_flight_count(get_device().get_device_window().get_output_images().size())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan ResourceStorage Create", 0xFFAAAA00);
-		const vk2::LogicalDevice& ldev = device().vk_get_logical_device();
+		const vk2::LogicalDevice& ldev = get_device().vk_get_logical_device();
 		this->samplers.reserve(this->count());
 
 		auto resources = info.get_resources();
@@ -461,9 +461,9 @@ namespace tz::gl
 
 	OutputManager::OutputManager(const renderer_infoVulkan& info):
 	output(info.get_output() != nullptr ? info.get_output()->unique_clone() : nullptr),
-	ldev(&device().vk_get_logical_device()),
-	swapchain_images(device().get_device_window().get_output_images()),
-	swapchain_depth_images(&device().get_device_window().get_depth_image()),
+	ldev(&get_device().vk_get_logical_device()),
+	swapchain_images(get_device().get_device_window().get_output_images()),
+	swapchain_depth_images(&get_device().get_device_window().get_depth_image()),
 	options(info.get_options())
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan OutputManager Create", 0xFFAAAA00);
@@ -759,8 +759,8 @@ namespace tz::gl
 
 	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_infoVulkan& info, const ResourceStorage& resources, const OutputManager& output)
 	{
-		this->shader = this->make_shader(device().vk_get_logical_device(), info.shader());
-		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), device().get_device_window().get_output_images().size());
+		this->shader = this->make_shader(get_device().vk_get_logical_device(), info.shader());
+		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), get_device().get_device_window().get_output_images().size());
 		this->depth_testing_enabled = !info.get_options().contains(renderer_option::NoDepthTesting);
 		const bool alpha_blending_enabled = info.get_options().contains(renderer_option::AlphaBlending);
 		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
@@ -1012,25 +1012,25 @@ namespace tz::gl
 			this->requires_present = true;
 		}
 		this->instant_compute_enabled = info.get_options().contains(renderer_option::RenderWait);
-		this->graphics_queue = device().vk_get_logical_device().get_hardware_queue
+		this->graphics_queue = get_device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::graphics},
 			.present_support = this->requires_present
 		});
-		this->compute_queue = device().vk_get_logical_device().get_hardware_queue
+		this->compute_queue = get_device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::compute},
 			.present_support = false
 		});
 		this->command_pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
-		this->frame_in_flight_count = device().get_device_window().get_output_images().size();
+		this->frame_in_flight_count = get_device().get_device_window().get_output_images().size();
 		this->commands = this->command_pool.allocate_buffers
 		({
 			.buffer_count = static_cast<std::uint32_t>(this->frame_in_flight_count + 1)
 		});
 		this->images_in_flight.resize(this->frame_in_flight_count, nullptr);
 		this->options = info.get_options();
-		this->device_scheduler = &device().get_render_scheduler();
+		this->device_scheduler = &get_device().get_render_scheduler();
 
 		hdk::assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		hdk::assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
@@ -1095,7 +1095,7 @@ namespace tz::gl
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work()
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
-		auto& device_window = device().get_device_window();
+		auto& device_window = get_device().get_device_window();
 		// Submit & Present
 		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		bool already_have_image = device_window.has_unused_image();
@@ -1204,7 +1204,7 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	RendererVulkan::RendererVulkan(const renderer_infoVulkan& info):
-	ldev(&device().vk_get_logical_device()),
+	ldev(&get_device().vk_get_logical_device()),
 	options(info.get_options()),
 	state(info.state()),
 	resources(info),
@@ -1923,8 +1923,8 @@ namespace tz::gl
 	bool RendererVulkan::handle_swapchain_outdated()
 	{
 		// Tell the DeviceWindow to update.
-		tz::gl::device().get_device_window().request_refresh();
-		auto& devwnd = tz::gl::device().get_device_window();
+		tz::gl::get_device().get_device_window().request_refresh();
+		auto& devwnd = tz::gl::get_device().get_device_window();
 		this->handle_resize
 		({
 			.new_dimensions = devwnd.get_swapchain().get_dimensions(),
@@ -1938,7 +1938,7 @@ namespace tz::gl
 	void RendererVulkan::handle_resize(const RendererResizeInfoVulkan& resize_info)
 	{
 		HDK_PROFZONE("Vulkan Frontend - RendererVulkan Handle Resize", 0xFFAAAA00);
-		// Context: The top-level gl::Device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
+		// Context: The top-level gl::device has just been told by the window that it has been resized, and has recreated a new swapchain. Our old pointer to the swapchain `maybe_swapchain` correctly points to the new swapchain already, so we just have to recreate all the new state.
 		this->command.wait_pending_commands_complete();
 		this->output.create_output_resources(resize_info.new_output_images, resize_info.new_depth_image);
 		this->pipeline.recreate(this->output.get_render_pass(), resize_info.new_dimensions, this->pipeline.is_wireframe_mode());

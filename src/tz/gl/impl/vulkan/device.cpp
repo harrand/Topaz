@@ -189,7 +189,7 @@ namespace tz::gl
 		#if HDK_DEBUG
 			for(std::size_t i = 0; i < this->window_buf.get_images().size(); i++)
 			{
-				this->window_buf.get_images()[i].debug_set_name("Device Swapchain Image " + std::to_string (i));
+				this->window_buf.get_images()[i].debug_set_name("device Swapchain Image " + std::to_string (i));
 			}
 		#endif
 	}
@@ -205,7 +205,7 @@ namespace tz::gl
 			.usage = {vk2::ImageUsage::DepthStencilAttachment},
 			.residency = vk2::MemoryResidency::GPU
 		}};
-		this->depth_image.debug_set_name("Device Depth Image");
+		this->depth_image.debug_set_name("device Depth Image");
 	}
 
 	void DeviceWindowVulkan::on_resize(hdk::vec2ui dims)
@@ -255,15 +255,15 @@ namespace tz::gl
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
 			auto& iasev = this->image_available.emplace_back(ldev);
-			iasev.debug_set_name("Device Image Semaphore " + std::to_string(i));
+			iasev.debug_set_name("device Image Semaphore " + std::to_string(i));
 			auto& rwsev = this->render_work_done.emplace_back(ldev);
-			rwsev.debug_set_name("Device Render Semaphore " + std::to_string(i));
+			rwsev.debug_set_name("device Render Semaphore " + std::to_string(i));
 			auto& fence = this->frame_work.emplace_back(vk2::FenceInfo
 			{
 				.device = &ldev,
 				.initially_signalled = true
 			});
-			fence.debug_set_name("Device Frame Fence " + std::to_string(i));
+			fence.debug_set_name("device Frame Fence " + std::to_string(i));
 		}
 	}
 
@@ -412,7 +412,7 @@ namespace tz::gl
 		{
 			return rate_physical_device(a) < rate_physical_device(b);
 		});
-		hdk::report("Vulkan Device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_physical_device(pdev));
+		hdk::report("Vulkan device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_physical_device(pdev));
 
 		// TODO: Remove when we can get testing on devices that aren't NV.
 		#if HDK_DEBUG

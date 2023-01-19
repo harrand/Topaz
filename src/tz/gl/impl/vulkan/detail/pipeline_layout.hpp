@@ -13,7 +13,7 @@ namespace tz::gl::vk2
 	{
 		/// List of layouts, in order.
 		std::vector<const DescriptorLayout*> descriptor_layouts;
-		/// Owning LogicalDevice. Must not be nullptr or null Device.
+		/// Owning LogicalDevice. Must not be nullptr or null device.
 		const LogicalDevice* logical_device;
 	};
 

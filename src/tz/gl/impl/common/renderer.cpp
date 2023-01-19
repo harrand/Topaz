@@ -101,7 +101,7 @@ namespace tz::gl
 
 	resource_handle renderer_infoCommon::ref_resource(renderer_handle ren, resource_handle res)
 	{
-		return this->ref_resource(tz::gl::device().get_renderer(ren).get_component(res));
+		return this->ref_resource(tz::gl::get_device().get_renderer(ren).get_component(res));
 	}
 
 	void renderer_infoCommon::set_output(const ioutput& output)

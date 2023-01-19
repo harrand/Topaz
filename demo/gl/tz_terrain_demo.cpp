@@ -55,8 +55,8 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_terrain_demo, fragment));
 		//rinfo.state().graphics.clear_colour = {0.0f, 0.765f, 1.0f, 1.0f};
 
-		tz::gl::renderer_handle rendererh = tz::gl::device().create_renderer(rinfo);
-		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(rendererh);
+		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 		hdk::vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool flight_enabled = false;
 		bool game_menu_enabled = false;

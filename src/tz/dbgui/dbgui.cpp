@@ -368,14 +368,14 @@ namespace tz::dbgui
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate Renderer");
 		
-		global_render_data->renderer = tz::gl::device().create_renderer(rinfo);
+		global_render_data->renderer = tz::gl::get_device().create_renderer(rinfo);
 
 		tz::gl::renderer_info empty;
 		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::Internal_FinalDebugUIRenderer, tz::gl::renderer_option::Internal});
 		empty.debug_name("ImGui Final Renderer");
-		global_render_data->final_renderer = tz::gl::device().create_renderer(empty);
+		global_render_data->final_renderer = tz::gl::get_device().create_renderer(empty);
 
 		io.Fonts->SetTexID(0);
 
@@ -404,7 +404,7 @@ namespace tz::dbgui
 
 		hdk::assert(global_render_data->renderer != hdk::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
-		tz::gl::Renderer& renderer = tz::gl::device().get_renderer(global_render_data->renderer);
+		tz::gl::Renderer& renderer = tz::gl::get_device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
@@ -486,7 +486,7 @@ namespace tz::dbgui
 		}
 		{
 			HDK_PROFZONE("Dbgui Render - Final Pass", 0xFFAA00AA);
-			tz::gl::device().get_renderer(global_render_data->final_renderer).render();
+			tz::gl::get_device().get_renderer(global_render_data->final_renderer).render();
 		}
 	}
 
@@ -559,8 +559,8 @@ namespace tz::dbgui
 		//		{
 		//			ImGui::Text("- %s (%s)", tz::gl::vk2::util::instance_extension_tz_names[static_cast<int>(iext)], tz::gl::vk2::util::instance_extension_names[static_cast<int>(iext)]);
 		//		}
-		//		const tz::gl::vk2::LogicalDevice& ldev = tz::gl::device().vk_get_logical_device();
-		//		ImGui::Text("Vulkan Device Extensions:");
+		//		const tz::gl::vk2::LogicalDevice& ldev = tz::gl::get_device().vk_get_logical_device();
+		//		ImGui::Text("Vulkan device Extensions:");
 		//		for(tz::gl::vk2::DeviceExtension dext : ldev.get_extensions())
 		//		{
 		//			ImGui::Text("- %s (%s)", tz::gl::vk2::util::device_extension_tz_names[static_cast<int>(dext)], tz::gl::vk2::util::device_extension_names[static_cast<int>(dext)]);
@@ -651,9 +651,9 @@ namespace tz::dbgui
 
 	void draw_tz_device_info()
 	{
-		if(ImGui::Begin("Device", &tab_tz.show_device_info))
+		if(ImGui::Begin("device", &tab_tz.show_device_info))
 		{
-			tz::gl::device().dbgui();
+			tz::gl::get_device().dbgui();
 			ImGui::End();
 		}
 	}
@@ -666,7 +666,7 @@ namespace tz::dbgui
 			{
 				ImGui::MenuItem("Top Bar", nullptr, &tab_tz.show_top_bar);
 				ImGui::MenuItem("Window", nullptr, &tab_tz.show_window_info);
-				ImGui::MenuItem("Device", nullptr, &tab_tz.show_device_info);
+				ImGui::MenuItem("device", nullptr, &tab_tz.show_device_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
 					hdk::error("Manual debug breakpoint occurred.");

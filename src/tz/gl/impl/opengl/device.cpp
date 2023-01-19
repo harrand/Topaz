@@ -14,7 +14,7 @@ namespace tz::gl
 
 	tz::gl::renderer_handle DeviceOGL::create_renderer(const renderer_infoOGL& info)
 	{
-		HDK_PROFZONE("OpenGL Frontend - Renderer Create (via Device)", 0xFFAA0000);
+		HDK_PROFZONE("OpenGL Frontend - Renderer Create (via device)", 0xFFAA0000);
 		return DeviceCommon<RendererOGL>::emplace_renderer(info);
 	}
 	

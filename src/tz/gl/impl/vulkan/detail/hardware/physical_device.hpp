@@ -89,7 +89,7 @@ namespace tz::gl::vk2
 		PhysicalDevice(VkPhysicalDevice native, const VulkanInstance& instance);
 		/**
 		 * @brief PhysicalDevices do not necessarily support all available DeviceFeatures.
-		 * @return An EnumField containing all the features supported by this Physical Device.
+		 * @return An EnumField containing all the features supported by this Physical device.
 		 */
 		DeviceFeatureField get_supported_features() const;
 		/**

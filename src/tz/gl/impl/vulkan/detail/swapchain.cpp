@@ -84,7 +84,7 @@ namespace tz::gl::vk2
 				hdk::error("Ran out of device memory (VRAM) while trying to create Swapchain. Ensure your device meets minimum requirements");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				hdk::error("Device lost whilst trying to create a Swapchain. Possible hardware fault. Please be aware: Device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
+				hdk::error("device lost whilst trying to create a Swapchain. Possible hardware fault. Please be aware: device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
 			break;
 			case VK_ERROR_SURFACE_LOST_KHR:
 				hdk::error("Surface lost whilst trying to create a Swapchain. Please submit a bug report (Please explain in detail what you were doing, this is window-related)");

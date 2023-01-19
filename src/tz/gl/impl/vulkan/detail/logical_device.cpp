@@ -248,7 +248,7 @@ namespace tz::gl::vk2
 				hdk::error("Failed to create LogicalDevice because too many of such objects. Pleas submit a bug report.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				hdk::error("Device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: Device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
+				hdk::error("device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
 			break;
 		}
 		// We'll retrieve all the VkQueues now so we don't have to deal with it later.

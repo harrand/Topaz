@@ -139,9 +139,9 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2_graphicsapi_vk_frontend_renderer
 	 * Deciphering the actual render target is pretty complicated. There are various gotchas:
-	 * - If there is a swapchain, we don't have control over how many swapchain images are available. We need to be flexible as the Device has sole control over this.
+	 * - If there is a swapchain, we don't have control over how many swapchain images are available. We need to be flexible as the device has sole control over this.
 	 * - If we're rendering into a separate image (most likely a texture resource belonging to another RendererVulkan), that RendererVulkan has ownership of the image component, not us.
-	 * - If we're rendering to the window, the Device used to create this RendererVulkan has ownership of those image components. This should always be the case.
+	 * - If we're rendering to the window, the device used to create this RendererVulkan has ownership of those image components. This should always be the case.
 	 *
 	 * This class deals with all of those cases and exposes a list of output images, aswell as imageviews and framebuffers for them.
 	 */
@@ -204,7 +204,7 @@ namespace tz::gl
 		std::unique_ptr<ioutput> output = nullptr;
 		/// Logical device used to create depth images, render passes and framebuffers.
 		const vk2::LogicalDevice* ldev = nullptr;
-		/// List of window buffer images (offscreen image or swapchain images) from the Device.
+		/// List of window buffer images (offscreen image or swapchain images) from the device.
 		std::span<vk2::Image> swapchain_images = {};
 		/// List of depth images for each window buffer image (These may be null if depth testing is disabled).
 		vk2::Image* swapchain_depth_images = {};
@@ -348,7 +348,7 @@ namespace tz::gl
 		/**
 		 * Create a new Renderer.
 		 * @param info User-exposed class which describes how many resources etc. we have and a high-level description of where we expect to render into.
-		 * @param device_info A renderer is always created by a Device - This constructor is not invoked manually. When the Device does this, it provides some information about the internals; this.
+		 * @param device_info A renderer is always created by a device - This constructor is not invoked manually. When the device does this, it provides some information about the internals; this.
 		 */
 		RendererVulkan(const renderer_infoVulkan& info);
 		RendererVulkan(RendererVulkan&& move);

@@ -100,7 +100,7 @@ namespace tz::gl
 		}
 		return
 		{{
-			.device = &tz::gl::device().vk_get_logical_device(),
+			.device = &tz::gl::get_device().vk_get_logical_device(),
 			.size_bytes = this->resource->data().size_bytes(),
 			.usage = usage_field,
 			.residency = residency
@@ -205,7 +205,7 @@ namespace tz::gl
 		}
 		return
 		{{
-			.device = &tz::gl::device().vk_get_logical_device(),
+			.device = &tz::gl::get_device().vk_get_logical_device(),
 			.format = to_vk2(img_res->get_format()),
 			.dimensions = img_res->get_dimensions(),
 			.usage = usage_field,

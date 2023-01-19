@@ -164,7 +164,7 @@ namespace tz::gl::vk2
 				hdk::error("Failed to wait on TimelineSemaphore because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				hdk::error("Failed to wait on TimelineSemaphore because Device was lost. This is a fatal error.");
+				hdk::error("Failed to wait on TimelineSemaphore because device was lost. This is a fatal error.");
 			break;
 			default:
 				hdk::error("Failed to wait on TimelineSemaphore but cannot determine why. Please submit a bug report.");

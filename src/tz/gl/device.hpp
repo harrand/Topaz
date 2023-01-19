@@ -9,9 +9,9 @@
 namespace tz::gl
 {
 	#if TZ_VULKAN
-		using Device = DeviceVulkan;
+		using device = DeviceVulkan;
 	#elif TZ_OGL
-		using Device = DeviceOGL;
+		using device = DeviceOGL;
 	#endif
 
 	/**
@@ -20,7 +20,7 @@ namespace tz::gl
 	 *
 	 * You should not be creating your own devices.
 	 */
-	Device& device();
+	device& get_device();
 	void destroy_device();
 }
 

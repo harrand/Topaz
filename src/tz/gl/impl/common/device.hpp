@@ -33,7 +33,7 @@ namespace tz::gl
 #if HDK_DEBUG
 			bool free_list_contains = std::find(this->free_list.begin(), this->free_list.end(), h) != this->free_list.end();
 			hdk::assert(!free_list_contains, "Detected double-destroy of renderer of handle value %zu", h);
-			hdk::assert(this->renderers.size() > h, "Detected attempted destroy of renderer of invalid handle value %zu. Device renderer storage does not have the capacity for this, meaning no renderer with this handle was ever returned by this device.", h);
+			hdk::assert(this->renderers.size() > h, "Detected attempted destroy of renderer of invalid handle value %zu. device renderer storage does not have the capacity for this, meaning no renderer with this handle was ever returned by this device.", h);
 
 #endif // HDK_DEBUG
 			this->renderers[h] = R::null();
@@ -82,10 +82,10 @@ namespace tz::gl
 	{
 		const std::size_t renderer_count = device.renderer_count();
 
-		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "tz::gl::device()");
+		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "tz::gl::get_device()");
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Summary");
-		ImGui::Text("- The Device currently stores %zu renderers", renderer_count);
+		ImGui::Text("- The device currently stores %zu renderers", renderer_count);
 		ImGui::Text("- The image_format of the window is %s", detail::image_format_strings[static_cast<int>(device.get_window_format())]);
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
