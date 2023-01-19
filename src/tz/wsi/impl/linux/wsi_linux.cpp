@@ -1,6 +1,6 @@
 #ifdef __linux__
 #include "tz/wsi/impl/linux/wsi_linux.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/debug.hpp"
 #include <optional>
 
 namespace tz::wsi::impl
@@ -11,16 +11,16 @@ namespace tz::wsi::impl
 	void initialise_linux()
 	{
 		x11d.display = XOpenDisplay(nullptr);
-		hdk::assert(x11d.display != nullptr, "XOpenDisplay(nullptr) failed. Is an X-server not available?");
+		tz::assert(x11d.display != nullptr, "XOpenDisplay(nullptr) failed. Is an X-server not available?");
 		x11d.screen = DefaultScreen(x11d.display);
-		hdk::report("Initialised for Linux!");
+		tz::report("Initialised for Linux!");
 	}
 
 	void terminate_linux()
 	{
 		XCloseDisplay(x11d.display);
 		x11d.display = nullptr;
-		hdk::report("Terminated on Linux!");
+		tz::report("Terminated on Linux!");
 	}
 
 	void update_linux()

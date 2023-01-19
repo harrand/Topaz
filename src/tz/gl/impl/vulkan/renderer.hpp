@@ -28,7 +28,7 @@ namespace tz::gl
 
 	struct RendererResizeInfoVulkan
 	{
-		hdk::vec2ui new_dimensions;
+		tz::vec2ui new_dimensions;
 		std::span<vk2::Image> new_output_images;
 		vk2::Image* new_depth_image;
 	};
@@ -188,7 +188,7 @@ namespace tz::gl
 		 * Retrieve the dimensions of the output images. The output images are guaranteed to all be the same size.
 		 * @return {width, height} of the output images, in pixels.
 		 */
-		hdk::vec2ui get_output_dimensions() const;
+		tz::vec2ui get_output_dimensions() const;
 
 		ioutput* get_output();
 		const ioutput* get_output() const;
@@ -241,15 +241,15 @@ namespace tz::gl
 		const vk2::Pipeline& get_pipeline() const;
 		const vk2::Shader& get_shader() const;
 		vk2::Shader& get_shader();
-		void recreate(const vk2::RenderPass& new_render_pass, hdk::vec2ui new_viewport_dimensions, bool wireframe_mode = false);
+		void recreate(const vk2::RenderPass& new_render_pass, tz::vec2ui new_viewport_dimensions, bool wireframe_mode = false);
 		bool is_compute() const;
 		bool is_wireframe_mode() const;
 	private:
 		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
-		vk2::GraphicsPipelineInfo make_graphics_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
+		vk2::GraphicsPipelineInfo make_graphics_pipeline(tz::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 		vk2::ComputePipelineInfo make_compute_pipeline() const;
-		vk2::Pipeline make_pipeline(hdk::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
+		vk2::Pipeline make_pipeline(tz::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 
 		vk2::Shader shader = vk2::Shader::null();
 		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
@@ -454,7 +454,7 @@ namespace tz::gl
 		CommandProcessor command = {};
 		std::string debug_name = "Null renderer";
 		tz::gl::scissor_region scissor_cache = tz::gl::scissor_region::null();
-		hdk::vec2ui window_dims_cache = {};
+		tz::vec2ui window_dims_cache = {};
 	};
 
 	static_assert(renderer_type<renderer_vulkan>);

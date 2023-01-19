@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/graphics_pipeline.hpp"
 #include <algorithm>
 
@@ -22,8 +22,8 @@ namespace tz::gl::vk2
 	pipeline(VK_NULL_HANDLE),
 	info(info)
 	{
-		HDK_PROFZONE("Vulkan Backend - GraphicsPipeline Create", 0xFFAA0000);
-		hdk::assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
+		TZ_PROFZONE("Vulkan Backend - GraphicsPipeline Create", 0xFFAA0000);
+		tz::assert(info.valid(), "GraphicsPipelineInfo was invalid. Please submit a bug report.");
 		// https://youtu.be/yyLuGNPLRjc
 		// Vertex Input State
 		std::vector<VkVertexInputBindingDescription> vertex_input_binding_natives(info.state.vertex_input.bindings.length());
@@ -132,16 +132,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Failed to create GraphicsPipeline because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create GraphicsPipeline because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Failed to create GraphicsPipeline because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create GraphicsPipeline because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INVALID_SHADER_NV:
-				hdk::error("Failed to create GraphicsPipeline because one or more shaders failed to compile/link. Please submit a bug report");
+				tz::error("Failed to create GraphicsPipeline because one or more shaders failed to compile/link. Please submit a bug report");
 			break;
 			default:
-				hdk::error("Failed to create GraphicsPipeline but cannot determine why. Please submit a bug report.");
+				tz::error("Failed to create GraphicsPipeline but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -171,7 +171,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& GraphicsPipeline::get_device() const
 	{
-		hdk::assert(this->info.device != nullptr, "GraphicsPipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		tz::assert(this->info.device != nullptr, "GraphicsPipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
 		return *this->info.device;
 	}
 
@@ -194,7 +194,7 @@ namespace tz::gl::vk2
 	pipeline(VK_NULL_HANDLE),
 	info(info)
 	{
-		HDK_PROFZONE("Vulkan Backend - ComputePipeline Create", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - ComputePipeline Create", 0xFFAA0000);
 		VkComputePipelineCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
@@ -213,16 +213,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Failed to create ComputePipeline because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create ComputePipeline because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Failed to create ComputePipeline because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create ComputePipeline because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INVALID_SHADER_NV:
-				hdk::error("Failed to create ComputePipeline because one or more shaders failed to compile/link. Please submit a bug report");
+				tz::error("Failed to create ComputePipeline because one or more shaders failed to compile/link. Please submit a bug report");
 			break;
 			default:
-				hdk::error("Failed to create ComputePipeline but cannot determine why. Please submit a bug report.");
+				tz::error("Failed to create ComputePipeline but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -252,7 +252,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& ComputePipeline::get_device() const
 	{
-		hdk::assert(this->info.device != nullptr, "ComputePipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
+		tz::assert(this->info.device != nullptr, "ComputePipelineInfo contained nullptr LogicalDevice. Please submit a bug report.");
 		return *this->info.device;
 	}
 
@@ -279,7 +279,7 @@ namespace tz::gl::vk2
 
 	PipelineContext Pipeline::get_context() const
 	{
-		hdk::assert(!std::holds_alternative<std::monostate>(this->pipeline_variant), "Cannot get context of the null pipeline!");
+		tz::assert(!std::holds_alternative<std::monostate>(this->pipeline_variant), "Cannot get context of the null pipeline!");
 		if(std::holds_alternative<GraphicsPipeline>(this->pipeline_variant))
 		{
 			return PipelineContext::graphics;
@@ -295,14 +295,14 @@ namespace tz::gl::vk2
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr(std::is_same_v<T, std::monostate>)
 			{
-				hdk::error("Attempting to get device for a null Pipeline");
+				tz::error("Attempting to get device for a null Pipeline");
 			}
 			else
 			{
 				ldev = &arg.get_device();
 			}
 		}, this->pipeline_variant);
-		hdk::assert(ldev != nullptr, "Pipeline had no LogicalDevice attached. Please submit a bug report.");
+		tz::assert(ldev != nullptr, "Pipeline had no LogicalDevice attached. Please submit a bug report.");
 		return *ldev;
 	}
 
@@ -314,14 +314,14 @@ namespace tz::gl::vk2
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr(std::is_same_v<T, std::monostate>)
 			{
-				hdk::error("Attempting to get layout for a null Pipeline");
+				tz::error("Attempting to get layout for a null Pipeline");
 			}
 			else
 			{
 				lay = arg.get_info().pipeline_layout;
 			}
 		}, this->pipeline_variant);
-		hdk::assert(lay != nullptr, "Pipeline had no PipelineLayout attached. Please submit a bug report.");
+		tz::assert(lay != nullptr, "Pipeline had no PipelineLayout attached. Please submit a bug report.");
 		return *lay;
 	}
 
@@ -332,7 +332,7 @@ namespace tz::gl::vk2
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr(std::is_same_v<T, std::monostate>)
 			{
-				hdk::error("Attempting to set layout for a null Pipeline");
+				tz::error("Attempting to set layout for a null Pipeline");
 			}
 			else
 			{
@@ -349,7 +349,7 @@ namespace tz::gl::vk2
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr(std::is_same_v<T, std::monostate>)
 			{
-				hdk::error("Attempting to retrieve native type for a null Pipeline");
+				tz::error("Attempting to retrieve native type for a null Pipeline");
 			}
 			else
 			{

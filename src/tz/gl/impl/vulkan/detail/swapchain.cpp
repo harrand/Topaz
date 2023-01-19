@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/image.hpp"
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
@@ -14,21 +14,21 @@ namespace tz::gl::vk2
 	swapchain_images(),
 	swapchain_image_views()
 	{
-		HDK_PROFZONE("Vulkan Backend - Swapchain Create", 0xFFAA0000);
-		hdk::assert(this->info.device != nullptr, "SwapchainInfo contained null LogicalDevice. Please submi a bug report.");
+		TZ_PROFZONE("Vulkan Backend - Swapchain Create", 0xFFAA0000);
+		tz::assert(this->info.device != nullptr, "SwapchainInfo contained null LogicalDevice. Please submi a bug report.");
 		const LogicalDevice& ldev = *this->info.device;
 		const PhysicalDevice& pdev = ldev.get_hardware();
 
 		// Ensure the swapchain info specifies meets hardware requirements:
 		// Check the Swapchain extension is enabled.
-		hdk::assert(ldev.get_extensions().contains(DeviceExtension::Swapchain), "Attempted to create Swapchain, but owning LogicalDevice does not have DeviceExtension::Swapchain enabled!");
+		tz::assert(ldev.get_extensions().contains(DeviceExtension::Swapchain), "Attempted to create Swapchain, but owning LogicalDevice does not have DeviceExtension::Swapchain enabled!");
 
 		// Ensure the image count is reasonable (not too low or high)
 		PhysicalDeviceSurfaceCapabilityInfo pdev_surface_cap = pdev.get_surface_capabilities();
-		hdk::assert(pdev_surface_cap.min_image_count <= info.swapchain_image_count_minimum, "Swapchain image count too low (hardware minimum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.min_image_count, info.swapchain_image_count_minimum);
-		hdk::assert(info.swapchain_image_count_minimum <= pdev_surface_cap.max_image_count, "Swapchain image count too high (hardware maximum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.max_image_count, info.swapchain_image_count_minimum);
+		tz::assert(pdev_surface_cap.min_image_count <= info.swapchain_image_count_minimum, "Swapchain image count too low (hardware minimum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.min_image_count, info.swapchain_image_count_minimum);
+		tz::assert(info.swapchain_image_count_minimum <= pdev_surface_cap.max_image_count, "Swapchain image count too high (hardware maximum = %u, requested %u). Please submit a bug report.", pdev_surface_cap.max_image_count, info.swapchain_image_count_minimum);
 		// Now ensure the PhysicalDevice supports the provided image_format
-		hdk::assert(pdev.get_supported_surface_formats().contains(this->info.format), "Swapchain provided image_format which the PhysicalDevice does not support. Please submit a bug report.");
+		tz::assert(pdev.get_supported_surface_formats().contains(this->info.format), "Swapchain provided image_format which the PhysicalDevice does not support. Please submit a bug report.");
 		const WindowSurface& surface = pdev.get_instance().get_surface();
 
 		// Once we're ready, find out the surface extent we want.
@@ -37,7 +37,7 @@ namespace tz::gl::vk2
 		{
 			if(pdev_surface_cap.maybe_surface_dimensions.has_value())
 			{
-				hdk::vector<std::uint32_t, 2> current_extent = pdev_surface_cap.maybe_surface_dimensions.value().current_extent;
+				tz::vector<std::uint32_t, 2> current_extent = pdev_surface_cap.maybe_surface_dimensions.value().current_extent;
 				extent.width = current_extent[0];
 				extent.height = current_extent[1];
 			}
@@ -78,25 +78,25 @@ namespace tz::gl::vk2
 				// don't do anything.	
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Ran out of host memory (RAM) while trying to create Swapchain. Ensure your device meets minimum requirements.");
+				tz::error("Ran out of host memory (RAM) while trying to create Swapchain. Ensure your device meets minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Ran out of device memory (VRAM) while trying to create Swapchain. Ensure your device meets minimum requirements");
+				tz::error("Ran out of device memory (VRAM) while trying to create Swapchain. Ensure your device meets minimum requirements");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				hdk::error("device lost whilst trying to create a Swapchain. Possible hardware fault. Please be aware: device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
+				tz::error("device lost whilst trying to create a Swapchain. Possible hardware fault. Please be aware: device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
 			break;
 			case VK_ERROR_SURFACE_LOST_KHR:
-				hdk::error("Surface lost whilst trying to create a Swapchain. Please submit a bug report (Please explain in detail what you were doing, this is window-related)");
+				tz::error("Surface lost whilst trying to create a Swapchain. Please submit a bug report (Please explain in detail what you were doing, this is window-related)");
 			break;
 			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
-				hdk::error("Tried to create a Swapchain. Requested window is already in-use. If you're somehow using more than 1 window while running this application, this is probably why - Try reproducing the issue in a single window. If you're not doing anything special, please submit a bug report");
+				tz::error("Tried to create a Swapchain. Requested window is already in-use. If you're somehow using more than 1 window while running this application, this is probably why - Try reproducing the issue in a single window. If you're not doing anything special, please submit a bug report");
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				hdk::error("Tried to create a Swapchain, but something went wrong for implementation-specified reasons. Unfortunately this error code is extremely cryptic. Please submit a bug report (although please don't get your hopes up)");
+				tz::error("Tried to create a Swapchain, but something went wrong for implementation-specified reasons. Unfortunately this error code is extremely cryptic. Please submit a bug report (although please don't get your hopes up)");
 			break;
 			default:
-				hdk::error("Failed to create a Swapchain, and the error code is unrecognised. Either we are missing a return code case, or something has gone very, very wrong. Please submit a bug report.");
+				tz::error("Failed to create a Swapchain, and the error code is unrecognised. Either we are missing a return code case, or something has gone very, very wrong. Please submit a bug report.");
 			break;
 		}
 
@@ -119,7 +119,7 @@ namespace tz::gl::vk2
 	{
 		if(this->swapchain != VK_NULL_HANDLE)
 		{
-			hdk::assert(this->info.device != nullptr, "Cannot destroy Swapchain because we are unaware of the spawning LogicalDevice. Please submit a bug report");
+			tz::assert(this->info.device != nullptr, "Cannot destroy Swapchain because we are unaware of the spawning LogicalDevice. Please submit a bug report");
 			vkDestroySwapchainKHR(this->info.device->native(), this->swapchain, nullptr);
 			this->swapchain = VK_NULL_HANDLE;
 		}
@@ -137,15 +137,15 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Swapchain::get_device() const
 	{
-		hdk::assert(!this->is_null(), "Tried to retrieve LogicalDevice from a null Swapchain. Please submit a bug report.");
+		tz::assert(!this->is_null(), "Tried to retrieve LogicalDevice from a null Swapchain. Please submit a bug report.");
 		const LogicalDevice* ldev = this->info.device;
-		hdk::assert(ldev != nullptr && !ldev->is_null(), "SwapchainInfo contained nullptr or null LogicalDevice");
+		tz::assert(ldev != nullptr && !ldev->is_null(), "SwapchainInfo contained nullptr or null LogicalDevice");
 		return *ldev;
 	}
 
 	Swapchain::ImageAcquisitionResult Swapchain::acquire_image(const Swapchain::ImageAcquisition& acquire)
 	{
-		HDK_PROFZONE("Vulkan Backend - Swapchain Image Acquire", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Swapchain Image Acquire", 0xFFAA0000);
 		BinarySemaphore::NativeType signal_semaphore_native = VK_NULL_HANDLE;
 		Fence::NativeType signal_fence_native = VK_NULL_HANDLE;
 
@@ -208,7 +208,7 @@ namespace tz::gl::vk2
 		return this->info.present_mode;
 	}
 
-	hdk::vec2ui Swapchain::get_dimensions() const
+	tz::vec2ui Swapchain::get_dimensions() const
 	{
 		return this->dimensions;
 	}
@@ -219,7 +219,7 @@ namespace tz::gl::vk2
 
 	void Swapchain::initialise_images()
 	{
-		hdk::assert(!this->is_null(), "Tried to initialise Swapchain images, but the Swapchain is null. Please submit a bug report.");
+		tz::assert(!this->is_null(), "Tried to initialise Swapchain images, but the Swapchain is null. Please submit a bug report.");
 		if(!this->swapchain_images.empty())
 		{
 			this->swapchain_images.clear();

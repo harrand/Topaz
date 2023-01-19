@@ -1,8 +1,8 @@
 #ifdef _WIN32
 #include "tz/wsi/impl/windows/window.hpp"
 #include "tz/wsi/impl/windows/wsi_windows.hpp"
-#include "hdk/debug.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include <dwmapi.h>
 #include <algorithm>
 
@@ -53,13 +53,13 @@ namespace tz::wsi::impl
 				.fTransitionOnMaximized = 0
 			};
 			HRESULT res = DwmEnableBlurBehindWindow(this->hwnd, &bb);
-			hdk::assert(SUCCEEDED(res), "Failed to make window transparent");
+			tz::assert(SUCCEEDED(res), "Failed to make window transparent");
 		}
-		hdk::assert(this->hwnd != nullptr, "Window creation failed. GetLastError() returns %lu", GetLastError());
+		tz::assert(this->hwnd != nullptr, "Window creation failed. GetLastError() returns %lu", GetLastError());
 		this->hdc = GetDC(this->hwnd);
 		if(info.window_flags & window_flag::opengl)
 		{
-			hdk::report("Setting up window for modern opengl.");
+			tz::report("Setting up window for modern opengl.");
 			this->impl_init_opengl();
 		}
 		if(!(info.window_flags & window_flag::invisible))
@@ -71,7 +71,7 @@ namespace tz::wsi::impl
 		std::fill(this->key_state.keys_down.begin(), this->key_state.keys_down.end(), key::unknown);
 		// Empty mouse state.
 		std::fill(this->mouse_state.button_state.begin(), this->mouse_state.button_state.end(), mouse_button_state::noclicked);
-		this->mouse_state.mouse_position = hdk::vec2ui::zero();
+		this->mouse_state.mouse_position = tz::vec2ui::zero();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -97,17 +97,17 @@ namespace tz::wsi::impl
 
 //--------------------------------------------------------------------------------------------------
 
-	hdk::vec2ui window_winapi::get_dimensions() const
+	tz::vec2ui window_winapi::get_dimensions() const
 	{
 		RECT rect;
 		[[maybe_unused]] bool ret = GetClientRect(this->hwnd, &rect);
-		hdk::assert(ret, "Failed to retrieve window dimensions. GetLastError() returns %lu", GetLastError());
-		return static_cast<hdk::vec2ui>(hdk::vec2i{rect.right - rect.left, rect.bottom - rect.top});
+		tz::assert(ret, "Failed to retrieve window dimensions. GetLastError() returns %lu", GetLastError());
+		return static_cast<tz::vec2ui>(tz::vec2i{rect.right - rect.left, rect.bottom - rect.top});
 	}
 
 //--------------------------------------------------------------------------------------------------
 
-	void window_winapi::set_dimensions(hdk::vec2ui dims)
+	void window_winapi::set_dimensions(tz::vec2ui dims)
 	{
 		SetWindowPos(
 			this->hwnd,
@@ -133,7 +133,7 @@ namespace tz::wsi::impl
 	void window_winapi::set_title(std::string title)
 	{
 		[[maybe_unused]] bool ok = SetWindowTextA(this->hwnd, title.data());	
-		hdk::assert(ok, "Failed to set window title to \"%s\", GetLastError() returned %lu", title.data(), GetLastError());
+		tz::assert(ok, "Failed to set window title to \"%s\", GetLastError() returned %lu", title.data(), GetLastError());
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ namespace tz::wsi::impl
 
 	void window_winapi::update()
 	{
-		HDK_PROFZONE("window - update", 0xffff0000);
+		TZ_PROFZONE("window - update", 0xffff0000);
 		if(this->close_requested)
 		{
 			return;
@@ -159,7 +159,7 @@ namespace tz::wsi::impl
 
 	bool window_winapi::make_opengl_context_current()
 	{
-		hdk::assert(this->hdc != nullptr, "Tried to make window opengl context current, but the window was malformed (HDC is invalid)");
+		tz::assert(this->hdc != nullptr, "Tried to make window opengl context current, but the window was malformed (HDC is invalid)");
 		if(this->opengl_rc == nullptr)
 		{
 			return false;
@@ -182,9 +182,9 @@ namespace tz::wsi::impl
 			.hwnd = this->hwnd
 		};
 		auto fn = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>(vkGetInstanceProcAddr(vkinst, "vkCreateWin32SurfaceKHR"));
-		hdk::assert(fn != nullptr);
+		tz::assert(fn != nullptr);
 		VkResult res = fn(vkinst, &create, nullptr, &surf);
-		hdk::assert(res == VK_SUCCESS);
+		tz::assert(res == VK_SUCCESS);
 		return surf;
 	}
 	#endif // TZ_VULKAN
@@ -222,7 +222,7 @@ namespace tz::wsi::impl
 	void window_winapi::impl_init_opengl()
 	{
 		tz::wsi::impl::wgl_function_data wgl = tz::wsi::impl::get_wgl_functions();
-		hdk::assert(wgl != wgl_function_data{}, "Attempting to create modern OpenGL context for window, but WGL function data has not been loaded properly. Did you forget to `tz::wsi::initialise()`?");
+		tz::assert(wgl != wgl_function_data{}, "Attempting to create modern OpenGL context for window, but WGL function data has not been loaded properly. Did you forget to `tz::wsi::initialise()`?");
 		// First, set pixel format.
 		{
 			int attrib[] =
@@ -244,15 +244,15 @@ namespace tz::wsi::impl
 			UINT formats;
 			if(!wgl.wgl_choose_pixel_format_arb(this->hdc, attrib, nullptr, 1, &format, &formats) || formats == 0)
 			{
-				hdk::error("Modern OpenGL does not support the default required pixel format. Your graphics card is probably too old to support modern OpenGL.");
+				tz::error("Modern OpenGL does not support the default required pixel format. Your graphics card is probably too old to support modern OpenGL.");
 			}
 			PIXELFORMATDESCRIPTOR dsc{};
 			dsc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 			bool ok = DescribePixelFormat(this->hdc, format, sizeof(dsc), &dsc);
-			hdk::assert(ok, "Failed to describe OpenGL pixel format. No idea why not, I'm afraid.");
+			tz::assert(ok, "Failed to describe OpenGL pixel format. No idea why not, I'm afraid.");
 			if(!SetPixelFormat(this->hdc, format, &dsc))
 			{
-				hdk::error("Failed to set modern OpenGL pixel format.");
+				tz::error("Failed to set modern OpenGL pixel format.");
 			}
 		}
 
@@ -263,15 +263,15 @@ namespace tz::wsi::impl
 				WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 				WGL_CONTEXT_MINOR_VERSION_ARB, 5,
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-				#if HDK_DEBUG
+				#if TZ_DEBUG
 					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
 				#endif
 				0
 			};
 			this->opengl_rc = wgl.wgl_create_context_attribs_arb(this->hdc, nullptr, attrib);
-			hdk::assert(this->opengl_rc != nullptr, "Failed to create modern opengl context (OpenGL 4.5). Perhaps your graphics card does not support this version?");
+			tz::assert(this->opengl_rc != nullptr, "Failed to create modern opengl context (OpenGL 4.5). Perhaps your graphics card does not support this version?");
 			[[maybe_unused]] BOOL ok = wglMakeCurrent(this->hdc, this->opengl_rc);
-			hdk::assert(ok, "Failed to make modern opengl context current.");
+			tz::assert(ok, "Failed to make modern opengl context current.");
 			wgl.wgl_swap_interval_ext(0);
 		}
 	}

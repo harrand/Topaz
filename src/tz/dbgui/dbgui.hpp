@@ -29,7 +29,7 @@ namespace tz::dbgui
 	/**
 	 * Initialise dbgui. Debug-ui does not function unless this is done.
 	 * 
-	 * @note This is automatically invoked by @ref tz::initialise on `HDK_DEBUG` builds. You almost never want to invoke this yourself.
+	 * @note This is automatically invoked by @ref tz::initialise on `TZ_DEBUG` builds. You almost never want to invoke this yourself.
 	 *
 	 * @note In non-debug builds, this does nothing and thus ImGui functions cannot be called.
 	 */
@@ -37,7 +37,7 @@ namespace tz::dbgui
 	/**
 	 * Terminate dbgui. This must be done at the end of the program, after the debug-ui is ready to be shut down.
 	 *
-	 * @note This is automatically invoked by @ref tz::terminate on `HDK_DEBUG` builds. You almost never want to invoke this yourself.
+	 * @note This is automatically invoked by @ref tz::terminate on `TZ_DEBUG` builds. You almost never want to invoke this yourself.
 	 *
 	 * @pre @ref dbgui::initialise must have been invoked at some point in the past.
 	 */
@@ -54,7 +54,7 @@ namespace tz::dbgui
 
 	/**
 	 * @ingroup tz_dbgui
-	 * As dbgui is only available on HDK_DEBUG, calling ImGui functions directly in game-code will yield runtime errors on non-debug builds. ImGui function invocations should instead be stored within a lambda and passed to this function, which will do nothing on non-debug builds, and can do extra debug-only state checks.
+	 * As dbgui is only available on TZ_DEBUG, calling ImGui functions directly in game-code will yield runtime errors on non-debug builds. ImGui function invocations should instead be stored within a lambda and passed to this function, which will do nothing on non-debug builds, and can do extra debug-only state checks.
 	 *
 	 * Example:
 	 * ```cpp
@@ -66,7 +66,7 @@ namespace tz::dbgui
 	 */
 	inline void run([[maybe_unused]] tz::action auto action)
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			action();
 		#endif
 	}

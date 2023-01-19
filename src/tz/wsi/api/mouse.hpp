@@ -1,6 +1,6 @@
 #ifndef TZ_WSI_API_MOUSE_HPP
 #define TZ_WSI_API_MOUSE_HPP
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #include <array>
 
 namespace tz::wsi
@@ -43,7 +43,7 @@ namespace tz::wsi
 		/// Array of mouse button states against their booleans. Access via `button_state[(int)mouse_button::left].`
 		std::array<mouse_button_state, static_cast<int>(mouse_button::_count)> button_state;
 		/// Current position of the mouse cursor within the window.
-		hdk::vec2ui mouse_position;
+		tz::vec2ui mouse_position;
 		/// Current elevation of the mouse wheel. Increments per scroll-up, decrements per scroll-down.
 		int wheel_position = 0;
 	};

@@ -2,7 +2,7 @@
 #define TOPAZ_GL_IMPL_BACKEND_VK2_TZ_VULKAN_HPP
 #if TZ_VULKAN
 #include "tz/wsi/window.hpp"
-#include "hdk/data/version.hpp"
+#include "tz/core/data/version.hpp"
 #include "tz/core/game_info.hpp"
 #include "tz/tz.hpp"
 #include "tz/gl/impl/vulkan/detail/extensions.hpp"
@@ -110,17 +110,17 @@ namespace tz::gl::vk2
 	 * @}
 	 */
 
-	constexpr hdk::version vulkan_version{1, 2, 0, hdk::version_type::normal};
+	constexpr tz::version vulkan_version{1, 2, 0, tz::version_type::normal};
 
 	namespace util
 	{
 		using VkVersion = std::uint32_t;
 		/**
-		 * Convert a hdk::version to a VkVersion, which is used when interacting with the Vulkan API.
+		 * Convert a tz::version to a VkVersion, which is used when interacting with the Vulkan API.
 		 * @param ver Topaz version to convert
 		 * @return Corresponding VkVersion.
 		 */
-		constexpr VkVersion tz_to_vk_version(hdk::version ver)
+		constexpr VkVersion tz_to_vk_version(tz::version ver)
 		{
 			return VK_MAKE_VERSION(ver.major, ver.minor, ver.patch);
 		}

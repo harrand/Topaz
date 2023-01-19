@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/command.hpp"
 #include "tz/gl/impl/vulkan/detail/hardware/queue.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
@@ -12,7 +12,7 @@ namespace tz::gl::vk2::hardware
 	queue(VK_NULL_HANDLE),
 	info(info)
 	{
-		hdk::assert(info.dev != nullptr, "QueueInfo's LogicalDevice was nullptr");
+		tz::assert(info.dev != nullptr, "QueueInfo's LogicalDevice was nullptr");
 		vkGetDeviceQueue(info.dev->native(), this->info.queue_family_idx, this->info.queue_idx, &this->queue);
 	}
 
@@ -23,7 +23,7 @@ namespace tz::gl::vk2::hardware
 
 	const LogicalDevice& Queue::get_device() const
 	{
-		hdk::assert(this->info.dev != nullptr, "QueueInfo contained nullptr LogicalDevice");
+		tz::assert(this->info.dev != nullptr, "QueueInfo contained nullptr LogicalDevice");
 		return *this->info.dev;
 	}
 
@@ -34,10 +34,10 @@ namespace tz::gl::vk2::hardware
 
 	void Queue::submit(SubmitInfo submit_info)
 	{
-		HDK_PROFZONE("Vulkan Backend - Queue Submit", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Queue Submit", 0xFFAA0000);
 		if(submit_info.execution_complete_fence != nullptr)
 		{
-			hdk::assert(!submit_info.execution_complete_fence->is_signalled(), "SubmitInfo contained Fence to signal on execution complete, but it was already signalled.");
+			tz::assert(!submit_info.execution_complete_fence->is_signalled(), "SubmitInfo contained Fence to signal on execution complete, but it was already signalled.");
 		}
 
 		std::vector<BinarySemaphore::NativeType> wait_sem_natives(submit_info.waits.length());
@@ -83,23 +83,23 @@ namespace tz::gl::vk2::hardware
 				}
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Failed to submit Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to submit Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Failed to submit Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to submit Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				hdk::error("Failed to submit Queue because device was lost. This is a fatal error.");
+				tz::error("Failed to submit Queue because device was lost. This is a fatal error.");
 			break;
 			default:
-				hdk::error("Failed to submit Queue but cannot determine why. Please submit a bug report.");
+				tz::error("Failed to submit Queue but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
 
 	Queue::PresentResult Queue::present(Queue::PresentInfo present_info)
 	{
-		HDK_PROFZONE("Vulkan Backend - Queue Present", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Queue Present", 0xFFAA0000);
 		std::vector<BinarySemaphore::NativeType> wait_sem_natives(present_info.wait_semaphores.length());
 		
 		std::transform(present_info.wait_semaphores.begin(), present_info.wait_semaphores.end(), wait_sem_natives.begin(), [](const BinarySemaphore* sem){return sem->native();});
@@ -130,15 +130,15 @@ namespace tz::gl::vk2::hardware
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
 				pres_result = PresentResult::Fail_FatalError;
-				hdk::error("Failed to present Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to present Queue because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
 				pres_result = PresentResult::Fail_FatalError;
-				hdk::error("Failed to present Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to present Queue because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
 				pres_result = PresentResult::Fail_FatalError;
-				hdk::error("Failed to present Queue because device was lost. This is a fatal error.");
+				tz::error("Failed to present Queue because device was lost. This is a fatal error.");
 			break;
 			case VK_ERROR_OUT_OF_DATE_KHR:
 				pres_result = PresentResult::Fail_OutOfDate;
@@ -151,7 +151,7 @@ namespace tz::gl::vk2::hardware
 			break;
 			default:
 				pres_result = PresentResult::Fail_FatalError;
-				hdk::error("Failed to present Queue but cannot determine why. Please submit a bug report.");
+				tz::error("Failed to present Queue but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		return pres_result;
@@ -185,7 +185,7 @@ namespace tz::gl::vk2::hardware
 
 	void Queue::execute_cpu_side_command_buffer(const CommandBuffer& command_buffer) const
 	{
-		HDK_PROFZONE("Vulkan Backend - Command Buffer CPU Execute", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Command Buffer CPU Execute", 0xFFAA0000);
 		for(const VulkanCommand::variant& cmd : command_buffer.get_recorded_commands())
 		{
 			std::visit([](auto&& val)
@@ -193,7 +193,7 @@ namespace tz::gl::vk2::hardware
 				using T = std::decay_t<decltype(val)>;
 				if constexpr(std::is_same_v<T, VulkanCommand::BeginRenderPass>)
 				{
-					HDK_PROFZONE("Vulkan Backend - RenderPass Begin CPU Execute", 0xFFAA0000);
+					TZ_PROFZONE("Vulkan Backend - RenderPass Begin CPU Execute", 0xFFAA0000);
 					// Change image's layout CPU-side.
 					Framebuffer& framebuffer = *val.framebuffer;
 					const RenderPass& pass = framebuffer.get_pass();
@@ -206,7 +206,7 @@ namespace tz::gl::vk2::hardware
 				}
 				if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
 				{
-					HDK_PROFZONE("Vulkan Backend - RenderPass End CPU Execute", 0xFFAA0000);
+					TZ_PROFZONE("Vulkan Backend - RenderPass End CPU Execute", 0xFFAA0000);
 					// Change image's layout CPU-side.
 					Framebuffer& framebuffer = *val.framebuffer;
 					const RenderPass& pass = framebuffer.get_pass();
@@ -219,7 +219,7 @@ namespace tz::gl::vk2::hardware
 				}
 				else if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
 				{
-					HDK_PROFZONE("Vulkan Backend - TransitionImageLayout CPU Execute", 0xFFAA0000);
+					TZ_PROFZONE("Vulkan Backend - TransitionImageLayout CPU Execute", 0xFFAA0000);
 					// We probably need to change the image's layout CPU-side.
 					Image& img = *val.image;
 					img.set_layout(val.target_layout);

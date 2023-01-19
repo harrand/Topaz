@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/shader.hpp"
 
 namespace tz::gl::vk2
@@ -9,8 +9,8 @@ namespace tz::gl::vk2
 	type(info.type),
 	shader_module(VK_NULL_HANDLE)
 	{
-		HDK_PROFZONE("Vulkan Backend - ShaderModule Create (Compile)", 0xFFAA0000);
-		hdk::assert(this->device != nullptr && !this->device->is_null(), "ShaderModuleInfo has nullptr or null LogicalDevice");
+		TZ_PROFZONE("Vulkan Backend - ShaderModule Create (Compile)", 0xFFAA0000);
+		tz::assert(this->device != nullptr && !this->device->is_null(), "ShaderModuleInfo has nullptr or null LogicalDevice");
 
 		VkShaderModuleCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -24,16 +24,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Ran out of host memory (RAM) while trying to create ShaderModule. Ensure your system meets the minimum requirements.");
+				tz::error("Ran out of host memory (RAM) while trying to create ShaderModule. Ensure your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Ran out of device memory (VRAM) while trying to create ShaderModule. Ensure your system meets the minimum requirements.");
+				tz::error("Ran out of device memory (VRAM) while trying to create ShaderModule. Ensure your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INVALID_SHADER_NV:
-				hdk::error("Shader Module failed to compile/link. Please submit a bug report.");
+				tz::error("Shader Module failed to compile/link. Please submit a bug report.");
 			break;
 			default:
-				hdk::error("Failed to create ShaderModule but don't know why. This return code is undocumented. Please submit a bug report");
+				tz::error("Failed to create ShaderModule but don't know why. This return code is undocumented. Please submit a bug report");
 			break;
 		}
 	}
@@ -50,7 +50,7 @@ namespace tz::gl::vk2
 	{
 		if(this->shader_module != VK_NULL_HANDLE)
 		{
-			hdk::assert(this->device != nullptr && !this->device->is_null(), "Can't destroy ShaderModule because LogicalDevice is nullptr or null");
+			tz::assert(this->device != nullptr && !this->device->is_null(), "Can't destroy ShaderModule because LogicalDevice is nullptr or null");
 			vkDestroyShaderModule(this->device->native(), this->shader_module, nullptr);
 			this->shader_module = VK_NULL_HANDLE;
 		}
@@ -84,7 +84,7 @@ namespace tz::gl::vk2
 	{
 		for(const ShaderModuleInfo& module_info : info.modules)
 		{
-			hdk::assert(module_info.device == info.device, "ShaderInfo LogicalDevice did not match the devices specified in one or more of its ShaderModuleInfos. Please submit a bug report.");
+			tz::assert(module_info.device == info.device, "ShaderInfo LogicalDevice did not match the devices specified in one or more of its ShaderModuleInfos. Please submit a bug report.");
 			this->modules.emplace_back(module_info);
 		}
 	}
@@ -133,7 +133,7 @@ namespace tz::gl::vk2
 	void Shader::debug_set_name(std::string debug_name)
 	{
 		this->debug_name = debug_name;
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			for(const ShaderModule& s_module : this->modules)
 			{
 				const char* ext;
@@ -175,7 +175,7 @@ namespace tz::gl::vk2
 					case VK_SUCCESS:
 					break;
 					default:
-						hdk::error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
+						tz::error("Failed to set debug name for image backend, but for unknown reason. Please submit a bug report.");
 					break;
 				}
 			}

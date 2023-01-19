@@ -1,8 +1,9 @@
 #include "tz/tz.hpp"
+#include "tz/core/tz_core.hpp"
 #include "tz/wsi/wsi.hpp"
-#include "hdk/hdk.hpp"
-#include "hdk/debug.hpp"
-#include "hdk/profile.hpp"
+#include "tz/tz.hpp"
+#include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 
 #if TZ_VULKAN
@@ -15,26 +16,26 @@
 
 namespace tz
 {
-	tz::wsi::window_handle wnd = hdk::nullhand;
+	tz::wsi::window_handle wnd = tz::nullhand;
 	bool initialised = false;
 	initialise_info init_info = {};
 
 	void initialise(initialise_info init)
 	{
-		HDK_PROFZONE("Topaz Initialise", 0xFF0000AA);
-		hdk::initialise();
-		hdk::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
+		TZ_PROFZONE("Topaz Initialise", 0xFF0000AA);
+		tz::core::initialise();
+		tz::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
 		tz::wsi::initialise();
 		[[maybe_unused]] tz::game_info game_info{.name = init.name, .version = init.version, .engine = tz::info()};
 		// Ensure we're not already initialised before doing anything.
-		hdk::assert(wnd == hdk::nullhand && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
+		tz::assert(wnd == tz::nullhand && !initialised, "tz::initialise(): Already initialised (wnd = %p, init = %d)", wnd, initialised);
 
 		// After that, create the window.
 		{
 			std::string window_title = init.name;
-			#if HDK_DEBUG
+			#if TZ_DEBUG
 				window_title = game_info.to_string();
-			#endif // HDK_DEBUG
+			#endif // TZ_DEBUG
 
 			tz::wsi::window_flag::flag_bit flags = 0;
 			if(TZ_OGL)
@@ -72,8 +73,8 @@ namespace tz
 
 	void terminate()
 	{
-		HDK_PROFZONE("Topaz Terminate", 0xFF0000AA);
-		hdk::assert(wnd != hdk::nullhand && initialised, "tz::terminate(): Not initialised");
+		TZ_PROFZONE("Topaz Terminate", 0xFF0000AA);
+		tz::assert(wnd != tz::nullhand && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
 		tz::gl::destroy_device();
 		#if TZ_VULKAN
@@ -83,15 +84,15 @@ namespace tz
 		#endif
 
 		tz::wsi::destroy_window(wnd);
-		wnd = hdk::nullhand;
+		wnd = tz::nullhand;
 		tz::wsi::terminate();
-		hdk::terminate();
+		tz::core::terminate();
 		initialised = false;
 	}
 
 	void begin_frame()
 	{
-		HDK_FRAME_BEGIN;
+		TZ_FRAME_BEGIN;
 		tz::dbgui::begin_frame();
 	}
 
@@ -99,7 +100,7 @@ namespace tz
 	{
 		tz::dbgui::end_frame();
 		tz::wsi::update();
-		HDK_FRAME_END;
+		TZ_FRAME_END;
 	}
 
 	tz::wsi::window& window()

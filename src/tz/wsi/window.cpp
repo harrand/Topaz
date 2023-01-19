@@ -15,12 +15,12 @@ namespace tz::wsi
 	{
 		std::size_t wid = wm.windows.size();
 		wm.windows.emplace_back(info);
-		return static_cast<hdk::hanval>(wid);
+		return static_cast<tz::hanval>(wid);
 	}
 
 	bool destroy_window(window_handle wh)
 	{
-		auto wid = static_cast<std::size_t>(static_cast<hdk::hanval>(wh));
+		auto wid = static_cast<std::size_t>(static_cast<tz::hanval>(wh));
 		if(wm.windows.size() <= wid || wm.windows[wid] == std::nullopt)
 		{
 			return false;
@@ -31,14 +31,14 @@ namespace tz::wsi
 
 	window& get_window(window_handle wh)
 	{
-		auto wid = static_cast<std::size_t>(static_cast<hdk::hanval>(wh));
-		hdk::assert(has_window(wh), "No valid window at handle %zu", wid);
+		auto wid = static_cast<std::size_t>(static_cast<tz::hanval>(wh));
+		tz::assert(has_window(wh), "No valid window at handle %zu", wid);
 		return wm.windows[wid].value();
 	}
 
 	bool has_window(window_handle wh)
 	{
-		auto wid = static_cast<std::size_t>(static_cast<hdk::hanval>(wh));
+		auto wid = static_cast<std::size_t>(static_cast<tz::hanval>(wh));
 		return wm.windows.size() > wid && wm.windows[wid].has_value();
 	}
 

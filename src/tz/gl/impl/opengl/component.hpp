@@ -36,9 +36,9 @@ namespace tz::gl
 		virtual const iresource* get_resource() const final;
 		virtual iresource* get_resource() final;
 		// Satisfy image_component_type
-		hdk::vec2ui get_dimensions() const;
+		tz::vec2ui get_dimensions() const;
 		image_format get_format() const;
-		void resize(hdk::vec2ui dims);
+		void resize(tz::vec2ui dims);
 
 		const ogl2::Image& ogl_get_image() const;
 		ogl2::Image& ogl_get_image();

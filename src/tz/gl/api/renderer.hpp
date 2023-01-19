@@ -1,14 +1,14 @@
 #ifndef TOPAZ_GL2_API_RENDERER_HPP
 #define TOPAZ_GL2_API_RENDERER_HPP
 
-#include "hdk/data/handle.hpp"
+#include "tz/core/data/handle.hpp"
 #include "tz/gl/api/output.hpp"
 #include "tz/gl/api/resource.hpp"
 #include "tz/gl/api/component.hpp"
 #include "tz/gl/api/shader.hpp"
 #include "tz/core/containers/basic_list.hpp"
 #include "tz/core/containers/enum_field.hpp"
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #include <concepts>
 #include <variant>
 #include <optional>
@@ -24,7 +24,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Represents a handle for a renderer owned by an existing device.
 	 */
-	using renderer_handle = hdk::handle<detail::renderer_tag>;
+	using renderer_handle = tz::handle<detail::renderer_tag>;
 
 	/**
 	 * @ingroup tz_gl2_renderer
@@ -58,11 +58,11 @@ namespace tz::gl
 		struct Graphics
 		{
 			/// If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buffer. If there is no index buffer, this is nullhand.
-			resource_handle index_buffer = hdk::nullhand;
+			resource_handle index_buffer = tz::nullhand;
 			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::draw_indirect_buffer. If there is no draw buffer, this is nullhand.
-			resource_handle draw_buffer = hdk::nullhand;
+			resource_handle draw_buffer = tz::nullhand;
 			/// Normalised RGBA floating point colour.
-			hdk::vec4 clear_colour = hdk::vec4::zero();
+			tz::vec4 clear_colour = tz::vec4::zero();
 			/// number of triangles to be rendered in the next draw call.
 			std::size_t tri_count = 0;
 			bool operator==(const Graphics& rhs) const = default;
@@ -70,7 +70,7 @@ namespace tz::gl
 		struct Compute
 		{
 			/// Represents the compute kernel, which contains the number of workgroups to be launched in the X, Y and Z dimensions.
-			hdk::vec3ui kernel = {1u, 1u, 1u};
+			tz::vec3ui kernel = {1u, 1u, 1u};
 			bool operator==(const Compute& rhs) const = default;
 		};
 		/// Graphics state.
@@ -88,7 +88,7 @@ namespace tz::gl
 	using renderer_options = tz::EnumField<renderer_option>;
 
 	template<typename T>
-	concept renderer_info_type = requires(T t, renderer_handle ren, resource_handle r, const iresource& resource, icomponent* component, ioutput& output, renderer_options options, hdk::vec4 vec4, hdk::vec3ui vec3ui, std::string str)
+	concept renderer_info_type = requires(T t, renderer_handle ren, resource_handle r, const iresource& resource, icomponent* component, ioutput& output, renderer_options options, tz::vec4 vec4, tz::vec3ui vec3ui, std::string str)
 	{
 		{t.resource_count()} -> std::convertible_to<unsigned int>;
 		{t.get_resource(r)} -> std::convertible_to<const iresource*>;
@@ -134,7 +134,7 @@ namespace tz::gl
 			/// Handle corresponding to the image to edit.
 			resource_handle image_handle;
 			/// New dimensions of the image, in pixels.
-			hdk::vec2ui dimensions;
+			tz::vec2ui dimensions;
 		};
 
 		struct resource_write
@@ -156,7 +156,7 @@ namespace tz::gl
 		struct compute_config
 		{
 			/// New compute kernel workgroup dimensions.
-			hdk::vec3ui kernel;
+			tz::vec3ui kernel;
 		};
 
 		/**

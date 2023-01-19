@@ -1,9 +1,9 @@
 #include "tz/tz.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/debug.hpp"
 #include <cstdio>
 
 int main()
 {
 	constexpr tz::EngineInfo info = tz::info();
-	hdk::report("Engine Info: %s", info.to_string().c_str());
+	tz::report("Engine Info: %s", info.to_string().c_str());
 }

@@ -1,12 +1,12 @@
 #include "tz/core/matrix_transform.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include <cmath>
 
 namespace tz
 {
-	mat4 translate(hdk::vec3 position)
+	mat4 translate(tz::vec3 position)
 	{
-		HDK_PROFZONE("Matrix Translate", 0xFF0000AA);
+		TZ_PROFZONE("Matrix Translate", 0xFF0000AA);
 		mat4 m = mat4::identity();
 		m(0, 3) = position[0];
 		m(1, 3) = position[1];
@@ -79,9 +79,9 @@ namespace tz
 		return m;
 	}
 
-	mat4 rotate(hdk::vec3 rotation)
+	mat4 rotate(tz::vec3 rotation)
 	{
-		HDK_PROFZONE("Matrix Rotate", 0xFF0000AA);
+		TZ_PROFZONE("Matrix Rotate", 0xFF0000AA);
 		mat4 x = rotate_x(rotation[0]);
 		mat4 y = rotate_y(rotation[1]);
 		mat4 z = rotate_z(rotation[2]);
@@ -89,9 +89,9 @@ namespace tz
 		return r;
 	}
 
-	mat4 scale(hdk::vec3 scale)
+	mat4 scale(tz::vec3 scale)
 	{
-		HDK_PROFZONE("Matrix Scale", 0xFF0000AA);
+		TZ_PROFZONE("Matrix Scale", 0xFF0000AA);
 		mat4 m = mat4::identity();
 		for(std::size_t i = 0; i < 3; i++)
 		{
@@ -100,21 +100,21 @@ namespace tz
 		return m;
 	}
 
-	mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale)
+	mat4 model(tz::vec3 position, tz::vec3 rotation, tz::vec3 scale)
 	{
-		HDK_PROFZONE("Matrix Model", 0xFF0000AA);
+		TZ_PROFZONE("Matrix Model", 0xFF0000AA);
 		return tz::translate(position) * tz::rotate(rotation) * tz::scale(scale);
 	}
 
-	mat4 view(hdk::vec3 position, hdk::vec3 rotation)
+	mat4 view(tz::vec3 position, tz::vec3 rotation)
 	{
-		HDK_PROFZONE("Matrix View", 0xFF0000AA);
+		TZ_PROFZONE("Matrix View", 0xFF0000AA);
 		return (translate(position) * rotate(rotation)).inverse();
 	}
 
 	mat4 perspective(float fov, float aspect_ratio, float near, float far)
 	{
-		HDK_PROFZONE("Matrix Perspective", 0xFF0000AA);
+		TZ_PROFZONE("Matrix Perspective", 0xFF0000AA);
 		const float thf = std::tan(fov / 2.0f);
 		mat4 m = mat4::identity();
 		m(0, 0) = 1.0f / (aspect_ratio * thf);
@@ -130,7 +130,7 @@ namespace tz
 
 	mat4 orthographic(float left, float right, float top, float bottom, float near, float far)
 	{
-		HDK_PROFZONE("Matrix Orthographic", 0xFF0000AA);
+		TZ_PROFZONE("Matrix Orthographic", 0xFF0000AA);
 		mat4 m = mat4::identity();
 		m(0, 0) = 2.0f / (right - left);
 		m(1, 1) = 2.0f / (top - bottom);

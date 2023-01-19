@@ -1,5 +1,5 @@
 #include "tz/tz.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/core/time.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
@@ -14,9 +14,9 @@
 
 struct TriangleVertexData
 {
-	hdk::vec3 position;
+	tz::vec3 position;
 	float pad0;
-	hdk::vec2 texcoord;
+	tz::vec2 texcoord;
 	float pad1[2];
 };
 
@@ -121,7 +121,7 @@ int main()
 			static bool up = true;
 			if(fixed_update.done())
 			{
-				HDK_PROFZONE("Dynamic Updates", 0xFF00AA00);
+				TZ_PROFZONE("Dynamic Updates", 0xFF00AA00);
 				// Add new triangle by resizing the triangle vertex storage buffer to a capacity large enough for an extra triangle. Then we randomise the new triangle data.
 				fixed_update.reset();
 				triangle_count++;
@@ -134,7 +134,7 @@ int main()
 				{
 					up = true;
 				}
-				hdk::vec2ui new_dims = img_comp->get_dimensions();
+				tz::vec2ui new_dims = img_comp->get_dimensions();
 				if(up)
 				{
 					new_dims += {1u, 1u};
@@ -161,7 +161,7 @@ int main()
 				}
 
 				// Shuffle each byte randomly.
-				hdk::vec2ui img_dims = img_comp->get_dimensions();
+				tz::vec2ui img_dims = img_comp->get_dimensions();
 				std::span<std::byte> img_data = renderer.get_resource(imgh)->data();
 				std::random_shuffle(img_data.begin(), img_data.end());
 				// But set the first pixel (bottom left) to always be white.

@@ -4,7 +4,7 @@
 #include "tz/gl/impl/vulkan/convert.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/device.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/debug.hpp"
 
 namespace tz::gl
 {
@@ -26,13 +26,13 @@ namespace tz::gl
 
 	std::size_t buffer_component_vulkan::size() const
 	{
-		hdk::assert(this->resource->data().size_bytes() == this->buffer.size(), "buffer_component Size does not match its iresource data size. Please submit a bug report.");
+		tz::assert(this->resource->data().size_bytes() == this->buffer.size(), "buffer_component Size does not match its iresource data size. Please submit a bug report.");
 		return this->buffer.size();
 	}
 
 	void buffer_component_vulkan::resize(std::size_t sz)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize buffer_component_vulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
+		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize buffer_component_vulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -86,7 +86,7 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				hdk::error("Unrecognised resource_access. Please submit a bug report.");
+				tz::error("Unrecognised resource_access. Please submit a bug report.");
 			[[fallthrough]];
 			case resource_access::static_fixed:
 				usage_field |= vk2::BufferUsage::TransferDestination;
@@ -121,7 +121,7 @@ namespace tz::gl
 		return this->resource;
 	}
 
-	hdk::vec2ui image_component_vulkan::get_dimensions() const
+	tz::vec2ui image_component_vulkan::get_dimensions() const
 	{
 		return this->image.get_dimensions();
 	}
@@ -131,9 +131,9 @@ namespace tz::gl
 		return from_vk2(this->image.get_format());
 	}
 
-	void image_component_vulkan::resize(hdk::vec2ui new_dimensions)
+	void image_component_vulkan::resize(tz::vec2ui new_dimensions)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize an image_component_vulkan, but it does not have resource_access::dynamic_variable. Please submit a bug report.");
+		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize an image_component_vulkan, but it does not have resource_access::dynamic_variable. Please submit a bug report.");
 
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
@@ -173,7 +173,7 @@ namespace tz::gl
 
 	vk2::Image image_component_vulkan::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
+		tz::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
 		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
 		if(this->resource->get_flags().contains(resource_flag::renderer_output))
@@ -183,7 +183,7 @@ namespace tz::gl
 			constexpr auto allowed = vk2::format_traits::get_mandatory_colour_attachment_formats();
 			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
 			{
-				hdk::error("Detected resource_flag::renderer_output in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
+				tz::error("Detected resource_flag::renderer_output in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
 			}
 		}
 		vk2::MemoryResidency residency;
@@ -191,7 +191,7 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				hdk::error("Unknown resource_access. Please submit a bug report.");
+				tz::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
 			case resource_access::static_fixed:
 				residency = vk2::MemoryResidency::GPU;

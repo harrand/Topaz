@@ -16,11 +16,11 @@ void identity()
 		{
 			if(i == j)
 			{
-				hdk::assert(m(i, j) == 1, "Malformed identity matrix. Expected m(%zu, %zu) == 1, but it was %g", i, j, m(i, j));
+				tz::assert(m(i, j) == 1, "Malformed identity matrix. Expected m(%zu, %zu) == 1, but it was %g", i, j, m(i, j));
 			}
 			else
 			{
-				hdk::assert(m(i, j) == 0, "Malformed identity matrix. Expected m(%zu, %zu) == 0, but it was %g", i, j, m(i, j));
+				tz::assert(m(i, j) == 0, "Malformed identity matrix. Expected m(%zu, %zu) == 0, but it was %g", i, j, m(i, j));
 			}
 		}
 	}
@@ -52,7 +52,7 @@ void addition()
 	{
 		for(std::size_t j = 0; j < 4; j++)
 		{
-			hdk::assert(o(i, j) == 0, "Zero matrix unexpectedly had value %g when it should be zero at: (%zu, %zu)", o(i, j), i, j);
+			tz::assert(o(i, j) == 0, "Zero matrix unexpectedly had value %g when it should be zero at: (%zu, %zu)", o(i, j), i, j);
 		}
 	}
 }
@@ -62,7 +62,7 @@ void inversion()
 	// Get the identity matrix.
 	tz::mat4 id = tz::mat4::identity();
 	// Inverting the identity matrix must yield the identity matrix.
-	hdk::assert(id == id.inverse(), "Inverse of I != I... We have broken the rules of maths...");
+	tz::assert(id == id.inverse(), "Inverse of I != I... We have broken the rules of maths...");
 	
 	tz::mat4 fours;
 	for(std::size_t i = 0; i < 4; i++)
@@ -99,11 +99,11 @@ void inversion()
 		{
 			if((i == 0 && j == 3) || (i == 1 && j == 2) || (i == 2 && j == 1) || (i == 3 && j == 0))
 			{
-				hdk::assert(sixteenths(i, j) == sixteenth, "Inverse Matrix incorrect. Expected value %g at (%zu, %zu), but got value ", sixteenth, i, j, sixteenths(i, j));
+				tz::assert(sixteenths(i, j) == sixteenth, "Inverse Matrix incorrect. Expected value %g at (%zu, %zu), but got value ", sixteenth, i, j, sixteenths(i, j));
 			}
 			else
 			{
-				hdk::assert(sixteenths(i, j) == -sixteenth, "Inverse Matrix incorrect. Expected value %g at (%g, %g), but got value ", -sixteenth, i, j, sixteenths(i, j));
+				tz::assert(sixteenths(i, j) == -sixteenth, "Inverse Matrix incorrect. Expected value %g at (%g, %g), but got value ", -sixteenth, i, j, sixteenths(i, j));
 			}
 		}
 	}
@@ -119,9 +119,9 @@ void column_major()
 	|3   7   11   15|
 	*/
 
-	hdk::assert(order(0, 1) == 4.0f, "Expected %g but got %g", 4.0f, order(0, 1));
-	hdk::assert(order(0, 2) == 8.0f, "Expected %g but got %g", 8.0f, order(0, 2));
-	hdk::assert(order(3, 1) == 7.0f, "Expected %g but got %g", 7.0f, order(3, 1));
+	tz::assert(order(0, 1) == 4.0f, "Expected %g but got %g", 4.0f, order(0, 1));
+	tz::assert(order(0, 2) == 8.0f, "Expected %g but got %g", 8.0f, order(0, 2));
+	tz::assert(order(3, 1) == 7.0f, "Expected %g but got %g", 7.0f, order(3, 1));
 }
 
 int main()

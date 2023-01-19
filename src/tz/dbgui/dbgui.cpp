@@ -2,10 +2,10 @@
 #include "tz/wsi/keyboard.hpp"
 #include "tz/wsi/mouse.hpp"
 #include "tz/core/time.hpp"
-#include "hdk/debug.hpp"
-#include "hdk/job/job.hpp"
+#include "tz/core/debug.hpp"
+#include "tz/core/job/job.hpp"
 #include "tz/core/matrix_transform.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/output.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
@@ -41,11 +41,11 @@ namespace tz::dbgui
 
 	struct TopazRenderData
 	{
-		tz::gl::renderer_handle renderer = hdk::nullhand;
-		tz::gl::renderer_handle final_renderer = hdk::nullhand;
-		tz::gl::resource_handle vertex_buffer = hdk::nullhand;
-		tz::gl::resource_handle index_buffer = hdk::nullhand;
-		tz::gl::resource_handle shader_data_buffer = hdk::nullhand;
+		tz::gl::renderer_handle renderer = tz::nullhand;
+		tz::gl::renderer_handle final_renderer = tz::nullhand;
+		tz::gl::resource_handle vertex_buffer = tz::nullhand;
+		tz::gl::resource_handle index_buffer = tz::nullhand;
+		tz::gl::resource_handle shader_data_buffer = tz::nullhand;
 	};
 
 	TopazPlatformData* global_platform_data = nullptr;
@@ -67,31 +67,31 @@ namespace tz::dbgui
 
 	ImTextureID handle_to_texid(tz::gl::resource_handle handle)
 	{
-		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<hdk::hanval>(handle))));
+		return reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(static_cast<std::size_t>(static_cast<tz::hanval>(handle))));
 	}
 
 	void initialise([[maybe_unused]] init_info info)
 	{
-		HDK_PROFZONE("tz::dbgui::initialise", 0xFFAA00AA);
-		#if HDK_DEBUG
+		TZ_PROFZONE("tz::dbgui::initialise", 0xFFAA00AA);
+		#if TZ_DEBUG
 			global_info = info.game_info;
 			bool ret = imgui_impl_tz_init();
-			hdk::assert(ret, "Failed to initialise tz imgui backend.");
-		#endif // HDK_DEBUG
+			tz::assert(ret, "Failed to initialise tz imgui backend.");
+		#endif // TZ_DEBUG
 	}
 
 	void terminate()
 	{
-		HDK_PROFZONE("tz::dbgui::terminate", 0xFFAA00AA);
-		#if HDK_DEBUG
+		TZ_PROFZONE("tz::dbgui::terminate", 0xFFAA00AA);
+		#if TZ_DEBUG
 			imgui_impl_tz_term();
-		#endif // HDK_DEBUG
+		#endif // TZ_DEBUG
 	}
 
 	void begin_frame()
 	{
-		HDK_PROFZONE("tz::dbgui::begin_frame", 0xFFAA00AA);
-		#if HDK_DEBUG
+		TZ_PROFZONE("tz::dbgui::begin_frame", 0xFFAA00AA);
+		#if TZ_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
 			auto dims = tz::window().get_dimensions();
 			io.DisplaySize = ImVec2
@@ -100,20 +100,20 @@ namespace tz::dbgui
 			};
 			ImGui::NewFrame();
 			imgui_impl_begin_commands();
-		#endif // HDK_DEBUG
+		#endif // TZ_DEBUG
 	}
 
 	void end_frame()
 	{
-		HDK_PROFZONE("tz::dbgui::end_frame", 0xFFAA00AA);
-		#if HDK_DEBUG
+		TZ_PROFZONE("tz::dbgui::end_frame", 0xFFAA00AA);
+		#if TZ_DEBUG
 			ImGui::EndFrame();
 			ImGui::Render();
 			imgui_impl_render();
 
 			imgui_impl_handle_inputs();
 
-		#endif //HDK_DEBUG
+		#endif //TZ_DEBUG
 	}
 
 	game_menu_callback_type& game_menu()
@@ -128,7 +128,7 @@ namespace tz::dbgui
 
 	bool claims_keyboard()
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			return ImGui::GetIO().WantCaptureKeyboard;
 		#endif
 		return false;
@@ -136,7 +136,7 @@ namespace tz::dbgui
 
 	bool claims_mouse()
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			return ImGui::GetIO().WantCaptureMouse;
 		#endif
 		return false;
@@ -170,7 +170,7 @@ namespace tz::dbgui
 
 	InputDelta imgui_impl_get_input_delta()
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			auto before_keys = global_platform_data->kb_state.keys_down;
 			auto after_keys = tz::window().get_keyboard_state().keys_down;
 			std::vector<tz::wsi::key> newly_pressed;
@@ -248,13 +248,13 @@ namespace tz::dbgui
 				.mouse_position_changed  = mouse_moved,
 				.mouse_wheel_dir = mdir
 			};
-		#endif // HDK_DEBUG
+		#endif // TZ_DEBUG
 		return {};
 	}
 
 	void imgui_impl_handle_inputs()
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			ImGuiIO& io = ImGui::GetIO();
 			InputDelta delta = imgui_impl_get_input_delta();
 			// Pass to imgui.
@@ -293,7 +293,7 @@ namespace tz::dbgui
 
 			if(delta.mouse_position_changed)
 			{
-				const hdk::vec2ui mpos = tz::window().get_mouse_state().mouse_position;
+				const tz::vec2ui mpos = tz::window().get_mouse_state().mouse_position;
 				io.AddMousePosEvent(mpos[0], mpos[1]);
 			}
 			if(delta.mouse_wheel_dir != MouseWheelDirection::Same)
@@ -307,7 +307,7 @@ namespace tz::dbgui
 					io.AddMouseWheelEvent(0.0f, -1.0f);
 				}
 			}
-		#endif // HDK_DEBUG
+		#endif // TZ_DEBUG
 	}
 
 	bool imgui_impl_tz_init()
@@ -317,7 +317,7 @@ namespace tz::dbgui
 		global_render_data = new TopazRenderData;
 
 		ImGuiIO& io = ImGui::GetIO();
-		hdk::assert(io.BackendPlatformUserData == NULL, "Already initialised imgui backend!");
+		tz::assert(io.BackendPlatformUserData == NULL, "Already initialised imgui backend!");
 		io.BackendPlatformName = "Topaz";
 		io.BackendPlatformUserData = global_platform_data;
 		io.BackendRendererName = "tz::gl";
@@ -351,7 +351,7 @@ namespace tz::dbgui
 			font_data,
 			{
 				.format = tz::gl::image_format::RGBA32,
-				.dimensions = hdk::vec2ui{static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}
+				.dimensions = tz::vec2ui{static_cast<unsigned int>(font_width), static_cast<unsigned int>(font_height)}
 			}
 		);
 
@@ -396,13 +396,13 @@ namespace tz::dbgui
 
 	void imgui_impl_render()
 	{
-		HDK_PROFZONE("Dbgui Render", 0xFFAA00AA);
+		TZ_PROFZONE("Dbgui Render", 0xFFAA00AA);
 
 		ImDrawData* draw = ImGui::GetDrawData();
-		hdk::assert(draw != nullptr, "Null imgui draw data!");
-		hdk::assert(draw->Valid, "Invalid draw data!");
+		tz::assert(draw != nullptr, "Null imgui draw data!");
+		tz::assert(draw->Valid, "Invalid draw data!");
 
-		hdk::assert(global_render_data->renderer != hdk::nullhand, "Null imgui renderer when trying to render!");
+		tz::assert(global_render_data->renderer != tz::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
 		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
@@ -427,7 +427,7 @@ namespace tz::dbgui
 		}
 		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
 		{
-			HDK_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
+			TZ_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
 			renderer.edit(edit.build());
 		}
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
@@ -440,7 +440,7 @@ namespace tz::dbgui
 		std::size_t vertex_cursor = 0;
 		for(std::size_t n = 0; std::cmp_less(n, draw->CmdListsCount); n++)
 		{
-			HDK_PROFZONE("Dbgui Render - Command List Processing", 0xFFAA00AA);
+			TZ_PROFZONE("Dbgui Render - Command List Processing", 0xFFAA00AA);
 			const ImDrawList* cmd = draw->CmdLists[n];
 			std::memcpy(indices.data() + index_cursor, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
 			std::memcpy(vertices.data() + vertex_cursor, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
@@ -454,20 +454,20 @@ namespace tz::dbgui
 				io.DisplaySize.y,
 				-0.1f,
 				0.1f
-			) * tz::view(hdk::vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
+			) * tz::view(tz::vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});
 			for(const ImDrawCmd& draw_cmd : cmd->CmdBuffer)
 			{
-				HDK_PROFZONE("Dbgui Render - Single Command Processing", 0xFFAA00AA);
+				TZ_PROFZONE("Dbgui Render - Single Command Processing", 0xFFAA00AA);
 				shader_data.texture_id = static_cast<std::size_t>(reinterpret_cast<std::uintptr_t>(draw_cmd.TextureId));
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
 
 				tz::gl::ioutput* output = renderer.get_output();
-				hdk::assert(output != nullptr, "");
+				tz::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
-				output->scissor.offset = static_cast<hdk::vec2ui>(hdk::vec2{min.x, min.y} - hdk::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
-				output->scissor.extent = static_cast<hdk::vec2ui>(hdk::vec2{max.x, max.y});
+				output->scissor.offset = static_cast<tz::vec2ui>(tz::vec2{min.x, min.y} - tz::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
+				output->scissor.extent = static_cast<tz::vec2ui>(tz::vec2{max.x, max.y});
 #if TZ_OGL
 				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif
@@ -485,7 +485,7 @@ namespace tz::dbgui
 			}
 		}
 		{
-			HDK_PROFZONE("Dbgui Render - Final Pass", 0xFFAA00AA);
+			TZ_PROFZONE("Dbgui Render - Final Pass", 0xFFAA00AA);
 			tz::gl::get_device().get_renderer(global_render_data->final_renderer).render();
 		}
 	}
@@ -504,20 +504,20 @@ namespace tz::dbgui
 		#if TZ_VULKAN
 			ImGui::Text("Vulkan");					
 			ImGui::SameLine();
-			hdk::version ver = tz::gl::vk2::vulkan_version;
+			tz::version ver = tz::gl::vk2::vulkan_version;
 			ImGui::Text("%u.%u |", ver.major, ver.minor);
 		#elif TZ_OGL
 			ImGui::Text("OpenGL");	
 			ImGui::SameLine();
-			hdk::version ver = tz::gl::ogl2::ogl_version;
+			tz::version ver = tz::gl::ogl2::ogl_version;
 			ImGui::Text("%u.%u Core Profile |", ver.major, ver.minor);
 		#else
 			ImGui::Text("Unknown");	
 		#endif
 		ImGui::SameLine();
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			ImGui::Text("Debug");
-		#elif HDK_PROFILE
+		#elif TZ_PROFILE
 			ImGui::Text("Profile");
 		#else
 			ImGui::Text("Release");
@@ -547,7 +547,7 @@ namespace tz::dbgui
 		ImGui::SameLine();
 		ImGui::Text("%.2ffps |", 1000.0f / global_platform_data->frame_period);
 		ImGui::SameLine();
-		ImGui::Text("%u jobs", hdk::job_system().size());
+		ImGui::Text("%u jobs", tz::job_system().size());
 
 		//if(ImGui::CollapsingHeader("Graphics Backend"))
 		//{
@@ -630,7 +630,7 @@ namespace tz::dbgui
 			auto& wnd = tz::window();
 			if(!(wnd.get_flags() & tz::wsi::window_flag::noresize))
 			{
-				hdk::vec2ui xy = wnd.get_dimensions();
+				tz::vec2ui xy = wnd.get_dimensions();
 				if(ImGui::DragInt2("Dimensions", reinterpret_cast<int*>(xy.data().data()), 3, 1, 4192, "%u"))
 				{
 					wnd.set_dimensions(xy);
@@ -638,7 +638,7 @@ namespace tz::dbgui
 			}
 			else
 			{
-				hdk::vec2ui dims = wnd.get_dimensions();
+				tz::vec2ui dims = wnd.get_dimensions();
 				ImGui::Text("Dimensions = {%u, %u} - Fixed-size window", dims[0], dims[1]);
 			}
 			//ImGui::Text("Minimised = %s", wnd.is_minimised() ? "true" : "false");
@@ -669,7 +669,7 @@ namespace tz::dbgui
 				ImGui::MenuItem("device", nullptr, &tab_tz.show_device_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
-					hdk::error("Manual debug breakpoint occurred.");
+					tz::error("Manual debug breakpoint occurred.");
 				}
 				ImGui::EndMenu();
 			}

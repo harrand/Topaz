@@ -5,7 +5,7 @@
 #ifndef TOPAZ_CORE_MATRIX_TRANSFORM_HPP
 #define TOPAZ_CORE_MATRIX_TRANSFORM_HPP
 #include "tz/core/matrix.hpp"
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 
 namespace tz
 {
@@ -16,7 +16,7 @@ namespace tz
 	 * - Translates the result position[1] units in the positive y-direction.
 	 * - Translates the result position[2] units in the positive z-direction.
 	 */
-	mat4 translate(hdk::vec3 position);
+	mat4 translate(tz::vec3 position);
 	/**
 	 * @ingroup tz_core
 	 * Generates a matrix which performs the following three transformations, in chronological order:
@@ -24,7 +24,7 @@ namespace tz
 	 * - Rotates the result rotation[1] radians about the y-axis.
 	 * - Rotates the result rotation[2] radians about the z-axis.
 	 */
-	mat4 rotate(hdk::vec3 rotation);
+	mat4 rotate(tz::vec3 rotation);
 	/**
 	 * @ingroup tz_core
 	 * Generates a matrix which performs the following transformations at once:
@@ -32,19 +32,19 @@ namespace tz
 	 * - Multiplies each value by scale[1] in the y-direction.
 	 * - Multiplies each value by scale[2] in the z-direction.
 	 */
-	mat4 scale(hdk::vec3 scale);
+	mat4 scale(tz::vec3 scale);
 	/**
 	 * @ingroup tz_core
 	 * Generates a model matrix using the given position, euler-rotation and scale vectors.
 	 * Note: This can be used to transform positions within model-space to world-space.
 	 */
-	mat4 model(hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale);
+	mat4 model(tz::vec3 position, tz::vec3 rotation, tz::vec3 scale);
 	/**
 	 * @ingroup tz_core
 	 * Generates a view matrix using the given view position and rotation.
 	 * Note: This can be used to transform positions within world-space to camera-space.
 	 */
-	mat4 view(hdk::vec3 position, hdk::vec3 rotation);
+	mat4 view(tz::vec3 position, tz::vec3 rotation);
 	/**
 	 * @ingroup tz_core
 	 * Generates a perspective projection matrix using the given camera properties. The properties generate a regular pyramidal-frustum-shaped projection.

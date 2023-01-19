@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL2_API_OUTPUT_HPP
 #define TOPAZ_GL2_API_OUTPUT_HPP
-#include "hdk/memory/clone.hpp"
-#include "hdk/data/vector.hpp"
+#include "tz/core/memory/clone.hpp"
+#include "tz/core/data/vector.hpp"
 #include <concepts>
 #include <limits>
 
@@ -15,8 +15,8 @@ namespace tz::gl
 
 	struct viewport_region
 	{
-		hdk::vec2ui offset;
-		hdk::vec2ui extent;
+		tz::vec2ui offset;
+		tz::vec2ui extent;
 
 		static viewport_region null()
 		{
@@ -28,8 +28,8 @@ namespace tz::gl
 
 	struct scissor_region
 	{
-		hdk::vec2ui offset;
-		hdk::vec2ui extent;
+		tz::vec2ui offset;
+		tz::vec2ui extent;
 
 		static scissor_region null()
 		{
@@ -39,7 +39,7 @@ namespace tz::gl
 		bool operator==(const scissor_region& rhs) const = default;
 	};
 
-	class ioutput : public hdk::unique_cloneable<ioutput>
+	class ioutput : public tz::unique_cloneable<ioutput>
 	{
 	public:
 		constexpr virtual output_target get_target() const = 0;

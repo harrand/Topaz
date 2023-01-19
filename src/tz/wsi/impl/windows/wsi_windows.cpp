@@ -2,8 +2,8 @@
 #include "tz/wsi/impl/windows/wsi_windows.hpp"
 #include "tz/wsi/impl/windows/window.hpp"
 #include "tz/wsi/impl/windows/keyboard.hpp"
-#include "hdk/debug.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include <algorithm>
 #include <string_view>
 
@@ -62,11 +62,11 @@ namespace tz::wsi::impl
 
 	LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		HDK_PROFZONE("Tangle - win32 wndproc", 0xffff0000);
+		TZ_PROFZONE("Tangle - win32 wndproc", 0xffff0000);
 		auto get_window = [hwnd]()
 		{
 			auto wnd = reinterpret_cast<window_winapi*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-			hdk::assert(wnd != nullptr, "window_winapi userdata not setup properly. userdata was nullptr.");
+			tz::assert(wnd != nullptr, "window_winapi userdata not setup properly. userdata was nullptr.");
 			return wnd;
 		};
 		switch(msg)
@@ -94,7 +94,7 @@ namespace tz::wsi::impl
 				if(k != tz::wsi::key::unknown && !already_pressed)
 				{
 					auto iter = std::find_if(state.keys_down.begin(), state.keys_down.end(), [](tz::wsi::key key){return key == tz::wsi::key::unknown;});
-					hdk::assert(iter != state.keys_down.end(), "There are too many keyboard keys down at once (max = %u)", tz::wsi::max_simultaneous_key_presses);
+					tz::assert(iter != state.keys_down.end(), "There are too many keyboard keys down at once (max = %u)", tz::wsi::max_simultaneous_key_presses);
 					*iter = k;
 					state.last_key = k;
 				}
@@ -111,7 +111,7 @@ namespace tz::wsi::impl
 				if(k != tz::wsi::key::unknown && !not_pressed)
 				{
 					auto iter = std::find_if(state.keys_down.begin(), state.keys_down.end(), [k](tz::wsi::key key){return key == k;});
-					hdk::assert(iter != state.keys_down.end(), "Key that's meant to have already been pressed (now up) is not considered pressed. Logic error");
+					tz::assert(iter != state.keys_down.end(), "Key that's meant to have already been pressed (now up) is not considered pressed. Logic error");
 					*iter = tz::wsi::key::unknown;
 					if(state.last_key == k)
 					{
@@ -168,7 +168,7 @@ namespace tz::wsi::impl
 
 	wgl_function_data get_wgl_functions()
 	{
-		hdk::assert(wgl_data != wgl_function_data{}, "Detected WGL functions have not been loaded properly. This should've been done by `tz::wsi::impl::initialise_windows()`. Have you forgotten to initialise?");
+		tz::assert(wgl_data != wgl_function_data{}, "Detected WGL functions have not been loaded properly. This should've been done by `tz::wsi::impl::initialise_windows()`. Have you forgotten to initialise?");
 		return wgl_data;
 	}
 
@@ -176,7 +176,7 @@ namespace tz::wsi::impl
 
 	void load_wgl_functions()
 	{
-		hdk::assert(wgl_data == wgl_function_data{}, "Detected WGL functions have already been loaded, but we've been asked to load them a second time. Logic error?");
+		tz::assert(wgl_data == wgl_function_data{}, "Detected WGL functions have already been loaded, but we've been asked to load them a second time. Logic error?");
 		HWND dummy = CreateWindowExA(
 			0, "STATIC",
 			"Dummy Window",
@@ -184,9 +184,9 @@ namespace tz::wsi::impl
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			nullptr, nullptr, nullptr, nullptr
 		);
-		hdk::assert(dummy != nullptr, "Failed to create dummy window. Initialisation has gone pear-shaped, or windows is being extremely dodgy.");
+		tz::assert(dummy != nullptr, "Failed to create dummy window. Initialisation has gone pear-shaped, or windows is being extremely dodgy.");
 		HDC dc = GetDC(dummy);
-		hdk::assert(dc != nullptr, "Failed to retrieve device context for dummy window. Either initialisation has gone pear-shaped, or windows is acting extremely dodgy.");
+		tz::assert(dc != nullptr, "Failed to retrieve device context for dummy window. Either initialisation has gone pear-shaped, or windows is acting extremely dodgy.");
 		PIXELFORMATDESCRIPTOR dsc{};
 		dsc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 		dsc.nVersion = 1;
@@ -194,20 +194,20 @@ namespace tz::wsi::impl
 		dsc.iPixelType = PFD_TYPE_RGBA;
 		dsc.cColorBits = 24;
 		int format = ChoosePixelFormat(dc, &dsc);
-		hdk::assert(format != 0, "Failed to describe OpenGL pixel format for dummy window. We do this whether or not you use OpenGL, but it seems something has gone very wrong.");
+		tz::assert(format != 0, "Failed to describe OpenGL pixel format for dummy window. We do this whether or not you use OpenGL, but it seems something has gone very wrong.");
 		// we have all this pain because you can only SetPixelFormat once on a window.
 		if(!SetPixelFormat(dc, format, &dsc))
 		{
-			hdk::error("Failed to set pixel format for OpenGL dummy window. We do this whether or not you use OpenGL, but it seems something has gone very wrong.");
+			tz::error("Failed to set pixel format for OpenGL dummy window. We do this whether or not you use OpenGL, but it seems something has gone very wrong.");
 		}
 		HGLRC rc = wglCreateContext(dc);
-		hdk::assert(rc != nullptr, "Failed to create ancient OpenGL context for dummy window.");;
+		tz::assert(rc != nullptr, "Failed to create ancient OpenGL context for dummy window.");;
 		[[maybe_unused]] bool ok = wglMakeCurrent(dc, rc);
-		hdk::assert(ok, "Failed to make ancient OpenGL dummy context current.");
+		tz::assert(ok, "Failed to make ancient OpenGL dummy context current.");
 		auto wglGetExtensionsStringARB = reinterpret_cast<PFNWGLGETEXTENSIONSSTRINGARBPROC>(reinterpret_cast<void*>(wglGetProcAddress("wglGetExtensionsStringARB")));
-		hdk::assert(wglGetExtensionsStringARB != nullptr, "OpenGL does not support WGL_ARB_extensions_string extension! You are most likely using an absolutely ancient GPU, or initialisation has gone extremely pear-shaped.");
+		tz::assert(wglGetExtensionsStringARB != nullptr, "OpenGL does not support WGL_ARB_extensions_string extension! You are most likely using an absolutely ancient GPU, or initialisation has gone extremely pear-shaped.");
 		const char* ext = wglGetExtensionsStringARB(dc);
-		hdk::assert(ext != nullptr, "Failed to get OpenGL WGL extension string");
+		tz::assert(ext != nullptr, "Failed to get OpenGL WGL extension string");
 		const char* start = ext;
 		for(;;)
 		{
@@ -240,9 +240,9 @@ namespace tz::wsi::impl
 			start = ext;
 		}
 		
-		hdk::assert(wgl_data.wgl_choose_pixel_format_arb != nullptr, "Failed to load \"wglChoosePixelFormatARB\" function.");
-		hdk::assert(wgl_data.wgl_create_context_attribs_arb != nullptr, "Failed to load \"wglCreateContextAttribsARB\" function.");
-		hdk::assert(wgl_data.wgl_swap_interval_ext != nullptr, "Failed to load \"wglSwapIntervalEXT\" function.");
+		tz::assert(wgl_data.wgl_choose_pixel_format_arb != nullptr, "Failed to load \"wglChoosePixelFormatARB\" function.");
+		tz::assert(wgl_data.wgl_create_context_attribs_arb != nullptr, "Failed to load \"wglCreateContextAttribsARB\" function.");
+		tz::assert(wgl_data.wgl_swap_interval_ext != nullptr, "Failed to load \"wglSwapIntervalEXT\" function.");
 		wglMakeCurrent(nullptr, nullptr);
 		wglDeleteContext(rc);
 		ReleaseDC(dummy, dc);

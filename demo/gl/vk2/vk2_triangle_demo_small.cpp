@@ -141,8 +141,8 @@ int main()
 		({
 			.buffer_count = static_cast<std::uint32_t>(swapchain.get_images().size())
 		});
-		hdk::assert(result.success(), "CommandPool allocation failed unexpectedly");
-		hdk::assert(result.buffers.length() == swapchain.get_images().size(), "Did not allocate correct number of CommandBuffers");
+		tz::assert(result.success(), "CommandPool allocation failed unexpectedly");
+		tz::assert(result.buffers.length() == swapchain.get_images().size(), "Did not allocate correct number of CommandBuffers");
 
 		for(std::size_t i = 0; i < result.buffers.length(); i++)
 		{
@@ -224,7 +224,7 @@ int main()
 				.swapchain = &swapchain,
 				.swapchain_image_index = swapchain_image_index
 			});
-			hdk::assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
+			tz::assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
 
 			current_frame = (current_frame + 1) % max_frames_in_flight;
 

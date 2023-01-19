@@ -1,5 +1,5 @@
 #if TZ_OGL
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/opengl/detail/image.hpp"
 
 namespace tz::gl::ogl2
@@ -9,7 +9,7 @@ namespace tz::gl::ogl2
 	info(info),
 	maybe_bindless_handle(std::nullopt)
 	{
-		HDK_PROFZONE("OpenGL Backend - Image Create", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Image Create", 0xFFAA0000);
 		glCreateTextures(GL_TEXTURE_2D, 1, &this->image);
 
 		glTextureParameteri(this->image, GL_TEXTURE_WRAP_S, static_cast<GLint>(this->info.sampler.address_mode_s));
@@ -53,7 +53,7 @@ namespace tz::gl::ogl2
 		return this->info.format;
 	}
 
-	hdk::vec2ui Image::get_dimensions() const
+	tz::vec2ui Image::get_dimensions() const
 	{
 		return this->info.dimensions;
 	}
@@ -65,16 +65,16 @@ namespace tz::gl::ogl2
 
 	void Image::set_data(std::span<const std::byte> texture_data)
 	{
-		HDK_PROFZONE("OpenGL Backend - Image Data Write", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Image Data Write", 0xFFAA0000);
 		const FormatData internal_fmt = get_format_data(this->get_format());
 		glTextureSubImage2D(this->image, 0, 0, 0, this->get_dimensions()[0], this->get_dimensions()[1], internal_fmt.format, internal_fmt.type, texture_data.data());
 	}
 
 	void Image::make_bindless()
 	{
-		HDK_PROFZONE("OpenGL Backend - Image Make Bindless", 0xFFAA0000);
-		hdk::assert(supports_bindless_textures(), "Attempted to make an image bindless, but the bindless textures extension (\"GL_ARB_bindless_texture\") is not available on this machine. Your hardware/drivers do not support this specific OGL backend.");
-		hdk::assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
+		TZ_PROFZONE("OpenGL Backend - Image Make Bindless", 0xFFAA0000);
+		tz::assert(supports_bindless_textures(), "Attempted to make an image bindless, but the bindless textures extension (\"GL_ARB_bindless_texture\") is not available on this machine. Your hardware/drivers do not support this specific OGL backend.");
+		tz::assert(!this->is_bindless(), "Image is being made bindless, but it was already bindless. Please submit a bug report.");
 		this->maybe_bindless_handle = glGetTextureHandleARB(this->image);
 		glMakeTextureHandleResidentARB(this->maybe_bindless_handle.value());
 	}
@@ -86,7 +86,7 @@ namespace tz::gl::ogl2
 
 	Image::BindlessTextureHandle Image::get_bindless_handle() const
 	{
-		hdk::assert(this->is_bindless(), "Attempted to retrieve bindless handle for image which is not bindless.");
+		tz::assert(this->is_bindless(), "Attempted to retrieve bindless handle for image which is not bindless.");
 		return this->maybe_bindless_handle.value();
 	}
 
@@ -103,7 +103,7 @@ namespace tz::gl::ogl2
 	void Image::debug_set_name(std::string name)
 	{
 		this->debug_name = name;
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			glObjectLabel(GL_TEXTURE, this->image, -1, this->debug_name.c_str());
 		#endif
 	}
@@ -128,21 +128,21 @@ namespace tz::gl::ogl2
 	{
 		void copy(const Image& source, Image& destination)
 		{
-			HDK_PROFZONE("OpenGL Backend - Image Copy", 0xFFAA0000);
-			hdk::assert(source.get_format() == destination.get_format(), "Image Copy - Source and destination must have identical formats.");
+			TZ_PROFZONE("OpenGL Backend - Image Copy", 0xFFAA0000);
+			tz::assert(source.get_format() == destination.get_format(), "Image Copy - Source and destination must have identical formats.");
 			glCopyImageSubData(source.native(), GL_TEXTURE_2D, 0, 0, 0, 0, destination.native(), GL_TEXTURE_2D, 0, 0, 0, 0, source.get_dimensions()[0], source.get_dimensions()[1], 1);
 		}
 
-		Image clone_resized(const Image& image, hdk::vec2ui new_size)
+		Image clone_resized(const Image& image, tz::vec2ui new_size)
 		{
-			HDK_PROFZONE("OpenGL Backend - Image Clone Resized", 0xFFAA0000);
+			TZ_PROFZONE("OpenGL Backend - Image Clone Resized", 0xFFAA0000);
 			Image newimg
 			{{
 				.format = image.get_format(),
 				.dimensions = new_size,
 				.sampler = image.get_sampler()
 			}};
-			hdk::vec2ui min
+			tz::vec2ui min
 			{
 				std::min(image.get_dimensions()[0], new_size[0]),
 				std::min(image.get_dimensions()[1], new_size[1])

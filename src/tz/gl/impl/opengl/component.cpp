@@ -28,7 +28,7 @@ namespace tz::gl
 
 	void buffer_component_ogl::resize(std::size_t sz)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a buffer_component_ogl, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
+		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a buffer_component_ogl, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
 		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
 		// Just set the new buffer range, clone resized already sorts out the data for us.
@@ -52,7 +52,7 @@ namespace tz::gl
 		switch(this->resource->get_access())
 		{
 			default:
-				hdk::error("Unknown resource_access. Please submit a bug report.");
+				tz::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
 			case resource_access::static_fixed:
 				residency = ogl2::BufferResidency::Static;
@@ -86,7 +86,7 @@ namespace tz::gl
 		return this->resource;
 	}
 
-	hdk::vec2ui image_component_ogl::get_dimensions() const
+	tz::vec2ui image_component_ogl::get_dimensions() const
 	{
 		return this->image.get_dimensions();
 	}
@@ -96,9 +96,9 @@ namespace tz::gl
 		return from_ogl2(this->image.get_format());
 	}
 
-	void image_component_ogl::resize(hdk::vec2ui dims)
+	void image_component_ogl::resize(tz::vec2ui dims)
 	{
-		hdk::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of image_component_ogl, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
+		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of image_component_ogl, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::Image& old_image = this->ogl_get_image();
 		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
 
@@ -120,14 +120,14 @@ namespace tz::gl
 
 	ogl2::Image image_component_ogl::make_image() const
 	{
-		hdk::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
+		tz::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
 		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
 		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
 		ogl2::AddressMode mode = ogl2::AddressMode::ClampToEdge;
-#if HDK_DEBUG
+#if TZ_DEBUG
 		if(img_res->get_flags().contains({resource_flag::image_filter_nearest, resource_flag::image_filter_linear}))
 		{
-			hdk::error("resource_flags included both image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
+			tz::error("resource_flags included both image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
 		}
 #endif
 		if(img_res->get_flags().contains(resource_flag::image_filter_nearest))
@@ -141,7 +141,7 @@ namespace tz::gl
 
 		if(img_res->get_flags().contains({resource_flag::image_wrap_clamp_edge, resource_flag::image_wrap_repeat, resource_flag::image_wrap_mirrored_repeat}))
 		{
-			hdk::error("resource_flags included all 3 of image_wrap_clamp_edge, image_wrap_repeat and image_wrap_mirrored_repeat, all of which are mutually exclusive. Please submit a bug report.");
+			tz::error("resource_flags included all 3 of image_wrap_clamp_edge, image_wrap_repeat and image_wrap_mirrored_repeat, all of which are mutually exclusive. Please submit a bug report.");
 		}
 		if(img_res->get_flags().contains(resource_flag::image_wrap_clamp_edge))
 		{

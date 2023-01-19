@@ -13,14 +13,14 @@
 
 struct RenderData
 {
-	hdk::vec2 triangle_pos = {-0.5f, 0.0f};
-	hdk::vec2 triangle_scale = {1.0f, 1.0f};
-	hdk::vec2 quad_pos = {0.5f, 0.0f};
-	hdk::vec2 quad_scale = {1.0f, 1.0f};
+	tz::vec2 triangle_pos = {-0.5f, 0.0f};
+	tz::vec2 triangle_scale = {1.0f, 1.0f};
+	tz::vec2 quad_pos = {0.5f, 0.0f};
+	tz::vec2 quad_scale = {1.0f, 1.0f};
 
-	hdk::vec3 triangle_colour = {1.0f, 0.0f, 0.0f};
+	tz::vec3 triangle_colour = {1.0f, 0.0f, 0.0f};
 	float pad0;
-	hdk::vec3 quad_colour = {0.0f, 0.0f, 1.0f};
+	tz::vec3 quad_colour = {0.0f, 0.0f, 1.0f};
 	float pad1;
 };
 
@@ -61,7 +61,7 @@ int main()
 		tz::gl::image_resource image_out0 = tz::gl::image_resource::from_uninitialised
 		({
 			.format = tz::gl::image_format::BGRA32,
-			.dimensions = static_cast<hdk::vec2ui>(tz::window().get_dimensions()),
+			.dimensions = static_cast<tz::vec2ui>(tz::window().get_dimensions()),
 			.flags = {tz::gl::resource_flag::renderer_output}
 		});
 		tz::gl::image_resource image_out1 = image_out0;

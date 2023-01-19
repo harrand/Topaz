@@ -1,8 +1,8 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP
-#include "tz/core/memory.hpp"
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/impl/common/shader.hpp"
+#include "tz/core/memory/maybe_owned_ptr.hpp"
 #include "imgui.h"
 #undef assert
 
@@ -151,9 +151,9 @@ namespace tz::gl
 		/// Describes the shader sources used.
 		ShaderInfo shader_info;
 		/// The clear value for colour attachments.
-		hdk::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+		tz::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// Workgroup sizes if we're doing compute.
-		hdk::vec3ui compute_kernel = {1u, 1u, 1u};
+		tz::vec3ui compute_kernel = {1u, 1u, 1u};
 		std::string dbg_name = "";
 	};
 	static_assert(renderer_info_type<renderer_info>);
@@ -162,7 +162,7 @@ namespace tz::gl
 	class AssetStorageCommon
 	{
 	public:
-		using AssetHandle = hdk::handle<Asset>;
+		using AssetHandle = tz::handle<Asset>;
 		AssetStorageCommon(std::span<const Asset* const> assets = {}):
 		asset_storage()
 		{
@@ -186,22 +186,22 @@ namespace tz::gl
 		
 		const Asset* get(AssetHandle handle) const
 		{
-			if(handle == hdk::nullhand) return nullptr;
-			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
+			if(handle == tz::nullhand) return nullptr;
+			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
 			return this->asset_storage[handle_val].get();
 		}
 
 		Asset* get(AssetHandle handle)
 		{
-			if(handle == hdk::nullhand) return nullptr;
-			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
+			if(handle == tz::nullhand) return nullptr;
+			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
 			return this->asset_storage[handle_val].get();
 		}
 
 		void set(AssetHandle handle, Asset* value)
 		{
-			std::size_t handle_val = static_cast<std::size_t>(static_cast<hdk::hanval>(handle));
-			hdk::assert(!this->asset_storage[handle_val].owning(), "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
+			std::size_t handle_val = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+			tz::assert(!this->asset_storage[handle_val].owning(), "AssetStorageCommon: Try to set specific asset value, but the asset at that handle is not a reference (it is owned by us)");
 			this->asset_storage[handle_val] = value;
 		}
 	private:
@@ -235,7 +235,7 @@ namespace tz::gl
 
 				// Display information about current resource.
 				ImGui::Indent();
-				renderer.get_resource(static_cast<hdk::hanval>(res_id))->dbgui();
+				renderer.get_resource(static_cast<tz::hanval>(res_id))->dbgui();
 				ImGui::Unindent();
 			}
 		}
@@ -253,7 +253,7 @@ namespace tz::gl
 				auto* comp = renderer.get_component(han);
 				if(comp != nullptr && ImGui::CollapsingHeader("Index Buffer"))
 				{
-					ImGui::Text("[resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Text("[resource %zu]", static_cast<std::size_t>(static_cast<tz::hanval>(han)));
 					ImGui::Indent();
 					comp->get_resource()->dbgui();
 					ImGui::Unindent();
@@ -265,7 +265,7 @@ namespace tz::gl
 				auto* comp = renderer.get_component(han);
 				if(comp != nullptr && ImGui::CollapsingHeader("Draw Indirect Buffer"))
 				{
-					ImGui::Text("[resource %zu]", static_cast<std::size_t>(static_cast<hdk::hanval>(han)));
+					ImGui::Text("[resource %zu]", static_cast<std::size_t>(static_cast<tz::hanval>(han)));
 					ImGui::Indent();
 					comp->get_resource()->dbgui();
 					ImGui::Unindent();
@@ -282,7 +282,7 @@ namespace tz::gl
 			}
 			// Graphics - Tri Count
 			{
-				if(renderer.get_state().graphics.draw_buffer != hdk::nullhand)
+				if(renderer.get_state().graphics.draw_buffer != tz::nullhand)
 				{
 					ImGui::Text("Triangle Count: Indirect Buffer");
 				}
@@ -296,7 +296,7 @@ namespace tz::gl
 			ImGui::Indent();
 			// Compute - Kernel
 			{
-				auto kern = static_cast<hdk::vec3i>(renderer.get_state().compute.kernel);
+				auto kern = static_cast<tz::vec3i>(renderer.get_state().compute.kernel);
 				if(ImGui::DragInt3("Kernel", kern.data().data(), 0.25f, 0, 64))
 				{
 					ImGui::Text("Direct edit is not yet supported.");
@@ -310,7 +310,7 @@ namespace tz::gl
 			{
 				ImGui::Text("%s", detail::renderer_option_strings[static_cast<int>(option)]);
 			}
-			#if HDK_DEBUG
+			#if TZ_DEBUG
 				ImGui::PushTextWrapPos();
 				ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
 				ImGui::PopTextWrapPos();

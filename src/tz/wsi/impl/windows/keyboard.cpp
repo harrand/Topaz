@@ -1,6 +1,6 @@
 #ifdef _WIN32
 #include "tz/wsi/impl/windows/keyboard.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/debug.hpp"
 #include <cstring>
 #include <algorithm>
 

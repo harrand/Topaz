@@ -2,7 +2,7 @@
 #define TZ_WSI_WINDOW_HPP
 #include "tz/wsi/impl/windows/window.hpp"
 #include "tz/wsi/impl/linux/window.hpp"
-#include "hdk/data/handle.hpp"
+#include "tz/core/data/handle.hpp"
 
 namespace tz::wsi
 {
@@ -14,7 +14,7 @@ namespace tz::wsi
 	 * @ingroup tz_wsi_window
 	 * An opaque handle associated with a window.
 	 */
-	using window_handle = hdk::handle<detail::window_handle_tag>;
+	using window_handle = tz::handle<detail::window_handle_tag>;
 
 	#define DOCONLY TZ_VULKAN && TZ_OGL
 	#if DOCONLY
@@ -63,7 +63,7 @@ namespace tz::wsi
 			}
 			inline void wait_for_event()
 			{
-				hdk::error("wait_for_event on linux is NYI");
+				tz::error("wait_for_event on linux is NYI");
 			}
 		#else
 			static_assert(false, "Window Implementation does not seem to exist for this platform.");

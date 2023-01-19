@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL2_DECLARE_IMAGE_FORMAT_HPP
 #define TOPAZ_GL2_DECLARE_IMAGE_FORMAT_HPP
-#include "hdk/debug.hpp"
+#include "tz/core/debug.hpp"
 #include <climits>
 #include <array>
 
@@ -158,7 +158,7 @@ namespace tz::gl
 			return 16;
 		break;
 		default:
-			hdk::error("Unrecognised TZ image_format");
+			tz::error("Unrecognised TZ image_format");
 			return 0;
 		break;
 		}

@@ -1,5 +1,5 @@
 #if TZ_OGL
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/opengl/renderer.hpp"
 #include "tz/gl/impl/opengl/device.hpp"
@@ -14,7 +14,7 @@ namespace tz::gl
 
 	tz::gl::renderer_handle device_ogl::create_renderer(const renderer_info& info)
 	{
-		HDK_PROFZONE("OpenGL Frontend - renderer Create (via device)", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Frontend - renderer Create (via device)", 0xFFAA0000);
 		return DeviceCommon<renderer_ogl>::emplace_renderer(info);
 	}
 	

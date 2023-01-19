@@ -104,12 +104,12 @@ namespace tz::gl
 	type(type),
 	flags(flags)
 	{
-		hdk::assert(!flags.contains(resource_flag::image_mip_nearest) && !flags.contains(resource_flag::image_mip_linear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
+		tz::assert(!flags.contains(resource_flag::image_mip_nearest) && !flags.contains(resource_flag::image_mip_linear), "Detected resource flag related to image mip filtering. Mips are not yet implemented.");
 	}
 
 	void resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
-		hdk::assert(this->get_access() == resource_access::dynamic_fixed || this->get_access() == resource_access::dynamic_variable, "Cannot set mapped data on a static resource.");
+		tz::assert(this->get_access() == resource_access::dynamic_fixed || this->get_access() == resource_access::dynamic_variable, "Cannot set mapped data on a static resource.");
 		this->mapped_resource_data = mapped_resource_data;
 	}
 
@@ -183,17 +183,17 @@ namespace tz::gl
 		return this->format;
 	}
 
-	hdk::vec2ui image_resource::get_dimensions() const
+	tz::vec2ui image_resource::get_dimensions() const
 	{
 		return this->dimensions;
 	}
 
-	void image_resource::set_dimensions(hdk::vec2ui dims)
+	void image_resource::set_dimensions(tz::vec2ui dims)
 	{
 		this->dimensions = dims;
 	}
 
-	image_resource::image_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, hdk::vec2ui dimensions, resource_flags flags):
+	image_resource::image_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, tz::vec2ui dimensions, resource_flags flags):
 	resource(access, resource_data, initial_alignment_offset, resource_type::image, flags),
 	format(format),
 	dimensions(dimensions){}

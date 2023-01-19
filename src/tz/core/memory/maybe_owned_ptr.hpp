@@ -1,25 +1,9 @@
-#ifndef TOPAZ_CORE_MEMORY_HPP
-#define TOPAZ_CORE_MEMORY_HPP
-#include <memory>
-#include <variant>
+#ifndef TOPAZ_CORE_MEMORY_MAYBE_OWNED_PTR_HPP
+#define TOPAZ_CORE_MEMORY_MAYBE_OWNED_PTR_HPP
+#include "tz/core/memory/memblk.hpp"
 
 namespace tz
 {
-	/**
-	 * @ingroup tz_core
-	 * Represents an arbitrary, non-owning block of memory.
-	 */
-	struct blk
-	{
-		/// Pointer to the start of the memory block.
-		void* ptr;
-		/// Size of the block, in bytes.
-		std::size_t size;
-
-		bool operator==(const blk& rhs) const = default;
-	};
-	constexpr blk nullblk{.ptr = nullptr, .size = 0};
-
 	template<typename T>
 	class maybe_owned_ptr
 	{
@@ -68,6 +52,6 @@ namespace tz
 	template<typename T, typename... Args>
 	maybe_owned_ptr<T> make_owned(Args&&... args);
 }
-#include "tz/core/memory.inl"
 
-#endif // TOPAZ_CORE_MEMORY_HPP
+#include "tz/core/memory/maybe_owned_ptr.inl"
+#endif // TOPAZ_CORE_MEMORY_MAYBE_OWNED_PTR_HPP

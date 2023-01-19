@@ -5,6 +5,7 @@
 #include "tz/gl/impl/vulkan/detail/sampler.hpp"
 #include "tz/gl/impl/vulkan/detail/image_view.hpp"
 #include <unordered_map>
+#include <variant>
 
 namespace tz::gl::vk2
 {

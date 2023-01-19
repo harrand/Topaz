@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/pipeline_layout.hpp"
 
 namespace tz::gl::vk2
@@ -8,8 +8,8 @@ namespace tz::gl::vk2
 	pipeline_layout(VK_NULL_HANDLE),
 	logical_device(info.logical_device)
 	{
-		HDK_PROFZONE("Vulkan Backend - PipelineLayout Create", 0xFFAA0000);
-		hdk::assert(this->logical_device != nullptr && !this->logical_device->is_null(), "PipelineLayoutInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
+		TZ_PROFZONE("Vulkan Backend - PipelineLayout Create", 0xFFAA0000);
+		tz::assert(this->logical_device != nullptr && !this->logical_device->is_null(), "PipelineLayoutInfo contained nullptr or null LogicalDevice. Please submit a bug report.");
 		VkPipelineLayoutCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO; 
 		create.pNext = nullptr;
@@ -30,13 +30,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Failed to create PipelineLayout because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create PipelineLayout because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Failed to create PipelineLayout because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create PipelineLayout because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			default:
-				hdk::error("Failed to create PipelineLayout but cannot determine why. Please submit a bug report.");
+				tz::error("Failed to create PipelineLayout but cannot determine why. Please submit a bug report.");
 			break;
 		}
 	}
@@ -52,7 +52,7 @@ namespace tz::gl::vk2
 	{
 		if(this->pipeline_layout != VK_NULL_HANDLE)
 		{
-			hdk::assert(this->logical_device != nullptr && !this->logical_device->is_null(), "Failed to destroy PipelineLayout because LogicalDevice was nullptr or null");
+			tz::assert(this->logical_device != nullptr && !this->logical_device->is_null(), "Failed to destroy PipelineLayout because LogicalDevice was nullptr or null");
 			vkDestroyPipelineLayout(this->logical_device->native(), this->pipeline_layout, nullptr);
 			this->pipeline_layout = VK_NULL_HANDLE;
 		}

@@ -24,8 +24,8 @@ namespace tz::wsi::impl
 		using native = Window;
 		native get_native() const;
 		bool is_close_requested() const;
-		hdk::vec2ui get_dimensions() const;
-		void set_dimensions(hdk::vec2ui dimensions);
+		tz::vec2ui get_dimensions() const;
+		void set_dimensions(tz::vec2ui dimensions);
 		std::string get_title() const;
 		void set_title(std::string title);
 		window_flag::flag_bit get_flags() const;

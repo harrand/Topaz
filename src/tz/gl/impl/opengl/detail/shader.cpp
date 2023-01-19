@@ -1,5 +1,5 @@
 #if TZ_OGL
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include "tz/gl/impl/opengl/detail/shader.hpp"
 #include <algorithm>
@@ -11,8 +11,8 @@ namespace tz::gl::ogl2
 	shader(0),
 	info(info)
 	{
-		HDK_PROFZONE("OpenGL Backend - ShaderModule Create", 0xFFAA0000);
-		hdk::assert(ogl2::is_initialised(), "Tried to create shader module because ogl2 was not initialised. Please submit a bug report.");
+		TZ_PROFZONE("OpenGL Backend - ShaderModule Create", 0xFFAA0000);
+		tz::assert(ogl2::is_initialised(), "Tried to create shader module because ogl2 was not initialised. Please submit a bug report.");
 		this->shader = glCreateShader(static_cast<GLenum>(this->info.type));
 		// Upload source code.
 		std::array<const GLchar*, 1> source_views = {this->info.code.c_str()};
@@ -46,7 +46,7 @@ namespace tz::gl::ogl2
 
 	ShaderModule::CompileResult ShaderModule::compile()
 	{
-		HDK_PROFZONE("OpenGL Backend - Shader Source Compile", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Shader Source Compile", 0xFFAA0000);
 		glCompileShader(this->shader);
 		GLint success;
 		glGetShaderiv(this->shader, GL_COMPILE_STATUS, &success);
@@ -60,7 +60,7 @@ namespace tz::gl::ogl2
 		GLsizei length_used;
 		glGetShaderInfoLog(this->shader, info_log.length(), &length_used, info_log.data());
 		length_used++; // For null terminator.
-		hdk::assert(std::cmp_equal(length_used, info_log.length()), "Shader Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
+		tz::assert(std::cmp_equal(length_used, info_log.length()), "Shader Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
 		return {.success = false, .info_log = info_log};
 	}
 
@@ -74,8 +74,8 @@ namespace tz::gl::ogl2
 	modules(),
 	info(info)
 	{
-		HDK_PROFZONE("OpenGL Backend - Shader Create", 0xFFAA0000);
-		hdk::assert(ogl2::is_initialised(), "Tried to create shader program because ogl2 was not initialised. Please submit a bug report.");
+		TZ_PROFZONE("OpenGL Backend - Shader Create", 0xFFAA0000);
+		tz::assert(ogl2::is_initialised(), "Tried to create shader program because ogl2 was not initialised. Please submit a bug report.");
 		this->program = glCreateProgram();
 
 		this->modules.reserve(info.modules.length());
@@ -88,10 +88,10 @@ namespace tz::gl::ogl2
 		{
 			glAttachShader(this->program, shader_module.native());
 			ShaderModule::CompileResult cpl = shader_module.compile();
-			hdk::assert(cpl.success, "Shader Module Compilation failed: %s", cpl.info_log.c_str());
+			tz::assert(cpl.success, "Shader Module Compilation failed: %s", cpl.info_log.c_str());
 		}
 		LinkResult lnk = this->link();
-		hdk::assert(lnk.success, "Shader Program Linkage+Validation failed: %s", lnk.info_log.c_str());
+		tz::assert(lnk.success, "Shader Program Linkage+Validation failed: %s", lnk.info_log.c_str());
 	}
 
 	Shader::Shader(Shader&& move):
@@ -117,7 +117,7 @@ namespace tz::gl::ogl2
 
 	Shader::LinkResult Shader::link()
 	{
-		HDK_PROFZONE("OpenGL Backend - Shader Link", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Shader Link", 0xFFAA0000);
 		glLinkProgram(this->program);
 		GLint success;
 		glGetProgramiv(this->program, GL_LINK_STATUS, &success);
@@ -131,13 +131,13 @@ namespace tz::gl::ogl2
 		GLsizei length_used;
 		glGetProgramInfoLog(this->program, info_log.length(), &length_used, info_log.data());
 		length_used++; // For null terminator.
-		hdk::assert(std::cmp_equal(length_used, info_log.length()), "Program Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
+		tz::assert(std::cmp_equal(length_used, info_log.length()), "Program Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
 		return {.success = false, .info_log = info_log};
 	}
 
 	void Shader::use() const
 	{
-		HDK_PROFZONE("OpenGL Backend - Shader Use", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Shader Use", 0xFFAA0000);
 		glUseProgram(this->program);
 	}
 
@@ -177,7 +177,7 @@ namespace tz::gl::ogl2
 	void Shader::debug_set_name(std::string name)
 	{
 		this->debug_name = name;
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			glObjectLabel(GL_PROGRAM, this->program, -1, this->debug_name.c_str());
 			for(const ShaderModule& s_module : this->modules)
 			{
@@ -216,7 +216,7 @@ namespace tz::gl::ogl2
 
 	Shader::LinkResult Shader::validate()
 	{
-		HDK_PROFZONE("OpenGL Backend - Shader Validate", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Shader Validate", 0xFFAA0000);
 		glValidateProgram(this->program);
 		GLint success;
 		glGetProgramiv(this->program, GL_VALIDATE_STATUS, &success);
@@ -230,7 +230,7 @@ namespace tz::gl::ogl2
 		GLsizei length_used;
 		glGetProgramInfoLog(this->program, info_log.length(), &length_used, info_log.data());
 		length_used++; // For null terminator.
-		hdk::assert(std::cmp_equal(length_used, info_log.length()), "Program Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
+		tz::assert(std::cmp_equal(length_used, info_log.length()), "Program Info Log had unexpected size. GL told us %zu, actual size was %u", info_log.length(), length_used);
 		return {.success = false, .info_log = info_log};
 	}
 }

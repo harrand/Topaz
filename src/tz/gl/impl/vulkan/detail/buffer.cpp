@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/buffer.hpp"
 
 namespace tz::gl::vk2
@@ -11,7 +11,7 @@ namespace tz::gl::vk2
 	vma_alloc(),
 	vma_alloc_info()
 	{
-		HDK_PROFZONE("Vulkan Backend - Buffer Create", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Buffer Create", 0xFFAA0000);
 
 		VkBufferCreateInfo create
 		{
@@ -30,7 +30,7 @@ namespace tz::gl::vk2
 		switch(info.residency)
 		{
 			default:
-				hdk::error("Unknown vk2::MemoryResidency. Please submit a bug report.");
+				tz::error("Unknown vk2::MemoryResidency. Please submit a bug report.");
 			[[fallthrough]];
 			case MemoryResidency::GPU:
 				vma_usage = VMA_MEMORY_USAGE_GPU_ONLY;
@@ -63,16 +63,16 @@ namespace tz::gl::vk2
 
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Failed to create Buffer because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create Buffer because we ran out of host memory (RAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Failed to create Buffer because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
+				tz::error("Failed to create Buffer because we ran out of device memory (VRAM). Please ensure that your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS:
-				hdk::error("Failed to create Buffer because the requested address is not available. Note: This error type should never happen, please submit a bug report.");
+				tz::error("Failed to create Buffer because the requested address is not available. Note: This error type should never happen, please submit a bug report.");
 			break;
 			default:
-				hdk::error("Failed to create Buffer but cannot determine why. Please submit a bug report.");
+				tz::error("Failed to create Buffer but cannot determine why. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_BUFFER>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->buffer));
@@ -108,7 +108,7 @@ namespace tz::gl::vk2
 
 	const LogicalDevice& Buffer::get_device() const
 	{
-		hdk::assert(this->info.device != nullptr && !this->info.device->is_null(), "buffer_info contained nullptr or null LogicalDevice");
+		tz::assert(this->info.device != nullptr && !this->info.device->is_null(), "buffer_info contained nullptr or null LogicalDevice");
 		return *this->info.device;
 	}
 
@@ -124,7 +124,7 @@ namespace tz::gl::vk2
 
 	void* Buffer::map()
 	{
-		HDK_PROFZONE("Vulkan Backend - Buffer Map", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Buffer Map", 0xFFAA0000);
 		// If we're GPU resident we can't be host visible, so early out.
 		if(this->info.residency == MemoryResidency::GPU)
 		{
@@ -146,7 +146,7 @@ namespace tz::gl::vk2
 
 	void Buffer::unmap()
 	{
-		HDK_PROFZONE("Vulkan Backend - Buffer Unmap", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Buffer Unmap", 0xFFAA0000);
 		if(this->vma_alloc_info.pMappedData == nullptr || this->info.residency == MemoryResidency::CPUPersistent)
 		{
 			return;

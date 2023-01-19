@@ -81,12 +81,12 @@ void buffer_copies()
 		std::iota(b2_data.begin(), b2_data.end(), 0.0f);
 	}
 	// b2 = {0.0f, 1.0f, 2.0f, ...}
-	hdk::assert(!buffer_data_matches(b1, b2), "Buffer data which are set to not have matching data store contents seem to have matching values.");
+	tz::assert(!buffer_data_matches(b1, b2), "Buffer data which are set to not have matching data store contents seem to have matching values.");
 	// Now set b1 to iota aswell.
 	{
 		buffer::copy(b1, b2);
 	}
-	hdk::assert(buffer_data_matches(b1, b2), "Buffer data which are set to have matching data store contents seem to not have matching values.");
+	tz::assert(buffer_data_matches(b1, b2), "Buffer data which are set to have matching data store contents seem to not have matching values.");
 }
 
 int main()

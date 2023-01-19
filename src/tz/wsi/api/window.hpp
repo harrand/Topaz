@@ -2,7 +2,7 @@
 #define TZ_WSI_API_WINDOW_HPP
 #include "tz/wsi/api/keyboard.hpp"
 #include "tz/wsi/api/mouse.hpp"
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #if TZ_VULKAN
 #ifdef _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR
@@ -53,7 +53,7 @@ namespace tz::wsi
 		/// Title of the window. Default is "Untitled".
 		const char* title = "Untitled";
 		/// Dimensions of the window, in pixels. Default is 800x600.
-		hdk::vec2ui dimensions = {800u, 600u};
+		tz::vec2ui dimensions = {800u, 600u};
 		/// Extra behaviour for the window. Default is none.
 		window_flag::flag_bit window_flags = window_flag::none;
 	};
@@ -63,7 +63,7 @@ namespace tz::wsi
 	 * Represents an API for a window. `wsi::window` is implemented separately per platform, but all implementations are guaranteed to satisfy this api.
 	 */
 	template<typename T>
-	concept window_api = requires(T t, hdk::vec2ui dims, void* addr, std::string str
+	concept window_api = requires(T t, tz::vec2ui dims, void* addr, std::string str
 	#if TZ_VULKAN
 	, VkInstance vkinst
 	#endif
@@ -72,7 +72,7 @@ namespace tz::wsi
 		typename T::native;
 		{t.get_native()} -> std::convertible_to<typename T::native>;
 		{t.is_close_requested()} -> std::same_as<bool>;
-		{t.get_dimensions()} -> std::same_as<hdk::vec2ui>;
+		{t.get_dimensions()} -> std::same_as<tz::vec2ui>;
 		{t.set_dimensions(dims)} -> std::same_as<void>;
 		{t.get_title()} -> std::convertible_to<std::string>;
 		{t.set_title(str)} -> std::same_as<void>;

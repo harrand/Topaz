@@ -4,6 +4,15 @@
 [submodule "lib/imgui"]
 	path = lib/imgui
 	url = https://github.com/ocornut/imgui
-[submodule "lib/HDK"]
-	path = lib/HDK
-	url = https://github.com/Harrand/HDK
+[submodule "lib/textc"]
+	path = lib/textc
+	url = https://github.com/Harrand/textc
+[submodule "lib/concurrentqueue"]
+	path = lib/concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue
+[submodule "lib/debugbreak"]
+	path = lib/debugbreak
+	url = https://github.com/Harrand/debugbreak
+[submodule "lib/tracy"]
+	path = lib/tracy
+	url = https://github.com/wolfpld/tracy

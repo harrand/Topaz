@@ -1,7 +1,7 @@
 #ifndef TOPAZ_CORE_ENGINE_INFO_HPP
 #define TOPAZ_CORE_ENGINE_INFO_HPP
 #include <string>
-#include "hdk/data/version.hpp"
+#include "tz/core/data/version.hpp"
 
 namespace tz
 {
@@ -40,7 +40,7 @@ namespace tz
 
 		render_api renderer;
 		build_config build;
-		hdk::version version;
+		tz::version version;
 	};
 
 	/**

@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_CONTAINERS_GRID_VIEW_HPP
 #define TOPAZ_CORE_CONTAINERS_GRID_VIEW_HPP
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #include <span>
 #include <functional>
 
@@ -23,7 +23,7 @@ namespace tz
 		 * @param data View over grid data.
 		 * @param dimensions {x, y} where x is number of columns, and y is number of rows.
 		 */
-		GridView(std::span<T> data, hdk::vec2ui dimensions);
+		GridView(std::span<T> data, tz::vec2ui dimensions);
 		/**
 		 * Create a view over an existing array of square grid data.
 		 * @param data View over grid data.
@@ -34,7 +34,7 @@ namespace tz
 		 * Retrieve the dimensions of the grid, in elements.
 		 * @return {width, height}.
 		 */
-		hdk::vec2ui get_dimensions() const;
+		tz::vec2ui get_dimensions() const;
 		/**
 		 * Retrieve the underlying span.
 		 */
@@ -55,7 +55,7 @@ namespace tz
 		std::conditional_t<N == 1, T&, std::span<T>> operator()(unsigned int x, unsigned int y);
 	private:
 		std::span<T> data;
-		hdk::vec2ui dimensions;
+		tz::vec2ui dimensions;
 	};
 }
 

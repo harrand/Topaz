@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_IMAGE_HPP
 #if TZ_VULKAN
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #include "tz/core/containers/enum_field.hpp"
 #include "tz/gl/impl/vulkan/detail/debugname.hpp"
 #include "tz/gl/impl/vulkan/detail/image_format.hpp"
@@ -132,7 +132,7 @@ namespace tz::gl::vk2
 		/// Format of the image.
 		image_format format;
 		/// Dimensions of the image, in pixels.
-		hdk::vec2ui dimensions;
+		tz::vec2ui dimensions;
 		/// Field of expected usages of the image. For example, if you wish to transition the image to @ref ImageLayout::TransferTo then this usage field must contain @ref ImageUsage::TransferDestination.
 		ImageUsageField usage;
 		/// Describes where the image is laid out in memory.
@@ -179,7 +179,7 @@ namespace tz::gl::vk2
 		 * Retrieve the dimensions of the image.
 		 * @return {width, height} of the image, in pixels.
 		 */
-		hdk::vec2ui get_dimensions() const;
+		tz::vec2ui get_dimensions() const;
 		/**
 		 * Retrieve the @ref LogicalDevice that 'owns' the image.
 		 *
@@ -220,7 +220,7 @@ namespace tz::gl::vk2
 		ImageLayout layout;
 		ImageTiling tiling;
 		MemoryResidency residency;
-		hdk::vec2ui dimensions;
+		tz::vec2ui dimensions;
 		const LogicalDevice* device;
 		bool destroy_on_destructor;
 		std::optional<VmaAllocation> vma_alloc;

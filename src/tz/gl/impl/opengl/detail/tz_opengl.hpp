@@ -3,9 +3,9 @@
 #if TZ_OGL
 #include "tz/tz.hpp"
 #include "glad/glad.h"
-#if HDK_PROFILE
+#if TZ_PROFILE
 #include "TracyOpenGL.hpp"
-#endif // HDK_PROFILE
+#endif // TZ_PROFILE
 
 namespace tz::gl::ogl2
 {
@@ -55,7 +55,7 @@ namespace tz::gl::ogl2
 	 */
 	bool is_initialised();
 
-	constexpr hdk::version ogl_version{4, 5, 0, hdk::version_type::normal};
+	constexpr tz::version ogl_version{4, 5, 0, tz::version_type::normal};
 	using OGLString = std::basic_string<GLchar>;
 	using OGLStringView = std::basic_string_view<GLchar>;
 

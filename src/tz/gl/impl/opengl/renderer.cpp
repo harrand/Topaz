@@ -1,6 +1,6 @@
 #if TZ_OGL
-#include "hdk/profile.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/profile.hpp"
+#include "tz/core/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include "tz/gl/impl/opengl/detail/buffer.hpp"
@@ -18,7 +18,7 @@ namespace tz::gl
 		{
 			ogl2::Buffer& buffer = bufcomp.ogl_get_buffer();
 			iresource* res = bufcomp.get_resource();
-			hdk::assert(res != nullptr, "buffer_component had null resource");
+			tz::assert(res != nullptr, "buffer_component had null resource");
 			switch(res->get_access())
 			{
 				case resource_access::static_fixed:
@@ -54,7 +54,7 @@ namespace tz::gl
 				}
 				break;
 				default:
-					hdk::error("resource_access for this buffer is not yet implemented");	
+					tz::error("resource_access for this buffer is not yet implemented");	
 				break;
 			}
 		}
@@ -66,7 +66,7 @@ namespace tz::gl
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::Buffer::null())
 	{
-		HDK_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage Create", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage Create", 0xFFAA0000);
 		auto do_metadata = [this](icomponent* comp)
 		{
 			iresource* res = comp->get_resource();
@@ -96,7 +96,7 @@ namespace tz::gl
 					}
 				break;
 				default:
-					hdk::error("Unrecognised resource_type. Please submit a bug report.");
+					tz::error("Unrecognised resource_type. Please submit a bug report.");
 				break;
 			}
 		};
@@ -104,7 +104,7 @@ namespace tz::gl
 		std::size_t encountered_reference_count = 0;
 		for(std::size_t i = 0; i < this->count(); i++)
 		{
-			iresource* res = this->get(static_cast<hdk::hanval>(i));
+			iresource* res = this->get(static_cast<tz::hanval>(i));
 			icomponent* comp = nullptr;
 			if(res == nullptr)
 			{
@@ -112,7 +112,7 @@ namespace tz::gl
 				this->components.push_back(comp);
 				encountered_reference_count++;
 				res = comp->get_resource();
-				this->set(static_cast<hdk::hanval>(i), res);
+				this->set(static_cast<tz::hanval>(i), res);
 			}
 			else
 			{
@@ -125,7 +125,7 @@ namespace tz::gl
 						this->components.push_back(tz::make_owned<image_component_ogl>(*res));
 					break;
 					default:
-						hdk::error("Unrecognised resource_type. Please submit a bug report.");
+						tz::error("Unrecognised resource_type. Please submit a bug report.");
 					break;
 				}
 				comp = this->components.back().get();
@@ -137,20 +137,20 @@ namespace tz::gl
 
 	const icomponent* ResourceStorage::get_component(resource_handle handle) const
 	{
-		if(handle == hdk::nullhand)
+		if(handle == tz::nullhand)
 		{
 			return nullptr;
 		}
-		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
+		return this->components[static_cast<std::size_t>(static_cast<tz::hanval>(handle))].get();
 	}
 
 	icomponent* ResourceStorage::get_component(resource_handle handle)
 	{
-		if(handle == hdk::nullhand)
+		if(handle == tz::nullhand)
 		{
 			return nullptr;
 		}
-		return this->components[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
+		return this->components[static_cast<std::size_t>(static_cast<tz::hanval>(handle))].get();
 	}
 
 	unsigned int ResourceStorage::resource_count_of(resource_type type) const
@@ -164,7 +164,7 @@ namespace tz::gl
 
 	void ResourceStorage::fill_bindless_image_buffer()
 	{
-		HDK_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage (Fill bindless image buffer)", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage (Fill bindless image buffer)", 0xFFAA0000);
 		if(this->image_handles.empty() || !ogl2::supports_bindless_textures())
 		{
 			return;
@@ -272,7 +272,7 @@ namespace tz::gl
 
 	void ResourceStorage::set_image_handle(tz::gl::resource_handle h, ogl2::Image::BindlessTextureHandle bindless_handle)
 	{
-		this->image_handles[static_cast<std::size_t>(static_cast<hdk::hanval>(h))] = bindless_handle;
+		this->image_handles[static_cast<std::size_t>(static_cast<tz::hanval>(h))] = bindless_handle;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -326,8 +326,8 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			hdk::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			hdk::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
 			modules =
 			{
 				{
@@ -342,7 +342,7 @@ namespace tz::gl
 
 			if(sinfo.has_shader(shader_stage::tessellation_control) || sinfo.has_shader(shader_stage::tessellation_evaluation))
 			{
-				hdk::assert(sinfo.has_shader(shader_stage::tessellation_control) && sinfo.has_shader(shader_stage::tessellation_evaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
+				tz::assert(sinfo.has_shader(shader_stage::tessellation_control) && sinfo.has_shader(shader_stage::tessellation_evaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
 				modules.add
 				({
 					.type = ogl2::ShaderType::tessellation_control,
@@ -377,7 +377,7 @@ namespace tz::gl
 			case output_target::offscreen_image:
 			{
 				auto* out = static_cast<image_output*>(this->output.get());
-				hdk::assert(!out->has_depth_attachment(), "image_output with depth attachment is not yet implemented.");
+				tz::assert(!out->has_depth_attachment(), "image_output with depth attachment is not yet implemented.");
 				tz::BasicList<ogl2::FramebufferTexture> colour_attachments;
 				colour_attachments.resize(out->colour_attachment_count());
 				for(std::size_t i = 0; i < colour_attachments.length(); i++)
@@ -403,7 +403,7 @@ namespace tz::gl
 				// Do nothing. We use null framebuffer.
 			break;
 			default:
-				hdk::error("Use of this specific output_target is not yet implemented.");
+				tz::error("Use of this specific output_target is not yet implemented.");
 			break;
 			}
 		}
@@ -411,7 +411,7 @@ namespace tz::gl
 
 	void OutputManager::set_render_target() const
 	{
-		HDK_PROFZONE("OpenGL Frontend - renderer_ogl OutputManager (Set Render Target)", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Frontend - renderer_ogl OutputManager (Set Render Target)", 0xFFAA0000);
 		this->framebuffer.bind();
 		if(!this->options.contains(tz::gl::renderer_option::no_clear_output))
 		{
@@ -466,10 +466,10 @@ namespace tz::gl
 	debug_name(info.debug_get_name())
 	{
 		// Handle debug names for resources.
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)
 			{
-				icomponent* comp = this->resources.get_component(static_cast<hdk::hanval>(i));
+				icomponent* comp = this->resources.get_component(static_cast<tz::hanval>(i));
 				if(comp->get_resource()->get_type() == resource_type::buffer)
 				{
 					ogl2::Buffer& buf = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
@@ -484,7 +484,7 @@ namespace tz::gl
 				}
 			}
 			this->shader.get_program().debug_set_name(this->debug_name + ":Shader");
-		#endif // HDK_DEBUG
+		#endif // TZ_DEBUG
 	}
 
 	unsigned int renderer_ogl::resource_count() const
@@ -534,9 +534,9 @@ namespace tz::gl
 
 	void renderer_ogl::render()
 	{
-		HDK_PROFZONE("OpenGL Frontend - renderer_ogl Render", 0xFFAA0000);
-		hdk::assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
-		#if HDK_DEBUG
+		TZ_PROFZONE("OpenGL Frontend - renderer_ogl Render", 0xFFAA0000);
+		tz::assert(!this->is_null(), "Attempting to render with a null renderer. Please submit a bug report.");
+		#if TZ_DEBUG
 		{
 			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, this->debug_name.c_str());
 		}
@@ -549,9 +549,9 @@ namespace tz::gl
 			this->resources.bind_buffers(this->state);
 			if(this->resources.resource_count_of(resource_type::image) > 0)
 			{
-				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
+				this->resources.bind_image_buffer(this->state.graphics.index_buffer != tz::nullhand, this->state.graphics.draw_buffer != tz::nullhand);
 			}
-			//hdk::assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
+			//tz::assert(this->resources.try_get_index_buffer() == nullptr, "Compute renderer has an index buffer applied to it. This doesn't make any sense. Please submit a bug report.");
 			{
 				auto ker = this->state.compute.kernel;
 				glDispatchCompute(ker[0], ker[1], ker[2]);
@@ -588,7 +588,7 @@ namespace tz::gl
 			this->resources.bind_buffers(this->state);
 			if(this->resources.resource_count_of(resource_type::image) > 0)
 			{
-				this->resources.bind_image_buffer(this->state.graphics.index_buffer != hdk::nullhand, this->state.graphics.draw_buffer != hdk::nullhand);
+				this->resources.bind_image_buffer(this->state.graphics.index_buffer != tz::nullhand, this->state.graphics.draw_buffer != tz::nullhand);
 			}
 
 			glPolygonMode(GL_FRONT_AND_BACK, this->wireframe_mode ? GL_LINE : GL_FILL);
@@ -626,7 +626,7 @@ namespace tz::gl
 				tz::window().update();
 			}
 		}
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 		{
 			glPopDebugGroup();
 		}
@@ -648,8 +648,8 @@ namespace tz::gl
 
 	void renderer_ogl::edit(const renderer_edit_request& edit_request)
 	{
-		HDK_PROFZONE("OpenGL Backend - renderer_ogl Edit", 0xFFAA0000);
-		hdk::assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
+		TZ_PROFZONE("OpenGL Backend - renderer_ogl Edit", 0xFFAA0000);
+		tz::assert(!this->is_null(), "Attempting to perform an edit on the null renderer. Please submit a bug report.");
 		for(const renderer_edit::variant& req : edit_request)
 		{
 			std::visit([this](auto&& arg)
@@ -658,7 +658,7 @@ namespace tz::gl
 				if constexpr(std::is_same_v<T, renderer_edit::buffer_resize>)
 				{
 					auto bufcomp = static_cast<buffer_component_ogl*>(this->get_component(arg.buffer_handle));
-					hdk::assert(bufcomp != nullptr, "Invalid buffer handle in renderer_edit::buffer_resize");
+					tz::assert(bufcomp != nullptr, "Invalid buffer handle in renderer_edit::buffer_resize");
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
@@ -667,7 +667,7 @@ namespace tz::gl
 				else if constexpr(std::is_same_v<T, renderer_edit::image_resize>)
 				{
 					auto imgcomp = static_cast<image_component_ogl*>(this->get_component(arg.image_handle));
-					hdk::assert(imgcomp != nullptr, "Invalid image handle in renderer_edit::image_resize");
+					tz::assert(imgcomp != nullptr, "Invalid image handle in renderer_edit::image_resize");
 					if(imgcomp->get_dimensions() != arg.dimensions)
 					{
 						imgcomp->resize(arg.dimensions);
@@ -721,7 +721,7 @@ namespace tz::gl
 							}
 						break;
 						default:
-							hdk::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<hdk::hanval>(arg.resource)));
+							tz::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::hanval>(arg.resource)));
 							std::span<std::byte> data = res->data_as<std::byte>();
 							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 						break;
@@ -737,11 +737,11 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{
-					hdk::error("renderer_edit resource Reference re-seating is not yet implemented (OGL)");
+					tz::error("renderer_edit resource Reference re-seating is not yet implemented (OGL)");
 				}
 				else
 				{
-					hdk::error("renderer_edit requested that is not yet supported.");
+					tz::error("renderer_edit requested that is not yet supported.");
 				}
 			}, req);
 		}

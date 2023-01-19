@@ -43,16 +43,16 @@ namespace tz::wsi::impl
 		return this->close_requested;
 	}
 
-	hdk::vec2ui window_x11::get_dimensions() const
+	tz::vec2ui window_x11::get_dimensions() const
 	{
 		XWindowAttributes attr{};
 		XGetWindowAttributes(impl::x11_display().display, this->wnd, &attr);
-		return static_cast<hdk::vec2ui>(hdk::vec2i{attr.width, attr.height});
+		return static_cast<tz::vec2ui>(tz::vec2i{attr.width, attr.height});
 	}
 
-	void window_x11::set_dimensions([[maybe_unused]] hdk::vec2ui dimensions)
+	void window_x11::set_dimensions([[maybe_unused]] tz::vec2ui dimensions)
 	{
-		hdk::report("warning: NYI set_dimensions linux");
+		tz::report("warning: NYI set_dimensions linux");
 	}
 
 	std::string window_x11::get_title() const
@@ -124,9 +124,9 @@ namespace tz::wsi::impl
 			.window = this->wnd
 		};
 		auto fn = reinterpret_cast<PFN_vkCreateXlibSurfaceKHR>(vkGetInstanceProcAddr(vkinst, "vkCreateXlibSurfaceKHR"));
-		hdk::assert(fn != nullptr);
+		tz::assert(fn != nullptr);
 		VkResult res = fn(vkinst, &create, nullptr, &surf);
-		hdk::assert(res == VK_SUCCESS);
+		tz::assert(res == VK_SUCCESS);
 		return surf;
 	}
 	#endif // TZ_VULKAN
@@ -197,7 +197,7 @@ namespace tz::wsi::impl
 		constexpr int maj = 4, min = 5;
 		int nelements;
 		GLXFBConfig* fb_configs = glXChooseFBConfig(x11d.display, x11d.screen, nullptr, &nelements);
-		hdk::assert(fb_configs != nullptr, "Failed to retrieve any framebuffer configs for OpenGL context.");
+		tz::assert(fb_configs != nullptr, "Failed to retrieve any framebuffer configs for OpenGL context.");
 		// Let's go through and choose one, instead of at random.
 		GLXFBConfig best_config = fb_configs[0];
 		int best_sample_count;
@@ -228,14 +228,14 @@ namespace tz::wsi::impl
 		const char *glx_exts = glXQueryExtensionsString(x11d.display, x11d.screen);
 		if(!is_extension_supported(glx_exts, "GLX_ARB_create_context"))
 		{
-			hdk::error("glXCreateContextAttribsARB is not supported/available. Cannot create OpenGL context.");
+			tz::error("glXCreateContextAttribsARB is not supported/available. Cannot create OpenGL context.");
 		}
 		typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
 		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = reinterpret_cast<glXCreateContextAttribsARBProc>(reinterpret_cast<void*>(glXGetProcAddressARB(reinterpret_cast<const GLubyte*>("glXCreateContextAttribsARB"))));
-		hdk::assert(glXCreateContextAttribsARB != nullptr);
+		tz::assert(glXCreateContextAttribsARB != nullptr);
 		this->ctx = glXCreateContextAttribsARB(x11d.display, best_config, nullptr, True, attribs);
-		hdk::assert(this->ctx != nullptr, "Could create OpenGL context :(");
+		tz::assert(this->ctx != nullptr, "Could create OpenGL context :(");
 		this->make_opengl_context_current();	
 	}
 

@@ -1,6 +1,6 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/profile.hpp"
+#include "tz/core/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/common/device.hpp"
 #include "tz/gl/impl/vulkan/renderer.hpp"
@@ -74,9 +74,9 @@ namespace tz::gl
 	DeviceWindowVulkan::DeviceWindowVulkan(const vk2::LogicalDevice& device):
 	DeviceWindowVulkan()
 	{
-		HDK_PROFZONE("DeviceWindowVulkan Create", 0xFFAAAA00);
+		TZ_PROFZONE("DeviceWindowVulkan Create", 0xFFAAAA00);
 		const vk2::VulkanInstance& instance = device.get_hardware().get_instance();
-		hdk::assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance which is not headless, but doesn't have a WindowSurface attached. Please submit a bug report.");
+		tz::assert(instance.has_surface(), "DeviceWindowVulkan provided a VulkanInstance which is not headless, but doesn't have a WindowSurface attached. Please submit a bug report.");
 
 		// Create a swapchain.
 		// Ideally we want mailbox present mode, but that may not be available.
@@ -133,7 +133,7 @@ namespace tz::gl
 		return this->window_buf;
 	}
 
-	hdk::vec2ui DeviceWindowVulkan::get_dimensions() const
+	tz::vec2ui DeviceWindowVulkan::get_dimensions() const
 	{
 		return this->get_swapchain().get_dimensions();
 	}
@@ -186,7 +186,7 @@ namespace tz::gl
 
 	void DeviceWindowVulkan::set_swapchain_images_debug_name()
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			for(std::size_t i = 0; i < this->window_buf.get_images().size(); i++)
 			{
 				this->window_buf.get_images()[i].debug_set_name("device Swapchain Image " + std::to_string (i));
@@ -208,9 +208,9 @@ namespace tz::gl
 		this->depth_image.debug_set_name("device Depth Image");
 	}
 
-	void DeviceWindowVulkan::on_resize(hdk::vec2ui dims)
+	void DeviceWindowVulkan::on_resize(tz::vec2ui dims)
 	{
-		HDK_PROFZONE("DeviceWindowVulkan OnResize", 0xFFAAAA00);
+		TZ_PROFZONE("DeviceWindowVulkan OnResize", 0xFFAAAA00);
 		if(dims[0] == 0 || dims[0] == 0)
 		{
 			return;
@@ -338,7 +338,7 @@ namespace tz::gl
 	window_storage(this->device),
 	scheduler(this->device, this->window_storage.get_output_images().size())
 	{
-		HDK_PROFZONE("Vulkan Frontend - device_vulkan Create", 0xFFAAAA00);
+		TZ_PROFZONE("Vulkan Frontend - device_vulkan Create", 0xFFAAAA00);
 	}
 
 	device_vulkan::~device_vulkan()
@@ -350,14 +350,14 @@ namespace tz::gl
 
 	tz::gl::renderer_handle device_vulkan::create_renderer(const renderer_info& info)
 	{
-		HDK_PROFZONE("Vulkan Frontend - renderer Create (via device_vulkan)", 0xFFAAAA00);
+		TZ_PROFZONE("Vulkan Frontend - renderer Create (via device_vulkan)", 0xFFAAAA00);
 		this->scheduler.notify_renderer_added();
 		return DeviceCommon<renderer_vulkan>::emplace_renderer(info);
 	}
 
 	void device_vulkan::destroy_renderer(tz::gl::renderer_handle handle)
 	{
-		this->scheduler.notify_renderer_removed(static_cast<std::size_t>(static_cast<hdk::hanval>(handle)));
+		this->scheduler.notify_renderer_removed(static_cast<std::size_t>(static_cast<tz::hanval>(handle)));
 		DeviceCommon<renderer_vulkan>::destroy_renderer(handle);
 	}
 
@@ -406,16 +406,16 @@ namespace tz::gl
 		// First, create a LogicalDevice.
 		// TODO: Don't just choose a device at random.
 		vk2::PhysicalDeviceList pdevs = vk2::get_all_devices(instance);
-		hdk::assert(!pdevs.empty(), "Could not locate any physical devices at all. Your machine either needs a valid GPU, CPU or a virtualised device acting as the former. Please ensure your machine meets minimum system requirements.");
+		tz::assert(!pdevs.empty(), "Could not locate any physical devices at all. Your machine either needs a valid GPU, CPU or a virtualised device acting as the former. Please ensure your machine meets minimum system requirements.");
 		vk2::PhysicalDevice pdev = *std::max_element(pdevs.begin(), pdevs.end(),
 		[](const vk2::PhysicalDevice& a, const vk2::PhysicalDevice& b)
 		{
 			return rate_physical_device(a) < rate_physical_device(b);
 		});
-		hdk::report("Vulkan device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_physical_device(pdev));
+		tz::report("Vulkan device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_physical_device(pdev));
 
 		// TODO: Remove when we can get testing on devices that aren't NV.
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			if(pdev.get_info().vendor != vk2::PhysicalDeviceVendor::Nvidia)
 			{
 				const char* vendor_name = "<Unknown, sorry>";
@@ -430,7 +430,7 @@ namespace tz::gl
 						vendor_name = "Intel";
 					break;
 				}
-				hdk::report("Developer: Warning: The selected device is not an Nvidia device. Non-nvidia devices are not tested at present, so if you do run into any issues please note on the bug report that your vendor is %s", vendor_name);
+				tz::report("Developer: Warning: The selected device is not an Nvidia device. Non-nvidia devices are not tested at present, so if you do run into any issues please note on the bug report that your vendor is %s", vendor_name);
 			}
 		#endif
 
@@ -445,12 +445,12 @@ namespace tz::gl
 			vk2::DeviceFeature::FragmentShaderResourceWrite,
 			vk2::DeviceFeature::TimelineSemaphores
 		};
-		hdk::assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'ColourBlendLogicalOperations' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
+		tz::assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'ColourBlendLogicalOperations' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
 		dev_exts = {vk2::DeviceExtension::Swapchain};
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			dev_exts |= vk2::DeviceExtension::ShaderDebugPrint;
 		#endif
-		hdk::assert(pdev.get_supported_extensions().contains(dev_exts), "One or more of the %zu required DeviceExtensions are not supported by this machine/driver. Please ensure your machine meets the system requirements.", dev_exts.count());
+		tz::assert(pdev.get_supported_extensions().contains(dev_exts), "One or more of the %zu required DeviceExtensions are not supported by this machine/driver. Please ensure your machine meets the system requirements.", dev_exts.count());
 		return
 		{{
 			.physical_device = pdev,

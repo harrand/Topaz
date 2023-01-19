@@ -1,10 +1,10 @@
 #include "tz/core/peripherals/keyboard.hpp"
 #include "tz/tz.hpp"
-#include "hdk/debug.hpp"
+#include "tz/core/debug.hpp"
 
 int main()
 {
-	tz::initialise({"tz_key_press_demo", hdk::version{1, 0, 0}});
+	tz::initialise({"tz_key_press_demo", tz::version{1, 0, 0}});
 	{
 		while(!tz::window().is_close_requested())
 		{

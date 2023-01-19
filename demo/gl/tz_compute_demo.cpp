@@ -1,5 +1,5 @@
 #include "tz/tz.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/imported_shaders.hpp"
@@ -20,10 +20,10 @@ int main()
 		tz::gl::buffer_resource colour_buffer = tz::gl::buffer_resource::from_many
 		(
 		 	{
-				hdk::vec4{0.0f, 0.0f, 0.0f, 1.0f},
-				hdk::vec4{1.0f, 0.0f, 0.0f, 1.0f},
-				hdk::vec4{0.0f, 1.0f, 0.0f, 1.0f},
-				hdk::vec4{0.0f, 0.0f, 1.0f, 1.0f}
+				tz::vec4{0.0f, 0.0f, 0.0f, 1.0f},
+				tz::vec4{1.0f, 0.0f, 0.0f, 1.0f},
+				tz::vec4{0.0f, 1.0f, 0.0f, 1.0f},
+				tz::vec4{0.0f, 0.0f, 1.0f, 1.0f}
 			}
 		);
 		tz::gl::buffer_resource time_buffer = tz::gl::buffer_resource::from_one(0u);

@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_VK2_DEVICE_HPP
 #if TZ_VULKAN
-#include "hdk/data/handle.hpp"
+#include "tz/core/data/handle.hpp"
 #include "tz/core/callback.hpp"
 #include "tz/gl/api/device.hpp"
 #include "tz/gl/impl/common/device.hpp"
@@ -26,7 +26,7 @@ namespace tz::gl
 		const vk2::Swapchain& get_swapchain() const;
 		vk2::Swapchain& get_swapchain();
 
-		hdk::vec2ui get_dimensions() const;
+		tz::vec2ui get_dimensions() const;
 		vk2::image_format get_format() const;
 
 		vk2::Swapchain::ImageAcquisitionResult get_unused_image(const vk2::Swapchain::ImageAcquisition& acquire);
@@ -39,13 +39,13 @@ namespace tz::gl
 	private:
 		void set_swapchain_images_debug_name();
 		void make_depth_image();
-		void on_resize(hdk::vec2ui dims);
+		void on_resize(tz::vec2ui dims);
 
 		vk2::Swapchain window_buf = vk2::Swapchain::null();
 		vk2::Image old_depth_image = vk2::Image::null();
 		vk2::Image depth_image = vk2::Image::null();
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
-		hdk::vec2ui window_dims_cache = {};
+		tz::vec2ui window_dims_cache = {};
 	};
 
 	class DeviceRenderSchedulerVulkan

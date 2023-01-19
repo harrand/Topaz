@@ -50,14 +50,14 @@ namespace tz
 	template<typename T, typename Allocator>
 	const T& PolymorphicList<T, Allocator>::operator[](std::size_t idx) const
 	{
-		hdk::assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
+		tz::assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
 		return *this->elements[idx];
 	}
 		
 	template<typename T, typename Allocator>
 	T& PolymorphicList<T, Allocator>::operator[](std::size_t idx)
 	{
-		hdk::assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
+		tz::assert(idx < this->size(), "Index %zu out of range, size = %zu", idx, this->size());
 		return *this->elements[idx];
 	}
 

@@ -14,7 +14,7 @@ namespace tz
 				render_api = "Vulkan";
 			break;
 			default:
-				hdk::error("Unrecognised graphics API. A serious error has occurred. Please submit a bug report");
+				tz::error("Unrecognised graphics API. A serious error has occurred. Please submit a bug report");
 				render_api = "Unknown";
 			break;
 		}
@@ -31,7 +31,7 @@ namespace tz
 				build_config = "Release";
 			break;
 			default:
-				hdk::error("Unrecognised build config. A serious error has occurred. Please submit a bug report");
+				tz::error("Unrecognised build config. A serious error has occurred. Please submit a bug report");
 				build_config = "Unknown";
 			break;
 		}

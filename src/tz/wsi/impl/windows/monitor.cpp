@@ -10,11 +10,11 @@ namespace tz::wsi::impl
 		MONITORINFOEXA minfo;
 		minfo.cbSize = sizeof(MONITORINFOEXA);
 		GetMonitorInfo(hmon, &minfo);
-		hdk::vec2i dims{minfo.rcMonitor.right - minfo.rcMonitor.left, minfo.rcMonitor.bottom - minfo.rcMonitor.top};
+		tz::vec2i dims{minfo.rcMonitor.right - minfo.rcMonitor.left, minfo.rcMonitor.bottom - minfo.rcMonitor.top};
 		mons->push_back
 		({
 			.name = minfo.szDevice,
-			.dimensions = static_cast<hdk::vec2ui>(dims)
+			.dimensions = static_cast<tz::vec2ui>(dims)
 		});
 		if(hmon == MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY))
 		{

@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL2_API_RESOURCE_HPP
 #define TOPAZ_GL2_API_RESOURCE_HPP
-#include "hdk/memory/clone.hpp"
-#include "hdk/data/handle.hpp"
+#include "tz/core/memory/clone.hpp"
+#include "tz/core/data/handle.hpp"
 #include "tz/core/containers/enum_field.hpp"
 #include <span>
 #include <memory>
@@ -78,7 +78,7 @@ namespace tz::gl
 	 * - @ref buffer_resource
 	 * - @ref image_resource
 	 */
-	class iresource : public hdk::unique_cloneable<iresource>
+	class iresource : public tz::unique_cloneable<iresource>
 	{
 	public:
 		iresource() = default;
@@ -136,7 +136,7 @@ namespace tz::gl
 	};
 
 	/// Opaque handle which is used to refer to an existing resource within a renderer or Processor.
-	using resource_handle = hdk::handle<iresource>;
+	using resource_handle = tz::handle<iresource>;
 }
 
 #endif // TOPAZ_GL2_API_RESOURCE_HPP

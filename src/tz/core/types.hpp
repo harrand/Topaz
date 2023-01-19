@@ -2,7 +2,7 @@
 #define TOPAZ_CORE_TYPES_HPP
 #include <type_traits>
 #include <concepts>
-#include "tz/core/memory.hpp"
+#include "tz/core/memory/memblk.hpp"
 
 namespace tz
 {
@@ -67,6 +67,14 @@ namespace tz
 	{
 		T::NativeType;
 		{t.native()} -> std::same_as<typename T::NativeType>;
+	};
+
+	template<typename T>
+	concept allocator = requires(T t, tz::memblk blk, std::size_t sz)
+	{
+		{t.allocate(sz)} -> std::same_as<tz::memblk>;
+		{t.deallocate(blk)} -> std::same_as<void>;
+		{t.owns(blk)} -> std::same_as<bool>;
 	};
 }
 

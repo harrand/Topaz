@@ -1,7 +1,7 @@
 #include "tz/tz.hpp"
 #include "tz/wsi/keyboard.hpp"
 #include "tz/wsi/mouse.hpp"
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "tz/core/time.hpp"
 #include "tz/dbgui/dbgui.hpp"
@@ -28,12 +28,12 @@ int main()
 			tz::mat4 model = tz::model({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
 			tz::mat4 view = tz::view({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f});
 			tz::mat4 projection = tz::mat4::identity();
-			hdk::vec3 camera_position{0.0f, 0.0f, 0.0f};
+			tz::vec3 camera_position{0.0f, 0.0f, 0.0f};
 		};
 
 		struct FeedbackData
 		{
-			hdk::vec3 pos{0.0f, 0.0f, 0.0f};
+			tz::vec3 pos{0.0f, 0.0f, 0.0f};
 		};
 
 
@@ -57,7 +57,7 @@ int main()
 
 		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
 		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
-		hdk::vec3 cam_rot{0.0f, 0.0f, 0.0f};
+		tz::vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool flight_enabled = false;
 		bool game_menu_enabled = false;
 		using namespace tz::literals;
@@ -90,35 +90,35 @@ int main()
 				fixed_update.reset();
 				// Retrieve the dynamic buffer resource data.
 				BufferData& bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
-				hdk::vec3& camera_position = bufd.camera_position;
+				tz::vec3& camera_position = bufd.camera_position;
 
 				// Dragging the mouse influences the camera rotation.
-				static hdk::vec2ui mouse_position;
+				static tz::vec2ui mouse_position;
 				const auto& ms = tz::window().get_mouse_state();
-				hdk::vec2ui mpi = ms.mouse_position;
+				tz::vec2ui mpi = ms.mouse_position;
 				if(tz::wsi::is_mouse_button_down(ms, tz::wsi::mouse_button::left) && !tz::dbgui::claims_mouse())
 				{
 					// Get mouse delta since last frame.
-					hdk::vec2i mouse_delta = mpi - mouse_position;
+					tz::vec2i mouse_delta = mpi - mouse_position;
 					constexpr float rot_multiplier = 0.003f;
 					cam_rot[1] -= mouse_delta[0] * rot_multiplier;
 					cam_rot[0] -= mouse_delta[1] * rot_multiplier;
 				}
 				mouse_position = mpi;
 
-				hdk::vec3 camera_position_height_only = camera_position;
+				tz::vec3 camera_position_height_only = camera_position;
 				camera_position_height_only[0] = camera_position_height_only[2] = 0.0f;
 				bufd.view = tz::view(camera_position_height_only, cam_rot);
 				// Recalculate projection every fixed update. This is a massive waste of time but easily guarantees no distortion if the window is ever resized.
-				auto fdims = static_cast<hdk::vec2>(tz::window().get_dimensions());
+				auto fdims = static_cast<tz::vec2>(tz::window().get_dimensions());
 				const float aspect_ratio = fdims[0] / fdims[1];
 				bufd.projection = tz::perspective(1.6f, aspect_ratio, 0.1f, 1000.0f);
 				// WASD move the camera position around. Space and LeftShift move camera directly up or down.
 
-				hdk::vec4 cam_forward4 = bufd.view * hdk::vec4{0.0f, 0.0f, -1.0f, 0.0f};
-				hdk::vec4 cam_right4 = bufd.view * hdk::vec4{-1.0f, 0.0f, 0.0f, 0.0f};
-				hdk::vec3 cam_forward = cam_forward4.swizzle<0, 1, 2>();
-				hdk::vec3 cam_right = cam_right4.swizzle<0, 1, 2>();
+				tz::vec4 cam_forward4 = bufd.view * tz::vec4{0.0f, 0.0f, -1.0f, 0.0f};
+				tz::vec4 cam_right4 = bufd.view * tz::vec4{-1.0f, 0.0f, 0.0f, 0.0f};
+				tz::vec3 cam_forward = cam_forward4.swizzle<0, 1, 2>();
+				tz::vec3 cam_right = cam_right4.swizzle<0, 1, 2>();
 				const auto& kb = tz::window().get_keyboard_state();
 				if(tz::wsi::is_key_down(kb, tz::wsi::key::w))
 				{

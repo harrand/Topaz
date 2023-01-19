@@ -1,6 +1,6 @@
 #ifndef TOPAZ_GL2_TZ_GL_HPP
 #define TOPAZ_GL2_TZ_GL_HPP
-#include "hdk/data/version.hpp"
+#include "tz/core/data/version.hpp"
 #include <array>
 
 namespace tz::gl

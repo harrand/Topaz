@@ -21,7 +21,7 @@ namespace tz::gl::vk2
 		/// List of output attachments from the RenderPass.
 		tz::BasicList<ImageView*> attachments;
 		/// Dimensions of the frame buffer.
-		hdk::vector<std::uint32_t, 2> dimensions;
+		tz::vector<std::uint32_t, 2> dimensions;
 	};
 
 	/**
@@ -43,7 +43,7 @@ namespace tz::gl::vk2
 		 * Retrieve the width and height of the framebuffer. All attachments must have the same dimensions.
 		 * @return Dimensions of the framebuffer, in pixels.
 		 */
-		hdk::vec2ui get_dimensions() const;
+		tz::vec2ui get_dimensions() const;
 		/**
 		 * Retrieve the @ref RenderPass that this Framebuffer expects to act as a target for.
 		 * @return Reference to parent @ref RenderPass.

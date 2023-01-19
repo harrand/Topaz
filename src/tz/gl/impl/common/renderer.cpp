@@ -44,9 +44,9 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 	renderer_info::renderer_info()
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			this->options |= tz::gl::renderer_option::no_present;
-		#endif // HDK_DEBUG
+		#endif // TZ_DEBUG
 	}
 
 	unsigned int renderer_info::resource_count() const
@@ -56,7 +56,7 @@ namespace tz::gl
 
 	const iresource* renderer_info::get_resource(resource_handle handle)
 	{
-		return this->resources[static_cast<std::size_t>(static_cast<hdk::hanval>(handle))].get();
+		return this->resources[static_cast<std::size_t>(static_cast<tz::hanval>(handle))].get();
 	}
 
 	std::vector<const iresource*> renderer_info::get_resources() const
@@ -81,22 +81,22 @@ namespace tz::gl
 
 	resource_handle renderer_info::add_resource(const iresource& resource)
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			if(resource.get_flags().contains(resource_flag::index_buffer))
 			{
-				hdk::assert(resource.get_type() == resource_type::buffer, "Attempting to add a resource with resource_flag::index_buffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
-				hdk::assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(resource_flag::index_buffer);}), "Attempting to add a resource with resource_flag::index_buffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
+				tz::assert(resource.get_type() == resource_type::buffer, "Attempting to add a resource with resource_flag::index_buffer specified, but the resource is not a buffer resource! Logic error/memory corruption? Please submit a bug report.");
+				tz::assert(!std::any_of(this->resources.begin(), this->resources.end(), [](const auto& r)->bool{return r != nullptr && r->get_flags().contains(resource_flag::index_buffer);}), "Attempting to add a resource with resource_flag::index_buffer specified, but a resource was already added which is an index buffer. You cannot have more than one index buffer in a renderer. Logic error? Please submit a bug report.");
 			}
 		#endif
 		this->resources.push_back(resource.unique_clone());
-		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
+		return static_cast<tz::hanval>(this->real_resource_count() - 1);
 	}
 
 	resource_handle renderer_info::ref_resource(icomponent* component)
 	{
 		this->resources.push_back(nullptr);
 		this->components.push_back(component);
-		return static_cast<hdk::hanval>(this->real_resource_count() - 1);
+		return static_cast<tz::hanval>(this->real_resource_count() - 1);
 	}
 
 	resource_handle renderer_info::ref_resource(renderer_handle ren, resource_handle res)
@@ -121,7 +121,7 @@ namespace tz::gl
 
 	void renderer_info::set_options(renderer_options options)
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			if(!options.contains(renderer_option::_internal_final_dbgui_renderer))
 			{
 				options |= renderer_option::no_present;
@@ -162,7 +162,7 @@ namespace tz::gl
 
 	std::string renderer_info::debug_get_name() const
 	{
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			if(!this->dbg_name.empty())
 			{
 				return this->dbg_name;

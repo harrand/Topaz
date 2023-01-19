@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/features.hpp"
 #include "tz/gl/impl/vulkan/detail/hardware/physical_device.hpp"
 #include "tz/gl/impl/vulkan/detail/logical_device.hpp"
@@ -8,7 +8,7 @@ namespace tz::gl::vk2
 {
 	void QueueStorage::init(std::span<const QueueFamilyInfo> queue_families, const LogicalDevice& device)
 	{
-		HDK_PROFZONE("Vulkan Backend - QueueStorage Initialisation", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - QueueStorage Initialisation", 0xFFAA0000);
 		for(std::uint32_t i = 0; std::cmp_less(i, queue_families.size()); i++)
 		{
 			List& hardware_queue_family = this->hardware_queue_families.emplace();
@@ -37,7 +37,7 @@ namespace tz::gl::vk2
 
 	const hardware::Queue* QueueStorage::request_queue(QueueRequest request) const
 	{
-		HDK_PROFZONE("Vulkan Backend - Queue Storage Request", 0xFFAA0000);
+		TZ_PROFZONE("Vulkan Backend - Queue Storage Request", 0xFFAA0000);
 		auto queue_satisfies_request = [request](const QueueFamilyInfo& info)
 		{
 			// If we request present support, the queue family *must* support it.
@@ -127,8 +127,8 @@ namespace tz::gl::vk2
 	queue_families(),
 	vma_allocator()
 	{
-		HDK_PROFZONE("Vulkan Backend - LogicalDevice Create", 0xFFAA0000);
-		hdk::assert(this->physical_device.native() != VK_NULL_HANDLE, "Null PhysicalDevice provided to LogicalDevice ctor. Submit a bug report.");
+		TZ_PROFZONE("Vulkan Backend - LogicalDevice Create", 0xFFAA0000);
+		tz::assert(this->physical_device.native() != VK_NULL_HANDLE, "Null PhysicalDevice provided to LogicalDevice ctor. Submit a bug report.");
 		// Firstly, let's retrieve some information about the PhysicalDevice's queue families. Note that its API doesn't expose this to the end-user, so we have to do this ourselves.
 		{
 			std::vector<VkQueueFamilyProperties> queue_family_props;
@@ -161,7 +161,7 @@ namespace tz::gl::vk2
 				}
 
 				const VulkanInstance& vk_inst = this->get_hardware().get_instance();
-				hdk::assert(vk_inst.has_surface(), "VulkanInstance did not have a surface associated with it.");
+				tz::assert(vk_inst.has_surface(), "VulkanInstance did not have a surface associated with it.");
 				const WindowSurface& surf = vk_inst.get_surface();
 				VkBool32 present_support;
 				vkGetPhysicalDeviceSurfaceSupportKHR(this->physical_device.native(), queue_family_index, surf.native(), &present_support);
@@ -197,14 +197,14 @@ namespace tz::gl::vk2
 
 		// Now deal with extensions.
 		util::VkExtensionList vk_extensions;
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			DeviceExtensionList debug_supported_extensions = this->physical_device.get_supported_extensions();		
 		#endif
 		for(DeviceExtension ext : this->enabled_extensions)
 		{
-			hdk::assert(ext != DeviceExtension::Count, "Invalid extension passed into LogicalDevice ctor Extension::Count");
-			#if HDK_DEBUG
-				hdk::assert(debug_supported_extensions.contains(ext), "LogicalDevice attempted to use the extension %s, but the correspnding PhysicalDevice does not support it. Submit a bug report.", util::to_vk_extension(ext));
+			tz::assert(ext != DeviceExtension::Count, "Invalid extension passed into LogicalDevice ctor Extension::Count");
+			#if TZ_DEBUG
+				tz::assert(debug_supported_extensions.contains(ext), "LogicalDevice attempted to use the extension %s, but the correspnding PhysicalDevice does not support it. Submit a bug report.", util::to_vk_extension(ext));
 			#endif
 			vk_extensions.add(util::to_vk_extension(ext));
 		}
@@ -212,11 +212,11 @@ namespace tz::gl::vk2
 		create.ppEnabledExtensionNames = vk_extensions.data();	
 
 		// And finally, features.
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 			DeviceFeatureField debug_supported_features = this->physical_device.get_supported_features();
 			std::for_each(this->enabled_features.begin(), this->enabled_features.end(), [&debug_supported_features](const DeviceFeature& feature)
 			{
-				hdk::assert(debug_supported_features.contains(feature), "LogicalDevice attempted to use a feature, but the corresponding PhysicalDevice does not support it. Submit a bug report.");
+				tz::assert(debug_supported_features.contains(feature), "LogicalDevice attempted to use a feature, but the corresponding PhysicalDevice does not support it. Submit a bug report.");
 			});		
 		#endif
 		detail::DeviceFeatureInfo features = detail::from_feature_field(this->enabled_features);
@@ -228,27 +228,27 @@ namespace tz::gl::vk2
 		{
 			case VK_SUCCESS: break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Ran out of host memory whilst trying to create LogicalDevice");
+				tz::error("Ran out of host memory whilst trying to create LogicalDevice");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Ran out of device memory whilst trying to create LogicalDevice");
+				tz::error("Ran out of device memory whilst trying to create LogicalDevice");
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
 			[[fallthrough]];
 			default:
-				hdk::error("Failed to create LogicalDevice, but for unknown reason. Ensure that your machine meets the system requirements.");
+				tz::error("Failed to create LogicalDevice, but for unknown reason. Ensure that your machine meets the system requirements.");
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				hdk::error("Failed to create LogicalDevice because an extension was enabled but not available. An assert should've popped earlier - If this is the first error you've seen, submit a bug report.");
+				tz::error("Failed to create LogicalDevice because an extension was enabled but not available. An assert should've popped earlier - If this is the first error you've seen, submit a bug report.");
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
-				hdk::error("Failed to create LogicalDevice because a feature was enabled but not supported by the PhysicalDevice. An assert should've popped earlier - If this is the first error you've seen, submit a bug report");
+				tz::error("Failed to create LogicalDevice because a feature was enabled but not supported by the PhysicalDevice. An assert should've popped earlier - If this is the first error you've seen, submit a bug report");
 			break;
 			case VK_ERROR_TOO_MANY_OBJECTS:
-				hdk::error("Failed to create LogicalDevice because too many of such objects. Pleas submit a bug report.");
+				tz::error("Failed to create LogicalDevice because too many of such objects. Pleas submit a bug report.");
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				hdk::error("device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
+				tz::error("device lost whilst trying to create a LogicalDevice. Possible hardware fault. Please be aware: device loss is serious and further attempts to run the engine may cause serious hazards, such as operating system crash. Submit a bug report but do not attempt to reproduce the issue.");
 			break;
 		}
 		// We'll retrieve all the VkQueues now so we don't have to deal with it later.
@@ -277,7 +277,7 @@ namespace tz::gl::vk2
 
 			break;
 			default:
-				hdk::error("Failed to create VMA allocator for unknown reason. Please submit a bug report.");
+				tz::error("Failed to create VMA allocator for unknown reason. Please submit a bug report.");
 			break;
 		}
 	}

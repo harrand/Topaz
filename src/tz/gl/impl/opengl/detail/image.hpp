@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_IMAGE_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_IMAGE_HPP
 #if TZ_OGL
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include "tz/gl/impl/opengl/detail/sampler.hpp"
 #include "tz/gl/impl/opengl/detail/image_format.hpp"
@@ -18,7 +18,7 @@ namespace tz::gl::ogl2
 		/// Format of the image data.
 		image_format format;
 		/// {Width, Height} of the image, in pixels.
-		hdk::vec2ui dimensions;
+		tz::vec2ui dimensions;
 		/// Specifies how the image should be sampled in a shader.
 		Sampler sampler;
 	};
@@ -50,7 +50,7 @@ namespace tz::gl::ogl2
 		/**
 		 * @return {width, height} of the image, in pixels.
 		 */
-		hdk::vec2ui get_dimensions() const;
+		tz::vec2ui get_dimensions() const;
 		/**
 		 * Retrieves the state specifying how the image is sampled in a shader.
 		 */
@@ -104,7 +104,7 @@ namespace tz::gl::ogl2
 	namespace image
 	{
 		void copy(const Image& source, Image& destination);
-		Image clone_resized(const Image& image, hdk::vec2ui new_size);
+		Image clone_resized(const Image& image, tz::vec2ui new_size);
 	}
 }
 

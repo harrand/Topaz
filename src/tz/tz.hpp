@@ -66,9 +66,9 @@ namespace tz
 		/// - Name of the application. If initialisation spawns a window, the title will contain this string. Defaults to 'Untitled'.
 		const char* name = "Untitled";
 		/// - Version of the application. If you do not version your application, you can leave this. Defaults to 1.0.0.
-		hdk::version version = {1, 0, 0, hdk::version_type::normal};
+		tz::version version = {1, 0, 0, tz::version_type::normal};
 		/// - Specifies dimensions of the window, in pixels.
-		hdk::vec2ui dimensions = {800u, 600u};
+		tz::vec2ui dimensions = {800u, 600u};
 		/// - Describes some optional behaviours for the application. See @ref application_flag for details.
 		application_flags flags = {};
 	};

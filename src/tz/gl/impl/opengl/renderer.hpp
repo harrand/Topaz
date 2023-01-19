@@ -8,7 +8,6 @@
 #include "tz/gl/impl/opengl/detail/shader.hpp"
 #include "tz/gl/impl/opengl/detail/framebuffer.hpp"
 #include "tz/gl/impl/opengl/detail/buffer.hpp"
-#include "tz/core/memory.hpp"
 
 namespace tz::gl
 {

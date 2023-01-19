@@ -1,6 +1,6 @@
 #ifndef TOPAZ_CORE_MATRIX_HPP
 #define TOPAZ_CORE_MATRIX_HPP
-#include "hdk/data/vector.hpp"
+#include "tz/core/data/vector.hpp"
 #include "tz/core/types.hpp"
 #include <array>
 
@@ -157,7 +157,7 @@ namespace tz
 		 * @param vec Column matrix to multiply with the current matrix.
 		 * @return A row-matrix representing the resultant multiplication.
 		 */
-		hdk::vector<T, R> operator*(const hdk::vector<T, C>& vec) const;
+		tz::vector<T, R> operator*(const tz::vector<T, C>& vec) const;
 		/**
 		 * Equate the given scalar with each value of the matrix.
 		 * `mymatrix == T{5}` shall return if-and-only-if each element of mymatrix is equal to 'T{5}'. If no such comparison exists, then the program is ill-formed.
@@ -185,7 +185,7 @@ namespace tz
 		 * @return Transpose of the original matrix. The original matrix is unchanged.
 		 */
 		matrix<T, R, C> transpose() const;
-		#if HDK_DEBUG
+		#if TZ_DEBUG
 		/**
 		 * Pretty-print each value of the given matrix. If T is not printable, then the program is ill-formed.
 		 * Note: This method is compiled-out in release. If this method is invoked in a non-debug context, then the program is ill-formed.

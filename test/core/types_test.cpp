@@ -23,7 +23,7 @@ void sanity_check()
 		#ifndef _MSC_VER
 			// No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
 			constexpr bool satisfies = requires{requires tz::number<T>;};
-			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::number<T>)");
+			tz::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::number<T>)");
 		#endif
 	};
 	struct NotANumber
@@ -46,7 +46,7 @@ void sanity_check()
 		#ifndef _MSC_VER
 			// No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
 			constexpr bool satisfies = requires{requires tz::action<F>;};
-			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::action<F> aka 'void()')");
+			tz::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::action<F> aka 'void()')");
 		#endif
 	};
 
@@ -66,7 +66,7 @@ void sanity_check()
 		#ifndef _MSC_VER
 			// No MSVC support for 'requires' expression https://en.cppreference.com/w/cpp/compiler_support
 			constexpr bool satisfies = requires{requires tz::function<F, int, int, int>;};
-			hdk::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::function<F, int, int, int> aka 'int(int, int)')");
+			tz::assert(satisfies == should_be, "A type did not satisfy a sanity check (tz::function<F, int, int, int> aka 'int(int, int)')");
 		#endif
 	};
 	struct MyAdderFunctor
@@ -89,7 +89,7 @@ void numeric()
 		T initial = t;
 		t *= 2;
 		t -= initial;
-		hdk::assert(initial == t, "Multiplied by two and then subtracted by original did not yield original.");
+		tz::assert(initial == t, "Multiplied by two and then subtracted by original did not yield original.");
 	};
 	test(5);
 	test(16u);
@@ -133,17 +133,17 @@ void functional_action()
 	int x = 1;
 	auto dubs = [&x](){x *= 2;};
 	doit(dubs);
-	hdk::assert(x == 2, "");
+	tz::assert(x == 2, "");
 
 	// Parameters tz::action
 	auto muls = [&x](int mul){x *= mul;};
 	doit_withparams(muls, 5);
-	hdk::assert(x == 10, "");
+	tz::assert(x == 10, "");
 
 	// Parameters & Return tz::function
 	auto give_double = [](int x){return x*2;};
 	int res = doit_witheverything<int>(give_double, 10);
-	hdk::assert(res == 20, "");
+	tz::assert(res == 20, "");
 }
 
 int main()

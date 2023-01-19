@@ -21,11 +21,11 @@
 
 struct TriangleResourceData
 {
-	hdk::vec3 position;
+	tz::vec3 position;
 	float pad0;
-	hdk::vec3 rotation;
+	tz::vec3 rotation;
 	float pad1;
-	hdk::vec3 scale;
+	tz::vec3 scale;
 	float pad2;
 	tz::mat4 mvp;
 	std::uint32_t texture_id;
@@ -34,9 +34,9 @@ struct TriangleResourceData
 
 struct TriangleVertexData
 {
-	hdk::vec3 position;
+	tz::vec3 position;
 	float pad0;
-	hdk::vec2 texcoord;
+	tz::vec2 texcoord;
 	float pad1[2];
 };
 
@@ -196,8 +196,8 @@ int main()
 		({
 			.set_layouts = std::move(alloc_layout_list)
 		});
-		hdk::assert(dpool_alloc.success(), "Descriptor Pool allocation failed.");
-		hdk::assert(dpool_alloc.sets.length() == swapchain.get_images().size(), "Descriptor Pool allocation returned incorrect number of DescriptorSets");
+		tz::assert(dpool_alloc.success(), "Descriptor Pool allocation failed.");
+		tz::assert(dpool_alloc.sets.length() == swapchain.get_images().size(), "Descriptor Pool allocation returned incorrect number of DescriptorSets");
 		// Write the buffers and texture to the sets. We only need to do this once fortunately.
 		// We have a set per swapchain image. For each of these sets:
 		// 	- Write the vertex storage buffer to binding 0
@@ -311,8 +311,8 @@ int main()
 		 	// Enough buffers for each swapchain image, plus an extra for one-time commands.
 			.buffer_count = static_cast<std::uint32_t>(swapchain.get_images().size()) + 1
 		});
-		hdk::assert(result.success(), "CommandPool allocation failed unexpectedly");
-		hdk::assert(result.buffers.length() == swapchain.get_images().size() + 1, "Did not allocate correct number of CommandBuffers");
+		tz::assert(result.success(), "CommandPool allocation failed unexpectedly");
+		tz::assert(result.buffers.length() == swapchain.get_images().size() + 1, "Did not allocate correct number of CommandBuffers");
 
 		for(std::size_t i = 0; i < swapchain.get_images().size(); i++)
 		{
@@ -520,9 +520,9 @@ int main()
 		}
 		// Now the resource data.
 		std::span<TriangleResourceData> resources = triangle_resource_buffer.map_as<TriangleResourceData>();
-		auto set_triangle_data = [&resources](std::size_t triangle_idx, hdk::vec3 position, hdk::vec3 rotation, hdk::vec3 scale, std::uint32_t texture_id = 0)
+		auto set_triangle_data = [&resources](std::size_t triangle_idx, tz::vec3 position, tz::vec3 rotation, tz::vec3 scale, std::uint32_t texture_id = 0)
 		{
-			hdk::assert(texture_id < 2, "Texture ID %u is invalid.", texture_id);
+			tz::assert(texture_id < 2, "Texture ID %u is invalid.", texture_id);
 			resources[triangle_idx] =
 			{
 				.position = position,
@@ -613,7 +613,7 @@ int main()
 				.swapchain = &swapchain,
 				.swapchain_image_index = swapchain_image_index
 			});
-			hdk::assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
+			tz::assert(res == hardware::Queue::PresentResult::Success || res == hardware::Queue::PresentResult::Success_Suboptimal, "Presentation failed.");
 
 			current_frame = (current_frame + 1) % max_frames_in_flight;
 

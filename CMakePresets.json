@@ -9,6 +9,48 @@
 	"configurePresets":
 	[
 	{
+		"name": "debug",
+		"binaryDir": "${sourceDir}/build/debug",
+		"cacheVariables":
+		{
+			"TZ_PROFILE": "0",
+			"CMAKE_BUILD_TYPE":
+			{
+				"type": "string",
+				"value": "Debug"
+			}
+		},
+		"hidden": true
+	},
+	{
+		"name": "release",
+		"binaryDir": "${sourceDir}/build/release",
+		"cacheVariables":
+		{
+			"TZ_PROFILE": "0",
+			"CMAKE_BUILD_TYPE":
+			{
+				"type": "string",
+				"value": "Release"
+			}
+		},
+		"hidden": true
+	},
+	{
+		"name": "profile",
+		"binaryDir": "${sourceDir}/build/profile",
+		"cacheVariables":
+		{
+			"TZ_PROFILE": "1",
+			"CMAKE_BUILD_TYPE":
+			{
+				"type": "string",
+				"value": "Release"
+			}
+		},
+		"hidden": true
+	},
+	{
 		"name": "vulkan",
 		"cacheVariables":
 		{
@@ -74,8 +116,5 @@
 		"description": "An OpenGL profile build.",
 		"inherits": [ "opengl", "profile" ]
 	}
-	],
-	"include": [
-		"lib/HDK/CMakePresets.json"
 	]
 }

@@ -16,15 +16,16 @@ set(TZ_CXX_STANDARD 20)
 project(topaz VERSION ${TZ_VERSION}
 	DESCRIPTION "C++20 Graphics Engine")
 
-add_subdirectory(lib/HDK)
 include(cmake/project.cmake)
 
-hdk_add_library(TARGET topaz
-	SOURCES
+find_package(Threads)
+
+add_library(topaz STATIC
 	src/tz/tz.cpp
 	src/tz/tz.hpp
 	src/tz/tz.inl
 	# tz::core
+	src/tz/core/algorithms/static.hpp
 	src/tz/core/containers/basic_list.hpp
 	src/tz/core/containers/enum_field.hpp
 	src/tz/core/containers/enum_field.inl
@@ -32,21 +33,52 @@ hdk_add_library(TARGET topaz
 	src/tz/core/containers/grid_view.inl
 	src/tz/core/containers/polymorphic_list.hpp
 	src/tz/core/containers/polymorphic_list.inl
-	src/tz/core/algorithms/static.hpp
+	src/tz/core/data/handle.hpp
+	src/tz/core/data/vector.cpp
+	src/tz/core/data/vector.hpp
+	src/tz/core/data/vector.inl
+	src/tz/core/data/version.cpp
+	src/tz/core/data/version.hpp
+	src/tz/core/job/job.cpp
+	src/tz/core/job/job.hpp
+	src/tz/core/job/api/job.hpp
+	src/tz/core/job/impl/stdasync/job.cpp
+	src/tz/core/job/impl/stdasync/job.hpp
+	src/tz/core/job/impl/threadpool_lfq/job.cpp
+	src/tz/core/job/impl/threadpool_lfq/job.hpp
+	src/tz/core/memory/allocators/adapter.hpp
+	src/tz/core/memory/allocators/fallback.hpp
+	src/tz/core/memory/allocators/linear.cpp
+	src/tz/core/memory/allocators/linear.hpp
+	src/tz/core/memory/allocators/malloc.cpp
+	src/tz/core/memory/allocators/malloc.hpp
+	src/tz/core/memory/allocators/null.hpp
+	src/tz/core/memory/allocators/stack.hpp
+	src/tz/core/memory/allocators/stack.inl
+	src/tz/core/memory/clone.hpp
+	src/tz/core/memory/maybe_owned_ptr.hpp
+	src/tz/core/memory/maybe_owned_ptr.inl
+	src/tz/core/memory/memblk.hpp
+
 	src/tz/core/callback.hpp
+	src/tz/core/debug.cpp
+	src/tz/core/debug.hpp
+	src/tz/core/debug.inl
 	src/tz/core/engine_info.cpp
 	src/tz/core/engine_info.hpp
 	src/tz/core/engine_info.inl
 	src/tz/core/game_info.hpp
 	src/tz/core/imported_text.hpp
-	src/tz/core/matrix_transform.cpp
-	src/tz/core/matrix_transform.hpp
+	src/tz/core/macros.hpp
 	src/tz/core/matrix.hpp
 	src/tz/core/matrix.inl
-	src/tz/core/memory.hpp
-	src/tz/core/memory.inl
+	src/tz/core/matrix_transform.cpp
+	src/tz/core/matrix_transform.hpp
 	src/tz/core/time.cpp
 	src/tz/core/time.hpp
+	src/tz/core/types.hpp
+	src/tz/core/tz_core.cpp
+	src/tz/core/tz_core.hpp
 	# tz::wsi
 	src/tz/wsi/keyboard.cpp
 	src/tz/wsi/keyboard.hpp
@@ -203,6 +235,23 @@ else()
 	message(FATAL_ERROR "Unrecognised Platform ${CMAKE_HOST_SYSTEM_NAME}")
 endif()
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	target_compile_definitions(topaz PUBLIC "-DTZ_DEBUG=1")
+	tz_configure_debug(TARGET topaz)
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+	target_compile_definitions(topaz PUBLIC "-DTZ_DEBUG=0")
+	tz_configure_release(TARGET topaz)
+endif()
+
+if(${TZ_PROFILE} EQUAL 1)
+	message(STATUS "Topaz - Profiling enabled in this build")
+	target_compile_definitions(topaz PUBLIC "-DTZ_PROFILE=1")
+	tz_configure_profile(TARGET topaz)
+else()
+	message(STATUS "Topaz - Profiling disabled in this build")
+	target_compile_definitions(topaz PUBLIC "-DTZ_PROFILE=0")
+endif()
+
 message(STATUS "Topaz v${TZ_VERSION}")
 set_target_properties(topaz PROPERTIES
 	CXX_STANDARD ${TZ_CXX_STANDARD}
@@ -229,7 +278,8 @@ message(STATUS "Render API: ${TOPAZ_RENDER_API}")
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC imgui glad)
+target_link_libraries(topaz PUBLIC imgui glad textc_lib concurrentqueue)
+target_link_libraries(topaz PRIVATE debugbreak Threads::Threads)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)
@@ -243,6 +293,7 @@ add_shader(
 	)
 
 add_subdirectory(demo)
+include(cmake/test.cmake)
 enable_testing()
 add_subdirectory(test)
 

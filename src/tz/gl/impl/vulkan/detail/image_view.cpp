@@ -1,5 +1,5 @@
 #if TZ_VULKAN
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/vulkan/detail/image_view.hpp"
 #include "tz/gl/impl/vulkan/detail/logical_device.hpp"
 
@@ -11,8 +11,8 @@ namespace tz::gl::vk2
 	info(info),
 	ldev(&this->info.image->get_device())
 	{
-		HDK_PROFZONE("Vulkan Backend - ImageView Create", 0xFFAA0000);
-		hdk::assert(this->info.image != nullptr && !this->info.image->is_null(), "ImageViewInfo refers to nullptr or null Image");
+		TZ_PROFZONE("Vulkan Backend - ImageView Create", 0xFFAA0000);
+		tz::assert(this->info.image != nullptr && !this->info.image->is_null(), "ImageViewInfo refers to nullptr or null Image");
 		VkImageViewCreateInfo create{};
 		create.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO; 
 		create.image = this->info.image->native();
@@ -27,7 +27,7 @@ namespace tz::gl::vk2
 				create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 			break;
 			default:
-				hdk::error("Unknown ImageAspectFlag");
+				tz::error("Unknown ImageAspectFlag");
 			break;
 		}
 		create.subresourceRange.baseMipLevel = 0;
@@ -43,13 +43,13 @@ namespace tz::gl::vk2
 				// do nothing
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				hdk::error("Ran out of host memory (RAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
+				tz::error("Ran out of host memory (RAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				hdk::error("Ran out of device memory (VRAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
+				tz::error("Ran out of device memory (VRAM) while trying to create ImageView. Ensure your system meets the minimum requirements.");
 			break;
 			default:
-				hdk::error("Failed to create ImageView, but the error code is unrecognised. Please submit a bug report.");
+				tz::error("Failed to create ImageView, but the error code is unrecognised. Please submit a bug report.");
 			break;
 		}
 		DebugNameable<VK_OBJECT_TYPE_IMAGE_VIEW>::debug_set_handle(reinterpret_cast<std::uint64_t>(this->image_view));
@@ -71,7 +71,7 @@ namespace tz::gl::vk2
 	{
 		if(this->image_view != VK_NULL_HANDLE)
 		{
-			hdk::assert(this->ldev != nullptr);
+			tz::assert(this->ldev != nullptr);
 			vkDestroyImageView(this->ldev->native(), this->image_view, nullptr);
 			this->image_view = VK_NULL_HANDLE;
 		}
@@ -88,13 +88,13 @@ namespace tz::gl::vk2
 
 	const Image& ImageView::get_image() const
 	{
-		hdk::assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
+		tz::assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
 		return *this->info.image;
 	}
 
 	Image& ImageView::get_image()
 	{
-		hdk::assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
+		tz::assert(this->info.image != nullptr, "ImageView originated from a nullptr Image. Move semantics may have gone pear-shaped. Please submit a bug report.");
 		return *this->info.image;
 	}
 

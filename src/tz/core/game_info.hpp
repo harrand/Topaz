@@ -38,7 +38,7 @@ namespace tz
 		}
 
 		const char* name;
-		hdk::version version;
+		tz::version version;
 		engine_info engine;
 	};
 	/**

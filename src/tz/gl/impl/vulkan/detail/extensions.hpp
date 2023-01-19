@@ -18,7 +18,7 @@ namespace tz::gl::vk2
 	 */
 	enum class InstanceExtension
 	{
-		/// - Enables Debug Messenger (only supported on HDK_DEBUG)
+		/// - Enables Debug Messenger (only supported on TZ_DEBUG)
 		DebugMessenger,
 
 		Count

@@ -1,5 +1,5 @@
 #if TZ_OGL
-#include "hdk/profile.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include "tz/gl/impl/opengl/detail/framebuffer.hpp"
 
@@ -9,8 +9,8 @@ namespace tz::gl::ogl2
 	framebuffer(0),
 	info(info)
 	{
-		HDK_PROFZONE("OpenGL Backend - Framebuffer Create", 0xFFAA0000);
-		hdk::assert(ogl2::is_initialised(), "Attempted to create Framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
+		TZ_PROFZONE("OpenGL Backend - Framebuffer Create", 0xFFAA0000);
+		tz::assert(ogl2::is_initialised(), "Attempted to create Framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
 		glCreateFramebuffers(1, &this->framebuffer);
 
 		// Deal with attachments.
@@ -31,7 +31,7 @@ namespace tz::gl::ogl2
 				}
 				else
 				{
-					hdk::error("Unknown FramebufferTexture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");
+					tz::error("Unknown FramebufferTexture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");
 				}
 			}, this->info.maybe_depth_attachment.value());
 		}
@@ -53,7 +53,7 @@ namespace tz::gl::ogl2
 		}
 		glNamedFramebufferDrawBuffers(this->framebuffer, draw_buffers.size(), draw_buffers.data());
 
-		hdk::assert(glCheckNamedFramebufferStatus(this->framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
+		tz::assert(glCheckNamedFramebufferStatus(this->framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
 	}
 
 	Framebuffer::Framebuffer(Framebuffer&& move):
@@ -89,7 +89,7 @@ namespace tz::gl::ogl2
 		return this->info.colour_attachments.length();
 	}
 
-	hdk::vec2ui Framebuffer::get_dimensions() const
+	tz::vec2ui Framebuffer::get_dimensions() const
 	{
 		if(this->is_null())
 		{
@@ -100,7 +100,7 @@ namespace tz::gl::ogl2
 
 	void Framebuffer::bind() const
 	{
-		HDK_PROFZONE("OpenGL Backend - Framebuffer Bind", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Framebuffer Bind", 0xFFAA0000);
 		glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
 
 		auto dims = this->get_dimensions();
@@ -109,7 +109,7 @@ namespace tz::gl::ogl2
 
 	void Framebuffer::clear() const
 	{
-		HDK_PROFZONE("OpenGL Backend - Framebuffer Clear", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - Framebuffer Clear", 0xFFAA0000);
 		GLenum clear_flags = GL_COLOR_BUFFER_BIT;
 		if(this->has_depth_attachment())
 		{
