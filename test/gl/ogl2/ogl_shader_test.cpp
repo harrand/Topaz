@@ -26,7 +26,7 @@ int main()
 	tz::initialise
 	({
 		.name = "ogl_shader_test",
-		.flags = {tz::application_flag::HiddenWindow}
+		.flags = {tz::application_flag::window_hidden}
 	});
 	{
 		create_empty_shader();

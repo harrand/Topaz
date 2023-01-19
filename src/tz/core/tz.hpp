@@ -17,31 +17,13 @@ namespace tz
 	}
 
 	/**
-	 * @defgroup tz_core Core Libraries (tz)
-	 * A collection of platform-agnostic core functionality.
+	 * @defgroup tz_core Core Functionality
+	 * A grab-bag of common helpers used frequently in other engine modules.
 	 *
-	 * This includes:
-	 * - Engine initialisation/termination
-	 * - Windowing and hardware requests
-	 * - Input processing
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_init Initialisation and Termination
-	 * Documentation for functionality related to engine initialisation and termination.
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_vecmat Vectors and Matrices
-	 * Documentation for vectors and matrices.
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_peripherals Hardware and Peripherals
-	 * Documentation for retrieving hardware information, such as monitor properties.
+	 * Notable features:
+	 * - Initialisation via @ref tz::initialise() and @ref tz::terminate()
+	 * - Callback functions via @ref tz::callback
+	 * - Custom file includes (via @ref ImportedTextData)
 	 */
 
 	/**
@@ -56,35 +38,6 @@ namespace tz
 	 * Documentation for custom Topaz algorithms.
 	 */
 
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_allocators Allocators
-	 * Documentation for custom Topaz allocators. All allocators satisfy `std::allocator_traits`.
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_profiling Profiling and Instrumentation
-	 * Documentation for profiling and instrumentation macros.
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_windowing Windowing
-	 * Documentation for creating and managing windows.
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_utility Utility Helpers
-	 * Documentation for utility helper functions and types. This includes 'general' style usage such as handles and callbacks.
-	 */
-
-	/**
-	 * @ingroup tz_core
-	 * @defgroup tz_core_time Times, Dates and sync scheduling
-	 * Documentation for functions and helpers which can be used to tell the time, and schedule sync tasks. Has nothing to do with parallellism or threads.
-	 */
 
 	/**
 	 * @defgroup tzsl Topaz Shading Language (TZSL)
@@ -93,15 +46,15 @@ namespace tz
 
 	enum class application_flag
 	{
-		HiddenWindow,
-		UnresizeableWindow,
-		TransparentWindow,
+		window_hidden,
+		window_noresize,
+		window_transparent,
 	};
 
 	using application_flags = tz::EnumField<application_flag>;
 
 	/**
-	 * @ingroup tz_core_init
+	 * @ingroup tz_core
 	 * Specifies everything needed to initialise the engine.
 	 */
 	struct initialise_info
@@ -116,13 +69,13 @@ namespace tz
 		application_flags flags = {};
 	};
 	/**
-	 * @ingroup tz_core_init
+	 * @ingroup tz_core
 	 * Initialise Topaz.
 	 * @param init Information about how the application should be initialised.
 	 */
 	void initialise(initialise_info init = {});
 	/**
-	 * @ingroup tz_core_init
+	 * @ingroup tz_core
 	 * @brief Terminate Topaz.
 	 * @pre If `tz::initialise` has not been invoked before this, then the behaviour of the program is undefined.
 	 * @post If anything in `tz` is invoked after this, then the behaviour of the program is undefined.
@@ -132,14 +85,14 @@ namespace tz
 	void begin_frame();
 	void end_frame();
 	/**
-	 * @ingroup tz_core_init
+	 * @ingroup tz_core
 	 * @brief Retrieve the application window.
 	 * @post @ref tz::terminate() has not yet been invoked.
 	 * @return Window& Reference to the application window.
 	 */
 	tz::wsi::window& window();
 	/**
-	 * @ingroup tz_core_init
+	 * @ingroup tz_core
 	 * @brief Query as to whether Topaz is initialised.
 	 * @note This function is within the Initial Group.
 	 * @return true If `tz::initialise` has been invoked and `tz::terminate()` has not yet been invoked. Otherwise, returns false.

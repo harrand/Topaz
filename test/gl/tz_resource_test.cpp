@@ -107,7 +107,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_resource_test",
-		.flags = {tz::application_flag::HiddenWindow}
+		.flags = {tz::application_flag::window_hidden}
 	});
 	{
 		null_buffer();

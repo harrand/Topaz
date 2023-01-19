@@ -7,7 +7,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_core_vecmat
+	 * @ingroup tz_core
 	 * Represents a row-major matrix with R rows and C columns.
 	 * The value type of a matrix is typically a float or double, but for this implementation it is templated on T.
 	 */
@@ -199,7 +199,7 @@ namespace tz
 	};
 
 	/**
-	 * @ingroup tz_core_vecmat
+	 * @ingroup tz_core
 	 * @{
 	 */
 

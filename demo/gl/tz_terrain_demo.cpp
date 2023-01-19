@@ -20,7 +20,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_terrain_demo",
-		.flags = {tz::application_flag::TransparentWindow}
+		.flags = {tz::application_flag::window_transparent}
 	});
 	{
 		struct BufferData

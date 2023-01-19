@@ -415,7 +415,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_renderer_test",
-		.flags = {tz::application_flag::HiddenWindow}
+		.flags = {tz::application_flag::window_hidden}
 	});
 	{
 		create_destroy_empty_renderer();

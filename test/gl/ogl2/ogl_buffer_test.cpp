@@ -94,7 +94,7 @@ int main()
 	tz::initialise
 	({
 		.name = "ogl_buffer_test",
-		.flags = {tz::application_flag::HiddenWindow}
+		.flags = {tz::application_flag::window_hidden}
 	});
 	{
 		create_empty_buffer();

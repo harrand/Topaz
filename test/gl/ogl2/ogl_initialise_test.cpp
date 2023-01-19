@@ -6,7 +6,7 @@ int main()
 	tz::initialise
 	({
 		.name = "ogl_initialise_test",
-		.flags = {tz::application_flag::HiddenWindow}
+		.flags = {tz::application_flag::window_hidden}
 	});
 	{
 

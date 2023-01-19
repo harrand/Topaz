@@ -12,13 +12,13 @@ namespace tz
 		struct callback_type{};
 	}
 	/**
-	 * @ingroup tz_core_utility
+	 * @ingroup tz_core
 	 * Opaque handle representing a reference to an existing @ref tz::callback function.
 	 */
 	using callback_handle = hdk::handle<detail::callback_type>;
 
 	/**
-	 * @ingroup tz_core_utility
+	 * @ingroup tz_core
 	 * Represents a centralised storage/management of callback functions of a common signature `void(Args...)`.
 	 *
 	 * Callables matching the above signature can be registered by this object. When registered the caller is provided a reference handle. The token can be used to unregister the callback later.

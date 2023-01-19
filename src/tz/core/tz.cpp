@@ -41,11 +41,11 @@ namespace tz
 			{
 				flags |= tz::wsi::window_flag::opengl;
 			}
-			if(init.flags.contains(tz::application_flag::HiddenWindow))
+			if(init.flags.contains(tz::application_flag::window_hidden))
 			{
 				flags |= tz::wsi::window_flag::invisible;
 			}
-			if(init.flags.contains(tz::application_flag::TransparentWindow))
+			if(init.flags.contains(tz::application_flag::window_transparent))
 			{
 				flags |= tz::wsi::window_flag::transparent;
 			}

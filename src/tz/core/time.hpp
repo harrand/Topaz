@@ -8,7 +8,7 @@
 namespace tz
 {
 	/**
-	 * @ingroup tz_core_time
+	 * @ingroup tz_core
 	 * Represents some duration, expressable as a quantity of most time metrics.
 	 */
 	class duration
@@ -142,13 +142,13 @@ namespace tz
 	}
 
 	/**
-	 * @ingroup tz_core_time
+	 * @ingroup tz_core
 	 * Retrieve a duration corresponding to the time passed since epoch.
 	 */
 	duration system_time();
 
 	/**
-	 * @ingroup tz_core_time
+	 * @ingroup tz_core
 	 * An object which is falsy until a certain amount of time has passed since construction.
 	 */
 	class delay

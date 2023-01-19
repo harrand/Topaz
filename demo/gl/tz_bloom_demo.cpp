@@ -46,7 +46,7 @@ int main()
 	tz::initialise
 	({
 		.name = "tz_bloom_demo",
-		.flags = {tz::application_flag::UnresizeableWindow}
+		.flags = {tz::application_flag::window_noresize}
 	});
 	{
 		struct BloomOptions
