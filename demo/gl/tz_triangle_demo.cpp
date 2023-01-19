@@ -1,6 +1,4 @@
 #include "tz/core/tz.hpp"
-#include "tz/wsi/wsi.hpp"
-#include "hdk/profile.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/imported_shaders.hpp"
@@ -19,7 +17,7 @@ int main()
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_triangle_demo, fragment));
-		rinfo.set_options({tz::gl::renderer_option::NoDepthTesting});
+		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
 
 		tz::gl::renderer_handle renh = tz::gl::get_device().create_renderer(rinfo);
 		while(!tz::window().is_close_requested())

@@ -413,7 +413,7 @@ namespace tz::gl
 	{
 		HDK_PROFZONE("OpenGL Frontend - renderer_ogl OutputManager (Set Render Target)", 0xFFAA0000);
 		this->framebuffer.bind();
-		if(!this->options.contains(tz::gl::renderer_option::NoClearOutput))
+		if(!this->options.contains(tz::gl::renderer_option::no_clear_output))
 		{
 			this->framebuffer.clear();
 		}
@@ -564,7 +564,7 @@ namespace tz::gl
 				auto col = this->state.graphics.clear_colour;
 				glClearColor(col[0], col[1], col[2], col[3]);
 			}
-			if(this->options.contains(renderer_option::NoDepthTesting))
+			if(this->options.contains(renderer_option::no_depth_testing))
 			{
 				glDisable(GL_DEPTH_TEST);
 			}
@@ -573,7 +573,7 @@ namespace tz::gl
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LESS);
 			}
-			if(this->options.contains(renderer_option::AlphaBlending))
+			if(this->options.contains(renderer_option::alpha_blending))
 			{
 				glEnable(GL_BLEND);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -621,7 +621,7 @@ namespace tz::gl
 					this->vao.draw(this->state.graphics.tri_count, this->shader.has_tessellation());
 				}
 			}
-			if(!this->options.contains(tz::gl::renderer_option::NoPresent))
+			if(!this->options.contains(tz::gl::renderer_option::no_present))
 			{
 				tz::window().update();
 			}
@@ -632,7 +632,7 @@ namespace tz::gl
 		}
 		#endif
 		// If we're doing instant render, block now.
-		if(this->get_options().contains(renderer_option::RenderWait))
+		if(this->get_options().contains(renderer_option::render_wait))
 		{
 			auto fence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 			glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());

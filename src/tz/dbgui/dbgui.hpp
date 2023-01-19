@@ -11,14 +11,14 @@
 namespace tz::dbgui
 {
 	/**
-	 * @defgroup tz_dbgui Debug UI (tz::dbgui)
-	 * Functionality for debug-only user interface via ImGui.
+	 * @ingroup tz_cpp
+	 * @defgroup tz_dbgui Debug UI
 	 *
 	 * On debug builds, debug-ui is always displayed on the main window above anything being rendered. When debug-ui is enabled, this API is useful for allowing easy debug-only user activity (such as tweaking a value without recompiling).
 	 *
 	 * If you're experienced using ImGui, you're free to `#include "tz/dbgui/dbgui.hpp"` and start using ImGui functions to your hearts content. If you're not comfortable using ImGui, [now's a great time to learn](https://github.com/ocornut/imgui#the-pitch).
 	 *
-	 * @note Debug-ui functionality (and therefore imgui functions) cannot be used or invoked before @ref tz::initialise.
+	 * @note Debug-UI functionality (and therefore imgui functions) cannot be used or invoked before @ref tz::initialise.
 	 */
 	struct init_info
 	{

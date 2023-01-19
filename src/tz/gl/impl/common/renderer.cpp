@@ -45,7 +45,7 @@ namespace tz::gl
 	renderer_infoCommon::renderer_infoCommon()
 	{
 		#if HDK_DEBUG
-			this->options |= tz::gl::renderer_option::NoPresent;
+			this->options |= tz::gl::renderer_option::no_present;
 		#endif // HDK_DEBUG
 	}
 
@@ -122,9 +122,9 @@ namespace tz::gl
 	void renderer_infoCommon::set_options(renderer_options options)
 	{
 		#if HDK_DEBUG
-			if(!options.contains(renderer_option::Internal_FinalDebugUIRenderer))
+			if(!options.contains(renderer_option::_internal_final_dbgui_renderer))
 			{
-				options |= renderer_option::NoPresent;
+				options |= renderer_option::no_present;
 			}
 		#endif
 		this->options = options;

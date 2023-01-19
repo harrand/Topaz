@@ -9,6 +9,7 @@ namespace tz::wsi
 	void update();
 
 	/**
+	 * @ingroup tz_cpp
 	 * @defgroup tz_wsi Window System Integration
 	 * Documentation for functionality related to windowing, peripherals and input.
 	 */

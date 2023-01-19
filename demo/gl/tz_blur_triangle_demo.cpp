@@ -42,13 +42,13 @@ int main()
 		postprocess_info.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(blur, fragment));
 		tz::gl::resource_handle blur_buffer_handle = postprocess_info.add_resource(blur_data);
 		tz::gl::resource_handle colour_target_handle = postprocess_info.add_resource(blur_image);
-		postprocess_info.set_options({tz::gl::renderer_option::NoDepthTesting});
+		postprocess_info.set_options({tz::gl::renderer_option::no_depth_testing});
 		tz::gl::renderer_handle blur_rendererh = tz::gl::get_device().create_renderer(postprocess_info);
 
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_triangle_demo, fragment));
-		rinfo.set_options({tz::gl::renderer_option::NoDepthTesting});
+		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
 		rinfo.set_output(tz::gl::image_output
 		{{
 			.colours = {tz::gl::get_device().get_renderer(blur_rendererh).get_component(colour_target_handle)}

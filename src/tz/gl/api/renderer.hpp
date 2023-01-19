@@ -33,19 +33,19 @@ namespace tz::gl
 	enum class renderer_option
 	{
 		/// - Disables depth-testing and depth-writing.
-		NoDepthTesting,
+		no_depth_testing,
 		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
-		AlphaBlending,
+		alpha_blending,
 		/// - When a compute renderer's `render()` is invoked, the thread will block until the compute-shader has finished processing.
-		RenderWait,
+		render_wait,
 		/// - When a renderer is invoked, the output image is not cleared before being rendered to. If nothing has been rendered into the output this frame, then the behaviour is undefined.
-		NoClearOutput,
+		no_clear_output,
 		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an image_output, this has no effect.
-		NoPresent,
+		no_present,
 		// Final debug ui renderer. Do not use.
-		Internal_FinalDebugUIRenderer,
+		_internal_final_dbgui_renderer,
 		// Internal renderer. Has no effect aside from hiding it from the dbgui.
-		Internal,
+		_internal,
 		Count
 	};
 

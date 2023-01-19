@@ -17,6 +17,15 @@ namespace tz
 	}
 
 	/**
+	 * @defgroup tz_cpp C++ API Reference
+	 */
+
+	/**
+	 * @defgroup tzsl TZSL API Reference
+	 */
+
+	/**
+	 * @ingroup tz_cpp
 	 * @defgroup tz_core Core Functionality
 	 * A grab-bag of common helpers used frequently in other engine modules.
 	 *
@@ -29,19 +38,13 @@ namespace tz
 	/**
 	 * @ingroup tz_core
 	 * @defgroup tz_core_containers Containers
-	 * Documentation for custom Topaz containers, such as BasicList and EnumField.
+	 * Documentation for some niché containers. These do not attempt to replace standard library containers - you should continue using those for the most part, although rarely one of these containers may be preferable.
 	 */
 
 	/**
 	 * @ingroup tz_core
 	 * @defgroup tz_core_algorithms Algorithms
-	 * Documentation for custom Topaz algorithms.
-	 */
-
-
-	/**
-	 * @defgroup tzsl Topaz Shading Language (TZSL)
-	 * Documentation for the TZSL language and standard library.
+	 * Documentation for custom Topaz algorithms. These do not attempt to replace standard library algorithms, but in niché circumstances these may come in useful.
 	 */
 
 	enum class application_flag

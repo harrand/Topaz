@@ -99,13 +99,13 @@ namespace tz::gl
 		ImGui::SliderInt("renderer ID", &id, 0, renderer_count - 1);
 		ImGui::Indent();
 		const auto& renderer = device.get_renderer(static_cast<hdk::hanval>(id));
-		if(renderer.get_options().contains(tz::gl::renderer_option::Internal) && !display_internal_renderers)
+		if(renderer.get_options().contains(tz::gl::renderer_option::_internal) && !display_internal_renderers)
 		{
 			ImGui::Text("Internal renderer");
 			ImGui::Spacing();
 			if(id > 0)
 			{
-				if(ImGui::Button("<<")){while(device.get_renderer(static_cast<hdk::hanval>(id)).get_options().contains(tz::gl::renderer_option::Internal) && id > 0){id--;}}
+				if(ImGui::Button("<<")){while(device.get_renderer(static_cast<hdk::hanval>(id)).get_options().contains(tz::gl::renderer_option::_internal) && id > 0){id--;}}
 				ImGui::SameLine();
 				if(ImGui::Button("Prev")){id--;}
 			}
@@ -114,7 +114,7 @@ namespace tz::gl
 				ImGui::SameLine();
 				if(ImGui::Button("Next")){id++;}
 				ImGui::SameLine();
-				if(ImGui::Button(">>")){while(device.get_renderer(static_cast<hdk::hanval>(id)).get_options().contains(tz::gl::renderer_option::Internal) && std::cmp_less(id, (renderer_count - 1))){id++;}}
+				if(ImGui::Button(">>")){while(device.get_renderer(static_cast<hdk::hanval>(id)).get_options().contains(tz::gl::renderer_option::_internal) && std::cmp_less(id, (renderer_count - 1))){id++;}}
 			}
 		}
 		else

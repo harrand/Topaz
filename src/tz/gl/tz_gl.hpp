@@ -6,7 +6,8 @@
 namespace tz::gl
 {
 	/**
-	 * @defgroup tz_gl2 Graphics Library (tz::gl)
+	 * @ingroup tz_cpp
+	 * @defgroup tz_gl2 Graphics Library
 	 * Hardware-accelerated 3D graphics library.
 	 */
 

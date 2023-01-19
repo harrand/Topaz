@@ -364,7 +364,7 @@ namespace tz::dbgui
 		rinfo.add_resource(font_image);
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(dbgui, fragment));
-		rinfo.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::NoPresent, tz::gl::renderer_option::RenderWait, tz::gl::renderer_option::Internal});
+		rinfo.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::no_present, tz::gl::renderer_option::render_wait, tz::gl::renderer_option::_internal});
 		rinfo.set_output(wout);
 		rinfo.debug_name("ImGui Intermediate renderer");
 		
@@ -373,7 +373,7 @@ namespace tz::dbgui
 		tz::gl::renderer_info empty;
 		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
-		empty.set_options({tz::gl::renderer_option::NoClearOutput, tz::gl::renderer_option::NoDepthTesting, tz::gl::renderer_option::Internal_FinalDebugUIRenderer, tz::gl::renderer_option::Internal});
+		empty.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::_internal_final_dbgui_renderer, tz::gl::renderer_option::_internal});
 		empty.debug_name("ImGui Final renderer");
 		global_render_data->final_renderer = tz::gl::get_device().create_renderer(empty);
 

@@ -546,8 +546,8 @@ namespace tz::gl
 			}
 			else
 			{
-				// Now we weren't given a depth image. We should leave this nullptr, but only if NoDepthTesting was enabled. If we need to do depth testing but weren't given a depth image, we'll use the swapchain depth image.
-				if(this->options.contains(renderer_option::NoDepthTesting))
+				// Now we weren't given a depth image. We should leave this nullptr, but only if no_depth_testing was enabled. If we need to do depth testing but weren't given a depth image, we'll use the swapchain depth image.
+				if(this->options.contains(renderer_option::no_depth_testing))
 				{
 					out_image.depth_attachment = nullptr;
 				}
@@ -596,7 +596,7 @@ namespace tz::gl
 	
 	bool OutputManager::has_depth_images() const
 	{
-		return !this->options.contains(renderer_option::NoDepthTesting);
+		return !this->options.contains(renderer_option::no_depth_testing);
 	}
 
 	void OutputManager::create_output_resources(std::span<vk2::Image> swapchain_images, vk2::Image* depth_image)
@@ -683,9 +683,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = colour_image->get_format(),
-				.colour_depth_load = this->options.contains(renderer_option::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_load = this->options.contains(renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 				.colour_depth_store = vk2::StoreOp::Store,
-				.initial_layout = this->options.contains(renderer_option::NoClearOutput) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
+				.initial_layout = this->options.contains(renderer_option::no_clear_output) ? vk2::ImageLayout::Present : vk2::ImageLayout::Undefined,
 				.final_layout = final_layout
 			});
 		}
@@ -695,9 +695,9 @@ namespace tz::gl
 			rbuilder.with_attachment
 			({
 				.format = output_image_copy.front().depth_attachment->get_format(),
-				.colour_depth_load = this->options.contains(renderer_option::NoClearOutput) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
-				.colour_depth_store = this->options.contains(renderer_option::NoPresent) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
-				.initial_layout = this->options.contains(renderer_option::NoClearOutput) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
+				.colour_depth_load = this->options.contains(renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+				.colour_depth_store = this->options.contains(renderer_option::no_present) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare,
+				.initial_layout = this->options.contains(renderer_option::no_clear_output) ? vk2::ImageLayout::DepthStencilAttachment : vk2::ImageLayout::Undefined,
 				.final_layout = vk2::ImageLayout::DepthStencilAttachment
 			});
 		}
@@ -761,8 +761,8 @@ namespace tz::gl
 	{
 		this->shader = this->make_shader(get_device().vk_get_logical_device(), info.shader());
 		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), get_device().get_device_window().get_output_images().size());
-		this->depth_testing_enabled = !info.get_options().contains(renderer_option::NoDepthTesting);
-		const bool alpha_blending_enabled = info.get_options().contains(renderer_option::AlphaBlending);
+		this->depth_testing_enabled = !info.get_options().contains(renderer_option::no_depth_testing);
+		const bool alpha_blending_enabled = info.get_options().contains(renderer_option::alpha_blending);
 		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
 	}
 
@@ -1011,7 +1011,7 @@ namespace tz::gl
 		{
 			this->requires_present = true;
 		}
-		this->instant_compute_enabled = info.get_options().contains(renderer_option::RenderWait);
+		this->instant_compute_enabled = info.get_options().contains(renderer_option::render_wait);
 		this->graphics_queue = get_device().vk_get_logical_device().get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::graphics},
@@ -1137,7 +1137,7 @@ namespace tz::gl
 			};
 		}
 		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
-		if(requires_present && !this->options.contains(renderer_option::NoPresent))
+		if(requires_present && !this->options.contains(renderer_option::no_present))
 		{
 			sem_signals = {&this->device_scheduler->get_render_work_signals()[this->current_frame]};
 		}
@@ -1156,7 +1156,7 @@ namespace tz::gl
 
 		CommandProcessor::RenderWorkSubmitResult result;
 
-		if(requires_present && !this->options.contains(renderer_option::NoPresent))
+		if(requires_present && !this->options.contains(renderer_option::no_present))
 		{
 			result.present = this->graphics_queue->present
 			({
