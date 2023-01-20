@@ -123,7 +123,7 @@ namespace tz::gl
 	 */
 	struct OutputImageState
 	{
-		tz::BasicList<vk2::Image*> colour_attachments = {};
+		tz::basic_list<vk2::Image*> colour_attachments = {};
 		vk2::Image* depth_attachment = nullptr;
 	};
 
@@ -132,7 +132,7 @@ namespace tz::gl
 	 */
 	struct OutputImageViewState
 	{
-		tz::BasicList<vk2::ImageView> colour_views = {};
+		tz::basic_list<vk2::ImageView> colour_views = {};
 	};
 
 	/**

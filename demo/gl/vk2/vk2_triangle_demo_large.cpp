@@ -187,7 +187,7 @@ int main()
 			},
 			.logical_device = &ldev,
 		}};
-		tz::BasicList<const DescriptorLayout*> alloc_layout_list;
+		tz::basic_list<const DescriptorLayout*> alloc_layout_list;
 		for(std::size_t i = 0; i < swapchain.get_images().size(); i++)
 		{
 			alloc_layout_list.add(&dlayout);
@@ -325,7 +325,7 @@ int main()
 					.pipeline = &graphics_pipeline,
 					.pipeline_context = PipelineContext::graphics
 				});
-				tz::BasicList<const DescriptorSet*> sets;
+				tz::basic_list<const DescriptorSet*> sets;
 				sets.resize(dpool_alloc.sets.length());
 				std::transform(dpool_alloc.sets.begin(), dpool_alloc.sets.end(), sets.begin(), [](const DescriptorSet& set){return &set;});
 

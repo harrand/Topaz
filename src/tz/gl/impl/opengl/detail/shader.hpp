@@ -43,7 +43,7 @@ namespace tz::gl::ogl2
 	struct ShaderInfo
 	{
 		/// List of all modules.
-		tz::BasicList<ShaderModuleInfo> modules;
+		tz::basic_list<ShaderModuleInfo> modules;
 	};
 
 	/**

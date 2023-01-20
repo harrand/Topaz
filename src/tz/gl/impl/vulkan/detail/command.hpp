@@ -104,7 +104,7 @@ namespace tz::gl::vk2
 			/// Pipeline bind point.
 			PipelineContext context;
 			/// List of DescriptorSet to bind.
-			const tz::BasicList<const DescriptorSet*> descriptor_sets;
+			const tz::basic_list<const DescriptorSet*> descriptor_sets;
 			/// The operation causes the sets [first_set_id, first_set_id + descriptor_sets.length() + 1] to refer to the DescriptorSets within `descriptor_sets`.
 			std::uint32_t first_set_id;
 		};
@@ -210,9 +210,9 @@ namespace tz::gl::vk2
 			ImageAspectFlags image_aspects;
 
 			/// List of affected mip levels. Must be in ascending-order and with no gaps. E.g {0, 1, 2} is fine, {0, 2, 3} is not and neither is {0, 2, 1}. Default is {0}.
-			tz::BasicList<std::uint32_t> affected_mip_levels = {0u};
+			tz::basic_list<std::uint32_t> affected_mip_levels = {0u};
 			/// List of affected array layers. Must be in ascending-order and with no gaps. E.g {0, 1, 2} is fine, {0, 2, 3} is not and neither is {0, 2, 1}. Default is {0}.
-			tz::BasicList<std::uint32_t> affected_layers = {0u};
+			tz::basic_list<std::uint32_t> affected_layers = {0u};
 		};
 
 		struct SetScissorDynamic
@@ -237,7 +237,7 @@ namespace tz::gl::vk2
 	{
 		Reusable = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
 	};
-	using CommandPoolFlags = tz::EnumField<CommandPoolFlag>;
+	using CommandPoolFlags = tz::enum_field<CommandPoolFlag>;
 	/**
 	 * @ingroup tz_gl_vk_commands
 	 * Specifies creation flags for a @ref CommandPool.
@@ -451,7 +451,7 @@ namespace tz::gl::vk2
 			};
 
 			/// List of newly-allocated buffers.
-			tz::BasicList<CommandBuffer> buffers;
+			tz::basic_list<CommandBuffer> buffers;
 			/// Result description for this specific allocation.
 			AllocationResultType type;
 		};

@@ -396,7 +396,7 @@ namespace tz::gl::vk2
 						return arg.framebuffer->get_pass().get_info().attachments[attachment_idx].final_layout;
 					};
 					// We end a framebuffer, which has some number of attachments. Firstly we check if any of them are this image. If it is, we query the render pass to find out what the layout was meant to be.
-					const tz::BasicList<ImageView*>& framebuffer_attachments = arg.framebuffer->get_attachment_views();
+					const tz::basic_list<ImageView*>& framebuffer_attachments = arg.framebuffer->get_attachment_views();
 					auto iter = std::find_if(framebuffer_attachments.begin(), framebuffer_attachments.end(),
 					[&image](ImageView* const & view_ptr)->bool
 					{

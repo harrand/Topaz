@@ -207,14 +207,14 @@ namespace tz::gl::vk2
 		return ret;
 	}
 
-	tz::BasicList<image_format> PhysicalDevice::get_supported_surface_formats() const
+	tz::basic_list<image_format> PhysicalDevice::get_supported_surface_formats() const
 	{
 		tz::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		tz::assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
 		tz::assert(this->instance->has_surface(), "PhysicalDevice belongs to a VulkanInstance that does not have a WindowSurface attached. Please submit a bug report");
 		const WindowSurface& surface = this->instance->get_surface();
 		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
-		tz::BasicList<image_format> fmts;
+		tz::basic_list<image_format> fmts;
 
 		std::vector<VkSurfaceFormatKHR> surf_fmts;
 		std::uint32_t num_supported_formats;
@@ -229,15 +229,15 @@ namespace tz::gl::vk2
 		return fmts;
 	}
 
-	tz::BasicList<SurfacePresentMode> PhysicalDevice::get_supported_surface_present_modes() const
+	tz::basic_list<SurfacePresentMode> PhysicalDevice::get_supported_surface_present_modes() const
 	{
 		tz::assert(!this->is_null(), "This was PhysicalDevice::null()");
 		tz::assert(this->instance != nullptr, "PhysicalDevice is not aware of its vulkan instance");
 		tz::assert(this->instance->has_surface(), "PhysicalDevice belongs to a VulkanInstance that does not have a WindowSurface attached. Please submit a bug report");
 		const WindowSurface& surface = this->instance->get_surface();
 		// We can assume that this->instance == surface.get->instance() meaning that the VulkanInstance supports the "VK_KHR_surface" util::VkExtension which is what we need for vkGetPhysicalDeviceSurfaceFormatsKHR. For this reason we don't check for the extensions availability and assume everything is ok. 
-		tz::BasicList<SurfacePresentMode> presents;
-		tz::BasicList<VkPresentModeKHR> present_natives;
+		tz::basic_list<SurfacePresentMode> presents;
+		tz::basic_list<VkPresentModeKHR> present_natives;
 
 		std::uint32_t present_mode_count = 0;
 		vkGetPhysicalDeviceSurfacePresentModesKHR(this->dev, surface.native(), &present_mode_count, nullptr);

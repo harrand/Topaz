@@ -51,7 +51,7 @@ namespace tz::gl
 		Count
 	};
 
-	using resource_flags = tz::EnumField<resource_flag>;
+	using resource_flags = tz::enum_field<resource_flag>;
 
 	/**
 	 * @ingroup tz_gl2_res

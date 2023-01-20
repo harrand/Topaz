@@ -26,7 +26,7 @@ namespace tz::gl::ogl2
 		/// Depth attachment, if one exists. Default nullopt.
 		std::optional<FramebufferTexture> maybe_depth_attachment = std::nullopt;
 		/// List of colour attachments in-order. Default empty.
-		tz::BasicList<FramebufferTexture> colour_attachments = {};
+		tz::basic_list<FramebufferTexture> colour_attachments = {};
 	};
 
 	/**

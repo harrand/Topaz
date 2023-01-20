@@ -30,7 +30,7 @@ namespace tz::gl::vk2
 		index_buffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT
 	};
 
-	using BufferUsageField = tz::EnumField<BufferUsage>;
+	using BufferUsageField = tz::enum_field<BufferUsage>;
 
 	/**
 	 * @ingroup tz_gl_vk_buffer

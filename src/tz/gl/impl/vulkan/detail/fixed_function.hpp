@@ -74,8 +74,8 @@ namespace tz::gl::vk2
 			std::uint32_t element_offset;
 		};
 
-		tz::BasicList<Binding> bindings = {};
-		tz::BasicList<Attribute> attributes = {};
+		tz::basic_list<Binding> bindings = {};
+		tz::basic_list<Attribute> attributes = {};
 	};
 
 	/**
@@ -86,8 +86,8 @@ namespace tz::gl::vk2
 	 */
 	struct ViewportState
 	{
-		tz::BasicList<VkViewport> viewports;
-		tz::BasicList<VkRect2D> scissors;
+		tz::basic_list<VkViewport> viewports;
+		tz::basic_list<VkRect2D> scissors;
 
 		using NativeType = VkPipelineViewportStateCreateInfo;
 		NativeType native() const;
@@ -215,7 +215,7 @@ namespace tz::gl::vk2
 		static AttachmentState no_blending();
 		static AttachmentState alpha_blending();
 
-		tz::BasicList<AttachmentState> attachment_states = {no_blending()};
+		tz::basic_list<AttachmentState> attachment_states = {no_blending()};
 		std::optional<VkLogicOp> logical_operator = std::nullopt;
 		tz::vec4 blend_constants = tz::vec4{0.0f, 0.0f, 0.0f, 0.0f};
 		
@@ -229,7 +229,7 @@ namespace tz::gl::vk2
 		Scissor = VK_DYNAMIC_STATE_SCISSOR
 	};
 
-	using DynamicStateTypes = tz::EnumField<DynamicStateType>;
+	using DynamicStateTypes = tz::enum_field<DynamicStateType>;
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed

@@ -4,6 +4,6 @@
 
 int main()
 {
-	constexpr tz::EngineInfo info = tz::info();
+	constexpr tz::engine_info info = tz::info();
 	tz::report("Engine Info: %s", info.to_string().c_str());
 }

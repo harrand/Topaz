@@ -46,7 +46,7 @@ namespace tz::gl::vk2
 		VariableCount = VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
 	};
 
-	using DescriptorFlags = tz::EnumField<DescriptorFlag>;
+	using DescriptorFlags = tz::enum_field<DescriptorFlag>;
 
 	/**
 	 * @ingroup tz_gl_vk_descriptors
@@ -73,7 +73,7 @@ namespace tz::gl::vk2
 			DescriptorFlags flags;
 		};
 		/// List of all descriptor bindings in the layout.
-		tz::BasicList<BindingInfo> bindings;
+		tz::basic_list<BindingInfo> bindings;
 		/// LogicalDevice which will be creating the resultant @ref DescriptorLayout. This must not be null or a null LogicalDevice.
 		const LogicalDevice* logical_device;
 	};
@@ -263,7 +263,7 @@ namespace tz::gl::vk2
 			/// List of writes to the descriptor array
 			std::vector<WriteInfo> write_infos;
 		};
-		using WriteList = tz::BasicList<Write>;
+		using WriteList = tz::basic_list<Write>;
 
 		/**
 		 * Request structure representing zero or more descriptor changes for this set.
@@ -342,7 +342,7 @@ namespace tz::gl::vk2
 		struct Allocation
 		{
 			/// List of layouts for each set. When an allocation is performed, a list of DescriptorSets is returned. The list has size matching `set_layouts.length()` and the i'th element of the list will have layout matching `set_layouts[i]`.
-			tz::BasicList<const DescriptorLayout*> set_layouts;
+			tz::basic_list<const DescriptorLayout*> set_layouts;
 		};
 
 		/// Specifies information about the resultant of an invocation to @ref DescriptorPool::allocate_sets
@@ -365,7 +365,7 @@ namespace tz::gl::vk2
 			};
 
 			/// List of allocated sets. If `type` == `AllocationResultType::Success`, this contains a list of valid DescriptorSets which can now be used.
-			tz::BasicList<DescriptorSet> sets;
+			tz::basic_list<DescriptorSet> sets;
 			/// Describes how the allocation went. Allocations can fail.
 			AllocationResultType type;
 		};

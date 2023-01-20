@@ -10,12 +10,12 @@ namespace tz
 	 * @ingroup tz_core_data
 	 * A view into an array representing a flattened grid of data.
 	 *
-	 * Elements are interpreted as a tightly-packed array of rows. Each element is expected to be equivalent to a T[N]. For example, GridView on an RGBA32 image might be a `GridView<std::byte, 4>`.
+	 * Elements are interpreted as a tightly-packed array of rows. Each element is expected to be equivalent to a T[N]. For example, grid_view on an RGBA32 image might be a `grid_view<std::byte, 4>`.
 	 * @tparam T Underlying type of the element.
 	 * @tparam N number of T's per element. Default 1.
 	 */
 	template<typename T, std::size_t N = 1>
-	class GridView
+	class grid_view
 	{
 	public:
 		/**
@@ -23,13 +23,13 @@ namespace tz
 		 * @param data View over grid data.
 		 * @param dimensions {x, y} where x is number of columns, and y is number of rows.
 		 */
-		GridView(std::span<T> data, tz::vec2ui dimensions);
+		grid_view(std::span<T> data, tz::vec2ui dimensions);
 		/**
 		 * Create a view over an existing array of square grid data.
 		 * @param data View over grid data.
 		 * @param length Represents the number of columns and rows.
 		 */
-		GridView(std::span<T> data, unsigned int length);
+		grid_view(std::span<T> data, unsigned int length);
 		/**
 		 * Retrieve the dimensions of the grid, in elements.
 		 * @return {width, height}.

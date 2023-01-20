@@ -12,22 +12,22 @@ namespace tz
 	 * @tparam E Enum class type.
 	 */
 	template<tz::enum_class E>
-	class EnumField
+	class enum_field
 	{
 	public:
 		/**
 		 * Create an empty field.
 		 */
-		constexpr EnumField() = default;
+		constexpr enum_field() = default;
 		/**
 		 * Create a field from the provided values.
 		 */
-		constexpr EnumField(std::initializer_list<E> types);
+		constexpr enum_field(std::initializer_list<E> types);
 		/**
 		 * Create a field from a single value.
 		 */
-		constexpr EnumField(E type);
-		constexpr ~EnumField() = default;
+		constexpr enum_field(E type);
+		constexpr ~enum_field() = default;
 		/**
 		 * Query as to whether the field contains the given value.
 		 * @note The value is only contained if the exact value was inserted into the field, not if the field contains elements forming a bitwise equivalent.
@@ -41,7 +41,7 @@ namespace tz
 		 * Query as to whether the field contains each element within another field.
 		 * @return True if for each element `x` in the parameter field, `this->contains(x)`, otherwise false.
 		 */
-		bool contains(const EnumField<E>& field) const;
+		bool contains(const enum_field<E>& field) const;
 		/**
 		 * Retrieve the number of elements within the field.
 		 * @return number of elements within the field.
@@ -57,17 +57,17 @@ namespace tz
 		 * @param type Element to add to the field.
 		 * @return This.
 		 */
-		EnumField<E>& operator|=(E type);
+		enum_field<E>& operator|=(E type);
 		/**
 		 * Add a field to another field. If this field contains 'C' and other field is comprised of 'A | B', this field will become 'C | A | B'.
 		 */
-		EnumField<E>& operator|=(const EnumField<E>& field);
+		enum_field<E>& operator|=(const enum_field<E>& field);
 		/**
 		 * Create a copy of this field, but with the parameter element added. The cumulative value `C` of the field becomes `C | E`.
 		 * @param type Element to add to the new field.
 		 * @return A copy of this.
 		 */
-		EnumField<E> operator|(E type) const;
+		enum_field<E> operator|(E type) const;
 		/**
 		 * Remove the enum value from the field, if it exists.
 		 */
@@ -104,7 +104,7 @@ namespace tz
 		 * Query as to whether the elements of the field exactly match that of another field. This may return false even if the cumulative values are equivalent.
 		 * @return True if fields contain same elements, otherwise false.
 		 */
-		bool operator==(const EnumField<E>& rhs) const = default;
+		bool operator==(const enum_field<E>& rhs) const = default;
 		/**
 		 * Retrieve the cumulative value of the field.
 		 */

@@ -89,12 +89,12 @@ namespace tz::gl::vk2
 		PhysicalDevice(VkPhysicalDevice native, const VulkanInstance& instance);
 		/**
 		 * @brief PhysicalDevices do not necessarily support all available DeviceFeatures.
-		 * @return An EnumField containing all the features supported by this Physical device.
+		 * @return An enum_field containing all the features supported by this Physical device.
 		 */
 		DeviceFeatureField get_supported_features() const;
 		/**
 		 * @brief PhysicalDevices support various extensions, but not necessarily all of them.
-		 * @return An EnumField containing all the extensions supported by this PhysicalDevice.
+		 * @return An enum_field containing all the extensions supported by this PhysicalDevice.
 		 */
 		DeviceExtensionList get_supported_extensions() const;
 		/**
@@ -106,13 +106,13 @@ namespace tz::gl::vk2
 		 * Retrieve a list of all image_formats that could represent the given window surface.
 		 * @return List of acceptable image_formats for a window surface.
 		 */
-		tz::BasicList<image_format> get_supported_surface_formats() const;
+		tz::basic_list<image_format> get_supported_surface_formats() const;
 		/**
 		 * Retrieve a list of all SurfacePresentModes that could be used to present images to the @ref WindowSurface attached to the @ref VulkanInstance owning this device.
 		 * This is guaranteed to contain every element within @ref present_traits::get_mandatory_present_modes().
 		 * @return List of acceptable SurfacePresentModes for a window surface.
 		 */
-		tz::BasicList<SurfacePresentMode> get_supported_surface_present_modes() const;
+		tz::basic_list<SurfacePresentMode> get_supported_surface_present_modes() const;
 		PhysicalDeviceSurfaceCapabilityInfo get_surface_capabilities() const;
 		/**
 		 * Query as to whether the given image_format can be used as a framebuffer colour attachment and as an input attachment format.
@@ -154,7 +154,7 @@ namespace tz::gl::vk2
 		const VulkanInstance* instance;
 	};
 
-	using PhysicalDeviceList = tz::BasicList<PhysicalDevice>;
+	using PhysicalDeviceList = tz::basic_list<PhysicalDevice>;
 
 	/*
 	 * @ingroup tz_gl_vk
@@ -164,7 +164,7 @@ namespace tz::gl::vk2
 	 * @ingroup tz_gl_vk
 	 * @brief Retrieve a list of all physical devices available on the machine for the given @ref VulkanInstance.
 	 * If no VulkanInstance is provided, the global instance @ref vk2::get() will be used.
-	 * @return BasicList of all PhysicalDevices. These have not been filtered in any way.
+	 * @return basic_list of all PhysicalDevices. These have not been filtered in any way.
 	 */
 	PhysicalDeviceList get_all_devices(const VulkanInstance& instance);
 }

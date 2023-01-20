@@ -90,7 +90,7 @@ namespace tz::gl::vk2
 
 	};
 
-	using AccessFlagField = tz::EnumField<AccessFlag>;
+	using AccessFlagField = tz::enum_field<AccessFlag>;
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_render_pass
@@ -165,17 +165,17 @@ namespace tz::gl::vk2
 			/// Specifies how this subpass binds to the graphics pipeline.
 			PipelineContext context = PipelineContext::graphics;
 			/// List of all attachments which will be input attachments during this subpass.
-			tz::BasicList<InputAttachmentReference> input_attachments;
+			tz::basic_list<InputAttachmentReference> input_attachments;
 			/// List of all attachments which will be colour attachments during this subpass.
-			tz::BasicList<AttachmentReference> colour_attachments;
+			tz::basic_list<AttachmentReference> colour_attachments;
 			/// Optional reference to an attachment which will be the depth-stencil attachment during this subpass.
 			std::optional<AttachmentReference> depth_stencil_attachment = std::nullopt;
 		};
 
 		/// List of all attachments. These attachments are referenced throughout the subpasses.
-		tz::BasicList<Attachment> attachments;
+		tz::basic_list<Attachment> attachments;
 		/// List of all subpasses, in order.
-		tz::BasicList<Subpass> subpasses;
+		tz::basic_list<Subpass> subpasses;
 		/// @ref LogicalDevice which will be used to create the @ref RenderPass. It must point to a valid device.
 		const LogicalDevice* logical_device = nullptr;
 	};

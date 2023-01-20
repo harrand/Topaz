@@ -71,7 +71,7 @@ namespace tz
 	private:
 		using SmartPointer = std::unique_ptr<T>;
 		using SmartPointerConst = std::unique_ptr<const T>;
-		BasicList<SmartPointer, Allocator> elements;
+		basic_list<SmartPointer, Allocator> elements;
 	};
 
 	template<typename T>
