@@ -9,7 +9,7 @@ namespace tz::gl
 {
 	struct image_output_info
 	{
-		tz::BasicList<icomponent*> colours;
+		tz::basic_list<icomponent*> colours;
 		icomponent* depth = nullptr;
 	};
 

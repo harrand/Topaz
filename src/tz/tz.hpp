@@ -55,7 +55,7 @@ namespace tz
 		window_transparent,
 	};
 
-	using application_flags = tz::EnumField<application_flag>;
+	using application_flags = tz::enum_field<application_flag>;
 
 	/**
 	 * @ingroup tz_core

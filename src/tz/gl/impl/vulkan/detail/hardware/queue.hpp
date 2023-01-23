@@ -83,11 +83,11 @@ namespace tz::gl::vk2
 				};
 
 				/// List of command buffers to submit.
-				tz::BasicList<const CommandBuffer*> command_buffers;
+				tz::basic_list<const CommandBuffer*> command_buffers;
 				/// List of wait semaphores. Command buffers for this submission batch will not begin execution until these semaphores are signalled. Note that when the wait is complete, each semaphore will be automatically set to unsignalled again.
-				tz::BasicList<WaitInfo> waits;
+				tz::basic_list<WaitInfo> waits;
 				/// List of signal semaphores. Once the command buffers associated with this submission have completed execution, these semaphores are signalled.
-				tz::BasicList<const BinarySemaphore*> signal_semaphores;
+				tz::basic_list<const BinarySemaphore*> signal_semaphores;
 				/// Optional fence which is signalled once all command buffers have finished execution. If this is nullptr, there is no way to verify that the command buffers associated with this submission have completed.
 				const Fence* execution_complete_fence;
 			};
@@ -115,7 +115,7 @@ namespace tz::gl::vk2
 			struct PresentInfo
 			{
 				/// List of wait semaphores. The present request will not be issued until all of these semaphores are signalled. Note that once they are signalled, they are automatically set to unsignalled again.
-				tz::BasicList<const BinarySemaphore*> wait_semaphores;
+				tz::basic_list<const BinarySemaphore*> wait_semaphores;
 				/// Pointer to a swapchain from which an image will be sourced. This must not be nullptr.
 				const Swapchain* swapchain;
 				/// Index to the swapchain's images which will be presented to the surface. The index must have value such that `swapchain_image_index < swapchain.get_image_views().size()`

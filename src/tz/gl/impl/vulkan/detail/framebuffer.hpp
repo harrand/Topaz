@@ -19,7 +19,7 @@ namespace tz::gl::vk2
 		/// RenderPass that will target the frame buffer.
 		const RenderPass* render_pass;
 		/// List of output attachments from the RenderPass.
-		tz::BasicList<ImageView*> attachments;
+		tz::basic_list<ImageView*> attachments;
 		/// Dimensions of the frame buffer.
 		tz::vector<std::uint32_t, 2> dimensions;
 	};
@@ -58,12 +58,12 @@ namespace tz::gl::vk2
 		 * Retrieve a list of imageviews corresponding to each attachment.
 		 * @return List of ImageViews. The i'th @ref ImageView corresponds to the i'th output attachment from the @ref RenderPass referenced by `this->get_pass()`.
 		 */
-		tz::BasicList<const ImageView*> get_attachment_views() const;
+		tz::basic_list<const ImageView*> get_attachment_views() const;
 		/**
 		 * Retrieve a list of imageviews corresponding to each attachment.
 		 * @return List of ImageViews. The i'th @ref ImageView corresponds to the i'th output attachment from the @ref RenderPass referenced by `this->get_pass()`.
 		 */
-		tz::BasicList<ImageView*> get_attachment_views();
+		tz::basic_list<ImageView*> get_attachment_views();
 		void set_render_pass(RenderPass& render_pass);
 
 		using NativeType = VkFramebuffer;

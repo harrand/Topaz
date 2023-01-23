@@ -311,7 +311,7 @@ namespace tz::gl
 
 	ogl2::Shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
 	{
-		tz::BasicList<ogl2::ShaderModuleInfo> modules;
+		tz::basic_list<ogl2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(shader_stage::compute))
 		{
 			// Compute, we only care about the compute shader.
@@ -378,7 +378,7 @@ namespace tz::gl
 			{
 				auto* out = static_cast<image_output*>(this->output.get());
 				tz::assert(!out->has_depth_attachment(), "image_output with depth attachment is not yet implemented.");
-				tz::BasicList<ogl2::FramebufferTexture> colour_attachments;
+				tz::basic_list<ogl2::FramebufferTexture> colour_attachments;
 				colour_attachments.resize(out->colour_attachment_count());
 				for(std::size_t i = 0; i < colour_attachments.length(); i++)
 				{

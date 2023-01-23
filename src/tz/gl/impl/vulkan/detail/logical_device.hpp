@@ -21,9 +21,9 @@ namespace tz::gl::vk2
 	};
 
 	/**
-	 * An @ref EnumField of QueueFamilyType. Can wholly describe the usage of one of a PhysicalDevice's queue families.
+	 * An @ref enum_field of QueueFamilyType. Can wholly describe the usage of one of a PhysicalDevice's queue families.
 	 */
-	using QueueFamilyTypeField = tz::EnumField<QueueFamilyType>;
+	using QueueFamilyTypeField = tz::enum_field<QueueFamilyType>;
 
 	struct QueueFamilyInfo
 	{
@@ -83,8 +83,8 @@ namespace tz::gl::vk2
 
 			bool operator==(const QueueData& rhs);
 		};
-		using List = tz::BasicList<QueueData>;
-		tz::BasicList<List> hardware_queue_families;	
+		using List = tz::basic_list<QueueData>;
+		tz::basic_list<List> hardware_queue_families;	
 	};
 	
 	/**

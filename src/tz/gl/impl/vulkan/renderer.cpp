@@ -233,7 +233,7 @@ namespace tz::gl
 			.logical_device = &ldev
 		}};
 		{
-			tz::BasicList<const vk2::DescriptorLayout*> alloc_layout_list;
+			tz::basic_list<const vk2::DescriptorLayout*> alloc_layout_list;
 			for(std::size_t i = 0; i < this->frame_in_flight_count; i++)
 			{
 				alloc_layout_list.add(&this->descriptor_layout);
@@ -735,7 +735,7 @@ namespace tz::gl
 		for(std::size_t i = 0; i < this->output_imageviews.size(); i++)
 		{
 			tz::vec2ui dims = this->output_imageviews[i].colour_views.front().get_image().get_dimensions();
-			tz::BasicList<vk2::ImageView*> attachments;
+			tz::basic_list<vk2::ImageView*> attachments;
 			attachments.resize(this->output_imageviews[i].colour_views.length());
 			std::transform(this->output_imageviews[i].colour_views.begin(), this->output_imageviews[i].colour_views.end(), attachments.begin(),
 			[](vk2::ImageView& colour_view)
@@ -861,7 +861,7 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan GraphicsPipelineManager (Shader Create)", 0xFFAAAA00);
 		std::vector<char> vtx_src, frg_src, tesscon_src, tesseval_src, cmp_src;
-		tz::BasicList<vk2::ShaderModuleInfo> modules;
+		tz::basic_list<vk2::ShaderModuleInfo> modules;
 		if(sinfo.has_shader(shader_stage::compute))
 		{
 			tz::assert(!sinfo.has_shader(shader_stage::vertex), "Shader has compute shader and vertex shader. These are mutually exclusive.");
@@ -953,7 +953,7 @@ namespace tz::gl
 
 	vk2::GraphicsPipelineInfo GraphicsPipelineManager::make_graphics_pipeline(tz::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const
 	{
-		tz::BasicList<vk2::ColourBlendState::AttachmentState> alpha_blending_options;
+		tz::basic_list<vk2::ColourBlendState::AttachmentState> alpha_blending_options;
 		alpha_blending_options.resize(render_pass.get_info().total_colour_attachment_count());
 		std::fill(alpha_blending_options.begin(), alpha_blending_options.end(), alpha_blending_enabled ? vk2::ColourBlendState::alpha_blending() : vk2::ColourBlendState::no_blending());
 		return
@@ -1124,7 +1124,7 @@ namespace tz::gl
 		}
 
 		this->device_scheduler->get_frame_fences()[this->current_frame].unsignal();
-		tz::BasicList<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits;
+		tz::basic_list<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits;
 		if(requires_present && !already_have_image)
 		{
 			waits =
@@ -1136,7 +1136,7 @@ namespace tz::gl
 				}
 			};
 		}
-		tz::BasicList<const vk2::BinarySemaphore*> sem_signals;
+		tz::basic_list<const vk2::BinarySemaphore*> sem_signals;
 		if(requires_present && !this->options.contains(renderer_option::no_present))
 		{
 			sem_signals = {&this->device_scheduler->get_render_work_signals()[this->current_frame]};
@@ -1781,7 +1781,7 @@ namespace tz::gl
 				({
 					.pipeline = &this->pipeline.get_pipeline(),
 				});
-				tz::BasicList<const vk2::DescriptorSet*> sets;
+				tz::basic_list<const vk2::DescriptorSet*> sets;
 				if(!this->resources.descriptor_empty())
 				{
 					std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();
@@ -1885,7 +1885,7 @@ namespace tz::gl
 			({
 				.pipeline = &this->pipeline.get_pipeline(),
 			});
-			tz::BasicList<const vk2::DescriptorSet*> sets;
+			tz::basic_list<const vk2::DescriptorSet*> sets;
 			if(!this->resources.empty())
 			{
 				std::span<const vk2::DescriptorSet> resource_sets = this->resources.get_descriptor_sets();

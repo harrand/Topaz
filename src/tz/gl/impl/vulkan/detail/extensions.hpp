@@ -36,8 +36,8 @@ namespace tz::gl::vk2
 		Count
 	};
 
-	using InstanceExtensionList = tz::EnumField<InstanceExtension>;
-	using DeviceExtensionList = tz::EnumField<DeviceExtension>;
+	using InstanceExtensionList = tz::enum_field<InstanceExtension>;
+	using DeviceExtensionList = tz::enum_field<DeviceExtension>;
 
 	/**
 	 * @}
@@ -84,7 +84,7 @@ namespace tz::gl::vk2
 			return DeviceExtension::Count;
 		}
 
-		using VkExtensionList = tz::BasicList<VkExtension>;
+		using VkExtensionList = tz::basic_list<VkExtension>;
 	}
 }
 

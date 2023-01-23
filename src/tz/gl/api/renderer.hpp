@@ -85,7 +85,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_renderer
 	 * Represents a collection of renderer options.
 	 */
-	using renderer_options = tz::EnumField<renderer_option>;
+	using renderer_options = tz::enum_field<renderer_option>;
 
 	template<typename T>
 	concept renderer_info_type = requires(T t, renderer_handle ren, resource_handle r, const iresource& resource, icomponent* component, ioutput& output, renderer_options options, tz::vec4 vec4, tz::vec3ui vec3ui, std::string str)

@@ -33,7 +33,7 @@ namespace tz::gl::vk2
 		FragmentShaderResourceWrite
 	};
 
-	using DeviceFeatureField = tz::EnumField<DeviceFeature>;
+	using DeviceFeatureField = tz::enum_field<DeviceFeature>;
 
 	namespace detail
 	{

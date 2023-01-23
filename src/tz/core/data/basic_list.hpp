@@ -17,7 +17,7 @@ namespace tz
 	 * @tparam Allocator Allocator type.
 	 */
 	template<typename T, typename Allocator = std::allocator<T>>
-	class BasicList
+	class basic_list
 	{
 	private:
 		using UnderlyingList = std::vector<T, Allocator>;
@@ -27,14 +27,14 @@ namespace tz
 		using ConstIterator = typename UnderlyingList::const_iterator;
 
 		/**
-		 * Construct a BasicList using existing elements via copy.
+		 * Construct a basic_list using existing elements via copy.
 		 */
-		BasicList(std::initializer_list<T> elements):
+		basic_list(std::initializer_list<T> elements):
 		elements(elements){}
 		/**
-		 * Construct an empty BasicList.
+		 * Construct an empty basic_list.
 		 */
-		BasicList() = default;
+		basic_list() = default;
 
 		/**
 		 * Retrieve a span over the entire list.
@@ -113,7 +113,7 @@ namespace tz
 		 * Copy the elements of another list to the end of this list.
 		 * @param other Second list whose elements should be appended to the end of this list.
 		 */
-		void append(const BasicList<T>& other)
+		void append(const basic_list<T>& other)
 		{
 			this->elements.insert(this->elements.end(), other.elements.begin(), other.elements.end());
 		}
@@ -210,7 +210,7 @@ namespace tz
 		 */
 		const T& operator[](std::size_t index) const
 		{
-			tz::assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
+			tz::assert(this->length() > index, "tz::basic_list<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
 			return this->elements[index];
 		}
 
@@ -222,11 +222,11 @@ namespace tz
 		 */
 		T& operator[](std::size_t index)
 		{
-			tz::assert(this->length() > index, "tz::BasicList<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
+			tz::assert(this->length() > index, "tz::basic_list<T>::operator[%zu]: Out of range (length = %zu)", index, this->length());
 			return this->elements[index];
 		}
 
-		auto operator<=>(const tz::BasicList<T, Allocator>& rhs) const = default;
+		auto operator<=>(const tz::basic_list<T, Allocator>& rhs) const = default;
 
 		/**
 		 * Erase the element at the given position.

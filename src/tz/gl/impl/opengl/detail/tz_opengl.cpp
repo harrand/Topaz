@@ -7,7 +7,7 @@
 
 namespace tz::gl::ogl2
 {
-	tz::BasicList<OGLStringView> get_supported_ogl_extensions();
+	tz::basic_list<OGLStringView> get_supported_ogl_extensions();
 
 	bool initialised = false;
 
@@ -52,11 +52,11 @@ namespace tz::gl::ogl2
 		return initialised;
 	}
 
-	tz::BasicList<OGLStringView> get_supported_ogl_extensions()
+	tz::basic_list<OGLStringView> get_supported_ogl_extensions()
 	{
 		GLint extension_count;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
-		tz::BasicList<OGLStringView> exts;
+		tz::basic_list<OGLStringView> exts;
 		exts.resize(extension_count);
 		for(std::size_t i = 0; std::cmp_less(i, extension_count); i++)
 		{

@@ -20,7 +20,7 @@ namespace tz::gl::vk2
 		compute = VK_SHADER_STAGE_COMPUTE_BIT
 	};
 	
-	using ShaderTypeField = tz::EnumField<ShaderType>;
+	using ShaderTypeField = tz::enum_field<ShaderType>;
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_shader
@@ -78,12 +78,12 @@ namespace tz::gl::vk2
 		/// LogicalDevice owner. Must not be null.
 		const LogicalDevice* device;
 		/// Information about the Shader's modules. Must be a valid combination of modules.
-		tz::BasicList<ShaderModuleInfo> modules;
+		tz::basic_list<ShaderModuleInfo> modules;
 	};
 
 	struct ShaderPipelineData
 	{
-		tz::BasicList<VkPipelineShaderStageCreateInfo> create_infos;
+		tz::basic_list<VkPipelineShaderStageCreateInfo> create_infos;
 	};
 
 	/**

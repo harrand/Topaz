@@ -85,7 +85,7 @@ namespace tz::gl::vk2
 		InputAttachment = VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
 	};
 
-	using ImageUsageField = tz::EnumField<ImageUsage>;
+	using ImageUsageField = tz::enum_field<ImageUsage>;
 
 	/**
 	 * @ingroup tz_gl_vk_image
@@ -98,7 +98,7 @@ namespace tz::gl::vk2
 		Stencil = VK_IMAGE_ASPECT_STENCIL_BIT
 	};
 
-	using ImageAspectFlags = tz::EnumField<ImageAspectFlag>;
+	using ImageAspectFlags = tz::enum_field<ImageAspectFlag>;
 
 	ImageAspectFlags derive_aspect_from_format(image_format fmt);
 
