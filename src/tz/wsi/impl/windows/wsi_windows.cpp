@@ -62,7 +62,7 @@ namespace tz::wsi::impl
 
 	LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		TZ_PROFZONE("Tangle - win32 wndproc", 0xffff0000);
+		TZ_PROFZONE("tz::wsi - win32 wndproc", 0xffff0000);
 		auto get_window = [hwnd]()
 		{
 			auto wnd = reinterpret_cast<window_winapi*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));

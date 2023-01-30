@@ -7,7 +7,7 @@
 
 namespace tz::wsi::impl
 {
-	constexpr char wndclass_name[] = "Tangle Windowing Library";
+	constexpr char wndclass_name[] = "Topaz WSI";
 
 	void initialise_windows();
 	void terminate_windows();
