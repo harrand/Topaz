@@ -559,6 +559,7 @@ namespace tz::gl
 		}
 		else
 		{
+			const bool window_output = this->output.get_output() == nullptr || this->output.get_output()->get_target() == tz::gl::output_target::window;
 			this->resources.write_dynamic_images();
 			{
 				auto col = this->state.graphics.clear_colour;
@@ -621,7 +622,7 @@ namespace tz::gl
 					this->vao.draw(this->state.graphics.tri_count, this->shader.has_tessellation());
 				}
 			}
-			if(!this->options.contains(tz::gl::renderer_option::no_present))
+			if(!this->options.contains(tz::gl::renderer_option::no_present) && window_output)
 			{
 				tz::window().update();
 			}
