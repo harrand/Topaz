@@ -96,7 +96,7 @@ SHOW_USED_FILES        = NO
 SHOW_FILES             = NO
 SHOW_NAMESPACES        = NO
 FILE_VERSION_FILTER    =
-LAYOUT_FILE            =
+LAYOUT_FILE            = doc/DoxygenLayout.xml
 CITE_BIB_FILES         =
 #---------------------------------------------------------------------------
 # Configuration options related to warning and progress messages
@@ -243,7 +243,8 @@ QHP_SECT_FILTER_ATTRS  =
 QHG_LOCATION           =
 GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = org.doxygen.Project
-DISABLE_INDEX          = YES
+DISABLE_INDEX          = NO
+FULL_SIDEBAR           = NO
 GENERATE_TREEVIEW      = YES
 ENUM_VALUES_PER_LINE   = 1
 TREEVIEW_WIDTH         = 250
