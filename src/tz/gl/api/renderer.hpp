@@ -238,6 +238,82 @@ namespace tz::gl
 		{t.dbgui()} -> std::same_as<void>;
 		{t.debug_get_name()} -> std::convertible_to<std::string_view>;
 	};
+
+	#if TZ_VULKAN && TZ_OGL
+		// Documentation only.
+		/**
+		 * @ingroup tz_gl2_renderer
+		 * Implements @ref tz::gl::renderer_type
+		 */
+		class renderer
+		{
+		public:
+			/**
+			 * Retrieves the number of resources used by the renderer.
+		 	 */
+			unsigned int resource_count() const;	
+			/**
+			 * Retrieves a pointer to the resource via its associated handle.
+			 * @pre The handle `rh` must have been retrieved from a prior call to @ref tz::gl::renderer_info::add_resource() or @ref tz::gl::renderer_info::ref_resource(), where the @ref tz::gl::renderer_info was later used by @ref tz::gl::device::create_renderer() to create the current renderer object. Otherwise, the behaviour is undefined.
+			 * @param rh Handle corresponding to the resource.
+			 * @return Pointer to the associated resource, or nullptr if no such resource exists.
+			 */ 
+			const iresource* get_resource(tz::gl::resource_handle rh) const;
+			/**
+			 * Retrieves a pointer to the resource via its associated handle.
+			 * @pre The handle `rh` must have been retrieved from a prior call to @ref tz::gl::renderer_info::add_resource() or @ref tz::gl::renderer_info::ref_resource(), where the @ref tz::gl::renderer_info was later used by @ref tz::gl::device::create_renderer() to create the current renderer object. Otherwise, the behaviour is undefined.
+			 * @param rh Handle corresponding to the resource.
+			 * @return Pointer to the associated resource, or nullptr if no such resource exists.
+			 */ 
+			iresource* get_resource(tz::gl::resource_handle rh);
+
+			/**
+			 * Retrieve the output that this renderer draws to.
+			 * @return Pointer to the output, or `nullptr` if there is no output (Meaning the renderer draws directly to the window).
+			 */
+			const ioutput* get_output() const;
+			/**
+			 * Retrieve the output that this renderer draws to.
+			 * @return Pointer to the output, or `nullptr` if there is no output (Meaning the renderer draws directly to the window).
+			 */
+			ioutput* get_output();
+
+			/**
+			 * Retrieve the set of enabled @ref tz::gl::renderer_option flags used by this renderer.
+			 * @return Set of options used by the renderer.
+			 */ 
+			tz::gl::renderer_options get_options() const;
+			/**
+			 * Retrieve the current render state.
+			 * @return Information about the renderer's current state.
+			 */ 
+			const tz::gl::render_state& get_state() const;
+			/**
+			 * Submit the renderer's work to the GPU.
+			 * 
+			 * This function returns instantly.
+			 * - To have this function block the current thread until the work is complete, see @ref tz::gl::renderer_option::render_wait.
+			 * - There is no way to query whether the GPU work is complete after-the-fact. However, you may be interested in @ref renderer_dependencies (WIP).
+			 *
+			 * If this is a graphics renderer, the number of triangles submitted in the draw call will be equal to the most recently provided triangle count in a previous invocation to @ref tz::gl::renderer::render(std::size_t). If this method was never invoked on this renderer object, a triangle count of `0` will be used.
+			 */ 
+			void render();
+			/**
+			 * Submit the renderer's work to the GPU.
+			 *
+			 * This function returns instantly.
+			 * - To have this function block the current thread until the work is complete, see @ref tz::gl::renderer_option::render_wait.
+			 * - There is no way to query whether the GPU work is complete after-the-fact. However, you may be interested in @ref renderer_dependencies (WIP).
+			 *
+			 * @param tri_count The number of triangles that will be drawn by the renderer.
+			 * 
+			 * - If the renderer has an index buffer, `tri_count` refers instead to the number of indices that will be drawn by the renderer.
+			 * - If the renderer has a draw-indirect buffer, `tri_count` is ignored.
+			 * - If the renderer is a compute renderer, `tri_count` is ignored.
+			 */
+			void render(std::size_t tri_count);
+		};
+	#endif
 }
 
 #endif // TOPAZ_GL2_API_RENDERER_HPP

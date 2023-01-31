@@ -8,6 +8,7 @@
 	  <tab type="user" visible="yes" title="TZSL" url="@ref tzsl"/>
 	</tab>
 	<tab type="user" visible="yes" title="Shaders" url="@ref shaders"/>
+	<tab type="user" visible="yes" title="Graphics" url="@ref graphics"/>
   </navindex>
 
   <!-- Layout definition for a class page -->
