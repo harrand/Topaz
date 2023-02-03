@@ -9,12 +9,6 @@
 
 namespace tz::gl
 {
-
-	/**
-	 * @ingroup tz_gl2_renderer
-	 * @class renderer
-	 * Implementation of @ref tz::gl::renderer_type.
-	 */
 	#if TZ_VULKAN
 		using renderer = renderer_vulkan;
 	#elif TZ_OGL

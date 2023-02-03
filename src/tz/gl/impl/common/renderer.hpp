@@ -85,7 +85,15 @@ namespace tz::gl
 		 * @return Handle corresponding to the resource. If you want to retrieve the resource later, you should keep ahold of this handle.
 		 */
 		resource_handle add_resource(const iresource& resource);
+		/**
+		 * Deprecated. See @ref ref_resource(renderer_handle, resource_handle)
+		 */
 		resource_handle ref_resource(icomponent* component);
+		/**
+		 * Adds a resource to this renderer which already exists and is owned by another renderer.
+		 * @param ren Handle associated with the existing renderer that owns the resource.
+		 * @param res Handle associated with the resource that should be referenced.
+		 */
 		resource_handle ref_resource(renderer_handle ren, resource_handle res);
 		/**
 		 * Renderers always render into something. By default, it renders to the window (only one window is supported so no confusion there). You can however set it to render into something else, such as a @ref TextureOutput if you want to render into the resource of another renderer.
