@@ -16,7 +16,12 @@ namespace tz
 
 	bool delay::done() const
 	{
-		return (this->begin_systime + this->delay_length) <= system_time();
+		return this->elapsed() >= this->delay_length;
+	}
+
+	duration delay::elapsed() const
+	{
+		return this->begin_systime - system_time();
 	}
 
 	void delay::reset()

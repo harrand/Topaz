@@ -164,6 +164,10 @@ namespace tz
 		 */
 		bool done() const;
 		/**
+		 * Retrieve how much time has passed since the delay began. If the elapsed time is longer than or equal to the delay length, the delay is `done()`.
+		 */
+		duration elapsed() const;
+		/**
 		 * Reset the delay object. The instant a delay object is reset, 0 seconds have elapsed since the "construction" of the object. You can use this to check for the same delay again in the future.
 		 */
 		void reset();
