@@ -9,7 +9,7 @@ macro(add_shader_vulkan)
 	set(processed_shader_name ${SHADER}.glsl)
 	set(processed_shader_path ${PROJECT_BINARY_DIR}/${processed_shader_name})
 
-	if(${TOPAZ_BUILDCONFIG} MATCHES "debug")
+	if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
 		add_custom_command( OUTPUT ${processed_shader_path}
 			COMMENT "TZSLC_VK (Debug): Preprocessing ${SHADER} -> ${processed_shader_name}"
