@@ -1094,10 +1094,13 @@ namespace tz::gl
 
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work()
 	{
-		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan CommandProcessor (Do Render Work)", 0xFFAAAA00);
+		TZ_PROFZONE("renderer_vulkan - do render work", 0xFFAAAA00);
 		auto& device_window = get_device().get_device_window();
 		// Submit & Present
-		this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
+		{
+			TZ_PROFZONE("wait on frame fence", 0xFFAAAA00);
+			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
+		}
 		bool already_have_image = device_window.has_unused_image();
 		if(requires_present)
 		{
@@ -1114,6 +1117,7 @@ namespace tz::gl
 			const vk2::Fence*& target_image = this->images_in_flight[this->output_image_index];
 			if(target_image != nullptr)
 			{
+				TZ_PROFZONE("wait for swapchain image", 0xFFAAAA00);
 				target_image->wait_until_signalled();
 			}
 			target_image = &this->device_scheduler->get_frame_fences()[this->output_image_index];
@@ -1151,6 +1155,7 @@ namespace tz::gl
 
 		if(this->instant_compute_enabled)
 		{
+			TZ_PROFZONE("block for render_wait", 0xFFAAAA00);
 			this->device_scheduler->get_frame_fences()[this->current_frame].wait_until_signalled();
 		}
 
@@ -1327,18 +1332,20 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan Render", 0xFFAAAA00);
 		if(tz::window().get_dimensions() == tz::vec2ui::zero())
 		{
+			TZ_PROFZONE("render() - wait till wsi event", 0xFFAAAA00);
 			tz::wsi::wait_for_event();
 			return;
 		}
 		if(tz::window().get_dimensions() != this->window_dims_cache)
 		{
+			TZ_PROFZONE("render() - handle resize", 0xFFAAAA00);
 			this->handle_swapchain_outdated();
 		}
 		
 		// If output scissor region has changed, we need to rerecord.
 		if(this->get_output() != nullptr)
 		{
-			TZ_PROFZONE("Vulkan Frontend - renderer_vulkan Scissor Cache Miss", 0xFFAA0000);
+			TZ_PROFZONE("render() - scissor rect change", 0xFFAA0000);
 			if(this->get_output()->scissor != this->scissor_cache)
 			{
 				this->scissor_cache = this->get_output()->scissor;
@@ -1346,7 +1353,10 @@ namespace tz::gl
 				this->setup_work_commands();
 			}
 		}
-		this->resources.write_padded_image_data();
+		{
+			TZ_PROFZONE("render() - dynamic image writes", 0xFFAA0000);
+			this->resources.write_padded_image_data();
+		}
 		if(this->pipeline.is_compute())
 		{
 			this->command.do_compute_work();
