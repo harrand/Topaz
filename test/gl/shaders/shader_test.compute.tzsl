@@ -46,12 +46,12 @@ void math_tests()
 	tz::debug::assert(tz::math::clamp(2.5f, 1.0f, 2.0f) == 2.0f);
 
 	tz::debug::assert(tz::math::distance(vec2(0.0f, 0.0f), vec2(0.0f, 0.0f)) == 0.0f);
-	tz::debug::assert(tz::math::dot(vec2(2.0f, 0.0f), vec2(2.0f, 0.0f)) == 2.0f);
+	tz::debug::assert(tz::math::dot(vec2(2.0f, 0.0f), vec2(2.0f, 0.0f)) == 4.0f);
 
 	tz::debug::assert(tz::math::ln(tz::math::exp(2.0f)) == 2.0f);
 	tz::debug::assert(tz::math::log(tz::math::exp2(2.0f)) == 2.0f);
 
-	tz::debug::assert(tz::math::sqrt(3.0f) == (1.0f / tz::math::inverse_sqrt(3.0f)));
+	tz::debug::assert(tz::math::inverse_sqrt(3.0f) == (1.0f / tz::math::sqrt(3.0f)));
 
 	tz::debug::assert(!tz::math::is_infinity(1.0f));
 	tz::debug::assert(!tz::math::is_nan(1.0f));
