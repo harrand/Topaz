@@ -62,6 +62,15 @@ namespace tz::gl::ogl2
 		glMultiDrawArraysIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, nullptr, draw_count, 0);
 	}
 
+	void VertexArray::draw_indirect_count(unsigned int max_draw_count, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation)
+	{
+		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndirectCount", 0xFFAA0000);
+		this->bind();
+		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
+		draw_indirect_buffer.custom_bind(BufferTarget::Parameter);
+		glMultiDrawArraysIndirectCountARB(tessellation ? GL_PATCHES : GL_TRIANGLES, reinterpret_cast<const GLvoid*>(draw_commands_offset), 0, max_draw_count, 0);
+	}
+
 	void VertexArray::draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation)
 	{
 		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndexedIndirect", 0xFFAA0000);
@@ -71,6 +80,16 @@ namespace tz::gl::ogl2
 		index_buffer.custom_bind(BufferTarget::Index);
 		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
 		glMultiDrawElementsIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, draw_count, 0);
+	}
+
+	void VertexArray::draw_indexed_indirect_count(unsigned int max_draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation)
+	{
+		TZ_PROFZONE("OpenGL Backend - VertexArray DrawIndexedIndirectCount", 0xFFAA0000);
+		this->bind();
+		index_buffer.custom_bind(BufferTarget::Index);
+		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
+		draw_indirect_buffer.custom_bind(BufferTarget::Parameter);
+		glMultiDrawElementsIndirectCountARB(tessellation ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(draw_commands_offset), 0, max_draw_count, 0);
 	}
 
 	VertexArray VertexArray::null()

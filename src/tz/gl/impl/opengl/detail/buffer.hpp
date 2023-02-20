@@ -18,7 +18,9 @@ namespace tz::gl::ogl2
 		/// - Uniform Buffers (UBOs).
 		Uniform = GL_UNIFORM_BUFFER,
 		/// - Shader Storage Buffers (SSBOs).
-		ShaderStorage = GL_SHADER_STORAGE_BUFFER
+		ShaderStorage = GL_SHADER_STORAGE_BUFFER,
+		/// - Draw Indirect Parameter Buffer
+		Parameter = GL_PARAMETER_BUFFER_ARB,
 	};
 
 	/**

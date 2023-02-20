@@ -39,7 +39,9 @@ namespace tz::gl::ogl2
 		void draw_indexed(unsigned int triangle_count, const Buffer& index_buffer, bool tessellation = false);
 
 		void draw_indirect(unsigned int draw_count, const Buffer& draw_indirect_buffer, bool tessellation = false);
+		void draw_indirect_count(unsigned int max_draw_count, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
 		void draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation = false);
+		void draw_indexed_indirect_count(unsigned int max_draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
 		/**
 		 * Retrieve the Null VertexArray. Binding the null vertex array is equivalent to unbinding a vertex array. It is invalid to attempt to perform draws or computes using the null vertex array.
 		 */

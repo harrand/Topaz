@@ -602,7 +602,14 @@ namespace tz::gl
 				if(dcomp != nullptr)
 				{
 					const ogl2::Buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
-					this->vao.draw_indexed_indirect(dbuf.size() / sizeof(ogl2::DrawIndexedIndirectCommand), ibuf, dbuf, this->shader.has_tessellation());
+					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
+					{
+						tz::error("test");
+					}
+					else
+					{
+						this->vao.draw_indexed_indirect(dbuf.size() / sizeof(ogl2::DrawIndexedIndirectCommand), ibuf, dbuf, this->shader.has_tessellation());
+					}
 				}
 				else
 				{
@@ -615,7 +622,14 @@ namespace tz::gl
 				if(dcomp != nullptr)
 				{
 					const ogl2::Buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
-					this->vao.draw_indirect(dbuf.size() / sizeof(ogl2::DrawIndirectCommand), dbuf, this->shader.has_tessellation());
+					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
+					{
+						this->vao.draw_indirect_count(dbuf.size() / sizeof(ogl2::DrawIndirectCommand), dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), this->shader.has_tessellation());
+					}
+					else
+					{
+						this->vao.draw_indirect(dbuf.size() / sizeof(ogl2::DrawIndirectCommand), dbuf, this->shader.has_tessellation());
+					}
 				}
 				else
 				{
