@@ -132,6 +132,10 @@
  *		<td>gl_InstanceID</td>
  * 	</tr>
  * 	<tr>
+ *		<td>in::draw_id</td>
+ *		<td>gl_DrawID</td>
+ * 	</tr>
+ * 	<tr>
  *		<td>out::position</td>
  *		<td>gl_Position</td>
  * 	</tr>
