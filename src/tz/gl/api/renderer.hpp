@@ -42,6 +42,8 @@ namespace tz::gl
 		no_clear_output,
 		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an image_output, this has no effect.
 		no_present,
+		/// - The renderer's `state().graphics.draw_buffer` is assumed to contain a uint32 representing the draw count at the very start of the buffer, and the draw commands appear after that count in memory.
+		draw_indirect_count,
 		// Final debug ui renderer. Do not use.
 		_internal_final_dbgui_renderer,
 		// Internal renderer. Has no effect aside from hiding it from the dbgui.

@@ -142,10 +142,22 @@ namespace tz::gl::vk2
 		vkCmdDrawIndirect(this->get_command_buffer().native(), command.draw_indirect_buffer->native(), command.offset, command.draw_count, command.stride);
 	}
 
+	void CommandBufferRecording::draw_indirect_count(VulkanCommand::DrawIndirectCount command)
+	{
+		this->register_command(command);
+		vkCmdDrawIndirectCount(this->get_command_buffer().native(), command.draw_indirect_buffer->native(), command.offset, command.draw_indirect_buffer->native(), 0, command.max_draw_count, command.stride);
+	}
+
 	void CommandBufferRecording::draw_indexed_indirect(VulkanCommand::DrawIndexedIndirect command)
 	{
 		this->register_command(command);
 		vkCmdDrawIndexedIndirect(this->get_command_buffer().native(), command.draw_indirect_buffer->native(), command.offset, command.draw_count, command.stride);
+	}
+
+	void CommandBufferRecording::draw_indexed_indirect_count(VulkanCommand::DrawIndexedIndirectCount command)
+	{
+		this->register_command(command);
+		vkCmdDrawIndexedIndirectCount(this->get_command_buffer().native(), command.draw_indirect_buffer->native(), command.offset, command.draw_indirect_buffer->native(), 0, command.max_draw_count, command.stride);
 	}
 
 	void CommandBufferRecording::bind_index_buffer(VulkanCommand::BindIndexBuffer command)

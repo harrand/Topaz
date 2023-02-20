@@ -25,6 +25,7 @@ int main()
 		tz::gl::renderer_info rinfo;
 		rinfo.debug_name("Triangle renderer");
 		tz::gl::resource_handle dbufh_ref = rinfo.ref_resource(ch, dbufh);
+		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
 		rinfo.state().graphics.draw_buffer = dbufh_ref;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_gpu_driven_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_gpu_driven_demo_render, fragment));

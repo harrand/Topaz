@@ -61,6 +61,14 @@ namespace tz::gl::vk2
 			VkDeviceSize offset = 0;
 		};
 
+		struct DrawIndirectCount
+		{
+			const Buffer* draw_indirect_buffer;
+			std::uint32_t max_draw_count;
+			std::uint32_t stride;
+			VkDeviceSize offset = sizeof(std::uint32_t);
+		};
+
 		/**
 		 * Record an indexed indirect draw.
 		 * See @ref COmmandBufferRecording::draw_indexed_indirect for usage.
@@ -71,6 +79,14 @@ namespace tz::gl::vk2
 			std::uint32_t draw_count;
 			std::uint32_t stride;
 			VkDeviceSize offset = 0;
+		};
+
+		struct DrawIndexedIndirectCount
+		{
+			const Buffer* draw_indirect_buffer;
+			std::uint32_t max_draw_count;
+			std::uint32_t stride;
+			VkDeviceSize offset = sizeof(std::uint32_t);
 		};
 
 		/**
@@ -230,7 +246,7 @@ namespace tz::gl::vk2
 		struct DebugEndLabel{};
 
 		/// variant type which has alternatives for every single possible recordable command type.
-		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndexedIndirect, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
+		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -317,11 +333,13 @@ namespace tz::gl::vk2
 		 * See @ref VulkanCommand::DrawIndirect for details.
 		 */
 		void draw_indirect(VulkanCommand::DrawIndirect draw);
+		void draw_indirect_count(VulkanCommand::DrawIndirectCount draw);
 		/**
 		 * Perform some indirect, indexed draws.
 		 * See @ref VulkanCommand::DrawIndexedIndirect for details.
 		 */
 		void draw_indexed_indirect(VulkanCommand::DrawIndexedIndirect draw);
+		void draw_indexed_indirect_count(VulkanCommand::DrawIndexedIndirectCount draw);
 		void bind_index_buffer(VulkanCommand::BindIndexBuffer bind);
 		/**
 		 * Bind a list of @ref DescriptorSet.
