@@ -1,8 +1,9 @@
 shader(type = fragment);
 
+input(id = 0) vec3 in_colour;
 output(id = 0) vec4 out_colour;
 
 void main()
 {
-	out_colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	out_colour = vec4(in_colour, 1.0f);
 }

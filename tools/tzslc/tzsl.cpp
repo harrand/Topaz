@@ -79,14 +79,14 @@ namespace tzslc
 	{
 		/*
 		 * tzslc header info
-		 * #version 450 core
+		 * #version 460 core
 		 * #define TZ_OGL ?
 		 * #define TZ_VULKAN ?
 		 * #define TZ_DEBUG ?
 		 *
 		 * 5 lines total
 		 */
-		std::string ret = "/*tzslc header info*/\n#version 450 core\n";
+		std::string ret = "/*tzslc header info*/\n#version 460 core\n";
 		if(dialect == GLSLDialect::Vulkan)
 		{
 			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n";

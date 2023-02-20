@@ -19,6 +19,8 @@ namespace tz::gl::vk2
 		DrawIndirectCount,
 		/// - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
 		MultiDrawIndirect,
+		/// - Enable shader draw parameters (gl_DrawID).
+		ShaderDrawParameters,
 		/// - Allows creation of bindless descriptors. Dramatically increases the limits for shader resources, and yields a moderate to vast improvement to performance across-the-board.
 		BindlessDescriptors,
 		/// - Enables use of @ref TimelineSemaphore.
@@ -39,6 +41,14 @@ namespace tz::gl::vk2
 
 	namespace detail
 	{
+		constexpr VkPhysicalDeviceVulkan11Features empty_11_features(VkPhysicalDeviceVulkan12Features& next)
+		{
+			VkPhysicalDeviceVulkan11Features feats{};
+			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+			feats.pNext = &next;
+			return feats;
+		}
+
 		constexpr VkPhysicalDeviceVulkan12Features empty_12_features()
 		{
 			VkPhysicalDeviceVulkan12Features feats{};
@@ -46,7 +56,7 @@ namespace tz::gl::vk2
 			return feats;
 		}
 
-		constexpr VkPhysicalDeviceFeatures2 empty_features2(VkPhysicalDeviceVulkan12Features& next)
+		constexpr VkPhysicalDeviceFeatures2 empty_features2(VkPhysicalDeviceVulkan11Features& next)
 		{
 			VkPhysicalDeviceFeatures2 feats{};
 			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
@@ -57,7 +67,8 @@ namespace tz::gl::vk2
 		struct DeviceFeatureInfo
 		{
 			VkPhysicalDeviceVulkan12Features features12 = empty_12_features();
-			VkPhysicalDeviceFeatures2 features = empty_features2(features12);
+			VkPhysicalDeviceVulkan11Features features11 = empty_11_features(features12);
+			VkPhysicalDeviceFeatures2 features = empty_features2(features11);
 		};
 	}
 }

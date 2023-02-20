@@ -3,6 +3,7 @@
 #include "tz/gl/draw.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
+#include "tz/dbgui/dbgui.hpp"
 
 #include "tz/gl/imported_shaders.hpp"
 #include ImportedShaderHeader(tz_gpu_driven_demo, compute)
@@ -15,14 +16,19 @@ int main()
 	{
 		tz::gl::renderer_info cinfo;
 		// we're doing draw-indirect-count, which means we must have a uint32 at the beginnign representing our count!
+		constexpr std::size_t max_draw_count = 64;
 		struct draw_indirect_count_data
 		{
 			std::uint32_t count;
-			tz::gl::draw_indirect_command cmd;
+			std::array<tz::gl::draw_indirect_command, max_draw_count> cmd;
 		};
 		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::buffer_resource::from_one(draw_indirect_count_data{},
 		{
 			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
+		}));
+		tz::gl::resource_handle count_bufh = cinfo.add_resource(tz::gl::buffer_resource::from_one(std::uint32_t{1},
+		{
+			.access = tz::gl::resource_access::dynamic_fixed
 		}));
 		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(tz_gpu_driven_demo, compute));
 		cinfo.debug_name("Compute Driver");
@@ -42,6 +48,13 @@ int main()
 			tz::begin_frame();
 			tz::gl::get_device().get_renderer(ch).render();
 			tz::gl::get_device().get_renderer(rh).render(1);	
+			tz::dbgui::run([ch, count_bufh]()
+			{
+				ImGui::Begin("#countdbgui");
+				auto& count = tz::gl::get_device().get_renderer(ch).get_resource(count_bufh)->data_as<std::uint32_t>().front();
+				ImGui::SliderInt("Draw Count", reinterpret_cast<int*>(&count), 1, max_draw_count, "%zu");
+				ImGui::End();
+			});
 			tz::end_frame();
 		}
 	}

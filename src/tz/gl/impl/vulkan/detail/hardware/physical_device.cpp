@@ -47,6 +47,10 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::MultiDrawIndirect;
 			}
+			if(features.features11.shaderDrawParameters)
+			{
+				ret |= DeviceFeature::ShaderDrawParameters;
+			}
 			if(features.features12.descriptorBindingStorageImageUpdateAfterBind
 			&& features.features12.descriptorBindingStorageBufferUpdateAfterBind
 			&& features.features12.descriptorBindingSampledImageUpdateAfterBind
@@ -90,6 +94,7 @@ namespace tz::gl::vk2
 			DeviceFeatureInfo info;
 			info.features12.drawIndirectCount = feature_field.contains(DeviceFeature::DrawIndirectCount);
 			info.features.features.multiDrawIndirect = feature_field.contains(DeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
+			info.features11.shaderDrawParameters = feature_field.contains(DeviceFeature::ShaderDrawParameters) ? VK_TRUE : VK_FALSE;
 			info.features12.timelineSemaphore = feature_field.contains(DeviceFeature::TimelineSemaphores) ? VK_TRUE : VK_FALSE;
 			info.features.features.logicOp = feature_field.contains(DeviceFeature::ColourBlendLogicalOperations);
 			info.features.features.fillModeNonSolid = feature_field.contains(DeviceFeature::NonSolidFillRasteriser);

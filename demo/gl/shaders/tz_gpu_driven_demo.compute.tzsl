@@ -6,12 +6,21 @@ import <draw>
 resource(id = 0) buffer draw_indirect_buffer
 {
 	uint count;
-	tz::draw::DrawIndirectCommand command;
+	tz::draw::DrawIndirectCommand commands[];
 } draw_buffer;
+
+resource(id = 1) const buffer editable_count_buffer
+{
+	uint editable_count;
+};
 
 void main()
 {
-	draw_buffer.command = tz::draw::DrawIndirectCommand::new();
-	draw_buffer.command.vertex_count = 9;
-	draw_buffer.count = 1;
+	uint draw_count = editable_count;
+	for(uint i = 0; i < draw_count; i++)
+	{
+		draw_buffer.commands[i] = tz::draw::DrawIndirectCommand::new();
+		draw_buffer.commands[i].vertex_count = 9;
+	}
+	draw_buffer.count = draw_count;
 }

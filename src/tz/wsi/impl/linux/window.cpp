@@ -194,7 +194,7 @@ namespace tz::wsi::impl
 	void window_x11::impl_init_opengl()
 	{
 		const auto& x11d = impl::x11_display();
-		constexpr int maj = 4, min = 5;
+		constexpr int maj = 4, min = 6;
 		int nelements;
 		GLXFBConfig* fb_configs = glXChooseFBConfig(x11d.display, x11d.screen, nullptr, &nelements);
 		tz::assert(fb_configs != nullptr, "Failed to retrieve any framebuffer configs for OpenGL context.");

@@ -95,7 +95,9 @@ The following requirements apply for all possible build configurations:
 		- VK_EXT_descriptor_indexing
 #### OpenGL Build
 * Windows or Linux.
-* Your graphics card must support OpenGL 4.5. [Check your graphics card here](https://opengl.gpuinfo.org/).
+* Your graphics card must support OpenGL 4.6. [Check your graphics card here](https://opengl.gpuinfo.org/).
 	* It must also support the following opengl extension(s):
 		- ARB_bindless_texture
-			* Note: If this extension is not supported, the engine can still build & run, but ImageResources cannot be used. The unit-tests are guaranteed not to use ImageResources, so those are safe to run if you lack this extension.
+			* Note: If this extension is not supported, the engine can still build & run, but you cannot use `tz::gl::image_resource`s of any kind. The unit-tests are guaranteed not to use image resources, so those are safe to run if you lack this extension.
+		- ARB_indirect_parameters
+			* Note: If this extension is not supported, the engine can still build and run, but you cannot use `tz::gl::renderer_option::draw_indirect_count`. None of the tests do this, but `tz_gpu_driven_demo` is a demo that does use this, and thus won't run for you on OGL.
