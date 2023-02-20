@@ -465,6 +465,10 @@ namespace tz::gl
 	state(info.state()),
 	debug_name(info.debug_get_name())
 	{
+		if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
+		{
+			tz::assert(this->state.graphics.draw_buffer != tz::nullhand);
+		}
 		// Handle debug names for resources.
 		#if TZ_DEBUG
 			for(std::size_t i = 0; i < this->resource_count(); i++)

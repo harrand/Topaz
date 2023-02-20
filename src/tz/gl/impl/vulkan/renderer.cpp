@@ -1218,6 +1218,10 @@ namespace tz::gl
 	command(info),
 	debug_name(info.debug_get_name())
 	{
+		if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
+		{
+			tz::assert(this->state.graphics.draw_buffer != tz::nullhand);
+		}
 		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan Create", 0xFFAAAA00);
 		this->window_dims_cache = tz::window().get_dimensions();
 
