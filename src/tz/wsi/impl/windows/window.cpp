@@ -59,7 +59,6 @@ namespace tz::wsi::impl
 		this->hdc = GetDC(this->hwnd);
 		if(info.window_flags & window_flag::opengl)
 		{
-			tz::report("Setting up window for modern opengl.");
 			this->impl_init_opengl();
 		}
 		this->impl_register_mouseleave();
