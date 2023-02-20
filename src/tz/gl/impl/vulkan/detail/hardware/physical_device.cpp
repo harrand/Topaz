@@ -39,6 +39,10 @@ namespace tz::gl::vk2
 		{
 			DeviceFeatureField ret;
 
+			if(features.features12.drawIndirectCount)
+			{
+				ret |= DeviceFeature::DrawIndirectCount;
+			}
 			if(features.features.features.multiDrawIndirect)
 			{
 				ret |= DeviceFeature::MultiDrawIndirect;
@@ -84,6 +88,7 @@ namespace tz::gl::vk2
 		DeviceFeatureInfo from_feature_field(const DeviceFeatureField& feature_field)
 		{
 			DeviceFeatureInfo info;
+			info.features12.drawIndirectCount = feature_field.contains(DeviceFeature::DrawIndirectCount);
 			info.features.features.multiDrawIndirect = feature_field.contains(DeviceFeature::MultiDrawIndirect) ? VK_TRUE : VK_FALSE;
 			info.features12.timelineSemaphore = feature_field.contains(DeviceFeature::TimelineSemaphores) ? VK_TRUE : VK_FALSE;
 			info.features.features.logicOp = feature_field.contains(DeviceFeature::ColourBlendLogicalOperations);

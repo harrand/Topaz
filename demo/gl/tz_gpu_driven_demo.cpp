@@ -14,7 +14,13 @@ int main()
 	tz::initialise();
 	{
 		tz::gl::renderer_info cinfo;
-		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command{},
+		// we're doing draw-indirect-count, which means we must have a uint32 at the beginnign representing our count!
+		struct draw_indirect_count_data
+		{
+			std::uint32_t count;
+			tz::gl::draw_indirect_command cmd;
+		};
+		tz::gl::resource_handle dbufh = cinfo.add_resource(tz::gl::buffer_resource::from_one(draw_indirect_count_data{},
 		{
 			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 		}));

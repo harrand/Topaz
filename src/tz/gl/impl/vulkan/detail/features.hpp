@@ -15,6 +15,8 @@ namespace tz::gl::vk2
 	 */
 	enum class DeviceFeature
 	{
+		/// - Allows GPU-driven rendering via draw-indirect-count. Can be used to minimise cpu-gpu latency.
+		DrawIndirectCount,
 		/// - Allows mass-batching of draw-calls. Vastly improves performance for large scenes.
 		MultiDrawIndirect,
 		/// - Allows creation of bindless descriptors. Dramatically increases the limits for shader resources, and yields a moderate to vast improvement to performance across-the-board.

@@ -437,6 +437,7 @@ namespace tz::gl
 		vk2::DeviceExtensionList dev_exts = {};
 		const vk2::DeviceFeatureField dev_feats =
 		{
+			vk2::DeviceFeature::DrawIndirectCount,
 			vk2::DeviceFeature::BindlessDescriptors,
 			vk2::DeviceFeature::ColourBlendLogicalOperations,
 			vk2::DeviceFeature::NonSolidFillRasteriser,

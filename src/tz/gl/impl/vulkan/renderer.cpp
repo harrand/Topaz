@@ -1841,13 +1841,25 @@ namespace tz::gl
 					}
 					else
 					{
-						recording.draw_indirect
-						({
-							.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
-							.draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
-							.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand)),
-							.offset = static_cast<VkDeviceSize>(0)
-						});
+						if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
+						{
+							//tz::error("draw_indirect_count (non-indexed) is NYI sorry");
+							recording.draw_indirect_count
+							({
+								.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
+								.max_draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand))
+							});
+						}
+						else
+						{
+							recording.draw_indirect
+							({
+								.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
+								.draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand))
+							});
+						}
 					}
 				}
 				else
@@ -1865,13 +1877,20 @@ namespace tz::gl
 					}
 					else
 					{
-						recording.draw_indexed_indirect
-						({
-							.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
-							.draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndexedIndirectCommand)),
-							.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndexedIndirectCommand)),
-							.offset = static_cast<VkDeviceSize>(0)
-						});
+						if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
+						{
+							tz::error("draw_indirect_count (indexed) is NYI sorry");
+						}
+						else
+						{
+							recording.draw_indexed_indirect
+							({
+								.draw_indirect_buffer = &ind_buf->vk_get_buffer(),
+								.draw_count = static_cast<std::uint32_t>(ind_buf->get_resource()->data().size_bytes() / sizeof(VkDrawIndexedIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndexedIndirectCommand)),
+								.offset = static_cast<VkDeviceSize>(0)
+							});
+						}
 					}
 				}
 			}
