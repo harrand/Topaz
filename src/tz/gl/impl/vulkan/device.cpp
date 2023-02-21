@@ -320,6 +320,15 @@ namespace tz::gl
 		}
 	}
 
+	void DeviceRenderSchedulerVulkan::new_frame()
+	{
+		// our frame_id is some value. we need to make sure the frame work at that id (from last time we had this id) is done. we wait on that.
+		this->frame_work[this->frame_id].wait_until_signalled();
+		// unsignal it. we're gonna use it again.
+		this->frame_work[this->frame_id].unsignal();
+		this->frame_id = (this->frame_id + 1) % this->frame_work.size();
+	}
+
 	void DeviceRenderSchedulerVulkan::clear_renderers()
 	{
 		this->renderer_timelines.clear();
@@ -373,12 +382,11 @@ namespace tz::gl
 
 	void device_vulkan::begin_frame()
 	{
-
+		this->scheduler.new_frame();
 	}
 
 	void device_vulkan::end_frame()
 	{
-
 	}
 
 	const DeviceWindowVulkan& device_vulkan::get_device_window() const

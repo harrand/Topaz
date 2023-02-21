@@ -62,6 +62,7 @@ namespace tz::gl
 		std::span<const vk2::TimelineSemaphore> get_renderer_timelines() const;
 		std::span<vk2::TimelineSemaphore> get_renderer_timelines();
 		void wait_frame_work_complete() const;
+		void new_frame();
 		void clear_renderers();
 	private:
 		const vk2::LogicalDevice* ldev;
@@ -69,6 +70,7 @@ namespace tz::gl
 		std::vector<vk2::BinarySemaphore> render_work_done;
 		std::vector<vk2::Fence> frame_work;
 		std::vector<vk2::TimelineSemaphore> renderer_timelines;
+		std::size_t frame_id = 0;
 	};
 
 	class device_vulkan : public DeviceCommon<renderer_vulkan>
