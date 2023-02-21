@@ -85,6 +85,9 @@ namespace tz::gl
 		void destroy_renderer(tz::gl::renderer_handle handle);
 		image_format get_window_format() const;
 		void dbgui();
+		void begin_frame();
+		void end_frame();
+
 		const DeviceWindowVulkan& get_device_window() const;
 		DeviceWindowVulkan& get_device_window();
 		const DeviceRenderSchedulerVulkan& get_render_scheduler() const;

@@ -27,6 +27,8 @@ namespace tz::gl
 		{t.get_renderer(h)} -> renderer_type;
 		{t.get_window_format()} -> std::same_as<image_format>;
 		{t.dbgui()} -> std::same_as<void>;
+		{t.begin_frame()} -> std::same_as<void>;
+		{t.end_frame()} -> std::same_as<void>;
 	};
 
 	#if TZ_VULKAN && TZ_OGL

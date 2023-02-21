@@ -27,6 +27,16 @@ namespace tz::gl
 	{
 		tz::gl::common_device_dbgui(*this);
 	}
+
+	void device_ogl::begin_frame()
+	{
+
+	}
+
+	void device_ogl::end_frame()
+	{
+
+	}
 }
 
 #endif // TZ_OGL

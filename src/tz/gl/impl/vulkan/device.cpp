@@ -371,6 +371,16 @@ namespace tz::gl
 		tz::gl::common_device_dbgui(*this);
 	}
 
+	void device_vulkan::begin_frame()
+	{
+
+	}
+
+	void device_vulkan::end_frame()
+	{
+
+	}
+
 	const DeviceWindowVulkan& device_vulkan::get_device_window() const
 	{
 		return this->window_storage;
