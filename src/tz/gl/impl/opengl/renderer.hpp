@@ -202,7 +202,7 @@ namespace tz::gl
 	private:
 		renderer_ogl();
 
-		ogl2::VertexArray vao;
+		ogl2::vertex_array vao;
 		ResourceStorage resources;
 		ShaderManager shader;
 		OutputManager output;

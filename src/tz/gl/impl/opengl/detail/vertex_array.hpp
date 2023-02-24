@@ -10,18 +10,18 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2
 	 * Wrapper for an OpenGL VAO.
 	 */
-	class VertexArray
+	class vertex_array
 	{
 	public:
 		/**
 		 * Create a new VAO.
 		 */
-		VertexArray();
-		VertexArray(const VertexArray& copy) = delete;
-		VertexArray(VertexArray&& move);
-		~VertexArray();
-		VertexArray& operator=(const VertexArray& rhs) = delete;
-		VertexArray& operator=(VertexArray&& rhs);
+		vertex_array();
+		vertex_array(const vertex_array& copy) = delete;
+		vertex_array(vertex_array&& move);
+		~vertex_array();
+		vertex_array& operator=(const vertex_array& rhs) = delete;
+		vertex_array& operator=(vertex_array&& rhs);
 
 		/**
 		 * Bind the VAO, causing subsequent GL commands using VAO state to use this.
@@ -43,15 +43,15 @@ namespace tz::gl::ogl2
 		void draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation = false);
 		void draw_indexed_indirect_count(unsigned int max_draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
 		/**
-		 * Retrieve the Null VertexArray. Binding the null vertex array is equivalent to unbinding a vertex array. It is invalid to attempt to perform draws or computes using the null vertex array.
+		 * Retrieve the Null vertex_array. Binding the null vertex array is equivalent to unbinding a vertex array. It is invalid to attempt to perform draws or computes using the null vertex array.
 		 */
-		static VertexArray null();
+		static vertex_array null();
 		/**
-		 * Query as to whether this is a null vertex array, which is equivalent to @ref VertexArray::null().
+		 * Query as to whether this is a null vertex array, which is equivalent to @ref vertex_array::null().
 		 */
 		bool is_null() const;
 	private:
-		VertexArray(std::nullptr_t);
+		vertex_array(std::nullptr_t);
 
 		GLuint vao;
 	};
