@@ -33,7 +33,7 @@ namespace tz::gl::ogl2
 		/// Type of this shader module.
 		ShaderType type;
 		/// GLSL source code.
-		OGLString code;
+		ogl_string code;
 	};
 	
 	/**
@@ -61,7 +61,7 @@ namespace tz::gl::ogl2
 			/// True if compilation was successful, otherwise false.
 			bool success;
 			/// String containing information about compilation. If compilation was successful, this is guaranteed to be the empty string.
-			OGLString info_log;
+			ogl_string info_log;
 
 			operator bool() const {return this->success;}
 		};
@@ -106,7 +106,7 @@ namespace tz::gl::ogl2
 			/// True if linkage + validation were successful, otherwise false.
 			bool success;
 			/// String containing information about compilation. If compilation was successful, this is guaranteed to be the empty string.
-			OGLString info_log;
+			ogl_string info_log;
 
 			operator bool() const {return this->success;}
 		};

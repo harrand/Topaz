@@ -56,7 +56,7 @@ namespace tz::gl::ogl2
 		}
 		GLint info_log_length;
 		glGetShaderiv(this->shader, GL_INFO_LOG_LENGTH, &info_log_length);
-		OGLString info_log(info_log_length, '\0');
+		ogl_string info_log(info_log_length, '\0');
 		GLsizei length_used;
 		glGetShaderInfoLog(this->shader, info_log.length(), &length_used, info_log.data());
 		length_used++; // For null terminator.
@@ -127,7 +127,7 @@ namespace tz::gl::ogl2
 		}
 		GLint info_log_length;
 		glGetProgramiv(this->program, GL_INFO_LOG_LENGTH, &info_log_length);
-		OGLString info_log(info_log_length, '\0');
+		ogl_string info_log(info_log_length, '\0');
 		GLsizei length_used;
 		glGetProgramInfoLog(this->program, info_log.length(), &length_used, info_log.data());
 		length_used++; // For null terminator.
@@ -226,7 +226,7 @@ namespace tz::gl::ogl2
 		}
 		GLint info_log_length;
 		glGetProgramiv(this->program, GL_INFO_LOG_LENGTH, &info_log_length);
-		OGLString info_log(info_log_length, '\0');
+		ogl_string info_log(info_log_length, '\0');
 		GLsizei length_used;
 		glGetProgramInfoLog(this->program, info_log.length(), &length_used, info_log.data());
 		length_used++; // For null terminator.

@@ -56,8 +56,8 @@ namespace tz::gl::ogl2
 	bool is_initialised();
 
 	constexpr tz::version ogl_version{4, 6, 0, tz::version_type::normal};
-	using OGLString = std::basic_string<GLchar>;
-	using OGLStringView = std::basic_string_view<GLchar>;
+	using ogl_string = std::basic_string<GLchar>;
+	using ogl_string_view = std::basic_string_view<GLchar>;
 
 	bool supports_bindless_textures();
 }

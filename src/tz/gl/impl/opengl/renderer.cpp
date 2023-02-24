@@ -319,7 +319,7 @@ namespace tz::gl
 			{
 				{
 					.type = ogl2::ShaderType::compute,
-					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::compute))
+					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::compute))
 				}
 			};
 		}
@@ -332,11 +332,11 @@ namespace tz::gl
 			{
 				{
 					.type = ogl2::ShaderType::vertex,
-					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::vertex))
+					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::vertex))
 				},
 				{
 					.type = ogl2::ShaderType::fragment,
-					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::fragment))
+					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::fragment))
 				}
 			};
 
@@ -346,13 +346,13 @@ namespace tz::gl
 				modules.add
 				({
 					.type = ogl2::ShaderType::tessellation_control,
-					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::tessellation_control))
+					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::tessellation_control))
 				});
 
 				modules.add
 				({
 					.type = ogl2::ShaderType::tessellation_evaluation,
-					.code = ogl2::OGLString(sinfo.get_shader(shader_stage::tessellation_evaluation))
+					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::tessellation_evaluation))
 				});
 			}
 		}

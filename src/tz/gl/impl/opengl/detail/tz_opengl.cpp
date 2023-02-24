@@ -7,7 +7,7 @@
 
 namespace tz::gl::ogl2
 {
-	tz::basic_list<OGLStringView> get_supported_ogl_extensions();
+	tz::basic_list<ogl_string_view> get_supported_ogl_extensions();
 
 	bool initialised = false;
 
@@ -34,7 +34,7 @@ namespace tz::gl::ogl2
 		#endif
 		if(!supports_bindless_textures())
 		{
-			tz::report("The OpenGL backend prefers using bindless textures under-the-hood. Unfortunately, the bindless textures extension `GL_ARB_bindltess_texture` is unavailable on this implementation. Renderers will fallback to old-style OpenGL uniforms for image resources, although this behaviour is unreliable and could be removed at any point.");
+			tz::report("Detected no bindless textures support. The behaviour of `tz::gl::image_resource` is undefined.");
 		}
 		tz::report("OpenGL v%u.%u %sInitialised", ogl_version.major, ogl_version.minor, supports_bindless_textures() ? "" : "(Bindful) ");
 		initialised = true;
@@ -52,11 +52,11 @@ namespace tz::gl::ogl2
 		return initialised;
 	}
 
-	tz::basic_list<OGLStringView> get_supported_ogl_extensions()
+	tz::basic_list<ogl_string_view> get_supported_ogl_extensions()
 	{
 		GLint extension_count;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &extension_count);
-		tz::basic_list<OGLStringView> exts;
+		tz::basic_list<ogl_string_view> exts;
 		exts.resize(extension_count);
 		for(std::size_t i = 0; std::cmp_less(i, extension_count); i++)
 		{
