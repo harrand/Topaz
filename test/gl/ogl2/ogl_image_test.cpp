@@ -10,13 +10,13 @@ void create_empty_image()
 	{{
 		.format = image_format::RGBA32,
 		.dimensions = {1u, 1u},
-		.sampler =
+		.shader_sampler =
 		{
-			.min_filter = LookupFilter::Nearest,
-			.mag_filter = LookupFilter::Nearest,
-			.address_mode_s = AddressMode::ClampToEdge,
-			.address_mode_t = AddressMode::ClampToEdge,
-			.address_mode_r = AddressMode::ClampToEdge
+			.min_filter = lookup_filter::nearest,
+			.mag_filter = lookup_filter::nearest,
+			.address_mode_s = address_mode::clamp_to_edge,
+			.address_mode_t = address_mode::clamp_to_edge,
+			.address_mode_r = address_mode::clamp_to_edge
 		}
 	}};
 }

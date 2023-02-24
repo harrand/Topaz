@@ -12,12 +12,12 @@ namespace tz::gl::ogl2
 		TZ_PROFZONE("OpenGL Backend - Image Create", 0xFFAA0000);
 		glCreateTextures(GL_TEXTURE_2D, 1, &this->image);
 
-		glTextureParameteri(this->image, GL_TEXTURE_WRAP_S, static_cast<GLint>(this->info.sampler.address_mode_s));
-		glTextureParameteri(this->image, GL_TEXTURE_WRAP_T, static_cast<GLint>(this->info.sampler.address_mode_t));
-		glTextureParameteri(this->image, GL_TEXTURE_WRAP_R, static_cast<GLint>(this->info.sampler.address_mode_r));
+		glTextureParameteri(this->image, GL_TEXTURE_WRAP_S, static_cast<GLint>(this->info.shader_sampler.address_mode_s));
+		glTextureParameteri(this->image, GL_TEXTURE_WRAP_T, static_cast<GLint>(this->info.shader_sampler.address_mode_t));
+		glTextureParameteri(this->image, GL_TEXTURE_WRAP_R, static_cast<GLint>(this->info.shader_sampler.address_mode_r));
 
-		glTextureParameteri(this->image, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(this->info.sampler.min_filter));
-		glTextureParameteri(this->image, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(this->info.sampler.mag_filter));
+		glTextureParameteri(this->image, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(this->info.shader_sampler.min_filter));
+		glTextureParameteri(this->image, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(this->info.shader_sampler.mag_filter));
 
 		glTextureStorage2D(this->image, 1, get_format_data(this->info.format).internal_format, static_cast<GLsizei>(this->info.dimensions[0]), static_cast<GLsizei>(this->info.dimensions[1]));
 	}
@@ -58,9 +58,9 @@ namespace tz::gl::ogl2
 		return this->info.dimensions;
 	}
 
-	const Sampler& Image::get_sampler() const
+	const sampler& Image::get_sampler() const
 	{
-		return this->info.sampler;
+		return this->info.shader_sampler;
 	}
 
 	void Image::set_data(std::span<const std::byte> texture_data)
@@ -140,7 +140,7 @@ namespace tz::gl::ogl2
 			{{
 				.format = image.get_format(),
 				.dimensions = new_size,
-				.sampler = image.get_sampler()
+				.shader_sampler = image.get_sampler()
 			}};
 			tz::vec2ui min
 			{

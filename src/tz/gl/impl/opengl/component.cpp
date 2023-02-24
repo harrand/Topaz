@@ -122,8 +122,8 @@ namespace tz::gl
 	{
 		tz::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
 		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
-		ogl2::LookupFilter filter = ogl2::LookupFilter::Nearest;
-		ogl2::AddressMode mode = ogl2::AddressMode::ClampToEdge;
+		ogl2::lookup_filter filter = ogl2::lookup_filter::nearest;
+		ogl2::address_mode mode = ogl2::address_mode::clamp_to_edge;
 #if TZ_DEBUG
 		if(img_res->get_flags().contains({resource_flag::image_filter_nearest, resource_flag::image_filter_linear}))
 		{
@@ -132,11 +132,11 @@ namespace tz::gl
 #endif
 		if(img_res->get_flags().contains(resource_flag::image_filter_nearest))
 		{
-			filter = ogl2::LookupFilter::Nearest;
+			filter = ogl2::lookup_filter::nearest;
 		}
 		if(img_res->get_flags().contains(resource_flag::image_filter_linear))
 		{
-			filter = ogl2::LookupFilter::Linear;
+			filter = ogl2::lookup_filter::linear;
 		}
 
 		if(img_res->get_flags().contains({resource_flag::image_wrap_clamp_edge, resource_flag::image_wrap_repeat, resource_flag::image_wrap_mirrored_repeat}))
@@ -145,21 +145,21 @@ namespace tz::gl
 		}
 		if(img_res->get_flags().contains(resource_flag::image_wrap_clamp_edge))
 		{
-			mode = ogl2::AddressMode::ClampToEdge;
+			mode = ogl2::address_mode::clamp_to_edge;
 		}
 		if(img_res->get_flags().contains(resource_flag::image_wrap_repeat))
 		{
-			mode = ogl2::AddressMode::Repeat;
+			mode = ogl2::address_mode::repeat;
 		}
 		if(img_res->get_flags().contains(resource_flag::image_wrap_mirrored_repeat))
 		{
-			mode = ogl2::AddressMode::MirroredRepeat;
+			mode = ogl2::address_mode::mirrored_repeat;
 		}
 		return
 		{{
 			.format = to_ogl2(img_res->get_format()),
 			.dimensions = img_res->get_dimensions(),
-			.sampler = 
+			.shader_sampler = 
 			{
 				.min_filter = filter,
 				.mag_filter = filter,

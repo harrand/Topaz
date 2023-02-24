@@ -20,7 +20,7 @@ namespace tz::gl::ogl2
 		/// {Width, Height} of the image, in pixels.
 		tz::vec2ui dimensions;
 		/// Specifies how the image should be sampled in a shader.
-		Sampler sampler;
+		sampler shader_sampler;
 	};
 
 	/**
@@ -54,7 +54,7 @@ namespace tz::gl::ogl2
 		/**
 		 * Retrieves the state specifying how the image is sampled in a shader.
 		 */
-		const Sampler& get_sampler() const;
+		const sampler& get_sampler() const;
 		/**
 		 * Set the image data.
 		 * @param texture_data View into bytes representing the data. Should match the format and dimensions of this texture, as an array of rows of pixel data.

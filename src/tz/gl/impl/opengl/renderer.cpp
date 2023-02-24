@@ -731,7 +731,7 @@ namespace tz::gl
 									{{
 										.format = image.get_format(),
 										.dimensions = image.get_dimensions(),
-										.sampler = image.get_sampler()
+										.shader_sampler = image.get_sampler()
 									}};
 									staging_image.set_data(arg.data);
 									ogl2::image::copy(staging_image, image);

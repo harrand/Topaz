@@ -9,26 +9,26 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_image 
 	 * Determines how sub-pixel colours are filtered.
 	 */
-	enum class LookupFilter : GLint
+	enum class lookup_filter : GLint
 	{
 		/// - Texel nearest (via Manhattan Distance) to the texture coordinate is used.
-		Nearest = GL_NEAREST,
+		nearest = GL_NEAREST,
 		/// - Weighted average of four closest texels to the texture coordinate.
-		Linear = GL_LINEAR
+		linear = GL_LINEAR
 	};
 
 	/**
 	 * @ingroup tz_gl_ogl2_image 
 	 * Determines the value retrieved from a texture lookup if the texture coordinate is out of range.
 	 */
-	enum class AddressMode : GLint
+	enum class address_mode : GLint
 	{
 		/// - An imaginary line is drawn from the out-of-bounds-coordinate back to the edge of the sampled image. The colour of the texel that it meets is used.
-		ClampToEdge = GL_CLAMP_TO_EDGE,
+		clamp_to_edge = GL_CLAMP_TO_EDGE,
 		/// - The texcoord is essentially modulo'd with the image dimensions.
-		Repeat = GL_REPEAT,
-		/// - Just like Repeat, except mirrored.
-		MirroredRepeat = GL_MIRRORED_REPEAT
+		repeat = GL_REPEAT,
+		/// - Just like repeat, except mirrored.
+		mirrored_repeat = GL_MIRRORED_REPEAT
 		
 	};
 
@@ -36,19 +36,19 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_image 
 	 * Describes various details about texture lookups from a sampled image.
 	 */
-	struct Sampler
+	struct sampler
 	{
 		/// Filter used when texels are larger than screen pixels.
-		LookupFilter min_filter;
+		lookup_filter min_filter;
 		/// Filter used when texels are smaller than screen pixels.
-		LookupFilter mag_filter;
+		lookup_filter mag_filter;
 
 		/// Addressing mode used when out of range on the s (x) axis.
-		AddressMode address_mode_s;
+		address_mode address_mode_s;
 		/// Addressing mode used when out of range on the t (y) axis.
-		AddressMode address_mode_t;
+		address_mode address_mode_t;
 		/// Addressing mode used when out of range on the r (z) axis. When not in the dark ages this would be named 'p', such as in OGL GLSL.
-		AddressMode address_mode_r;
+		address_mode address_mode_r;
 	};
 }
 
