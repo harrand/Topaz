@@ -5,16 +5,16 @@
 void create_empty_shader()
 {
 	using namespace tz::gl::ogl2;
-	Shader shader
+	shader shader
 	{{
 		.modules =
 		{
 			{
-				.type = ShaderType::vertex,
+				.type = shader_type::vertex,
 				.code = "#version 430\nvoid main(){}"
 			},
 			{
-				.type = ShaderType::fragment,
+				.type = shader_type::fragment,
 				.code = "#version 430\nvoid main(){}"
 			}
 		}

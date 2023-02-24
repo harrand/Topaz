@@ -93,12 +93,12 @@ namespace tz::gl
 		bool is_compute() const;
 		bool has_tessellation() const;
 
-		ogl2::Shader& get_program();
+		ogl2::shader& get_program();
 
 	private:
-		ogl2::Shader make_shader(const ShaderInfo& sinfo) const;
+		ogl2::shader make_shader(const ShaderInfo& sinfo) const;
 
-		ogl2::Shader shader;
+		ogl2::shader shader;
 	};
 
 	/**

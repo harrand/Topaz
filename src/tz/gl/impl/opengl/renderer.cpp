@@ -284,7 +284,7 @@ namespace tz::gl
 	}
 
 	ShaderManager::ShaderManager():
-	shader(ogl2::Shader::null())
+	shader(ogl2::shader::null())
 	{
 		
 	}
@@ -304,21 +304,21 @@ namespace tz::gl
 		return this->shader.has_tessellation();
 	}
 
-	ogl2::Shader& ShaderManager::get_program()
+	ogl2::shader& ShaderManager::get_program()
 	{
 		return this->shader;
 	}
 
-	ogl2::Shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
+	ogl2::shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
 	{
-		tz::basic_list<ogl2::ShaderModuleInfo> modules;
+		tz::basic_list<ogl2::shader_module_info> modules;
 		if(sinfo.has_shader(shader_stage::compute))
 		{
 			// Compute, we only care about the compute shader.
 			modules =
 			{
 				{
-					.type = ogl2::ShaderType::compute,
+					.type = ogl2::shader_type::compute,
 					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::compute))
 				}
 			};
@@ -331,11 +331,11 @@ namespace tz::gl
 			modules =
 			{
 				{
-					.type = ogl2::ShaderType::vertex,
+					.type = ogl2::shader_type::vertex,
 					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::vertex))
 				},
 				{
-					.type = ogl2::ShaderType::fragment,
+					.type = ogl2::shader_type::fragment,
 					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::fragment))
 				}
 			};
@@ -345,13 +345,13 @@ namespace tz::gl
 				tz::assert(sinfo.has_shader(shader_stage::tessellation_control) && sinfo.has_shader(shader_stage::tessellation_evaluation), "Detected a tessellaton shader type, but it was missing its sister. If a control or evaluation shader exists, they both must exist.");
 				modules.add
 				({
-					.type = ogl2::ShaderType::tessellation_control,
+					.type = ogl2::shader_type::tessellation_control,
 					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::tessellation_control))
 				});
 
 				modules.add
 				({
-					.type = ogl2::ShaderType::tessellation_evaluation,
+					.type = ogl2::shader_type::tessellation_evaluation,
 					.code = ogl2::ogl_string(sinfo.get_shader(shader_stage::tessellation_evaluation))
 				});
 			}

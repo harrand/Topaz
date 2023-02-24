@@ -10,7 +10,7 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_shader
 	 * Specifies the shader type.
 	 */
-	enum class ShaderType : GLenum
+	enum class shader_type : GLenum
 	{
 		/// - Vertex Shader.
 		vertex = GL_VERTEX_SHADER,
@@ -26,12 +26,12 @@ namespace tz::gl::ogl2
 
 	/**
 	 * @ingroup tz_gl_ogl2_shader
-	 * Specifies creation flags for a @ref ShaderModule.
+	 * Specifies creation flags for a @ref shader_module.
 	 */
-	struct ShaderModuleInfo
+	struct shader_module_info
 	{
 		/// Type of this shader module.
-		ShaderType type;
+		shader_type type;
 		/// GLSL source code.
 		ogl_string code;
 	};
@@ -40,23 +40,23 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_shader
 	 * Specifies creation flags for a @ref Shader.
 	 */
-	struct ShaderInfo
+	struct shader_info
 	{
 		/// List of all modules.
-		tz::basic_list<ShaderModuleInfo> modules;
+		tz::basic_list<shader_module_info> modules;
 	};
 
 	/**
 	 * @ingroup tz_gl_ogl2_shader
 	 * Represents an OpenGL shader.
 	 */
-	class ShaderModule
+	class shader_module
 	{
 	public:
 		/**
 		 * State of a shader module compilation attempt.
 		 */
-		struct CompileResult
+		struct compile_result
 		{
 			/// True if compilation was successful, otherwise false.
 			bool success;
@@ -69,39 +69,39 @@ namespace tz::gl::ogl2
 		/**
 		 * Create a new shader module. You should not need to invoke this directly - The shader program is responsible for constructing all of its modules.
 		 */
-		ShaderModule(ShaderModuleInfo info);
-		ShaderModule(const ShaderModule& copy) = delete;
-		ShaderModule(ShaderModule&& move);
-		~ShaderModule();
-		ShaderModule& operator=(const ShaderModule& rhs) = delete;
-		ShaderModule& operator=(ShaderModule&& rhs);
+		shader_module(shader_module_info info);
+		shader_module(const shader_module& copy) = delete;
+		shader_module(shader_module&& move);
+		~shader_module();
+		shader_module& operator=(const shader_module& rhs) = delete;
+		shader_module& operator=(shader_module&& rhs);
 
-		ShaderType get_type() const;
+		shader_type get_type() const;
 
 		/**
 		 * Attempt to compile the shader source. This could fail.
 		 * @return Result state describing the success of the compilation attempt.
 		 */
-		CompileResult compile();
+		compile_result compile();
 
 		using NativeType = GLuint;
 		NativeType native() const;
 	private:
 		GLuint shader;
-		ShaderModuleInfo info;
+		shader_module_info info;
 	};
 
 	/**
 	 * @ingroup tz_gl_ogl2_shader
 	 * Represents an OpenGL shader program.
 	 */
-	class Shader
+	class shader
 	{
 	public:
 		/**
 		 * State of a shader module compilation attempt.
 		 */
-		struct LinkResult
+		struct link_result
 		{
 			/// True if linkage + validation were successful, otherwise false.
 			bool success;
@@ -114,18 +114,18 @@ namespace tz::gl::ogl2
 		 * Create a new shader program.
 		 * @param info Information about modules contained within the shader program.
 		 */
-		Shader(ShaderInfo info);
-		Shader(const Shader& copy) = delete;
-		Shader(Shader&& move);
-		~Shader();
-		Shader& operator=(const Shader& rhs) = delete;
-		Shader& operator=(Shader&& rhs);
+		shader(shader_info info);
+		shader(const shader& copy) = delete;
+		shader(shader&& move);
+		~shader();
+		shader& operator=(const shader& rhs) = delete;
+		shader& operator=(shader&& rhs);
 
 		/**
 		 * Attempt to link and validate the shader program. This could fail.
 		 * @return Result state describing the success of the link + validate attempts.
 		 */
-		LinkResult link();
+		link_result link();
 		/**
 		 * Set the program as in-use, causing subsequent gl commands to use it as the shader program.
 		 */
@@ -134,7 +134,7 @@ namespace tz::gl::ogl2
 		/**
 		 * Create the null shader. Operations are invalid on the null shader.
 		 */
-		static Shader null();
+		static shader null();
 		/**
 		 * Query as to whether this is a null shader. See @ref Shader::null().
 		 */
@@ -146,12 +146,12 @@ namespace tz::gl::ogl2
 		std::string debug_get_name() const;
 		void debug_set_name(std::string name);
 	private:
-		Shader(std::nullptr_t);
-		Shader::LinkResult validate();
+		shader(std::nullptr_t);
+		shader::link_result validate();
 
 		GLuint program;
-		std::vector<ShaderModule> modules;
-		ShaderInfo info;
+		std::vector<shader_module> modules;
+		shader_info info;
 		std::string debug_name = "";
 	};
 }
