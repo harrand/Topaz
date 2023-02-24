@@ -21,7 +21,7 @@ namespace tz::gl::ogl2
 			[this](const auto& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, const Image*>)
+				if constexpr(std::is_same_v<T, const image*>)
 				{
 					glNamedFramebufferTexture(this->framebuffer, GL_DEPTH_ATTACHMENT, arg->native(), 0);
 				}
@@ -45,7 +45,7 @@ namespace tz::gl::ogl2
 			[this, attachment](const auto& arg)
 			{
 				using T = std::decay_t<decltype(arg)>;
-				if constexpr(std::is_same_v<T, const Image*>)
+				if constexpr(std::is_same_v<T, const image*>)
 				{
 					glNamedFramebufferTexture(this->framebuffer, attachment, arg->native(), 0);
 				}

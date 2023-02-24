@@ -14,7 +14,7 @@ namespace tz::gl::ogl2
 	 * @ingroup tz_gl_ogl2_framebuffer
 	 * Describes a reference to either an image or renderbuffer. Is used as a @ref Framebuffer attachment.
 	 */
-	using FramebufferTexture = std::variant<const Image*, const render_buffer*>;
+	using FramebufferTexture = std::variant<const image*, const render_buffer*>;
 	/**
 	 * @ingroup tz_gl_ogl2_framebuffer
 	 * Specifies creation flags for a @ref Framebuffer.

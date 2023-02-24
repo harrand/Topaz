@@ -6,7 +6,7 @@
 void create_empty_image()
 {
 	using namespace tz::gl::ogl2;
-	Image image
+	image img
 	{{
 		.format = image_format::RGBA32,
 		.dimensions = {1u, 1u},

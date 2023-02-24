@@ -55,18 +55,18 @@ namespace tz::gl
 		 */
 		void bind_buffers(const render_state& state);
 		/**
-		 * Images are converted into bindless texture handles which are then all stored within a secret bespoke SSBO (this does not count as a buffer resource however). This binds that SSBO to the resource id equal to the list of images (this will be equal to the total number of buffer resources).
+		 * images are converted into bindless texture handles which are then all stored within a secret bespoke SSBO (this does not count as a buffer resource however). This binds that SSBO to the resource id equal to the list of images (this will be equal to the total number of buffer resources).
 		 */
 		void bind_image_buffer(bool has_index_buffer, bool has_draw_buffer);
 		void write_dynamic_images();
-		void set_image_handle(tz::gl::resource_handle h, ogl2::Image::BindlessTextureHandle bindless_handle);
+		void set_image_handle(tz::gl::resource_handle h, ogl2::image::bindless_handle bindless_handle);
 	private:
 		void fill_bindless_image_buffer();
 
 		/// Stores components corresponding to each resource.
 		std::vector<tz::maybe_owned_ptr<icomponent>> components;
 		/// Stores a bindless texture handle for each image resource.
-		std::vector<ogl2::Image::BindlessTextureHandle> image_handles;
+		std::vector<ogl2::image::bindless_handle> image_handles;
 		// Shader has an array of texture samplers in tzsl. tzslc compiles this down to actually a storage buffer containing a variable array of texture samplers. This is that buffer.
 		ogl2::Buffer bindless_image_storage_buffer;
 	};

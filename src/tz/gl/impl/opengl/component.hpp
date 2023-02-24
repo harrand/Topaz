@@ -40,13 +40,13 @@ namespace tz::gl
 		image_format get_format() const;
 		void resize(tz::vec2ui dims);
 
-		const ogl2::Image& ogl_get_image() const;
-		ogl2::Image& ogl_get_image();
+		const ogl2::image& ogl_get_image() const;
+		ogl2::image& ogl_get_image();
 	private:
-		ogl2::Image make_image() const;
+		ogl2::image make_image() const;
 		
 		iresource* resource;
-		ogl2::Image image;
+		ogl2::image image;
 	};
 	static_assert(image_component_type<image_component_ogl>);
 }

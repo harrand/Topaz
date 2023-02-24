@@ -78,7 +78,7 @@ namespace tz::gl
 				case resource_type::image:
 					{
 						image_component_ogl& img = *static_cast<image_component_ogl*>(comp);
-						ogl2::Image& image = img.ogl_get_image();
+						ogl2::image& image = img.ogl_get_image();
 						image.set_data(img.get_resource()->data());
 						if(ogl2::supports_bindless_textures())
 						{
@@ -169,7 +169,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		const std::size_t buf_size = this->image_handles.size() * sizeof(ogl2::Image::BindlessTextureHandle);
+		const std::size_t buf_size = this->image_handles.size() * sizeof(ogl2::image::bindless_handle);
 		this->bindless_image_storage_buffer =
 		{{
 			.target = ogl2::BufferTarget::ShaderStorage,
@@ -183,7 +183,7 @@ namespace tz::gl
 			.size_bytes = buf_size
 		}};
 		{
-			std::span<ogl2::Image::BindlessTextureHandle> handle_data = temp_copy_buffer.map_as<ogl2::Image::BindlessTextureHandle>();
+			std::span<ogl2::image::bindless_handle> handle_data = temp_copy_buffer.map_as<ogl2::image::bindless_handle>();
 			std::copy(this->image_handles.begin(), this->image_handles.end(), handle_data.begin());
 		}
 		ogl2::buffer::copy(temp_copy_buffer, this->bindless_image_storage_buffer);
@@ -246,7 +246,7 @@ namespace tz::gl
 
 			for(std::size_t i = 0; i < this->image_handles.size(); i++)
 			{
-				auto img_nat = static_cast<ogl2::Image::NativeType>(this->image_handles[i]);
+				auto img_nat = static_cast<ogl2::image::NativeType>(this->image_handles[i]);
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, img_nat);
 
@@ -264,13 +264,13 @@ namespace tz::gl
 			if(res->get_type() == resource_type::image && res->get_access() != resource_access::static_fixed)
 			{
 				// Get the underlying image, and set its data to whatever the span said it was.
-				ogl2::Image& img = static_cast<image_component_ogl*>(component_ptr.get())->ogl_get_image();
+				ogl2::image& img = static_cast<image_component_ogl*>(component_ptr.get())->ogl_get_image();
 				img.set_data(res->data());
 			}
 		}
 	}
 
-	void ResourceStorage::set_image_handle(tz::gl::resource_handle h, ogl2::Image::BindlessTextureHandle bindless_handle)
+	void ResourceStorage::set_image_handle(tz::gl::resource_handle h, ogl2::image::bindless_handle bindless_handle)
 	{
 		this->image_handles[static_cast<std::size_t>(static_cast<tz::hanval>(h))] = bindless_handle;
 	}
@@ -482,7 +482,7 @@ namespace tz::gl
 				}
 				if(comp->get_resource()->get_type() == resource_type::image)
 				{
-					ogl2::Image& img = static_cast<image_component_ogl*>(comp)->ogl_get_image();
+					ogl2::image& img = static_cast<image_component_ogl*>(comp)->ogl_get_image();
 					std::string n = img.debug_get_name();
 					img.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":I" + std::to_string(i));
 				}
@@ -691,7 +691,7 @@ namespace tz::gl
 					{
 						imgcomp->resize(arg.dimensions);
 						
-						ogl2::Image::BindlessTextureHandle h = imgcomp->ogl_get_image().native();
+						ogl2::image::bindless_handle h = imgcomp->ogl_get_image().native();
 						if(ogl2::supports_bindless_textures())
 						{
 							h = imgcomp->ogl_get_image().get_bindless_handle();
@@ -726,15 +726,15 @@ namespace tz::gl
 								}
 								break;
 								case resource_type::image:
-									ogl2::Image& image = static_cast<image_component_ogl*>(comp)->ogl_get_image();
-									ogl2::Image staging_image
+									ogl2::image& image = static_cast<image_component_ogl*>(comp)->ogl_get_image();
+									ogl2::image staging_image
 									{{
 										.format = image.get_format(),
 										.dimensions = image.get_dimensions(),
 										.shader_sampler = image.get_sampler()
 									}};
 									staging_image.set_data(arg.data);
-									ogl2::image::copy(staging_image, image);
+									ogl2::image_helper::copy(staging_image, image);
 
 								break;
 							}

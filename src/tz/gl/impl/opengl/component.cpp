@@ -99,8 +99,8 @@ namespace tz::gl
 	void image_component_ogl::resize(tz::vec2ui dims)
 	{
 		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of image_component_ogl, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
-		ogl2::Image& old_image = this->ogl_get_image();
-		ogl2::Image new_image = ogl2::image::clone_resized(old_image, dims);
+		ogl2::image& old_image = this->ogl_get_image();
+		ogl2::image new_image = ogl2::image_helper::clone_resized(old_image, dims);
 
 		auto* ires = static_cast<image_resource*>(this->resource);
 		ires->set_dimensions(dims);
@@ -108,17 +108,17 @@ namespace tz::gl
 		std::swap(old_image, new_image);
 	}
 
-	const ogl2::Image& image_component_ogl::ogl_get_image() const
+	const ogl2::image& image_component_ogl::ogl_get_image() const
 	{
 		return this->image;
 	}
 
-	ogl2::Image& image_component_ogl::ogl_get_image()
+	ogl2::image& image_component_ogl::ogl_get_image()
 	{
 		return this->image;
 	}
 
-	ogl2::Image image_component_ogl::make_image() const
+	ogl2::image image_component_ogl::make_image() const
 	{
 		tz::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
 		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
