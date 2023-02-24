@@ -25,7 +25,7 @@ namespace tz::gl::ogl2
 				{
 					glNamedFramebufferTexture(this->framebuffer, GL_DEPTH_ATTACHMENT, arg->native(), 0);
 				}
-				else if constexpr(std::is_same_v<T, const Renderbuffer*>)
+				else if constexpr(std::is_same_v<T, const render_buffer*>)
 				{
 					glNamedFramebufferRenderbuffer(this->framebuffer, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, arg->native());
 				}

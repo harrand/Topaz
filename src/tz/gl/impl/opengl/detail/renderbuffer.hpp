@@ -7,7 +7,7 @@
 
 namespace tz::gl::ogl2
 {
-	struct RenderbufferInfo
+	struct render_buffer_info
 	{
 		/// Format of the image data.
 		image_format format;
@@ -15,29 +15,29 @@ namespace tz::gl::ogl2
 		tz::vec2ui dimensions;
 	};
 
-	class Renderbuffer
+	class render_buffer
 	{
 	public:
-		Renderbuffer(RenderbufferInfo info);
-		Renderbuffer(const Renderbuffer& copy) = delete;
-		Renderbuffer(Renderbuffer&& move);
-		~Renderbuffer();
+		render_buffer(render_buffer_info info);
+		render_buffer(const render_buffer& copy) = delete;
+		render_buffer(render_buffer&& move);
+		~render_buffer();
 
-		Renderbuffer& operator=(const Renderbuffer& rhs) = delete;
-		Renderbuffer& operator=(Renderbuffer&& rhs);
+		render_buffer& operator=(const render_buffer& rhs) = delete;
+		render_buffer& operator=(render_buffer&& rhs);
 
 		image_format get_format() const;
 		tz::vec2ui get_dimensions() const;
 		using NativeType = GLuint;
 		NativeType native() const;
 
-		static Renderbuffer null();
+		static render_buffer null();
 		bool is_null() const;
 	private:
-		Renderbuffer();
+		render_buffer();
 
 		GLuint renderbuffer;
-		RenderbufferInfo info;
+		render_buffer_info info;
 	};
 }
 

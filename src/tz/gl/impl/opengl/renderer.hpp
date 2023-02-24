@@ -120,7 +120,7 @@ namespace tz::gl
 		const ioutput* get_output() const;
 	private:
 		std::unique_ptr<ioutput> output;
-		ogl2::Renderbuffer default_depth_renderbuffer;
+		ogl2::render_buffer default_depth_renderbuffer;
 		ogl2::Framebuffer framebuffer;
 		tz::gl::renderer_options options;
 	};

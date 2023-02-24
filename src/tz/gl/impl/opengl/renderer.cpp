@@ -366,7 +366,7 @@ namespace tz::gl
 
 	OutputManager::OutputManager(const ioutput* output, tz::gl::renderer_options options):
 	output(output != nullptr ? output->unique_clone() : nullptr),
-	default_depth_renderbuffer(ogl2::Renderbuffer::null()),
+	default_depth_renderbuffer(ogl2::render_buffer::null()),
 	framebuffer(ogl2::Framebuffer::null()),
 	options(options)
 	{
