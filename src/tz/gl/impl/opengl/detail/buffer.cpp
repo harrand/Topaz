@@ -8,7 +8,7 @@ namespace tz::gl::ogl2
 	buf(0),
 	info(info)
 	{
-		TZ_PROFZONE("OpenGL Backend - buffer Create", 0xFFAA0000);
+		TZ_PROFZONE("ogl - buffer create", 0xFFAA0000);
 		tz::assert(ogl2::is_initialised(), "Cannot create ogl2 buffer because ogl2 backend has not yet been initialised! Please submit a bug report.");
 		tz::assert(this->info.size_bytes > 0, "Cannot create a zero-sized buffer.");
 		glCreateBuffers(1, &this->buf);
@@ -31,6 +31,7 @@ namespace tz::gl::ogl2
 
 	buffer::~buffer()
 	{
+		TZ_PROFZONE("ogl - buffer destroy", 0xFFAA0000);
 		glDeleteBuffers(1, &this->buf);
 	}
 
@@ -59,7 +60,7 @@ namespace tz::gl::ogl2
 
 	void* buffer::map()
 	{
-		TZ_PROFZONE("OpenGL Backend - buffer Map", 0xFFAA0000);
+		TZ_PROFZONE("ogl - buffer map", 0xFFAA0000);
 		if(this->mapped_ptr != nullptr)
 		{
 			return this->mapped_ptr;
@@ -73,7 +74,7 @@ namespace tz::gl::ogl2
 
 	const void* buffer::map() const
 	{
-		TZ_PROFZONE("OpenGL Backend - buffer Map", 0xFFAA0000);
+		TZ_PROFZONE("ogl - buffer map", 0xFFAA0000);
 		if(this->mapped_ptr != nullptr)
 		{
 			return this->mapped_ptr;
@@ -87,23 +88,26 @@ namespace tz::gl::ogl2
 
 	void buffer::unmap()
 	{
+		TZ_PROFZONE("ogl - buffer unmap", 0xFFAA0000);
 		this->mapped_ptr = nullptr;
 		glUnmapNamedBuffer(this->native());
 	}
 
 	void buffer::basic_bind() const
 	{
+		TZ_PROFZONE("ogl - buffer basic bind", 0xFFAA0000);
 		this->custom_bind(this->get_target());
 	}
 
 	void buffer::custom_bind(buffer_target tar) const
 	{
+		TZ_PROFZONE("ogl - buffer custom bind", 0xFFAA0000);
 		glBindBuffer(static_cast<GLenum>(tar), this->buf);
 	}
 
 	void buffer::bind_to_resource_id(unsigned int shader_resource_id) const
 	{
-		TZ_PROFZONE("OpenGL Backend - buffer Bind", 0xFFAA0000);
+		TZ_PROFZONE("ogl - buffer bind to resource", 0xFFAA0000);
 		tz::assert(this->get_target() == buffer_target::uniform || this->get_target() == buffer_target::shader_storage, "Attempted to bind buffer to resource id %u, but its target was invalid - Only UBOs and SSBOs can be bound to a resource id.", shader_resource_id);
 		glBindBufferBase(static_cast<GLenum>(this->get_target()), shader_resource_id, this->buf);
 	}
@@ -144,7 +148,7 @@ namespace tz::gl::ogl2
 	{
 		void copy(const buffer& source, buffer& destination)
 		{
-			TZ_PROFZONE("OpenGL Backend - buffer Copy", 0xFFAA0000);
+			TZ_PROFZONE("ogl - buffer copy operation", 0xFFAA0000);
 
 			tz::assert(destination.size() >= source.size(), "buffer Copy: buffer source was larger than destination; therefore destination does not have enough space for transfer. Please submit a bug report.");
 			glCopyNamedBufferSubData(source.native(), destination.native(), 0, 0, static_cast<GLsizeiptr>(source.size()));
@@ -152,7 +156,7 @@ namespace tz::gl::ogl2
 
 		buffer clone_resized(const buffer& buf, std::size_t new_size)
 		{
-			TZ_PROFZONE("OpenGL Backend - buffer Clone Resized", 0xFFAA0000);
+			TZ_PROFZONE("ogl - buffer clone operation", 0xFFAA0000);
 			buffer newbuf
 			{{
 				.target = buf.get_target(),

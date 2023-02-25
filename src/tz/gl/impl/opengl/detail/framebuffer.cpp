@@ -9,7 +9,7 @@ namespace tz::gl::ogl2
 	fb(0),
 	info(info)
 	{
-		TZ_PROFZONE("OpenGL Backend - framebuffer Create", 0xFFAA0000);
+		TZ_PROFZONE("ogl - framebuffer create", 0xFFAA0000);
 		tz::assert(ogl2::is_initialised(), "Attempted to create framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
 		glCreateFramebuffers(1, &this->fb);
 
@@ -65,6 +65,7 @@ namespace tz::gl::ogl2
 
 	framebuffer::~framebuffer()
 	{
+		TZ_PROFZONE("ogl - framebuffer destroy", 0xFFAA0000);
 		glDeleteFramebuffers(1, &this->fb);
 	}
 
@@ -100,7 +101,7 @@ namespace tz::gl::ogl2
 
 	void framebuffer::bind() const
 	{
-		TZ_PROFZONE("OpenGL Backend - framebuffer Bind", 0xFFAA0000);
+		TZ_PROFZONE("ogl - framebuffer bind", 0xFFAA0000);
 		glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
 
 		auto dims = this->get_dimensions();
@@ -109,7 +110,7 @@ namespace tz::gl::ogl2
 
 	void framebuffer::clear() const
 	{
-		TZ_PROFZONE("OpenGL Backend - framebuffer Clear", 0xFFAA0000);
+		TZ_PROFZONE("ogl - framebuffer clear", 0xFFAA0000);
 		GLenum clear_flags = GL_COLOR_BUFFER_BIT;
 		if(this->has_depth_attachment())
 		{
