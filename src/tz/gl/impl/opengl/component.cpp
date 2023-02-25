@@ -29,14 +29,14 @@ namespace tz::gl
 	void buffer_component_ogl::resize(std::size_t sz)
 	{
 		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a buffer_component_ogl, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
-		ogl2::Buffer& old_buffer = this->ogl_get_buffer();
-		ogl2::Buffer new_buffer = ogl2::buffer::clone_resized(old_buffer, sz);
+		ogl2::buffer& old_buffer = this->ogl_get_buffer();
+		ogl2::buffer new_buffer = ogl2::buffer_helper::clone_resized(old_buffer, sz);
 		// Just set the new buffer range, clone resized already sorts out the data for us.
 		this->resource->set_mapped_data(new_buffer.map_as<std::byte>());
 		std::swap(old_buffer, new_buffer);
 	}
 
-	ogl2::Buffer& buffer_component_ogl::ogl_get_buffer()
+	ogl2::buffer& buffer_component_ogl::ogl_get_buffer()
 	{
 		return this->buffer;
 	}
@@ -46,26 +46,26 @@ namespace tz::gl
 		return !this->resource->get_flags().contains(resource_flag::index_buffer) && !this->resource->get_flags().contains(resource_flag::draw_indirect_buffer);
 	}
 
-	ogl2::Buffer buffer_component_ogl::make_buffer() const
+	ogl2::buffer buffer_component_ogl::make_buffer() const
 	{
-		ogl2::BufferResidency residency;
+		ogl2::buffer_residency residency;
 		switch(this->resource->get_access())
 		{
 			default:
 				tz::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
 			case resource_access::static_fixed:
-				residency = ogl2::BufferResidency::Static;
+				residency = ogl2::buffer_residency::static_fixed;
 			break;
 			case resource_access::dynamic_fixed:
 			[[fallthrough]];
 			case resource_access::dynamic_variable:
-				residency = ogl2::BufferResidency::Dynamic;
+				residency = ogl2::buffer_residency::dynamic;
 			break;
 		}
 		return
 		{{
-			.target = ogl2::BufferTarget::ShaderStorage,
+			.target = ogl2::buffer_target::shader_storage,
 			.residency = residency,
 			.size_bytes = this->resource->data().size_bytes()
 		}};

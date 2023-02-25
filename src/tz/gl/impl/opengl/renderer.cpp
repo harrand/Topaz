@@ -16,7 +16,7 @@ namespace tz::gl
 	{
 		void initialise_buffer(buffer_component_ogl& bufcomp)
 		{
-			ogl2::Buffer& buffer = bufcomp.ogl_get_buffer();
+			ogl2::buffer& buffer = bufcomp.ogl_get_buffer();
 			iresource* res = bufcomp.get_resource();
 			tz::assert(res != nullptr, "buffer_component had null resource");
 			switch(res->get_access())
@@ -24,22 +24,22 @@ namespace tz::gl
 				case resource_access::static_fixed:
 				{
 					// Create a staging buffer, write the resource data into it, and then do a buffer copy to the component.
-					ogl2::BufferTarget tar = ogl2::BufferTarget::ShaderStorage;
+					ogl2::buffer_target tar = ogl2::buffer_target::shader_storage;
 					if(res->get_flags().contains(resource_flag::index_buffer))
 					{
-						tar = ogl2::BufferTarget::Index;
+						tar = ogl2::buffer_target::index;
 					}
 
-					ogl2::Buffer staging_buffer
+					ogl2::buffer staging_buffer
 					{{
 						.target = tar,
-						.residency = ogl2::BufferResidency::Dynamic,
+						.residency = ogl2::buffer_residency::dynamic,
 						.size_bytes = buffer.size()
 					}};
 					auto staging_data = staging_buffer.map_as<std::byte>();
 					auto resource_data = res->data();
 					std::copy(resource_data.begin(), resource_data.end(), staging_data.begin());
-					ogl2::buffer::copy(staging_buffer, buffer);
+					ogl2::buffer_helper::copy(staging_buffer, buffer);
 				}
 				break;
 				case resource_access::dynamic_fixed:
@@ -64,7 +64,7 @@ namespace tz::gl
 	AssetStorageCommon<iresource>(resources),
 	components(),
 	image_handles(),
-	bindless_image_storage_buffer(ogl2::Buffer::null())
+	bindless_image_storage_buffer(ogl2::buffer::null())
 	{
 		TZ_PROFZONE("OpenGL Frontend - renderer_ogl ResourceStorage Create", 0xFFAA0000);
 		auto do_metadata = [this](icomponent* comp)
@@ -172,21 +172,21 @@ namespace tz::gl
 		const std::size_t buf_size = this->image_handles.size() * sizeof(ogl2::image::bindless_handle);
 		this->bindless_image_storage_buffer =
 		{{
-			.target = ogl2::BufferTarget::ShaderStorage,
-			.residency = ogl2::BufferResidency::Static,
+			.target = ogl2::buffer_target::shader_storage,
+			.residency = ogl2::buffer_residency::static_fixed,
 			.size_bytes = buf_size
 		}};
-		ogl2::Buffer temp_copy_buffer =
+		ogl2::buffer temp_copy_buffer =
 		{{
-			.target = ogl2::BufferTarget::ShaderStorage,
-			.residency = ogl2::BufferResidency::Dynamic,
+			.target = ogl2::buffer_target::shader_storage,
+			.residency = ogl2::buffer_residency::dynamic,
 			.size_bytes = buf_size
 		}};
 		{
 			std::span<ogl2::image::bindless_handle> handle_data = temp_copy_buffer.map_as<ogl2::image::bindless_handle>();
 			std::copy(this->image_handles.begin(), this->image_handles.end(), handle_data.begin());
 		}
-		ogl2::buffer::copy(temp_copy_buffer, this->bindless_image_storage_buffer);
+		ogl2::buffer_helper::copy(temp_copy_buffer, this->bindless_image_storage_buffer);
 	}
 
 	void ResourceStorage::bind_buffers(const render_state& state)
@@ -476,7 +476,7 @@ namespace tz::gl
 				icomponent* comp = this->resources.get_component(static_cast<tz::hanval>(i));
 				if(comp->get_resource()->get_type() == resource_type::buffer)
 				{
-					ogl2::Buffer& buf = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
+					ogl2::buffer& buf = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
 					std::string n = buf.debug_get_name();
 					buf.debug_set_name(n + (n.empty() ? "" : " -> ") + this->debug_name + ":B" + std::to_string(i));
 				}
@@ -601,11 +601,11 @@ namespace tz::gl
 			auto* icomp = this->get_component(this->state.graphics.index_buffer);
 			if(icomp != nullptr)
 			{
-				const ogl2::Buffer& ibuf = static_cast<buffer_component_ogl*>(icomp)->ogl_get_buffer();
+				const ogl2::buffer& ibuf = static_cast<buffer_component_ogl*>(icomp)->ogl_get_buffer();
 				auto* dcomp = this->get_component(this->state.graphics.draw_buffer);
 				if(dcomp != nullptr)
 				{
-					const ogl2::Buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
+					const ogl2::buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
 					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
 					{
 						tz::error("test");
@@ -625,7 +625,7 @@ namespace tz::gl
 				auto* dcomp = this->get_component(this->state.graphics.draw_buffer);
 				if(dcomp != nullptr)
 				{
-					const ogl2::Buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
+					const ogl2::buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
 					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
 					{
 						this->vao.draw_indirect_count(dbuf.size() / sizeof(ogl2::draw_indirect_command), dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), this->shader.has_tessellation());
@@ -710,11 +710,11 @@ namespace tz::gl
 							{
 								case resource_type::buffer:
 								{
-									ogl2::Buffer& buffer = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
-									ogl2::Buffer staging_buffer
+									ogl2::buffer& buffer = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
+									ogl2::buffer staging_buffer
 									{{
-										.target = ogl2::BufferTarget::Uniform,
-										.residency = ogl2::BufferResidency::Dynamic,
+										.target = ogl2::buffer_target::uniform,
+										.residency = ogl2::buffer_residency::dynamic,
 										.size_bytes = res->data().size_bytes()
 									}};
 									{
@@ -722,7 +722,7 @@ namespace tz::gl
 										std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
 										staging_buffer.unmap();
 									}
-									ogl2::buffer::copy(staging_buffer, buffer);
+									ogl2::buffer_helper::copy(staging_buffer, buffer);
 								}
 								break;
 								case resource_type::image:

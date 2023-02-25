@@ -44,54 +44,54 @@ namespace tz::gl::ogl2
 		glDrawArrays(tessellation ? GL_PATCHES : GL_TRIANGLES, 0, triangle_count * 3);
 	}
 
-	void vertex_array::draw_indexed(unsigned int triangle_count, const Buffer& index_buffer, bool tessellation)
+	void vertex_array::draw_indexed(unsigned int triangle_count, const buffer& index_buffer, bool tessellation)
 	{
 		TZ_PROFZONE("ogl - draw indexed", 0xFFAA0000);
 		tz::assert(!index_buffer.is_null(), "Detected `nullbuf` index buffer for draw_indexed");
 		this->bind();
-		index_buffer.custom_bind(BufferTarget::Index);
+		index_buffer.custom_bind(buffer_target::index);
 		glDrawElements(tessellation ? GL_PATCHES : GL_TRIANGLES, triangle_count * 3, GL_UNSIGNED_INT, nullptr);
 	}
 
-	void vertex_array::draw_indirect(unsigned int draw_count, const Buffer& draw_indirect_buffer, bool tessellation)
+	void vertex_array::draw_indirect(unsigned int draw_count, const buffer& draw_indirect_buffer, bool tessellation)
 	{
 		TZ_PROFZONE("ogl - draw indirect", 0xFFAA0000);
 		tz::assert(!draw_indirect_buffer.is_null(), "Detected `nullbuf` draw indirect buffer for draw indirect");
 		this->bind();
-		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
+		draw_indirect_buffer.custom_bind(buffer_target::draw_indirect);
 		glMultiDrawArraysIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, nullptr, draw_count, 0);
 	}
 
-	void vertex_array::draw_indirect_count(unsigned int max_draw_count, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation)
+	void vertex_array::draw_indirect_count(unsigned int max_draw_count, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation)
 	{
 		TZ_PROFZONE("ogl - draw indirect count", 0xFFAA0000);
 		tz::assert(!draw_indirect_buffer.is_null(), "Detected `nullbuf` draw indirect buffer for draw indirect count");
 		this->bind();
-		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
-		draw_indirect_buffer.custom_bind(BufferTarget::Parameter);
+		draw_indirect_buffer.custom_bind(buffer_target::draw_indirect);
+		draw_indirect_buffer.custom_bind(buffer_target::parameter);
 		glMultiDrawArraysIndirectCountARB(tessellation ? GL_PATCHES : GL_TRIANGLES, reinterpret_cast<const GLvoid*>(draw_commands_offset), 0, max_draw_count, 0);
 	}
 
-	void vertex_array::draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation)
+	void vertex_array::draw_indexed_indirect(unsigned int draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, bool tessellation)
 	{
 		TZ_PROFZONE("ogl - draw indexed indirect", 0xFFAA0000);
 		tz::assert(!index_buffer.is_null(), "Detected `nullbuf` index buffer for draw indexed indirect");
 		tz::assert(!draw_indirect_buffer.is_null(), "Detected `nullbuf` draw indirect buffer for draw indexed indirect");
 		this->bind();
-		index_buffer.custom_bind(BufferTarget::Index);
-		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
+		index_buffer.custom_bind(buffer_target::index);
+		draw_indirect_buffer.custom_bind(buffer_target::draw_indirect);
 		glMultiDrawElementsIndirect(tessellation ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, draw_count, 0);
 	}
 
-	void vertex_array::draw_indexed_indirect_count(unsigned int max_draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation)
+	void vertex_array::draw_indexed_indirect_count(unsigned int max_draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation)
 	{
 		TZ_PROFZONE("ogl - draw indexed indirect count", 0xFFAA0000);
 		tz::assert(!index_buffer.is_null(), "Detected `nullbuf` index buffer for draw indexed indirect count");
 		tz::assert(!draw_indirect_buffer.is_null(), "Detected `nullbuf` draw indirect buffer for draw indexed indirect count");
 		this->bind();
-		index_buffer.custom_bind(BufferTarget::Index);
-		draw_indirect_buffer.custom_bind(BufferTarget::DrawIndirect);
-		draw_indirect_buffer.custom_bind(BufferTarget::Parameter);
+		index_buffer.custom_bind(buffer_target::index);
+		draw_indirect_buffer.custom_bind(buffer_target::draw_indirect);
+		draw_indirect_buffer.custom_bind(buffer_target::parameter);
 		glMultiDrawElementsIndirectCountARB(tessellation ? GL_PATCHES : GL_TRIANGLES, GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(draw_commands_offset), 0, max_draw_count, 0);
 	}
 

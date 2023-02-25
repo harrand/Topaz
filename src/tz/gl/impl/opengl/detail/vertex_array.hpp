@@ -5,7 +5,7 @@
 
 namespace tz::gl::ogl2
 {
-	class Buffer;
+	class buffer;
 	/**
 	 * @ingroup tz_gl_ogl2
 	 * Wrapper for an OpenGL VAO.
@@ -36,12 +36,12 @@ namespace tz::gl::ogl2
 		 * Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
 		 * @param triangle_count number of triangles to draw.
 		 */
-		void draw_indexed(unsigned int triangle_count, const Buffer& index_buffer, bool tessellation = false);
+		void draw_indexed(unsigned int triangle_count, const buffer& index_buffer, bool tessellation = false);
 
-		void draw_indirect(unsigned int draw_count, const Buffer& draw_indirect_buffer, bool tessellation = false);
-		void draw_indirect_count(unsigned int max_draw_count, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
-		void draw_indexed_indirect(unsigned int draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, bool tessellation = false);
-		void draw_indexed_indirect_count(unsigned int max_draw_count, const Buffer& index_buffer, const Buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
+		void draw_indirect(unsigned int draw_count, const buffer& draw_indirect_buffer, bool tessellation = false);
+		void draw_indirect_count(unsigned int max_draw_count, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
+		void draw_indexed_indirect(unsigned int draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, bool tessellation = false);
+		void draw_indexed_indirect_count(unsigned int max_draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
 		/**
 		 * Retrieve the Null vertex_array. Binding the null vertex array is equivalent to unbinding a vertex array. It is invalid to attempt to perform draws or computes using the null vertex array.
 		 */

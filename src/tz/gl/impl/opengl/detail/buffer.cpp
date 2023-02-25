@@ -4,156 +4,156 @@
 
 namespace tz::gl::ogl2
 {
-	Buffer::Buffer(buffer_info info):
-	buffer(0),
+	buffer::buffer(buffer_info info):
+	buf(0),
 	info(info)
 	{
-		TZ_PROFZONE("OpenGL Backend - Buffer Create", 0xFFAA0000);
-		tz::assert(ogl2::is_initialised(), "Cannot create ogl2 Buffer because ogl2 backend has not yet been initialised! Please submit a bug report.");
+		TZ_PROFZONE("OpenGL Backend - buffer Create", 0xFFAA0000);
+		tz::assert(ogl2::is_initialised(), "Cannot create ogl2 buffer because ogl2 backend has not yet been initialised! Please submit a bug report.");
 		tz::assert(this->info.size_bytes > 0, "Cannot create a zero-sized buffer.");
-		glCreateBuffers(1, &this->buffer);
+		glCreateBuffers(1, &this->buf);
 		constexpr GLenum buffer_create_flags_static = 0;
 		constexpr GLenum buffer_create_flags_dynamic = GL_DYNAMIC_STORAGE_BIT | GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 		GLenum flags = buffer_create_flags_static;
-		if(this->info.residency == BufferResidency::Dynamic)
+		if(this->info.residency == buffer_residency::dynamic)
 		{
 			flags = buffer_create_flags_dynamic;
 		}
-		glNamedBufferStorage(this->buffer, static_cast<GLsizeiptr>(this->info.size_bytes), nullptr, flags);
+		glNamedBufferStorage(this->buf, static_cast<GLsizeiptr>(this->info.size_bytes), nullptr, flags);
 	}
 
-	Buffer::Buffer(Buffer&& move):
-	buffer(0),
+	buffer::buffer(buffer&& move):
+	buf(0),
 	info()
 	{
 		*this = std::move(move);
 	}
 
-	Buffer::~Buffer()
+	buffer::~buffer()
 	{
-		glDeleteBuffers(1, &this->buffer);
+		glDeleteBuffers(1, &this->buf);
 	}
 
-	Buffer& Buffer::operator=(Buffer&& move)
+	buffer& buffer::operator=(buffer&& move)
 	{
-		std::swap(this->buffer, move.buffer);
+		std::swap(this->buf, move.buf);
 		std::swap(this->info, move.info);
 		std::swap(this->mapped_ptr, move.mapped_ptr);
 		return *this;
 	}
 
-	BufferTarget Buffer::get_target() const
+	buffer_target buffer::get_target() const
 	{
 		return this->info.target;
 	}
 
-	BufferResidency Buffer::get_residency() const
+	buffer_residency buffer::get_residency() const
 	{
 		return this->info.residency;
 	}
 
-	std::size_t Buffer::size() const
+	std::size_t buffer::size() const
 	{
 		return this->info.size_bytes;
 	}
 
-	void* Buffer::map()
+	void* buffer::map()
 	{
-		TZ_PROFZONE("OpenGL Backend - Buffer Map", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - buffer Map", 0xFFAA0000);
 		if(this->mapped_ptr != nullptr)
 		{
 			return this->mapped_ptr;
 		}
 
-		tz::assert(this->info.residency == BufferResidency::Dynamic, "OGL Buffers with non-dynamic residency cannot be mapped. Please submit a bug report.");
-		this->mapped_ptr = glMapNamedBufferRange(this->buffer, 0, static_cast<GLsizeiptr>(this->size()), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-		tz::assert(this->mapped_ptr != nullptr, "Buffer::map() returned nullptr. Please submit a bug report.");
+		tz::assert(this->info.residency == buffer_residency::dynamic, "OGL buffers with non-dynamic residency cannot be mapped. Please submit a bug report.");
+		this->mapped_ptr = glMapNamedBufferRange(this->buf, 0, static_cast<GLsizeiptr>(this->size()), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		tz::assert(this->mapped_ptr != nullptr, "buffer::map() returned nullptr. Please submit a bug report.");
 		return this->mapped_ptr;
 	}
 
-	const void* Buffer::map() const
+	const void* buffer::map() const
 	{
-		TZ_PROFZONE("OpenGL Backend - Buffer Map", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - buffer Map", 0xFFAA0000);
 		if(this->mapped_ptr != nullptr)
 		{
 			return this->mapped_ptr;
 		}
 
-		tz::assert(this->info.residency == BufferResidency::Dynamic, "OGL Buffers with non-dynamic residency cannot be mapped. Please submit a bug report.");
-		this->mapped_ptr = glMapNamedBufferRange(this->buffer, 0, static_cast<GLsizeiptr>(this->size()), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-		tz::assert(this->mapped_ptr != nullptr, "Buffer::map() returned nullptr. Please submit a bug report.");
+		tz::assert(this->info.residency == buffer_residency::dynamic, "OGL buffers with non-dynamic residency cannot be mapped. Please submit a bug report.");
+		this->mapped_ptr = glMapNamedBufferRange(this->buf, 0, static_cast<GLsizeiptr>(this->size()), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		tz::assert(this->mapped_ptr != nullptr, "buffer::map() returned nullptr. Please submit a bug report.");
 		return this->mapped_ptr;
 	}
 
-	void Buffer::unmap()
+	void buffer::unmap()
 	{
 		this->mapped_ptr = nullptr;
 		glUnmapNamedBuffer(this->native());
 	}
 
-	void Buffer::basic_bind() const
+	void buffer::basic_bind() const
 	{
 		this->custom_bind(this->get_target());
 	}
 
-	void Buffer::custom_bind(BufferTarget tar) const
+	void buffer::custom_bind(buffer_target tar) const
 	{
-		glBindBuffer(static_cast<GLenum>(tar), this->buffer);
+		glBindBuffer(static_cast<GLenum>(tar), this->buf);
 	}
 
-	void Buffer::bind_to_resource_id(unsigned int shader_resource_id) const
+	void buffer::bind_to_resource_id(unsigned int shader_resource_id) const
 	{
-		TZ_PROFZONE("OpenGL Backend - Buffer Bind", 0xFFAA0000);
-		tz::assert(this->get_target() == BufferTarget::Uniform || this->get_target() == BufferTarget::ShaderStorage, "Attempted to bind buffer to resource id %u, but its target was invalid - Only UBOs and SSBOs can be bound to a resource id.", shader_resource_id);
-		glBindBufferBase(static_cast<GLenum>(this->get_target()), shader_resource_id, this->buffer);
+		TZ_PROFZONE("OpenGL Backend - buffer Bind", 0xFFAA0000);
+		tz::assert(this->get_target() == buffer_target::uniform || this->get_target() == buffer_target::shader_storage, "Attempted to bind buffer to resource id %u, but its target was invalid - Only UBOs and SSBOs can be bound to a resource id.", shader_resource_id);
+		glBindBufferBase(static_cast<GLenum>(this->get_target()), shader_resource_id, this->buf);
 	}
 
-	Buffer Buffer::null()
+	buffer buffer::null()
 	{
 		return {};
 	}
 
-	bool Buffer::is_null() const
+	bool buffer::is_null() const
 	{
-		return this->buffer == 0;
+		return this->buf == 0;
 	}
 
-	Buffer::NativeType Buffer::native() const
+	buffer::NativeType buffer::native() const
 	{
-		return this->buffer;
+		return this->buf;
 	}
 
-	std::string Buffer::debug_get_name() const
+	std::string buffer::debug_get_name() const
 	{
 		return this->debug_name;
 	}
 
-	void Buffer::debug_set_name(std::string name)
+	void buffer::debug_set_name(std::string name)
 	{
 		this->debug_name = name;
 		#if TZ_DEBUG
-			glObjectLabel(GL_BUFFER, this->buffer, -1, this->debug_name.c_str());
+			glObjectLabel(GL_BUFFER, this->buf, -1, this->debug_name.c_str());
 		#endif
 	}
 
-	Buffer::Buffer():
-	buffer(0),
+	buffer::buffer():
+	buf(0),
 	info(){}
 
-	namespace buffer
+	namespace buffer_helper
 	{
-		void copy(const Buffer& source, Buffer& destination)
+		void copy(const buffer& source, buffer& destination)
 		{
-			TZ_PROFZONE("OpenGL Backend - Buffer Copy", 0xFFAA0000);
+			TZ_PROFZONE("OpenGL Backend - buffer Copy", 0xFFAA0000);
 
-			tz::assert(destination.size() >= source.size(), "Buffer Copy: Buffer source was larger than destination; therefore destination does not have enough space for transfer. Please submit a bug report.");
+			tz::assert(destination.size() >= source.size(), "buffer Copy: buffer source was larger than destination; therefore destination does not have enough space for transfer. Please submit a bug report.");
 			glCopyNamedBufferSubData(source.native(), destination.native(), 0, 0, static_cast<GLsizeiptr>(source.size()));
 		}
 
-		Buffer clone_resized(const Buffer& buf, std::size_t new_size)
+		buffer clone_resized(const buffer& buf, std::size_t new_size)
 		{
-			TZ_PROFZONE("OpenGL Backend - Buffer Clone Resized", 0xFFAA0000);
-			Buffer newbuf
+			TZ_PROFZONE("OpenGL Backend - buffer Clone Resized", 0xFFAA0000);
+			buffer newbuf
 			{{
 				.target = buf.get_target(),
 				.residency = buf.get_residency(),
