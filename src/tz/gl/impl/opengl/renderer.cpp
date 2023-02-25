@@ -367,7 +367,7 @@ namespace tz::gl
 	OutputManager::OutputManager(const ioutput* output, tz::gl::renderer_options options):
 	output(output != nullptr ? output->unique_clone() : nullptr),
 	default_depth_renderbuffer(ogl2::render_buffer::null()),
-	framebuffer(ogl2::Framebuffer::null()),
+	framebuffer(ogl2::framebuffer::null()),
 	options(options)
 	{
 		if(this->output != nullptr)
@@ -378,7 +378,7 @@ namespace tz::gl
 			{
 				auto* out = static_cast<image_output*>(this->output.get());
 				tz::assert(!out->has_depth_attachment(), "image_output with depth attachment is not yet implemented.");
-				tz::basic_list<ogl2::FramebufferTexture> colour_attachments;
+				tz::basic_list<ogl2::framebuffer_texture> colour_attachments;
 				colour_attachments.resize(out->colour_attachment_count());
 				for(std::size_t i = 0; i < colour_attachments.length(); i++)
 				{
@@ -392,7 +392,7 @@ namespace tz::gl
 				}};
 
 				this->framebuffer =
-				{ogl2::FramebufferInfo{
+				{ogl2::framebuffer_info{
 					.dimensions = out->get_colour_attachment(0).get_dimensions(),
 					.maybe_depth_attachment = {&this->default_depth_renderbuffer},
 					.colour_attachments = colour_attachments

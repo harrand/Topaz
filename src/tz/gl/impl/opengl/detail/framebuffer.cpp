@@ -5,13 +5,13 @@
 
 namespace tz::gl::ogl2
 {
-	Framebuffer::Framebuffer(FramebufferInfo info):
-	framebuffer(0),
+	framebuffer::framebuffer(framebuffer_info info):
+	fb(0),
 	info(info)
 	{
-		TZ_PROFZONE("OpenGL Backend - Framebuffer Create", 0xFFAA0000);
-		tz::assert(ogl2::is_initialised(), "Attempted to create Framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
-		glCreateFramebuffers(1, &this->framebuffer);
+		TZ_PROFZONE("OpenGL Backend - framebuffer Create", 0xFFAA0000);
+		tz::assert(ogl2::is_initialised(), "Attempted to create framebuffer but ogl2 is not yet initialised. Please submit a bug report.");
+		glCreateFramebuffers(1, &this->fb);
 
 		// Deal with attachments.
 		// First depth (if there is one).
@@ -23,15 +23,15 @@ namespace tz::gl::ogl2
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, const image*>)
 				{
-					glNamedFramebufferTexture(this->framebuffer, GL_DEPTH_ATTACHMENT, arg->native(), 0);
+					glNamedFramebufferTexture(this->fb, GL_DEPTH_ATTACHMENT, arg->native(), 0);
 				}
 				else if constexpr(std::is_same_v<T, const render_buffer*>)
 				{
-					glNamedFramebufferRenderbuffer(this->framebuffer, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, arg->native());
+					glNamedFramebufferRenderbuffer(this->fb, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, arg->native());
 				}
 				else
 				{
-					tz::error("Unknown FramebufferTexture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");
+					tz::error("Unknown framebuffer_texture variant entry. Perhaps a new one has only been partially implemented? Please submit a bug report.");
 				}
 			}, this->info.maybe_depth_attachment.value());
 		}
@@ -47,35 +47,35 @@ namespace tz::gl::ogl2
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(std::is_same_v<T, const image*>)
 				{
-					glNamedFramebufferTexture(this->framebuffer, attachment, arg->native(), 0);
+					glNamedFramebufferTexture(this->fb, attachment, arg->native(), 0);
 				}
 			}, this->info.colour_attachments[i]);
 		}
-		glNamedFramebufferDrawBuffers(this->framebuffer, draw_buffers.size(), draw_buffers.data());
+		glNamedFramebufferDrawBuffers(this->fb, draw_buffers.size(), draw_buffers.data());
 
-		tz::assert(glCheckNamedFramebufferStatus(this->framebuffer, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
+		tz::assert(glCheckNamedFramebufferStatus(this->fb, GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Newly-created framebuffer was incomplete. Please submit a bug report.");
 	}
 
-	Framebuffer::Framebuffer(Framebuffer&& move):
-	framebuffer(0),
+	framebuffer::framebuffer(framebuffer&& move):
+	fb(0),
 	info()
 	{
 		*this = std::move(move);
 	}
 
-	Framebuffer::~Framebuffer()
+	framebuffer::~framebuffer()
 	{
-		glDeleteFramebuffers(1, &this->framebuffer);
+		glDeleteFramebuffers(1, &this->fb);
 	}
 
-	Framebuffer& Framebuffer::operator=(Framebuffer&& rhs)
+	framebuffer& framebuffer::operator=(framebuffer&& rhs)
 	{
-		std::swap(this->framebuffer, rhs.framebuffer);
+		std::swap(this->fb, rhs.fb);
 		std::swap(this->info, rhs.info);
 		return *this;
 	}
 	
-	bool Framebuffer::has_depth_attachment() const
+	bool framebuffer::has_depth_attachment() const
 	{
 		if(this->is_null())
 		{
@@ -84,12 +84,12 @@ namespace tz::gl::ogl2
 		return this->info.maybe_depth_attachment.has_value();
 	}
 
-	unsigned int Framebuffer::colour_attachment_count() const
+	unsigned int framebuffer::colour_attachment_count() const
 	{
 		return this->info.colour_attachments.length();
 	}
 
-	tz::vec2ui Framebuffer::get_dimensions() const
+	tz::vec2ui framebuffer::get_dimensions() const
 	{
 		if(this->is_null())
 		{
@@ -98,18 +98,18 @@ namespace tz::gl::ogl2
 		return this->info.dimensions;
 	}
 
-	void Framebuffer::bind() const
+	void framebuffer::bind() const
 	{
-		TZ_PROFZONE("OpenGL Backend - Framebuffer Bind", 0xFFAA0000);
-		glBindFramebuffer(GL_FRAMEBUFFER, this->framebuffer);
+		TZ_PROFZONE("OpenGL Backend - framebuffer Bind", 0xFFAA0000);
+		glBindFramebuffer(GL_FRAMEBUFFER, this->fb);
 
 		auto dims = this->get_dimensions();
 		glViewport(0, 0, static_cast<GLsizei>(dims[0]), static_cast<GLsizei>(dims[1]));
 	}
 
-	void Framebuffer::clear() const
+	void framebuffer::clear() const
 	{
-		TZ_PROFZONE("OpenGL Backend - Framebuffer Clear", 0xFFAA0000);
+		TZ_PROFZONE("OpenGL Backend - framebuffer Clear", 0xFFAA0000);
 		GLenum clear_flags = GL_COLOR_BUFFER_BIT;
 		if(this->has_depth_attachment())
 		{
@@ -118,23 +118,23 @@ namespace tz::gl::ogl2
 		glClear(clear_flags);
 	}
 
-	Framebuffer Framebuffer::null()
+	framebuffer framebuffer::null()
 	{
 		return {nullptr};
 	}
 
-	bool Framebuffer::is_null() const
+	bool framebuffer::is_null() const
 	{
-		return this->framebuffer == 0;
+		return this->fb == 0;
 	}
 
-	Framebuffer::NativeType Framebuffer::native() const
+	framebuffer::NativeType framebuffer::native() const
 	{
-		return this->framebuffer;
+		return this->fb;
 	}
 
-	Framebuffer::Framebuffer(std::nullptr_t):
-	framebuffer(0),
+	framebuffer::framebuffer(std::nullptr_t):
+	fb(0),
 	info(){}
 }
 

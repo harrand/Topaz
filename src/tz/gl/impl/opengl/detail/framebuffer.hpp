@@ -12,41 +12,41 @@ namespace tz::gl::ogl2
 {
 	/**
 	 * @ingroup tz_gl_ogl2_framebuffer
-	 * Describes a reference to either an image or renderbuffer. Is used as a @ref Framebuffer attachment.
+	 * Describes a reference to either an image or renderbuffer. Is used as a @ref framebuffer attachment.
 	 */
-	using FramebufferTexture = std::variant<const image*, const render_buffer*>;
+	using framebuffer_texture = std::variant<const image*, const render_buffer*>;
 	/**
 	 * @ingroup tz_gl_ogl2_framebuffer
-	 * Specifies creation flags for a @ref Framebuffer.
+	 * Specifies creation flags for a @ref framebuffer.
 	 */
-	struct FramebufferInfo
+	struct framebuffer_info
 	{
 		/// {width, height}, in pixels.
 		tz::vec2ui dimensions;
 		/// Depth attachment, if one exists. Default nullopt.
-		std::optional<FramebufferTexture> maybe_depth_attachment = std::nullopt;
+		std::optional<framebuffer_texture> maybe_depth_attachment = std::nullopt;
 		/// List of colour attachments in-order. Default empty.
-		tz::basic_list<FramebufferTexture> colour_attachments = {};
+		tz::basic_list<framebuffer_texture> colour_attachments = {};
 	};
 
 	/**
 	 * @ingroup tz_gl_ogl2_framebuffer
 	 * Represents an OpenGL framebuffer object.
 	 */
-	class Framebuffer
+	class framebuffer
 	{
 	public:
 		/**
-		 * Create a new Framebuffer.
+		 * Create a new framebuffer.
 		 * @param info Creation flags for the framebuffer.
 		 */
-		Framebuffer(FramebufferInfo info);
-		Framebuffer(const Framebuffer& copy) = delete;
-		Framebuffer(Framebuffer&& move);
-		~Framebuffer();
+		framebuffer(framebuffer_info info);
+		framebuffer(const framebuffer& copy) = delete;
+		framebuffer(framebuffer&& move);
+		~framebuffer();
 		
-		Framebuffer& operator=(const Framebuffer& rhs) = delete;
-		Framebuffer& operator=(Framebuffer&& rhs);
+		framebuffer& operator=(const framebuffer& rhs) = delete;
+		framebuffer& operator=(framebuffer&& rhs);
 		
 		/**
 		 * Query as to whether the framebuffer has a depth attachment. If the framebuffer is a null framebuffer, then this will return whether we have enabled depth testing or not.
@@ -77,7 +77,7 @@ namespace tz::gl::ogl2
 		 * Retrieve the null framebuffer. The null framebuffer represents the window (note that Topaz applications can only have a single window).
 		 * @return Null framebuffer.
 		 */
-		static Framebuffer null();
+		static framebuffer null();
 		/**
 		 * Query as to whether this is the null framebuffer.
 		 * @return True if this is the null framebuffer, otherwise false.
@@ -87,10 +87,10 @@ namespace tz::gl::ogl2
 		using NativeType = GLuint;
 		NativeType native() const;
 	private:
-		Framebuffer(std::nullptr_t);
+		framebuffer(std::nullptr_t);
 
-		GLuint framebuffer;
-		FramebufferInfo info;
+		GLuint fb;
+		framebuffer_info info;
 	};
 }
 

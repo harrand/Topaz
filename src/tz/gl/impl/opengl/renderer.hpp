@@ -103,7 +103,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
-	 * Stores information about the output target, and a framebuffer which either points to an offscreen image for render-to-texture (not yet implemented), or the main window framebuffer via ogl2::Framebuffer::null().
+	 * Stores information about the output target, and a framebuffer which either points to an offscreen image for render-to-texture (not yet implemented), or the main window framebuffer via ogl2::framebuffer::null().
 	 */
 	class OutputManager
 	{
@@ -121,7 +121,7 @@ namespace tz::gl
 	private:
 		std::unique_ptr<ioutput> output;
 		ogl2::render_buffer default_depth_renderbuffer;
-		ogl2::Framebuffer framebuffer;
+		ogl2::framebuffer framebuffer;
 		tz::gl::renderer_options options;
 	};
 
