@@ -12,8 +12,8 @@ namespace tz::gl
 		using draw_indirect_command = VkDrawIndirectCommand;
 		using draw_indexed_indirect_command = VkDrawIndexedIndirectCommand;
 	#elif TZ_OGL
-		using draw_indirect_command = ogl2::DrawIndirectCommand;
-		using draw_indexed_indirect_command = ogl2::DrawIndexedIndirectCommand;
+		using draw_indirect_command = ogl2::draw_indirect_command;
+		using draw_indexed_indirect_command = ogl2::draw_indexed_indirect_command;
 	#endif
 }
 

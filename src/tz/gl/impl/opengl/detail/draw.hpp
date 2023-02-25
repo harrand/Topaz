@@ -4,7 +4,7 @@
 
 namespace tz::gl::ogl2
 {
-	struct DrawIndirectCommand
+	struct draw_indirect_command
 	{
 		unsigned int count;
 		unsigned int instance_count = 1;
@@ -12,7 +12,7 @@ namespace tz::gl::ogl2
 		unsigned int base_instance = 0;
 	};
 
-	struct DrawIndexedIndirectCommand
+	struct draw_indexed_indirect_command
 	{
 		unsigned int count;
 		unsigned int instance_count = 1;
