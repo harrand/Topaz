@@ -4,7 +4,7 @@
 #include "tz/tz.hpp"
 #include "glad/glad.h"
 #if TZ_PROFILE
-#include "TracyOpenGL.hpp"
+#include "tracy/TracyOpenGL.hpp"
 #endif // TZ_PROFILE
 
 namespace tz::gl::ogl2
