@@ -121,7 +121,9 @@ add_library(topaz STATIC
 	src/tz/dbgui/dbgui.hpp
 	# tz::gl (API)
 	src/tz/gl/api/component.hpp
+	src/tz/gl/api/device.cpp
 	src/tz/gl/api/device.hpp
+	src/tz/gl/api/device.inl
 	src/tz/gl/api/output.hpp
 	src/tz/gl/api/renderer.cpp
 	src/tz/gl/api/renderer.hpp
@@ -143,7 +145,6 @@ add_library(topaz STATIC
 	src/tz/gl/resource.inl
 	src/tz/gl/tz_gl.hpp
 	# tz::gl (Common Impl)
-	src/tz/gl/impl/common/device.hpp
 	src/tz/gl/impl/common/renderer.cpp
 	src/tz/gl/impl/common/renderer.hpp
 	# tz::gl (Vulkan Frontend)

@@ -3,7 +3,6 @@
 #if TZ_OGL
 #include "tz/gl/api/device.hpp"
 #include "tz/gl/declare/image_format.hpp"
-#include "tz/gl/impl/common/device.hpp"
 #include "tz/gl/impl/opengl/renderer.hpp"
 
 namespace tz::gl
@@ -15,8 +14,8 @@ namespace tz::gl
 
 		// Satisfies device_type.
 		tz::gl::renderer_handle create_renderer(const renderer_info& info);
-		using DeviceCommon<renderer_ogl>::get_renderer;
-		using DeviceCommon<renderer_ogl>::destroy_renderer;
+		using device_common<renderer_ogl>::get_renderer;
+		using device_common<renderer_ogl>::destroy_renderer;
 		image_format get_window_format() const;
 		void dbgui();
 		void begin_frame();

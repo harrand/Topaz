@@ -4,7 +4,6 @@
 #include "tz/core/data/handle.hpp"
 #include "tz/core/callback.hpp"
 #include "tz/gl/api/device.hpp"
-#include "tz/gl/impl/common/device.hpp"
 #include "tz/gl/impl/vulkan/renderer.hpp"
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
 #include "tz/gl/impl/vulkan/detail/image.hpp"

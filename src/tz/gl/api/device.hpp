@@ -30,6 +30,28 @@ namespace tz::gl
 		{t.end_frame()} -> std::same_as<void>;
 	};
 
+	template<renderer_type R>
+	class device_common
+	{
+	public:
+		device_common() = default;
+		const R& get_renderer(tz::gl::renderer_handle handle) const;
+		R& get_renderer(tz::gl::renderer_handle handle);
+		void destroy_renderer(tz::gl::renderer_handle handle);
+		std::size_t renderer_count() const;
+		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
+	protected:
+		template<typename... Args>
+		tz::gl::renderer_handle emplace_renderer(Args&&... args);
+		void internal_clear();
+	private:
+		std::vector<R> renderers;
+		std::vector<std::size_t> free_list = {};
+	};
+
+	template<tz::gl::device_type<tz::gl::renderer_info> T>
+	void common_device_dbgui(T& device);
+
 	#if TZ_VULKAN && TZ_OGL
 	// Documentation only.
 	/**
@@ -82,4 +104,5 @@ namespace tz::gl
 	#endif
 }
 
+#include "tz/gl/api/device.inl"
 #endif // TOPAZ_GL_2_API_DEVICE_HPP

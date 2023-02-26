@@ -1,10 +1,9 @@
 #if TZ_VULKAN
+#include "tz/gl/impl/vulkan/device.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/core/debug.hpp"
 #include "tz/dbgui/dbgui.hpp"
-#include "tz/gl/impl/common/device.hpp"
 #include "tz/gl/impl/vulkan/renderer.hpp"
-#include "tz/gl/impl/vulkan/device.hpp"
 #include "tz/gl/impl/vulkan/convert.hpp"
 #include "tz/gl/impl/vulkan/detail/extensions.hpp"
 #include "tz/gl/impl/vulkan/detail/hardware/physical_device.hpp"
