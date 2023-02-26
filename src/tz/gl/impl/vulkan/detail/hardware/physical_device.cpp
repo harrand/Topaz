@@ -1,7 +1,6 @@
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/detail/features.hpp"
 #include "tz/gl/impl/vulkan/detail/image_format.hpp"
-#include "tz/gl/impl/common/shader.hpp"
 #include "tz/gl/impl/vulkan/detail/hardware/physical_device.hpp"
 #include <vector>
 

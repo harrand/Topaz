@@ -857,7 +857,7 @@ namespace tz::gl
 		return this->wireframe_mode;
 	}
 
-	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const
+	vk2::Shader GraphicsPipelineManager::make_shader(const vk2::LogicalDevice& ldev, const shader_info& sinfo) const
 	{
 		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan GraphicsPipelineManager (Shader Create)", 0xFFAAAA00);
 		std::vector<char> vtx_src, frg_src, tesscon_src, tesseval_src, cmp_src;
@@ -884,8 +884,8 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			tz::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			tz::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::vertex), "shader_info must contain a non-empty vertex shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::fragment), "shader_info must contain a non-empty fragment shader if no compute shader is present.");
 			{
 				std::string_view vertex_source = sinfo.get_shader(shader_stage::vertex);
 				vtx_src.resize(vertex_source.length());

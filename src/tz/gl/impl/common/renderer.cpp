@@ -145,12 +145,12 @@ namespace tz::gl
 		return this->renderer_state;
 	}
 
-	ShaderInfo& renderer_info::shader()
+	shader_info& renderer_info::shader()
 	{
 		return this->shader_info;
 	}
 
-	const ShaderInfo& renderer_info::shader() const
+	const shader_info& renderer_info::shader() const
 	{
 		return this->shader_info;
 	}

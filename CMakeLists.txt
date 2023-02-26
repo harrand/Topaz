@@ -127,6 +127,7 @@ add_library(topaz STATIC
 	src/tz/gl/api/resource.hpp
 	src/tz/gl/api/schedule.cpp
 	src/tz/gl/api/schedule.hpp
+	src/tz/gl/api/shader.cpp
 	src/tz/gl/api/shader.hpp
 	# tz::gl
 	src/tz/gl/component.hpp
@@ -144,8 +145,6 @@ add_library(topaz STATIC
 	src/tz/gl/impl/common/device.hpp
 	src/tz/gl/impl/common/renderer.cpp
 	src/tz/gl/impl/common/renderer.hpp
-	src/tz/gl/impl/common/shader.cpp
-	src/tz/gl/impl/common/shader.hpp
 	# tz::gl (Vulkan Frontend)
 	src/tz/gl/impl/vulkan/component.cpp
 	src/tz/gl/impl/vulkan/component.hpp

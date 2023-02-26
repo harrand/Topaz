@@ -1,7 +1,7 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP
 #include "tz/gl/api/renderer.hpp"
-#include "tz/gl/impl/common/shader.hpp"
+#include "tz/gl/api/shader.hpp"
 #include "tz/core/memory/maybe_owned_ptr.hpp"
 #include "imgui.h"
 #undef assert
@@ -128,11 +128,11 @@ namespace tz::gl
 		/**
 		 * Read/write information about the shader that will be built for the renderer.
 		 */
-		ShaderInfo& shader();
+		shader_info& shader();
 		/**
 		 * Read-only information about the shader that will be built for the renderer.
 		 */
-		const ShaderInfo& shader() const;
+		const shader_info& shader() const;
 		/**
 		 * Set the debug name of the spawned renderer. By default, the debug name is a compact description of the renderer.
 		 * @note This only has an affect on debug builds.
@@ -157,7 +157,7 @@ namespace tz::gl
 		/// List of renderers we are dependent on.
 		std::vector<renderer_handle> dependencies = {};
 		/// Describes the shader sources used.
-		ShaderInfo shader_info;
+		shader_info shader_info;
 		/// The clear value for colour attachments.
 		tz::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// Workgroup sizes if we're doing compute.

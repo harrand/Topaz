@@ -1,6 +1,8 @@
 #ifndef TOPAZ_GL2_API_SHADER_HPP
 #define TOPAZ_GL2_API_SHADER_HPP
+#include <string>
 #include <string_view>
+#include <array>
 
 namespace tz::gl
 {
@@ -12,7 +14,7 @@ namespace tz::gl
 		tessellation_control,
 		tessellation_evaluation,
 
-		Count
+		_count
 	};
 
 	struct shader_meta
@@ -20,15 +22,20 @@ namespace tz::gl
 
 	};
 
-	template<typename T>
-	concept shader_info_type = requires(T t, shader_stage stage, std::string_view sv, shader_meta meta)
+	class shader_info
 	{
-		{t.set_shader(stage, sv)} -> std::same_as<void>;
-		{t.get_shader(stage)} -> std::same_as<std::string_view>;
-		{t.has_shader(stage)} -> std::same_as<bool>;
+	public:
+		shader_info();
 
-		{t.set_meta(stage, meta)} -> std::same_as<void>;
-		{t.get_meta(stage)} -> std::convertible_to<shader_meta>;
+		void set_shader(shader_stage stage, std::string_view source);
+		std::string_view get_shader(shader_stage stage) const;
+		bool has_shader(shader_stage stage) const;
+
+		void set_meta(shader_stage stage, shader_meta meta);
+		const shader_meta& get_meta(shader_stage stage) const;
+	private:
+		std::array<std::string, static_cast<int>(shader_stage::_count)> source_data;
+		std::array<shader_meta, static_cast<int>(shader_stage::_count)> meta_data;
 	};
 }
 

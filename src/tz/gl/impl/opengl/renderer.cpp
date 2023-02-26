@@ -277,7 +277,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	ShaderManager::ShaderManager(const ShaderInfo& sinfo):
+	ShaderManager::ShaderManager(const shader_info& sinfo):
 	shader(this->make_shader(sinfo))
 	{
 
@@ -309,7 +309,7 @@ namespace tz::gl
 		return this->shader;
 	}
 
-	ogl2::shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
+	ogl2::shader ShaderManager::make_shader(const shader_info& sinfo) const
 	{
 		tz::basic_list<ogl2::shader_module_info> modules;
 		if(sinfo.has_shader(shader_stage::compute))
@@ -326,8 +326,8 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			tz::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			tz::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::vertex), "shader_info must contain a non-empty vertex shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::fragment), "shader_info must contain a non-empty fragment shader if no compute shader is present.");
 			modules =
 			{
 				{

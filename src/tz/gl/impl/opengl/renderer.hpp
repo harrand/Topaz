@@ -81,7 +81,7 @@ namespace tz::gl
 		/**
 		 * Construct the shader program from the information provided.
 		 */
-		ShaderManager(const ShaderInfo& sinfo);
+		ShaderManager(const shader_info& sinfo);
 		/**
 		 * Construct a null shader manager. It is an error to do any render/compute work with a null shader manager.
 		 */
@@ -96,7 +96,7 @@ namespace tz::gl
 		ogl2::shader& get_program();
 
 	private:
-		ogl2::shader make_shader(const ShaderInfo& sinfo) const;
+		ogl2::shader make_shader(const shader_info& sinfo) const;
 
 		ogl2::shader shader;
 	};

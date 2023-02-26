@@ -245,7 +245,7 @@ namespace tz::gl
 		bool is_compute() const;
 		bool is_wireframe_mode() const;
 	private:
-		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const ShaderInfo& sinfo) const;
+		vk2::Shader make_shader(const vk2::LogicalDevice& ldev, const shader_info& sinfo) const;
 		vk2::PipelineLayout make_pipeline_layout(const vk2::DescriptorLayout& dlayout, std::size_t frame_in_flight_count) const;
 		vk2::GraphicsPipelineInfo make_graphics_pipeline(tz::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 		vk2::ComputePipelineInfo make_compute_pipeline() const;

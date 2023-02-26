@@ -109,7 +109,7 @@ namespace tz::gl
 		{t.add_dependency(ren)} -> std::same_as<void>;
 
 		{t.state()} -> std::convertible_to<render_state>;
-		{t.shader()} -> shader_info_type;
+		{t.shader()} -> std::convertible_to<shader_info>;
 		{t.debug_name(str)} -> std::same_as<void>;
 		{t.debug_get_name()} -> std::same_as<std::string>;
 	};
