@@ -148,6 +148,8 @@ add_library(topaz STATIC
 	src/tz/gl/impl/vulkan/component.hpp
 	src/tz/gl/impl/vulkan/convert.hpp
 	src/tz/gl/impl/vulkan/convert.inl
+	src/tz/gl/impl/vulkan/device2.cpp
+	src/tz/gl/impl/vulkan/device2.hpp
 	src/tz/gl/impl/vulkan/device.cpp
 	src/tz/gl/impl/vulkan/device.hpp
 	src/tz/gl/impl/vulkan/renderer.cpp
