@@ -8,7 +8,7 @@
 
 namespace tz::gl
 {
-	class device_ogl : public DeviceCommon<renderer_ogl>
+	class device_ogl : public device_common<renderer_ogl>
 	{
 	public:
 		device_ogl();

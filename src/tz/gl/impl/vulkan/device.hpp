@@ -73,7 +73,7 @@ namespace tz::gl
 		std::size_t frame_id = 0;
 	};
 
-	class device_vulkan : public DeviceCommon<renderer_vulkan>
+	class device_vulkan : public device_common<renderer_vulkan>
 	{
 	public:
 		device_vulkan();
@@ -83,7 +83,7 @@ namespace tz::gl
 
 		// Satisfies device_type.
 		tz::gl::renderer_handle create_renderer(const renderer_info& info);
-		using DeviceCommon<renderer_vulkan>::get_renderer;
+		using device_common<renderer_vulkan>::get_renderer;
 		void destroy_renderer(tz::gl::renderer_handle handle);
 		image_format get_window_format() const;
 		void dbgui();

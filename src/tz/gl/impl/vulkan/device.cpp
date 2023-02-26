@@ -354,20 +354,20 @@ namespace tz::gl
 	{
 		this->scheduler.wait_frame_work_complete();
 		this->scheduler.clear_renderers();
-		DeviceCommon<renderer_vulkan>::internal_clear();
+		device_common<renderer_vulkan>::internal_clear();
 	}
 
 	tz::gl::renderer_handle device_vulkan::create_renderer(const renderer_info& info)
 	{
 		TZ_PROFZONE("Vulkan Frontend - renderer Create (via device_vulkan)", 0xFFAAAA00);
 		this->scheduler.notify_renderer_added();
-		return DeviceCommon<renderer_vulkan>::emplace_renderer(info);
+		return device_common<renderer_vulkan>::emplace_renderer(info);
 	}
 
 	void device_vulkan::destroy_renderer(tz::gl::renderer_handle handle)
 	{
 		this->scheduler.notify_renderer_removed(static_cast<std::size_t>(static_cast<tz::hanval>(handle)));
-		DeviceCommon<renderer_vulkan>::destroy_renderer(handle);
+		device_common<renderer_vulkan>::destroy_renderer(handle);
 	}
 
 	image_format device_vulkan::get_window_format() const

@@ -13,10 +13,10 @@
 namespace tz::gl
 {
 	template<renderer_type R>
-	class DeviceCommon
+	class device_common
 	{
 	public:
-		DeviceCommon() = default;
+		device_common() = default;
 		const R& get_renderer(tz::gl::renderer_handle handle) const
 		{
 			return this->renderers[static_cast<std::size_t>(static_cast<tz::hanval>(handle))];
