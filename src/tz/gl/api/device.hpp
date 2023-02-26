@@ -20,7 +20,6 @@ namespace tz::gl
 	concept device_type = requires(T t, R& rinfo, renderer_handle h)
 	{
 		requires std::is_default_constructible_v<std::decay_t<T>>;
-		requires renderer_info_type<R>;
 		{t.create_renderer(rinfo)} -> std::same_as<renderer_handle>;
 		{t.destroy_renderer(h)} -> std::same_as<void>;
 		{t.renderer_count()} -> std::convertible_to<std::size_t>;

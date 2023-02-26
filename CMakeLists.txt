@@ -123,6 +123,7 @@ add_library(topaz STATIC
 	src/tz/gl/api/component.hpp
 	src/tz/gl/api/device.hpp
 	src/tz/gl/api/output.hpp
+	src/tz/gl/api/renderer.cpp
 	src/tz/gl/api/renderer.hpp
 	src/tz/gl/api/resource.hpp
 	src/tz/gl/api/schedule.cpp
