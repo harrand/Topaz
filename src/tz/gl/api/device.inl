@@ -35,24 +35,42 @@ namespace tz::gl
 	}
 
 	template<renderer_type R>
-	template<typename... args>
-	tz::gl::renderer_handle device_common<R>::emplace_renderer(args&&... argvals)
+	void device_common<R>::post_add_renderer(std::size_t)
+	{
+
+	}
+
+	template<renderer_type R>
+	const tz::gl::schedule& device_common<R>::render_graph() const
+	{
+		return this->render_schedule;
+	}
+
+	template<renderer_type R>
+	tz::gl::schedule& device_common<R>::render_graph()
+	{
+		return this->render_schedule;
+	}
+
+	template<renderer_type R>
+	tz::gl::renderer_handle device_common<R>::emplace_renderer(const tz::gl::renderer_info& rinfo)
 	{
 		// If free list is empty, we need to expand our storage and retrieve a new handle.
+		std::size_t rid;
 		if(this->free_list.empty())
 		{
-			this->renderers.emplace_back(std::forward<args>(argvals)...);
-			return static_cast<tz::hanval>(this->renderers.size() - 1);
+			this->renderers.emplace_back(rinfo);
+			rid = this->renderers.size() - 1;
 		}
 		else
 		{
 			// We destroyed a renderer in the past and now the free list contains a reference to the null renderer at its place. We can re-use this position.
 			// If we destroyed a renderer in the past, let's re-use its handle. The renderer at the position will be a null renderer.
-			tz::gl::renderer_handle h = static_cast<tz::hanval>(this->free_list.back());
+			rid = this->free_list.back();
 			this->free_list.pop_back();
-			this->get_renderer(h) = R{std::forward<args>(argvals)...};
-			return h;
+			this->renderers[rid] = R{rinfo};
 		}
+		return static_cast<hanval>(rid);
 	}
 
 	template<renderer_type R>

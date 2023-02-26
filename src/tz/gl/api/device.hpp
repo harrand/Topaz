@@ -2,6 +2,7 @@
 #define TOPAZ_GL_2_API_DEVICE_HPP
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/api/renderer.hpp"
+#include "tz/gl/api/schedule.hpp"
 #include <functional>
 #include <type_traits>
 
@@ -39,14 +40,17 @@ namespace tz::gl
 		R& get_renderer(tz::gl::renderer_handle handle);
 		void destroy_renderer(tz::gl::renderer_handle handle);
 		std::size_t renderer_count() const;
+		const tz::gl::schedule& render_graph() const;
+		tz::gl::schedule& render_graph();
 		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
 	protected:
-		template<typename... Args>
-		tz::gl::renderer_handle emplace_renderer(Args&&... args);
+		tz::gl::renderer_handle emplace_renderer(const tz::gl::renderer_info& rinfo);
 		void internal_clear();
+		void post_add_renderer(std::size_t);
 	private:
 		std::vector<R> renderers;
 		std::vector<std::size_t> free_list = {};
+		tz::gl::schedule render_schedule = {};
 	};
 
 	template<tz::gl::device_type<tz::gl::renderer_info> T>

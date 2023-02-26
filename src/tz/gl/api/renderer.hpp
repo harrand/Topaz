@@ -318,7 +318,7 @@ namespace tz::gl
 	 * Named requirement for a renderer.
 	 */
 	template<typename T>
-	concept renderer_type = requires(T t, resource_handle r, std::size_t tri_count, const renderer_edit_request& edit_request)
+	concept renderer_type = requires(T t, resource_handle r, std::size_t tri_count, const renderer_edit_request& edit_request, const tz::gl::renderer_info& rinfo)
 	{
 		requires tz::nullable<T>;
 		/**
