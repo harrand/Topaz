@@ -44,6 +44,8 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_gpu_driven_demo_render, fragment));
 		tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
 
+		tz::gl::get_device().render_graph().timeline = {ch, rh};
+
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
