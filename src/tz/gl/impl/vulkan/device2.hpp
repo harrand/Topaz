@@ -45,8 +45,6 @@ namespace tz::gl
 	{
 	public:
 		device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline);
-	protected:
-		void set_timeline(tz::gl::timeline_t timeline);
 	private:
 		const tz::gl::timeline_t& timeline;
 		vk2::TimelineSemaphore tsem;
