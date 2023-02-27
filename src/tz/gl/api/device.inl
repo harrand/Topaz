@@ -47,6 +47,15 @@ namespace tz::gl
 	}
 
 	template<renderer_type R>
+	void device_common<R>::render()
+	{
+		for(eid_t evt : this->render_schedule.timeline)
+		{
+			this->renderers[evt].render();
+		}
+	}
+
+	template<renderer_type R>
 	tz::gl::renderer_handle device_common<R>::emplace_renderer(const tz::gl::renderer_info& rinfo)
 	{
 		// If free list is empty, we need to expand our storage and retrieve a new handle.

@@ -50,8 +50,7 @@ int main()
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			tz::gl::get_device().get_renderer(ch).render();
-			tz::gl::get_device().get_renderer(rh).render();
+			tz::gl::get_device().render();
 			tz::dbgui::run([ch, count_bufh]()
 			{
 				ImGui::Begin("#countdbgui");

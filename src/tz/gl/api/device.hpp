@@ -42,6 +42,7 @@ namespace tz::gl
 		std::size_t renderer_count() const;
 		const tz::gl::schedule& render_graph() const;
 		tz::gl::schedule& render_graph();
+		void render();
 		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
 	protected:
 		tz::gl::renderer_handle emplace_renderer(const tz::gl::renderer_info& rinfo);
