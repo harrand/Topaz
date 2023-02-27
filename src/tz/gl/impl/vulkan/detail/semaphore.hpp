@@ -6,6 +6,11 @@
 
 namespace tz::gl::vk2
 {
+	enum class semaphore_type
+	{
+		binary,
+		timeline
+	};
 	/**
 	 * @ingroup tz_gl_vk_sync
 	 * Synchronisation primitive which is not interactable on the host and which has two states:
@@ -23,6 +28,7 @@ namespace tz::gl::vk2
 
 		BinarySemaphore& operator=(const BinarySemaphore& rhs) = delete;
 		BinarySemaphore& operator=(BinarySemaphore&& rhs);
+		virtual semaphore_type get_type() const{return semaphore_type::binary;}
 
 		const LogicalDevice& get_device() const;
 
@@ -60,6 +66,8 @@ namespace tz::gl::vk2
 		TimelineSemaphore& operator=(const TimelineSemaphore&& rhs) = delete;
 		TimelineSemaphore& operator=(TimelineSemaphore&& rhs);
 
+
+		virtual semaphore_type get_type() const{return semaphore_type::timeline;}
 		/**
 		 * Instantaneously set the semaphore to the given value.
 		 */

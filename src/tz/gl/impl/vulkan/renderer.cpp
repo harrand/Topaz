@@ -1140,16 +1140,23 @@ namespace tz::gl
 				}
 			};
 		}
-		tz::basic_list<const vk2::BinarySemaphore*> sem_signals;
+		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals;
 		if(requires_present && !this->options.contains(renderer_option::no_present))
 		{
-			sem_signals = {&this->device_scheduler->get_render_work_signals()[this->current_frame]};
+			signals =
+			{
+				vk2::hardware::Queue::SubmitInfo::SignalInfo
+				{
+					.signal_semaphore = &this->device_scheduler->get_render_work_signals()[this->current_frame],
+					.timeline = 0
+				}
+			};
 		}
 		this->graphics_queue->submit
 		({
 			.command_buffers = {&this->get_render_command_buffers()[this->output_image_index]},
 			.waits = waits,
-			.signal_semaphores = sem_signals,
+			.signals = signals,
 			.execution_complete_fence = &this->device_scheduler->get_frame_fences()[this->current_frame]
 		});
 
@@ -1190,7 +1197,7 @@ namespace tz::gl
 		({
 			.command_buffers = {&this->get_render_command_buffers().front()},
 			.waits = {},
-			.signal_semaphores = {},
+			.signals = {},
 			.execution_complete_fence = &this->device_scheduler->get_frame_fences()[this->current_frame]
 		});
 

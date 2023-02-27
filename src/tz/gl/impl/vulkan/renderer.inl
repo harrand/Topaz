@@ -15,7 +15,7 @@ namespace tz::gl
 		({
 			.command_buffers = {&scratch_buf},
 			.waits = {},
-			.signal_semaphores = {},
+			.signals = {},
 			.execution_complete_fence = &work_complete_fence
 		});
 		work_complete_fence.wait_until_signalled();

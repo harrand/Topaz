@@ -51,19 +51,49 @@ namespace tz::gl::vk2::hardware
 		std::vector<CommandBuffer::NativeType> command_buffer_natives(submit_info.command_buffers.length());
 		std::transform(submit_info.command_buffers.begin(), submit_info.command_buffers.end(), command_buffer_natives.begin(), [](const CommandBuffer* buf){return buf->native();});
 
-		std::vector<BinarySemaphore::NativeType> signal_sem_natives(submit_info.signal_semaphores.length());
-		std::transform(submit_info.signal_semaphores.begin(), submit_info.signal_semaphores.end(), signal_sem_natives.begin(), [](const BinarySemaphore* signal_sem){return signal_sem->native();});
+		std::vector<BinarySemaphore::NativeType> signal_sem_natives(submit_info.signals.length());
+		std::transform(submit_info.signals.begin(), submit_info.signals.end(), signal_sem_natives.begin(), [](const SubmitInfo::SignalInfo& signal){return signal.signal_semaphore->native();});
+
+		std::vector<std::uint64_t> wait_timeline_values;
+		std::vector<std::uint64_t> signal_timeline_values;
+		bool using_timelines = std::any_of(submit_info.signals.begin(), submit_info.signals.end(), [](const auto& signal){return signal.signal_semaphore->get_type() == semaphore_type::timeline;})
+							|| std::any_of(submit_info.waits.begin(), submit_info.waits.end(), [](const auto& wait){return wait.wait_semaphore->get_type() == semaphore_type::timeline;});
+		if(using_timelines)
+		{
+			//tz::assert(std::all_of(submit_info.signals.begin(), submit_info.signals.end(), [](const auto& signal){return signal.signal_semaphore->get_type() == semaphore_type::timeline;}), "Found mix of binary and timeline semaphores in wait submit. Unfortunately, you can only use one or the other (feel free to submit a feature request)");
+			wait_timeline_values.resize(submit_info.waits.length());
+			std::transform(submit_info.waits.begin(), submit_info.waits.end(), wait_timeline_values.begin(), [](const auto& wait){return wait.timeline;});
+
+			signal_timeline_values.resize(submit_info.signals.length());
+			std::transform(submit_info.signals.begin(), submit_info.signals.end(), signal_timeline_values.begin(), [](const auto& signal){return signal.timeline;});
+		}
+
+		VkTimelineSemaphoreSubmitInfo timeline_sinfo
+		{
+			.sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+			.pNext = nullptr,
+			.waitSemaphoreValueCount = static_cast<std::uint32_t>(wait_timeline_values.size()),
+			.pWaitSemaphoreValues = wait_timeline_values.data(),
+			.signalSemaphoreValueCount = static_cast<std::uint32_t>(signal_timeline_values.size()),
+			.pSignalSemaphoreValues = signal_timeline_values.data()
+		};
+
+		void* next = nullptr;
+		if(using_timelines)
+		{
+			next = &timeline_sinfo;
+		}
 
 		VkSubmitInfo sub
 		{
 			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-			.pNext = nullptr,
+			.pNext = next,
 			.waitSemaphoreCount = static_cast<std::uint32_t>(submit_info.waits.length()),
 			.pWaitSemaphores = wait_sem_natives.data(),
 			.pWaitDstStageMask = wait_stage_natives.data(),
 			.commandBufferCount = static_cast<std::uint32_t>(submit_info.command_buffers.length()),
 			.pCommandBuffers = command_buffer_natives.data(),
-			.signalSemaphoreCount = static_cast<std::uint32_t>(submit_info.signal_semaphores.length()),
+			.signalSemaphoreCount = static_cast<std::uint32_t>(submit_info.signals.length()),
 			.pSignalSemaphores = signal_sem_natives.data()
 		};
 
