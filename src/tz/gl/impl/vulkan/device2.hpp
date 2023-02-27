@@ -3,7 +3,7 @@
 #if TZ_VULKAN
 #include "tz/core/data/vector.hpp"
 #include "tz/gl/api/device.hpp"
-#include "tz/gl/impl/vulkan/renderer.hpp"
+#include "tz/gl/impl/vulkan/renderer2.hpp"
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
 #include "tz/gl/impl/vulkan/detail/image.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
@@ -59,7 +59,7 @@ namespace tz::gl
 		vk2::LogicalDevice ldev;
 	};
 
-	class device_vulkan2 : public device_common<renderer_vulkan>, public device_vulkan_base, public device_window, public device_render_sync
+	class device_vulkan2 : public device_common<renderer_vulkan2>, public device_vulkan_base, public device_window, public device_render_sync
 	{
 	public:
 		device_vulkan2();
