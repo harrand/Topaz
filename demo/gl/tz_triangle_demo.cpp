@@ -15,6 +15,7 @@ int main()
 	});
 	{
 		tz::gl::renderer_info rinfo;
+		rinfo.state().graphics.tri_count = 1;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
@@ -23,7 +24,7 @@ int main()
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			tz::gl::get_device().get_renderer(renh).render(1);
+			tz::gl::get_device().get_renderer(renh).render();
 			tz::end_frame();
 		}
 	}

@@ -659,12 +659,6 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_ogl::render(unsigned int tri_count)
-	{
-		this->state.graphics.tri_count = tri_count;
-		this->render();
-	}
-
 	void renderer_ogl::edit(const renderer_edit_request& edit_request)
 	{
 		TZ_PROFZONE("OpenGL Backend - renderer_ogl Edit", 0xFFAA0000);
@@ -753,6 +747,10 @@ namespace tz::gl
 				else if constexpr(std::is_same_v<T, renderer_edit::render_config>)
 				{
 					this->wireframe_mode = arg.wireframe_mode;
+				}
+				else if constexpr(std::is_same_v<T, renderer_edit::tri_count>)
+				{
+					this->state.graphics.tri_count = arg.tri_count;
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{

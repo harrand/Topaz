@@ -394,11 +394,6 @@ namespace tz::gl
 		 */
 		void render();
 		/**
-		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
-		 * @param tri_count number of triangles to render.
-		 */
-		void render(unsigned int tri_count);
-		/**
 		 * Confirm changes to a renderer.
 		 *
 		 * Editing renderers is expensive, so it should only be done if absolutely necessary. If you are editing renderers on a per-frame basis, consider creating multiple different renderers upfront for each hot-path and switching between them as necessary instead.

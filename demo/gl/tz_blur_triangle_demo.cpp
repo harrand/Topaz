@@ -38,6 +38,7 @@ int main()
 		});
 
 		tz::gl::renderer_info postprocess_info;
+		postprocess_info.state().graphics.tri_count = 1;
 		postprocess_info.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(blur, vertex));
 		postprocess_info.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(blur, fragment));
 		tz::gl::resource_handle blur_buffer_handle = postprocess_info.add_resource(blur_data);
@@ -48,6 +49,7 @@ int main()
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_triangle_demo, fragment));
+		rinfo.state().graphics.tri_count = 1;
 		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
 		rinfo.set_output(tz::gl::image_output
 		{{
@@ -62,12 +64,12 @@ int main()
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			renderer.render(1);
+			renderer.render();
 			BlurData& blur = blur_renderer.get_resource(blur_buffer_handle)->data_as<BlurData>().front();
 			static float counter = 0.0f;
 			blur.direction = tz::vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
 			counter += 0.0003f;
-			blur_renderer.render(1);
+			blur_renderer.render();
 			tz::end_frame();
 		}
 	}

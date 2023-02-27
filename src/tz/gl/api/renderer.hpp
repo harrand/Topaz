@@ -269,7 +269,12 @@ namespace tz::gl
 			bool wireframe_mode = false;
 		};
 
-		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config>;
+		struct tri_count
+		{
+			std::size_t tri_count;
+		};
+
+		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config, tri_count>;
 	};
 
 	/**
@@ -305,6 +310,7 @@ namespace tz::gl
 		 */
 		RendererEditBuilder& buffer_resize(renderer_edit::buffer_resize req);
 		RendererEditBuilder& write(renderer_edit::resource_write req);
+		RendererEditBuilder& set_tri_count(renderer_edit::tri_count tris);
 		/**
 		 * Retrieve a @ref renderer_edit_request corresponding to all edits specified within the builder so far.
 		 */
@@ -354,11 +360,6 @@ namespace tz::gl
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles renderered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
 		{t.render()} -> std::same_as<void>;
-		/**
-		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
-		 * @param tri_count number of triangles to render.
-		 */
-		{t.render(tri_count)} -> std::same_as<void>;
 		/**
 		 * Confirm changes to a renderer.
 		 *

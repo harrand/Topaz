@@ -474,9 +474,10 @@ namespace tz::dbgui
 
 				// Do a draw.
 				const std::size_t tri_count = draw_cmd.ElemCount / 3;
+				renderer.edit(tz::gl::RendererEditBuilder{}.set_tri_count({.tri_count = tri_count}).build());
 				if(draw_cmd.UserCallback == nullptr)
 				{
-					renderer.render(tri_count);
+					renderer.render();
 				}
 				else
 				{

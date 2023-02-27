@@ -1398,17 +1398,6 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_vulkan::render(unsigned int tri_count)
-	{
-		if(this->state.graphics.tri_count != tri_count)
-		{
-			this->state.graphics.tri_count = tri_count;
-			this->command.wait_pending_commands_complete();
-			this->setup_work_commands();
-		}
-		this->render();
-	}
-
 	void renderer_vulkan::edit(const renderer_edit_request& edit_request)
 	{
 		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan Edit", 0xFFAAAA00);
@@ -1447,6 +1436,14 @@ namespace tz::gl
 					{
 						data.pipeline_recreate = true;
 						final_wireframe_mode_state = arg.wireframe_mode;
+					}
+				}
+				else if constexpr(std::is_same_v<T, renderer_edit::tri_count>)
+				{
+					if(arg.tri_count != this->state.graphics.tri_count)
+					{
+						this->state.graphics.tri_count = arg.tri_count;
+						data.commands_rerecord = true;
 					}
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)

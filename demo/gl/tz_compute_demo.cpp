@@ -36,6 +36,7 @@ int main()
 		tz::gl::renderer_handle compute_workerh = tz::gl::get_device().create_renderer(pinfo);
 
 		tz::gl::renderer_info rinfo;
+		rinfo.state().graphics.tri_count = 1;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
 		tz::gl::resource_handle refbuf = rinfo.ref_resource(compute_workerh, cbuf);
@@ -55,7 +56,7 @@ int main()
 		{
 			tz::begin_frame();
 			compute_worker.render();
-			renderer.render(1);
+			renderer.render();
 
 			tz::dbgui::run([&game_menu_enabled, &compute_worker, &tbufh]()
 			{
