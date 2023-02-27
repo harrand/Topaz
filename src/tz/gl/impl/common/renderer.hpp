@@ -70,7 +70,7 @@ namespace tz::gl
 			return;
 		}
 		ImGui::PushID(&renderer);
-		ImGui::Text("renderer Name:");
+		ImGui::Text("Renderer Name:");
 		ImGui::SameLine();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s", renderer.debug_get_name().data());
 		if(renderer.resource_count() > 0)
@@ -93,7 +93,7 @@ namespace tz::gl
 		{
 			ImGui::Text("renderer has no resources.");
 		}
-		if(ImGui::CollapsingHeader("renderer State"))
+		if(ImGui::CollapsingHeader("Renderer State"))
 		{
 			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Graphics");
 			ImGui::Indent();
@@ -154,7 +154,7 @@ namespace tz::gl
 			}
 			ImGui::Unindent();
 		}
-		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("renderer Options"))
+		if(!renderer.get_options().empty() && ImGui::CollapsingHeader("Renderer Options"))
 		{
 			for(renderer_option option : renderer.get_options())
 			{

@@ -35,12 +35,6 @@ namespace tz::gl
 	}
 
 	template<renderer_type R>
-	void device_common<R>::post_add_renderer(std::size_t)
-	{
-
-	}
-
-	template<renderer_type R>
 	const tz::gl::schedule& device_common<R>::render_graph() const
 	{
 		return this->render_schedule;
@@ -70,6 +64,7 @@ namespace tz::gl
 			this->free_list.pop_back();
 			this->renderers[rid] = R{rinfo};
 		}
+		this->post_add_renderer(rid, rinfo);
 		return static_cast<hanval>(rid);
 	}
 
@@ -77,6 +72,23 @@ namespace tz::gl
 	void device_common<R>::internal_clear()
 	{
 		this->renderers.clear();
+	}
+
+	template<renderer_type R>
+	void device_common<R>::post_add_renderer(std::size_t rid, const tz::gl::renderer_info& rinfo)
+	{
+		const auto& evts = this->render_graph().events;
+		auto iter = std::find_if(evts.begin(), evts.end(), [&rid](const auto& evt){return evt.eid == rid;});
+		if(iter == this->render_graph().events.end())
+		{
+			tz::gl::event& evt = this->render_graph().events.emplace_back();
+			evt.eid = rid;
+			auto deps = rinfo.get_dependencies();
+			for(const auto& dep : deps)
+			{
+				evt.dependencies.push_back(static_cast<eid_t>(static_cast<std::size_t>(static_cast<tz::hanval>(dep))));
+			}
+		}
 	}
 
 	template<tz::gl::device_type<tz::gl::renderer_info> T>
@@ -98,7 +110,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		ImGui::SliderInt("renderer ID", &id, 0, renderer_count - 1);
+		ImGui::SliderInt("Renderer ID ID", &id, 0, renderer_count - 1);
 		ImGui::Indent();
 		const auto& renderer = device.get_renderer(static_cast<tz::hanval>(id));
 		if(renderer.get_options().contains(tz::gl::renderer_option::_internal) && !display_internal_renderers)
@@ -125,5 +137,6 @@ namespace tz::gl
 		}
 		ImGui::Unindent();
 		ImGui::Separator();
+		device.render_graph().dbgui();
 	}
 }

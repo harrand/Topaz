@@ -46,7 +46,7 @@ namespace tz::gl
 	protected:
 		tz::gl::renderer_handle emplace_renderer(const tz::gl::renderer_info& rinfo);
 		void internal_clear();
-		void post_add_renderer(std::size_t);
+		void post_add_renderer(std::size_t rid, const tz::gl::renderer_info& rinfo);
 	private:
 		std::vector<R> renderers;
 		std::vector<std::size_t> free_list = {};

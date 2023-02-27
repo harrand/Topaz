@@ -35,6 +35,7 @@ int main()
 		tz::gl::renderer_handle ch = tz::gl::get_device().create_renderer(cinfo);
 
 		tz::gl::renderer_info rinfo;
+		rinfo.add_dependency(ch);
 		rinfo.debug_name("Triangle renderer");
 		tz::gl::resource_handle dbufh_ref = rinfo.ref_resource(ch, dbufh);
 		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});

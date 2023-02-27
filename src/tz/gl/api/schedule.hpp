@@ -2,6 +2,7 @@
 #define TZ_GL_API_SCHEDULE_HPP
 #include "tz/core/data/handle.hpp"
 #include <vector>
+#include <span>
 
 namespace tz::gl
 {
@@ -16,6 +17,9 @@ namespace tz::gl
 	struct schedule
 	{
 		std::vector<event> events = {};
+
+		std::span<const eid_t> get_dependencies(eid_t evt) const;
+		void dbgui();
 	};
 
 }
