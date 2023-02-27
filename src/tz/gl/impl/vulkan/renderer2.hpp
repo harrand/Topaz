@@ -20,6 +20,7 @@ namespace tz::gl
 		icomponent* get_component(tz::gl::resource_handle rh);
 	private:
 		void patch_resource_references(const tz::gl::renderer_info& rinfo);
+		void setup_dynamic_resource_spans();
 		tz::maybe_owned_ptr<icomponent> make_component_from(iresource* resource);
 		std::vector<tz::maybe_owned_ptr<icomponent>> components = {};
 	};
