@@ -96,6 +96,13 @@ namespace tz::gl
 		this->device_depth.debug_set_name("Device Depth Image");
 	}
 
+	device_render_sync::device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline):
+	timeline(timeline),
+	tsem(ldev, 0)
+	{
+
+	}
+
 	unsigned int rate_physical_device(const vk2::PhysicalDevice device)
 	{
 		unsigned int rating = 0u;
@@ -221,7 +228,8 @@ namespace tz::gl
 
 	device_vulkan2::device_vulkan2():
 	device_vulkan_base(),
-	device_window(this->vk_get_logical_device())
+	device_window(this->vk_get_logical_device()),
+	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline)
 	{
 
 	}

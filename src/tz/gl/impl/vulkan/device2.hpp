@@ -6,6 +6,7 @@
 #include "tz/gl/impl/vulkan/renderer.hpp"
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
 #include "tz/gl/impl/vulkan/detail/image.hpp"
+#include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 
 namespace tz::gl
 {
@@ -40,6 +41,17 @@ namespace tz::gl
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
 	};
 
+	class device_render_sync
+	{
+	public:
+		device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline);
+	protected:
+		void set_timeline(tz::gl::timeline_t timeline);
+	private:
+		const tz::gl::timeline_t& timeline;
+		vk2::TimelineSemaphore tsem;
+	};
+
 	class device_vulkan_base
 	{
 	public:
@@ -49,7 +61,7 @@ namespace tz::gl
 		vk2::LogicalDevice ldev;
 	};
 
-	class device_vulkan2 : public device_common<renderer_vulkan>, public device_vulkan_base, public device_window
+	class device_vulkan2 : public device_common<renderer_vulkan>, public device_vulkan_base, public device_window, public device_render_sync
 	{
 	public:
 		device_vulkan2();
