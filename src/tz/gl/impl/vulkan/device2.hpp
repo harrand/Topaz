@@ -2,6 +2,8 @@
 #define TZ_GL_IMPL_VULKAN_DEVICE_HPP
 #if TZ_VULKAN
 #include "tz/core/data/vector.hpp"
+#include "tz/gl/api/device.hpp"
+#include "tz/gl/impl/vulkan/renderer.hpp"
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
 #include "tz/gl/impl/vulkan/detail/image.hpp"
 
@@ -28,7 +30,6 @@ namespace tz::gl
 		*
 		*/
 		vk2::hardware::Queue::PresentResult present_image(vk2::hardware::Queue& present_queue, std::span<const vk2::BinarySemaphore> wait_semaphores);
-		void new_frame();
 	private:
 		void make_depth_image();
 		void debug_annotate_resources();
@@ -37,6 +38,21 @@ namespace tz::gl
 		vk2::Image device_depth = vk2::Image::null();
 		tz::vec2ui dimensions_cache = tz::vec2ui::zero();
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
+	};
+
+	class device_vulkan_base
+	{
+	public:
+		device_vulkan_base();
+		const vk2::LogicalDevice& vk_get_logical_device() const;
+	protected:
+		vk2::LogicalDevice ldev;
+	};
+
+	class device_vulkan2 : public device_common<renderer_vulkan>, public device_vulkan_base, public device_window
+	{
+	public:
+		device_vulkan2();
 	};
 }
 
