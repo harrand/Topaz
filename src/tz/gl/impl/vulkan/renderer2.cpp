@@ -119,6 +119,11 @@ namespace tz::gl
 		this->deduce_descriptor_layout(rinfo.state());
 	}
 
+	bool renderer_descriptor_manager::empty() const
+	{
+		return this->layout.is_null();
+	}
+
 	void renderer_descriptor_manager::deduce_descriptor_layout(const tz::gl::render_state& state)
 	{
 		// figure out what descriptor layout we need, and set this->layout to it.
@@ -145,11 +150,20 @@ namespace tz::gl
 		// this is why we need to know the render state.	
 		if(state.graphics.index_buffer != tz::nullhand)
 		{
+			tz::assert(buffer_count > 0);
 			buffer_count--;
 		}
 		if(state.graphics.draw_buffer != tz::nullhand)
 		{
+			tz::assert(buffer_count > 0);
 			buffer_count--;
+		}
+		if(buffer_count == 0 && image_count == 0)
+		{
+			// we have no shader resources -- this we should be marked as empty.
+			this->layout = vk2::DescriptorLayout::null();
+			// and then early-out because we don't need to do anymore work.
+			return;
 		}
 
 		// now we can actually create the descriptor layout.

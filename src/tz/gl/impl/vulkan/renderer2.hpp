@@ -9,6 +9,15 @@
 
 namespace tz::gl
 {
+	// to encapsulate the whole state of a vulkan renderer leads to *alot* of code.
+	// to make this alot more palatable, each "major feature" of a vulkan renderer is its own class, and they form an inheritance branch leading to the fully-featured renderer_vulkan2.
+	// i.e renderer_resource_manager -> renderer_descriptor_manager -> ... -> renderer_vulkan2
+	// each of these "major feature" classes are unaware of the functionality of the next-level in the chain. this means that the classes get more and more access to things.
+	// note: this also means that the implementation of renderer_type is done piecemeal - as we use public inheritance, eventually renderer_vulkan2 will inherit all the api impls from its lower-level components. 
+
+	// represents topaz-level resource management.
+	// the majority of this code is not specific to vulkan, however setting up dynamic-resource-spans is.
+	// possible todo: bring most of this class out into a common impl for opengl? 
 	class renderer_resource_manager : private AssetStorageCommon<iresource>
 	{
 	public:
@@ -27,11 +36,14 @@ namespace tz::gl
 		std::vector<tz::maybe_owned_ptr<icomponent>> components = {};
 	};
 
+	// responsible for making sure our topaz-level resources are represented as descriptor sets correctly.
 	class renderer_descriptor_manager : public renderer_resource_manager
 	{
 	public:
 		renderer_descriptor_manager(const tz::gl::renderer_info& rinfo);
 		renderer_descriptor_manager() = default;
+		// descriptor manager is empty if there are no descriptors to bind.
+		bool empty() const;
 	private:
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
