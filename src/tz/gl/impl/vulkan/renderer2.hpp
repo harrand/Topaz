@@ -33,7 +33,7 @@ namespace tz::gl
 		renderer_descriptor_manager(const tz::gl::renderer_info& rinfo);
 		renderer_descriptor_manager() = default;
 	private:
-		void deduce_descriptor_layout();
+		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
 	};
 
