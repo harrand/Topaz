@@ -114,12 +114,28 @@ namespace tz::gl
 		this->another_pool();
 	}
 
-	vk2::DescriptorPool::AllocationResult device_descriptor_pool::vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc)
+	vk2::DescriptorPool::UpdateRequest device_descriptor_pool::vk_make_update_request(unsigned int fingerprint)
 	{
-		return this->impl_allocate_sets(alloc, 0);
+		return this->get_pool(fingerprint).make_update_request();
 	}
 
-	vk2::DescriptorPool::AllocationResult device_descriptor_pool::impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int attempt)
+	vk2::DescriptorPool::AllocationResult device_descriptor_pool::vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint)
+	{
+		return this->impl_allocate_sets(alloc, fingerprint, 0);
+	}
+
+	void device_descriptor_pool::vk_update_sets(vk2::DescriptorPool::UpdateRequest update, unsigned int fingerprint)
+	{
+		this->get_pool(fingerprint).update_sets(update);
+	}
+
+	vk2::DescriptorPool& device_descriptor_pool::get_pool(unsigned int fingerprint)
+	{
+		tz::assert(this->fingerprint_to_pool_id.find(fingerprint) != this->fingerprint_to_pool_id.end(), "A renderer requested to write descriptor sets with fingerprint %u, but no such fingerprint was ever used to allocate sets.", fingerprint);
+		return this->pools[this->fingerprint_to_pool_id.at(fingerprint)];
+	}
+
+	vk2::DescriptorPool::AllocationResult device_descriptor_pool::impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
 	{
 		// allocate using the most recently created descriptor pool
 		// if allocation fails due to lack of memory, create a new descriptor pool and try again.
@@ -131,6 +147,7 @@ namespace tz::gl
 		using ART = vk2::DescriptorPool::AllocationResult::AllocationResultType;
 		if(ret.type == ART::AllocationSuccess)
 		{
+			this->fingerprint_to_pool_id[fingerprint] = this->pools.size();
 			return ret;
 		}
 		else
@@ -139,7 +156,7 @@ namespace tz::gl
 			{
 				// todooo: try to tailor the new pool to the sizes expected by the alloc request. if the alloc request is larger than our defaults, we will simply never succeed.
 				this->another_pool();
-				return this->impl_allocate_sets(alloc, attempt + 1);
+				return this->impl_allocate_sets(alloc, fingerprint, attempt + 1);
 			}
 			if(ret.type == ART::FatalError)
 			{
@@ -182,7 +199,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	unsigned int rate_physical_device(const vk2::PhysicalDevice device)
+	unsigned int rate_device(const vk2::PhysicalDevice device)
 	{
 		unsigned int rating = 0u;
 		const vk2::PhysicalDeviceInfo info = device.get_info();
@@ -247,9 +264,9 @@ namespace tz::gl
 		vk2::PhysicalDevice pdev = *std::max_element(pdevs.begin(), pdevs.end(),
 		[](const vk2::PhysicalDevice& a, const vk2::PhysicalDevice& b)
 		{
-			return rate_physical_device(a) < rate_physical_device(b);
+			return rate_device(a) < rate_device(b);
 		});
-		tz::report("Vulkan device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_physical_device(pdev));
+		tz::report("Vulkan device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_device(pdev));
 
 		// TODO: Remove when we can get testing on devices that aren't NV.
 		#if TZ_DEBUG

@@ -81,6 +81,20 @@ namespace tz::gl::vk2
 	{
 		return this->sampler;
 	}
+
+	Sampler Sampler::null()
+	{
+		return {};
+	}
+	
+	bool Sampler::is_null() const
+	{
+		return this->sampler == VK_NULL_HANDLE;
+	}
+
+	Sampler::Sampler():
+	sampler(VK_NULL_HANDLE),
+	info(){}
 }
 
 #endif // TZ_VULKAN

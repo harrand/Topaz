@@ -3,12 +3,15 @@
 
 namespace tz::gl
 {
+	unsigned int renderer_vulkan_base::uid_counter = 0;
 //--------------------------------------------------------------------------------------------------
 	renderer_resource_manager::renderer_resource_manager(const tz::gl::renderer_info& rinfo):
 	AssetStorageCommon<iresource>(rinfo.get_resources())
 	{
 		this->patch_resource_references(rinfo);
 		this->setup_dynamic_resource_spans();
+		this->populate_image_resource_views();
+		this->populate_image_resource_samplers();
 	}
 
 	unsigned int renderer_resource_manager::resource_count() const
@@ -34,6 +37,16 @@ namespace tz::gl
 	icomponent* renderer_resource_manager::get_component(tz::gl::resource_handle rh)
 	{
 		return this->components[static_cast<std::size_t>(static_cast<tz::hanval>(rh))].get();
+	}
+
+	std::span<vk2::ImageView> renderer_resource_manager::get_image_resource_views()
+	{
+		return this->image_resource_views;
+	}
+
+	std::span<vk2::Sampler> renderer_resource_manager::get_image_resource_samplers()
+	{
+		return this->image_resource_samplers;
 	}
 
 	void renderer_resource_manager::patch_resource_references(const tz::gl::renderer_info& rinfo)
@@ -94,6 +107,96 @@ namespace tz::gl
 			std::copy(resdata.begin(), resdata.end(), underlying_component_data.begin());
 			res->set_mapped_data(underlying_component_data);
 		}
+	}
+
+	void renderer_resource_manager::populate_image_resource_views()
+	{
+		this->image_resource_views.clear();
+		for(auto& component_ptr : this->components)
+		{
+			if(component_ptr->get_resource()->get_type() == tz::gl::resource_type::image)
+			{
+				vk2::Image& img = static_cast<image_component_vulkan*>(component_ptr.get())->vk_get_image();
+				this->image_resource_views.emplace_back
+				(
+					vk2::ImageViewInfo
+					{
+						.image = &img,
+						.aspect = vk2::derive_aspect_from_format(img.get_format()).front()
+					}
+				);
+			}
+			else
+			{
+				this->image_resource_views.push_back(vk2::ImageView::null());
+			}
+		}
+	}
+
+	void renderer_resource_manager::populate_image_resource_samplers()
+	{
+		this->image_resource_samplers.clear();
+		for(auto& component_ptr : this->components)
+		{
+			if(component_ptr->get_resource()->get_type() == tz::gl::resource_type::image)
+			{
+				this->image_resource_samplers.emplace_back(renderer_resource_manager::make_fitting_sampler(*component_ptr->get_resource()));
+			}
+			else
+			{
+				this->image_resource_samplers.push_back(vk2::Sampler::null());
+			}
+		}
+	}
+
+	vk2::SamplerInfo renderer_resource_manager::make_fitting_sampler(const iresource& res)
+	{
+		tz::assert(res.get_type() == tz::gl::resource_type::image);
+		vk2::LookupFilter filter = vk2::LookupFilter::Nearest;
+		vk2::MipLookupFilter mip_filter = vk2::MipLookupFilter::Nearest;
+		vk2::SamplerAddressMode mode = vk2::SamplerAddressMode::ClampToEdge;
+#if TZ_DEBUG
+		if(res.get_flags().contains({resource_flag::image_filter_nearest, resource_flag::image_filter_linear}))
+		{
+			tz::error("image_resource contained both resource_flags image_filter_nearest and image_filter_linear, which are mutually exclusive. Please submit a bug report.");
+		}
+#endif // TZ_DEBUG
+		if(res.get_flags().contains(resource_flag::image_filter_nearest))
+		{
+			filter = vk2::LookupFilter::Nearest;
+		}
+		else if(res.get_flags().contains(resource_flag::image_filter_linear))
+		{
+			filter = vk2::LookupFilter::Linear;
+		}
+
+		if(res.get_flags().contains({resource_flag::image_wrap_clamp_edge, resource_flag::image_wrap_repeat, resource_flag::image_wrap_mirrored_repeat}))
+		{
+			tz::error("resource_flags included all 3 of image_wrap_clamp_edge, image_wrap_repeat and image_wrap_mirrored_repeat, all of which are mutually exclusive. Please submit a bug report.");
+		}
+		if(res.get_flags().contains(resource_flag::image_wrap_clamp_edge))
+		{
+			mode = vk2::SamplerAddressMode::ClampToEdge;
+		}
+		if(res.get_flags().contains(resource_flag::image_wrap_repeat))
+		{
+			mode = vk2::SamplerAddressMode::Repeat;
+		}
+		if(res.get_flags().contains(resource_flag::image_wrap_mirrored_repeat))
+		{
+			mode = vk2::SamplerAddressMode::MirroredRepeat;
+		}
+		
+		return
+		{
+			.device = &tz::gl::get_device2().vk_get_logical_device(),
+			.min_filter = filter,
+			.mag_filter = filter,
+			.mipmap_mode = mip_filter,
+			.address_mode_u = mode,
+			.address_mode_v = mode,
+			.address_mode_w = mode
+		};
 	}
 
 	tz::maybe_owned_ptr<icomponent> renderer_resource_manager::make_component_from(iresource* resource)
@@ -213,7 +316,7 @@ namespace tz::gl
 		}
 		// we need to know how many frames-in-flight we expect.
 		tz::assert(!this->layout.is_null());
-		std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
 		tz::basic_list<const vk2::DescriptorLayout*> layouts;
 		layouts.resize(frame_in_flight_count);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
@@ -223,8 +326,87 @@ namespace tz::gl
 		this->descriptors = tz::gl::get_device2().vk_allocate_sets
 		({
 			.set_layouts = std::move(layouts)
-		});
+		}, renderer_vulkan_base::uid);
 		tz::assert(this->descriptors.success());
+	}
+
+	void renderer_descriptor_manager::write_descriptors(const tz::gl::render_state& state)
+	{
+		// early out if there's no descriptors to write to.
+		if(this->empty())
+		{
+			tz::assert(this->descriptors.sets.empty());
+			return;
+		}
+		// populate a list of buffer and image writes.
+		// pair.first is the binding id, pair.second is the write info. 
+		std::vector<std::pair<std::uint32_t, vk2::DescriptorSet::Write::BufferWriteInfo>> buffer_writes;
+		buffer_writes.reserve(renderer_resource_manager::resource_count());
+		std::vector<vk2::DescriptorSet::Write::ImageWriteInfo> image_writes;
+		image_writes.reserve(renderer_resource_manager::resource_count());
+		std::size_t uninterested_descriptor_count = 0;
+		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
+		{
+			tz::gl::resource_handle rh = static_cast<tz::hanval>(i);
+			if(state.graphics.index_buffer == rh || state.graphics.draw_buffer == rh)
+			{
+				uninterested_descriptor_count++;			
+				continue;
+			}
+			icomponent* comp = renderer_resource_manager::get_component(rh);
+			tz::assert(comp != nullptr);
+			iresource* res = comp->get_resource();
+			tz::assert(res != nullptr);
+			switch(res->get_type())
+			{
+				case tz::gl::resource_type::buffer:
+				{
+					vk2::Buffer& buf = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer();
+					buffer_writes.push_back
+					(std::make_pair(
+		  				static_cast<std::uint32_t>(i - uninterested_descriptor_count),
+		  				vk2::DescriptorSet::Write::BufferWriteInfo{
+						.buffer = &buf,
+						.buffer_offset = 0,
+		  				.buffer_write_size = buf.size()
+						}
+					));
+				}
+				break;
+				case tz::gl::resource_type::image:
+					image_writes.push_back
+					({
+						.sampler = &renderer_resource_manager::get_image_resource_samplers()[i],
+		  				.image_view = &renderer_resource_manager::get_image_resource_views()[i]
+					});
+				break;
+				default:
+					tz::error("invalid resource_type. memory corruption?");
+				break;
+			}
+		}
+
+		// now, apply buffer_writes and image_writes to all descriptor sets.
+		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		vk2::DescriptorPool::UpdateRequest update = tz::gl::get_device2().vk_make_update_request(renderer_vulkan_base::uid);
+		for(std::size_t i = 0; i < frame_in_flight_count; i++)
+		{
+			vk2::DescriptorSet& set = this->descriptors.sets[i];
+			vk2::DescriptorSet::EditRequest req = set.make_edit_request();
+			for(const auto& [binding_id, buf_write] : buffer_writes)
+			{
+				req.set_buffer(binding_id, buf_write);
+			}
+			if(!image_writes.empty())
+			{
+				for(std::size_t j = 0; j < image_writes.size(); j++)
+				{
+					req.set_image(buffer_writes.size(), image_writes[j], j);
+				}
+			}
+			update.add_set_edit(req);
+		}
+		tz::gl::get_device2().vk_update_sets(update, renderer_vulkan_base::uid);
 	}
 
 //--------------------------------------------------------------------------------------------------

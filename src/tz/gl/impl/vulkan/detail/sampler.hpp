@@ -84,7 +84,10 @@ namespace tz::gl::vk2
 
 		using NativeType = VkSampler;
 		NativeType native() const;
+		static Sampler null();
+		bool is_null() const;
 	private:
+		Sampler();
 		VkSampler sampler;
 		SamplerInfo info;
 	};

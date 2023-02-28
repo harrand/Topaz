@@ -15,10 +15,18 @@ namespace tz::gl
 	// each of these "major feature" classes are unaware of the functionality of the next-level in the chain. this means that the classes get more and more access to things.
 	// note: this also means that the implementation of renderer_type is done piecemeal - as we use public inheritance, eventually renderer_vulkan2 will inherit all the api impls from its lower-level components. 
 
+	struct renderer_vulkan_base
+	{
+		// devices have this concept of renderer handles, but they are not guaranteed to be unique (e.g if renderer handle 2 is deleted and a new renderer is created, that will also have handle 2.)
+		// this is a uid which will uniquely identify ths current renderer. renderers need to have their own identity because other manager classes (mainly device_vulkan2) does bookkeeping for renderers and needs to know who is who.
+		static unsigned int uid_counter;
+		unsigned int uid = uid_counter++;
+	};
+
 	// represents topaz-level resource management.
 	// the majority of this code is not specific to vulkan, however setting up dynamic-resource-spans is.
 	// possible todo: bring most of this class out into a common impl for opengl? 
-	class renderer_resource_manager : private AssetStorageCommon<iresource>
+	class renderer_resource_manager : private AssetStorageCommon<iresource>, public renderer_vulkan_base
 	{
 	public:
 		renderer_resource_manager(const tz::gl::renderer_info& rinfo);
@@ -29,11 +37,20 @@ namespace tz::gl
 		iresource* get_resource(tz::gl::resource_handle rh);
 		const icomponent* get_component(tz::gl::resource_handle rh) const;
 		icomponent* get_component(tz::gl::resource_handle rh);
+	protected:
+		std::span<vk2::ImageView> get_image_resource_views();
+		std::span<vk2::Sampler> get_image_resource_samplers();
 	private:
 		void patch_resource_references(const tz::gl::renderer_info& rinfo);
 		void setup_dynamic_resource_spans();
+		void populate_image_resource_views();
+		void populate_image_resource_samplers();
+		static vk2::SamplerInfo make_fitting_sampler(const iresource& res);
 		tz::maybe_owned_ptr<icomponent> make_component_from(iresource* resource);
 		std::vector<tz::maybe_owned_ptr<icomponent>> components = {};
+		// one entry per component - symmetrical to this->components. if component is a buffer though, the view is vk2::ImageView::null()
+		std::vector<vk2::ImageView> image_resource_views = {};
+		std::vector<vk2::Sampler> image_resource_samplers = {};
 	};
 
 	// responsible for making sure our topaz-level resources are represented as descriptor sets correctly.
@@ -47,6 +64,7 @@ namespace tz::gl
 	private:
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		void collect_descriptors();
+		void write_descriptors(const tz::gl::render_state& state);
 		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
 		vk2::DescriptorPool::AllocationResult descriptors = {};
 	};

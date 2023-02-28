@@ -8,6 +8,7 @@
 #include "tz/gl/impl/vulkan/detail/image.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 #include "tz/gl/impl/vulkan/detail/descriptors.hpp"
+#include <unordered_map>
 
 namespace tz::gl
 {
@@ -55,13 +56,17 @@ namespace tz::gl
 	{
 	public:
 		device_descriptor_pool(const vk2::LogicalDevice& device);
-		vk2::DescriptorPool::AllocationResult vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc);
+		vk2::DescriptorPool::UpdateRequest vk_make_update_request(unsigned int fingerprint);
+		vk2::DescriptorPool::AllocationResult vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint);
+		void vk_update_sets(vk2::DescriptorPool::UpdateRequest update, unsigned int fingerprint);
 	private:
-		vk2::DescriptorPool::AllocationResult impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int attempt);
+		vk2::DescriptorPool& get_pool(unsigned int fingerprint);
+		vk2::DescriptorPool::AllocationResult impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
 		void another_pool();
 		void another_pool(std::size_t set_count, std::size_t buf_count, std::size_t img_count);
 		const vk2::LogicalDevice* ldev;
 		std::vector<vk2::DescriptorPool> pools = {};
+		std::unordered_map<unsigned int, std::size_t> fingerprint_to_pool_id = {};
 	};
 
 	class device_vulkan_base
