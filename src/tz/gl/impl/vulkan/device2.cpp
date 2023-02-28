@@ -121,6 +121,9 @@ namespace tz::gl
 
 	vk2::DescriptorPool::AllocationResult device_descriptor_pool::impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int attempt)
 	{
+		// allocate using the most recently created descriptor pool
+		// if allocation fails due to lack of memory, create a new descriptor pool and try again.
+		// if it fails too many times in a row, we're gonna error out.
 		constexpr unsigned int failure_attempt = 8;
 		tz::assert(attempt < failure_attempt, "Failed to allocate descriptor sets for a renderer after %u attempts. Please submit a bug report", failure_attempt);
 

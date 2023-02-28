@@ -117,6 +117,7 @@ namespace tz::gl
 	renderer_resource_manager(rinfo)
 	{
 		this->deduce_descriptor_layout(rinfo.state());
+		this->collect_descriptors();
 	}
 
 	bool renderer_descriptor_manager::empty() const
@@ -168,7 +169,7 @@ namespace tz::gl
 
 		// now we can actually create the descriptor layout.
 		vk2::DescriptorLayoutBuilder builder;
-		builder.set_device(tz::gl::get_device().vk_get_logical_device());
+		builder.set_device(tz::gl::get_device2().vk_get_logical_device());
 		for(std::size_t i = 0; i < buffer_count; i++)
 		{
 			builder.with_binding
@@ -197,6 +198,33 @@ namespace tz::gl
 			});
 		}
 		this->layout = builder.build();
+	}
+
+	void renderer_descriptor_manager::collect_descriptors()
+	{
+		if(this->empty())
+		{
+			return;
+		}
+		if(!this->descriptors.sets.empty())
+		{
+			// we have a previous allocation.
+			// todo: tell the device to free these descriptors.
+		}
+		// we need to know how many frames-in-flight we expect.
+		tz::assert(!this->layout.is_null());
+		std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		tz::basic_list<const vk2::DescriptorLayout*> layouts;
+		layouts.resize(frame_in_flight_count);
+		for(std::size_t i = 0; i < frame_in_flight_count; i++)
+		{
+			layouts[i] = &this->layout;
+		}
+		this->descriptors = tz::gl::get_device2().vk_allocate_sets
+		({
+			.set_layouts = std::move(layouts)
+		});
+		tz::assert(this->descriptors.success());
 	}
 
 //--------------------------------------------------------------------------------------------------

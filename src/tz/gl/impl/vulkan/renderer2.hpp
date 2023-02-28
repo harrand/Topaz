@@ -46,7 +46,9 @@ namespace tz::gl
 		bool empty() const;
 	private:
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
+		void collect_descriptors();
 		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
+		vk2::DescriptorPool::AllocationResult descriptors = {};
 	};
 
 	class renderer_vulkan2 : public renderer_descriptor_manager

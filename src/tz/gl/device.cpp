@@ -4,6 +4,7 @@
 namespace tz::gl
 {
 	std::unique_ptr<device> dev = nullptr;
+	std::unique_ptr<device2> dev2 = nullptr;
 
 	device& get_device()
 	{
@@ -12,6 +13,15 @@ namespace tz::gl
 			dev = std::make_unique<device>();	
 		}
 		return *dev;
+	}
+
+	device2& get_device2()
+	{
+		if(dev2 == nullptr)
+		{
+			dev2 = std::make_unique<device2>();	
+		}
+		return *dev2;
 	}
 
 	void destroy_device()
