@@ -108,6 +108,77 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
+	device_descriptor_pool::device_descriptor_pool(const vk2::LogicalDevice& device):
+	ldev(&device)
+	{
+		this->another_pool();
+	}
+
+	vk2::DescriptorPool::AllocationResult device_descriptor_pool::vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc)
+	{
+		return this->impl_allocate_sets(alloc, 0);
+	}
+
+	vk2::DescriptorPool::AllocationResult device_descriptor_pool::impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int attempt)
+	{
+		constexpr unsigned int failure_attempt = 8;
+		tz::assert(attempt < failure_attempt, "Failed to allocate descriptor sets for a renderer after %u attempts. Please submit a bug report", failure_attempt);
+
+		vk2::DescriptorPool::AllocationResult ret = this->pools.back().allocate_sets(alloc);
+		using ART = vk2::DescriptorPool::AllocationResult::AllocationResultType;
+		if(ret.type == ART::AllocationSuccess)
+		{
+			return ret;
+		}
+		else
+		{
+			if(ret.type == ART::FragmentedPool || ret.type == ART::PoolOutOfMemory)
+			{
+				// todooo: try to tailor the new pool to the sizes expected by the alloc request. if the alloc request is larger than our defaults, we will simply never succeed.
+				this->another_pool();
+				return this->impl_allocate_sets(alloc, attempt + 1);
+			}
+			if(ret.type == ART::FatalError)
+			{
+				tz::error("Fatal error occurred while trying to allocate descriptor sets for a renderer. Was on attempt %u of %u", attempt + 1, failure_attempt + 1);
+			}
+			else
+			{
+				tz::error("Unknown error occurred while trying to allocate descriptor sets for a renderer. Possible memory corruption? Was on attempt %u of %u", attempt + 1, failure_attempt + 1);
+			}
+			return {};
+		}
+	}
+
+	void device_descriptor_pool::another_pool()
+	{
+		// note: this will not use 0 for the limits, but the defaults.
+		this->another_pool(0, 0, 0);
+	}
+
+	void device_descriptor_pool::another_pool(std::size_t set_count, std::size_t buf_count, std::size_t img_count)
+	{
+		constexpr std::size_t min_pool_storage_buffer_count = 128;
+		constexpr std::size_t min_pool_samplerimage_count = 128;
+		constexpr std::size_t min_pool_set_count = 128;
+
+		std::size_t pool_buf_count = std::max(min_pool_storage_buffer_count, buf_count);
+		std::size_t pool_img_count = std::max(min_pool_samplerimage_count, img_count);
+		std::size_t pool_set_count = std::max(min_pool_set_count, set_count);
+
+		vk2::DescriptorPoolInfo::PoolLimits pool_lims;
+		pool_lims.limits[vk2::DescriptorType::StorageBuffer] = pool_buf_count;
+		pool_lims.limits[vk2::DescriptorType::ImageWithSampler] = pool_img_count;
+		pool_lims.max_sets = pool_set_count;
+		this->pools.emplace_back(vk2::DescriptorPoolInfo
+		{
+			.limits = pool_lims,
+			.logical_device = this->ldev
+		});
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	unsigned int rate_physical_device(const vk2::PhysicalDevice device)
 	{
 		unsigned int rating = 0u;
@@ -238,7 +309,8 @@ namespace tz::gl
 	device_vulkan2::device_vulkan2():
 	device_vulkan_base(),
 	device_window(this->vk_get_logical_device()),
-	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline)
+	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline),
+	device_descriptor_pool(this->vk_get_logical_device())
 	{
 
 	}

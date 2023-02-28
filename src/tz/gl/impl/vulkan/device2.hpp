@@ -7,6 +7,7 @@
 #include "tz/gl/impl/vulkan/detail/swapchain.hpp"
 #include "tz/gl/impl/vulkan/detail/image.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
+#include "tz/gl/impl/vulkan/detail/descriptors.hpp"
 
 namespace tz::gl
 {
@@ -50,6 +51,19 @@ namespace tz::gl
 		vk2::TimelineSemaphore tsem;
 	};
 
+	class device_descriptor_pool
+	{
+	public:
+		device_descriptor_pool(const vk2::LogicalDevice& device);
+		vk2::DescriptorPool::AllocationResult vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc);
+	private:
+		vk2::DescriptorPool::AllocationResult impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int attempt);
+		void another_pool();
+		void another_pool(std::size_t set_count, std::size_t buf_count, std::size_t img_count);
+		const vk2::LogicalDevice* ldev;
+		std::vector<vk2::DescriptorPool> pools = {};
+	};
+
 	class device_vulkan_base
 	{
 	public:
@@ -59,7 +73,7 @@ namespace tz::gl
 		vk2::LogicalDevice ldev;
 	};
 
-	class device_vulkan2 : public device_common<renderer_vulkan2>, public device_vulkan_base, public device_window, public device_render_sync
+	class device_vulkan2 : public device_common<renderer_vulkan2>, public device_vulkan_base, public device_window, public device_render_sync, public device_descriptor_pool
 	{
 	public:
 		device_vulkan2();
