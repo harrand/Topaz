@@ -5,6 +5,8 @@
 #include "tz/gl/impl/vulkan/component.hpp"
 #include "tz/gl/impl/common/renderer.hpp"
 
+#include "tz/gl/impl/vulkan/detail/descriptors.hpp"
+
 namespace tz::gl
 {
 	class renderer_resource_manager : private AssetStorageCommon<iresource>
@@ -25,7 +27,17 @@ namespace tz::gl
 		std::vector<tz::maybe_owned_ptr<icomponent>> components = {};
 	};
 
-	class renderer_vulkan2 : public renderer_resource_manager
+	class renderer_descriptor_manager : public renderer_resource_manager
+	{
+	public:
+		renderer_descriptor_manager(const tz::gl::renderer_info& rinfo);
+		renderer_descriptor_manager() = default;
+	private:
+		void deduce_descriptor_layout();
+		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
+	};
+
+	class renderer_vulkan2 : public renderer_descriptor_manager
 	{
 	public:
 		renderer_vulkan2(const tz::gl::renderer_info& rinfo);

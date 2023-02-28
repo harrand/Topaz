@@ -1,7 +1,9 @@
 #include "tz/gl/impl/vulkan/renderer2.hpp"
+#include "tz/gl/device.hpp"
 
 namespace tz::gl
 {
+//--------------------------------------------------------------------------------------------------
 	renderer_resource_manager::renderer_resource_manager(const tz::gl::renderer_info& rinfo):
 	AssetStorageCommon<iresource>(rinfo.get_resources())
 	{
@@ -109,8 +111,27 @@ namespace tz::gl
 		return nullptr;
 	}
 
+//--------------------------------------------------------------------------------------------------
+
+	renderer_descriptor_manager::renderer_descriptor_manager(const tz::gl::renderer_info& rinfo):
+	renderer_resource_manager(rinfo)
+	{
+		this->deduce_descriptor_layout();
+	}
+
+	void renderer_descriptor_manager::deduce_descriptor_layout()
+	{
+		// figure out what descriptor layout we need, and set this->layout to it.
+		// the old value of this->layout is discarded. it is an error to call this function while the layout is "in-use"
+		vk2::DescriptorLayoutBuilder builder;
+		builder.set_device(tz::gl::get_device().vk_get_logical_device());
+		// todo: impl
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	renderer_vulkan2::renderer_vulkan2(const tz::gl::renderer_info& rinfo):
-	renderer_resource_manager(rinfo),
+	renderer_descriptor_manager(rinfo),
 	options(rinfo.get_options()),
 	state(rinfo.state())
 	{
