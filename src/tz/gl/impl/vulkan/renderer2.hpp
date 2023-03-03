@@ -17,6 +17,7 @@ namespace tz::gl
 
 	struct renderer_vulkan_base
 	{
+		protected:
 		// devices have this concept of renderer handles, but they are not guaranteed to be unique (e.g if renderer handle 2 is deleted and a new renderer is created, that will also have handle 2.)
 		// this is a uid which will uniquely identify ths current renderer. renderers need to have their own identity because other manager classes (mainly device_vulkan2) does bookkeeping for renderers and needs to know who is who.
 		static unsigned int uid_counter;
@@ -59,9 +60,9 @@ namespace tz::gl
 	public:
 		renderer_descriptor_manager(const tz::gl::renderer_info& rinfo);
 		renderer_descriptor_manager() = default;
+	private:
 		// descriptor manager is empty if there are no descriptors to bind.
 		bool empty() const;
-	private:
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		void collect_descriptors();
 		void write_descriptors(const tz::gl::render_state& state);

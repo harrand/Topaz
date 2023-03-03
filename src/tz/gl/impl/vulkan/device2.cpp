@@ -199,6 +199,88 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
+	device_command_pool::device_command_pool(const vk2::LogicalDevice& device):
+	ldev(&device)
+	{
+		this->graphics_queue = this->ldev->get_hardware_queue
+		({
+			.field = {vk2::QueueFamilyType::graphics},
+	   		.present_support = false
+   		});
+
+		this->graphics_present_queue = this->ldev->get_hardware_queue
+		({
+			.field = {vk2::QueueFamilyType::graphics},
+	   		.present_support = true
+   		});
+
+		this->compute_queue = this->ldev->get_hardware_queue
+		({
+			.field = {vk2::QueueFamilyType::compute},
+	   		.present_support = false
+   		});
+	}
+
+	vk2::CommandPool::AllocationResult device_command_pool::vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint)
+	{
+		return this->impl_allocate_commands(alloc, fingerprint, 0);
+	}
+
+	void device_command_pool::vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo)
+	{
+		this->fingerprint_alloc_types[fingerprint] = finfo;
+	}
+
+	vk2::CommandPool::AllocationResult device_command_pool::impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
+	{
+		// allocate using the most recently created descriptor pool
+		// if allocation fails due to lack of memory, create a new descriptor pool and try again.
+		// if it fails too many times in a row, we're gonna error out.
+		constexpr unsigned int failure_attempt = 8;
+		tz::assert(attempt < failure_attempt, "Failed to allocate command buffers for a renderer after %u attempts. Please submit a bug report", failure_attempt);
+		vk2::CommandPool& pool = this->get_fitting_pool(this->fingerprint_alloc_types.at(fingerprint));
+
+		vk2::CommandPool::AllocationResult ret = pool.allocate_buffers(alloc);
+		using ART = vk2::CommandPool::AllocationResult::AllocationResultType;
+		if(ret.type == ART::AllocationSuccess)
+		{
+			this->fingerprint_allocation_history[fingerprint].push_back(alloc);
+			return ret;
+		}
+		else
+		{
+			if(ret.type == ART::FatalError)
+			{
+				tz::error("Fatal error occurred while trying to allocate command buffers for a renderer. Was on attempt %u of %u", attempt + 1, failure_attempt + 1);
+			}
+			else
+			{
+				// todo: attempt to recycle command buffer allocations from a fingerprint that is now marked as dead. NYI.
+				tz::error("Unknown error occurred while trying to allocate command buffers for a renderer. This could've been mitigated by command buffer recycling from dead renderers, which is NYI.");
+				return {};
+				//this->another_pool();
+				//return this->impl_allocate_commands(alloc, fingerprint, attempt + 1);
+			}
+			return {};
+		}
+	}
+
+	vk2::CommandPool& device_command_pool::get_fitting_pool(const fingerprint_info_t& finfo)
+	{
+		if(finfo.compute)
+		{
+			return this->compute_commands;
+		}
+		if(finfo.requires_present)
+		{
+			return this->graphics_present_commands;
+		}
+		return this->graphics_commands;
+	}
+
+
+//--------------------------------------------------------------------------------------------------
+
 	unsigned int rate_device(const vk2::PhysicalDevice device)
 	{
 		unsigned int rating = 0u;
@@ -330,7 +412,8 @@ namespace tz::gl
 	device_vulkan_base(),
 	device_window(this->vk_get_logical_device()),
 	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline),
-	device_descriptor_pool(this->vk_get_logical_device())
+	device_descriptor_pool(this->vk_get_logical_device()),
+	device_command_pool(this->vk_get_logical_device())
 	{
 
 	}

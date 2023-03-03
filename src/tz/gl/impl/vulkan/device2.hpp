@@ -8,6 +8,7 @@
 #include "tz/gl/impl/vulkan/detail/image.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 #include "tz/gl/impl/vulkan/detail/descriptors.hpp"
+#include "tz/gl/impl/vulkan/detail/command.hpp"
 #include <unordered_map>
 
 namespace tz::gl
@@ -69,6 +70,36 @@ namespace tz::gl
 		std::unordered_map<unsigned int, std::size_t> fingerprint_to_pool_id = {};
 	};
 
+	class device_command_pool
+	{
+	public:
+		struct fingerprint_info_t
+		{
+			bool compute = false;
+			bool requires_present = true;
+		};
+		device_command_pool(const vk2::LogicalDevice& device);
+		vk2::CommandPool::AllocationResult vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint);
+		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
+	private:
+		struct allocation_history
+		{
+			fingerprint_info_t info;
+			vk2::CommandPool::Allocation alloc;
+		};
+		vk2::CommandPool::AllocationResult impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
+		vk2::CommandPool& get_fitting_pool(const fingerprint_info_t& finfo);
+		const vk2::LogicalDevice* ldev;
+		const vk2::hardware::Queue* graphics_queue = nullptr;
+		const vk2::hardware::Queue* graphics_present_queue = nullptr;
+		const vk2::hardware::Queue* compute_queue = nullptr;
+		vk2::CommandPool graphics_commands = vk2::CommandPool::null();
+		vk2::CommandPool graphics_present_commands = vk2::CommandPool::null();
+		vk2::CommandPool compute_commands = vk2::CommandPool::null();
+		std::unordered_map<unsigned int, fingerprint_info_t> fingerprint_alloc_types = {};
+		std::unordered_map<unsigned int, std::vector<vk2::CommandPool::Allocation>> fingerprint_allocation_history = {};
+	};
+
 	class device_vulkan_base
 	{
 	public:
@@ -78,7 +109,13 @@ namespace tz::gl
 		vk2::LogicalDevice ldev;
 	};
 
-	class device_vulkan2 : public device_common<renderer_vulkan2>, public device_vulkan_base, public device_window, public device_render_sync, public device_descriptor_pool
+	class device_vulkan2 :
+		public device_common<renderer_vulkan2>,
+		public device_vulkan_base,
+		public device_window,
+		public device_render_sync,
+		public device_descriptor_pool,
+		public device_command_pool
 	{
 	public:
 		device_vulkan2();

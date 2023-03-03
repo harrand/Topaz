@@ -406,6 +406,7 @@ namespace tz::gl
 			}
 			update.add_set_edit(req);
 		}
+		// tell the device to do all the writes.
 		tz::gl::get_device2().vk_update_sets(update, renderer_vulkan_base::uid);
 	}
 
