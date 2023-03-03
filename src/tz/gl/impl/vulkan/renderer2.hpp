@@ -70,7 +70,7 @@ namespace tz::gl
 		vk2::DescriptorPool::AllocationResult descriptors = {};
 	};
 
-	class renderer_command_processor
+	class renderer_command_processor : public renderer_descriptor_manager
 	{
 	public:
 		renderer_command_processor(const tz::gl::renderer_info& info);
@@ -79,7 +79,7 @@ namespace tz::gl
 		bool render_wait_enabled = false;
 	};
 
-	class renderer_vulkan2 : public renderer_descriptor_manager
+	class renderer_vulkan2 : public renderer_command_processor
 	{
 	public:
 		renderer_vulkan2(const tz::gl::renderer_info& rinfo);

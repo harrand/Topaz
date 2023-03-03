@@ -413,6 +413,7 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	renderer_command_processor::renderer_command_processor(const tz::gl::renderer_info& rinfo):
+	renderer_descriptor_manager(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait))
 	{
 
@@ -421,7 +422,7 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	renderer_vulkan2::renderer_vulkan2(const tz::gl::renderer_info& rinfo):
-	renderer_descriptor_manager(rinfo),
+	renderer_command_processor(rinfo),
 	options(rinfo.get_options()),
 	state(rinfo.state())
 	{
