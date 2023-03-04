@@ -500,7 +500,17 @@ namespace tz::gl
 	void renderer_command_processor::scratch_initialise_static_resources()
 	{
 		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
-		// NYI	
+		// now the scratch buffer might've already been recorded earlier with commands. if so, we need to realloc it.
+		if(this->scratch_command_buffer().command_count() > 0)
+		{
+			// allocate already purges previous alloc, so just need to call free_commands aswell.
+			this->allocate_commands(command_type::scratch);
+		}
+		this->do_scratch_work([](vk2::CommandBufferRecording& record)
+		{
+			(void)record;
+			tz::error("NYI");
+		});
 	}
 
 	std::span<vk2::CommandBuffer> renderer_command_processor::work_command_buffers()

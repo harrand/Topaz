@@ -2,6 +2,7 @@
 #define TZ_GL_IMPL_VULKAN_RENDERER2_HPP
 #include "tz/gl/api/renderer.hpp"
 #include "tz/core/memory/maybe_owned_ptr.hpp"
+#include "tz/core/types.hpp"
 #include "tz/gl/impl/vulkan/component.hpp"
 #include "tz/gl/impl/common/renderer.hpp"
 
@@ -77,6 +78,7 @@ namespace tz::gl
 		renderer_command_processor(const tz::gl::renderer_info& info);
 		~renderer_command_processor();
 		renderer_command_processor() = default;
+		void do_scratch_work(tz::action<vk2::CommandBufferRecording&> auto record_commands);
 
 		enum class command_type
 		{
@@ -125,4 +127,5 @@ namespace tz::gl
 	static_assert(tz::gl::renderer_type<renderer_vulkan2>);
 }
 
+#include "tz/gl/impl/vulkan/renderer2.inl"
 #endif // TZ_GL_IMPL_VULKAN_RENDERER2_HPP
