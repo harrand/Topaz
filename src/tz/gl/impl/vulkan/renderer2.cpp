@@ -1,4 +1,5 @@
 #include "tz/gl/impl/vulkan/renderer2.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/device.hpp"
 
 namespace tz::gl
@@ -8,6 +9,7 @@ namespace tz::gl
 	renderer_resource_manager::renderer_resource_manager(const tz::gl::renderer_info& rinfo):
 	AssetStorageCommon<iresource>(rinfo.get_resources())
 	{
+		TZ_PROFZONE("render_resource_manager - initialise", 0xFFAAAA00);
 		this->patch_resource_references(rinfo);
 		this->setup_dynamic_resource_spans();
 		this->populate_image_resource_views();
@@ -51,6 +53,7 @@ namespace tz::gl
 
 	void renderer_resource_manager::patch_resource_references(const tz::gl::renderer_info& rinfo)
 	{
+		TZ_PROFZONE("render_resource_manager - patch resource references", 0xFFAAAA00);
 		// AssetStorageCommon populates our set of resources already from the renderer info.
 		// However, if the renderer info contained resource references (rinfo.ref_resource), the resource will be nullptr, and we will need to patch it up ourselves now.
 		this->components.reserve(this->resource_count());
@@ -78,6 +81,7 @@ namespace tz::gl
 
 	void renderer_resource_manager::setup_dynamic_resource_spans()
 	{
+		TZ_PROFZONE("render_resource_manager - setup dynamic spans", 0xFFAAAA00);
 		// go through each component. if its a dynamic resource, link the underlying image/buffer mapped data with the resource data.
 		for(std::size_t i = 0; i < this->resource_count(); i++)
 		{
@@ -111,6 +115,7 @@ namespace tz::gl
 
 	void renderer_resource_manager::populate_image_resource_views()
 	{
+		TZ_PROFZONE("render_resource_manager - populate image resourse views", 0xFFAAAA00);
 		this->image_resource_views.clear();
 		for(auto& component_ptr : this->components)
 		{
@@ -135,6 +140,7 @@ namespace tz::gl
 
 	void renderer_resource_manager::populate_image_resource_samplers()
 	{
+		TZ_PROFZONE("render_resource_manager - populate image resourse samplers", 0xFFAAAA00);
 		this->image_resource_samplers.clear();
 		for(auto& component_ptr : this->components)
 		{
@@ -201,6 +207,7 @@ namespace tz::gl
 
 	tz::maybe_owned_ptr<icomponent> renderer_resource_manager::make_component_from(iresource* resource)
 	{
+		TZ_PROFZONE("render_resource_manager - component factory", 0xFFAAAA00);
 		tz::assert(resource != nullptr);
 		switch(resource->get_type())
 		{
@@ -219,8 +226,9 @@ namespace tz::gl
 	renderer_descriptor_manager::renderer_descriptor_manager(const tz::gl::renderer_info& rinfo):
 	renderer_resource_manager(rinfo)
 	{
+		TZ_PROFZONE("renderer_descriptor_manager - initialise", 0xFFAAAA00);
 		this->deduce_descriptor_layout(rinfo.state());
-		this->collect_descriptors();
+		this->allocate_descriptors();
 	}
 
 	bool renderer_descriptor_manager::empty() const
@@ -230,6 +238,7 @@ namespace tz::gl
 
 	void renderer_descriptor_manager::deduce_descriptor_layout(const tz::gl::render_state& state)
 	{
+		TZ_PROFZONE("renderer_descriptor_manager - deduce descriptor layout", 0xFFAAAA00);
 		// figure out what descriptor layout we need, and set this->layout to it.
 		// the old value of this->layout is discarded. it is an error to call this function while the layout is "in-use"
 		std::size_t buffer_count = 0;
@@ -303,8 +312,9 @@ namespace tz::gl
 		this->layout = builder.build();
 	}
 
-	void renderer_descriptor_manager::collect_descriptors()
+	void renderer_descriptor_manager::allocate_descriptors()
 	{
+		TZ_PROFZONE("renderer_descriptor_manager - allocate descriptors ", 0xFFAAAA00);
 		if(this->empty())
 		{
 			return;
@@ -313,6 +323,7 @@ namespace tz::gl
 		{
 			// we have a previous allocation.
 			// todo: tell the device to free these descriptors.
+			tz::error("support for handling previous descriptors allocation is NYI.");
 		}
 		// we need to know how many frames-in-flight we expect.
 		tz::assert(!this->layout.is_null());
@@ -332,6 +343,7 @@ namespace tz::gl
 
 	void renderer_descriptor_manager::write_descriptors(const tz::gl::render_state& state)
 	{
+		TZ_PROFZONE("renderer_descriptor_manager - write descriptors ", 0xFFAAAA00);
 		// early out if there's no descriptors to write to.
 		if(this->empty())
 		{
@@ -344,10 +356,12 @@ namespace tz::gl
 		buffer_writes.reserve(renderer_resource_manager::resource_count());
 		std::vector<vk2::DescriptorSet::Write::ImageWriteInfo> image_writes;
 		image_writes.reserve(renderer_resource_manager::resource_count());
+		// not all buffers are going to be referenced by descriptors (e.g index and indirect buffers). we count them here and exclude them from the final descriptor counts.
 		std::size_t uninterested_descriptor_count = 0;
 		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
 		{
 			tz::gl::resource_handle rh = static_cast<tz::hanval>(i);
+			// we dont want to expose index and draw indirect buffers to descriptors, so we skip them here.
 			if(state.graphics.index_buffer == rh || state.graphics.draw_buffer == rh)
 			{
 				uninterested_descriptor_count++;			
@@ -416,7 +430,45 @@ namespace tz::gl
 	renderer_descriptor_manager(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait))
 	{
+		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
+		this->allocate_commands();
+	}
 
+	void renderer_command_processor::allocate_commands()
+	{
+		TZ_PROFZONE("renderer_command_processor - allocate commands", 0xFFAAAA00);
+		tz::assert(this->command_allocations.empty(), "command allocations not empty during `allocate_commands()`. no functionality exists yet to free existing commands - are you trying to do a renderer edit? those are NYI");
+		this->command_allocations.resize(2);
+		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		const std::size_t scratch_buffer_count = 1;
+		// we want a quantity of command buffers equal to `frame_in_flight_count` + 1.
+		// the +1 is a scratch buffer which will be used for various commands (mainly renderer edits, but a few things in setup aswell, such as static resource writes).
+
+		constexpr std::size_t work_alloc_id = 0;
+		constexpr std::size_t scratch_alloc_id = 1;
+		// tell the command pool about our intentions.
+		auto& dev = tz::gl::get_device2();
+		dev.vk_command_pool_touch(renderer_vulkan_base::uid,
+		{
+			// todo: no magic values.
+			.compute = false,
+			.requires_present = true
+		});
+		// one allocation for our render/compute work commands.
+		this->command_allocations[work_alloc_id] = dev.vk_allocate_commands
+		({
+			.buffer_count = frame_in_flight_count
+		}, renderer_vulkan_base::uid);
+		this->command_allocations[scratch_alloc_id] = dev.vk_allocate_commands
+		({
+			.buffer_count = scratch_buffer_count
+		}, renderer_vulkan_base::uid);
+	}
+
+	void renderer_command_processor::scratch_initialise_static_resources()
+	{
+		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
+		// NYI	
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -426,6 +478,7 @@ namespace tz::gl
 	options(rinfo.get_options()),
 	state(rinfo.state())
 	{
+		TZ_PROFZONE("renderer_vulkan2 - initialise", 0xFFAAAA00);
 
 	}
 

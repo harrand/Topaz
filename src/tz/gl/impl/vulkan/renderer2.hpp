@@ -6,6 +6,7 @@
 #include "tz/gl/impl/common/renderer.hpp"
 
 #include "tz/gl/impl/vulkan/detail/descriptors.hpp"
+#include "tz/gl/impl/vulkan/detail/command.hpp"
 
 namespace tz::gl
 {
@@ -64,7 +65,7 @@ namespace tz::gl
 		// descriptor manager is empty if there are no descriptors to bind.
 		bool empty() const;
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
-		void collect_descriptors();
+		void allocate_descriptors();
 		void write_descriptors(const tz::gl::render_state& state);
 		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
 		vk2::DescriptorPool::AllocationResult descriptors = {};
@@ -76,7 +77,10 @@ namespace tz::gl
 		renderer_command_processor(const tz::gl::renderer_info& info);
 		renderer_command_processor() = default;
 	private:
+		void allocate_commands();
+		void scratch_initialise_static_resources();
 		bool render_wait_enabled = false;
+		std::vector<vk2::CommandPool::AllocationResult> command_allocations = {};
 	};
 
 	class renderer_vulkan2 : public renderer_command_processor
