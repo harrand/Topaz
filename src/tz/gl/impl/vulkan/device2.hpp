@@ -78,10 +78,11 @@ namespace tz::gl
 			bool compute = false;
 			bool requires_present = true;
 		};
-		device_command_pool(const vk2::LogicalDevice& device);
+		device_command_pool(vk2::LogicalDevice& device);
 		vk2::CommandPool::AllocationResult vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint);
 		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
+		void vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer);
 	private:
 		struct allocation_history
 		{
@@ -90,10 +91,11 @@ namespace tz::gl
 		};
 		vk2::CommandPool::AllocationResult impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
 		vk2::CommandPool& get_fitting_pool(const fingerprint_info_t& finfo);
-		const vk2::LogicalDevice* ldev;
-		const vk2::hardware::Queue* graphics_queue = nullptr;
-		const vk2::hardware::Queue* graphics_present_queue = nullptr;
-		const vk2::hardware::Queue* compute_queue = nullptr;
+		vk2::hardware::Queue* get_original_queue(const fingerprint_info_t& finfo);
+		vk2::LogicalDevice* ldev;
+		vk2::hardware::Queue* graphics_queue = nullptr;
+		vk2::hardware::Queue* graphics_present_queue = nullptr;
+		vk2::hardware::Queue* compute_queue = nullptr;
 		vk2::CommandPool graphics_commands = vk2::CommandPool::null();
 		vk2::CommandPool graphics_present_commands = vk2::CommandPool::null();
 		vk2::CommandPool compute_commands = vk2::CommandPool::null();
@@ -106,6 +108,7 @@ namespace tz::gl
 	public:
 		device_vulkan_base();
 		const vk2::LogicalDevice& vk_get_logical_device() const;
+		vk2::LogicalDevice& vk_get_logical_device();
 	protected:
 		vk2::LogicalDevice ldev;
 	};

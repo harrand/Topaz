@@ -161,7 +161,6 @@ add_library(topaz STATIC
 	src/tz/gl/impl/vulkan/renderer.inl
 	src/tz/gl/impl/vulkan/renderer2.cpp
 	src/tz/gl/impl/vulkan/renderer2.hpp
-	src/tz/gl/impl/vulkan/renderer2.inl
 	# tz::gl (OpenGL Frontend)
 	src/tz/gl/impl/opengl/component.cpp
 	src/tz/gl/impl/opengl/component.hpp

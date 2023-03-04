@@ -1,6 +1,7 @@
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/device2.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
+#include "tz/gl/impl/vulkan/detail/fence.hpp"
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
 #include "tz/core/profile.hpp"
 #include <algorithm>
@@ -199,7 +200,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	device_command_pool::device_command_pool(const vk2::LogicalDevice& device):
+	device_command_pool::device_command_pool(vk2::LogicalDevice& device):
 	ldev(&device)
 	{
 		this->graphics_queue = this->ldev->get_hardware_queue
@@ -253,6 +254,28 @@ namespace tz::gl
 		this->fingerprint_alloc_types[fingerprint] = finfo;
 	}
 
+	void device_command_pool::vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer)
+	{
+		vk2::Fence temp_fence
+		{{
+			.device = this->ldev
+		}};
+
+		#if TZ_DEBUG
+			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
+			tz::assert(debug_real_alloc_length > buffer_id, "attempted to submit & run scratch command buffer id %zu at (fingerprint:allocid) %u:%zu. there are only %zu buffers in this allocation. please submit a bug report.", buffer_id, fingerprint, allocation_id, debug_real_alloc_length);
+		#endif // TZ_DEBUG
+	
+		this->get_original_queue(this->fingerprint_alloc_types[fingerprint])->submit
+		(vk2::hardware::Queue::SubmitInfo{
+			.command_buffers = {&buffer},
+	   		.waits = {},
+	   		.signals = {},
+	   		.execution_complete_fence = &temp_fence
+		});	
+		temp_fence.wait_until_signalled();
+	}
+
 	vk2::CommandPool::AllocationResult device_command_pool::impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
 	{
 		// allocate using the most recently created descriptor pool
@@ -300,6 +323,18 @@ namespace tz::gl
 		return this->graphics_commands;
 	}
 
+	vk2::hardware::Queue* device_command_pool::get_original_queue(const fingerprint_info_t& finfo)
+	{
+		if(finfo.compute)
+		{
+			return this->compute_queue;
+		}
+		if(finfo.requires_present)
+		{
+			return this->graphics_present_queue;
+		}
+		return this->graphics_queue;
+	}
 
 //--------------------------------------------------------------------------------------------------
 
@@ -424,6 +459,11 @@ namespace tz::gl
 	}
 
 	const vk2::LogicalDevice& device_vulkan_base::vk_get_logical_device() const
+	{
+		return this->ldev;
+	}
+
+	vk2::LogicalDevice& device_vulkan_base::vk_get_logical_device()
 	{
 		return this->ldev;
 	}

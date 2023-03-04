@@ -439,6 +439,19 @@ namespace tz::gl
 		this->free_commands(command_type::both);
 	}
 
+	void renderer_command_processor::do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands)
+	{
+		vk2::CommandBuffer& buf = this->scratch_command_buffer();
+		// firstly record the commands requested.
+		{
+			vk2::CommandBufferRecording rec = buf.record();
+			record_commands(rec);
+		}
+		// then, execute them.
+		constexpr std::size_t scratch_id = 1;
+		tz::gl::get_device2().vk_submit_and_run_commands_blocking(renderer_vulkan_base::uid, scratch_id, 0, buf);
+	}
+
 	constexpr std::size_t cmdbuf_work_alloc_id = 0;
 	constexpr std::size_t cmdbuf_scratch_alloc_id = 1;
 
