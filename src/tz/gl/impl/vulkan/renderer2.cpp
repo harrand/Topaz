@@ -431,21 +431,30 @@ namespace tz::gl
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait))
 	{
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
-		this->allocate_commands();
+		this->allocate_commands(command_type::both);
 	}
 
-	void renderer_command_processor::allocate_commands()
+	renderer_command_processor::~renderer_command_processor()
+	{
+		this->free_commands(command_type::both);
+	}
+
+	constexpr std::size_t cmdbuf_work_alloc_id = 0;
+	constexpr std::size_t cmdbuf_scratch_alloc_id = 1;
+
+	void renderer_command_processor::allocate_commands(renderer_command_processor::command_type t)
 	{
 		TZ_PROFZONE("renderer_command_processor - allocate commands", 0xFFAAAA00);
-		tz::assert(this->command_allocations.empty(), "command allocations not empty during `allocate_commands()`. no functionality exists yet to free existing commands - are you trying to do a renderer edit? those are NYI");
+		if(this->command_allocations.size() > 0 /* this might be incorrect logic */)
+		{
+			this->free_commands(t);
+		}
 		this->command_allocations.resize(2);
 		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
 		const std::size_t scratch_buffer_count = 1;
 		// we want a quantity of command buffers equal to `frame_in_flight_count` + 1.
 		// the +1 is a scratch buffer which will be used for various commands (mainly renderer edits, but a few things in setup aswell, such as static resource writes).
 
-		constexpr std::size_t work_alloc_id = 0;
-		constexpr std::size_t scratch_alloc_id = 1;
 		// tell the command pool about our intentions.
 		auto& dev = tz::gl::get_device2();
 		dev.vk_command_pool_touch(renderer_vulkan_base::uid,
@@ -455,20 +464,54 @@ namespace tz::gl
 			.requires_present = true
 		});
 		// one allocation for our render/compute work commands.
-		this->command_allocations[work_alloc_id] = dev.vk_allocate_commands
+		this->command_allocations[cmdbuf_work_alloc_id] = dev.vk_allocate_commands
 		({
 			.buffer_count = frame_in_flight_count
 		}, renderer_vulkan_base::uid);
-		this->command_allocations[scratch_alloc_id] = dev.vk_allocate_commands
+		this->command_allocations[cmdbuf_scratch_alloc_id] = dev.vk_allocate_commands
 		({
 			.buffer_count = scratch_buffer_count
 		}, renderer_vulkan_base::uid);
+	}
+
+	void renderer_command_processor::free_commands(renderer_command_processor::command_type t)
+	{
+		if(this->command_allocations.empty())
+		{
+			return;
+		}
+		if(t == command_type::work || t == command_type::both)
+		{
+			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, this->command_allocations[cmdbuf_work_alloc_id].buffers);
+			// pop_front() doesnt exist in std::vector ugh
+			this->command_allocations.erase(this->command_allocations.begin());
+		}
+		if(t == command_type::scratch || t == command_type::both)
+		{
+			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_scratch_alloc_id, this->command_allocations[cmdbuf_scratch_alloc_id].buffers);
+			this->command_allocations.pop_back();
+		}
+		if(t == command_type::both)
+		{
+			tz::assert(this->command_allocations.empty());
+		}
 	}
 
 	void renderer_command_processor::scratch_initialise_static_resources()
 	{
 		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
 		// NYI	
+	}
+
+	std::span<vk2::CommandBuffer> renderer_command_processor::work_command_buffers()
+	{
+		return this->command_allocations[cmdbuf_work_alloc_id].buffers;
+	}
+
+	vk2::CommandBuffer& renderer_command_processor::scratch_command_buffer()
+	{
+		tz::assert(this->command_allocations[cmdbuf_scratch_alloc_id].buffers.length() == 1, "detected more than 1 scratch command. engine dev - you forgot to refactor `scratch_command_buffer()`. please submit a bug report.");
+		return this->command_allocations[cmdbuf_scratch_alloc_id].buffers.front();
 	}
 
 //--------------------------------------------------------------------------------------------------

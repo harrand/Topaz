@@ -489,6 +489,7 @@ namespace tz::gl::vk2
 		 * @return Structure with the resultant information, including newly-allocated CommandBuffers.
 		 */
 		AllocationResult allocate_buffers(const Allocation& alloc);
+		void free_buffers(const AllocationResult& alloc_result);
 
 		using NativeType = VkCommandPool;
 		NativeType native() const;

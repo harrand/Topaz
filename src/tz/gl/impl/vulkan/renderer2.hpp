@@ -75,10 +75,22 @@ namespace tz::gl
 	{
 	public:
 		renderer_command_processor(const tz::gl::renderer_info& info);
+		~renderer_command_processor();
 		renderer_command_processor() = default;
+
+		enum class command_type
+		{
+			work,
+			scratch,
+			both
+		};
 	private:
-		void allocate_commands();
+		void allocate_commands(command_type t = command_type::both);
+		void free_commands(command_type t = command_type::both);
 		void scratch_initialise_static_resources();
+
+		std::span<vk2::CommandBuffer> work_command_buffers();
+		vk2::CommandBuffer& scratch_command_buffer();
 		bool render_wait_enabled = false;
 		std::vector<vk2::CommandPool::AllocationResult> command_allocations = {};
 	};

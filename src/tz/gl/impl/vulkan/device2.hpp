@@ -80,6 +80,7 @@ namespace tz::gl
 		};
 		device_command_pool(const vk2::LogicalDevice& device);
 		vk2::CommandPool::AllocationResult vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint);
+		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
 	private:
 		struct allocation_history

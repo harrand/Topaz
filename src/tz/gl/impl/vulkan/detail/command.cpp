@@ -577,6 +577,17 @@ namespace tz::gl::vk2
 		return alloc_res;
 	}
 
+	void CommandPool::free_buffers(const AllocationResult& alloc_result)
+	{
+		std::vector<CommandBuffer::NativeType> cmd_natives(alloc_result.buffers.length());
+		std::transform(alloc_result.buffers.begin(), alloc_result.buffers.end(), cmd_natives.begin(),
+		[](const vk2::CommandBuffer& buf)
+		{
+			return buf.native();
+		});
+		vkFreeCommandBuffers(this->get_device().native(), this->pool, cmd_natives.size(), cmd_natives.data());
+	}
+
 	CommandPool::NativeType CommandPool::native() const
 	{
 		return this->pool;

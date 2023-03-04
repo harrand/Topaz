@@ -223,7 +223,29 @@ namespace tz::gl
 
 	vk2::CommandPool::AllocationResult device_command_pool::vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint)
 	{
+		tz::assert(alloc.buffer_count > 0, "it's illegal to do a command buffer allocation of size zero. please submit a bug report.");
 		return this->impl_allocate_commands(alloc, fingerprint, 0);
+	}
+
+	void device_command_pool::vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers)
+	{
+		tz::assert(this->fingerprint_allocation_history.find(fingerprint) != this->fingerprint_allocation_history.end(), "cannot free commands because there is no recorded history for fingerprint %u", fingerprint);
+		auto& allocations = this->fingerprint_allocation_history.at(fingerprint);
+		tz::assert(!allocations.empty(), "attempted to free command buffers of allocation-id %zu for fingerprint %u, but there were no allocations -- either a zero-allocation occurred (wouldve asserted earlier), or this has already been freed.");
+		tz::assert(allocations.size() > allocation_id, "allocation id %zu for fingerprint %u is invalid - only %zu allocations are in the history for this fingerprint", allocation_id, fingerprint, allocations.size());
+		tz::assert(allocations.size() == command_buffers.size(), "passed span for command buffers in free (size %zu) does not match the number of buffers that were allocated (%zu). the span does not match. logic error. please submit a bug report.");
+		
+		// do the free.
+		vk2::CommandPool& pool = this->get_fitting_pool(this->fingerprint_alloc_types.at(fingerprint));
+		tz::basic_list<vk2::CommandBuffer> buffers;
+		for(std::size_t i = 0; i < command_buffers.size(); i++)
+		{
+			buffers.add(std::move(command_buffers[i]));
+		}
+		pool.free_buffers({.buffers = buffers, .type = vk2::CommandPool::AllocationResult::AllocationResultType::AllocationSuccess});
+		
+		// allocations have a buffer count of 0 when freed.
+		allocations[allocation_id] = {.buffer_count = 0u};
 	}
 
 	void device_command_pool::vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo)
