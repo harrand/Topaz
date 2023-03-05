@@ -18,6 +18,9 @@ namespace tz::gl
 	public:
 		device_window(const vk2::LogicalDevice& device);
 		const vk2::Swapchain& get_swapchain() const;
+		vk2::Swapchain& get_swapchain();
+		const vk2::Image& get_depth_image() const;
+		vk2::Image& get_depth_image();
 		/**
 		 * acquire an image from the underlying presentation engine. if you want to render something to the window, you will need to acquire an image here and render into it.
 		 * if you acquired an image earlier but didn't present to it, this will give you the same image.

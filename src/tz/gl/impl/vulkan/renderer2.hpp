@@ -77,7 +77,17 @@ namespace tz::gl
 	public:
 		renderer_output_manager(const tz::gl::renderer_info& rinfo);
 		renderer_output_manager() = default;
+
+		struct render_target_t
+		{
+			std::vector<vk2::ImageView> colour_attachments = {};
+			vk2::ImageView depth_attachment = vk2::ImageView::null();
+		};
 	private:
+		void populate_render_targets();
+
+		const tz::gl::ioutput* output = nullptr;
+		std::vector<render_target_t> render_targets = {};
 	};
 
 	class renderer_command_processor : public renderer_output_manager

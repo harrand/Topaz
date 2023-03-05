@@ -426,9 +426,36 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	renderer_output_manager::renderer_output_manager(const tz::gl::renderer_info& rinfo):
-	renderer_descriptor_manager(rinfo)
+	renderer_descriptor_manager(rinfo),
+	output(rinfo.get_output())
 	{
+		this->populate_render_targets();
+	}
 
+	void renderer_output_manager::populate_render_targets()
+	{
+		this->render_targets.clear();
+		if(this->output == nullptr)
+		{
+			// we use window output. swapchain and device depth.
+			auto& swapchain = tz::gl::get_device2().get_swapchain();
+			const std::uint32_t frame_in_flight_count = swapchain.get_images().size();
+			this->render_targets.resize(frame_in_flight_count);
+			for(std::size_t i = 0; i < frame_in_flight_count; i++)
+			{
+				auto& colours = this->render_targets[i].colour_attachments;
+				colours.push_back
+				(vk2::ImageView{{
+					.image = &swapchain.get_images()[i],
+					.aspect = vk2::ImageAspectFlag::Colour
+				 }});
+				this->render_targets[i].depth_attachment = vk2::ImageView
+				{{
+					.image = &tz::gl::get_device2().get_depth_image(),
+					.aspect = vk2::ImageAspectFlag::Depth
+				}};
+			}
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------

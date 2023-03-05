@@ -53,6 +53,21 @@ namespace tz::gl
 		return this->swapchain;
 	}
 
+	vk2::Swapchain& device_window::get_swapchain()
+	{
+		return this->swapchain;
+	}
+
+	const vk2::Image& device_window::get_depth_image() const
+	{
+		return this->device_depth;
+	}
+
+	vk2::Image& device_window::get_depth_image()
+	{
+		return this->device_depth;
+	}
+
 	std::size_t device_window::acquire_image(const vk2::Swapchain::ImageAcquisition& acquire)
 	{
 		if(!this->recent_acquire.has_value())
