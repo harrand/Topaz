@@ -84,7 +84,7 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::FragmentShaderResourceWrite;
 			}
-			if(features.features_dr.dynamicRendering)
+			if(features.features13.dynamicRendering)
 			{
 				ret |= DeviceFeature::DynamicRendering;
 			}
@@ -116,7 +116,7 @@ namespace tz::gl::vk2
 				info.features12.runtimeDescriptorArray = VK_TRUE;
 			}
 
-			info.features_dr.dynamicRendering = feature_field.contains(DeviceFeature::DynamicRendering);
+			info.features13.dynamicRendering = feature_field.contains(DeviceFeature::DynamicRendering);
 			return info;
 		}
 

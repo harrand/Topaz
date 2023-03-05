@@ -51,11 +51,19 @@ namespace tz::gl::vk2
 			return feats;
 		}
 
-		constexpr VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceDynamicRenderingFeaturesKHR& next)
+		constexpr VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceVulkan13Features& next)
 		{
 			VkPhysicalDeviceVulkan12Features feats{};
 			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
 			feats.pNext = &next;	
+			return feats;
+		}
+
+		constexpr VkPhysicalDeviceVulkan13Features empty_13_features()
+		{
+			VkPhysicalDeviceVulkan13Features feats{};
+			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+			feats.pNext = nullptr;
 			return feats;
 		}
 
@@ -67,17 +75,10 @@ namespace tz::gl::vk2
 			return feats;
 		}
 
-		constexpr VkPhysicalDeviceDynamicRenderingFeaturesKHR empty_dynamic_rendering_features()
-		{
-			VkPhysicalDeviceDynamicRenderingFeaturesKHR feats{};
-			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES; 
-			return feats;
-		}
-
 		struct DeviceFeatureInfo
 		{
-			VkPhysicalDeviceDynamicRenderingFeaturesKHR features_dr = empty_dynamic_rendering_features();
-			VkPhysicalDeviceVulkan12Features features12 = empty_12_features(features_dr);
+			VkPhysicalDeviceVulkan13Features features13 = empty_13_features();
+			VkPhysicalDeviceVulkan12Features features12 = empty_12_features(features13);
 			VkPhysicalDeviceVulkan11Features features11 = empty_11_features(features12);
 			VkPhysicalDeviceFeatures2 features = empty_features2(features11);
 		};

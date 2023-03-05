@@ -468,7 +468,7 @@ namespace tz::gl
 			vk2::DeviceFeature::DynamicRendering
 		};
 		tz::assert(pdev.get_supported_features().contains(dev_feats), "One or both of DeviceFeatures 'BindlessDescriptors' and 'ColourBlendLogicalOperations' are not supported by this machine/driver. Please ensure your machine meets the system requirements.");
-		dev_exts = {vk2::DeviceExtension::Swapchain, vk2::DeviceExtension::DynamicRendering};
+		dev_exts = {vk2::DeviceExtension::Swapchain};
 		#if TZ_DEBUG
 			dev_exts |= vk2::DeviceExtension::ShaderDebugPrint;
 		#endif

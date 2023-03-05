@@ -65,9 +65,9 @@ namespace tz::gl::vk2
 	recording(&record)
 	{
 		tz::vec2ui dims = tz::vec2ui::zero();
-		std::vector<VkRenderingAttachmentInfoKHR> colour_attachment_natives(colour_attachments.size());
+		std::vector<VkRenderingAttachmentInfo> colour_attachment_natives(colour_attachments.size());
 		std::transform(colour_attachments.begin(), colour_attachments.end(), colour_attachment_natives.begin(),
-		[](const auto& imgview)->VkRenderingAttachmentInfoKHR
+		[](const auto& imgview)->VkRenderingAttachmentInfo
 		{
 			VkClearColorValue clearval;
 			clearval.float32[0] = clearval.float32[1] = clearval.float32[2] = 0.0f;
@@ -96,7 +96,7 @@ namespace tz::gl::vk2
 		tz::assert(std::all_of(colour_attachments.begin(), colour_attachments.end(), [dims](const auto& imgview){return imgview.get_image().get_dimensions() == dims;}));
 		VkClearDepthStencilValue clearvald;
 		clearvald.depth = 0.0f;
-		VkRenderingAttachmentInfoKHR depth_attachment_native
+		VkRenderingAttachmentInfo depth_attachment_native
 		{
 			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
 			.pNext = nullptr,
@@ -138,13 +138,13 @@ namespace tz::gl::vk2
 			.pDepthAttachment = (depth_attachment != nullptr) ? &depth_attachment_native : nullptr,
 			.pStencilAttachment = nullptr
 		};
-		vkCmdBeginRenderingKHR(this->recording->get_command_buffer().native(), &info);
+		vkCmdBeginRendering(this->recording->get_command_buffer().native(), &info);
 		this->recording->register_command(VulkanCommand::BeginDynamicRendering{});
 	}
 
 	CommandBufferRecording::DynamicRenderingRun::~DynamicRenderingRun()
 	{
-		vkCmdEndRenderingKHR(this->recording->get_command_buffer().native());
+		vkCmdEndRendering(this->recording->get_command_buffer().native());
 		this->recording->register_command(VulkanCommand::EndDynamicRendering{});
 	}
 
