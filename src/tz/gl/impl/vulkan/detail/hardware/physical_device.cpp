@@ -84,6 +84,10 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::FragmentShaderResourceWrite;
 			}
+			if(features.features_dr.dynamicRendering)
+			{
+				ret |= DeviceFeature::DynamicRendering;
+			}
 		
 			return ret;
 		}
@@ -111,6 +115,8 @@ namespace tz::gl::vk2
 				info.features12.descriptorBindingVariableDescriptorCount = VK_TRUE;
 				info.features12.runtimeDescriptorArray = VK_TRUE;
 			}
+
+			info.features_dr.dynamicRendering = feature_field.contains(DeviceFeature::DynamicRendering);
 			return info;
 		}
 

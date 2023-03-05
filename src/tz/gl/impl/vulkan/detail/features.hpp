@@ -34,7 +34,9 @@ namespace tz::gl::vk2
 		/// - Enables vertex, geometry, and tessellation shaders to write to storage buffers.
 		VertexPipelineResourceWrite,
 		/// - Enables fragment shaders to write to storage buffers.
-		FragmentShaderResourceWrite
+		FragmentShaderResourceWrite,
+		/// - Enables dynamic rendering. this is not optional.
+		DynamicRendering
 	};
 
 	using DeviceFeatureField = tz::enum_field<DeviceFeature>;
@@ -49,10 +51,11 @@ namespace tz::gl::vk2
 			return feats;
 		}
 
-		constexpr VkPhysicalDeviceVulkan12Features empty_12_features()
+		constexpr VkPhysicalDeviceVulkan12Features empty_12_features(VkPhysicalDeviceDynamicRenderingFeaturesKHR& next)
 		{
 			VkPhysicalDeviceVulkan12Features feats{};
 			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+			feats.pNext = &next;	
 			return feats;
 		}
 
@@ -64,9 +67,17 @@ namespace tz::gl::vk2
 			return feats;
 		}
 
+		constexpr VkPhysicalDeviceDynamicRenderingFeaturesKHR empty_dynamic_rendering_features()
+		{
+			VkPhysicalDeviceDynamicRenderingFeaturesKHR feats{};
+			feats.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES; 
+			return feats;
+		}
+
 		struct DeviceFeatureInfo
 		{
-			VkPhysicalDeviceVulkan12Features features12 = empty_12_features();
+			VkPhysicalDeviceDynamicRenderingFeaturesKHR features_dr = empty_dynamic_rendering_features();
+			VkPhysicalDeviceVulkan12Features features12 = empty_12_features(features_dr);
 			VkPhysicalDeviceVulkan11Features features11 = empty_11_features(features12);
 			VkPhysicalDeviceFeatures2 features = empty_features2(features11);
 		};
