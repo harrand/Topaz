@@ -432,6 +432,11 @@ namespace tz::gl
 		this->populate_render_targets();
 	}
 
+	std::span<renderer_output_manager::render_target_t> renderer_output_manager::get_render_targets()
+	{
+		return this->render_targets;
+	}
+
 	void renderer_output_manager::populate_render_targets()
 	{
 		this->render_targets.clear();

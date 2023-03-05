@@ -83,6 +83,7 @@ namespace tz::gl
 			std::vector<vk2::ImageView> colour_attachments = {};
 			vk2::ImageView depth_attachment = vk2::ImageView::null();
 		};
+		std::span<render_target_t> get_render_targets();
 	private:
 		void populate_render_targets();
 
