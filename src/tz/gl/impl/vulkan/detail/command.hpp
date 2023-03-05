@@ -134,6 +134,10 @@ namespace tz::gl::vk2
 			/// Framebuffer containing the @ref RenderPass.
 			Framebuffer* framebuffer;
 		};
+
+		struct BeginDynamicRendering{};
+
+		struct EndDynamicRendering{};
 		
 		/**
 		 * Record the ending of some @ref RenderPass.
@@ -246,7 +250,7 @@ namespace tz::gl::vk2
 		struct DebugEndLabel{};
 
 		/// variant type which has alternatives for every single possible recordable command type.
-		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
+		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BeginDynamicRendering, EndDynamicRendering, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -297,6 +301,18 @@ namespace tz::gl::vk2
 			RenderPassRun& operator=(RenderPassRun&& rhs) = delete;
 		private:
 			Framebuffer* framebuffer;
+			CommandBufferRecording* recording;
+		};
+
+		class DynamicRenderingRun
+		{
+		public:
+			DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment);
+			~DynamicRenderingRun();
+
+			DynamicRenderingRun& operator=(const DynamicRenderingRun& rhs) = delete;
+			DynamicRenderingRun& operator=(DynamicRenderingRun&& rhs) = delete;
+		private:
 			CommandBufferRecording* recording;
 		};
 

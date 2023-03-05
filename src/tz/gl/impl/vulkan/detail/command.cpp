@@ -61,6 +61,93 @@ namespace tz::gl::vk2
 		});
 	}
 
+	CommandBufferRecording::DynamicRenderingRun::DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment):
+	recording(&record)
+	{
+		tz::vec2ui dims = tz::vec2ui::zero();
+		std::vector<VkRenderingAttachmentInfoKHR> colour_attachment_natives(colour_attachments.size());
+		std::transform(colour_attachments.begin(), colour_attachments.end(), colour_attachment_natives.begin(),
+		[](const auto& imgview)->VkRenderingAttachmentInfoKHR
+		{
+			VkClearColorValue clearval;
+			clearval.float32[0] = clearval.float32[1] = clearval.float32[2] = 0.0f;
+			clearval.float32[3] = 1.0f;
+			return
+			{
+				.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+				.pNext = nullptr,
+				.imageView = imgview.native(),
+				.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				.resolveMode = VK_RESOLVE_MODE_NONE,
+				.resolveImageView = VK_NULL_HANDLE,
+				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // todo: configurable on NoClearOutput
+				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+				.clearValue =
+				{
+					.color = {clearval}
+				}
+			};
+		});
+		if(colour_attachments.size())
+		{
+			dims = colour_attachments.front().get_image().get_dimensions();
+		}
+		tz::assert(std::all_of(colour_attachments.begin(), colour_attachments.end(), [dims](const auto& imgview){return imgview.get_image().get_dimensions() == dims;}));
+		VkClearDepthStencilValue clearvald;
+		clearvald.depth = 0.0f;
+		VkRenderingAttachmentInfoKHR depth_attachment_native
+		{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+			.pNext = nullptr,
+			.imageView = VK_NULL_HANDLE,
+			.imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+			.resolveMode = VK_RESOLVE_MODE_NONE,
+			.resolveImageView = VK_NULL_HANDLE,
+			.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.clearValue = 
+			{
+				.depthStencil = {clearvald}
+			}
+		};
+		if(depth_attachment != nullptr)
+		{
+			depth_attachment_native.imageView = depth_attachment->native();
+			#if TZ_DEBUG
+				auto ddims = depth_attachment->get_image().get_dimensions();
+				tz::assert(ddims != dims, "Depth attachment dimensions (%zux%zu) does not match the dimensions of the render area derived from colour attachments (%zux%zu)", ddims[0], ddims[1], dims[0], dims[1]);
+			#endif // TZ_DEBUG
+		}
+		auto dims32 = static_cast<tz::vec2ui32>(dims);
+		VkRenderingInfo info =
+		{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.renderArea =
+			{
+				.offset = {0, 0},
+				.extent = {dims32[0], dims32[1]}
+			},
+			.layerCount = 1,
+			.viewMask = 0,
+			.colorAttachmentCount = static_cast<std::uint32_t>(colour_attachment_natives.size()),
+			.pColorAttachments = colour_attachment_natives.size() ? colour_attachment_natives.data() : nullptr,
+			.pDepthAttachment = (depth_attachment != nullptr) ? &depth_attachment_native : nullptr,
+			.pStencilAttachment = nullptr
+		};
+		vkCmdBeginRenderingKHR(this->recording->get_command_buffer().native(), &info);
+		this->recording->register_command(VulkanCommand::BeginDynamicRendering{});
+	}
+
+	CommandBufferRecording::DynamicRenderingRun::~DynamicRenderingRun()
+	{
+		vkCmdEndRenderingKHR(this->recording->get_command_buffer().native());
+		this->recording->register_command(VulkanCommand::EndDynamicRendering{});
+	}
+
 	CommandBufferRecording::CommandBufferRecording(CommandBuffer& command_buffer):
 	command_buffer(&command_buffer)
 	{
