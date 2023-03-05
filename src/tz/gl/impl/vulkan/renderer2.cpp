@@ -468,7 +468,28 @@ namespace tz::gl
 	renderer_pipeline::renderer_pipeline(const tz::gl::renderer_info& rinfo):
 	renderer_output_manager(rinfo)
 	{
-		
+		this->deduce_pipeline_config(rinfo);
+		this->deduce_pipeline_layout(false);
+	}
+
+	void renderer_pipeline::deduce_pipeline_config(const tz::gl::renderer_info& rinfo)
+	{
+		this->pipeline_config =
+		{
+			.depth_testing = !rinfo.get_options().contains(tz::gl::renderer_option::no_depth_testing),
+			.alpha_blending = !rinfo.get_options().contains(tz::gl::renderer_option::alpha_blending)
+		};
+		tz::assert(this->pipeline_config.valid);
+	}
+
+	void renderer_pipeline::deduce_pipeline_layout(bool wireframes)
+	{
+		(void)wireframes;
+	}
+
+	void renderer_pipeline::update_pipeline()
+	{
+
 	}
 
 //--------------------------------------------------------------------------------------------------

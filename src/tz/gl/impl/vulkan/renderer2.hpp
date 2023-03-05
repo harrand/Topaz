@@ -97,6 +97,22 @@ namespace tz::gl
 		renderer_pipeline(const tz::gl::renderer_info& rinfo);
 		renderer_pipeline() = default;
 	private:
+		struct pipeline_invariant_config_t
+		{
+			bool depth_testing = false;
+			bool alpha_blending = false;
+			// all of these cannot change for a renderer. wireframe mode can be disabled/enabled, so we don't want to cache that. have to query that every time.
+			bool valid = true;
+			static pipeline_invariant_config_t null(){return {.valid = false};}
+		};
+		void deduce_pipeline_config(const tz::gl::renderer_info& rinfo);
+		void deduce_pipeline_layout(bool wireframes);
+		void update_pipeline();
+		vk2::Shader shader = vk2::Shader::null();
+		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
+		vk2::Pipeline pipeline = vk2::Pipeline::null();
+		// depends purely on renderer options so this should never change.
+		pipeline_invariant_config_t pipeline_config = pipeline_invariant_config_t::null();
 	};
 
 	class renderer_command_processor : public renderer_pipeline
