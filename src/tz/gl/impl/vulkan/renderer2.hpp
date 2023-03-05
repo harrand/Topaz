@@ -107,6 +107,8 @@ namespace tz::gl
 	protected:
 		void do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands);
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
+		void record_render_commands();
+		void record_compute_commands();
 	private:
 		void allocate_commands(command_type t = command_type::both);
 		void free_commands(command_type t = command_type::both);

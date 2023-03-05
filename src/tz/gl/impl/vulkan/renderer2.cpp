@@ -518,6 +518,44 @@ namespace tz::gl
 		}
 	}
 
+	void renderer_command_processor::record_render_commands()
+	{
+		this->set_work_commands([this](vk2::CommandBufferRecording& record, unsigned int render_target_id)
+		{
+			record.debug_begin_label({.name = "unnamed renderer2"});
+			{
+				renderer_output_manager::render_target_t& render_target = renderer_output_manager::get_render_targets()[render_target_id];
+				vk2::ImageView* depth = &render_target.depth_attachment;
+				if(depth->is_null())
+				{
+					depth = nullptr;
+				}
+				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, &render_target.depth_attachment};
+				tz::error("NYI");
+				// render commands go here now.
+				// bind pipeline.
+				// bind descriptor sets if necessary.
+				// set scissor rect
+				// draw logic
+			}
+			record.debug_end_label({});
+		});
+	}
+
+	void renderer_command_processor::record_compute_commands()
+	{
+		this->set_work_commands([](vk2::CommandBufferRecording& record, unsigned int render_target_id)
+		{
+			(void)render_target_id;
+			record.debug_begin_label({.name = "unnamed renderer2"});
+			tz::error("NYI");
+			// bind pipeline.
+			// bind descriptor sets if necessary.
+			// dispatch
+			record.debug_end_label({});
+		});
+	}
+
 	constexpr std::size_t cmdbuf_work_alloc_id = 0;
 	constexpr std::size_t cmdbuf_scratch_alloc_id = 1;
 
