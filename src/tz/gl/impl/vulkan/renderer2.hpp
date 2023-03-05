@@ -91,7 +91,15 @@ namespace tz::gl
 		std::vector<render_target_t> render_targets = {};
 	};
 
-	class renderer_command_processor : public renderer_output_manager
+	class renderer_pipeline : public renderer_output_manager
+	{
+	public:
+		renderer_pipeline(const tz::gl::renderer_info& rinfo);
+		renderer_pipeline() = default;
+	private:
+	};
+
+	class renderer_command_processor : public renderer_pipeline
 	{
 	public:
 		renderer_command_processor(const tz::gl::renderer_info& info);

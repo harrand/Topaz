@@ -465,8 +465,16 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
+	renderer_pipeline::renderer_pipeline(const tz::gl::renderer_info& rinfo):
+	renderer_output_manager(rinfo)
+	{
+		
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	renderer_command_processor::renderer_command_processor(const tz::gl::renderer_info& rinfo):
-	renderer_output_manager(rinfo),
+	renderer_pipeline(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait))
 	{
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
