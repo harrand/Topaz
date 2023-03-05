@@ -423,15 +423,23 @@ namespace tz::gl
 		// tell the device to do all the writes.
 		tz::gl::get_device2().vk_update_sets(update, renderer_vulkan_base::uid);
 	}
+//--------------------------------------------------------------------------------------------------
+
+	renderer_output_manager::renderer_output_manager(const tz::gl::renderer_info& rinfo):
+	renderer_descriptor_manager(rinfo)
+	{
+
+	}
 
 //--------------------------------------------------------------------------------------------------
 
 	renderer_command_processor::renderer_command_processor(const tz::gl::renderer_info& rinfo):
-	renderer_descriptor_manager(rinfo),
+	renderer_output_manager(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait))
 	{
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
+		this->scratch_initialise_static_resources();
 	}
 
 	renderer_command_processor::~renderer_command_processor()
@@ -441,6 +449,12 @@ namespace tz::gl
 
 	void renderer_command_processor::do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands)
 	{
+		TZ_PROFZONE("renderer_command_processor - scratch work...", 0xFFAAAA00);
+		if(this->scratch_command_buffer().command_count() > 0)
+		{
+			// this scratch command buffer is already populated with potentially different commands. purge and go again.
+			this->allocate_commands(command_type::scratch);
+		}
 		vk2::CommandBuffer& buf = this->scratch_command_buffer();
 		// firstly record the commands requested.
 		{
@@ -450,6 +464,26 @@ namespace tz::gl
 		// then, execute them.
 		constexpr std::size_t scratch_id = 1;
 		tz::gl::get_device2().vk_submit_and_run_commands_blocking(renderer_vulkan_base::uid, scratch_id, 0, buf);
+	}
+
+	void renderer_command_processor::set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands)
+	{
+		TZ_PROFZONE("renderer_command_processor - set work commands", 0xFFAAAA00);
+		auto bufs = this->work_command_buffers();
+		if(std::any_of(bufs.begin(), bufs.end(), [](const auto& work_buf)
+		{
+			tz::assert(!work_buf.is_recording(), "attempt to set work commands while one or more of them is recording. sync error. please submit a bug report.");
+			return work_buf.command_count() > 0;
+		}))
+		{
+			// if any of the work command buffers have already been recorded, we need to purge.
+			this->allocate_commands(command_type::work);
+		}
+		for(unsigned int i = 0; i < bufs.size(); i++)
+		{
+			vk2::CommandBufferRecording record = bufs[i].record();
+			work_record_commands(record, i);
+		}
 	}
 
 	constexpr std::size_t cmdbuf_work_alloc_id = 0;
@@ -489,6 +523,7 @@ namespace tz::gl
 
 	void renderer_command_processor::free_commands(renderer_command_processor::command_type t)
 	{
+		TZ_PROFZONE("renderer_command_processor - free commands", 0xFFAAAA00);
 		if(this->command_allocations.empty())
 		{
 			return;
@@ -513,16 +548,133 @@ namespace tz::gl
 	void renderer_command_processor::scratch_initialise_static_resources()
 	{
 		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
-		// now the scratch buffer might've already been recorded earlier with commands. if so, we need to realloc it.
-		if(this->scratch_command_buffer().command_count() > 0)
+		// we need to create a staging buffer for each static_fixed buffer and image resource we have.
+		// these staging buffers should be cpu-writable (like a dynamic-fixed buffer resource), and we write in the data in the mapped ptr just like a dynamic resource.
+		// afterwards, we record a scratch buffer which does transfers between each staging buffer and its corresponding static resource.
+		// we then instantly wait on this work to be complete.
+		std::vector<vk2::Buffer> resource_staging_buffers;
+		resource_staging_buffers.reserve(renderer_resource_manager::resource_count());
+		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
 		{
-			// allocate already purges previous alloc, so just need to call free_commands aswell.
-			this->allocate_commands(command_type::scratch);
+			const icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
+			tz::assert(cmp != nullptr);
+			const iresource* res = cmp->get_resource();
+			tz::assert(res != nullptr);
+			if(res->get_access() != tz::gl::resource_access::static_fixed)
+			{
+				resource_staging_buffers.push_back(vk2::Buffer::null());
+				continue;
+			}
+			switch(res->get_type())
+			{
+				// create staging buffers and copy over spans.
+				case tz::gl::resource_type::buffer:
+					resource_staging_buffers.push_back
+					({{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+		  				.size_bytes = res->data().size_bytes(),
+		  				.usage = {vk2::BufferUsage::TransferSource},
+		  				.residency = vk2::MemoryResidency::CPU
+					}});
+				break;
+				case tz::gl::resource_type::image:
+				{
+					auto* img = static_cast<const image_component_vulkan*>(cmp);
+					tz::assert(img != nullptr);
+					resource_staging_buffers.push_back
+					({{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+		  				.size_bytes = tz::gl::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
+		  				.usage = {vk2::BufferUsage::TransferSource},
+		  				.residency = vk2::MemoryResidency::CPU
+					}});
+				}
+				break;
+				default:
+					tz::error("unrecognised resource_type. memory corruption?");
+				break;
+			}
+			// get the new staging buffer
+			vk2::Buffer& new_buf = resource_staging_buffers.back();
+			// write resource data
+			{
+				void* mapped_ptr = new_buf.map();
+				std::memcpy(mapped_ptr, res->data().data(), res->data().size_bytes());
+				new_buf.unmap();
+			}
 		}
-		this->do_scratch_work([](vk2::CommandBufferRecording& record)
+		this->do_static_resource_transfers(resource_staging_buffers);
+	}
+
+	void renderer_command_processor::do_static_resource_transfers(std::span<vk2::Buffer> resource_staging_buffers)
+	{
+		TZ_PROFZONE("renderer_command_processor - do static resource transfers", 0xFFAAAA00);
+		tz::assert(resource_staging_buffers.size() == renderer_resource_manager::resource_count(), "unexpected number of resource staging buffers. expected %u, got %zu", renderer_resource_manager::resource_count(), resource_staging_buffers.size());
+		this->do_scratch_work([this, &resource_staging_buffers](vk2::CommandBufferRecording& recording)
 		{
-			(void)record;
-			tz::error("NYI");
+			// we now have all the staging buffers we need. do all necessary transfers.
+			for(std::size_t i = 0; i < resource_staging_buffers.size(); i++)
+			{
+				vk2::Buffer& staging_buffer = resource_staging_buffers[i];
+				tz::gl::icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
+				const tz::gl::iresource* res = cmp->get_resource();
+				if(staging_buffer.is_null())
+				{
+					continue;
+				}
+				tz::assert(res->get_access() == tz::gl::resource_access::static_fixed, "while initialising static resources, detected non-static-fixed resource at handle %zu that somehow ended up with a non-null staging buffer. logic error. please submit a bug report.", i);
+				switch(res->get_type())
+				{
+					case tz::gl::resource_type::buffer:
+						// super easy, just copy the buffer.
+						recording.buffer_copy_buffer
+						({
+							.src = &staging_buffer,
+		   					.dst = &static_cast<buffer_component_vulkan*>(cmp)->vk_get_buffer()
+						});
+					break;
+					case tz::gl::resource_type::image:
+					{
+						// not so easy. copy the buffer, but do some layout transitions first.
+						vk2::Image& img = static_cast<image_component_vulkan*>(cmp)->vk_get_image();
+						vk2::ImageAspectFlags aspect = vk2::derive_aspect_from_format(img.get_format());
+						// Image will initially be in undefined layout. We need to:
+						// - Transition the texture component to TransferDestination
+						// - Transfer from the staging texture buffer
+						// - Transition the texture component to ShaderResource so it can be used in the shader.
+						recording.transition_image_layout
+						({
+							.image = &img,
+							.target_layout = vk2::ImageLayout::TransferDestination,
+							.source_access = {vk2::AccessFlag::NoneNeeded},
+							.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+							.source_stage = vk2::PipelineStage::Top,
+							.destination_stage = vk2::PipelineStage::TransferCommands,
+							.image_aspects = aspect
+						});
+						recording.buffer_copy_image
+						({
+							.src = &staging_buffer,
+							.dst = &img,
+							.image_aspects = aspect
+						});
+						recording.transition_image_layout
+						({
+							.image = &img,
+							.target_layout = vk2::ImageLayout::ShaderResource,
+							.source_access = {vk2::AccessFlag::TransferOperationWrite},
+							.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+							.source_stage = vk2::PipelineStage::TransferCommands,
+							.destination_stage = vk2::PipelineStage::FragmentShader,
+							.image_aspects = aspect
+						});
+					}
+					break;
+					default:
+						tz::error("invalid resource_type. memory corruption?");
+					break;
+				}
+			}
 		});
 	}
 
@@ -548,6 +700,12 @@ namespace tz::gl
 
 	}
 
+	const ioutput* renderer_vulkan2::get_output() const
+	{
+		tz::error("NYI");
+		return nullptr;
+	}
+
 	const tz::gl::renderer_options& renderer_vulkan2::get_options() const
 	{
 		return this->options;
@@ -556,5 +714,37 @@ namespace tz::gl
 	const tz::gl::render_state& renderer_vulkan2::get_state() const
 	{
 		return this->state;
+	}
+
+	void renderer_vulkan2::render()
+	{
+		tz::error("NYI");
+	}
+
+	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)
+	{
+		(void)req;
+		tz::error("NYI");
+	}
+
+	void renderer_vulkan2::dbgui()
+	{
+		tz::error("NYI");
+	}
+
+	std::string_view renderer_vulkan2::debug_get_name() const
+	{
+		return "NYI";
+	}
+
+	renderer_vulkan2 renderer_vulkan2::null()
+	{
+		return {};
+	}
+
+	bool renderer_vulkan2::is_null() const
+	{
+		tz::error("NYI");
+		return true;
 	}
 }

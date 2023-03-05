@@ -83,6 +83,7 @@ namespace tz::gl
 		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
 		void vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer);
+		void vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, vk2::hardware::Queue::SubmitInfo submit);
 	private:
 		struct allocation_history
 		{

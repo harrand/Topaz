@@ -276,6 +276,16 @@ namespace tz::gl
 		temp_fence.wait_until_signalled();
 	}
 
+	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, vk2::hardware::Queue::SubmitInfo submit)
+	{
+		#if TZ_DEBUG
+			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
+			tz::assert(debug_real_alloc_length > buffer_id, "attempted to submit & run scratch command buffer id %zu at (fingerprint:allocid) %u:%zu. there are only %zu buffers in this allocation. please submit a bug report.", buffer_id, fingerprint, allocation_id, debug_real_alloc_length);
+		#endif // TZ_DEBUG
+	
+		this->get_original_queue(this->fingerprint_alloc_types[fingerprint])->submit(submit);
+	}
+
 	vk2::CommandPool::AllocationResult device_command_pool::impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
 	{
 		// allocate using the most recently created descriptor pool

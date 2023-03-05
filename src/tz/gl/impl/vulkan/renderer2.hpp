@@ -72,13 +72,20 @@ namespace tz::gl
 		vk2::DescriptorPool::AllocationResult descriptors = {};
 	};
 
-	class renderer_command_processor : public renderer_descriptor_manager
+	class renderer_output_manager : public renderer_descriptor_manager
+	{
+	public:
+		renderer_output_manager(const tz::gl::renderer_info& rinfo);
+		renderer_output_manager() = default;
+	private:
+	};
+
+	class renderer_command_processor : public renderer_output_manager
 	{
 	public:
 		renderer_command_processor(const tz::gl::renderer_info& info);
 		~renderer_command_processor();
 		renderer_command_processor() = default;
-		void do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands);
 
 		enum class command_type
 		{
@@ -86,10 +93,14 @@ namespace tz::gl
 			scratch,
 			both
 		};
+	protected:
+		void do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands);
+		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
 	private:
 		void allocate_commands(command_type t = command_type::both);
 		void free_commands(command_type t = command_type::both);
 		void scratch_initialise_static_resources();
+		void do_static_resource_transfers(std::span<vk2::Buffer> resource_staging_buffers);
 
 		std::span<vk2::CommandBuffer> work_command_buffers();
 		vk2::CommandBuffer& scratch_command_buffer();
@@ -101,23 +112,19 @@ namespace tz::gl
 	{
 	public:
 		renderer_vulkan2(const tz::gl::renderer_info& rinfo);
+		// NYI
+		const ioutput* get_output() const;
+		const tz::gl::renderer_options& get_options() const;
+		const tz::gl::render_state& get_state() const;
+		void render();
+		void edit(tz::gl::renderer_edit_request req);
+		void dbgui();
+		// NYI
+		std::string_view debug_get_name() const;
+
 		// Satisfies tz::nullable
 		static renderer_vulkan2 null();
 		bool is_null() const;
-
-		// NYI
-		const ioutput* get_output() const {return nullptr;}
-		const tz::gl::renderer_options& get_options() const;
-		const tz::gl::render_state& get_state() const;
-		// NYI
-		void render() {}
-		// NYI
-		void edit(tz::gl::renderer_edit_request req){(void)req;}
-		// NYI
-		void dbgui(){}
-		// NYI
-		std::string_view debug_get_name(){return "NYI";}
-
 	private:
 		renderer_vulkan2() = default;
 
