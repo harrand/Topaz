@@ -231,6 +231,11 @@ namespace tz::gl
 		this->allocate_descriptors();
 	}
 
+	const vk2::DescriptorLayout& renderer_descriptor_manager::get_descriptor_layout() const
+	{
+		return this->layout;
+	}
+
 	bool renderer_descriptor_manager::empty() const
 	{
 		return this->layout.is_null();
@@ -469,7 +474,13 @@ namespace tz::gl
 	renderer_output_manager(rinfo)
 	{
 		this->deduce_pipeline_config(rinfo);
-		this->deduce_pipeline_layout(false);
+		this->deduce_pipeline_layout();
+		this->update_pipeline();
+	}
+
+	renderer_pipeline::pipeline_type_t renderer_pipeline::get_pipeline_type() const
+	{
+		return this->pipeline_config.type;
 	}
 
 	void renderer_pipeline::deduce_pipeline_config(const tz::gl::renderer_info& rinfo)
@@ -477,14 +488,21 @@ namespace tz::gl
 		this->pipeline_config =
 		{
 			.depth_testing = !rinfo.get_options().contains(tz::gl::renderer_option::no_depth_testing),
-			.alpha_blending = !rinfo.get_options().contains(tz::gl::renderer_option::alpha_blending)
+			.alpha_blending = !rinfo.get_options().contains(tz::gl::renderer_option::alpha_blending),
+			.type = rinfo.shader().has_shader(tz::gl::shader_stage::compute) ? pipeline_type_t::compute : pipeline_type_t::graphics
 		};
 		tz::assert(this->pipeline_config.valid);
 	}
 
-	void renderer_pipeline::deduce_pipeline_layout(bool wireframes)
+	void renderer_pipeline::deduce_pipeline_layout()
 	{
-		(void)wireframes;
+		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		std::vector<const vk2::DescriptorLayout*> dlayouts(frame_in_flight_count, &renderer_descriptor_manager::get_descriptor_layout());
+		this->pipeline_layout =
+		{{
+			.descriptor_layouts = std::move(dlayouts),
+			.logical_device = &tz::gl::get_device2().vk_get_logical_device(),
+		}};
 	}
 
 	void renderer_pipeline::update_pipeline()

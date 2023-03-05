@@ -62,6 +62,8 @@ namespace tz::gl
 	public:
 		renderer_descriptor_manager(const tz::gl::renderer_info& rinfo);
 		renderer_descriptor_manager() = default;
+	protected:
+		const vk2::DescriptorLayout& get_descriptor_layout() const;
 	private:
 		// descriptor manager is empty if there are no descriptors to bind.
 		bool empty() const;
@@ -96,17 +98,25 @@ namespace tz::gl
 	public:
 		renderer_pipeline(const tz::gl::renderer_info& rinfo);
 		renderer_pipeline() = default;
+		enum class pipeline_type_t
+		{
+			graphics,
+			compute
+		};
+	protected:
+		pipeline_type_t get_pipeline_type() const;
 	private:
 		struct pipeline_invariant_config_t
 		{
 			bool depth_testing = false;
 			bool alpha_blending = false;
+			pipeline_type_t type = pipeline_type_t::graphics;
 			// all of these cannot change for a renderer. wireframe mode can be disabled/enabled, so we don't want to cache that. have to query that every time.
 			bool valid = true;
 			static pipeline_invariant_config_t null(){return {.valid = false};}
 		};
 		void deduce_pipeline_config(const tz::gl::renderer_info& rinfo);
-		void deduce_pipeline_layout(bool wireframes);
+		void deduce_pipeline_layout();
 		void update_pipeline();
 		vk2::Shader shader = vk2::Shader::null();
 		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
