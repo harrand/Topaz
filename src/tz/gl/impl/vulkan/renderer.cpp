@@ -842,6 +842,7 @@ namespace tz::gl
 				},
 				.pipeline_layout = &this->pipeline_layout,
 				.render_pass = &new_render_pass,
+				.dynamic_rendering_state = {},
 				.device = &new_render_pass.get_device()
 			 }};
 		}
@@ -979,6 +980,7 @@ namespace tz::gl
 			},
 			.pipeline_layout = &this->pipeline_layout,
 			.render_pass = &render_pass,
+			.dynamic_rendering_state = {},
 			.device = &this->pipeline_layout.get_device()
 		};
 	}

@@ -34,7 +34,12 @@ namespace tz::gl::vk2
 		PipelineState state;
 		const PipelineLayout* pipeline_layout;
 		const RenderPass* render_pass;
-
+		struct DynamicRenderingState
+		{
+			std::vector<VkFormat> colour_attachment_formats = {};
+			VkFormat depth_format = VK_FORMAT_UNDEFINED;
+		};
+		DynamicRenderingState dynamic_rendering_state;
 		const LogicalDevice* device;
 	};
 

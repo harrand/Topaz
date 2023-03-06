@@ -102,10 +102,31 @@ namespace tz::gl::vk2
 			.flags = 0,
 			.patchControlPoints = 3
 		};
+		auto dynamic_rendering_state = VkPipelineRenderingCreateInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
+			.pNext = nullptr,
+			.viewMask = 0,
+			.colorAttachmentCount = static_cast<std::uint32_t>(info.dynamic_rendering_state.colour_attachment_formats.size()),
+			.pColorAttachmentFormats = info.dynamic_rendering_state.colour_attachment_formats.data(),
+			.depthAttachmentFormat = info.dynamic_rendering_state.depth_format,
+			.stencilAttachmentFormat = VK_FORMAT_UNDEFINED
+		};
+		VkRenderPass render_pass_native = VK_NULL_HANDLE;
+		void* next = nullptr;
+		if(info.render_pass == nullptr)
+		{
+			tz::assert(info.dynamic_rendering_state.colour_attachment_formats.size(), "Specified no render pass within graphics pipeline creation flags. This means we're using dynamic rendering, but no colour attachment formats were passed. logic error. please submit a bug report.");
+			next = &dynamic_rendering_state;
+		}
+		else
+		{
+			render_pass_native = info.render_pass->native();
+		}
 		VkGraphicsPipelineCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-			.pNext = nullptr,
+			.pNext = next,
 			.flags = 0,
 			.stageCount = static_cast<std::uint32_t>(info.shaders.create_infos.length()),
 			.pStages = info.shaders.create_infos.data(),
@@ -119,7 +140,7 @@ namespace tz::gl::vk2
 			.pColorBlendState = &colour_blend_state_native,
 			.pDynamicState = &dynamic_state_native,
 			.layout = info.pipeline_layout->native(),
-			.renderPass = info.render_pass->native(),
+			.renderPass = render_pass_native,
 			.subpass = 0,
 			.basePipelineHandle = VK_NULL_HANDLE,
 			.basePipelineIndex = -1

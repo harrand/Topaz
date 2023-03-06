@@ -236,6 +236,11 @@ namespace tz::gl
 		return this->layout;
 	}
 
+	std::span<const vk2::DescriptorSet> renderer_descriptor_manager::get_descriptor_sets() const
+	{
+		return this->descriptors.sets;
+	}
+
 	bool renderer_descriptor_manager::empty() const
 	{
 		return this->layout.is_null();
@@ -442,6 +447,13 @@ namespace tz::gl
 		return this->render_targets;
 	}
 
+	tz::vec2ui renderer_output_manager::get_render_target_dimensions() const
+	{
+		tz::assert(this->render_targets.size(), "no render targets. logic error.");
+		tz::assert(this->render_targets.front().colour_attachments.size(), "render target has no colour attachments. this isn't an error in of itself, but it is when trying to retrieve render target dimensions. should this method be improved to return depth dimensions (if a depth attachment exists) in this case? logic error.");
+		return this->render_targets.front().colour_attachments.front().get_image().get_dimensions();
+	}
+
 	void renderer_output_manager::populate_render_targets()
 	{
 		this->render_targets.clear();
@@ -475,12 +487,23 @@ namespace tz::gl
 	{
 		this->deduce_pipeline_config(rinfo);
 		this->deduce_pipeline_layout();
+		this->create_shader(rinfo);
 		this->update_pipeline();
 	}
 
 	renderer_pipeline::pipeline_type_t renderer_pipeline::get_pipeline_type() const
 	{
 		return this->pipeline_config.type;
+	}
+
+	const vk2::Pipeline& renderer_pipeline::get_pipeline() const
+	{
+		return this->pipeline;
+	}
+
+	const vk2::PipelineLayout& renderer_pipeline::get_pipeline_layout() const
+	{
+		return this->pipeline_layout;
 	}
 
 	void renderer_pipeline::deduce_pipeline_config(const tz::gl::renderer_info& rinfo)
@@ -492,6 +515,76 @@ namespace tz::gl
 			.type = rinfo.shader().has_shader(tz::gl::shader_stage::compute) ? pipeline_type_t::compute : pipeline_type_t::graphics
 		};
 		tz::assert(this->pipeline_config.valid);
+	}
+
+	void renderer_pipeline::create_shader(const tz::gl::renderer_info& rinfo)
+	{
+		tz::basic_list<vk2::ShaderModuleInfo> modules;
+		switch(this->get_pipeline_type())
+		{
+			case pipeline_type_t::graphics:
+			{
+				std::string_view vertex_source = rinfo.shader().get_shader(shader_stage::vertex);
+				std::vector<char> vtx_src(vertex_source.length());
+				std::copy(vertex_source.begin(), vertex_source.end(), vtx_src.begin());
+				std::string_view fragment_source = rinfo.shader().get_shader(shader_stage::fragment);
+				std::vector<char> frg_src(fragment_source.length());
+				std::copy(fragment_source.begin(), fragment_source.end(), frg_src.begin());
+				modules =
+				{
+					{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.type = vk2::ShaderType::vertex,
+						.code = vtx_src
+					},
+					{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.type = vk2::ShaderType::fragment,
+						.code = frg_src
+					},
+				};
+				if(rinfo.shader().has_shader(shader_stage::tessellation_control) || rinfo.shader().has_shader(shader_stage::tessellation_evaluation))
+				{
+					std::string_view tesscon_source = rinfo.shader().get_shader(shader_stage::tessellation_control);
+					std::vector<char> tessc_src(tesscon_source.length());
+					std::copy(tesscon_source.begin(), tesscon_source.end(), tessc_src.begin());
+					std::string_view tesseval_source = rinfo.shader().get_shader(shader_stage::tessellation_evaluation);
+					std::vector<char> tesse_src(tesseval_source.length());
+					std::copy(tesseval_source.begin(), tesseval_source.end(), tesse_src.begin());
+					modules.add(vk2::ShaderModuleInfo
+					{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.type = vk2::ShaderType::tessellation_control,
+						.code = tessc_src
+					});
+					modules.add(vk2::ShaderModuleInfo
+					{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.type = vk2::ShaderType::tessellation_evaluation,
+						.code = tesse_src
+					});
+				}
+			}
+			break;
+			case pipeline_type_t::compute:
+			{
+				std::string_view compute_source = rinfo.shader().get_shader(shader_stage::compute);
+				std::vector<char> cmp_src(compute_source.length());
+				std::copy(compute_source.begin(), compute_source.end(), cmp_src.begin());
+				modules =
+				{{
+					.device = &tz::gl::get_device2().vk_get_logical_device(),
+					.type = vk2::ShaderType::compute,
+					.code = cmp_src
+				}};
+			}
+			break;
+		}
+		this->shader =
+		{{
+			.device = &tz::gl::get_device2().vk_get_logical_device(),
+			.modules = modules
+		}};
 	}
 
 	void renderer_pipeline::deduce_pipeline_layout()
@@ -507,7 +600,65 @@ namespace tz::gl
 
 	void renderer_pipeline::update_pipeline()
 	{
+		switch(this->get_pipeline_type())
+		{
+			case pipeline_type_t::graphics:
+			{
+				const render_target_t& render_target_info = renderer_output_manager::get_render_targets().front();
+				tz::basic_list<vk2::ColourBlendState::AttachmentState> blending_options;
+				vk2::ColourBlendState::AttachmentState blend_state = this->pipeline_config.alpha_blending ? vk2::ColourBlendState::alpha_blending() : vk2::ColourBlendState::no_blending();
+				blending_options.resize(render_target_info.colour_attachments.size());
+				std::fill(blending_options.begin(), blending_options.end(), blend_state);
 
+				
+				std::vector<VkFormat> colour_attachment_formats(render_target_info.colour_attachments.size());
+				std::transform(render_target_info.colour_attachments.begin(), render_target_info.colour_attachments.end(), colour_attachment_formats.begin(),
+				[](const vk2::ImageView& colour_view) -> VkFormat
+				{
+					return static_cast<VkFormat>(colour_view.get_image().get_format());
+				});
+
+				this->pipeline =
+				{vk2::GraphicsPipelineInfo{
+					.shaders = this->shader.native_data(),
+					.state =
+					{
+						.viewport = vk2::create_basic_viewport(static_cast<tz::vec2>(renderer_output_manager::get_render_target_dimensions())),
+						.depth_stencil =
+						{
+							.depth_testing = this->pipeline_config.depth_testing,
+							.depth_writes = this->pipeline_config.depth_testing
+						},
+						.colour_blend =
+						{
+							.attachment_states = blending_options,
+							.logical_operator = VK_LOGIC_OP_COPY
+						},
+						.dynamic =
+						{
+							.states = {vk2::DynamicStateType::Scissor}
+						}
+					},
+					.pipeline_layout = &this->pipeline_layout,
+					.render_pass = nullptr,
+					.dynamic_rendering_state =
+					{
+						.colour_attachment_formats = colour_attachment_formats,
+						.depth_format = render_target_info.depth_attachment.is_null() ? VK_FORMAT_UNDEFINED : static_cast<VkFormat>(render_target_info.depth_attachment.get_image().get_format())
+					},
+					.device = &tz::gl::get_device2().vk_get_logical_device(),
+				}};
+			}
+			break;
+			case pipeline_type_t::compute:
+				this->pipeline =
+				{{
+					.shader = this->shader.native_data(),
+					.pipeline_layout = &this->pipeline_layout,
+					.device = &tz::gl::get_device2().vk_get_logical_device(),
+				}};
+			break;
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -565,9 +716,9 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_command_processor::record_render_commands()
+	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state)
 	{
-		this->set_work_commands([this](vk2::CommandBufferRecording& record, unsigned int render_target_id)
+		this->set_work_commands([this, state](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			record.debug_begin_label({.name = "unnamed renderer2"});
 			{
@@ -578,19 +729,42 @@ namespace tz::gl
 					depth = nullptr;
 				}
 				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, &render_target.depth_attachment};
-				tz::error("NYI");
-				// render commands go here now.
-				// bind pipeline.
-				// bind descriptor sets if necessary.
-				// set scissor rect
+				record.bind_pipeline
+				({
+					.pipeline = &renderer_pipeline::get_pipeline()
+				});
+				if(!renderer_descriptor_manager::empty())
+				{
+					tz::basic_list<const vk2::DescriptorSet*> sets;
+					sets = {&renderer_descriptor_manager::get_descriptor_sets()[render_target_id]};
+					record.bind_descriptor_sets
+					(vk2::VulkanCommand::BindDescriptorSets{
+						.pipeline_layout = &renderer_pipeline::get_pipeline_layout(),
+		  				.context = vk2::PipelineContext::graphics,
+						.descriptor_sets = sets,
+		  				.first_set_id = 0u
+					});
+				}
+				// todo: set scissor rect
+				tz::assert(state.graphics.index_buffer == tz::nullhand, "index buffers are NYI");
+				tz::assert(state.graphics.draw_buffer == tz::nullhand, "draw indirect buffers are NYI");
+				record.draw
+				({
+					.vertex_count = static_cast<std::uint32_t>(3 * state.graphics.tri_count),
+					.instance_count = 1,
+					.first_vertex = 0,
+					.first_instance = 0
+				});
+				//tz::error("NYI");
 				// draw logic
 			}
 			record.debug_end_label({});
 		});
 	}
 
-	void renderer_command_processor::record_compute_commands()
+	void renderer_command_processor::record_compute_commands(const tz::gl::render_state& state)
 	{
+		(void)state;
 		this->set_work_commands([](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			(void)render_target_id;

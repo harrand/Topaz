@@ -64,9 +64,10 @@ namespace tz::gl
 		renderer_descriptor_manager() = default;
 	protected:
 		const vk2::DescriptorLayout& get_descriptor_layout() const;
-	private:
+		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 		// descriptor manager is empty if there are no descriptors to bind.
 		bool empty() const;
+	private:
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		void allocate_descriptors();
 		void write_descriptors(const tz::gl::render_state& state);
@@ -85,7 +86,9 @@ namespace tz::gl
 			std::vector<vk2::ImageView> colour_attachments = {};
 			vk2::ImageView depth_attachment = vk2::ImageView::null();
 		};
+	protected:
 		std::span<render_target_t> get_render_targets();
+		tz::vec2ui get_render_target_dimensions() const;
 	private:
 		void populate_render_targets();
 
@@ -105,6 +108,8 @@ namespace tz::gl
 		};
 	protected:
 		pipeline_type_t get_pipeline_type() const;
+		const vk2::Pipeline& get_pipeline() const;
+		const vk2::PipelineLayout& get_pipeline_layout() const;
 	private:
 		struct pipeline_invariant_config_t
 		{
@@ -117,6 +122,7 @@ namespace tz::gl
 		};
 		void deduce_pipeline_config(const tz::gl::renderer_info& rinfo);
 		void deduce_pipeline_layout();
+		void create_shader(const tz::gl::renderer_info& rinfo);
 		void update_pipeline();
 		vk2::Shader shader = vk2::Shader::null();
 		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
@@ -141,8 +147,8 @@ namespace tz::gl
 	protected:
 		void do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands);
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
-		void record_render_commands();
-		void record_compute_commands();
+		void record_render_commands(const tz::gl::render_state& state);
+		void record_compute_commands(const tz::gl::render_state& state);
 	private:
 		void allocate_commands(command_type t = command_type::both);
 		void free_commands(command_type t = command_type::both);
