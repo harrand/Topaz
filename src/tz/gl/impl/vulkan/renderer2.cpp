@@ -716,11 +716,11 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state)
+	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, std::string label)
 	{
-		this->set_work_commands([this, state](vk2::CommandBufferRecording& record, unsigned int render_target_id)
+		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
-			record.debug_begin_label({.name = "unnamed renderer2"});
+			record.debug_begin_label({.name = label});
 			{
 				renderer_output_manager::render_target_t& render_target = renderer_output_manager::get_render_targets()[render_target_id];
 				vk2::ImageView* depth = &render_target.depth_attachment;
@@ -746,6 +746,7 @@ namespace tz::gl
 					});
 				}
 				// todo: set scissor rect
+				// todo: support for index and draw buffers.
 				tz::assert(state.graphics.index_buffer == tz::nullhand, "index buffers are NYI");
 				tz::assert(state.graphics.draw_buffer == tz::nullhand, "draw indirect buffers are NYI");
 				record.draw
@@ -755,24 +756,36 @@ namespace tz::gl
 					.first_vertex = 0,
 					.first_instance = 0
 				});
-				//tz::error("NYI");
-				// draw logic
 			}
 			record.debug_end_label({});
 		});
 	}
 
-	void renderer_command_processor::record_compute_commands(const tz::gl::render_state& state)
+	void renderer_command_processor::record_compute_commands(const tz::gl::render_state& state, std::string label)
 	{
-		(void)state;
-		this->set_work_commands([](vk2::CommandBufferRecording& record, unsigned int render_target_id)
+		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
-			(void)render_target_id;
-			record.debug_begin_label({.name = "unnamed renderer2"});
-			tz::error("NYI");
-			// bind pipeline.
-			// bind descriptor sets if necessary.
-			// dispatch
+			record.debug_begin_label({.name = label});
+			record.bind_pipeline
+			({
+				.pipeline = &renderer_pipeline::get_pipeline()
+			});
+			if(!renderer_descriptor_manager::empty())
+			{
+				tz::basic_list<const vk2::DescriptorSet*> sets;
+				sets = {&renderer_descriptor_manager::get_descriptor_sets()[render_target_id]};
+				record.bind_descriptor_sets
+				(vk2::VulkanCommand::BindDescriptorSets{
+					.pipeline_layout = &renderer_pipeline::get_pipeline_layout(),
+					.context = vk2::PipelineContext::graphics,
+					.descriptor_sets = sets,
+					.first_set_id = 0u
+				});
+			}
+			record.dispatch
+			({
+				.groups = state.compute.kernel
+			});
 			record.debug_end_label({});
 		});
 	}
