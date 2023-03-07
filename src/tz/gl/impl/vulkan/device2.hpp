@@ -51,9 +51,12 @@ namespace tz::gl
 	{
 	public:
 		device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline);
+	protected:
+		void touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id);
 	private:
 		const tz::gl::timeline_t& timeline;
 		vk2::TimelineSemaphore tsem;
+		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
 	};
 
 	class device_descriptor_pool

@@ -90,9 +90,10 @@ The following requirements apply for all possible build configurations:
 	* macOS may be theoretically possible now that MoltenVK supports VK1.2, but no investigation has been done to decipher how much work is needed. Definitely, no work is planned for proper Metal support.
 * Vulkan SDK 1.2 or later must be installed.
 
-* Your graphics card must support Vulkan 1.2. [Check your graphics card here](https://vulkan.gpuinfo.org/).
+* Your graphics card must support Vulkan 1.3. [Check your graphics card here](https://vulkan.gpuinfo.org/).
 	* It must also support the following vulkan extension(s):
-		- VK_EXT_descriptor_indexing
+		- VK_KHR_swapchain
+		- VK_KHR_shader_non_semantic_info (debug builds only)
 #### OpenGL Build
 * Windows or Linux.
 * Your graphics card must support OpenGL 4.6. [Check your graphics card here](https://opengl.gpuinfo.org/).

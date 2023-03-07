@@ -721,6 +721,7 @@ namespace tz::gl
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			record.debug_begin_label({.name = label});
+			// dynamic rendering { bind pipeline -> bind descriptor set -> set scissor -> draw }
 			{
 				renderer_output_manager::render_target_t& render_target = renderer_output_manager::get_render_targets()[render_target_id];
 				vk2::ImageView* depth = &render_target.depth_attachment;
@@ -766,6 +767,7 @@ namespace tz::gl
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			record.debug_begin_label({.name = label});
+			// bind pipeline -> bind descriptor set -> dispatch
 			record.bind_pipeline
 			({
 				.pipeline = &renderer_pipeline::get_pipeline()
@@ -830,6 +832,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_command_processor - free commands", 0xFFAAAA00);
 		if(this->command_allocations.empty())
 		{
+			// early out if there's nothing to free.
 			return;
 		}
 		if(t == command_type::work || t == command_type::both)

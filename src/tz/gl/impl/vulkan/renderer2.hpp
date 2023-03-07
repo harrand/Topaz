@@ -24,6 +24,8 @@ namespace tz::gl
 		// this is a uid which will uniquely identify ths current renderer. renderers need to have their own identity because other manager classes (mainly device_vulkan2) does bookkeeping for renderers and needs to know who is who.
 		static unsigned int uid_counter;
 		unsigned int uid = uid_counter++;
+	public:
+		unsigned int vk_get_uid() const{return this->uid;}
 	};
 
 	// represents topaz-level resource management.

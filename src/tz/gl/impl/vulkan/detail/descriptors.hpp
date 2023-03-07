@@ -317,7 +317,7 @@ namespace tz::gl::vk2
 		 * @return Layout of this DescriptorSet.
 		 */
 		const DescriptorLayout& get_layout() const;
-		void set_layout(DescriptorLayout& layout);
+		void set_layout(const DescriptorLayout& layout);
 		/**
 		 * Retrieve an empty request for this set. You can use this to request changes to existing descriptors within this set.
 		 * @note This only represents a *request* to make changes. To submit requests, this request must be passed to a @ref DescriptorPool::UpdateRequest.
@@ -348,6 +348,38 @@ namespace tz::gl::vk2
 		/// Specifies information about the resultant of an invocation to @ref DescriptorPool::allocate_sets
 		struct AllocationResult
 		{
+			AllocationResult() = default;
+			AllocationResult(AllocationResult&& move) = default;
+			AllocationResult& operator=(AllocationResult&& rhs)
+			{
+				const DescriptorLayout* lhs_layout = nullptr;
+				const DescriptorLayout* rhs_layout = nullptr;
+				if(this->sets.length())
+				{
+					lhs_layout = &this->sets.front().get_layout();
+				}
+				if(rhs.sets.length())
+				{
+					rhs_layout = &rhs.sets.front().get_layout();
+				}
+				if(lhs_layout != nullptr)
+				{
+					for(auto& set : rhs.sets)
+					{
+						set.set_layout(*lhs_layout);
+					}
+				}
+				if(rhs_layout != nullptr)
+				{
+					for(auto& set : this->sets)
+					{
+						set.set_layout(*rhs_layout);
+					}
+				}
+				std::swap(this->sets, rhs.sets);
+				std::swap(this->type, rhs.type);
+				return *this;
+			}
 			/// Returns true if the allocation was successful.
 			bool success() const;
 
