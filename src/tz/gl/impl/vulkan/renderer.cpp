@@ -436,31 +436,6 @@ namespace tz::gl
 		this->create_output_resources(this->swapchain_images, this->swapchain_depth_images);
 	}
 
-	OutputManager::OutputManager(OutputManager&& move):
-	output(std::move(move.output)),
-	ldev(move.ldev),
-	swapchain_images(std::move(move.swapchain_images)),
-	swapchain_depth_images(std::move(move.swapchain_depth_images)),
-	options(std::move(move.options)),
-	output_imageviews(std::move(move.output_imageviews)),
-	output_depth_imageviews(std::move(move.output_depth_imageviews)),
-	data(std::move(move.data))
-	{
-	}
-
-	OutputManager& OutputManager::operator=(OutputManager&& rhs)
-	{
-		std::swap(this->output, rhs.output);
-		std::swap(this->ldev, rhs.ldev);
-		std::swap(this->swapchain_images, rhs.swapchain_images);
-		std::swap(this->swapchain_depth_images, rhs.swapchain_depth_images);
-		std::swap(this->options, rhs.options);
-		std::swap(this->output_imageviews, rhs.output_imageviews);
-		std::swap(this->output_depth_imageviews, rhs.output_depth_imageviews);
-		std::swap(this->data, rhs.data);
-		return *this;
-	}
-
 	const vk2::RenderPass& OutputManager::get_render_pass() const
 	{
 		return this->data.render_pass;

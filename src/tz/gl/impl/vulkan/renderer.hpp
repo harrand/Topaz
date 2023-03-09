@@ -149,9 +149,9 @@ namespace tz::gl
 		 */
 		OutputManager(const renderer_info& info);
 		OutputManager() = default;
-		OutputManager(OutputManager&& move);
+		OutputManager(OutputManager&& move) = default;
 		~OutputManager() = default;
-		OutputManager& operator=(OutputManager&& rhs);
+		OutputManager& operator=(OutputManager&& rhs) = default;
 		/**
 		 * Retrieve the render pass used by the renderer.
 		 */
