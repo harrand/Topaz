@@ -203,7 +203,7 @@ namespace tz::gl
 						}
 				});
 			}
-			this->descriptor_layout = lbuilder.build();
+			this->descriptors.layout = lbuilder.build();
 		}
 
 		// If we have no shader resources at all, then we completely skip creating pools and sets.
@@ -236,50 +236,16 @@ namespace tz::gl
 			tz::basic_list<const vk2::DescriptorLayout*> alloc_layout_list;
 			for(std::size_t i = 0; i < this->frame_in_flight_count; i++)
 			{
-				alloc_layout_list.add(&this->descriptor_layout);
+				alloc_layout_list.add(&this->descriptors.layout);
 			}
-			this->descriptors = this->descriptor_pool.allocate_sets
+			this->descriptors.data = this->descriptor_pool.allocate_sets
 			({
 				.set_layouts = std::move(alloc_layout_list)
 			});
 		};
-		tz::assert(this->descriptors.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
+		tz::assert(this->descriptors.data.success(), "Descriptor Pool allocation failed. Please submit a bug report.");
 		this->sync_descriptors(true, info.state());
 	}
-
-	ResourceStorage::ResourceStorage(ResourceStorage&& move):
-	AssetStorageCommon<iresource>(static_cast<AssetStorageCommon<iresource>&&>(move)),
-	components(std::move(move.components)),
-	image_component_views(std::move(move.image_component_views)),
-	samplers(std::move(move.samplers)),
-	descriptor_layout(std::move(move.descriptor_layout)),
-	descriptor_pool(std::move(move.descriptor_pool)),
-	descriptors(std::move(move.descriptors)),
-	frame_in_flight_count(move.frame_in_flight_count)
-	{
-		for(auto& set : this->descriptors.sets)
-		{
-			set.set_layout(this->descriptor_layout);
-		}
-	}
-
-	ResourceStorage& ResourceStorage::operator=(ResourceStorage&& rhs)
-	{
-		AssetStorageCommon<iresource>::operator=(std::move(rhs));
-		std::swap(this->components, rhs.components);
-		std::swap(this->image_component_views, rhs.image_component_views);
-		std::swap(this->samplers, rhs.samplers);
-		std::swap(this->descriptor_layout, rhs.descriptor_layout);
-		std::swap(this->descriptor_pool, rhs.descriptor_pool);
-		std::swap(this->descriptors, rhs.descriptors);
-		std::swap(this->frame_in_flight_count, rhs.frame_in_flight_count);
-		for(auto& set : this->descriptors.sets)
-		{
-			set.set_layout(this->descriptor_layout);
-		}
-		return *this;
-	}
-			
 
 	const icomponent* ResourceStorage::get_component(resource_handle handle) const
 	{
@@ -301,12 +267,12 @@ namespace tz::gl
 
 	const vk2::DescriptorLayout& ResourceStorage::get_descriptor_layout() const
 	{
-		return this->descriptor_layout;
+		return this->descriptors.layout;
 	}
 
 	std::span<const vk2::DescriptorSet> ResourceStorage::get_descriptor_sets() const
 	{
-		return this->descriptors.sets;
+		return this->descriptors.data.sets;
 	}
 
 	std::size_t ResourceStorage::resource_count_of(resource_type type) const
@@ -365,7 +331,7 @@ namespace tz::gl
 		// For each set, make the same edits.
 		for(std::size_t i = 0 ; i < this->frame_in_flight_count; i++)
 		{
-			vk2::DescriptorSet& set = this->descriptors.sets[i];
+			vk2::DescriptorSet& set = this->descriptors.data.sets[i];
 			vk2::DescriptorSet::EditRequest set_edit = set.make_edit_request();
 			// Now update each binding corresponding to a buffer resource.
 			for(std::size_t j = 0; j < buffers.size(); j++)
@@ -407,7 +373,7 @@ namespace tz::gl
 	
 	bool ResourceStorage::descriptor_empty() const
 	{
-		return this->descriptor_layout.binding_count() == 0;
+		return this->descriptors.layout.binding_count() == 0;
 	}
 
 	void ResourceStorage::write_padded_image_data()

@@ -478,6 +478,27 @@ namespace tz::gl::vk2
 		DescriptorPoolInfo info;
 		std::vector<DescriptorSet::NativeType> allocated_set_natives;
 	};
+
+	struct DescriptorData
+	{
+		DescriptorData() = default;
+		DescriptorData(DescriptorData&& move)
+		{
+			*this = std::move(move);
+		}
+		DescriptorData& operator=(DescriptorData&& rhs)
+		{
+			std::swap(this->layout, rhs.layout);
+			std::swap(this->data, rhs.data);
+			for(auto& set : this->data.sets)
+			{
+				set.set_layout(this->layout);
+			}
+			return *this;
+		}
+		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
+		vk2::DescriptorPool::AllocationResult data = {};
+	};
 }
 
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_DESCRIPTORS2_HPP

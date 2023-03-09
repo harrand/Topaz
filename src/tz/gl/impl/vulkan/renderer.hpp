@@ -53,9 +53,9 @@ namespace tz::gl
 		 */
 		ResourceStorage(const renderer_info& info);
 		ResourceStorage() = default;
-		ResourceStorage(ResourceStorage&& move);
+		ResourceStorage(ResourceStorage&& move) = default;
 		~ResourceStorage() = default;
-		ResourceStorage& operator=(ResourceStorage&& rhs);
+		ResourceStorage& operator=(ResourceStorage&& rhs) = default;
 		/**
 		 * Retrieve the component (read-only) which stores the corresponding vulkan backend objects for the resource corresponding to the handle.
 		 * @param handle Handle whose resource's component needs to be retrieved. The handle must have referred to one of the initial resources passed to the constructor, otherwise the behaviour is undefined.
@@ -108,12 +108,9 @@ namespace tz::gl
 		std::vector<vk2::ImageView> image_component_views = {};
 		// A unique sampler for every single image. There is no duplicate checking, so there may be redundant samplers in here. However, it's not trivial to fix this because we use combined image sampling - to use separate image and samplers requires shader source changes, which means big tzslc changes for vulkan only. Looks like it could end up changing syntax so we avoid this for the time being.
 		std::vector<vk2::Sampler> samplers = {};
-		/// Vulkan Descriptor Set layout, which matches the layout of the provided buffer and image resources. Note that buffer resources get their own binding, but all image resources are a single descriptor array.
-		vk2::DescriptorLayout descriptor_layout = vk2::DescriptorLayout::null();
-		/// Storage for DescriptorSets.
+		// Descriptors data.
+		vk2::DescriptorData descriptors = {};
 		vk2::DescriptorPool descriptor_pool = vk2::DescriptorPool::null();
-		/// Stores the above pool's allocation result. We know the exact number of descriptors/sets etc that we need, so we only ever need a single allocation for now.
-		vk2::DescriptorPool::AllocationResult descriptors = {};
 		/// Describes the number of frames that are in-flight at once.
 		std::size_t frame_in_flight_count = 0;
 	};
