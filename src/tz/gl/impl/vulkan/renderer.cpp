@@ -925,9 +925,9 @@ namespace tz::gl
 			.field = {vk2::QueueFamilyType::compute},
 			.present_support = false
 		});
-		this->command_pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
+		this->commands.pool = vk2::CommandPool{{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
 		this->frame_in_flight_count = get_device().get_device_window().get_output_images().size();
-		this->commands = this->command_pool.allocate_buffers
+		this->commands.data = this->commands.pool.allocate_buffers
 		({
 			.buffer_count = static_cast<std::uint32_t>(this->frame_in_flight_count + 1)
 		});
@@ -937,62 +937,17 @@ namespace tz::gl
 
 		tz::assert(this->graphics_queue != nullptr, "Could not retrieve graphics present queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
 		tz::assert(this->compute_queue != nullptr, "Could not retrieve compute queue. Either your machine does not meet requirements, or (more likely) a logical error. Please submit a bug report.");
-		tz::assert(this->commands.success(), "Failed to allocate from CommandPool");
-	}
-
-	CommandProcessor::CommandProcessor(CommandProcessor&& move):
-	requires_present(move.requires_present),
-	instant_compute_enabled(move.instant_compute_enabled),
-	graphics_queue(move.graphics_queue),
-	compute_queue(move.compute_queue),
-	command_pool(std::move(move.command_pool)),
-	commands(std::move(move.commands)),
-	frame_in_flight_count(move.frame_in_flight_count),
-	images_in_flight(std::move(move.images_in_flight)),
-	options(move.options),
-	device_scheduler(move.device_scheduler),
-	output_image_index(move.output_image_index),
-	current_frame(move.current_frame)
-	{
-		for(vk2::CommandBuffer& cbuf : this->commands.buffers)
-		{
-			cbuf.set_owner(this->command_pool);
-		}
-	}
-
-	CommandProcessor& CommandProcessor::operator=(CommandProcessor&& rhs)
-	{
-		std::swap(this->requires_present, rhs.requires_present);
-		std::swap(this->instant_compute_enabled, rhs.instant_compute_enabled);
-		std::swap(this->graphics_queue, rhs.graphics_queue);
-		std::swap(this->compute_queue, rhs.compute_queue);
-		std::swap(this->command_pool,rhs.command_pool);
-		std::swap(this->commands, rhs.commands);
-		std::swap(this->frame_in_flight_count, rhs.frame_in_flight_count);
-		std::swap(this->images_in_flight, rhs.images_in_flight);
-		std::swap(this->options, rhs.options);
-		std::swap(this->device_scheduler, rhs.device_scheduler);
-		std::swap(this->output_image_index, rhs.output_image_index);
-		std::swap(this->current_frame, rhs.current_frame);
-		for(vk2::CommandBuffer& cbuf : this->commands.buffers)
-		{
-			cbuf.set_owner(this->command_pool);
-		}
-		for(vk2::CommandBuffer& cbuf : rhs.commands.buffers)
-		{
-			cbuf.set_owner(rhs.command_pool);
-		}
-		return *this;
+		tz::assert(this->commands.data.success(), "Failed to allocate from CommandPool");
 	}
 
 	std::span<const vk2::CommandBuffer> CommandProcessor::get_render_command_buffers() const
 	{
-		return {this->commands.buffers.begin(), this->frame_in_flight_count};
+		return {this->commands.data.buffers.begin(), this->frame_in_flight_count};
 	}
 
 	std::span<vk2::CommandBuffer> CommandProcessor::get_render_command_buffers()
 	{
-		return {this->commands.buffers.begin(), this->frame_in_flight_count};
+		return {this->commands.data.buffers.begin(), this->frame_in_flight_count};
 	}
 
 	CommandProcessor::RenderWorkSubmitResult CommandProcessor::do_render_work()

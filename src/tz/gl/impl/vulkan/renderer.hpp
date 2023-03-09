@@ -269,10 +269,10 @@ namespace tz::gl
 		CommandProcessor(vk2::LogicalDevice& ldev, std::size_t frame_in_flight_count, output_target output_target, std::span<vk2::Framebuffer> output_framebuffers, bool instant_compute_enabled, tz::gl::renderer_options options, DeviceRenderSchedulerVulkan& scheduler);
 		CommandProcessor() = default;
 		CommandProcessor(const CommandProcessor& copy) = delete;
-		CommandProcessor(CommandProcessor&& move);
+		CommandProcessor(CommandProcessor&& move) = default;
 		~CommandProcessor() = default;
 		CommandProcessor& operator=(const CommandProcessor& rhs) = delete;
-		CommandProcessor& operator=(CommandProcessor&& rhs);
+		CommandProcessor& operator=(CommandProcessor&& rhs) = default;
 		/**
 		 * Retrieve a list of all command buffers which will be used for rendering. Each command buffer is guaranteed to have the exact same commands recorded within them.
 		 * @return Array of command buffers, length matching the number of frames-in-flight.
@@ -311,10 +311,7 @@ namespace tz::gl
 		vk2::hardware::Queue* graphics_queue = nullptr;
 		/// Hardware queue which will be used for any compute work that needs to be done.
 		vk2::hardware::Queue* compute_queue = nullptr;
-		/// Pool which handles allocation of command buffers.
-		vk2::CommandPool command_pool = vk2::CommandPool::null();
-		/// Stores allocated command buffers.
-		vk2::CommandPool::AllocationResult commands = {};
+		vk2::CommandBufferData commands = {};
 		/// Stores the number of frames we expect to have in flight.
 		std::size_t frame_in_flight_count = 0;
 		/// Helper list which refers to each in-flight-fence, but in an order useful to the swapchain image acquisition logic.

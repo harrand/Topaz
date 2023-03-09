@@ -518,6 +518,31 @@ namespace tz::gl::vk2
 		VkCommandPool pool;
 		CommandPoolInfo info;
 	};
+
+	struct CommandBufferData
+	{
+		CommandBufferData() = default;
+		CommandBufferData(CommandBufferData&& move)
+		{
+			*this = std::move(move);
+		}
+		CommandBufferData& operator=(CommandBufferData&& rhs)
+		{
+			std::swap(this->pool, rhs.pool);
+			std::swap(this->data, rhs.data);
+			for(auto& buf : this->data.buffers)
+			{
+				buf.set_owner(this->pool);
+			}
+			for(auto& buf : rhs.data.buffers)
+			{
+				buf.set_owner(rhs.pool);
+			}
+			return *this;
+		}
+		vk2::CommandPool pool = vk2::CommandPool::null();
+		vk2::CommandPool::AllocationResult data = {};
+	};
 }
 
 #endif // TZ_VULKAN
