@@ -444,13 +444,8 @@ namespace tz::gl
 	options(std::move(move.options)),
 	output_imageviews(std::move(move.output_imageviews)),
 	output_depth_imageviews(std::move(move.output_depth_imageviews)),
-	render_pass(std::move(move.render_pass)),
-	output_framebuffers(std::move(move.output_framebuffers))
+	data(std::move(move.data))
 	{
-		for(auto& fb : this->output_framebuffers)
-		{
-			fb.set_render_pass(this->render_pass);
-		}
 	}
 
 	OutputManager& OutputManager::operator=(OutputManager&& rhs)
@@ -462,21 +457,13 @@ namespace tz::gl
 		std::swap(this->options, rhs.options);
 		std::swap(this->output_imageviews, rhs.output_imageviews);
 		std::swap(this->output_depth_imageviews, rhs.output_depth_imageviews);
-		std::swap(this->render_pass, rhs.render_pass);
-		std::swap(this->output_framebuffers, rhs.output_framebuffers);
-		if(!this->render_pass.is_null())
-		{
-			for(auto& fb : this->output_framebuffers)
-			{
-				fb.set_render_pass(this->render_pass);
-			}
-		}
+		std::swap(this->data, rhs.data);
 		return *this;
 	}
 
 	const vk2::RenderPass& OutputManager::get_render_pass() const
 	{
-		return this->render_pass;
+		return this->data.render_pass;
 	}
 
 	std::vector<OutputImageState> OutputManager::get_output_images()
@@ -536,12 +523,12 @@ namespace tz::gl
 
 	std::span<const vk2::Framebuffer> OutputManager::get_output_framebuffers() const
 	{
-		return this->output_framebuffers;
+		return this->data.framebuffers;
 	}
 
 	std::span<vk2::Framebuffer> OutputManager::get_output_framebuffers()
 	{
-		return this->output_framebuffers;
+		return this->data.framebuffers;
 	}
 
 	tz::vec2ui OutputManager::get_output_dimensions() const
@@ -571,7 +558,7 @@ namespace tz::gl
 		this->swapchain_images = swapchain_images;
 		this->output_imageviews.clear();
 		this->output_depth_imageviews.clear();
-		this->output_framebuffers.clear();
+		this->data.framebuffers.clear();
 
 		this->swapchain_depth_images = depth_image;
 		this->output_depth_imageviews.reserve(this->swapchain_images.size());
@@ -687,7 +674,7 @@ namespace tz::gl
 			});
 		}
 
-		this->render_pass = rbuilder.with_subpass(sbuilder.build()).build();
+		this->data.render_pass = rbuilder.with_subpass(sbuilder.build()).build();
 
 	}
 
@@ -712,9 +699,9 @@ namespace tz::gl
 			{
 				attachments.add(&this->output_depth_imageviews[i]);
 			}
-			this->output_framebuffers.push_back
+			this->data.framebuffers.push_back
 			(vk2::FramebufferInfo{
-				.render_pass = &this->render_pass,
+				.render_pass = &this->data.render_pass,
 				.attachments = attachments,
 				.dimensions = dims
 			});

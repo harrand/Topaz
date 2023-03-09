@@ -209,10 +209,7 @@ namespace tz::gl
 		std::vector<OutputImageViewState> output_imageviews = {};
 		/// List of depth-image-views, one for each output image.
 		std::vector<vk2::ImageView> output_depth_imageviews = {};
-		/// We don't support multiple sub-passes, so this is a run-of-the-mill basic-bitch render pass.
-		vk2::RenderPass render_pass = vk2::RenderPass::null();
-		/// List of framebuffers, one for each output image. These also haven't been re-ordered in any way FYI.
-		std::vector<vk2::Framebuffer> output_framebuffers = {};
+		vk2::FramebufferData data = {};
 	};
 
 	/**
