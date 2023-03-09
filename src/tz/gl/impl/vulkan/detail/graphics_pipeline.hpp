@@ -120,6 +120,27 @@ namespace tz::gl::vk2
 
 		std::variant<GraphicsPipeline, ComputePipeline, std::monostate> pipeline_variant;
 	};
+
+	struct PipelineData
+	{
+		PipelineData() = default;
+		PipelineData(PipelineData&& move)
+		{
+			*this = std::move(move);
+		}
+		PipelineData& operator=(PipelineData&& rhs)
+		{
+			std::swap(this->layout, rhs.layout);
+			std::swap(this->data, rhs.data);
+			if(!this->layout.is_null())
+			{
+				this->data.set_layout(this->layout);
+			}
+			return *this;
+		}
+		PipelineLayout layout = PipelineLayout::null();
+		Pipeline data = Pipeline::null();
+	};
 }
 
 

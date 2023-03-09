@@ -224,9 +224,9 @@ namespace tz::gl
 		 */
 		GraphicsPipelineManager(const renderer_info& info, const ResourceStorage& resources, const OutputManager& output);
 		GraphicsPipelineManager() = default;
-		GraphicsPipelineManager(GraphicsPipelineManager&& move);
+		GraphicsPipelineManager(GraphicsPipelineManager&& move) = default;
 		~GraphicsPipelineManager() = default;
-		GraphicsPipelineManager& operator=(GraphicsPipelineManager&& rhs);
+		GraphicsPipelineManager& operator=(GraphicsPipelineManager&& rhs) = default;
 
 		/**
 		 * Retrieve the vulkan graphics pipeline which will be used for rendering.
@@ -246,8 +246,7 @@ namespace tz::gl
 		vk2::Pipeline make_pipeline(tz::vec2ui viewport_dimensions, bool depth_testing_enabled, bool alpha_blending_enabled, const vk2::RenderPass& render_pass) const;
 
 		vk2::Shader shader = vk2::Shader::null();
-		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
-		vk2::Pipeline graphics_pipeline = vk2::Pipeline::null();
+		vk2::PipelineData pipeline = {};
 		bool depth_testing_enabled = false;
 		bool wireframe_mode = false;
 	};

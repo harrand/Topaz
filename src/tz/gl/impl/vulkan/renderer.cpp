@@ -688,42 +688,15 @@ namespace tz::gl
 	GraphicsPipelineManager::GraphicsPipelineManager(const renderer_info& info, const ResourceStorage& resources, const OutputManager& output)
 	{
 		this->shader = this->make_shader(get_device().vk_get_logical_device(), info.shader());
-		this->pipeline_layout = this->make_pipeline_layout(resources.get_descriptor_layout(), get_device().get_device_window().get_output_images().size());
+		this->pipeline.layout = this->make_pipeline_layout(resources.get_descriptor_layout(), get_device().get_device_window().get_output_images().size());
 		this->depth_testing_enabled = !info.get_options().contains(renderer_option::no_depth_testing);
 		const bool alpha_blending_enabled = info.get_options().contains(renderer_option::alpha_blending);
-		this->graphics_pipeline = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
-	}
-
-	GraphicsPipelineManager::GraphicsPipelineManager(GraphicsPipelineManager&& move):
-	shader(std::move(move.shader)),
-	pipeline_layout(std::move(move.pipeline_layout)),
-	graphics_pipeline(std::move(move.graphics_pipeline)),
-	depth_testing_enabled(move.depth_testing_enabled)
-	{
-		if(!this->pipeline_layout.is_null())
-		{
-			this->graphics_pipeline.set_layout(this->pipeline_layout);
-		}
-	}
-
-	GraphicsPipelineManager& GraphicsPipelineManager::operator=(GraphicsPipelineManager&& rhs)
-	{
-		std::swap(this->shader, rhs.shader);
-		std::swap(this->pipeline_layout, rhs.pipeline_layout);
-		std::swap(this->graphics_pipeline, rhs.graphics_pipeline);
-		std::swap(this->depth_testing_enabled, rhs.depth_testing_enabled);
-
-		if(!this->pipeline_layout.is_null())
-		{
-			this->graphics_pipeline.set_layout(this->pipeline_layout);
-		}
-
-		return *this;
+		this->pipeline.data = this->make_pipeline(output.get_output_dimensions(), depth_testing_enabled, alpha_blending_enabled, output.get_render_pass());
 	}
 
 	const vk2::Pipeline& GraphicsPipelineManager::get_pipeline() const
 	{
-		return this->graphics_pipeline;
+		return this->pipeline.data;
 	}
 
 	const vk2::Shader& GraphicsPipelineManager::get_shader() const
@@ -742,16 +715,16 @@ namespace tz::gl
 		TZ_PROFZONE("Vulkan Frontend - renderer_vulkan GraphicsPipelineManager Recreate", 0xFFAAAA00);
 		if(this->is_compute())
 		{
-			this->graphics_pipeline =
+			this->pipeline.data =
 			{vk2::ComputePipelineInfo{
 				.shader = this->shader.native_data(),
-				.pipeline_layout = &this->pipeline_layout,
-				.device = &this->pipeline_layout.get_device()
+				.pipeline_layout = &this->pipeline.layout,
+				.device = &this->pipeline.layout.get_device()
 			}};
 		}
 		else
 		{
-			this->graphics_pipeline =
+			this->pipeline.data =
 			{{
 				.shaders = this->shader.native_data(),
 				.state = vk2::PipelineState
@@ -768,7 +741,7 @@ namespace tz::gl
 						.states = {vk2::DynamicStateType::Scissor}
 					}
 				},
-				.pipeline_layout = &this->pipeline_layout,
+				.pipeline_layout = &this->pipeline.layout,
 				.render_pass = &new_render_pass,
 				.dynamic_rendering_state = {},
 				.device = &new_render_pass.get_device()
@@ -906,10 +879,10 @@ namespace tz::gl
 					.states = {vk2::DynamicStateType::Scissor}
 				}
 			},
-			.pipeline_layout = &this->pipeline_layout,
+			.pipeline_layout = &this->pipeline.layout,
 			.render_pass = &render_pass,
 			.dynamic_rendering_state = {},
-			.device = &this->pipeline_layout.get_device()
+			.device = &this->pipeline.layout.get_device()
 		};
 	}
 
@@ -918,8 +891,8 @@ namespace tz::gl
 		return
 		{
 			.shader = this->shader.native_data(),
-			.pipeline_layout = &this->pipeline_layout,
-			.device = &this->pipeline_layout.get_device()
+			.pipeline_layout = &this->pipeline.layout,
+			.device = &this->pipeline.layout.get_device()
 		};
 	}
 
