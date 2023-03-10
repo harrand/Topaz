@@ -682,6 +682,7 @@ namespace tz::gl
 	void renderer_command_processor::do_frame()
 	{
 		const bool present = !this->no_present_enabled && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+		std::vector<const vk2::Semaphore*> work_waits = {}, work_signals = {};
 		// we potentially need to do a wait if our last frame id is still going.
 		auto& dev = tz::gl::get_device2();
 		dev.vk_frame_wait(renderer_vulkan_base::uid);
@@ -691,7 +692,13 @@ namespace tz::gl
 			tz::error("its presentin' time");
 		}
 		// let's retrieve the semaphores the device wants our work to wait on.
-		std::vector<const vk2::Semaphore*> dependency_waits = dev.vk_get_dependency_waits(renderer_vulkan_base::uid);
+		{
+			std::vector<const vk2::Semaphore*> dependency_waits = dev.vk_get_dependency_waits(renderer_vulkan_base::uid);
+			for(const vk2::Semaphore* wait : dependency_waits)
+			{
+				work_waits.push_back(wait);
+			}
+		}
 		// same for the semaphores we need to signal.
 		std::vector<const vk2::Semaphore*> dependency_signals = dev.vk_get_dependency_signals(renderer_vulkan_base::uid);
 		tz::error("NYFI");

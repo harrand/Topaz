@@ -9,12 +9,12 @@
 namespace tz::gl
 {
 //--------------------------------------------------------------------------------------------------
-	device_window::device_window(const vk2::LogicalDevice& device):
-	ldev(&device)
+	device_window::device_window():
+	device_vulkan_base()
 	{
 		// choose initial settings and create swapchain + depth.
 		TZ_PROFZONE("vk - device_window create", 0xFFAA0000);
-		const vk2::PhysicalDevice& hardware = this->ldev->get_hardware();
+		const vk2::PhysicalDevice& hardware = this->ldev.get_hardware();
 		const vk2::VulkanInstance& vkinst = hardware.get_instance();
 		tz::assert(vkinst.has_surface(), "Tried to create device_window, but vulkan instance has no surface.");
 
@@ -38,13 +38,14 @@ namespace tz::gl
 		
 		this->swapchain = vk2::Swapchain
 		{{
-			.device = this->ldev,
+			.device = &this->ldev,
 			.swapchain_image_count_minimum = swapchain_image_count,
 			.format = chosen_format,
 			.present_mode = chosen_present_mode
 		}};
 		this->dimensions_cache = tz::window().get_dimensions();
 		this->make_depth_image();
+		this->initialise_image_semaphores();
 		this->debug_annotate_resources();
 	}
 
@@ -68,11 +69,15 @@ namespace tz::gl
 		return this->device_depth;
 	}
 
-	std::size_t device_window::acquire_image(const vk2::Swapchain::ImageAcquisition& acquire)
+	std::size_t device_window::acquire_image(const vk2::Fence* signal_fence)
 	{
 		if(!this->recent_acquire.has_value())
 		{
-			this->recent_acquire = this->swapchain.acquire_image(acquire);
+			this->recent_acquire = this->swapchain.acquire_image(vk2::Swapchain::ImageAcquisition
+			{
+				.signal_semaphore = &this->get_image_semaphores()[this->frame_id],
+				.signal_fence = signal_fence
+			});
 		}
 		return this->recent_acquire.value().image_index;
 	}
@@ -91,17 +96,30 @@ namespace tz::gl
 		});
 	}
 
+	std::span<vk2::BinarySemaphore> device_window::get_image_semaphores()
+	{
+		return this->image_semaphores;
+	}
+
 	void device_window::make_depth_image()
 	{
 		tz::assert(!this->swapchain.is_null());
 		this->device_depth =
 		{{
-			.device = this->ldev,
+			.device = &this->ldev,
 			.format = vk2::image_format::Depth32_SFloat,
 			.dimensions = this->swapchain.get_dimensions(),
 			.usage = {vk2::ImageUsage::DepthStencilAttachment},
 			.residency = vk2::MemoryResidency::GPU
 		}};
+	}
+
+	void device_window::initialise_image_semaphores()
+	{
+		for(std::size_t i = 0; i < this->get_swapchain().get_images().size(); i++)
+		{
+			this->image_semaphores.emplace_back(this->ldev);
+		}
 	}
 
 	void device_window::debug_annotate_resources()
@@ -115,11 +133,12 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	device_render_sync::device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline, std::size_t frame_in_flight_count):
-	timeline(timeline),
+	device_render_sync::device_render_sync(device_common<renderer_vulkan2>& devcom):
+	device_window(),
+	timeline(devcom.render_graph().timeline),
 	tsem(ldev, 0)
 	{
-		for(std::size_t i = 0; i < frame_in_flight_count; i++)
+		for(std::size_t i = 0; i < device_window::get_swapchain().get_images().size(); i++)
 		{
 			this->frame_fences.push_back({{.device = &ldev, .initially_signalled = true}});
 		}
@@ -159,8 +178,8 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	device_descriptor_pool::device_descriptor_pool(const vk2::LogicalDevice& device):
-	ldev(&device)
+	device_descriptor_pool::device_descriptor_pool(device_common<renderer_vulkan2>& devcom):
+	device_render_sync(devcom)
 	{
 		this->another_pool();
 	}
@@ -245,28 +264,28 @@ namespace tz::gl
 		this->pools.emplace_back(vk2::DescriptorPoolInfo
 		{
 			.limits = pool_lims,
-			.logical_device = this->ldev
+			.logical_device = &this->ldev
 		});
 	}
 
 //--------------------------------------------------------------------------------------------------
 
-	device_command_pool::device_command_pool(vk2::LogicalDevice& device):
-	ldev(&device)
+	device_command_pool::device_command_pool(device_common<renderer_vulkan2>& devcom):
+	device_descriptor_pool(devcom)
 	{
-		this->graphics_queue = this->ldev->get_hardware_queue
+		this->graphics_queue = this->ldev.get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::graphics},
 	   		.present_support = false
    		});
 
-		this->graphics_present_queue = this->ldev->get_hardware_queue
+		this->graphics_present_queue = this->ldev.get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::graphics},
 	   		.present_support = true
    		});
 
-		this->compute_queue = this->ldev->get_hardware_queue
+		this->compute_queue = this->ldev.get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::compute},
 	   		.present_support = false
@@ -313,7 +332,7 @@ namespace tz::gl
 	{
 		vk2::Fence temp_fence
 		{{
-			.device = this->ldev
+			.device = &this->ldev
 		}};
 
 		#if TZ_DEBUG
@@ -537,11 +556,7 @@ namespace tz::gl
 //--------------------------------------------------------------------------------------------------
 
 	device_vulkan2::device_vulkan2():
-	device_vulkan_base(),
-	device_window(this->vk_get_logical_device()),
-	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline, device_window::get_swapchain().get_images().size()),
-	device_descriptor_pool(this->vk_get_logical_device()),
-	device_command_pool(this->vk_get_logical_device())
+	device_command_pool(static_cast<device_common<tz::gl::renderer_vulkan2>&>(*this))
 	{
 
 	}

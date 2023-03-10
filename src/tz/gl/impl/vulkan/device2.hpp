@@ -13,10 +13,21 @@
 
 namespace tz::gl
 {
-	class device_window
+	class device_vulkan_base
 	{
 	public:
-		device_window(const vk2::LogicalDevice& device);
+		device_vulkan_base();
+		const vk2::LogicalDevice& vk_get_logical_device() const;
+		vk2::LogicalDevice& vk_get_logical_device();
+	protected:
+		std::size_t frame_id = 0;
+		vk2::LogicalDevice ldev;
+	};
+
+	class device_window : public device_vulkan_base
+	{
+	public:
+		device_window();
 		const vk2::Swapchain& get_swapchain() const;
 		vk2::Swapchain& get_swapchain();
 		const vk2::Image& get_depth_image() const;
@@ -29,7 +40,7 @@ namespace tz::gl
 		 *
 		 * @return swapchain index image that will be retrieved.
 		 */
-		std::size_t acquire_image(const vk2::Swapchain::ImageAcquisition& acquire);
+		std::size_t acquire_image(const vk2::Fence* signal_fence);
 		/**
 		* present the acquired image.
 		*
@@ -37,20 +48,22 @@ namespace tz::gl
 		*
 		*/
 		vk2::hardware::Queue::PresentResult present_image(vk2::hardware::Queue& present_queue, std::span<const vk2::BinarySemaphore> wait_semaphores);
+		std::span<vk2::BinarySemaphore> get_image_semaphores();
 	private:
 		void make_depth_image();
+		void initialise_image_semaphores();
 		void debug_annotate_resources();
-		const vk2::LogicalDevice* ldev = nullptr;
 		vk2::Swapchain swapchain = vk2::Swapchain::null();
 		vk2::Image device_depth = vk2::Image::null();
 		tz::vec2ui dimensions_cache = tz::vec2ui::zero();
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
+		std::vector<vk2::BinarySemaphore> image_semaphores = {};
 	};
 
-	class device_render_sync
+	class device_render_sync : public device_window
 	{
 	public:
-		device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline, std::size_t frame_in_flight_count);
+		device_render_sync(device_common<renderer_vulkan2>& devcom);
 		void vk_frame_wait(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
@@ -62,13 +75,12 @@ namespace tz::gl
 		vk2::TimelineSemaphore tsem;
 		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
 		std::vector<vk2::Fence> frame_fences = {};
-		std::size_t frame_id = 0;
 	};
 
-	class device_descriptor_pool
+	class device_descriptor_pool : public device_render_sync
 	{
 	public:
-		device_descriptor_pool(const vk2::LogicalDevice& device);
+		device_descriptor_pool(device_common<renderer_vulkan2>& devcom);
 		vk2::DescriptorPool::UpdateRequest vk_make_update_request(unsigned int fingerprint);
 		vk2::DescriptorPool::AllocationResult vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint);
 		void vk_update_sets(vk2::DescriptorPool::UpdateRequest update, unsigned int fingerprint);
@@ -77,12 +89,11 @@ namespace tz::gl
 		vk2::DescriptorPool::AllocationResult impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
 		void another_pool();
 		void another_pool(std::size_t set_count, std::size_t buf_count, std::size_t img_count);
-		const vk2::LogicalDevice* ldev;
 		std::vector<vk2::DescriptorPool> pools = {};
 		std::unordered_map<unsigned int, std::size_t> fingerprint_to_pool_id = {};
 	};
 
-	class device_command_pool
+	class device_command_pool : public device_descriptor_pool
 	{
 	public:
 		struct fingerprint_info_t
@@ -90,7 +101,7 @@ namespace tz::gl
 			bool compute = false;
 			bool requires_present = true;
 		};
-		device_command_pool(vk2::LogicalDevice& device);
+		device_command_pool(device_common<renderer_vulkan2>& devcom);
 		vk2::CommandPool::AllocationResult vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint);
 		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
@@ -105,7 +116,6 @@ namespace tz::gl
 		vk2::CommandPool::AllocationResult impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
 		vk2::CommandPool& get_fitting_pool(const fingerprint_info_t& finfo);
 		vk2::hardware::Queue* get_original_queue(const fingerprint_info_t& finfo);
-		vk2::LogicalDevice* ldev;
 		vk2::hardware::Queue* graphics_queue = nullptr;
 		vk2::hardware::Queue* graphics_present_queue = nullptr;
 		vk2::hardware::Queue* compute_queue = nullptr;
@@ -116,22 +126,8 @@ namespace tz::gl
 		std::unordered_map<unsigned int, std::vector<vk2::CommandPool::Allocation>> fingerprint_allocation_history = {};
 	};
 
-	class device_vulkan_base
-	{
-	public:
-		device_vulkan_base();
-		const vk2::LogicalDevice& vk_get_logical_device() const;
-		vk2::LogicalDevice& vk_get_logical_device();
-	protected:
-		vk2::LogicalDevice ldev;
-	};
-
 	class device_vulkan2 :
 		public device_common<renderer_vulkan2>,
-		public device_vulkan_base,
-		public device_window,
-		public device_render_sync,
-		public device_descriptor_pool,
 		public device_command_pool
 	{
 	public:
