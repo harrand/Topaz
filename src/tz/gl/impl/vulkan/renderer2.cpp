@@ -9,7 +9,6 @@ namespace tz::gl
 	renderer_resource_manager::renderer_resource_manager(const tz::gl::renderer_info& rinfo):
 	AssetStorageCommon<iresource>(rinfo.get_resources())
 	{
-		TZ_PROFZONE("render_resource_manager - initialise", 0xFFAAAA00);
 		this->patch_resource_references(rinfo);
 		this->setup_dynamic_resource_spans();
 		this->populate_image_resource_views();
@@ -233,17 +232,17 @@ namespace tz::gl
 
 	const vk2::DescriptorLayout& renderer_descriptor_manager::get_descriptor_layout() const
 	{
-		return this->layout;
+		return this->descriptors.layout;
 	}
 
 	std::span<const vk2::DescriptorSet> renderer_descriptor_manager::get_descriptor_sets() const
 	{
-		return this->descriptors.sets;
+		return this->descriptors.data.sets;
 	}
 
 	bool renderer_descriptor_manager::empty() const
 	{
-		return this->layout.is_null();
+		return this->descriptors.layout.is_null();
 	}
 
 	void renderer_descriptor_manager::deduce_descriptor_layout(const tz::gl::render_state& state)
@@ -284,7 +283,7 @@ namespace tz::gl
 		if(buffer_count == 0 && image_count == 0)
 		{
 			// we have no shader resources -- this we should be marked as empty.
-			this->layout = vk2::DescriptorLayout::null();
+			this->descriptors.layout = vk2::DescriptorLayout::null();
 			// and then early-out because we don't need to do anymore work.
 			return;
 		}
@@ -319,7 +318,7 @@ namespace tz::gl
 				}
 			});
 		}
-		this->layout = builder.build();
+		this->descriptors.layout = builder.build();
 	}
 
 	void renderer_descriptor_manager::allocate_descriptors()
@@ -329,26 +328,26 @@ namespace tz::gl
 		{
 			return;
 		}
-		if(!this->descriptors.sets.empty())
+		if(!this->descriptors.data.sets.empty())
 		{
 			// we have a previous allocation.
 			// todo: tell the device to free these descriptors.
 			tz::error("support for handling previous descriptors allocation is NYI.");
 		}
 		// we need to know how many frames-in-flight we expect.
-		tz::assert(!this->layout.is_null());
+		tz::assert(!this->descriptors.layout.is_null());
 		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
 		tz::basic_list<const vk2::DescriptorLayout*> layouts;
 		layouts.resize(frame_in_flight_count);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
-			layouts[i] = &this->layout;
+			layouts[i] = &this->descriptors.layout;
 		}
-		this->descriptors = tz::gl::get_device2().vk_allocate_sets
+		this->descriptors.data = tz::gl::get_device2().vk_allocate_sets
 		({
 			.set_layouts = std::move(layouts)
 		}, renderer_vulkan_base::uid);
-		tz::assert(this->descriptors.success());
+		tz::assert(this->descriptors.data.success());
 	}
 
 	void renderer_descriptor_manager::write_descriptors(const tz::gl::render_state& state)
@@ -357,7 +356,7 @@ namespace tz::gl
 		// early out if there's no descriptors to write to.
 		if(this->empty())
 		{
-			tz::assert(this->descriptors.sets.empty());
+			tz::assert(this->descriptors.data.sets.empty());
 			return;
 		}
 		// populate a list of buffer and image writes.
@@ -415,7 +414,7 @@ namespace tz::gl
 		vk2::DescriptorPool::UpdateRequest update = tz::gl::get_device2().vk_make_update_request(renderer_vulkan_base::uid);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
-			vk2::DescriptorSet& set = this->descriptors.sets[i];
+			vk2::DescriptorSet& set = this->descriptors.data.sets[i];
 			vk2::DescriptorSet::EditRequest req = set.make_edit_request();
 			for(const auto& [binding_id, buf_write] : buffer_writes)
 			{

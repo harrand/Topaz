@@ -73,8 +73,7 @@ namespace tz::gl
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		void allocate_descriptors();
 		void write_descriptors(const tz::gl::render_state& state);
-		vk2::DescriptorLayout layout = vk2::DescriptorLayout::null();
-		vk2::DescriptorPool::AllocationResult descriptors = {};
+		vk2::DescriptorData descriptors = {};
 	};
 
 	class renderer_output_manager : public renderer_descriptor_manager
