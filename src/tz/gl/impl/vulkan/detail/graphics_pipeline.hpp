@@ -38,6 +38,7 @@ namespace tz::gl::vk2
 		{
 			std::vector<VkFormat> colour_attachment_formats = {};
 			VkFormat depth_format = VK_FORMAT_UNDEFINED;
+			bool operator==(const DynamicRenderingState& rhs) const = default;
 		};
 		DynamicRenderingState dynamic_rendering_state;
 		const LogicalDevice* device;

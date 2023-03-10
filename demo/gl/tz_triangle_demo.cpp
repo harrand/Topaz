@@ -20,11 +20,11 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_triangle_demo, fragment));
 		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
 
-		tz::gl::renderer_handle renh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::renderer_handle renh = tz::gl::get_device2().create_renderer(rinfo);
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			tz::gl::get_device().get_renderer(renh).render();
+			tz::gl::get_device2().get_renderer(renh).render();
 			tz::end_frame();
 		}
 	}

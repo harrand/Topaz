@@ -206,6 +206,7 @@ namespace tz::gl
 		pool_lims.limits[vk2::DescriptorType::StorageBuffer] = pool_buf_count;
 		pool_lims.limits[vk2::DescriptorType::ImageWithSampler] = pool_img_count;
 		pool_lims.max_sets = pool_set_count;
+		pool_lims.supports_update_after_bind = true;
 		this->pools.emplace_back(vk2::DescriptorPoolInfo
 		{
 			.limits = pool_lims,
@@ -235,6 +236,10 @@ namespace tz::gl
 			.field = {vk2::QueueFamilyType::compute},
 	   		.present_support = false
    		});
+
+		this->graphics_commands = {{.queue = this->graphics_queue}};
+		this->graphics_present_commands = {{.queue = this->graphics_present_queue}};
+		this->compute_commands = {{.queue = this->compute_queue}};
 	}
 
 	vk2::CommandPool::AllocationResult device_command_pool::vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint)
@@ -510,6 +515,7 @@ namespace tz::gl
 	{
 		return device_common<renderer_vulkan2>::emplace_renderer(rinfo);
 	}
+
 }
 
 #endif // TZ_VULKAN

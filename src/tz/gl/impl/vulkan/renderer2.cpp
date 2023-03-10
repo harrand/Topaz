@@ -242,7 +242,7 @@ namespace tz::gl
 
 	bool renderer_descriptor_manager::empty() const
 	{
-		return this->descriptors.layout.is_null();
+		return this->descriptors.layout.descriptor_count() == 0;
 	}
 
 	void renderer_descriptor_manager::deduce_descriptor_layout(const tz::gl::render_state& state)
@@ -280,13 +280,6 @@ namespace tz::gl
 			tz::assert(buffer_count > 0);
 			buffer_count--;
 		}
-		if(buffer_count == 0 && image_count == 0)
-		{
-			// we have no shader resources -- this we should be marked as empty.
-			this->descriptors.layout = vk2::DescriptorLayout::null();
-			// and then early-out because we don't need to do anymore work.
-			return;
-		}
 
 		// now we can actually create the descriptor layout.
 		vk2::DescriptorLayoutBuilder builder;
@@ -319,6 +312,10 @@ namespace tz::gl
 			});
 		}
 		this->descriptors.layout = builder.build();
+		if(buffer_count == 0 && image_count == 0)
+		{
+			tz::assert(this->empty());
+		}
 	}
 
 	void renderer_descriptor_manager::allocate_descriptors()
@@ -456,7 +453,7 @@ namespace tz::gl
 	void renderer_output_manager::populate_render_targets()
 	{
 		this->render_targets.clear();
-		if(this->output == nullptr)
+		if(this->output == nullptr || this->output->get_target() == tz::gl::output_target::window)
 		{
 			// we use window output. swapchain and device depth.
 			auto& swapchain = tz::gl::get_device2().get_swapchain();
@@ -588,7 +585,7 @@ namespace tz::gl
 
 	void renderer_pipeline::deduce_pipeline_layout()
 	{
-		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		const volatile std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
 		std::vector<const vk2::DescriptorLayout*> dlayouts(frame_in_flight_count, &renderer_descriptor_manager::get_descriptor_layout());
 		this->pipeline.layout =
 		{{

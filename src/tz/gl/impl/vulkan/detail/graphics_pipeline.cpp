@@ -9,7 +9,7 @@ namespace tz::gl::vk2
 	{
 		return !this->shaders.create_infos.empty()
 			&& this->pipeline_layout != nullptr
-			&& this->render_pass != nullptr
+			&& (this->render_pass != nullptr || this->dynamic_rendering_state != vk2::GraphicsPipelineInfo::DynamicRenderingState{})
 			&& this->valid_device();
 	}
 
