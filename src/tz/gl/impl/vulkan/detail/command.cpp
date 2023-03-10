@@ -117,7 +117,7 @@ namespace tz::gl::vk2
 			depth_attachment_native.imageView = depth_attachment->native();
 			#if TZ_DEBUG
 				auto ddims = depth_attachment->get_image().get_dimensions();
-				tz::assert(ddims != dims, "Depth attachment dimensions (%zux%zu) does not match the dimensions of the render area derived from colour attachments (%zux%zu)", ddims[0], ddims[1], dims[0], dims[1]);
+				tz::assert(ddims == dims, "Depth attachment dimensions (%zux%zu) does not match the dimensions of the render area derived from colour attachments (%zux%zu)", ddims[0], ddims[1], dims[0], dims[1]);
 			#endif // TZ_DEBUG
 		}
 		auto dims32 = static_cast<tz::vec2ui32>(dims);

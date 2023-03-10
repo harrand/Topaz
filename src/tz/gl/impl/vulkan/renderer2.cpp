@@ -228,6 +228,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_descriptor_manager - initialise", 0xFFAAAA00);
 		this->deduce_descriptor_layout(rinfo.state());
 		this->allocate_descriptors();
+		this->write_descriptors(rinfo.state());
 	}
 
 	const vk2::DescriptorLayout& renderer_descriptor_manager::get_descriptor_layout() const
@@ -672,6 +673,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
 		this->scratch_initialise_static_resources();
+		this->record_commands(rinfo.state(), "unnamed renderer");
 	}
 
 	renderer_command_processor::~renderer_command_processor()
@@ -679,28 +681,24 @@ namespace tz::gl
 		this->free_commands(command_type::both);
 	}
 
+	constexpr std::size_t cmdbuf_work_alloc_id = 0;
+	constexpr std::size_t cmdbuf_scratch_alloc_id = 1;
+
 	void renderer_command_processor::do_frame()
 	{
 		const bool present = !this->no_present_enabled && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
-		std::vector<const vk2::Semaphore*> work_waits = {}, work_signals = {};
+		tz::basic_list<const vk2::Semaphore*> extra_waits = {};
 		// we potentially need to do a wait if our last frame id is still going.
 		auto& dev = tz::gl::get_device2();
 		dev.vk_frame_wait(renderer_vulkan_base::uid);
 		if(present)
 		{
 			// we need to wait on the image being available.
-			tz::error("its presentin' time");
+			extra_waits.add(&dev.acquire_image(nullptr));
 		}
-		// let's retrieve the semaphores the device wants our work to wait on.
-		{
-			std::vector<const vk2::Semaphore*> dependency_waits = dev.vk_get_dependency_waits(renderer_vulkan_base::uid);
-			for(const vk2::Semaphore* wait : dependency_waits)
-			{
-				work_waits.push_back(wait);
-			}
-		}
-		// same for the semaphores we need to signal.
-		std::vector<const vk2::Semaphore*> dependency_signals = dev.vk_get_dependency_signals(renderer_vulkan_base::uid);
+		// submit the work
+		const std::size_t frame_id = dev.vk_get_frame_id();
+		dev.vk_submit_command(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, frame_id, std::span<const vk2::CommandBuffer>{&this->work_command_buffers()[frame_id], 1}, extra_waits);
 		tz::error("NYFI");
 	}
 
@@ -743,6 +741,22 @@ namespace tz::gl
 		}
 	}
 
+	void renderer_command_processor::record_commands(const tz::gl::render_state& state, std::string label)
+	{
+		switch(renderer_pipeline::get_pipeline_type())
+		{
+			case renderer_pipeline::pipeline_type_t::graphics:
+				this->record_render_commands(state, label);
+			break;
+			case renderer_pipeline::pipeline_type_t::compute:
+				this->record_compute_commands(state, label);
+			break;
+			default:
+				tz::error("invalid value for pipeline type. memory corruption?");
+			break;
+		}
+	}
+
 	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, std::string label)
 	{
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
@@ -773,7 +787,23 @@ namespace tz::gl
 		  				.first_set_id = 0u
 					});
 				}
-				// todo: set scissor rect
+				{
+					// scissor
+					tz::vec2ui offset{0u, 0u};
+					tz::vec2ui extent = renderer_output_manager::get_render_target_dimensions();
+					const ioutput* output = renderer_output_manager::get_output();
+					if(output != nullptr && output->scissor != scissor_region::null())
+					{
+						offset = output->scissor.offset;
+						extent = output->scissor.extent;
+					}
+					record.set_scissor_dynamic
+					({
+						.offset = offset,
+						.extent = extent
+					});
+				}
+
 				// todo: support for index and draw buffers.
 				tz::assert(state.graphics.index_buffer == tz::nullhand, "index buffers are NYI");
 				tz::assert(state.graphics.draw_buffer == tz::nullhand, "draw indirect buffers are NYI");
@@ -818,9 +848,6 @@ namespace tz::gl
 			record.debug_end_label({});
 		});
 	}
-
-	constexpr std::size_t cmdbuf_work_alloc_id = 0;
-	constexpr std::size_t cmdbuf_scratch_alloc_id = 1;
 
 	void renderer_command_processor::allocate_commands(renderer_command_processor::command_type t)
 	{

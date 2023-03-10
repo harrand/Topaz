@@ -10,6 +10,7 @@
 #include "tz/gl/impl/vulkan/detail/descriptors.hpp"
 #include "tz/gl/impl/vulkan/detail/command.hpp"
 #include <unordered_map>
+#include <deque>
 
 namespace tz::gl
 {
@@ -19,6 +20,7 @@ namespace tz::gl
 		device_vulkan_base();
 		const vk2::LogicalDevice& vk_get_logical_device() const;
 		vk2::LogicalDevice& vk_get_logical_device();
+		std::size_t vk_get_frame_id() const{return this->frame_id;}
 	protected:
 		std::size_t frame_id = 0;
 		vk2::LogicalDevice ldev;
@@ -89,7 +91,7 @@ namespace tz::gl
 		vk2::DescriptorPool::AllocationResult impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
 		void another_pool();
 		void another_pool(std::size_t set_count, std::size_t buf_count, std::size_t img_count);
-		std::vector<vk2::DescriptorPool> pools = {};
+		std::deque<vk2::DescriptorPool> pools = {};
 		std::unordered_map<unsigned int, std::size_t> fingerprint_to_pool_id = {};
 	};
 
@@ -106,7 +108,7 @@ namespace tz::gl
 		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
 		void vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer);
-		void vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, vk2::hardware::Queue::SubmitInfo submit);
+		void vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits);
 	private:
 		struct allocation_history
 		{

@@ -325,7 +325,8 @@ namespace tz::gl
 
 	vk2::DescriptorPool::UpdateRequest device_descriptor_pool::vk_make_update_request(unsigned int fingerprint)
 	{
-		return this->get_pool(fingerprint).make_update_request();
+		vk2::DescriptorPool& pool = this->get_pool(fingerprint);
+		return pool.make_update_request();
 	}
 
 	vk2::DescriptorPool::AllocationResult device_descriptor_pool::vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint)
@@ -489,14 +490,35 @@ namespace tz::gl
 		temp_fence.wait_until_signalled();
 	}
 
-	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, vk2::hardware::Queue::SubmitInfo submit)
+	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits)
 	{
 		#if TZ_DEBUG
 			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
 			tz::assert(debug_real_alloc_length > buffer_id, "attempted to submit & run scratch command buffer id %zu at (fingerprint:allocid) %u:%zu. there are only %zu buffers in this allocation. please submit a bug report.", buffer_id, fingerprint, allocation_id, debug_real_alloc_length);
 		#endif // TZ_DEBUG
-	
-		this->get_original_queue(this->fingerprint_alloc_types[fingerprint])->submit(submit);
+		vk2::hardware::Queue* q = this->get_original_queue(this->fingerprint_alloc_types[fingerprint]);	
+
+		vk2::hardware::Queue::SubmitInfo submit;
+		tz::basic_list<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits = {};
+		// TODO: fill waits with timeline semaphores frmo dependencies. probably signals too?
+
+		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals = {};
+
+		for(const vk2::Semaphore* wait : extra_waits)
+		{
+			waits.add({.wait_semaphore = wait, .wait_stage = vk2::PipelineStage::AllCommands});
+		}
+
+		tz::basic_list<const vk2::CommandBuffer*> buffers = {};
+		for(const vk2::CommandBuffer& buf : cmdbufs)
+		{
+			buffers.add(&buf);
+		}
+		submit.command_buffers = buffers;
+		submit.waits = waits;
+		submit.signals = signals;
+		submit.execution_complete_fence = nullptr;
+		q->submit(submit);
 	}
 
 	vk2::CommandPool::AllocationResult device_command_pool::impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
