@@ -357,7 +357,7 @@ namespace tz::gl
 		using ART = vk2::DescriptorPool::AllocationResult::AllocationResultType;
 		if(ret.type == ART::AllocationSuccess)
 		{
-			this->fingerprint_to_pool_id[fingerprint] = this->pools.size();
+			this->fingerprint_to_pool_id[fingerprint] = this->pools.size() - 1;
 			return ret;
 		}
 		else
