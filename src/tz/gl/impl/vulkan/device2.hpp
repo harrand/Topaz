@@ -130,6 +130,7 @@ namespace tz::gl
 	{
 	public:
 		device_vulkan2();
+		tz::gl::renderer_handle create_renderer(const tz::gl::renderer_info& rinfo);
 	};
 }
 

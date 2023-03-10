@@ -505,6 +505,11 @@ namespace tz::gl
 	{
 
 	}
+
+	tz::gl::renderer_handle device_vulkan2::create_renderer(const tz::gl::renderer_info& rinfo)
+	{
+		return device_common<renderer_vulkan2>::emplace_renderer(rinfo);
+	}
 }
 
 #endif // TZ_VULKAN
