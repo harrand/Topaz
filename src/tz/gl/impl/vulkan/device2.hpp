@@ -40,7 +40,7 @@ namespace tz::gl
 		 *
 		 * @return swapchain index image that will be retrieved.
 		 */
-		std::size_t acquire_image(const vk2::Fence* signal_fence);
+		const vk2::BinarySemaphore& acquire_image(const vk2::Fence* signal_fence);
 		/**
 		* present the acquired image.
 		*
