@@ -497,12 +497,12 @@ namespace tz::gl
 
 	const vk2::Pipeline& renderer_pipeline::get_pipeline() const
 	{
-		return this->pipeline;
+		return this->pipeline.data;
 	}
 
 	const vk2::PipelineLayout& renderer_pipeline::get_pipeline_layout() const
 	{
-		return this->pipeline_layout;
+		return this->pipeline.layout;
 	}
 
 	void renderer_pipeline::deduce_pipeline_config(const tz::gl::renderer_info& rinfo)
@@ -590,7 +590,7 @@ namespace tz::gl
 	{
 		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
 		std::vector<const vk2::DescriptorLayout*> dlayouts(frame_in_flight_count, &renderer_descriptor_manager::get_descriptor_layout());
-		this->pipeline_layout =
+		this->pipeline.layout =
 		{{
 			.descriptor_layouts = std::move(dlayouts),
 			.logical_device = &tz::gl::get_device2().vk_get_logical_device(),
@@ -617,7 +617,7 @@ namespace tz::gl
 					return static_cast<VkFormat>(colour_view.get_image().get_format());
 				});
 
-				this->pipeline =
+				this->pipeline.data =
 				{vk2::GraphicsPipelineInfo{
 					.shaders = this->shader.native_data(),
 					.state =
@@ -638,7 +638,7 @@ namespace tz::gl
 							.states = {vk2::DynamicStateType::Scissor}
 						}
 					},
-					.pipeline_layout = &this->pipeline_layout,
+					.pipeline_layout = &this->pipeline.layout,
 					.render_pass = nullptr,
 					.dynamic_rendering_state =
 					{
@@ -650,10 +650,10 @@ namespace tz::gl
 			}
 			break;
 			case pipeline_type_t::compute:
-				this->pipeline =
+				this->pipeline.data =
 				{{
 					.shader = this->shader.native_data(),
-					.pipeline_layout = &this->pipeline_layout,
+					.pipeline_layout = &this->pipeline.layout,
 					.device = &tz::gl::get_device2().vk_get_logical_device(),
 				}};
 			break;

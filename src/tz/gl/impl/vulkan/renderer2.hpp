@@ -35,7 +35,11 @@ namespace tz::gl
 	{
 	public:
 		renderer_resource_manager(const tz::gl::renderer_info& rinfo);
+		renderer_resource_manager(const renderer_resource_manager& copy) = delete;
+		renderer_resource_manager(renderer_resource_manager&& move) = default;
 		renderer_resource_manager() = default;
+		renderer_resource_manager& operator=(const renderer_resource_manager& copy) = delete;
+		renderer_resource_manager& operator=(renderer_resource_manager&& move) = default;
 
 		unsigned int resource_count() const;
 		const iresource* get_resource(tz::gl::resource_handle rh) const;
@@ -63,7 +67,11 @@ namespace tz::gl
 	{
 	public:
 		renderer_descriptor_manager(const tz::gl::renderer_info& rinfo);
+		renderer_descriptor_manager(const renderer_descriptor_manager& copy) = delete;
+		renderer_descriptor_manager(renderer_descriptor_manager&& move) = default;
 		renderer_descriptor_manager() = default;
+		renderer_descriptor_manager& operator=(const renderer_descriptor_manager& copy) = delete;
+		renderer_descriptor_manager& operator=(renderer_descriptor_manager&& move) = default;
 	protected:
 		const vk2::DescriptorLayout& get_descriptor_layout() const;
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
@@ -101,7 +109,11 @@ namespace tz::gl
 	{
 	public:
 		renderer_pipeline(const tz::gl::renderer_info& rinfo);
+		renderer_pipeline(const renderer_pipeline& copy) = delete;
+		renderer_pipeline(renderer_pipeline&& move) = default;
 		renderer_pipeline() = default;
+		renderer_pipeline& operator=(const renderer_pipeline& copy) = delete;
+		renderer_pipeline& operator=(renderer_pipeline&& move) = default;
 		enum class pipeline_type_t
 		{
 			graphics,
@@ -126,8 +138,7 @@ namespace tz::gl
 		void create_shader(const tz::gl::renderer_info& rinfo);
 		void update_pipeline();
 		vk2::Shader shader = vk2::Shader::null();
-		vk2::PipelineLayout pipeline_layout = vk2::PipelineLayout::null();
-		vk2::Pipeline pipeline = vk2::Pipeline::null();
+		vk2::PipelineData pipeline = {};
 		// depends purely on renderer options so this should never change.
 		pipeline_invariant_config_t pipeline_config = pipeline_invariant_config_t::null();
 	};
@@ -136,7 +147,12 @@ namespace tz::gl
 	{
 	public:
 		renderer_command_processor(const tz::gl::renderer_info& info);
+		renderer_command_processor(const renderer_command_processor& copy) = delete;
+		renderer_command_processor(renderer_command_processor&& move) = default;
+		// potential bug: command buffers retrieved from a move may have pool owner reference that is invalid?
 		~renderer_command_processor();
+		renderer_command_processor& operator=(const renderer_command_processor& copy) = delete;
+		renderer_command_processor& operator=(renderer_command_processor&& move) = default;
 		renderer_command_processor() = default;
 
 		enum class command_type
@@ -166,6 +182,11 @@ namespace tz::gl
 	{
 	public:
 		renderer_vulkan2(const tz::gl::renderer_info& rinfo);
+		renderer_vulkan2(const renderer_vulkan2& copy) = delete;
+		renderer_vulkan2(renderer_vulkan2&& move) = default;
+		~renderer_vulkan2() = default;
+		renderer_vulkan2& operator=(const renderer_vulkan2& copy) = delete;
+		renderer_vulkan2& operator=(renderer_vulkan2&& move) = default;
 		// NYI
 		const ioutput* get_output() const;
 		const tz::gl::renderer_options& get_options() const;
