@@ -50,13 +50,19 @@ namespace tz::gl
 	class device_render_sync
 	{
 	public:
-		device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline);
+		device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline, std::size_t frame_in_flight_count);
+		void vk_frame_wait(unsigned int fingerprint);
+		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
+		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
 	protected:
+		std::size_t get_rid(unsigned int fingerprint) const;
 		void touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id);
 	private:
 		const tz::gl::timeline_t& timeline;
 		vk2::TimelineSemaphore tsem;
 		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
+		std::vector<vk2::Fence> frame_fences = {};
+		std::size_t frame_id = 0;
 	};
 
 	class device_descriptor_pool

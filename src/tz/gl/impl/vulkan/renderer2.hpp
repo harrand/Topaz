@@ -95,13 +95,14 @@ namespace tz::gl
 			std::vector<vk2::ImageView> colour_attachments = {};
 			vk2::ImageView depth_attachment = vk2::ImageView::null();
 		};
+		const ioutput* get_output() const;
 	protected:
 		std::span<render_target_t> get_render_targets();
 		tz::vec2ui get_render_target_dimensions() const;
 	private:
 		void populate_render_targets();
 
-		const tz::gl::ioutput* output = nullptr;
+		std::unique_ptr<tz::gl::ioutput> output = nullptr;
 		std::vector<render_target_t> render_targets = {};
 	};
 
@@ -163,6 +164,7 @@ namespace tz::gl
 		};
 	protected:
 		void do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands);
+		void do_frame();
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
 		void record_render_commands(const tz::gl::render_state& state, std::string label);
 		void record_compute_commands(const tz::gl::render_state& state, std::string label);
@@ -175,6 +177,7 @@ namespace tz::gl
 		std::span<vk2::CommandBuffer> work_command_buffers();
 		vk2::CommandBuffer& scratch_command_buffer();
 		bool render_wait_enabled = false;
+		bool no_present_enabled = false;
 		std::vector<vk2::CommandPool::AllocationResult> command_allocations = {};
 	};
 
@@ -188,7 +191,6 @@ namespace tz::gl
 		renderer_vulkan2& operator=(const renderer_vulkan2& copy) = delete;
 		renderer_vulkan2& operator=(renderer_vulkan2&& move) = default;
 		// NYI
-		const ioutput* get_output() const;
 		const tz::gl::renderer_options& get_options() const;
 		const tz::gl::render_state& get_state() const;
 		void render();

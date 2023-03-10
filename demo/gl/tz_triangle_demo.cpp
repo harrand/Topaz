@@ -21,6 +21,7 @@ int main()
 		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
 
 		tz::gl::renderer_handle renh = tz::gl::get_device2().create_renderer(rinfo);
+		tz::gl::get_device2().render_graph().timeline = {renh};
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();

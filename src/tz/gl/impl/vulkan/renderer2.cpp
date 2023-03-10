@@ -433,9 +433,14 @@ namespace tz::gl
 
 	renderer_output_manager::renderer_output_manager(const tz::gl::renderer_info& rinfo):
 	renderer_descriptor_manager(rinfo),
-	output(rinfo.get_output())
+	output(rinfo.get_output() == nullptr ? nullptr : rinfo.get_output()->unique_clone())
 	{
 		this->populate_render_targets();
+	}
+
+	const ioutput* renderer_output_manager::get_output() const
+	{
+		return this->output.get();
 	}
 
 	std::span<renderer_output_manager::render_target_t> renderer_output_manager::get_render_targets()
@@ -661,7 +666,8 @@ namespace tz::gl
 
 	renderer_command_processor::renderer_command_processor(const tz::gl::renderer_info& rinfo):
 	renderer_pipeline(rinfo),
-	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait))
+	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait)),
+	no_present_enabled(rinfo.get_options().contains(tz::gl::renderer_option::no_present))
 	{
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
@@ -671,6 +677,24 @@ namespace tz::gl
 	renderer_command_processor::~renderer_command_processor()
 	{
 		this->free_commands(command_type::both);
+	}
+
+	void renderer_command_processor::do_frame()
+	{
+		const bool present = !this->no_present_enabled && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+		// we potentially need to do a wait if our last frame id is still going.
+		auto& dev = tz::gl::get_device2();
+		dev.vk_frame_wait(renderer_vulkan_base::uid);
+		if(present)
+		{
+			// we need to wait on the image being available.
+			tz::error("its presentin' time");
+		}
+		// let's retrieve the semaphores the device wants our work to wait on.
+		std::vector<const vk2::Semaphore*> dependency_waits = dev.vk_get_dependency_waits(renderer_vulkan_base::uid);
+		// same for the semaphores we need to signal.
+		std::vector<const vk2::Semaphore*> dependency_signals = dev.vk_get_dependency_signals(renderer_vulkan_base::uid);
+		tz::error("NYFI");
 	}
 
 	void renderer_command_processor::do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands)
@@ -1003,12 +1027,6 @@ namespace tz::gl
 
 	}
 
-	const ioutput* renderer_vulkan2::get_output() const
-	{
-		tz::error("NYI");
-		return nullptr;
-	}
-
 	const tz::gl::renderer_options& renderer_vulkan2::get_options() const
 	{
 		return this->options;
@@ -1021,7 +1039,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::render()
 	{
-		tz::error("NYI");
+		renderer_command_processor::do_frame();
 	}
 
 	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)

@@ -115,11 +115,46 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	device_render_sync::device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline):
+	device_render_sync::device_render_sync(const vk2::LogicalDevice& ldev, const tz::gl::timeline_t& timeline, std::size_t frame_in_flight_count):
 	timeline(timeline),
 	tsem(ldev, 0)
 	{
+		for(std::size_t i = 0; i < frame_in_flight_count; i++)
+		{
+			this->frame_fences.push_back({{.device = &ldev, .initially_signalled = true}});
+		}
+	}
 
+	void device_render_sync::vk_frame_wait(unsigned int fingerprint)
+	{
+		tz::assert(!this->timeline.empty(), "cannot wait on frame boundary because the timeline is empty!");
+		// if the first renderer of the frame needs to go, we need to make sure it waits on the frame fence.
+		if(this->timeline.front() == this->get_rid(fingerprint))
+		{
+			this->frame_fences[frame_id].wait_until_signalled();
+		}
+	}
+
+	std::vector<const vk2::Semaphore*> device_render_sync::vk_get_dependency_waits(unsigned int fingerprint)
+	{
+		(void)fingerprint;
+		return {};
+	}
+
+	std::vector<const vk2::Semaphore*> device_render_sync::vk_get_dependency_signals(unsigned int fingerprint)
+	{
+		(void)fingerprint;
+		return {};
+	}
+
+	std::size_t device_render_sync::get_rid(unsigned int fingerprint) const
+	{
+		return this->fingerprint_to_renderer_id.at(fingerprint);
+	}
+	
+	void device_render_sync::touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id)
+	{
+		this->fingerprint_to_renderer_id.emplace(fingerprint, renderer_id);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -504,7 +539,7 @@ namespace tz::gl
 	device_vulkan2::device_vulkan2():
 	device_vulkan_base(),
 	device_window(this->vk_get_logical_device()),
-	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline),
+	device_render_sync(this->vk_get_logical_device(), this->render_graph().timeline, device_window::get_swapchain().get_images().size()),
 	device_descriptor_pool(this->vk_get_logical_device()),
 	device_command_pool(this->vk_get_logical_device())
 	{
@@ -513,7 +548,9 @@ namespace tz::gl
 
 	tz::gl::renderer_handle device_vulkan2::create_renderer(const tz::gl::renderer_info& rinfo)
 	{
-		return device_common<renderer_vulkan2>::emplace_renderer(rinfo);
+		tz::gl::renderer_handle rh = device_common<renderer_vulkan2>::emplace_renderer(rinfo);
+		device_render_sync::touch_renderer_id(device_common<renderer_vulkan2>::get_renderer(rh).vk_get_uid(), device_common<renderer_vulkan2>::renderer_count() - 1);
+		return rh;
 	}
 
 }

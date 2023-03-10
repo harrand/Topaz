@@ -15,13 +15,13 @@ namespace tz::gl
 		std::vector<eid_t> dependencies = {};
 	};
 
-	struct timeline_t : public std::unordered_set<eid_t>
+	struct timeline_t : public std::vector<eid_t>
 	{
 		timeline_t() = default;
 		template<typename... Is>
 		timeline_t(Is&&... is)
 		{
-			(this->insert(static_cast<eid_t>(static_cast<tz::hanval>(is))), ...);
+			(this->push_back(static_cast<eid_t>(static_cast<tz::hanval>(is))), ...);
 		}
 	};
 
