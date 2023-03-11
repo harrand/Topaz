@@ -60,6 +60,27 @@ namespace tz::gl
 		return this->image_resource_samplers;
 	}
 
+	void renderer_resource_manager::notify_image_dirty(tz::gl::resource_handle rh)
+	{
+		// we need to know which image view index this corresponds to. just count resource image count until we reach rh vallue.
+		std::size_t imgview_idx = 0;
+		for(std::size_t i = 0; i < static_cast<std::size_t>(static_cast<tz::hanval>(rh)); i++)
+		{
+			if(this->get_resource(static_cast<tz::hanval>(i))->get_type() == tz::gl::resource_type::image)
+			{
+				imgview_idx++;
+			}
+		}
+		// just replace the image view.
+		tz::assert(imgview_idx < this->get_image_resource_views().size());
+		vk2::Image& img = static_cast<image_component_vulkan*>(this->get_component(rh))->vk_get_image();
+		this->get_image_resource_views()[imgview_idx] =
+		{{
+			.image = &img,
+			.aspect = vk2::derive_aspect_from_format(img.get_format()).front()
+		}};
+	}
+
 	void renderer_resource_manager::patch_resource_references(const tz::gl::renderer_info& rinfo)
 	{
 		TZ_PROFZONE("render_resource_manager - patch resource references", 0xFFAAAA00);
@@ -1182,9 +1203,9 @@ namespace tz::gl
 		for(const auto& edit : req)
 		{
 			std::visit(overloaded{
+				// BUFFER RESIZE
 				[&side_effects, this](tz::gl::renderer_edit::buffer_resize arg)
 				{
-					(void)arg;
 					auto bufcomp = static_cast<buffer_component_vulkan*>(renderer_resource_manager::get_component(arg.buffer_handle));
 					if(bufcomp->size() != arg.size)
 					{
@@ -1193,6 +1214,19 @@ namespace tz::gl
 					}
 					// todo: what if this is the index/draw buffer?
 				},
+				// IMAGE RESIZE
+				[&side_effects, this](tz::gl::renderer_edit::image_resize arg)
+				{
+					auto imgcomp = static_cast<image_component_vulkan*>(renderer_resource_manager::get_component(arg.image_handle));
+					if(imgcomp->get_dimensions() != arg.dimensions)
+					{
+						imgcomp->resize(arg.dimensions);
+						renderer_resource_manager::notify_image_dirty(arg.image_handle);
+						side_effects.rewrite_image_descriptors = true;
+					}
+					// todo: what if this is the index/draw buffer?
+				},
+				// UNKNOWN
 				[](auto arg)
 				{
 					(void)arg;
