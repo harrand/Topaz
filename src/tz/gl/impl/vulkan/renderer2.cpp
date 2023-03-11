@@ -1142,10 +1142,26 @@ namespace tz::gl
 		renderer_command_processor::do_frame();
 	}
 
+	template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+	template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
 	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)
 	{
-		(void)req;
-		//tz::error("NYI");
+		for(const auto& edit : req)
+		{
+			std::visit(overloaded{
+				[](tz::gl::renderer_edit::buffer_resize arg)
+				{
+					(void)arg;
+					// todo: handle buffer resize
+				},
+				[](auto arg)
+				{
+					(void)arg;
+					tz::error("renderer edit type NYFI");
+				}
+			}, edit);
+		}
 	}
 
 	void renderer_vulkan2::dbgui()
