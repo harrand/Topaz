@@ -911,7 +911,7 @@ namespace tz::gl
 				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, &render_target.depth_attachment,
 				{
 					.clear_colour = state.graphics.clear_colour,
-					.colour_load = options.contains(tz::gl::renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::DontCare,
+					.colour_load = options.contains(tz::gl::renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 					.colour_store = vk2::StoreOp::Store,
 					.depth_load = options.contains(tz::gl::renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
 					.depth_store = options.contains(tz::gl::renderer_option::no_present) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare
@@ -1233,6 +1233,15 @@ namespace tz::gl
 						side_effects.rewrite_image_descriptors = true;
 					}
 					// todo: what if this is the index/draw buffer?
+				},
+				// TRI COUNT
+				[&side_effects, this](tz::gl::renderer_edit::tri_count arg)
+				{
+					if(arg.tri_count != state.graphics.tri_count)
+					{
+						state.graphics.tri_count = arg.tri_count;
+						side_effects.rerecord_work_commands = true;
+					}
 				},
 				// UNKNOWN
 				[](auto arg)
