@@ -72,6 +72,8 @@ namespace tz::gl
 		const tz::gl::timeline_t& get_timeline() const;
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
+		void vk_cpu_wait_this_frame();
+		void vk_cpu_wait_all_frames();
 	protected:
 		std::span<vk2::TimelineSemaphore> get_frame_sync_objects();
 	private:

@@ -5,6 +5,16 @@
 namespace tz::gl
 {
 	unsigned int renderer_vulkan_base::uid_counter = 0;
+
+	struct edit_side_effects
+	{
+		bool rewrite_buffer_descriptors = false;
+		bool rewrite_image_descriptors = false;
+		bool recreate_pipeline = false;
+		bool rerecord_work_commands = false;
+		bool rewrite_static_resources = false;
+	};
+
 //--------------------------------------------------------------------------------------------------
 	renderer_resource_manager::renderer_resource_manager(const tz::gl::renderer_info& rinfo):
 	AssetStorageCommon<iresource>(rinfo.get_resources())
@@ -246,6 +256,89 @@ namespace tz::gl
 		return this->descriptors.layout.descriptor_count() == 0;
 	}
 
+	void renderer_descriptor_manager::write_descriptors(const tz::gl::render_state& state)
+	{
+		TZ_PROFZONE("renderer_descriptor_manager - write descriptors ", 0xFFAAAA00);
+		// early out if there's no descriptors to write to.
+		if(this->empty())
+		{
+			tz::assert(this->descriptors.data.sets.empty());
+			return;
+		}
+		// populate a list of buffer and image writes.
+		// pair.first is the binding id, pair.second is the write info. 
+		std::vector<std::pair<std::uint32_t, vk2::DescriptorSet::Write::BufferWriteInfo>> buffer_writes;
+		buffer_writes.reserve(renderer_resource_manager::resource_count());
+		std::vector<vk2::DescriptorSet::Write::ImageWriteInfo> image_writes;
+		image_writes.reserve(renderer_resource_manager::resource_count());
+		// not all buffers are going to be referenced by descriptors (e.g index and indirect buffers). we count them here and exclude them from the final descriptor counts.
+		std::size_t uninterested_descriptor_count = 0;
+		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
+		{
+			tz::gl::resource_handle rh = static_cast<tz::hanval>(i);
+			// we dont want to expose index and draw indirect buffers to descriptors, so we skip them here.
+			if(state.graphics.index_buffer == rh || state.graphics.draw_buffer == rh)
+			{
+				uninterested_descriptor_count++;			
+				continue;
+			}
+			icomponent* comp = renderer_resource_manager::get_component(rh);
+			tz::assert(comp != nullptr);
+			iresource* res = comp->get_resource();
+			tz::assert(res != nullptr);
+			switch(res->get_type())
+			{
+				case tz::gl::resource_type::buffer:
+				{
+					vk2::Buffer& buf = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer();
+					buffer_writes.push_back
+					(std::make_pair(
+		  				static_cast<std::uint32_t>(i - uninterested_descriptor_count),
+		  				vk2::DescriptorSet::Write::BufferWriteInfo{
+						.buffer = &buf,
+						.buffer_offset = 0,
+		  				.buffer_write_size = buf.size()
+						}
+					));
+				}
+				break;
+				case tz::gl::resource_type::image:
+					image_writes.push_back
+					({
+						.sampler = &renderer_resource_manager::get_image_resource_samplers()[i],
+		  				.image_view = &renderer_resource_manager::get_image_resource_views()[i]
+					});
+				break;
+				default:
+					tz::error("invalid resource_type. memory corruption?");
+				break;
+			}
+		}
+
+		// now, apply buffer_writes and image_writes to all descriptor sets.
+		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		vk2::DescriptorPool::UpdateRequest update = tz::gl::get_device2().vk_make_update_request(renderer_vulkan_base::uid);
+		for(std::size_t i = 0; i < frame_in_flight_count; i++)
+		{
+			vk2::DescriptorSet& set = this->descriptors.data.sets[i];
+			vk2::DescriptorSet::EditRequest req = set.make_edit_request();
+			for(const auto& [binding_id, buf_write] : buffer_writes)
+			{
+				req.set_buffer(binding_id, buf_write);
+			}
+			if(!image_writes.empty())
+			{
+				for(std::size_t j = 0; j < image_writes.size(); j++)
+				{
+					req.set_image(buffer_writes.size(), image_writes[j], j);
+				}
+			}
+			update.add_set_edit(req);
+		}
+		// tell the device to do all the writes.
+		tz::gl::get_device2().vk_update_sets(update, renderer_vulkan_base::uid);
+	}
+
 	void renderer_descriptor_manager::deduce_descriptor_layout(const tz::gl::render_state& state)
 	{
 		TZ_PROFZONE("renderer_descriptor_manager - deduce descriptor layout", 0xFFAAAA00);
@@ -348,88 +441,6 @@ namespace tz::gl
 		tz::assert(this->descriptors.data.success());
 	}
 
-	void renderer_descriptor_manager::write_descriptors(const tz::gl::render_state& state)
-	{
-		TZ_PROFZONE("renderer_descriptor_manager - write descriptors ", 0xFFAAAA00);
-		// early out if there's no descriptors to write to.
-		if(this->empty())
-		{
-			tz::assert(this->descriptors.data.sets.empty());
-			return;
-		}
-		// populate a list of buffer and image writes.
-		// pair.first is the binding id, pair.second is the write info. 
-		std::vector<std::pair<std::uint32_t, vk2::DescriptorSet::Write::BufferWriteInfo>> buffer_writes;
-		buffer_writes.reserve(renderer_resource_manager::resource_count());
-		std::vector<vk2::DescriptorSet::Write::ImageWriteInfo> image_writes;
-		image_writes.reserve(renderer_resource_manager::resource_count());
-		// not all buffers are going to be referenced by descriptors (e.g index and indirect buffers). we count them here and exclude them from the final descriptor counts.
-		std::size_t uninterested_descriptor_count = 0;
-		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
-		{
-			tz::gl::resource_handle rh = static_cast<tz::hanval>(i);
-			// we dont want to expose index and draw indirect buffers to descriptors, so we skip them here.
-			if(state.graphics.index_buffer == rh || state.graphics.draw_buffer == rh)
-			{
-				uninterested_descriptor_count++;			
-				continue;
-			}
-			icomponent* comp = renderer_resource_manager::get_component(rh);
-			tz::assert(comp != nullptr);
-			iresource* res = comp->get_resource();
-			tz::assert(res != nullptr);
-			switch(res->get_type())
-			{
-				case tz::gl::resource_type::buffer:
-				{
-					vk2::Buffer& buf = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer();
-					buffer_writes.push_back
-					(std::make_pair(
-		  				static_cast<std::uint32_t>(i - uninterested_descriptor_count),
-		  				vk2::DescriptorSet::Write::BufferWriteInfo{
-						.buffer = &buf,
-						.buffer_offset = 0,
-		  				.buffer_write_size = buf.size()
-						}
-					));
-				}
-				break;
-				case tz::gl::resource_type::image:
-					image_writes.push_back
-					({
-						.sampler = &renderer_resource_manager::get_image_resource_samplers()[i],
-		  				.image_view = &renderer_resource_manager::get_image_resource_views()[i]
-					});
-				break;
-				default:
-					tz::error("invalid resource_type. memory corruption?");
-				break;
-			}
-		}
-
-		// now, apply buffer_writes and image_writes to all descriptor sets.
-		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
-		vk2::DescriptorPool::UpdateRequest update = tz::gl::get_device2().vk_make_update_request(renderer_vulkan_base::uid);
-		for(std::size_t i = 0; i < frame_in_flight_count; i++)
-		{
-			vk2::DescriptorSet& set = this->descriptors.data.sets[i];
-			vk2::DescriptorSet::EditRequest req = set.make_edit_request();
-			for(const auto& [binding_id, buf_write] : buffer_writes)
-			{
-				req.set_buffer(binding_id, buf_write);
-			}
-			if(!image_writes.empty())
-			{
-				for(std::size_t j = 0; j < image_writes.size(); j++)
-				{
-					req.set_image(buffer_writes.size(), image_writes[j], j);
-				}
-			}
-			update.add_set_edit(req);
-		}
-		// tell the device to do all the writes.
-		tz::gl::get_device2().vk_update_sets(update, renderer_vulkan_base::uid);
-	}
 //--------------------------------------------------------------------------------------------------
 
 	renderer_output_manager::renderer_output_manager(const tz::gl::renderer_info& rinfo):
@@ -506,6 +517,69 @@ namespace tz::gl
 	const vk2::PipelineLayout& renderer_pipeline::get_pipeline_layout() const
 	{
 		return this->pipeline.layout;
+	}
+
+	void renderer_pipeline::update_pipeline()
+	{
+		switch(this->get_pipeline_type())
+		{
+			case pipeline_type_t::graphics:
+			{
+				const render_target_t& render_target_info = renderer_output_manager::get_render_targets().front();
+				tz::basic_list<vk2::ColourBlendState::AttachmentState> blending_options;
+				vk2::ColourBlendState::AttachmentState blend_state = this->pipeline_config.alpha_blending ? vk2::ColourBlendState::alpha_blending() : vk2::ColourBlendState::no_blending();
+				blending_options.resize(render_target_info.colour_attachments.size());
+				std::fill(blending_options.begin(), blending_options.end(), blend_state);
+
+				
+				std::vector<VkFormat> colour_attachment_formats(render_target_info.colour_attachments.size());
+				std::transform(render_target_info.colour_attachments.begin(), render_target_info.colour_attachments.end(), colour_attachment_formats.begin(),
+				[](const vk2::ImageView& colour_view) -> VkFormat
+				{
+					return static_cast<VkFormat>(colour_view.get_image().get_format());
+				});
+
+				this->pipeline.data =
+				{vk2::GraphicsPipelineInfo{
+					.shaders = this->shader.native_data(),
+					.state =
+					{
+						.viewport = vk2::create_basic_viewport(static_cast<tz::vec2>(renderer_output_manager::get_render_target_dimensions())),
+						.depth_stencil =
+						{
+							.depth_testing = this->pipeline_config.depth_testing,
+							.depth_writes = this->pipeline_config.depth_testing
+						},
+						.colour_blend =
+						{
+							.attachment_states = blending_options,
+							.logical_operator = VK_LOGIC_OP_COPY
+						},
+						.dynamic =
+						{
+							.states = {vk2::DynamicStateType::Scissor}
+						}
+					},
+					.pipeline_layout = &this->pipeline.layout,
+					.render_pass = nullptr,
+					.dynamic_rendering_state =
+					{
+						.colour_attachment_formats = colour_attachment_formats,
+						.depth_format = render_target_info.depth_attachment.is_null() ? VK_FORMAT_UNDEFINED : static_cast<VkFormat>(render_target_info.depth_attachment.get_image().get_format())
+					},
+					.device = &tz::gl::get_device2().vk_get_logical_device(),
+				}};
+			}
+			break;
+			case pipeline_type_t::compute:
+				this->pipeline.data =
+				{{
+					.shader = this->shader.native_data(),
+					.pipeline_layout = &this->pipeline.layout,
+					.device = &tz::gl::get_device2().vk_get_logical_device(),
+				}};
+			break;
+		}
 	}
 
 	void renderer_pipeline::deduce_pipeline_config(const tz::gl::renderer_info& rinfo)
@@ -598,69 +672,6 @@ namespace tz::gl
 			.descriptor_layouts = std::move(dlayouts),
 			.logical_device = &tz::gl::get_device2().vk_get_logical_device(),
 		}};
-	}
-
-	void renderer_pipeline::update_pipeline()
-	{
-		switch(this->get_pipeline_type())
-		{
-			case pipeline_type_t::graphics:
-			{
-				const render_target_t& render_target_info = renderer_output_manager::get_render_targets().front();
-				tz::basic_list<vk2::ColourBlendState::AttachmentState> blending_options;
-				vk2::ColourBlendState::AttachmentState blend_state = this->pipeline_config.alpha_blending ? vk2::ColourBlendState::alpha_blending() : vk2::ColourBlendState::no_blending();
-				blending_options.resize(render_target_info.colour_attachments.size());
-				std::fill(blending_options.begin(), blending_options.end(), blend_state);
-
-				
-				std::vector<VkFormat> colour_attachment_formats(render_target_info.colour_attachments.size());
-				std::transform(render_target_info.colour_attachments.begin(), render_target_info.colour_attachments.end(), colour_attachment_formats.begin(),
-				[](const vk2::ImageView& colour_view) -> VkFormat
-				{
-					return static_cast<VkFormat>(colour_view.get_image().get_format());
-				});
-
-				this->pipeline.data =
-				{vk2::GraphicsPipelineInfo{
-					.shaders = this->shader.native_data(),
-					.state =
-					{
-						.viewport = vk2::create_basic_viewport(static_cast<tz::vec2>(renderer_output_manager::get_render_target_dimensions())),
-						.depth_stencil =
-						{
-							.depth_testing = this->pipeline_config.depth_testing,
-							.depth_writes = this->pipeline_config.depth_testing
-						},
-						.colour_blend =
-						{
-							.attachment_states = blending_options,
-							.logical_operator = VK_LOGIC_OP_COPY
-						},
-						.dynamic =
-						{
-							.states = {vk2::DynamicStateType::Scissor}
-						}
-					},
-					.pipeline_layout = &this->pipeline.layout,
-					.render_pass = nullptr,
-					.dynamic_rendering_state =
-					{
-						.colour_attachment_formats = colour_attachment_formats,
-						.depth_format = render_target_info.depth_attachment.is_null() ? VK_FORMAT_UNDEFINED : static_cast<VkFormat>(render_target_info.depth_attachment.get_image().get_format())
-					},
-					.device = &tz::gl::get_device2().vk_get_logical_device(),
-				}};
-			}
-			break;
-			case pipeline_type_t::compute:
-				this->pipeline.data =
-				{{
-					.shader = this->shader.native_data(),
-					.pipeline_layout = &this->pipeline.layout,
-					.device = &tz::gl::get_device2().vk_get_logical_device(),
-				}};
-			break;
-		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -759,6 +770,8 @@ namespace tz::gl
 		{
 			// if any of the work command buffers have already been recorded, we need to purge.
 			this->allocate_commands(command_type::work);
+			// re-assign as we have new bufs now.
+			bufs = this->work_command_buffers();
 		}
 		for(unsigned int i = 0; i < bufs.size(); i++)
 		{
@@ -781,6 +794,67 @@ namespace tz::gl
 				tz::error("invalid value for pipeline type. memory corruption?");
 			break;
 		}
+	}
+
+	void renderer_command_processor::scratch_initialise_static_resources()
+	{
+		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
+		// we need to create a staging buffer for each static_fixed buffer and image resource we have.
+		// these staging buffers should be cpu-writable (like a dynamic-fixed buffer resource), and we write in the data in the mapped ptr just like a dynamic resource.
+		// afterwards, we record a scratch buffer which does transfers between each staging buffer and its corresponding static resource.
+		// we then instantly wait on this work to be complete.
+		std::vector<vk2::Buffer> resource_staging_buffers;
+		resource_staging_buffers.reserve(renderer_resource_manager::resource_count());
+		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
+		{
+			const icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
+			tz::assert(cmp != nullptr);
+			const iresource* res = cmp->get_resource();
+			tz::assert(res != nullptr);
+			if(res->get_access() != tz::gl::resource_access::static_fixed)
+			{
+				resource_staging_buffers.push_back(vk2::Buffer::null());
+				continue;
+			}
+			switch(res->get_type())
+			{
+				// create staging buffers and copy over spans.
+				case tz::gl::resource_type::buffer:
+					resource_staging_buffers.push_back
+					({{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+		  				.size_bytes = res->data().size_bytes(),
+		  				.usage = {vk2::BufferUsage::TransferSource},
+		  				.residency = vk2::MemoryResidency::CPU
+					}});
+				break;
+				case tz::gl::resource_type::image:
+				{
+					auto* img = static_cast<const image_component_vulkan*>(cmp);
+					tz::assert(img != nullptr);
+					resource_staging_buffers.push_back
+					({{
+						.device = &tz::gl::get_device2().vk_get_logical_device(),
+		  				.size_bytes = tz::gl::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
+		  				.usage = {vk2::BufferUsage::TransferSource},
+		  				.residency = vk2::MemoryResidency::CPU
+					}});
+				}
+				break;
+				default:
+					tz::error("unrecognised resource_type. memory corruption?");
+				break;
+			}
+			// get the new staging buffer
+			vk2::Buffer& new_buf = resource_staging_buffers.back();
+			// write resource data
+			{
+				void* mapped_ptr = new_buf.map();
+				std::memcpy(mapped_ptr, res->data().data(), res->data().size_bytes());
+				new_buf.unmap();
+			}
+		}
+		this->do_static_resource_transfers(resource_staging_buffers);
 	}
 
 	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, std::string label)
@@ -911,6 +985,12 @@ namespace tz::gl
 		if(this->command_allocations.size() > 0 /* this might be incorrect logic */)
 		{
 			this->free_commands(t);
+			if(t == renderer_command_processor::command_type::work)
+			{
+				// now the only remaining element is the scratch commands. need to push_front as work commands should go first.
+				this->command_allocations.insert(this->command_allocations.begin(), vk2::CommandPool::AllocationResult{});
+			}
+			// else (scratch or both), meaning we're already in the correct order (work commands first), so no need to do anything.
 		}
 		this->command_allocations.resize(2);
 		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
@@ -927,14 +1007,21 @@ namespace tz::gl
 			.requires_present = true
 		});
 		// one allocation for our render/compute work commands.
-		this->command_allocations[cmdbuf_work_alloc_id] = dev.vk_allocate_commands
-		({
-			.buffer_count = frame_in_flight_count
-		}, renderer_vulkan_base::uid);
-		this->command_allocations[cmdbuf_scratch_alloc_id] = dev.vk_allocate_commands
-		({
-			.buffer_count = scratch_buffer_count
-		}, renderer_vulkan_base::uid);
+		if(t == renderer_command_processor::command_type::work || t == renderer_command_processor::command_type::both)
+		{
+			this->command_allocations[cmdbuf_work_alloc_id] = dev.vk_allocate_commands
+			({
+				.buffer_count = frame_in_flight_count
+			}, renderer_vulkan_base::uid);
+		}
+		
+		if(t == renderer_command_processor::command_type::scratch || t == renderer_command_processor::command_type::both)
+		{
+			this->command_allocations[cmdbuf_scratch_alloc_id] = dev.vk_allocate_commands
+			({
+				.buffer_count = scratch_buffer_count
+			}, renderer_vulkan_base::uid);
+		}
 	}
 
 	void renderer_command_processor::free_commands(renderer_command_processor::command_type t)
@@ -960,67 +1047,6 @@ namespace tz::gl
 		{
 			tz::assert(this->command_allocations.empty());
 		}
-	}
-
-	void renderer_command_processor::scratch_initialise_static_resources()
-	{
-		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
-		// we need to create a staging buffer for each static_fixed buffer and image resource we have.
-		// these staging buffers should be cpu-writable (like a dynamic-fixed buffer resource), and we write in the data in the mapped ptr just like a dynamic resource.
-		// afterwards, we record a scratch buffer which does transfers between each staging buffer and its corresponding static resource.
-		// we then instantly wait on this work to be complete.
-		std::vector<vk2::Buffer> resource_staging_buffers;
-		resource_staging_buffers.reserve(renderer_resource_manager::resource_count());
-		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
-		{
-			const icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
-			tz::assert(cmp != nullptr);
-			const iresource* res = cmp->get_resource();
-			tz::assert(res != nullptr);
-			if(res->get_access() != tz::gl::resource_access::static_fixed)
-			{
-				resource_staging_buffers.push_back(vk2::Buffer::null());
-				continue;
-			}
-			switch(res->get_type())
-			{
-				// create staging buffers and copy over spans.
-				case tz::gl::resource_type::buffer:
-					resource_staging_buffers.push_back
-					({{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
-		  				.size_bytes = res->data().size_bytes(),
-		  				.usage = {vk2::BufferUsage::TransferSource},
-		  				.residency = vk2::MemoryResidency::CPU
-					}});
-				break;
-				case tz::gl::resource_type::image:
-				{
-					auto* img = static_cast<const image_component_vulkan*>(cmp);
-					tz::assert(img != nullptr);
-					resource_staging_buffers.push_back
-					({{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
-		  				.size_bytes = tz::gl::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
-		  				.usage = {vk2::BufferUsage::TransferSource},
-		  				.residency = vk2::MemoryResidency::CPU
-					}});
-				}
-				break;
-				default:
-					tz::error("unrecognised resource_type. memory corruption?");
-				break;
-			}
-			// get the new staging buffer
-			vk2::Buffer& new_buf = resource_staging_buffers.back();
-			// write resource data
-			{
-				void* mapped_ptr = new_buf.map();
-				std::memcpy(mapped_ptr, res->data().data(), res->data().size_bytes());
-				new_buf.unmap();
-			}
-		}
-		this->do_static_resource_transfers(resource_staging_buffers);
 	}
 
 	void renderer_command_processor::do_static_resource_transfers(std::span<vk2::Buffer> resource_staging_buffers)
@@ -1147,6 +1173,12 @@ namespace tz::gl
 
 	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)
 	{
+		if(req.empty())
+		{
+			return;
+		}
+		tz::gl::get_device2().vk_get_logical_device().wait_until_idle();
+		edit_side_effects side_effects = {};
 		for(const auto& edit : req)
 		{
 			std::visit(overloaded{
@@ -1158,9 +1190,30 @@ namespace tz::gl
 				[](auto arg)
 				{
 					(void)arg;
-					tz::error("renderer edit type NYFI");
+					//tz::error("renderer edit type NYFI");
 				}
 			}, edit);
+		}
+
+		side_effects.rewrite_buffer_descriptors = true;
+		side_effects.recreate_pipeline = true;
+
+		if(side_effects.rewrite_buffer_descriptors || side_effects.rewrite_image_descriptors)
+		{
+			renderer_descriptor_manager::write_descriptors(this->state);
+		}
+		if(side_effects.recreate_pipeline)
+		{
+			renderer_pipeline::update_pipeline();
+			side_effects.rerecord_work_commands = true;
+		}
+		if(side_effects.rerecord_work_commands)
+		{
+			renderer_command_processor::record_commands(this->state, "NYI");
+		}
+		if(side_effects.rewrite_static_resources)
+		{
+			renderer_command_processor::scratch_initialise_static_resources();
 		}
 	}
 

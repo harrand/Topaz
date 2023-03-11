@@ -79,10 +79,10 @@ namespace tz::gl
 		std::span<const vk2::DescriptorSet> get_descriptor_sets() const;
 		// descriptor manager is empty if there are no descriptors to bind.
 		bool empty() const;
+		void write_descriptors(const tz::gl::render_state& state);
 	private:
 		void deduce_descriptor_layout(const tz::gl::render_state& state);
 		void allocate_descriptors();
-		void write_descriptors(const tz::gl::render_state& state);
 		vk2::DescriptorData descriptors = {};
 	};
 
@@ -126,6 +126,7 @@ namespace tz::gl
 		pipeline_type_t get_pipeline_type() const;
 		const vk2::Pipeline& get_pipeline() const;
 		const vk2::PipelineLayout& get_pipeline_layout() const;
+		void update_pipeline();
 	private:
 		struct pipeline_invariant_config_t
 		{
@@ -139,7 +140,6 @@ namespace tz::gl
 		void deduce_pipeline_config(const tz::gl::renderer_info& rinfo);
 		void deduce_pipeline_layout();
 		void create_shader(const tz::gl::renderer_info& rinfo);
-		void update_pipeline();
 		vk2::Shader shader = vk2::Shader::null();
 		vk2::PipelineData pipeline = {};
 		// depends purely on renderer options so this should never change.
@@ -169,12 +169,12 @@ namespace tz::gl
 		void do_frame();
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
 		void record_commands(const tz::gl::render_state& state, std::string label);
+		void scratch_initialise_static_resources();
+	private:
 		void record_render_commands(const tz::gl::render_state& state, std::string label);
 		void record_compute_commands(const tz::gl::render_state& state, std::string label);
-	private:
 		void allocate_commands(command_type t = command_type::both);
 		void free_commands(command_type t = command_type::both);
-		void scratch_initialise_static_resources();
 		void do_static_resource_transfers(std::span<vk2::Buffer> resource_staging_buffers);
 
 		std::span<vk2::CommandBuffer> work_command_buffers();

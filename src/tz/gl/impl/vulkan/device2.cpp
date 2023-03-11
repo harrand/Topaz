@@ -322,6 +322,19 @@ namespace tz::gl
 		return {};
 	}
 
+	void device_render_sync::vk_cpu_wait_this_frame()
+	{
+		this->frame_syncs[device_vulkan_base::frame_id].wait_for(device_vulkan_base::global_timeline + 1);
+	}
+
+	void device_render_sync::vk_cpu_wait_all_frames()
+	{
+		for(std::size_t i = 0; i < device_window::get_swapchain().get_images().size(); i++)
+		{
+			this->frame_syncs[device_vulkan_base::frame_id + i].wait_for(device_vulkan_base::global_timeline + 1 + i);
+		}
+	}
+
 	std::span<vk2::TimelineSemaphore> device_render_sync::get_frame_sync_objects()
 	{
 		return this->frame_syncs;
@@ -569,9 +582,28 @@ namespace tz::gl
 
 		vk2::CommandPool::AllocationResult ret = pool.allocate_buffers(alloc);
 		using ART = vk2::CommandPool::AllocationResult::AllocationResultType;
+
+		// we want to re-use an old allocation slot if we can that was freed. they will have command buffer count = 0
+		std::optional<std::size_t> reuseable_alloc_id = std::nullopt;
+		for(std::size_t allocid = 0; allocid < this->fingerprint_allocation_history[fingerprint].size(); allocid++)
+		{
+			if(this->fingerprint_allocation_history[fingerprint][allocid].buffer_count == 0)
+			{
+				reuseable_alloc_id = allocid;
+				break;
+			}
+		}
+
 		if(ret.type == ART::AllocationSuccess)
 		{
-			this->fingerprint_allocation_history[fingerprint].push_back(alloc);
+			if(reuseable_alloc_id.has_value())
+			{
+				this->fingerprint_allocation_history[fingerprint][reuseable_alloc_id.value()] = alloc;
+			}
+			else
+			{
+				this->fingerprint_allocation_history[fingerprint].push_back(alloc);
+			}
 			return ret;
 		}
 		else
