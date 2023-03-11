@@ -503,6 +503,9 @@ namespace tz::gl
 		#if TZ_DEBUG
 			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
 			tz::assert(debug_real_alloc_length > buffer_id, "attempted to submit & run scratch command buffer id %zu at (fingerprint:allocid) %u:%zu. there are only %zu buffers in this allocation. please submit a bug report.", buffer_id, fingerprint, allocation_id, debug_real_alloc_length);
+		#else
+			(void)buffer_id;
+			(void)allocation_id;
 		#endif // TZ_DEBUG
 	
 		this->get_original_queue(this->fingerprint_alloc_types[fingerprint])->submit
@@ -521,6 +524,9 @@ namespace tz::gl
 			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
 			tz::assert(debug_real_alloc_length > allocation_id, "attempted to submit work command buffer id %zu at (fingerprint:allocid) %u:%zu. there are only %zu buffers in this allocation. please submit a bug report.", allocation_id, fingerprint, allocation_id, debug_real_alloc_length);
 			tz::assert(this->fingerprint_allocation_history[fingerprint][allocation_id].buffer_count > buffer_id, "attempted to submit work command buffer id %zu, but there are only %zu buffers in this allocation. logic error. please submit a bug report.", buffer_id, this->fingerprint_allocation_history[fingerprint][allocation_id].buffer_count);
+		#else
+			(void)buffer_id;
+			(void)allocation_id;
 		#endif // TZ_DEBUG
 		vk2::hardware::Queue* q = this->get_original_queue(this->fingerprint_alloc_types[fingerprint]);	
 

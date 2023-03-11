@@ -1182,10 +1182,16 @@ namespace tz::gl
 		for(const auto& edit : req)
 		{
 			std::visit(overloaded{
-				[](tz::gl::renderer_edit::buffer_resize arg)
+				[&side_effects, this](tz::gl::renderer_edit::buffer_resize arg)
 				{
 					(void)arg;
-					// todo: handle buffer resize
+					auto bufcomp = static_cast<buffer_component_vulkan*>(renderer_resource_manager::get_component(arg.buffer_handle));
+					if(bufcomp->size() != arg.size)
+					{
+						bufcomp->resize(arg.size);
+						side_effects.rewrite_buffer_descriptors = true;
+					}
+					// todo: what if this is the index/draw buffer?
 				},
 				[](auto arg)
 				{
@@ -1194,9 +1200,6 @@ namespace tz::gl
 				}
 			}, edit);
 		}
-
-		side_effects.rewrite_buffer_descriptors = true;
-		side_effects.recreate_pipeline = true;
 
 		if(side_effects.rewrite_buffer_descriptors || side_effects.rewrite_image_descriptors)
 		{

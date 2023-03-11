@@ -724,6 +724,7 @@ namespace tz::gl
 		}
 		else
 		{
+			vk2::GraphicsPipelineInfo::DynamicRenderingState dyn_state = {};
 			this->pipeline.data =
 			{{
 				.shaders = this->shader.native_data(),
@@ -743,7 +744,7 @@ namespace tz::gl
 				},
 				.pipeline_layout = &this->pipeline.layout,
 				.render_pass = &new_render_pass,
-				.dynamic_rendering_state = {},
+				.dynamic_rendering_state = dyn_state,
 				.device = &new_render_pass.get_device()
 			 }};
 		}

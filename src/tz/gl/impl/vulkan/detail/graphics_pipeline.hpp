@@ -40,7 +40,7 @@ namespace tz::gl::vk2
 			VkFormat depth_format = VK_FORMAT_UNDEFINED;
 			bool operator==(const DynamicRenderingState& rhs) const = default;
 		};
-		DynamicRenderingState dynamic_rendering_state;
+		DynamicRenderingState dynamic_rendering_state = {};
 		const LogicalDevice* device;
 	};
 
