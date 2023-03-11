@@ -26,6 +26,7 @@ namespace tz::gl
 	device& get_device();
 	device2& get_device2();
 	void destroy_device();
+	void destroy_device2();
 }
 
 #endif // TOPAZ_GL2_DEVICE_HPP

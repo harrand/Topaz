@@ -142,6 +142,7 @@ namespace tz::gl
 	{
 	public:
 		device_vulkan2();
+		~device_vulkan2();
 		tz::gl::renderer_handle create_renderer(const tz::gl::renderer_info& rinfo);
 		using device_common<renderer_vulkan2>::get_renderer;
 		image_format get_window_format() const;

@@ -945,16 +945,16 @@ namespace tz::gl
 			// early out if there's nothing to free.
 			return;
 		}
+		if(t == command_type::scratch || t == command_type::both)
+		{
+			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_scratch_alloc_id, this->command_allocations[cmdbuf_scratch_alloc_id].buffers);
+			this->command_allocations.pop_back();
+		}
 		if(t == command_type::work || t == command_type::both)
 		{
 			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, this->command_allocations[cmdbuf_work_alloc_id].buffers);
 			// pop_front() doesnt exist in std::vector ugh
 			this->command_allocations.erase(this->command_allocations.begin());
-		}
-		if(t == command_type::scratch || t == command_type::both)
-		{
-			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_scratch_alloc_id, this->command_allocations[cmdbuf_scratch_alloc_id].buffers);
-			this->command_allocations.pop_back();
 		}
 		if(t == command_type::both)
 		{
@@ -1111,10 +1111,20 @@ namespace tz::gl
 	renderer_vulkan2::renderer_vulkan2(const tz::gl::renderer_info& rinfo):
 	renderer_command_processor(rinfo),
 	options(rinfo.get_options()),
-	state(rinfo.state())
+	state(rinfo.state()),
+	null_flag(false)
 	{
 		TZ_PROFZONE("renderer_vulkan2 - initialise", 0xFFAAAA00);
 
+	}
+
+	renderer_vulkan2::~renderer_vulkan2()
+	{
+		if(this->is_null())
+		{
+			return;
+		}
+		tz::gl::get_device2().vk_get_logical_device().wait_until_idle();
 	}
 
 	const tz::gl::renderer_options& renderer_vulkan2::get_options() const
@@ -1155,7 +1165,6 @@ namespace tz::gl
 
 	bool renderer_vulkan2::is_null() const
 	{
-		tz::error("NYI");
-		return true;
+		return this->null_flag;
 	}
 }

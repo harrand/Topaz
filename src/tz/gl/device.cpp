@@ -38,4 +38,19 @@ namespace tz::gl
 			operator delete(p);
 		}
 	}
+
+	void destroy_device2()
+	{
+		if(dev2 != nullptr)
+		{
+			// Why the hell this magic instead of assigning to nullptr, you ask?
+			// It's very possible ~device() ends up invoking tz::gl::get_device(), which will be null during this dtor, so it tries to reconstruct it again and cause real problems. So the steps to fix this are:
+			// Invoke dtor, tz::gl::get_device() remains valid throughout dtor usage this time.
+			(*dev2).~device2();
+			// Release the raw ptr from the unique_ptr. `dev` is now nullptr.
+			auto* p = dev2.release();
+			// Free the memory without calling the dtor a second time.
+			operator delete(p);
+		}
+	}
 }

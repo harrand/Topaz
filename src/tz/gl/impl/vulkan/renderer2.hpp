@@ -192,7 +192,7 @@ namespace tz::gl
 		renderer_vulkan2(const tz::gl::renderer_info& rinfo);
 		renderer_vulkan2(const renderer_vulkan2& copy) = delete;
 		renderer_vulkan2(renderer_vulkan2&& move) = default;
-		~renderer_vulkan2() = default;
+		~renderer_vulkan2();
 		renderer_vulkan2& operator=(const renderer_vulkan2& copy) = delete;
 		renderer_vulkan2& operator=(renderer_vulkan2&& move) = default;
 		// NYI
@@ -212,6 +212,7 @@ namespace tz::gl
 
 		tz::gl::renderer_options options = {};
 		tz::gl::render_state state = {};
+		bool null_flag = true;
 	};
 	static_assert(tz::gl::renderer_type<renderer_vulkan2>);
 }

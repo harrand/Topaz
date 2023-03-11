@@ -78,7 +78,6 @@ namespace tz::gl
 		{
 			return rate_device(a) < rate_device(b);
 		});
-		tz::report("Vulkan device: Out of %zu device%s, chose \"%s\" because it had the highest rating (%u)", pdevs.length(), pdevs.length() == 1 ? "" : "s", pdev.get_info().name.c_str(), rate_device(pdev));
 
 		// TODO: Remove when we can get testing on devices that aren't NV.
 		#if TZ_DEBUG
@@ -461,7 +460,7 @@ namespace tz::gl
 		auto& allocations = this->fingerprint_allocation_history.at(fingerprint);
 		tz::assert(!allocations.empty(), "attempted to free command buffers of allocation-id %zu for fingerprint %u, but there were no allocations -- either a zero-allocation occurred (wouldve asserted earlier), or this has already been freed.");
 		tz::assert(allocations.size() > allocation_id, "allocation id %zu for fingerprint %u is invalid - only %zu allocations are in the history for this fingerprint", allocation_id, fingerprint, allocations.size());
-		tz::assert(allocations.size() == command_buffers.size(), "passed span for command buffers in free (size %zu) does not match the number of buffers that were allocated (%zu). the span does not match. logic error. please submit a bug report.");
+		tz::assert(allocations[allocation_id].buffer_count == command_buffers.size(), "passed span for command buffers in free (size %zu) does not match the number of buffers that were allocated (%zu). the span does not match. logic error. please submit a bug report.", command_buffers.size(), allocations[allocation_id].buffer_count);
 		
 		// do the free.
 		vk2::CommandPool& pool = this->get_fitting_pool(this->fingerprint_alloc_types.at(fingerprint));
@@ -529,7 +528,6 @@ namespace tz::gl
 		if(device_render_sync::get_timeline().back() == device_vulkan_base::get_rid(fingerprint))
 		{
 			signals.add({.signal_semaphore = &device_render_sync::get_frame_sync_objects()[device_vulkan_base::frame_id], .timeline = device_vulkan_base::global_timeline + 1});
-			tz::report("gonna signal %zu soon", device_vulkan_base::global_timeline + 1);
 			device_vulkan_base::global_timeline++;
 		}
 
@@ -626,6 +624,12 @@ namespace tz::gl
 	device_command_pool(static_cast<device_common<tz::gl::renderer_vulkan2>&>(*this))
 	{
 
+	}
+
+	device_vulkan2::~device_vulkan2()
+	{
+		device_vulkan_base::vk_get_logical_device().wait_until_idle();
+		device_common<renderer_vulkan2>::internal_clear();
 	}
 
 	tz::gl::renderer_handle device_vulkan2::create_renderer(const tz::gl::renderer_info& rinfo)

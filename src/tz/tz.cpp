@@ -77,6 +77,7 @@ namespace tz
 		tz::assert(wnd != tz::nullhand && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
 		tz::gl::destroy_device();
+		tz::gl::destroy_device2();
 		#if TZ_VULKAN
 			tz::gl::vk2::terminate();
 		#elif TZ_OGL
