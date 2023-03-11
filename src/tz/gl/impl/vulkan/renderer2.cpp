@@ -707,7 +707,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
 		this->scratch_initialise_static_resources();
-		this->record_commands(rinfo.state(), "unnamed renderer");
+		this->record_commands(rinfo.state(), rinfo.get_options(), "unnamed renderer");
 	}
 
 	renderer_command_processor::~renderer_command_processor()
@@ -801,15 +801,15 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_command_processor::record_commands(const tz::gl::render_state& state, std::string label)
+	void renderer_command_processor::record_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
 	{
 		switch(renderer_pipeline::get_pipeline_type())
 		{
 			case renderer_pipeline::pipeline_type_t::graphics:
-				this->record_render_commands(state, label);
+				this->record_render_commands(state, options, label);
 			break;
 			case renderer_pipeline::pipeline_type_t::compute:
-				this->record_compute_commands(state, label);
+				this->record_compute_commands(state, options, label);
 			break;
 			default:
 				tz::error("invalid value for pipeline type. memory corruption?");
@@ -878,11 +878,11 @@ namespace tz::gl
 		this->do_static_resource_transfers(resource_staging_buffers);
 	}
 
-	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, std::string label)
+	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
 	{
-		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
+		this->set_work_commands([this, state, &label, &options](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
-			const bool present = (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+			const bool present = !options.contains(tz::gl::renderer_option::no_present) && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
 			record.debug_begin_label({.name = label});
 			vk2::Image& cur_swapchain_image = tz::gl::get_device2().get_swapchain().get_images()[render_target_id];
 
@@ -908,7 +908,14 @@ namespace tz::gl
 				{
 					depth = nullptr;
 				}
-				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, &render_target.depth_attachment};
+				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, &render_target.depth_attachment,
+				{
+					.clear_colour = state.graphics.clear_colour,
+					.colour_load = options.contains(tz::gl::renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::DontCare,
+					.colour_store = vk2::StoreOp::Store,
+					.depth_load = options.contains(tz::gl::renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
+					.depth_store = options.contains(tz::gl::renderer_option::no_present) ? vk2::StoreOp::Store : vk2::StoreOp::DontCare
+				}};
 				record.bind_pipeline
 				({
 					.pipeline = &renderer_pipeline::get_pipeline()
@@ -970,8 +977,9 @@ namespace tz::gl
 		});
 	}
 
-	void renderer_command_processor::record_compute_commands(const tz::gl::render_state& state, std::string label)
+	void renderer_command_processor::record_compute_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
 	{
+		(void)options;
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			record.debug_begin_label({.name = label});
@@ -1246,7 +1254,7 @@ namespace tz::gl
 		}
 		if(side_effects.rerecord_work_commands)
 		{
-			renderer_command_processor::record_commands(this->state, "NYI");
+			renderer_command_processor::record_commands(this->state, this->options, "NYI");
 		}
 		if(side_effects.rewrite_static_resources)
 		{

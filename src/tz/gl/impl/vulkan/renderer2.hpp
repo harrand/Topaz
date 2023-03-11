@@ -169,11 +169,11 @@ namespace tz::gl
 		void do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands);
 		void do_frame();
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
-		void record_commands(const tz::gl::render_state& state, std::string label);
+		void record_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
 		void scratch_initialise_static_resources();
 	private:
-		void record_render_commands(const tz::gl::render_state& state, std::string label);
-		void record_compute_commands(const tz::gl::render_state& state, std::string label);
+		void record_render_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
+		void record_compute_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
 		void allocate_commands(command_type t = command_type::both);
 		void free_commands(command_type t = command_type::both);
 		void do_static_resource_transfers(std::span<vk2::Buffer> resource_staging_buffers);

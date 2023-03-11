@@ -272,6 +272,17 @@ namespace tz::gl::vk2
 
 	class CommandBuffer;
 
+
+	struct DynamicRenderingRunInfo
+	{
+		tz::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+		vk2::LoadOp colour_load = vk2::LoadOp::Clear;
+		vk2::StoreOp colour_store = vk2::StoreOp::Store;
+
+		vk2::LoadOp depth_load = vk2::LoadOp::Clear;
+		vk2::StoreOp depth_store = vk2::StoreOp::Store;
+	};
+
 	/**
 	 * @ingroup tz_gl_vk_commands
 	 * Represents the full duration of the recording process of an existing @ref CommandBuffer.
@@ -307,7 +318,7 @@ namespace tz::gl::vk2
 		class DynamicRenderingRun
 		{
 		public:
-			DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment);
+			DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment, DynamicRenderingRunInfo rinfo = {});
 			~DynamicRenderingRun();
 
 			DynamicRenderingRun& operator=(const DynamicRenderingRun& rhs) = delete;

@@ -61,17 +61,19 @@ namespace tz::gl::vk2
 		});
 	}
 
-	CommandBufferRecording::DynamicRenderingRun::DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment):
+	CommandBufferRecording::DynamicRenderingRun::DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment, DynamicRenderingRunInfo rinfo):
 	recording(&record)
 	{
 		tz::vec2ui dims = tz::vec2ui::zero();
 		std::vector<VkRenderingAttachmentInfo> colour_attachment_natives(colour_attachments.size());
 		std::transform(colour_attachments.begin(), colour_attachments.end(), colour_attachment_natives.begin(),
-		[](const auto& imgview)->VkRenderingAttachmentInfo
+		[rinfo](const auto& imgview)->VkRenderingAttachmentInfo
 		{
 			VkClearColorValue clearval;
-			clearval.float32[0] = clearval.float32[1] = clearval.float32[2] = 0.0f;
-			clearval.float32[3] = 1.0f;
+			clearval.float32[0] = rinfo.clear_colour[0];
+			clearval.float32[1] = rinfo.clear_colour[1];
+			clearval.float32[2] = rinfo.clear_colour[2];
+			clearval.float32[3] = rinfo.clear_colour[3];
 			return
 			{
 				.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
@@ -81,8 +83,8 @@ namespace tz::gl::vk2
 				.resolveMode = VK_RESOLVE_MODE_NONE,
 				.resolveImageView = VK_NULL_HANDLE,
 				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-				.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // todo: configurable on NoClearOutput
-				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+				.loadOp = static_cast<VkAttachmentLoadOp>(rinfo.colour_load),
+				.storeOp = static_cast<VkAttachmentStoreOp>(rinfo.colour_store),
 				.clearValue =
 				{
 					.color = {clearval}
@@ -105,8 +107,8 @@ namespace tz::gl::vk2
 			.resolveMode = VK_RESOLVE_MODE_NONE,
 			.resolveImageView = VK_NULL_HANDLE,
 			.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			.loadOp = static_cast<VkAttachmentLoadOp>(rinfo.depth_load),
+			.storeOp = static_cast<VkAttachmentStoreOp>(rinfo.depth_store),
 			.clearValue = 
 			{
 				.depthStencil = {clearvald}
