@@ -720,23 +720,28 @@ namespace tz::gl
 
 	void renderer_command_processor::do_frame()
 	{
-		const bool present = !this->no_present_enabled && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+		const bool can_present = (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+		const bool will_present = !this->no_present_enabled && can_present;
 		const bool compute = renderer_pipeline::get_pipeline_type() == renderer_pipeline::pipeline_type_t::compute;
 		tz::basic_list<const vk2::Semaphore*> extra_waits = {};
 		tz::basic_list<const vk2::Semaphore*> extra_signals = {};
 		// we potentially need to do a wait if our last frame id is still going.
 		auto& dev = tz::gl::get_device2();
 		dev.vk_frame_wait(renderer_vulkan_base::uid);
-		if(!compute && present)
+		if(!compute && can_present)
 		{
 			// we need to wait on the image being available.
-			extra_waits.add(&dev.acquire_image(nullptr));
-			// we want our work to signal a semaphore which our present waits on.
-			extra_signals.add(&this->present_sync_semaphore);
+			const vk2::Semaphore& image_wait = dev.acquire_image(nullptr);
+			if(will_present)
+			{
+				extra_waits.add(&image_wait);
+				// we want our work to signal a semaphore which our present waits on.
+				extra_signals.add(&this->present_sync_semaphore);
+			}
 		}
 		// submit the work
 		std::size_t frame_id = dev.vk_get_frame_id();
-		if(!compute && present)
+		if(!compute && can_present)
 		{
 			frame_id = dev.get_image_index();
 		}
@@ -751,7 +756,7 @@ namespace tz::gl
 			this->render_wait_fence.wait_until_signalled();
 			this->render_wait_fence.unsignal();
 		}
-		if(!compute && present)
+		if(!compute && will_present)
 		{
 			// do the present.
 			tz::basic_list<const vk2::BinarySemaphore*> present_waits{&this->present_sync_semaphore};
