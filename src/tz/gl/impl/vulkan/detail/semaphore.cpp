@@ -68,6 +68,16 @@ namespace tz::gl::vk2
 		return this->sem;
 	}
 
+	BinarySemaphore BinarySemaphore::null()
+	{
+		return {};
+	}
+	
+	bool BinarySemaphore::is_null() const
+	{
+		return this->sem == VK_NULL_HANDLE;
+	}
+
 	BinarySemaphore::BinarySemaphore():
 	sem(VK_NULL_HANDLE),
 	device(nullptr){}

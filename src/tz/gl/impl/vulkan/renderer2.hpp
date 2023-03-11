@@ -8,6 +8,8 @@
 
 #include "tz/gl/impl/vulkan/detail/descriptors.hpp"
 #include "tz/gl/impl/vulkan/detail/command.hpp"
+#include "tz/gl/impl/vulkan/detail/fence.hpp"
+#include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 
 namespace tz::gl
 {
@@ -180,6 +182,8 @@ namespace tz::gl
 		bool render_wait_enabled = false;
 		bool no_present_enabled = false;
 		std::vector<vk2::CommandPool::AllocationResult> command_allocations = {};
+		vk2::Fence render_wait_fence = vk2::Fence::null();
+		vk2::BinarySemaphore present_sync_semaphore = vk2::BinarySemaphore::null();
 	};
 
 	class renderer_vulkan2 : public renderer_command_processor

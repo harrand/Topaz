@@ -34,6 +34,9 @@ namespace tz::gl::vk2
 
 		using NativeType = VkSemaphore;
 		NativeType native() const;
+
+		static BinarySemaphore null();
+		bool is_null() const;
 	protected:
 		BinarySemaphore();
 		VkSemaphore sem;

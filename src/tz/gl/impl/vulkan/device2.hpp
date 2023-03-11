@@ -22,7 +22,13 @@ namespace tz::gl
 		vk2::LogicalDevice& vk_get_logical_device();
 		std::size_t vk_get_frame_id() const{return this->frame_id;}
 	protected:
+		void touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id);
+		std::size_t get_rid(unsigned int fingerprint) const;
+
 		std::size_t frame_id = 0;
+		std::size_t frame_counter = 0;
+		std::size_t global_timeline = 0;
+		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
 		vk2::LogicalDevice ldev;
 	};
 
@@ -43,14 +49,8 @@ namespace tz::gl
 		 * @return swapchain index image that will be retrieved.
 		 */
 		const vk2::BinarySemaphore& acquire_image(const vk2::Fence* signal_fence);
-		/**
-		* present the acquired image.
-		*
-		* @pre @ref acquire_image() should have been invoked earlier, in such a way that the acquisition will have been completed by the time the present command is ran GPU-side
-		*
-		*/
-		vk2::hardware::Queue::PresentResult present_image(vk2::hardware::Queue& present_queue, std::span<const vk2::BinarySemaphore> wait_semaphores);
 		std::span<vk2::BinarySemaphore> get_image_semaphores();
+		const vk2::Swapchain::ImageAcquisitionResult* get_recent_acquire() const;
 	private:
 		void make_depth_image();
 		void initialise_image_semaphores();
@@ -67,16 +67,15 @@ namespace tz::gl
 	public:
 		device_render_sync(device_common<renderer_vulkan2>& devcom);
 		void vk_frame_wait(unsigned int fingerprint);
+		const tz::gl::timeline_t& get_timeline() const;
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
 	protected:
-		std::size_t get_rid(unsigned int fingerprint) const;
-		void touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id);
+		std::span<vk2::TimelineSemaphore> get_frame_sync_objects();
 	private:
 		const tz::gl::timeline_t& timeline;
 		vk2::TimelineSemaphore tsem;
-		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
-		std::vector<vk2::Fence> frame_fences = {};
+		std::vector<vk2::TimelineSemaphore> frame_syncs = {};
 	};
 
 	class device_descriptor_pool : public device_render_sync
@@ -108,7 +107,14 @@ namespace tz::gl
 		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
 		void vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer);
-		void vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits);
+		void vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits, const tz::basic_list<const vk2::BinarySemaphore*>& extra_signals, vk2::Fence* signal_fence);
+		/**
+		* present the acquired image.
+		*
+		* @pre @ref acquire_image() should have been invoked earlier, in such a way that the acquisition will have been completed by the time the present command is ran GPU-side
+		*
+		*/
+		vk2::hardware::Queue::PresentResult present_image(unsigned int fingerprint, const tz::basic_list<const vk2::BinarySemaphore*>& wait_semaphores);
 	private:
 		struct allocation_history
 		{
@@ -139,7 +145,7 @@ namespace tz::gl
 		image_format get_window_format() const;
 		void dbgui(){}
 		void begin_frame(){}
-		void end_frame(){}
+		void end_frame();
 	};
 	static_assert(device_type<device_vulkan2, renderer_info>);
 }

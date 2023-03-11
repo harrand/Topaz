@@ -142,6 +142,17 @@ namespace tz::gl
 		return this->ldev;
 	}
 
+	void device_vulkan_base::touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id)
+	{
+		this->fingerprint_to_renderer_id.emplace(fingerprint, renderer_id);
+	}
+
+	std::size_t device_vulkan_base::get_rid(unsigned int fingerprint) const
+	{
+		return this->fingerprint_to_renderer_id.at(fingerprint);
+	}
+	
+
 //--------------------------------------------------------------------------------------------------
 
 	device_window::device_window():
@@ -221,23 +232,14 @@ namespace tz::gl
 		return sem;
 	}
 
-	vk2::hardware::Queue::PresentResult device_window::present_image(vk2::hardware::Queue& present_queue, std::span<const vk2::BinarySemaphore> wait_semaphores)
-	{
-		tz::assert(this->recent_acquire.has_value(), "Attempting to present image, but no image has been previously acquired. Logic error.");
-		tz::basic_list<const vk2::BinarySemaphore*> waits;
-		waits.resize(wait_semaphores.size());
-		std::transform(wait_semaphores.begin(), wait_semaphores.end(), waits.begin(), [](const vk2::BinarySemaphore& sem){return &sem;});
-		return present_queue.present
-		({
-			.wait_semaphores = waits,
-	   		.swapchain = &this->swapchain,
-			.swapchain_image_index = this->recent_acquire.value().image_index
-		});
-	}
-
 	std::span<vk2::BinarySemaphore> device_window::get_image_semaphores()
 	{
 		return this->image_semaphores;
+	}
+
+	const vk2::Swapchain::ImageAcquisitionResult* device_window::get_recent_acquire() const
+	{
+		return this->recent_acquire.has_value() ? &this->recent_acquire.value() : nullptr;
 	}
 
 	void device_window::make_depth_image()
@@ -279,7 +281,7 @@ namespace tz::gl
 	{
 		for(std::size_t i = 0; i < device_window::get_swapchain().get_images().size(); i++)
 		{
-			this->frame_fences.push_back({{.device = &ldev, .initially_signalled = true}});
+			this->frame_syncs.emplace_back(ldev, 0);
 		}
 	}
 
@@ -287,10 +289,15 @@ namespace tz::gl
 	{
 		tz::assert(!this->timeline.empty(), "cannot wait on frame boundary because the timeline is empty!");
 		// if the first renderer of the frame needs to go, we need to make sure it waits on the frame fence.
-		if(this->timeline.front() == this->get_rid(fingerprint))
+		if(device_vulkan_base::frame_counter > 0 && this->timeline.front() == device_vulkan_base::get_rid(fingerprint))
 		{
-			this->frame_fences[frame_id].wait_until_signalled();
+			this->frame_syncs[frame_id].wait_for(device_vulkan_base::global_timeline + 1);
 		}
+	}
+
+	const tz::gl::timeline_t& device_render_sync::get_timeline() const
+	{
+		return this->timeline;
 	}
 
 	std::vector<const vk2::Semaphore*> device_render_sync::vk_get_dependency_waits(unsigned int fingerprint)
@@ -305,14 +312,9 @@ namespace tz::gl
 		return {};
 	}
 
-	std::size_t device_render_sync::get_rid(unsigned int fingerprint) const
+	std::span<vk2::TimelineSemaphore> device_render_sync::get_frame_sync_objects()
 	{
-		return this->fingerprint_to_renderer_id.at(fingerprint);
-	}
-	
-	void device_render_sync::touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id)
-	{
-		this->fingerprint_to_renderer_id.emplace(fingerprint, renderer_id);
+		return this->frame_syncs;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -490,7 +492,7 @@ namespace tz::gl
 		temp_fence.wait_until_signalled();
 	}
 
-	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits)
+	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits, const tz::basic_list<const vk2::BinarySemaphore*>& extra_signals, vk2::Fence* signal_fence)
 	{
 		#if TZ_DEBUG
 			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
@@ -502,11 +504,21 @@ namespace tz::gl
 		tz::basic_list<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits = {};
 		// TODO: fill waits with timeline semaphores frmo dependencies. probably signals too?
 
-		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals = {};
-
 		for(const vk2::Semaphore* wait : extra_waits)
 		{
 			waits.add({.wait_semaphore = wait, .wait_stage = vk2::PipelineStage::AllCommands});
+		}
+
+		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals = {};
+		for(const vk2::Semaphore* signal : extra_signals)
+		{
+			signals.add({.signal_semaphore = signal});
+		}
+		if(device_render_sync::get_timeline().back() == device_vulkan_base::get_rid(fingerprint))
+		{
+			signals.add({.signal_semaphore = &device_render_sync::get_frame_sync_objects()[device_vulkan_base::frame_id], .timeline = device_vulkan_base::global_timeline + 1});
+			tz::report("gonna signal %zu soon", device_vulkan_base::global_timeline + 1);
+			device_vulkan_base::global_timeline++;
 		}
 
 		tz::basic_list<const vk2::CommandBuffer*> buffers = {};
@@ -517,9 +529,22 @@ namespace tz::gl
 		submit.command_buffers = buffers;
 		submit.waits = waits;
 		submit.signals = signals;
-		submit.execution_complete_fence = nullptr;
+		submit.execution_complete_fence = signal_fence;
 		q->submit(submit);
 	}
+
+	vk2::hardware::Queue::PresentResult device_command_pool::present_image(unsigned int fingerprint, const tz::basic_list<const vk2::BinarySemaphore*>& wait_semaphores)
+	{
+		tz::assert(device_window::get_recent_acquire() != nullptr, "Attempting to present image, but no image has been previously acquired. Logic error.");
+		vk2::hardware::Queue* present_queue = get_original_queue(this->fingerprint_alloc_types.at(fingerprint));
+		return present_queue->present
+		({
+			.wait_semaphores = wait_semaphores,
+	   		.swapchain = &device_window::get_swapchain(),
+			.swapchain_image_index = device_window::get_recent_acquire()->image_index
+		});
+	}
+
 
 	vk2::CommandPool::AllocationResult device_command_pool::impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
 	{
@@ -592,8 +617,14 @@ namespace tz::gl
 	tz::gl::renderer_handle device_vulkan2::create_renderer(const tz::gl::renderer_info& rinfo)
 	{
 		tz::gl::renderer_handle rh = device_common<renderer_vulkan2>::emplace_renderer(rinfo);
-		device_render_sync::touch_renderer_id(device_common<renderer_vulkan2>::get_renderer(rh).vk_get_uid(), device_common<renderer_vulkan2>::renderer_count() - 1);
+		device_vulkan_base::touch_renderer_id(device_common<renderer_vulkan2>::get_renderer(rh).vk_get_uid(), device_common<renderer_vulkan2>::renderer_count() - 1);
 		return rh;
+	}
+
+	void device_vulkan2::end_frame()
+	{
+		device_vulkan_base::frame_counter++;
+		device_vulkan_base::frame_id = (device_vulkan_base::frame_id + 1) % device_window::get_swapchain().get_images().size();
 	}
 
 }

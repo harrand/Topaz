@@ -668,7 +668,9 @@ namespace tz::gl
 	renderer_command_processor::renderer_command_processor(const tz::gl::renderer_info& rinfo):
 	renderer_pipeline(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait)),
-	no_present_enabled(rinfo.get_options().contains(tz::gl::renderer_option::no_present))
+	no_present_enabled(rinfo.get_options().contains(tz::gl::renderer_option::no_present)),
+	render_wait_fence(vk2::FenceInfo{.device = &tz::gl::get_device2().vk_get_logical_device()}),
+	present_sync_semaphore(tz::gl::get_device2().vk_get_logical_device())
 	{
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
@@ -687,19 +689,39 @@ namespace tz::gl
 	void renderer_command_processor::do_frame()
 	{
 		const bool present = !this->no_present_enabled && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+		const bool compute = renderer_pipeline::get_pipeline_type() == renderer_pipeline::pipeline_type_t::compute;
 		tz::basic_list<const vk2::Semaphore*> extra_waits = {};
+		tz::basic_list<const vk2::Semaphore*> extra_signals = {};
 		// we potentially need to do a wait if our last frame id is still going.
 		auto& dev = tz::gl::get_device2();
 		dev.vk_frame_wait(renderer_vulkan_base::uid);
-		if(present)
+		if(!compute && present)
 		{
 			// we need to wait on the image being available.
 			extra_waits.add(&dev.acquire_image(nullptr));
+			// we want our work to signal a semaphore which our present waits on.
+			extra_signals.add(&this->present_sync_semaphore);
 		}
 		// submit the work
 		const std::size_t frame_id = dev.vk_get_frame_id();
-		dev.vk_submit_command(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, frame_id, std::span<const vk2::CommandBuffer>{&this->work_command_buffers()[frame_id], 1}, extra_waits);
-		tz::error("NYFI");
+		vk2::Fence* signal_fence = nullptr;
+		if(this->render_wait_enabled)
+		{
+			signal_fence = &this->render_wait_fence;
+		}
+		dev.vk_submit_command(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, frame_id, std::span<const vk2::CommandBuffer>{&this->work_command_buffers()[frame_id], 1}, extra_waits, extra_signals, signal_fence);
+		if(this->render_wait_enabled)
+		{
+			this->render_wait_fence.wait_until_signalled();
+			this->render_wait_fence.unsignal();
+		}
+		if(!compute && present)
+		{
+			// do the present.
+			tz::basic_list<const vk2::BinarySemaphore*> present_waits{&this->present_sync_semaphore};
+			dev.present_image(renderer_vulkan_base::uid, present_waits);
+		}
+		//tz::error("NYFI");
 	}
 
 	void renderer_command_processor::do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands)
@@ -1079,12 +1101,12 @@ namespace tz::gl
 	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)
 	{
 		(void)req;
-		tz::error("NYI");
+		//tz::error("NYI");
 	}
 
 	void renderer_vulkan2::dbgui()
 	{
-		tz::error("NYI");
+		//tz::error("NYI");
 	}
 
 	std::string_view renderer_vulkan2::debug_get_name() const

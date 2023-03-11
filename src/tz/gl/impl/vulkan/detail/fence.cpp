@@ -83,6 +83,20 @@ namespace tz::gl::vk2
 	{
 		return this->fence;
 	}
+
+	Fence Fence::null()
+	{
+		return {};
+	}
+
+	bool Fence::is_null() const
+	{
+		return this->fence == VK_NULL_HANDLE;
+	}
+
+	Fence::Fence():
+	fence(VK_NULL_HANDLE),
+	info(){}
 }
 
 #endif // TZ_VULKAN
