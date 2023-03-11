@@ -242,6 +242,11 @@ namespace tz::gl
 		return this->recent_acquire.has_value() ? &this->recent_acquire.value() : nullptr;
 	}
 
+	void device_window::vk_acquire_done()
+	{
+		this->recent_acquire = std::nullopt;
+	}
+
 	void device_window::make_depth_image()
 	{
 		tz::assert(!this->swapchain.is_null());
@@ -537,12 +542,14 @@ namespace tz::gl
 	{
 		tz::assert(device_window::get_recent_acquire() != nullptr, "Attempting to present image, but no image has been previously acquired. Logic error.");
 		vk2::hardware::Queue* present_queue = get_original_queue(this->fingerprint_alloc_types.at(fingerprint));
-		return present_queue->present
+		vk2::hardware::Queue::PresentResult res = present_queue->present
 		({
 			.wait_semaphores = wait_semaphores,
 	   		.swapchain = &device_window::get_swapchain(),
 			.swapchain_image_index = device_window::get_recent_acquire()->image_index
 		});
+		device_window::vk_acquire_done();
+		return res;
 	}
 
 

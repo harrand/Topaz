@@ -51,6 +51,7 @@ namespace tz::gl
 		const vk2::BinarySemaphore& acquire_image(const vk2::Fence* signal_fence);
 		std::span<vk2::BinarySemaphore> get_image_semaphores();
 		const vk2::Swapchain::ImageAcquisitionResult* get_recent_acquire() const;
+		void vk_acquire_done();
 	private:
 		void make_depth_image();
 		void initialise_image_semaphores();
