@@ -703,7 +703,11 @@ namespace tz::gl
 			extra_signals.add(&this->present_sync_semaphore);
 		}
 		// submit the work
-		const std::size_t frame_id = dev.vk_get_frame_id();
+		std::size_t frame_id = dev.vk_get_frame_id();
+		if(!compute && present)
+		{
+			frame_id = dev.get_image_index();
+		}
 		vk2::Fence* signal_fence = nullptr;
 		if(this->render_wait_enabled)
 		{
@@ -783,7 +787,24 @@ namespace tz::gl
 	{
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
+			const bool present = (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
 			record.debug_begin_label({.name = label});
+			vk2::Image& cur_swapchain_image = tz::gl::get_device2().get_swapchain().get_images()[render_target_id];
+
+			if(present)
+			{
+				record.transition_image_layout
+				(vk2::VulkanCommand::TransitionImageLayout{
+					.image = &cur_swapchain_image,
+					.target_layout = vk2::ImageLayout::ColourAttachment,
+					.source_access = {},
+					.destination_access = {vk2::AccessFlag::ColourAttachmentWrite},
+					.source_stage = vk2::PipelineStage::Top,
+					.destination_stage = vk2::PipelineStage::ColourAttachmentOutput,
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
+				});
+			}
+
 			// dynamic rendering { bind pipeline -> bind descriptor set -> set scissor -> draw }
 			{
 				renderer_output_manager::render_target_t& render_target = renderer_output_manager::get_render_targets()[render_target_id];
@@ -835,6 +856,19 @@ namespace tz::gl
 					.instance_count = 1,
 					.first_vertex = 0,
 					.first_instance = 0
+				});
+			}
+			if(present)
+			{
+				record.transition_image_layout
+				(vk2::VulkanCommand::TransitionImageLayout{
+					.image = &cur_swapchain_image,
+					.target_layout = vk2::ImageLayout::Present,
+					.source_access = {vk2::AccessFlag::ColourAttachmentWrite},
+					.destination_access = {},
+					.source_stage = vk2::PipelineStage::ColourAttachmentOutput,
+					.destination_stage = vk2::PipelineStage::Bottom,
+					.image_aspects = {vk2::ImageAspectFlag::Colour}
 				});
 			}
 			record.debug_end_label({});
