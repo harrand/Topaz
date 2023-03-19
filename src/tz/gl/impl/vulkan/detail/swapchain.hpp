@@ -47,7 +47,16 @@ namespace tz::gl::vk2
 
 		struct ImageAcquisitionResult
 		{
+			enum class AcquisitionResultType
+			{
+				Success,
+				Suboptimal,
+				ErrorOutOfDate,
+				ErrorSurfaceLost,
+				ErrorUnknown
+			};
 			std::uint32_t image_index;
+			AcquisitionResultType type;
 		};
 		/**
 		 * Construct a new Swapchain.

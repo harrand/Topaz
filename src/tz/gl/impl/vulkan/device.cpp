@@ -147,6 +147,7 @@ namespace tz::gl
 		if(!this->recent_acquire.has_value())
 		{
 			this->recent_acquire = this->get_swapchain().acquire_image(acquire);
+			tz::assert(this->recent_acquire->type == vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType::Success);
 		}
 		return this->recent_acquire.value();
 	}

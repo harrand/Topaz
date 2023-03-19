@@ -227,6 +227,26 @@ namespace tz::gl
 				.signal_semaphore = &sem,
 				.signal_fence = signal_fence
 			});
+			switch(this->recent_acquire->type)
+			{
+				using enum vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType;
+				case Success:
+
+				break;
+				case Suboptimal:
+
+				break;
+				case ErrorOutOfDate:
+					tz::error("Failed to acquire swapchain image because it was out-of-date. Window-resizing has likely gone pear-shaped. Please submit a bug report.");
+				break;
+				case ErrorSurfaceLost:
+					tz::error("Failed to acquire swapchain image because surface was lost. Please submit a bug report.");
+				break;
+				case ErrorUnknown:
+					tz::error("Failed to acquire swapchain image, but couldn't determine why. Please submit a bug report.");
+				break;
+				default: tz::error(); break;
+			}
 		}
 		return sem;
 	}
