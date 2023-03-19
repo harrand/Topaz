@@ -237,7 +237,8 @@ namespace tz::gl
 
 				break;
 				case ErrorOutOfDate:
-					tz::error("Failed to acquire swapchain image because it was out-of-date. Window-resizing has likely gone pear-shaped. Please submit a bug report.");
+					this->swapchain.refresh();
+					return this->acquire_image(signal_fence);
 				break;
 				case ErrorSurfaceLost:
 					tz::error("Failed to acquire swapchain image because surface was lost. Please submit a bug report.");

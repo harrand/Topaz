@@ -762,7 +762,6 @@ namespace tz::gl
 			tz::basic_list<const vk2::BinarySemaphore*> present_waits{&this->present_sync_semaphore};
 			dev.present_image(renderer_vulkan_base::uid, present_waits);
 		}
-		//tz::error("NYFI");
 	}
 
 	void renderer_command_processor::do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands)

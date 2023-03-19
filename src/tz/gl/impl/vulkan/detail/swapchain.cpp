@@ -232,6 +232,19 @@ namespace tz::gl::vk2
 		return this->dimensions;
 	}
 
+	void Swapchain::refresh()
+	{
+		Swapchain second
+		{{
+			.device = this->info.device,
+			.swapchain_image_count_minimum = this->info.swapchain_image_count_minimum,
+			.format = this->info.format,
+			.present_mode = this->info.present_mode,
+			.old_swapchain = this
+		}};
+		*this = std::move(second);
+	}
+
 	Swapchain::Swapchain():
 	swapchain(VK_NULL_HANDLE),
 	info(){}
