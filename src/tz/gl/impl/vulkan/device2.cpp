@@ -237,7 +237,7 @@ namespace tz::gl
 
 				break;
 				case ErrorOutOfDate:
-					this->swapchain.refresh();
+					this->vk_notify_resize();
 					return this->acquire_image(signal_fence);
 				break;
 				case ErrorSurfaceLost:
@@ -275,6 +275,11 @@ namespace tz::gl
 
 	void device_window::vk_notify_resize()
 	{
+		if(tz::window().get_dimensions() == tz::vec2ui::zero())
+		{
+			tz::wsi::wait_for_event();
+			return;
+		}
 		if(this->dimensions_cache != tz::window().get_dimensions())
 		{
 			device_vulkan_base::vk_get_logical_device().wait_until_idle();

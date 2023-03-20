@@ -1203,7 +1203,10 @@ namespace tz::gl
 
 	void renderer_vulkan2::render()
 	{
-		this->check_and_handle_resize();
+		if(!this->check_and_handle_resize())
+		{
+			return;
+		}
 		renderer_command_processor::do_frame();
 	}
 
@@ -1302,18 +1305,23 @@ namespace tz::gl
 		return this->null_flag;
 	}
 
-	void renderer_vulkan2::check_and_handle_resize()
+	bool renderer_vulkan2::check_and_handle_resize()
 	{
+		if(tz::window().get_dimensions() == tz::vec2ui::zero())
+		{
+			tz::wsi::wait_for_event();
+			return false;
+		}
 		if(renderer_output_manager::targets_window() && (this->window_cache_dims != tz::window().get_dimensions()))
 		{
 			this->do_resize();
 			this->window_cache_dims = tz::window().get_dimensions();
 		}
+		return true;
 	}
 
 	void renderer_vulkan2::do_resize()
 	{
-		tz::gl::get_device2().vk_get_logical_device().wait_until_idle();
 		tz::gl::get_device2().vk_notify_resize();
 		renderer_output_manager::populate_render_targets();
 		renderer_pipeline::update_pipeline();

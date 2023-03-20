@@ -210,7 +210,7 @@ namespace tz::gl
 		bool is_null() const;
 	private:
 		renderer_vulkan2() = default;
-		void check_and_handle_resize();
+		bool check_and_handle_resize();
 		void do_resize();
 
 		tz::gl::renderer_options options = {};
