@@ -71,6 +71,7 @@ namespace tz::gl
 	device_vulkan_base::device_vulkan_base():
 	ldev([]()
 	{
+		TZ_PROFZONE("device_vulkan_base - initialise", 0xFFAAAA00);
 		vk2::PhysicalDeviceList pdevs = vk2::get_all_devices(vk2::get());
 		tz::assert(!pdevs.empty(), "Could not locate any physical devices at all. Your machine either needs a valid GPU, CPU or a virtualised device acting as the former. Please ensure your machine meets minimum system requirements.");
 		vk2::PhysicalDevice pdev = *std::max_element(pdevs.begin(), pdevs.end(),
@@ -158,7 +159,7 @@ namespace tz::gl
 	device_vulkan_base()
 	{
 		// choose initial settings and create swapchain + depth.
-		TZ_PROFZONE("vk - device_window create", 0xFFAA0000);
+		TZ_PROFZONE("device_window - initialise", 0xFFAA0000);
 		const vk2::PhysicalDevice& hardware = this->ldev.get_hardware();
 		const vk2::VulkanInstance& vkinst = hardware.get_instance();
 		tz::assert(vkinst.has_surface(), "Tried to create device_window, but vulkan instance has no surface.");
@@ -216,6 +217,7 @@ namespace tz::gl
 
 	const vk2::BinarySemaphore& device_window::acquire_image(const vk2::Fence* signal_fence)
 	{
+		TZ_PROFZONE("device_window - acquire image", 0xFFAA0000);
 		// do an acquire, choose a semaphore for it to signal, and then return that to the caller.
 		// the caller is expected to use that sem as a wait semaphore for their render work. they can't render into the device window until the semaphore is signalled.
 		// additionally the fence can be provided to do a cpu wait. not sure why you'd wanna do that tho.
@@ -275,8 +277,10 @@ namespace tz::gl
 
 	void device_window::vk_notify_resize()
 	{
+		TZ_PROFZONE("device_window - resize notify", 0xFFAA0000);
 		if(tz::window().get_dimensions() == tz::vec2ui::zero())
 		{
+			TZ_PROFZONE("device_window - wait on minimise", 0xFFAA0000);
 			tz::wsi::wait_for_event();
 			return;
 		}
@@ -291,6 +295,7 @@ namespace tz::gl
 
 	void device_window::make_depth_image()
 	{
+		TZ_PROFZONE("device_window - make depth image", 0xFFAA0000);
 		tz::assert(!this->swapchain.is_null());
 		this->device_depth =
 		{{
@@ -334,6 +339,7 @@ namespace tz::gl
 
 	void device_render_sync::vk_frame_wait(unsigned int fingerprint)
 	{
+		TZ_PROFZONE("device_render_sync - frame wait", 0xFFAA0000);
 		tz::assert(!this->timeline.empty(), "cannot wait on frame boundary because the timeline is empty!");
 		// if the first renderer of the frame needs to go, we need to make sure it waits on the frame fence.
 		if(device_vulkan_base::frame_counter > 0 && this->timeline.front() == device_vulkan_base::get_rid(fingerprint))
@@ -359,19 +365,6 @@ namespace tz::gl
 		return {};
 	}
 
-	void device_render_sync::vk_cpu_wait_this_frame()
-	{
-		this->frame_syncs[device_vulkan_base::frame_id].wait_for(device_vulkan_base::global_timeline + 1);
-	}
-
-	void device_render_sync::vk_cpu_wait_all_frames()
-	{
-		for(std::size_t i = 0; i < device_window::get_swapchain().get_images().size(); i++)
-		{
-			this->frame_syncs[device_vulkan_base::frame_id + i].wait_for(device_vulkan_base::global_timeline + 1 + i);
-		}
-	}
-
 	std::span<vk2::TimelineSemaphore> device_render_sync::get_frame_sync_objects()
 	{
 		return this->frame_syncs;
@@ -393,11 +386,13 @@ namespace tz::gl
 
 	vk2::DescriptorPool::AllocationResult device_descriptor_pool::vk_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint)
 	{
+		TZ_PROFZONE("device_descriptor_pool - allocate sets", 0xFFAA0000);
 		return this->impl_allocate_sets(alloc, fingerprint, 0);
 	}
 
 	void device_descriptor_pool::vk_update_sets(vk2::DescriptorPool::UpdateRequest update, unsigned int fingerprint)
 	{
+		TZ_PROFZONE("device_descriptor_pool - update sets", 0xFFAA0000);
 		this->get_pool(fingerprint).update_sets(update);
 	}
 
@@ -409,6 +404,7 @@ namespace tz::gl
 
 	vk2::DescriptorPool::AllocationResult device_descriptor_pool::impl_allocate_sets(const vk2::DescriptorPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
 	{
+		TZ_PROFZONE("device_descriptor_pool - set alloc attempt", 0xFFAA0000);
 		// allocate using the most recently created descriptor pool
 		// if allocation fails due to lack of memory, create a new descriptor pool and try again.
 		// if it fails too many times in a row, we're gonna error out.
@@ -450,6 +446,7 @@ namespace tz::gl
 
 	void device_descriptor_pool::another_pool(std::size_t set_count, std::size_t buf_count, std::size_t img_count)
 	{
+		TZ_PROFZONE("device_descriptor_pool - another pool", 0xFFAA0000);
 		constexpr std::size_t min_pool_storage_buffer_count = 128;
 		constexpr std::size_t min_pool_samplerimage_count = 128;
 		constexpr std::size_t min_pool_set_count = 128;
@@ -475,6 +472,7 @@ namespace tz::gl
 	device_command_pool::device_command_pool(device_common<renderer_vulkan2>& devcom):
 	device_descriptor_pool(devcom)
 	{
+		TZ_PROFZONE("device_command_pool - initialise", 0xFFAA0000);
 		this->graphics_queue = this->ldev.get_hardware_queue
 		({
 			.field = {vk2::QueueFamilyType::graphics},
@@ -500,12 +498,14 @@ namespace tz::gl
 
 	vk2::CommandPool::AllocationResult device_command_pool::vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint)
 	{
+		TZ_PROFZONE("device_command_pool - allocate commands", 0xFFAA0000);
 		tz::assert(alloc.buffer_count > 0, "it's illegal to do a command buffer allocation of size zero. please submit a bug report.");
 		return this->impl_allocate_commands(alloc, fingerprint, 0);
 	}
 
 	void device_command_pool::vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers)
 	{
+		TZ_PROFZONE("device_command_pool - free commands", 0xFFAA0000);
 		tz::assert(this->fingerprint_allocation_history.find(fingerprint) != this->fingerprint_allocation_history.end(), "cannot free commands because there is no recorded history for fingerprint %u", fingerprint);
 		auto& allocations = this->fingerprint_allocation_history.at(fingerprint);
 		tz::assert(!allocations.empty(), "attempted to free command buffers of allocation-id %zu for fingerprint %u, but there were no allocations -- either a zero-allocation occurred (wouldve asserted earlier), or this has already been freed.");
@@ -532,6 +532,7 @@ namespace tz::gl
 
 	void device_command_pool::vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer)
 	{
+		TZ_PROFZONE("device_command_pool - submit & run & block", 0xFFAA0000);
 		vk2::Fence temp_fence
 		{{
 			.device = &this->ldev
@@ -557,6 +558,7 @@ namespace tz::gl
 
 	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits, const tz::basic_list<const vk2::BinarySemaphore*>& extra_signals, vk2::Fence* signal_fence)
 	{
+		TZ_PROFZONE("device_command_pool - submit command buffer", 0xFFAA0000);
 		#if TZ_DEBUG
 			std::size_t debug_real_alloc_length = this->fingerprint_allocation_history[fingerprint].size();
 			tz::assert(debug_real_alloc_length > allocation_id, "attempted to submit work command buffer id %zu at (fingerprint:allocid) %u:%zu. there are only %zu buffers in this allocation. please submit a bug report.", allocation_id, fingerprint, allocation_id, debug_real_alloc_length);
@@ -601,6 +603,7 @@ namespace tz::gl
 
 	vk2::hardware::Queue::PresentResult device_command_pool::present_image(unsigned int fingerprint, const tz::basic_list<const vk2::BinarySemaphore*>& wait_semaphores)
 	{
+		TZ_PROFZONE("device_command_pool - present image", 0xFFAA0000);
 		tz::assert(device_window::get_recent_acquire() != nullptr, "Attempting to present image, but no image has been previously acquired. Logic error.");
 		vk2::hardware::Queue* present_queue = get_original_queue(this->fingerprint_alloc_types.at(fingerprint));
 		vk2::hardware::Queue::PresentResult res = present_queue->present
@@ -616,6 +619,7 @@ namespace tz::gl
 
 	vk2::CommandPool::AllocationResult device_command_pool::impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt)
 	{
+		TZ_PROFZONE("device_command_pool - command alloc attempt", 0xFFAA0000);
 		// allocate using the most recently created descriptor pool
 		// if allocation fails due to lack of memory, create a new descriptor pool and try again.
 		// if it fails too many times in a row, we're gonna error out.
@@ -709,6 +713,7 @@ namespace tz::gl
 
 	tz::gl::renderer_handle device_vulkan2::create_renderer(const tz::gl::renderer_info& rinfo)
 	{
+		TZ_PROFZONE("device_vulkan2 - create renderer", 0xFFAA0000);
 		tz::gl::renderer_handle rh = device_common<renderer_vulkan2>::emplace_renderer(rinfo);
 		device_vulkan_base::touch_renderer_id(device_common<renderer_vulkan2>::get_renderer(rh).vk_get_uid(), device_common<renderer_vulkan2>::renderer_count() - 1);
 		return rh;
@@ -716,6 +721,7 @@ namespace tz::gl
 
 	void device_vulkan2::end_frame()
 	{
+		TZ_PROFZONE("device_vulkan2 - end frame", 0xFFAA0000);
 		device_vulkan_base::frame_counter++;
 		device_vulkan_base::frame_id = (device_vulkan_base::frame_id + 1) % device_window::get_swapchain().get_images().size();
 	}

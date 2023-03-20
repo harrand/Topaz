@@ -63,7 +63,6 @@ namespace tz::gl
 		tz::vec2ui dimensions_cache = tz::vec2ui::zero();
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
 		std::vector<vk2::BinarySemaphore> image_semaphores = {};
-		tz::vec2ui window_dims_cache = {};
 	};
 
 	class device_render_sync : public device_window
@@ -74,8 +73,6 @@ namespace tz::gl
 		const tz::gl::timeline_t& get_timeline() const;
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
-		void vk_cpu_wait_this_frame();
-		void vk_cpu_wait_all_frames();
 	protected:
 		std::span<vk2::TimelineSemaphore> get_frame_sync_objects();
 	private:

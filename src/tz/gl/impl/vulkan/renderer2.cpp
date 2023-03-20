@@ -62,6 +62,7 @@ namespace tz::gl
 
 	void renderer_resource_manager::notify_image_dirty(tz::gl::resource_handle rh)
 	{
+		TZ_PROFZONE("renderer_resource_manager - notify image dirty", 0xFFAAAA00);
 		// we need to know which image view index this corresponds to. just count resource image count until we reach rh vallue.
 		std::size_t imgview_idx = 0;
 		for(std::size_t i = 0; i < static_cast<std::size_t>(static_cast<tz::hanval>(rh)); i++)
@@ -495,6 +496,7 @@ namespace tz::gl
 
 	void renderer_output_manager::populate_render_targets()
 	{
+		TZ_PROFZONE("renderer_output_manager - populate render targets", 0xFFAAAA00);
 		this->render_targets.clear();
 		if(this->targets_window())
 		{
@@ -524,6 +526,7 @@ namespace tz::gl
 	renderer_pipeline::renderer_pipeline(const tz::gl::renderer_info& rinfo):
 	renderer_output_manager(rinfo)
 	{
+		TZ_PROFZONE("renderer_pipeline - initialise", 0xFFAAAA00);
 		this->deduce_pipeline_config(rinfo);
 		this->deduce_pipeline_layout();
 		this->create_shader(rinfo);
@@ -547,6 +550,7 @@ namespace tz::gl
 
 	void renderer_pipeline::update_pipeline()
 	{
+		TZ_PROFZONE("renderer_pipeline - update pipeline", 0xFFAAAA00);
 		switch(this->get_pipeline_type())
 		{
 			case pipeline_type_t::graphics:
@@ -621,6 +625,7 @@ namespace tz::gl
 
 	void renderer_pipeline::create_shader(const tz::gl::renderer_info& rinfo)
 	{
+		TZ_PROFZONE("renderer_pipeline - create shader", 0xFFAAAA00);
 		tz::basic_list<vk2::ShaderModuleInfo> modules;
 		switch(this->get_pipeline_type())
 		{
@@ -725,6 +730,7 @@ namespace tz::gl
 
 	void renderer_command_processor::do_frame()
 	{
+		TZ_PROFZONE("renderer_command_processor - do frame", 0xFFAAAA00);
 		const bool can_present = this->targets_window();
 		const bool will_present = !this->no_present_enabled && can_present;
 		const bool compute = renderer_pipeline::get_pipeline_type() == renderer_pipeline::pipeline_type_t::compute;
@@ -758,6 +764,7 @@ namespace tz::gl
 		dev.vk_submit_command(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, frame_id, std::span<const vk2::CommandBuffer>{&this->work_command_buffers()[frame_id], 1}, extra_waits, extra_signals, signal_fence);
 		if(this->render_wait_enabled)
 		{
+			TZ_PROFZONE("renderer_command_processor - render wait", 0xFFAAAA00);
 			this->render_wait_fence.wait_until_signalled();
 			this->render_wait_fence.unsignal();
 		}
@@ -812,6 +819,7 @@ namespace tz::gl
 
 	void renderer_command_processor::record_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
 	{
+		TZ_PROFZONE("renderer_command_processor - record commands", 0xFFAAAA00);
 		switch(renderer_pipeline::get_pipeline_type())
 		{
 			case renderer_pipeline::pipeline_type_t::graphics:
@@ -889,6 +897,7 @@ namespace tz::gl
 
 	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
 	{
+		TZ_PROFZONE("renderer_command_processor - record render commands", 0xFFAAAA00);
 		this->set_work_commands([this, state, &label, &options](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			const bool present = !options.contains(tz::gl::renderer_option::no_present) && renderer_output_manager::targets_window();
@@ -988,6 +997,7 @@ namespace tz::gl
 
 	void renderer_command_processor::record_compute_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
 	{
+		TZ_PROFZONE("renderer_command_processor - record compute commands", 0xFFAAAA00);
 		(void)options;
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
@@ -1203,6 +1213,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::render()
 	{
+		TZ_PROFZONE("renderer_vulkan2 - render", 0xFFAAAA00);
 		if(!this->check_and_handle_resize())
 		{
 			return;
@@ -1215,6 +1226,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)
 	{
+		TZ_PROFZONE("renderer_vulkan2 - edit", 0xFFAAAA00);
 		this->check_and_handle_resize();
 		if(req.empty())
 		{
@@ -1309,6 +1321,7 @@ namespace tz::gl
 	{
 		if(tz::window().get_dimensions() == tz::vec2ui::zero())
 		{
+			TZ_PROFZONE("renderer_vulkan2 - wait while minimised", 0xFFAAAA00);
 			tz::wsi::wait_for_event();
 			return false;
 		}
@@ -1322,6 +1335,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::do_resize()
 	{
+		TZ_PROFZONE("renderer_vulkan2 - do resize", 0xFFAAAA00);
 		tz::gl::get_device2().vk_notify_resize();
 		renderer_output_manager::populate_render_targets();
 		renderer_pipeline::update_pipeline();
