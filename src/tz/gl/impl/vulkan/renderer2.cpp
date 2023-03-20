@@ -488,10 +488,15 @@ namespace tz::gl
 		return this->render_targets.front().colour_attachments.front().get_image().get_dimensions();
 	}
 
+	bool renderer_output_manager::targets_window() const
+	{
+		return this->get_output() == nullptr || this->get_output()->get_target() == output_target::window;
+	}
+
 	void renderer_output_manager::populate_render_targets()
 	{
 		this->render_targets.clear();
-		if(this->output == nullptr || this->output->get_target() == tz::gl::output_target::window)
+		if(this->targets_window())
 		{
 			// we use window output. swapchain and device depth.
 			auto& swapchain = tz::gl::get_device2().get_swapchain();
@@ -720,7 +725,7 @@ namespace tz::gl
 
 	void renderer_command_processor::do_frame()
 	{
-		const bool can_present = (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+		const bool can_present = this->targets_window();
 		const bool will_present = !this->no_present_enabled && can_present;
 		const bool compute = renderer_pipeline::get_pipeline_type() == renderer_pipeline::pipeline_type_t::compute;
 		tz::basic_list<const vk2::Semaphore*> extra_waits = {};
@@ -886,7 +891,7 @@ namespace tz::gl
 	{
 		this->set_work_commands([this, state, &label, &options](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
-			const bool present = !options.contains(tz::gl::renderer_option::no_present) && (renderer_output_manager::get_output() == nullptr || renderer_output_manager::get_output()->get_target() == output_target::window);
+			const bool present = !options.contains(tz::gl::renderer_option::no_present) && renderer_output_manager::targets_window();
 			record.debug_begin_label({.name = label});
 			vk2::Image& cur_swapchain_image = tz::gl::get_device2().get_swapchain().get_images()[render_target_id];
 
@@ -1171,10 +1176,10 @@ namespace tz::gl
 	renderer_command_processor(rinfo),
 	options(rinfo.get_options()),
 	state(rinfo.state()),
+	window_cache_dims(tz::window().get_dimensions()),
 	null_flag(false)
 	{
 		TZ_PROFZONE("renderer_vulkan2 - initialise", 0xFFAAAA00);
-
 	}
 
 	renderer_vulkan2::~renderer_vulkan2()
@@ -1198,6 +1203,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::render()
 	{
+		this->check_and_handle_resize();
 		renderer_command_processor::do_frame();
 	}
 
@@ -1206,6 +1212,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::edit(tz::gl::renderer_edit_request req)
 	{
+		this->check_and_handle_resize();
 		if(req.empty())
 		{
 			return;
@@ -1293,5 +1300,23 @@ namespace tz::gl
 	bool renderer_vulkan2::is_null() const
 	{
 		return this->null_flag;
+	}
+
+	void renderer_vulkan2::check_and_handle_resize()
+	{
+		if(renderer_output_manager::targets_window() && (this->window_cache_dims != tz::window().get_dimensions()))
+		{
+			this->do_resize();
+			this->window_cache_dims = tz::window().get_dimensions();
+		}
+	}
+
+	void renderer_vulkan2::do_resize()
+	{
+		tz::gl::get_device2().vk_get_logical_device().wait_until_idle();
+		tz::gl::get_device2().vk_notify_resize();
+		renderer_output_manager::populate_render_targets();
+		renderer_pipeline::update_pipeline();
+		renderer_command_processor::record_commands(this->state, this->options, "e");
 	}
 }

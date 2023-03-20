@@ -273,6 +273,17 @@ namespace tz::gl
 		this->recent_acquire = std::nullopt;
 	}
 
+	void device_window::vk_notify_resize()
+	{
+		if(this->dimensions_cache != tz::window().get_dimensions())
+		{
+			device_vulkan_base::vk_get_logical_device().wait_until_idle();
+			this->swapchain.refresh();
+			this->make_depth_image();
+			this->dimensions_cache = tz::window().get_dimensions();
+		}
+	}
+
 	void device_window::make_depth_image()
 	{
 		tz::assert(!this->swapchain.is_null());

@@ -53,6 +53,7 @@ namespace tz::gl
 		std::span<vk2::BinarySemaphore> get_image_semaphores();
 		const vk2::Swapchain::ImageAcquisitionResult* get_recent_acquire() const;
 		void vk_acquire_done();
+		void vk_notify_resize();
 	private:
 		void make_depth_image();
 		void initialise_image_semaphores();
@@ -62,6 +63,7 @@ namespace tz::gl
 		tz::vec2ui dimensions_cache = tz::vec2ui::zero();
 		std::optional<vk2::Swapchain::ImageAcquisitionResult> recent_acquire = std::nullopt;
 		std::vector<vk2::BinarySemaphore> image_semaphores = {};
+		tz::vec2ui window_dims_cache = {};
 	};
 
 	class device_render_sync : public device_window

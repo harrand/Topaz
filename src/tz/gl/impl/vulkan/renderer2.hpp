@@ -102,9 +102,9 @@ namespace tz::gl
 	protected:
 		std::span<render_target_t> get_render_targets();
 		tz::vec2ui get_render_target_dimensions() const;
-	private:
+		bool targets_window() const;
 		void populate_render_targets();
-
+	private:
 		std::unique_ptr<tz::gl::ioutput> output = nullptr;
 		std::vector<render_target_t> render_targets = {};
 	};
@@ -210,9 +210,12 @@ namespace tz::gl
 		bool is_null() const;
 	private:
 		renderer_vulkan2() = default;
+		void check_and_handle_resize();
+		void do_resize();
 
 		tz::gl::renderer_options options = {};
 		tz::gl::render_state state = {};
+		tz::vec2ui window_cache_dims = {};
 		bool null_flag = true;
 	};
 	static_assert(tz::gl::renderer_type<renderer_vulkan2>);
