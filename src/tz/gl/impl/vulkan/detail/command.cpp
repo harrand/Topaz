@@ -97,7 +97,7 @@ namespace tz::gl::vk2
 		}
 		tz::assert(std::all_of(colour_attachments.begin(), colour_attachments.end(), [dims](const auto& imgview){return imgview.get_image().get_dimensions() == dims;}));
 		VkClearDepthStencilValue clearvald;
-		clearvald.depth = 0.0f;
+		clearvald.depth = 1.0f;
 		VkRenderingAttachmentInfo depth_attachment_native
 		{
 			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
