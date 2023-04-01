@@ -42,11 +42,19 @@ namespace tz::gl
 
 	const icomponent* renderer_resource_manager::get_component(tz::gl::resource_handle rh) const
 	{
+		if(rh == tz::nullhand)
+		{
+			return nullptr;
+		}
 		return this->components[static_cast<std::size_t>(static_cast<tz::hanval>(rh))].get();
 	}
 
 	icomponent* renderer_resource_manager::get_component(tz::gl::resource_handle rh)
 	{
+		if(rh == tz::nullhand)
+		{
+			return nullptr;
+		}
 		return this->components[static_cast<std::size_t>(static_cast<tz::hanval>(rh))].get();
 	}
 
@@ -1290,7 +1298,7 @@ namespace tz::gl
 				[](auto arg)
 				{
 					(void)arg;
-					//tz::error("renderer edit type NYFI");
+					tz::error("renderer edit type NYFI");
 				}
 			}, edit);
 		}
@@ -1316,7 +1324,7 @@ namespace tz::gl
 
 	void renderer_vulkan2::dbgui()
 	{
-		//tz::error("NYI");
+		tz::gl::common_renderer_dbgui(*this);
 	}
 
 	std::string_view renderer_vulkan2::debug_get_name() const

@@ -768,7 +768,7 @@ namespace tz::gl
 
 	void device_vulkan2::dbgui()
 	{
-		ImGui::TextColored(ImVec4{1.0, 0.0, 0.0, 1.0}, "Well met!");
+		tz::gl::common_device_dbgui(*this);
 	}
 
 	void device_vulkan2::end_frame()

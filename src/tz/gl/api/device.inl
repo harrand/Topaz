@@ -146,6 +146,40 @@ namespace tz::gl
 		}
 		ImGui::Unindent();
 		ImGui::Separator();
-		device.render_graph().dbgui();
+		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Render Graph");
+		if(ImGui::BeginTabBar("#rendergraph"))
+		{
+			const auto& sched = device.render_graph();
+			if(ImGui::BeginTabItem("Timeline"))
+			{
+				for(eid_t e : sched.timeline)
+				{
+					auto& ren = device.get_renderer(static_cast<tz::hanval>(e));
+					std::string_view name = ren.debug_get_name();
+					if(ImGui::Button(name.data()))
+					{
+						id = e;
+					}
+					ImGui::SameLine();
+					ImGui::Text(" -> ");
+					ImGui::SameLine();
+				}
+				#if TZ_DEBUG
+				for(std::size_t i = 0; i < 2; i++)
+				{
+					if(device.renderer_count() > i && ImGui::Button(device.get_renderer(static_cast<tz::hanval>(i)).debug_get_name().data()))
+					{
+						id = i;
+					}
+					ImGui::SameLine();
+					ImGui::Text(" -> ");
+					ImGui::SameLine();
+				}
+				#endif
+				ImGui::Text("EOF");
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+		}
 	}
 }

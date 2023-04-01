@@ -41,7 +41,6 @@ namespace tz::gl
 			tz::assert(iter != this->events.end());
 			(iter->dependencies.push_back(static_cast<eid_t>(static_cast<tz::hanval>(deps))), ...);
 		}
-		void dbgui();
 	};
 
 }

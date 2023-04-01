@@ -366,7 +366,7 @@ namespace tz::dbgui
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::no_present, tz::gl::renderer_option::render_wait, tz::gl::renderer_option::_internal});
 		rinfo.set_output(wout);
-		rinfo.debug_name("ImGui Intermediate renderer");
+		rinfo.debug_name("Dbgui Renderer");
 		
 		global_render_data->renderer = tz::gl::get_device2().create_renderer(rinfo);
 
@@ -374,7 +374,7 @@ namespace tz::dbgui
 		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::_internal_final_dbgui_renderer, tz::gl::renderer_option::_internal});
-		empty.debug_name("ImGui Final renderer");
+		empty.debug_name("Dbgui Present");
 		global_render_data->final_renderer = tz::gl::get_device2().create_renderer(empty);
 
 		io.Fonts->SetTexID(0);
