@@ -100,6 +100,7 @@ namespace tz::gl
 		};
 		const ioutput* get_output() const;
 	protected:
+		ioutput* get_output_mutable();
 		std::span<render_target_t> get_render_targets();
 		tz::vec2ui get_render_target_dimensions() const;
 		bool targets_window() const;
@@ -217,6 +218,7 @@ namespace tz::gl
 		tz::gl::render_state state = {};
 		tz::vec2ui window_cache_dims = {};
 		bool null_flag = true;
+		std::string debug_name = "Untitled Renderer";
 	};
 	static_assert(tz::gl::renderer_type<renderer_vulkan2>);
 }

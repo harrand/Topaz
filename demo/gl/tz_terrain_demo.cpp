@@ -54,7 +54,7 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::tessellation_control, ImportedShaderSource(tz_terrain_demo, tesscon));
 		rinfo.shader().set_shader(tz::gl::shader_stage::tessellation_evaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_terrain_demo, fragment));
-		//rinfo.state().graphics.clear_colour = {0.0f, 0.765f, 1.0f, 1.0f};
+		rinfo.debug_name("Terrain Renderer");
 
 		tz::gl::renderer_handle rendererh = tz::gl::get_device2().create_renderer(rinfo);
 		tz::gl::renderer2& renderer = tz::gl::get_device2().get_renderer(rendererh);

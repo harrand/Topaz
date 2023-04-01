@@ -477,6 +477,11 @@ namespace tz::gl
 		return this->output.get();
 	}
 
+	ioutput* renderer_output_manager::get_output_mutable()
+	{
+		return this->output.get();
+	}
+
 	std::span<renderer_output_manager::render_target_t> renderer_output_manager::get_render_targets()
 	{
 		return this->render_targets;
@@ -717,7 +722,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
 		this->scratch_initialise_static_resources();
-		this->record_commands(rinfo.state(), rinfo.get_options(), "unnamed renderer");
+		this->record_commands(rinfo.state(), rinfo.get_options(), rinfo.debug_get_name());
 	}
 
 	renderer_command_processor::~renderer_command_processor()
@@ -1187,7 +1192,8 @@ namespace tz::gl
 	options(rinfo.get_options()),
 	state(rinfo.state()),
 	window_cache_dims(tz::window().get_dimensions()),
-	null_flag(false)
+	null_flag(false),
+	debug_name(rinfo.debug_get_name())
 	{
 		TZ_PROFZONE("renderer_vulkan2 - initialise", 0xFFAAAA00);
 	}
@@ -1269,6 +1275,17 @@ namespace tz::gl
 						side_effects.rerecord_work_commands = true;
 					}
 				},
+				[&side_effects, this](tz::gl::renderer_edit::scissor arg)
+				{
+					ioutput* out = renderer_output_manager::get_output_mutable();
+					tz::assert(out != nullptr);
+					if(arg.offset != out->scissor.offset || arg.extent != out->scissor.extent)
+					{
+						out->scissor.offset = arg.offset;
+						out->scissor.extent = arg.extent;
+						side_effects.rerecord_work_commands = true;
+					}
+				},
 				// UNKNOWN
 				[](auto arg)
 				{
@@ -1289,7 +1306,7 @@ namespace tz::gl
 		}
 		if(side_effects.rerecord_work_commands)
 		{
-			renderer_command_processor::record_commands(this->state, this->options, "NYI");
+			renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
 		}
 		if(side_effects.rewrite_static_resources)
 		{
@@ -1304,7 +1321,7 @@ namespace tz::gl
 
 	std::string_view renderer_vulkan2::debug_get_name() const
 	{
-		return "NYI";
+		return this->debug_name;
 	}
 
 	renderer_vulkan2 renderer_vulkan2::null()
@@ -1339,6 +1356,6 @@ namespace tz::gl
 		tz::gl::get_device2().vk_notify_resize();
 		renderer_output_manager::populate_render_targets();
 		renderer_pipeline::update_pipeline();
-		renderer_command_processor::record_commands(this->state, this->options, "e");
+		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
 	}
 }

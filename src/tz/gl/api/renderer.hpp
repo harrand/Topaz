@@ -274,7 +274,13 @@ namespace tz::gl
 			std::size_t tri_count;
 		};
 
-		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config, tri_count>;
+		struct scissor
+		{
+			tz::vec2ui offset = tz::vec2ui::zero();
+			tz::vec2ui extent;
+		};
+
+		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config, tri_count, scissor>;
 	};
 
 	/**
@@ -311,6 +317,7 @@ namespace tz::gl
 		RendererEditBuilder& buffer_resize(renderer_edit::buffer_resize req);
 		RendererEditBuilder& write(renderer_edit::resource_write req);
 		RendererEditBuilder& set_tri_count(renderer_edit::tri_count tris);
+		RendererEditBuilder& set_scissor(renderer_edit::scissor scis);
 		/**
 		 * Retrieve a @ref renderer_edit_request corresponding to all edits specified within the builder so far.
 		 */

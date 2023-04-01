@@ -408,27 +408,29 @@ namespace tz::dbgui
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
-		tz::gl::RendererEditBuilder edit;
-		if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() < req_idx_size)
 		{
-			edit.buffer_resize
-			({
-				.buffer_handle = global_render_data->index_buffer,
-				.size = req_idx_size
-			});
-		}
-		if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() < req_vtx_size)
-		{
-			edit.buffer_resize
-			({
-				.buffer_handle = global_render_data->vertex_buffer,
-				.size = req_vtx_size
-			});
-		}
-		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
-		{
-			TZ_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
-			renderer.edit(edit.build());
+			tz::gl::RendererEditBuilder edit;
+			if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() < req_idx_size)
+			{
+				edit.buffer_resize
+				({
+					.buffer_handle = global_render_data->index_buffer,
+					.size = req_idx_size
+				});
+			}
+			if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() < req_vtx_size)
+			{
+				edit.buffer_resize
+				({
+					.buffer_handle = global_render_data->vertex_buffer,
+					.size = req_vtx_size
+				});
+			}
+			static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
+			{
+				TZ_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
+				renderer.edit(edit.build());
+			}
 		}
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
@@ -462,19 +464,19 @@ namespace tz::dbgui
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
 
-				tz::gl::ioutput* output = (tz::gl::ioutput*)renderer.get_output();
-				tz::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
-				output->scissor.offset = static_cast<tz::vec2ui>(tz::vec2{min.x, min.y} - tz::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
-				output->scissor.extent = static_cast<tz::vec2ui>(tz::vec2{max.x, max.y});
+				auto offset = static_cast<tz::vec2ui>(tz::vec2{min.x, min.y} - tz::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
+				auto extent = static_cast<tz::vec2ui>(tz::vec2{max.x, max.y});
 #if TZ_OGL
-				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
+				extent[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif
+				tz::gl::RendererEditBuilder edit;
+				edit.set_scissor({.offset = offset, .extent = extent});
 
 				// Do a draw.
-				const std::size_t tri_count = draw_cmd.ElemCount / 3;
-				renderer.edit(tz::gl::RendererEditBuilder{}.set_tri_count({.tri_count = tri_count}).build());
+				edit.set_tri_count({.tri_count = draw_cmd.ElemCount / 3});
+				renderer.edit(edit.build());
 				if(draw_cmd.UserCallback == nullptr)
 				{
 					renderer.render();

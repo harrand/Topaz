@@ -41,6 +41,12 @@ namespace tz::gl
 		return *this;
 	}
 
+	RendererEditBuilder& RendererEditBuilder::set_scissor(renderer_edit::scissor scis)
+	{
+		this->request.push_back(scis);
+		return *this;
+	}
+
 	renderer_edit_request RendererEditBuilder::build() const
 	{
 		return this->request;

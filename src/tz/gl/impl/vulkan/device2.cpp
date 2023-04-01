@@ -3,6 +3,7 @@
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 #include "tz/gl/impl/vulkan/detail/fence.hpp"
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
+#include "tz/gl/impl/vulkan/convert.hpp"
 #include "tz/core/profile.hpp"
 #include <algorithm>
 
@@ -193,6 +194,11 @@ namespace tz::gl
 		this->make_depth_image();
 		this->initialise_image_semaphores();
 		this->debug_annotate_resources();
+	}
+
+	tz::gl::image_format device_window::get_window_format() const
+	{
+		return tz::gl::from_vk2(this->get_swapchain().get_image_format());
 	}
 
 	const vk2::Swapchain& device_window::get_swapchain() const
@@ -758,6 +764,11 @@ namespace tz::gl
 		tz::gl::renderer_handle rh = device_common<renderer_vulkan2>::emplace_renderer(rinfo);
 		device_vulkan_base::touch_renderer_id(device_common<renderer_vulkan2>::get_renderer(rh).vk_get_uid(), device_common<renderer_vulkan2>::renderer_count() - 1);
 		return rh;
+	}
+
+	void device_vulkan2::dbgui()
+	{
+		ImGui::TextColored(ImVec4{1.0, 0.0, 0.0, 1.0}, "Well met!");
 	}
 
 	void device_vulkan2::end_frame()
