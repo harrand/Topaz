@@ -328,11 +328,11 @@ namespace tz::gl
 
 	device_render_sync::device_render_sync(device_common<renderer_vulkan2>& devcom):
 	device_window(),
-	timeline(devcom.render_graph().timeline),
-	tsem(ldev, 0)
+	sched(devcom.render_graph())
 	{
 		for(std::size_t i = 0; i < device_window::get_swapchain().get_images().size(); i++)
 		{
+			this->dependency_syncs.emplace_back(ldev, 0);
 			this->frame_syncs.emplace_back(ldev, 0);
 		}
 	}
@@ -340,17 +340,22 @@ namespace tz::gl
 	void device_render_sync::vk_frame_wait(unsigned int fingerprint)
 	{
 		TZ_PROFZONE("device_render_sync - frame wait", 0xFFAA0000);
-		tz::assert(!this->timeline.empty(), "cannot wait on frame boundary because the timeline is empty!");
+		tz::assert(!this->get_timeline().empty(), "cannot wait on frame boundary because the timeline is empty!");
 		// if the first renderer of the frame needs to go, we need to make sure it waits on the frame fence.
-		if(device_vulkan_base::frame_counter > 0 && this->timeline.front() == device_vulkan_base::get_rid(fingerprint))
+		if(device_vulkan_base::frame_counter > 0 && this->get_timeline().front() == device_vulkan_base::get_rid(fingerprint))
 		{
 			this->frame_syncs[frame_id].wait_for(device_vulkan_base::global_timeline + 1);
 		}
 	}
 
+	const tz::gl::schedule& device_render_sync::get_schedule() const
+	{
+		return this->sched;
+	}
+
 	const tz::gl::timeline_t& device_render_sync::get_timeline() const
 	{
-		return this->timeline;
+		return this->get_schedule().timeline;
 	}
 
 	std::vector<const vk2::Semaphore*> device_render_sync::vk_get_dependency_waits(unsigned int fingerprint)
@@ -368,6 +373,31 @@ namespace tz::gl
 	std::span<vk2::TimelineSemaphore> device_render_sync::get_frame_sync_objects()
 	{
 		return this->frame_syncs;
+	}
+
+	std::span<vk2::TimelineSemaphore> device_render_sync::get_dependency_sync_objects()
+	{
+		return this->dependency_syncs;
+	}
+
+	std::uint64_t device_render_sync::get_sync_id(std::size_t renderer_id) const
+	{
+		const tz::gl::schedule& sch = device_render_sync::get_schedule();
+		std::uint64_t tl_val = 0;
+		for(tz::gl::eid_t evt : sch.get_dependencies(renderer_id))
+		{
+			tl_val = std::max(tl_val, get_sync_id(evt));
+		}
+		if(sch.get_dependencies(renderer_id).size())
+		{
+			tl_val++;
+		}
+		return tl_val;
+	}
+
+	std::uint64_t device_render_sync::get_renderer_sync_id(unsigned int fingerprint) const
+	{
+		return get_sync_id(device_vulkan_base::get_rid(fingerprint));
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -568,9 +598,16 @@ namespace tz::gl
 			(void)allocation_id;
 		#endif // TZ_DEBUG
 		vk2::hardware::Queue* q = this->get_original_queue(this->fingerprint_alloc_types[fingerprint]);	
+		vk2::TimelineSemaphore& dep_sem = device_render_sync::get_dependency_sync_objects()[device_vulkan_base::frame_id];
+		tz::assert(!dep_sem.is_null());
 
 		vk2::hardware::Queue::SubmitInfo submit;
 		tz::basic_list<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits = {};
+		std::size_t timeline_id = device_render_sync::get_renderer_sync_id(fingerprint) + device_vulkan_base::global_timeline;
+		if(dep_sem.get_value() < timeline_id)
+		{
+			waits.add({.wait_semaphore = &dep_sem, .wait_stage = vk2::PipelineStage::AllCommands, .timeline = timeline_id});
+		}
 		// TODO: fill waits with timeline semaphores frmo dependencies. probably signals too?
 
 		for(const vk2::Semaphore* wait : extra_waits)
@@ -579,6 +616,10 @@ namespace tz::gl
 		}
 
 		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals = {};
+		if(dep_sem.get_value() < timeline_id + 1)
+		{
+			signals.add({.signal_semaphore = &dep_sem, .timeline = timeline_id + 1});
+		}
 		for(const vk2::Semaphore* signal : extra_signals)
 		{
 			signals.add({.signal_semaphore = signal});

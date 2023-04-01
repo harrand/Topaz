@@ -1,6 +1,7 @@
 #ifndef TZ_GL_API_SCHEDULE_HPP
 #define TZ_GL_API_SCHEDULE_HPP
 #include "tz/core/data/handle.hpp"
+#include "tz/core/debug.hpp"
 #include <vector>
 #include <span>
 #include <unordered_set>
@@ -31,6 +32,15 @@ namespace tz::gl
 		timeline_t timeline = {};
 
 		std::span<const eid_t> get_dependencies(eid_t evt) const;
+
+		template<typename T0, typename... T>
+		void add_dependencies(T0 evth, T... deps)
+		{
+			auto evt = static_cast<eid_t>(static_cast<tz::hanval>(evth));
+			auto iter = std::find_if(this->events.begin(), this->events.end(), [evt](const auto& event){return event.eid == evt;});
+			tz::assert(iter != this->events.end());
+			(iter->dependencies.push_back(static_cast<eid_t>(static_cast<tz::hanval>(deps))), ...);
+		}
 		void dbgui();
 	};
 

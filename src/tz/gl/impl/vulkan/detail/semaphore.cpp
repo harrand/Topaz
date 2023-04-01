@@ -181,6 +181,13 @@ namespace tz::gl::vk2
 			break;
 		}
 	}
+
+	std::uint64_t TimelineSemaphore::get_value() const
+	{
+		std::uint64_t ret;
+		vkGetSemaphoreCounterValue(BinarySemaphore::device->native(), this->sem, &ret);
+		return ret;
+	}
 	
 	bool TimelineSemaphore::supported(const LogicalDevice& device)
 	{

@@ -70,14 +70,18 @@ namespace tz::gl
 	public:
 		device_render_sync(device_common<renderer_vulkan2>& devcom);
 		void vk_frame_wait(unsigned int fingerprint);
+		const tz::gl::schedule& get_schedule() const;
 		const tz::gl::timeline_t& get_timeline() const;
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
 	protected:
 		std::span<vk2::TimelineSemaphore> get_frame_sync_objects();
+		std::span<vk2::TimelineSemaphore> get_dependency_sync_objects();
+		std::uint64_t get_sync_id(std::size_t renderer_id) const;
+		std::uint64_t get_renderer_sync_id(unsigned int fingerprint) const;
 	private:
-		const tz::gl::timeline_t& timeline;
-		vk2::TimelineSemaphore tsem;
+		const tz::gl::schedule& sched;
+		std::vector<vk2::TimelineSemaphore> dependency_syncs = {};
 		std::vector<vk2::TimelineSemaphore> frame_syncs = {};
 	};
 

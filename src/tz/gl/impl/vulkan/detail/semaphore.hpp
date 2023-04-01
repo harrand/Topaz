@@ -79,6 +79,10 @@ namespace tz::gl::vk2
 		 * Blocks the current thread and waits until the semaphore has reached the provided value.
 		 */
 		void wait_for(std::uint64_t value) const;
+		/**
+		 * Retrieve the current semaphore value.
+		 */
+		std::uint64_t get_value() const;
 
 		/**
 		 * Timeline Semaphores are optional features and must be enabled. This is a helper function which can determine if a @ref LogicalDevice has enabled Timeline Semaphores.

@@ -1014,7 +1014,7 @@ namespace tz::gl
 				record.bind_descriptor_sets
 				(vk2::VulkanCommand::BindDescriptorSets{
 					.pipeline_layout = &renderer_pipeline::get_pipeline_layout(),
-					.context = vk2::PipelineContext::graphics,
+					.context = vk2::PipelineContext::compute,
 					.descriptor_sets = sets,
 					.first_set_id = 0u
 				});
