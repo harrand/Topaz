@@ -104,7 +104,7 @@ namespace tz::gl
 		std::span<render_target_t> get_render_targets();
 		tz::vec2ui get_render_target_dimensions() const;
 		bool targets_window() const;
-		void populate_render_targets();
+		void populate_render_targets(const tz::gl::renderer_options& options);
 	private:
 		std::unique_ptr<tz::gl::ioutput> output = nullptr;
 		std::vector<render_target_t> render_targets = {};

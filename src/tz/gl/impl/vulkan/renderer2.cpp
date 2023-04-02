@@ -1,6 +1,7 @@
 #include "tz/gl/impl/vulkan/renderer2.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/gl/device.hpp"
+#include "tz/gl/output.hpp"
 
 namespace tz::gl
 {
@@ -477,7 +478,7 @@ namespace tz::gl
 	renderer_descriptor_manager(rinfo),
 	output(rinfo.get_output() == nullptr ? nullptr : rinfo.get_output()->unique_clone())
 	{
-		this->populate_render_targets();
+		this->populate_render_targets(rinfo.get_options());
 	}
 
 	const ioutput* renderer_output_manager::get_output() const
@@ -507,19 +508,19 @@ namespace tz::gl
 		return this->get_output() == nullptr || this->get_output()->get_target() == output_target::window;
 	}
 
-	void renderer_output_manager::populate_render_targets()
+	void renderer_output_manager::populate_render_targets(const tz::gl::renderer_options& options)
 	{
 		TZ_PROFZONE("renderer_output_manager - populate render targets", 0xFFAAAA00);
 		this->render_targets.clear();
-		if(this->targets_window())
+		auto& swapchain = tz::gl::get_device2().get_swapchain();
+		const std::uint32_t frame_in_flight_count = swapchain.get_images().size();
+		this->render_targets.resize(frame_in_flight_count);
+		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
-			// we use window output. swapchain and device depth.
-			auto& swapchain = tz::gl::get_device2().get_swapchain();
-			const std::uint32_t frame_in_flight_count = swapchain.get_images().size();
-			this->render_targets.resize(frame_in_flight_count);
-			for(std::size_t i = 0; i < frame_in_flight_count; i++)
+			auto& colours = this->render_targets[i].colour_attachments;
+			if(this->targets_window())
 			{
-				auto& colours = this->render_targets[i].colour_attachments;
+				// use swapchain images and device depth image.
 				colours.push_back
 				(vk2::ImageView{{
 					.image = &swapchain.get_images()[i],
@@ -530,6 +531,42 @@ namespace tz::gl
 					.image = &tz::gl::get_device2().get_depth_image(),
 					.aspect = vk2::ImageAspectFlag::Depth
 				}};
+			}
+			else
+			{
+				// use image output.
+				auto& imgout = static_cast<tz::gl::image_output&>(*this->output.get());
+				// colour
+				for(std::size_t j = 0; j < imgout.colour_attachment_count(); j++)
+				{
+					colours.push_back(vk2::ImageView
+					{{
+						.image = &imgout.get_colour_attachment(j).vk_get_image(),
+						.aspect = vk2::ImageAspectFlag::Colour
+					}});
+				}
+				// depth
+				if(!options.contains(tz::gl::renderer_option::no_depth_testing))
+				{
+					// if we have depth enabled, we use the image output's depth image.
+					// if it doesn't have one, we use the global device depth image.
+					if(imgout.has_depth_attachment())
+					{
+						this->render_targets[i].depth_attachment = vk2::ImageView
+						{{
+							.image = &imgout.get_depth_attachment().vk_get_image(),
+							.aspect = vk2::ImageAspectFlag::Depth
+						}};
+					}
+					else
+					{
+						this->render_targets[i].depth_attachment = vk2::ImageView
+						{{
+							.image = &tz::gl::get_device2().get_depth_image(),
+							.aspect = vk2::ImageAspectFlag::Depth
+						}};
+					}
+				}
 			}
 		}
 	}
@@ -568,6 +605,7 @@ namespace tz::gl
 		{
 			case pipeline_type_t::graphics:
 			{
+				tz::assert(renderer_output_manager::get_render_targets().size(), "no render targets. please submit a bug report.");
 				const render_target_t& render_target_info = renderer_output_manager::get_render_targets().front();
 				tz::basic_list<vk2::ColourBlendState::AttachmentState> blending_options;
 				vk2::ColourBlendState::AttachmentState blend_state = this->pipeline_config.alpha_blending ? vk2::ColourBlendState::alpha_blending() : vk2::ColourBlendState::no_blending();
@@ -1362,7 +1400,7 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("renderer_vulkan2 - do resize", 0xFFAAAA00);
 		tz::gl::get_device2().vk_notify_resize();
-		renderer_output_manager::populate_render_targets();
+		renderer_output_manager::populate_render_targets(this->options);
 		renderer_pipeline::update_pipeline();
 		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
 	}
