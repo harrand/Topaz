@@ -32,10 +32,9 @@ int main()
 		}));
 		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(tz_gpu_driven_demo, compute));
 		cinfo.debug_name("Compute Driver");
-		tz::gl::renderer_handle ch = tz::gl::get_device().create_renderer(cinfo);
+		tz::gl::renderer_handle ch = tz::gl::get_device2().create_renderer(cinfo);
 
 		tz::gl::renderer_info rinfo;
-		rinfo.add_dependency(ch);
 		rinfo.debug_name("Triangle renderer");
 		tz::gl::resource_handle dbufh_ref = rinfo.ref_resource(ch, dbufh);
 		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
@@ -43,18 +42,19 @@ int main()
 		rinfo.state().graphics.tri_count = 1;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_gpu_driven_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_gpu_driven_demo_render, fragment));
-		tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::renderer_handle rh = tz::gl::get_device2().create_renderer(rinfo);
 
-		tz::gl::get_device().render_graph().timeline = {ch, rh};
+		tz::gl::get_device2().render_graph().timeline = {ch, rh};
+		tz::gl::get_device2().render_graph().add_dependencies(rh, ch);
 
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			tz::gl::get_device().render();
+			tz::gl::get_device2().render();
 			tz::dbgui::run([ch, count_bufh]()
 			{
 				ImGui::Begin("#countdbgui");
-				auto& count = tz::gl::get_device().get_renderer(ch).get_resource(count_bufh)->data_as<std::uint32_t>().front();
+				auto& count = tz::gl::get_device2().get_renderer(ch).get_resource(count_bufh)->data_as<std::uint32_t>().front();
 				ImGui::SliderInt("Draw Count", reinterpret_cast<int*>(&count), 1, max_draw_count, "%zu");
 				ImGui::End();
 			});

@@ -1018,16 +1018,70 @@ namespace tz::gl
 					});
 				}
 
-				// todo: support for index and draw buffers.
-				tz::assert(state.graphics.index_buffer == tz::nullhand, "index buffers are NYI");
-				tz::assert(state.graphics.draw_buffer == tz::nullhand, "draw indirect buffers are NYI");
-				record.draw
-				({
-					.vertex_count = static_cast<std::uint32_t>(3 * state.graphics.tri_count),
-					.instance_count = 1,
-					.first_vertex = 0,
-					.first_instance = 0
-				});
+				auto* index_buffer = static_cast<tz::gl::buffer_component_vulkan*>(renderer_resource_manager::get_component(state.graphics.index_buffer));
+				auto* indirect_buffer = static_cast<tz::gl::buffer_component_vulkan*>(renderer_resource_manager::get_component(state.graphics.draw_buffer));
+				if(index_buffer == nullptr)
+				{
+					if(indirect_buffer == nullptr)
+					{
+						record.draw
+						({
+							.vertex_count = static_cast<std::uint32_t>(3 * state.graphics.tri_count),
+							.instance_count = 1,
+							.first_vertex = 0,
+							.first_instance = 0
+						});
+					}
+					else
+					{
+						if(options.contains(tz::gl::renderer_option::draw_indirect_count))
+						{
+							record.draw_indirect_count
+							({
+								.draw_indirect_buffer = &indirect_buffer->vk_get_buffer(),
+								.max_draw_count = static_cast<std::uint32_t>(indirect_buffer->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand))
+							});
+						}
+						else
+						{
+							record.draw_indirect
+							({
+								.draw_indirect_buffer = &indirect_buffer->vk_get_buffer(),
+								.draw_count = static_cast<std::uint32_t>(indirect_buffer->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand))
+							});
+						}
+					}
+				}
+				else
+				{
+					record.bind_index_buffer({.index_buffer = &index_buffer->vk_get_buffer()});
+					if(indirect_buffer == nullptr)
+					{
+						record.draw_indexed
+						({
+							.index_count = static_cast<std::uint32_t>(3 * state.graphics.tri_count)
+						});
+					}
+					else
+					{
+						if(options.contains(tz::gl::renderer_option::draw_indirect_count))
+						{
+							tz::error("draw_indirect_count indexed is NYI");
+						}
+						else
+						{
+							record.draw_indexed_indirect
+							({
+								.draw_indirect_buffer = &indirect_buffer->vk_get_buffer(),
+								.draw_count = static_cast<std::uint32_t>(indirect_buffer->get_resource()->data().size_bytes() / sizeof(VkDrawIndexedIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndexedIndirectCommand)),
+								.offset = static_cast<VkDeviceSize>(0)
+							});
+						}
+					}
+				}
 			}
 			if(present)
 			{
