@@ -119,7 +119,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		ImGui::SliderInt("Renderer ID ID", &id, 0, renderer_count - 1);
+		ImGui::SliderInt("Renderer ID", &id, 0, renderer_count - 1);
 		ImGui::Indent();
 		const auto& renderer = device.get_renderer(static_cast<tz::hanval>(id));
 		if(renderer.get_options().contains(tz::gl::renderer_option::_internal) && !display_internal_renderers)
@@ -150,10 +150,17 @@ namespace tz::gl
 		if(ImGui::BeginTabBar("#rendergraph"))
 		{
 			const auto& sched = device.render_graph();
+			constexpr ImVec4 edge_default{1.0f, 1.0f, 1.0f, 1.0f};
+			constexpr ImVec4 edge_dependency{0.6f, 0.0f, 0.0f, 1.0f};
+			constexpr ImVec4 edge_renderwait{0.4f, 0.5f, 1.0f, 1.0f};
+			constexpr ImVec4 edge_implicit{0.6f, 0.6f, 0.0f, 1.0f};
 			if(ImGui::BeginTabItem("Timeline"))
 			{
-				for(eid_t e : sched.timeline)
+				static bool hide_internal = true;
+				ImGui::Checkbox("Hide Internal Renderers", &hide_internal);
+				for(std::size_t i = 0; i < sched.timeline.size(); i++)
 				{
+					eid_t e = sched.timeline[i];
 					auto& ren = device.get_renderer(static_cast<tz::hanval>(e));
 					std::string_view name = ren.debug_get_name();
 					if(ImGui::Button(name.data()))
@@ -161,22 +168,54 @@ namespace tz::gl
 						id = e;
 					}
 					ImGui::SameLine();
-					ImGui::Text(" -> ");
-					ImGui::SameLine();
+					ImVec4 col = edge_default;
+					if(ren.get_options().contains(tz::gl::renderer_option::render_wait))
+					{
+						col = edge_renderwait;
+					}
+					auto deps = sched.get_dependencies(sched.timeline[i + 1]);
+					if(i < (sched.timeline.size() - 1) && std::find(deps.begin(), deps.end(), e) != deps.end())
+					{
+						col = edge_dependency;
+					}
+					if(i == sched.timeline.size() - 1)
+					{
+						col = edge_implicit;
+					}
+					if(!hide_internal || i < (sched.timeline.size() - 1))
+					{
+						ImGui::TextColored(col, " -> ");
+						ImGui::SameLine();
+					}
 				}
 				#if TZ_DEBUG
-				for(std::size_t i = 0; i < 2; i++)
-				{
-					if(device.renderer_count() > i && ImGui::Button(device.get_renderer(static_cast<tz::hanval>(i)).debug_get_name().data()))
+				if(!hide_internal)
+				{			
+					for(std::size_t i = 0; i < 2; i++)
 					{
-						id = i;
+						if(device.renderer_count() > i && ImGui::Button(device.get_renderer(static_cast<tz::hanval>(i)).debug_get_name().data()))
+						{
+							id = i;
+						}
+						if(i < 1)
+						{
+							ImGui::SameLine();
+							ImGui::TextColored(edge_implicit, " -> ");
+							ImGui::SameLine();
+						}
 					}
-					ImGui::SameLine();
-					ImGui::Text(" -> ");
-					ImGui::SameLine();
 				}
 				#endif
-				ImGui::Text("EOF");
+				ImGui::Spacing();
+				ImGui::Indent();
+				ImGui::Text("("); ImGui::SameLine(); ImGui::TextColored(edge_default, "->"); ImGui::SameLine(); ImGui::Text("Default)"); ImGui::SameLine();
+				ImGui::Text("("); ImGui::SameLine(); ImGui::TextColored(edge_dependency, "->"); ImGui::SameLine(); ImGui::Text("Dependency)"); ImGui::SameLine();
+				ImGui::Text("("); ImGui::SameLine(); ImGui::TextColored(edge_renderwait, "->"); ImGui::SameLine(); ImGui::Text("Render Wait)"); ImGui::SameLine();
+				if(!hide_internal)
+				{
+					ImGui::Text("("); ImGui::SameLine(); ImGui::TextColored(edge_implicit, "->"); ImGui::SameLine(); ImGui::Text("Internal)");
+				}
+				ImGui::Unindent();
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
