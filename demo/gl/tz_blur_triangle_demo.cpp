@@ -44,7 +44,8 @@ int main()
 		tz::gl::resource_handle blur_buffer_handle = postprocess_info.add_resource(blur_data);
 		tz::gl::resource_handle colour_target_handle = postprocess_info.add_resource(blur_image);
 		postprocess_info.set_options({tz::gl::renderer_option::no_depth_testing});
-		tz::gl::renderer_handle blur_rendererh = tz::gl::get_device().create_renderer(postprocess_info);
+		postprocess_info.debug_name("Blur Pass");
+		tz::gl::renderer_handle blur_rendererh = tz::gl::get_device2().create_renderer(postprocess_info);
 
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_triangle_demo, vertex));
@@ -53,23 +54,25 @@ int main()
 		rinfo.set_options({tz::gl::renderer_option::no_depth_testing});
 		rinfo.set_output(tz::gl::image_output
 		{{
-			.colours = {tz::gl::get_device().get_renderer(blur_rendererh).get_component(colour_target_handle)}
+			.colours = {tz::gl::get_device2().get_renderer(blur_rendererh).get_component(colour_target_handle)}
 		}});
+		rinfo.debug_name("Triangle Renderer");
 
-		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::renderer_handle rendererh = tz::gl::get_device2().create_renderer(rinfo);
+		tz::gl::get_device2().render_graph().timeline = {rendererh, blur_rendererh};
+		tz::gl::get_device2().render_graph().add_dependencies(blur_rendererh, rendererh);
 		
-		tz::gl::renderer& blur_renderer = tz::gl::get_device().get_renderer(blur_rendererh);
-		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
+		tz::gl::renderer2& blur_renderer = tz::gl::get_device2().get_renderer(blur_rendererh);
+		tz::gl::renderer2& renderer = tz::gl::get_device2().get_renderer(rendererh);
 
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			renderer.render();
+			tz::gl::get_device2().render();
 			BlurData& blur = blur_renderer.get_resource(blur_buffer_handle)->data_as<BlurData>().front();
 			static float counter = 0.0f;
 			blur.direction = tz::vec2{std::sin(counter) * 50.0f, std::cos(counter * 2.0f) * 50.0f};
 			counter += 0.0003f;
-			blur_renderer.render();
 			tz::end_frame();
 		}
 	}

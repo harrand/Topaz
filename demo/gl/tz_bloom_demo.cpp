@@ -127,9 +127,6 @@ int main()
 		{
 			tz::begin_frame();
 			tz::gl::get_device2().render();
-			//renderer.render();
-			//combine.render();
-
 			tz::dbgui::run([&menu_enabled, &bloom_menu_enabled, &bloom_data_handle, &combine, &render_bufh, &renderer]()
 			{
 				if(menu_enabled)

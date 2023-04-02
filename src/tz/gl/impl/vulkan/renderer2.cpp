@@ -977,7 +977,7 @@ namespace tz::gl
 				{
 					depth = nullptr;
 				}
-				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, &render_target.depth_attachment,
+				vk2::CommandBufferRecording::DynamicRenderingRun run{record, render_target.colour_attachments, depth,
 				{
 					.clear_colour = state.graphics.clear_colour,
 					.colour_load = options.contains(tz::gl::renderer_option::no_clear_output) ? vk2::LoadOp::Load : vk2::LoadOp::Clear,
