@@ -9,6 +9,7 @@
 #include "tz/gl/output.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
+#include "tz/gl/draw.hpp"
 #include "tz/gl/imported_shaders.hpp"
 #include "imgui.h"
 
@@ -45,6 +46,7 @@ namespace tz::dbgui
 		tz::gl::renderer_handle final_renderer = tz::nullhand;
 		tz::gl::resource_handle vertex_buffer = tz::nullhand;
 		tz::gl::resource_handle index_buffer = tz::nullhand;
+		tz::gl::resource_handle draw_buffer = tz::nullhand;
 		tz::gl::resource_handle shader_data_buffer = tz::nullhand;
 	};
 
@@ -341,6 +343,15 @@ namespace tz::dbgui
 		{
 			.access = tz::gl::resource_access::dynamic_variable
 		});
+		tz::gl::buffer_resource draw_buffer = tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command
+		{
+			.count = 0u,
+			.first = 0
+		},
+		{
+			.access = tz::gl::resource_access::dynamic_fixed,
+			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
+		});
 		tz::gl::buffer_resource shader_data_buffer = tz::gl::buffer_resource::from_one(TopazShaderRenderData{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
@@ -361,7 +372,9 @@ namespace tz::dbgui
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
+		global_render_data->draw_buffer = rinfo.add_resource(draw_buffer);
 		rinfo.add_resource(font_image);
+		rinfo.state().graphics.draw_buffer = global_render_data->draw_buffer;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::no_present, tz::gl::renderer_option::render_wait, tz::gl::renderer_option::_internal});
@@ -474,9 +487,9 @@ namespace tz::dbgui
 				tz::gl::RendererEditBuilder edit;
 				edit.set_scissor({.offset = offset, .extent = extent});
 
-				// Do a draw.
-				edit.set_tri_count({.tri_count = draw_cmd.ElemCount / 3});
-				renderer.edit(edit.build());
+				// TODO: Do the edit and apply the scissor rectangle. Uncomment the below line to actually do this, potentially incorrect results without scissor rectangles, however avoiding this renderer edit will yield a ~4x speed improvement.
+				//renderer.edit(edit.build());
+				renderer.get_resource(global_render_data->draw_buffer)->data_as<tz::gl::draw_indexed_indirect_command>().front().count = draw_cmd.ElemCount;
 				if(draw_cmd.UserCallback == nullptr)
 				{
 					renderer.render();

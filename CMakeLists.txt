@@ -179,6 +179,7 @@ add_library(topaz STATIC
 	src/tz/gl/impl/vulkan/detail/debugname.inl
 	src/tz/gl/impl/vulkan/detail/descriptors.cpp
 	src/tz/gl/impl/vulkan/detail/descriptors.hpp
+	src/tz/gl/impl/vulkan/detail/draw.hpp
 	src/tz/gl/impl/vulkan/detail/extensions.hpp
 	src/tz/gl/impl/vulkan/detail/features.hpp
 	src/tz/gl/impl/vulkan/detail/fence.cpp
