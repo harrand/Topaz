@@ -78,6 +78,7 @@ int main()
 		combine_info.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_bloom_demo_combine, vertex));
 		combine_info.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_bloom_demo_combine, fragment));
 		combine_info.state().graphics.tri_count = 1;
+		combine_info.debug_name("Blur Pass");
 		tz::gl::renderer_handle combineh = tz::gl::get_device2().create_renderer(combine_info);
 
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
@@ -99,6 +100,7 @@ int main()
 		{{
 			.colours = {combine_old.get_component(iout0h), combine_old.get_component(iout1h)}
 		}});
+		rinfo.debug_name("Shape Renderer");
 		tz::gl::renderer_handle rendererh = tz::gl::get_device2().create_renderer(rinfo);
 		tz::gl::get_device2().render_graph().timeline = {rendererh, combineh};
 		tz::gl::get_device2().render_graph().add_dependencies(combineh, rendererh);
