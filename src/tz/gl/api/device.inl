@@ -196,6 +196,7 @@ namespace tz::gl
 						if(device.renderer_count() > i && ImGui::Button(device.get_renderer(static_cast<tz::hanval>(i)).debug_get_name().data()))
 						{
 							id = i;
+							display_internal_renderers = true;
 						}
 						if(i < 1)
 						{
