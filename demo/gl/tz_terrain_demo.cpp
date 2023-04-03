@@ -56,8 +56,8 @@ int main()
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_terrain_demo, fragment));
 		rinfo.debug_name("Terrain Renderer");
 
-		tz::gl::renderer_handle rendererh = tz::gl::get_device2().create_renderer(rinfo);
-		tz::gl::renderer2& renderer = tz::gl::get_device2().get_renderer(rendererh);
+		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 		tz::vec3 cam_rot{0.0f, 0.0f, 0.0f};
 		bool flight_enabled = false;
 		bool game_menu_enabled = false;
@@ -68,7 +68,7 @@ int main()
 		{
 			ImGui::MenuItem("Control Panel", nullptr, &game_menu_enabled);
 		});
-		tz::gl::get_device2().render_graph().timeline = {rendererh};
+		tz::gl::get_device().render_graph().timeline = {rendererh};
 
 		constexpr float multiplier = 3.5f;
 		while(!tz::window().is_close_requested())

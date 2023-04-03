@@ -79,7 +79,7 @@ int main()
 		combine_info.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_bloom_demo_combine, fragment));
 		combine_info.state().graphics.tri_count = 1;
 		combine_info.debug_name("Blur Pass");
-		tz::gl::renderer_handle combineh = tz::gl::get_device2().create_renderer(combine_info);
+		tz::gl::renderer_handle combineh = tz::gl::get_device().create_renderer(combine_info);
 
 		// Firstly draw some shapes. Brighter pixels are written into a second colour attachment
 		tz::gl::buffer_resource render_data = tz::gl::buffer_resource::from_one(RenderData{},
@@ -93,7 +93,7 @@ int main()
 		rinfo.state().graphics.tri_count = 3;
 		tz::gl::resource_handle render_bufh = rinfo.add_resource(render_data);
 
-		tz::gl::renderer2& combine_old = tz::gl::get_device2().get_renderer(combineh);
+		tz::gl::renderer& combine_old = tz::gl::get_device().get_renderer(combineh);
 
 		tz::gl::resource_handle bloom_bufh = rinfo.ref_resource(combine_old.get_component(bloom_data_handle));
 		rinfo.set_output(tz::gl::image_output
@@ -101,9 +101,9 @@ int main()
 			.colours = {combine_old.get_component(iout0h), combine_old.get_component(iout1h)}
 		}});
 		rinfo.debug_name("Shape Renderer");
-		tz::gl::renderer_handle rendererh = tz::gl::get_device2().create_renderer(rinfo);
-		tz::gl::get_device2().render_graph().timeline = {rendererh, combineh};
-		tz::gl::get_device2().render_graph().add_dependencies(combineh, rendererh);
+		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::get_device().render_graph().timeline = {rendererh, combineh};
+		tz::gl::get_device().render_graph().add_dependencies(combineh, rendererh);
 
 		// Blur the second colour attachment
 		// TODO
@@ -120,13 +120,13 @@ int main()
 			ImGui::MenuItem("Bloom", nullptr, &bloom_menu_enabled);
 		});
 
-		tz::gl::renderer2& combine = tz::gl::get_device2().get_renderer(combineh);
-		tz::gl::renderer2& renderer = tz::gl::get_device2().get_renderer(rendererh);
+		tz::gl::renderer& combine = tz::gl::get_device().get_renderer(combineh);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			tz::gl::get_device2().render();
+			tz::gl::get_device().render();
 			tz::dbgui::run([&menu_enabled, &bloom_menu_enabled, &bloom_data_handle, &combine, &render_bufh, &renderer]()
 			{
 				if(menu_enabled)

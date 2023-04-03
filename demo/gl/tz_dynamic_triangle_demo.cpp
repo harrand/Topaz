@@ -107,12 +107,12 @@ int main()
 			)
 		);
 
-		tz::gl::renderer_handle rendererh = tz::gl::get_device2().create_renderer(rinfo);
-		tz::gl::renderer2& renderer = tz::gl::get_device2().get_renderer(rendererh);
+		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 		std::default_random_engine rand;
 		tz::delay fixed_update{50_ms};
 
-		tz::gl::get_device2().render_graph().timeline = {rendererh};
+		tz::gl::get_device().render_graph().timeline = {rendererh};
 
 		while(!tz::window().is_close_requested())
 		{

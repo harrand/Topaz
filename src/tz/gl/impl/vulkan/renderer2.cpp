@@ -1,3 +1,4 @@
+#if TZ_VULKAN
 #include "tz/gl/impl/vulkan/renderer2.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/gl/device.hpp"
@@ -235,7 +236,7 @@ namespace tz::gl
 		
 		return
 		{
-			.device = &tz::gl::get_device2().vk_get_logical_device(),
+			.device = &tz::gl::get_device().vk_get_logical_device(),
 			.min_filter = filter,
 			.mag_filter = filter,
 			.mipmap_mode = mip_filter,
@@ -347,8 +348,8 @@ namespace tz::gl
 		}
 
 		// now, apply buffer_writes and image_writes to all descriptor sets.
-		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
-		vk2::DescriptorPool::UpdateRequest update = tz::gl::get_device2().vk_make_update_request(renderer_vulkan_base::uid);
+		const std::size_t frame_in_flight_count = tz::gl::get_device().get_swapchain().get_images().size();
+		vk2::DescriptorPool::UpdateRequest update = tz::gl::get_device().vk_make_update_request(renderer_vulkan_base::uid);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
 			vk2::DescriptorSet& set = this->descriptors.data.sets[i];
@@ -367,7 +368,7 @@ namespace tz::gl
 			update.add_set_edit(req);
 		}
 		// tell the device to do all the writes.
-		tz::gl::get_device2().vk_update_sets(update, renderer_vulkan_base::uid);
+		tz::gl::get_device().vk_update_sets(update, renderer_vulkan_base::uid);
 	}
 
 	void renderer_descriptor_manager::deduce_descriptor_layout(const tz::gl::render_state& state)
@@ -408,7 +409,7 @@ namespace tz::gl
 
 		// now we can actually create the descriptor layout.
 		vk2::DescriptorLayoutBuilder builder;
-		builder.set_device(tz::gl::get_device2().vk_get_logical_device());
+		builder.set_device(tz::gl::get_device().vk_get_logical_device());
 		for(std::size_t i = 0; i < buffer_count; i++)
 		{
 			builder.with_binding
@@ -458,14 +459,14 @@ namespace tz::gl
 		}
 		// we need to know how many frames-in-flight we expect.
 		tz::assert(!this->descriptors.layout.is_null());
-		const std::size_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		const std::size_t frame_in_flight_count = tz::gl::get_device().get_swapchain().get_images().size();
 		tz::basic_list<const vk2::DescriptorLayout*> layouts;
 		layouts.resize(frame_in_flight_count);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
 		{
 			layouts[i] = &this->descriptors.layout;
 		}
-		this->descriptors.data = tz::gl::get_device2().vk_allocate_sets
+		this->descriptors.data = tz::gl::get_device().vk_allocate_sets
 		({
 			.set_layouts = std::move(layouts)
 		}, renderer_vulkan_base::uid);
@@ -512,7 +513,7 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("renderer_output_manager - populate render targets", 0xFFAAAA00);
 		this->render_targets.clear();
-		auto& swapchain = tz::gl::get_device2().get_swapchain();
+		auto& swapchain = tz::gl::get_device().get_swapchain();
 		const std::uint32_t frame_in_flight_count = swapchain.get_images().size();
 		this->render_targets.resize(frame_in_flight_count);
 		for(std::size_t i = 0; i < frame_in_flight_count; i++)
@@ -528,7 +529,7 @@ namespace tz::gl
 				 }});
 				this->render_targets[i].depth_attachment = vk2::ImageView
 				{{
-					.image = &tz::gl::get_device2().get_depth_image(),
+					.image = &tz::gl::get_device().get_depth_image(),
 					.aspect = vk2::ImageAspectFlag::Depth
 				}};
 			}
@@ -562,7 +563,7 @@ namespace tz::gl
 					{
 						this->render_targets[i].depth_attachment = vk2::ImageView
 						{{
-							.image = &tz::gl::get_device2().get_depth_image(),
+							.image = &tz::gl::get_device().get_depth_image(),
 							.aspect = vk2::ImageAspectFlag::Depth
 						}};
 					}
@@ -648,7 +649,7 @@ namespace tz::gl
 						.colour_attachment_formats = colour_attachment_formats,
 						.depth_format = render_target_info.depth_attachment.is_null() ? VK_FORMAT_UNDEFINED : static_cast<VkFormat>(render_target_info.depth_attachment.get_image().get_format())
 					},
-					.device = &tz::gl::get_device2().vk_get_logical_device(),
+					.device = &tz::gl::get_device().vk_get_logical_device(),
 				}};
 			}
 			break;
@@ -657,7 +658,7 @@ namespace tz::gl
 				{{
 					.shader = this->shader.native_data(),
 					.pipeline_layout = &this->pipeline.layout,
-					.device = &tz::gl::get_device2().vk_get_logical_device(),
+					.device = &tz::gl::get_device().vk_get_logical_device(),
 				}};
 			break;
 		}
@@ -691,12 +692,12 @@ namespace tz::gl
 				modules =
 				{
 					{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.device = &tz::gl::get_device().vk_get_logical_device(),
 						.type = vk2::ShaderType::vertex,
 						.code = vtx_src
 					},
 					{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.device = &tz::gl::get_device().vk_get_logical_device(),
 						.type = vk2::ShaderType::fragment,
 						.code = frg_src
 					},
@@ -711,13 +712,13 @@ namespace tz::gl
 					std::copy(tesseval_source.begin(), tesseval_source.end(), tesse_src.begin());
 					modules.add(vk2::ShaderModuleInfo
 					{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.device = &tz::gl::get_device().vk_get_logical_device(),
 						.type = vk2::ShaderType::tessellation_control,
 						.code = tessc_src
 					});
 					modules.add(vk2::ShaderModuleInfo
 					{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.device = &tz::gl::get_device().vk_get_logical_device(),
 						.type = vk2::ShaderType::tessellation_evaluation,
 						.code = tesse_src
 					});
@@ -731,7 +732,7 @@ namespace tz::gl
 				std::copy(compute_source.begin(), compute_source.end(), cmp_src.begin());
 				modules =
 				{{
-					.device = &tz::gl::get_device2().vk_get_logical_device(),
+					.device = &tz::gl::get_device().vk_get_logical_device(),
 					.type = vk2::ShaderType::compute,
 					.code = cmp_src
 				}};
@@ -740,19 +741,19 @@ namespace tz::gl
 		}
 		this->shader =
 		{{
-			.device = &tz::gl::get_device2().vk_get_logical_device(),
+			.device = &tz::gl::get_device().vk_get_logical_device(),
 			.modules = modules
 		}};
 	}
 
 	void renderer_pipeline::deduce_pipeline_layout()
 	{
-		const volatile std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		const volatile std::uint32_t frame_in_flight_count = tz::gl::get_device().get_swapchain().get_images().size();
 		std::vector<const vk2::DescriptorLayout*> dlayouts(frame_in_flight_count, &renderer_descriptor_manager::get_descriptor_layout());
 		this->pipeline.layout =
 		{{
 			.descriptor_layouts = std::move(dlayouts),
-			.logical_device = &tz::gl::get_device2().vk_get_logical_device(),
+			.logical_device = &tz::gl::get_device().vk_get_logical_device(),
 		}};
 	}
 
@@ -762,8 +763,8 @@ namespace tz::gl
 	renderer_pipeline(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait)),
 	no_present_enabled(rinfo.get_options().contains(tz::gl::renderer_option::no_present)),
-	render_wait_fence(vk2::FenceInfo{.device = &tz::gl::get_device2().vk_get_logical_device()}),
-	present_sync_semaphore(tz::gl::get_device2().vk_get_logical_device())
+	render_wait_fence(vk2::FenceInfo{.device = &tz::gl::get_device().vk_get_logical_device()}),
+	present_sync_semaphore(tz::gl::get_device().vk_get_logical_device())
 	{
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
@@ -788,7 +789,7 @@ namespace tz::gl
 		tz::basic_list<const vk2::Semaphore*> extra_waits = {};
 		tz::basic_list<const vk2::Semaphore*> extra_signals = {};
 		// we potentially need to do a wait if our last frame id is still going.
-		auto& dev = tz::gl::get_device2();
+		auto& dev = tz::gl::get_device();
 		dev.vk_frame_wait(renderer_vulkan_base::uid);
 		if(!compute && can_present)
 		{
@@ -843,7 +844,7 @@ namespace tz::gl
 		}
 		// then, execute them.
 		constexpr std::size_t scratch_id = 1;
-		tz::gl::get_device2().vk_submit_and_run_commands_blocking(renderer_vulkan_base::uid, scratch_id, 0, buf);
+		tz::gl::get_device().vk_submit_and_run_commands_blocking(renderer_vulkan_base::uid, scratch_id, 0, buf);
 	}
 
 	void renderer_command_processor::set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands)
@@ -911,7 +912,7 @@ namespace tz::gl
 				case tz::gl::resource_type::buffer:
 					resource_staging_buffers.push_back
 					({{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.device = &tz::gl::get_device().vk_get_logical_device(),
 		  				.size_bytes = res->data().size_bytes(),
 		  				.usage = {vk2::BufferUsage::TransferSource},
 		  				.residency = vk2::MemoryResidency::CPU
@@ -923,7 +924,7 @@ namespace tz::gl
 					tz::assert(img != nullptr);
 					resource_staging_buffers.push_back
 					({{
-						.device = &tz::gl::get_device2().vk_get_logical_device(),
+						.device = &tz::gl::get_device().vk_get_logical_device(),
 		  				.size_bytes = tz::gl::pixel_size_bytes(img->get_format()) * img->get_dimensions()[0] * img->get_dimensions()[1],
 		  				.usage = {vk2::BufferUsage::TransferSource},
 		  				.residency = vk2::MemoryResidency::CPU
@@ -953,7 +954,7 @@ namespace tz::gl
 		{
 			const bool present = !options.contains(tz::gl::renderer_option::no_present) && renderer_output_manager::targets_window();
 			record.debug_begin_label({.name = label});
-			vk2::Image& cur_swapchain_image = tz::gl::get_device2().get_swapchain().get_images()[render_target_id];
+			vk2::Image& cur_swapchain_image = tz::gl::get_device().get_swapchain().get_images()[render_target_id];
 
 			if(present)
 			{
@@ -1146,13 +1147,13 @@ namespace tz::gl
 			// else (scratch or both), meaning we're already in the correct order (work commands first), so no need to do anything.
 		}
 		this->command_allocations.resize(2);
-		const std::uint32_t frame_in_flight_count = tz::gl::get_device2().get_swapchain().get_images().size();
+		const std::uint32_t frame_in_flight_count = tz::gl::get_device().get_swapchain().get_images().size();
 		const std::size_t scratch_buffer_count = 1;
 		// we want a quantity of command buffers equal to `frame_in_flight_count` + 1.
 		// the +1 is a scratch buffer which will be used for various commands (mainly renderer edits, but a few things in setup aswell, such as static resource writes).
 
 		// tell the command pool about our intentions.
-		auto& dev = tz::gl::get_device2();
+		auto& dev = tz::gl::get_device();
 		dev.vk_command_pool_touch(renderer_vulkan_base::uid,
 		{
 			// todo: no magic values.
@@ -1187,12 +1188,12 @@ namespace tz::gl
 		}
 		if(t == command_type::scratch || t == command_type::both)
 		{
-			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_scratch_alloc_id, this->command_allocations[cmdbuf_scratch_alloc_id].buffers);
+			tz::gl::get_device().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_scratch_alloc_id, this->command_allocations[cmdbuf_scratch_alloc_id].buffers);
 			this->command_allocations.pop_back();
 		}
 		if(t == command_type::work || t == command_type::both)
 		{
-			tz::gl::get_device2().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, this->command_allocations[cmdbuf_work_alloc_id].buffers);
+			tz::gl::get_device().vk_free_commands(renderer_vulkan_base::uid, cmdbuf_work_alloc_id, this->command_allocations[cmdbuf_work_alloc_id].buffers);
 			// pop_front() doesnt exist in std::vector ugh
 			this->command_allocations.erase(this->command_allocations.begin());
 		}
@@ -1300,11 +1301,7 @@ namespace tz::gl
 
 	renderer_vulkan2::~renderer_vulkan2()
 	{
-		if(this->is_null())
-		{
-			return;
-		}
-		tz::gl::get_device2().vk_get_logical_device().wait_until_idle();
+		tz::gl::get_device().vk_get_logical_device().wait_until_idle();
 	}
 
 	const tz::gl::renderer_options& renderer_vulkan2::get_options() const
@@ -1338,7 +1335,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		tz::gl::get_device2().vk_get_logical_device().wait_until_idle();
+		tz::gl::get_device().vk_get_logical_device().wait_until_idle();
 		edit_side_effects side_effects = {};
 		for(const auto& edit : req)
 		{
@@ -1460,9 +1457,10 @@ namespace tz::gl
 	void renderer_vulkan2::do_resize()
 	{
 		TZ_PROFZONE("renderer_vulkan2 - do resize", 0xFFAAAA00);
-		tz::gl::get_device2().vk_notify_resize();
+		tz::gl::get_device().vk_notify_resize();
 		renderer_output_manager::populate_render_targets(this->options);
 		renderer_pipeline::update_pipeline();
 		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
 	}
 }
+#endif // TZ_VULKAN

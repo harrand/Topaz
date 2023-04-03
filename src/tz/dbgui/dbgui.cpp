@@ -381,14 +381,14 @@ namespace tz::dbgui
 		rinfo.set_output(wout);
 		rinfo.debug_name("Dbgui Renderer");
 		
-		global_render_data->renderer = tz::gl::get_device2().create_renderer(rinfo);
+		global_render_data->renderer = tz::gl::get_device().create_renderer(rinfo);
 
 		tz::gl::renderer_info empty;
 		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::_internal_final_dbgui_renderer, tz::gl::renderer_option::_internal});
 		empty.debug_name("Dbgui Present");
-		global_render_data->final_renderer = tz::gl::get_device2().create_renderer(empty);
+		global_render_data->final_renderer = tz::gl::get_device().create_renderer(empty);
 
 		io.Fonts->SetTexID(0);
 
@@ -417,7 +417,7 @@ namespace tz::dbgui
 
 		tz::assert(global_render_data->renderer != tz::nullhand, "Null imgui renderer when trying to render!");
 		// We have a font texture already.
-		tz::gl::renderer2& renderer = tz::gl::get_device2().get_renderer(global_render_data->renderer);
+		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(global_render_data->renderer);
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
@@ -482,6 +482,7 @@ namespace tz::dbgui
 				auto offset = static_cast<tz::vec2ui>(tz::vec2{min.x, min.y} - tz::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
 				auto extent = static_cast<tz::vec2ui>(tz::vec2{max.x, max.y});
 #if TZ_OGL
+				const tz::gl::ioutput* output = renderer.get_output();
 				extent[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif
 				tz::gl::RendererEditBuilder edit;
@@ -489,7 +490,14 @@ namespace tz::dbgui
 
 				// TODO: Do the edit and apply the scissor rectangle. Uncomment the below line to actually do this, potentially incorrect results without scissor rectangles, however avoiding this renderer edit will yield a ~4x speed improvement.
 				//renderer.edit(edit.build());
-				renderer.get_resource(global_render_data->draw_buffer)->data_as<tz::gl::draw_indexed_indirect_command>().front().count = draw_cmd.ElemCount;
+				renderer.get_resource(global_render_data->draw_buffer)->data_as<tz::gl::draw_indexed_indirect_command>().front() =
+				{
+					.count = draw_cmd.ElemCount,
+					.instance_count = 1u,
+					.first_index = 0u,
+					.base_vertex = 0,
+					.base_instance = 0u
+				};
 				if(draw_cmd.UserCallback == nullptr)
 				{
 					renderer.render();
@@ -502,7 +510,7 @@ namespace tz::dbgui
 		}
 		{
 			TZ_PROFZONE("Dbgui Render - Final Pass", 0xFFAA00AA);
-			tz::gl::get_device2().get_renderer(global_render_data->final_renderer).render();
+			tz::gl::get_device().get_renderer(global_render_data->final_renderer).render();
 		}
 	}
 
@@ -575,7 +583,7 @@ namespace tz::dbgui
 		//		{
 		//			ImGui::Text("- %s (%s)", tz::gl::vk2::util::instance_extension_tz_names[static_cast<int>(iext)], tz::gl::vk2::util::instance_extension_names[static_cast<int>(iext)]);
 		//		}
-		//		const tz::gl::vk2::LogicalDevice& ldev = tz::gl::get_device2().vk_get_logical_device();
+		//		const tz::gl::vk2::LogicalDevice& ldev = tz::gl::get_device().vk_get_logical_device();
 		//		ImGui::Text("Vulkan device Extensions:");
 		//		for(tz::gl::vk2::DeviceExtension dext : ldev.get_extensions())
 		//		{
@@ -670,7 +678,7 @@ namespace tz::dbgui
 	{
 		if(ImGui::Begin("device", &tab_tz.show_device_info))
 		{
-			tz::gl::get_device2().dbgui();
+			tz::gl::get_device().dbgui();
 			ImGui::End();
 		}
 	}

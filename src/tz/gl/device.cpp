@@ -4,7 +4,6 @@
 namespace tz::gl
 {
 	std::unique_ptr<device> dev = nullptr;
-	std::unique_ptr<device2> dev2 = nullptr;
 
 	device& get_device()
 	{
@@ -13,15 +12,6 @@ namespace tz::gl
 			dev = std::make_unique<device>();	
 		}
 		return *dev;
-	}
-
-	device2& get_device2()
-	{
-		if(dev2 == nullptr)
-		{
-			dev2 = std::make_unique<device2>();	
-		}
-		return *dev2;
 	}
 
 	void destroy_device()
@@ -34,21 +24,6 @@ namespace tz::gl
 			(*dev).~device();
 			// Release the raw ptr from the unique_ptr. `dev` is now nullptr.
 			auto* p = dev.release();
-			// Free the memory without calling the dtor a second time.
-			operator delete(p);
-		}
-	}
-
-	void destroy_device2()
-	{
-		if(dev2 != nullptr)
-		{
-			// Why the hell this magic instead of assigning to nullptr, you ask?
-			// It's very possible ~device() ends up invoking tz::gl::get_device(), which will be null during this dtor, so it tries to reconstruct it again and cause real problems. So the steps to fix this are:
-			// Invoke dtor, tz::gl::get_device() remains valid throughout dtor usage this time.
-			(*dev2).~device2();
-			// Release the raw ptr from the unique_ptr. `dev` is now nullptr.
-			auto* p = dev2.release();
 			// Free the memory without calling the dtor a second time.
 			operator delete(p);
 		}

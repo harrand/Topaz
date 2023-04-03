@@ -1,5 +1,6 @@
 #ifndef TZ_GL_IMPL_VULKAN_RENDERER2_HPP
 #define TZ_GL_IMPL_VULKAN_RENDERER2_HPP
+#if TZ_VULKAN
 #include "tz/gl/api/renderer.hpp"
 #include "tz/core/memory/maybe_owned_ptr.hpp"
 #include "tz/gl/impl/vulkan/component.hpp"
@@ -223,4 +224,5 @@ namespace tz::gl
 	static_assert(tz::gl::renderer_type<renderer_vulkan2>);
 }
 
+#endif // TZ_VULKAN
 #endif // TZ_GL_IMPL_VULKAN_RENDERER2_HPP

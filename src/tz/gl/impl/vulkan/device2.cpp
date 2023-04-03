@@ -346,7 +346,10 @@ namespace tz::gl
 	void device_render_sync::vk_frame_wait(unsigned int fingerprint)
 	{
 		TZ_PROFZONE("device_render_sync - frame wait", 0xFFAA0000);
-		tz::assert(!this->get_timeline().empty(), "cannot wait on frame boundary because the timeline is empty!");
+		if(this->get_timeline().empty())
+		{
+			tz::report("Detected wait on frame boundary, even though the timeline was never populated. You may be about to run into scheduling errors");
+		}
 		// if the first renderer of the frame needs to go, we need to make sure it waits on the frame fence.
 		if(device_vulkan_base::frame_counter > 0 && this->get_timeline().front() == device_vulkan_base::get_rid(fingerprint))
 		{
@@ -630,7 +633,7 @@ namespace tz::gl
 		{
 			signals.add({.signal_semaphore = signal});
 		}
-		if(device_render_sync::get_timeline().back() == device_vulkan_base::get_rid(fingerprint))
+		if(device_render_sync::get_timeline().size() && device_render_sync::get_timeline().back() == device_vulkan_base::get_rid(fingerprint))
 		{
 			signals.add({.signal_semaphore = &device_render_sync::get_frame_sync_objects()[device_vulkan_base::frame_id], .timeline = device_vulkan_base::global_timeline + 1});
 			device_vulkan_base::global_timeline++;

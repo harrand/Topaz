@@ -112,7 +112,7 @@ namespace tz::gl
 
 	resource_handle renderer_info::ref_resource(renderer_handle ren, resource_handle res)
 	{
-		return this->ref_resource(tz::gl::get_device2().get_renderer(ren).get_component(res));
+		return this->ref_resource(tz::gl::get_device().get_renderer(ren).get_component(res));
 	}
 
 	void renderer_info::set_output(const ioutput& output)
