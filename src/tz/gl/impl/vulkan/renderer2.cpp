@@ -76,7 +76,7 @@ namespace tz::gl
 		std::size_t imgview_idx = 0;
 		for(std::size_t i = 0; i < static_cast<std::size_t>(static_cast<tz::hanval>(rh)); i++)
 		{
-			if(this->get_resource(static_cast<tz::hanval>(i))->get_type() == tz::gl::resource_type::image)
+			if(this->get_resource(static_cast<tz::hanval>(i))->get_type() != tz::gl::resource_type::image)
 			{
 				imgview_idx++;
 			}
@@ -1350,7 +1350,14 @@ namespace tz::gl
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
-						side_effects.rewrite_buffer_descriptors = true;
+						if(arg.buffer_handle == this->state.graphics.index_buffer || arg.buffer_handle == this->state.graphics.draw_buffer)
+						{
+							  side_effects.rerecord_work_commands = true;
+						}
+						else
+						{
+							side_effects.rewrite_buffer_descriptors = true;
+						}
 					}
 					// todo: what if this is the index/draw buffer?
 				},
