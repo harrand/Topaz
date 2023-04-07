@@ -831,7 +831,7 @@ namespace tz::gl
 	void renderer_command_processor::do_scratch_work(std::function<void(vk2::CommandBufferRecording&)> record_commands)
 	{
 		TZ_PROFZONE("renderer_command_processor - scratch work...", 0xFFAAAA00);
-		if(this->scratch_command_buffer().command_count() > 0)
+		if(this->scratch_command_buffer().has_ever_recorded())
 		{
 			// this scratch command buffer is already populated with potentially different commands. purge and go again.
 			this->allocate_commands(command_type::scratch);
@@ -945,6 +945,53 @@ namespace tz::gl
 			}
 		}
 		this->do_static_resource_transfers(resource_staging_buffers);
+	}
+
+	void renderer_command_processor::queue_resource_write(tz::gl::renderer_edit::resource_write rwrite)
+	{
+		iresource* res = renderer_resource_manager::get_resource(rwrite.resource);
+		tz::assert(res != nullptr);
+		if(res->get_access() != tz::gl::resource_access::static_fixed)
+		{
+			// if this is a dynamic resource, we can trivially do the write now.
+			tz::assert(res->data().size_bytes() >= (rwrite.offset + rwrite.data.size_bytes()), "resource write too long. resource is %zu bytes, write was (%zu + %zu) bytes", res->data().size_bytes(), rwrite.offset, rwrite.data.size_bytes());
+			std::memcpy(reinterpret_cast<char*>(res->data().data()) + rwrite.offset, rwrite.data.data(), rwrite.data.size_bytes());
+			return;
+		}
+		auto id = static_cast<std::size_t>(static_cast<tz::hanval>(rwrite.resource));
+		// get the buffer representing the staging buffer for this resource.
+		tz::assert(id < this->pending_resource_write_staging_buffers.size());
+		vk2::Buffer& buf = this->pending_resource_write_staging_buffers[id];
+		// initialise it.
+		buf = vk2::Buffer
+		{{
+			.device = &tz::gl::get_device().vk_get_logical_device(),
+			.size_bytes = rwrite.data.size_bytes(),
+			.usage = {vk2::BufferUsage::TransferSource},
+			.residency = vk2::MemoryResidency::CPU
+		}};
+		// write the resource write data.
+		{
+			void* mapped_ptr = buf.map();
+			std::memcpy(static_cast<char*>(mapped_ptr) + rwrite.offset, rwrite.data.data(), rwrite.data.size_bytes());
+			buf.unmap();
+		}	
+		// pending changes are now resident in that cpu buffer. submit resource writes will send off the work to be done.
+	}
+
+	void renderer_command_processor::submit_resource_writes()
+	{
+		this->do_static_resource_transfers(this->pending_resource_write_staging_buffers);
+		this->reset_resource_write_buffers();
+	}
+
+	void renderer_command_processor::reset_resource_write_buffers()
+	{
+		this->pending_resource_write_staging_buffers.clear();
+		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
+		{
+			this->pending_resource_write_staging_buffers.push_back(vk2::Buffer::null());
+		}
 	}
 
 	void renderer_command_processor::record_render_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label)
@@ -1297,6 +1344,7 @@ namespace tz::gl
 	debug_name(rinfo.debug_get_name())
 	{
 		TZ_PROFZONE("renderer_vulkan2 - initialise", 0xFFAAAA00);
+		renderer_command_processor::reset_resource_write_buffers();
 	}
 
 	renderer_vulkan2::~renderer_vulkan2()
@@ -1337,6 +1385,7 @@ namespace tz::gl
 		}
 		tz::gl::get_device().vk_get_logical_device().wait_until_idle();
 		edit_side_effects side_effects = {};
+		bool resource_writes = false;
 		for(const auto& edit : req)
 		{
 			std::visit(overloaded{
@@ -1370,6 +1419,12 @@ namespace tz::gl
 					}
 					// todo: what if this is the index/draw buffer?
 				},
+				// RESOURCE WRITE
+				[&resource_writes, &side_effects, this](tz::gl::renderer_edit::resource_write arg)
+				{
+					renderer_command_processor::queue_resource_write(arg);
+					resource_writes = true;
+				},
 				// TRI COUNT
 				[&side_effects, this](tz::gl::renderer_edit::tri_count arg)
 				{
@@ -1397,6 +1452,11 @@ namespace tz::gl
 					tz::error("renderer edit type NYFI");
 				}
 			}, edit);
+		}
+
+		if(resource_writes)
+		{
+			renderer_command_processor::submit_resource_writes();
 		}
 
 		if(side_effects.rewrite_buffer_descriptors || side_effects.rewrite_image_descriptors)

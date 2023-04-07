@@ -441,6 +441,10 @@ namespace tz::gl::vk2
 		 */
 		bool is_recording() const;
 		/**
+		 * Query as to whether this CommandBuffer is either recording, or ever has been recorded in the past, even if it doesn't contain any commands.
+		 */
+		bool has_ever_recorded() const;
+		/**
 		 * Retrieve the number of commands recorded into the buffer.
 		 * @return number of commands within the buffer.
 		 */
@@ -461,6 +465,7 @@ namespace tz::gl::vk2
 		VkCommandBuffer command_buffer;
 		const CommandPool* owner_pool;
 		bool recording;
+		bool ever_recorded;
 		std::vector<VulkanCommand::variant> recorded_commands;
 	};
 

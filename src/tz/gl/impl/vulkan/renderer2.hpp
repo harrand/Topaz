@@ -173,6 +173,9 @@ namespace tz::gl
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
 		void record_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
 		void scratch_initialise_static_resources();
+		void queue_resource_write(tz::gl::renderer_edit::resource_write rwrite);
+		void submit_resource_writes();
+		void reset_resource_write_buffers();
 	private:
 		void record_render_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
 		void record_compute_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
@@ -187,6 +190,7 @@ namespace tz::gl
 		std::vector<vk2::CommandPool::AllocationResult> command_allocations = {};
 		vk2::Fence render_wait_fence = vk2::Fence::null();
 		vk2::BinarySemaphore present_sync_semaphore = vk2::BinarySemaphore::null();
+		std::vector<vk2::Buffer> pending_resource_write_staging_buffers = {};
 	};
 
 	class renderer_vulkan2 : public renderer_command_processor

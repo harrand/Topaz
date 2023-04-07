@@ -533,6 +533,11 @@ namespace tz::gl::vk2
 		return this->recording;
 	}
 
+	bool CommandBuffer::has_ever_recorded() const
+	{
+		return this->ever_recorded;
+	}
+
 	std::size_t CommandBuffer::command_count() const
 	{
 		return this->recorded_commands.size();
@@ -556,6 +561,7 @@ namespace tz::gl::vk2
 	void CommandBuffer::set_recording(bool recording)
 	{
 		this->recording = recording;
+		this->ever_recorded = true;
 	}
 
 	void CommandBuffer::add_command(VulkanCommand::variant command)
@@ -566,7 +572,8 @@ namespace tz::gl::vk2
 	CommandBuffer::CommandBuffer(const CommandPool& owner_pool, CommandBuffer::NativeType native):
 	command_buffer(native),
 	owner_pool(&owner_pool),
-	recording(false)
+	recording(false),
+	ever_recorded(false)
 	{
 
 	}
