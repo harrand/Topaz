@@ -318,6 +318,7 @@ namespace tz::gl
 		 */
 		RendererEditBuilder& buffer_resize(renderer_edit::buffer_resize req);
 		RendererEditBuilder& write(renderer_edit::resource_write req);
+		RendererEditBuilder& resource_ref(renderer_edit::resource_reference req);
 		RendererEditBuilder& set_tri_count(renderer_edit::tri_count tris);
 		RendererEditBuilder& set_scissor(renderer_edit::scissor scis);
 		/**

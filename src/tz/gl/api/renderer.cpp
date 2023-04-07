@@ -35,6 +35,12 @@ namespace tz::gl
 		return *this;
 	}
 
+	RendererEditBuilder& RendererEditBuilder::resource_ref(renderer_edit::resource_reference req)
+	{
+		this->request.push_back(req);
+		return *this;
+	}
+
 	RendererEditBuilder& RendererEditBuilder::set_tri_count(renderer_edit::tri_count req)
 	{
 		this->request.push_back(req);

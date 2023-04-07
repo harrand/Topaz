@@ -92,6 +92,18 @@ namespace tz::gl
 		}};
 	}
 
+	void renderer_resource_manager::reseat_resource(tz::gl::renderer_edit::resource_reference resref)
+	{
+		// an existing component exists at resref.resource. we want to entirely replace it with the component specified.
+		iresource* newres = resref.component->get_resource();
+		tz::assert(newres != nullptr);
+		AssetStorageCommon<iresource>::set(resref.resource, newres);
+		auto resid = static_cast<std::size_t>(static_cast<tz::hanval>(resref.resource));
+		tz::assert(resid < this->components.size());
+		this->components[resid] = resref.component;
+		// note: if descriptors have already been written, the descriptor associated with this resource is now out-of-date and needs to be rewritten.
+	}
+
 	void renderer_resource_manager::patch_resource_references(const tz::gl::renderer_info& rinfo)
 	{
 		TZ_PROFZONE("render_resource_manager - patch resource references", 0xFFAAAA00);
@@ -1425,6 +1437,24 @@ namespace tz::gl
 				{
 					renderer_command_processor::queue_resource_write(arg);
 					resource_writes = true;
+				},
+				[&side_effects, this](tz::gl::renderer_edit::resource_reference arg)
+				{
+					tz::assert(arg.component != nullptr && arg.component->get_resource() != nullptr);
+					tz::assert(static_cast<std::size_t>(static_cast<tz::hanval>(arg.resource)) < renderer_resource_manager::resource_count(), "resource_write resource handle was invalid.");
+					tz::assert(arg.component->get_resource()->get_type() == renderer_resource_manager::get_resource(arg.resource)->get_type(), "resource_write component refers to a resource type that doesn't match the existing resource associated with the given handle.");
+					renderer_resource_manager::reseat_resource(arg);
+					// we will need to rewrite the associated descriptor. horribly heavy-handed to rewrite all of them, but that's what we do for now.
+					// TODO?: write more code to support updating only a single descriptor.
+					switch(arg.component->get_resource()->get_type())
+					{
+						case tz::gl::resource_type::buffer:
+							side_effects.rewrite_buffer_descriptors = true;
+						break;
+						case tz::gl::resource_type::image:
+							side_effects.rewrite_image_descriptors = true;
+						break;
+					}
 				},
 				// TRI COUNT
 				[&side_effects, this](tz::gl::renderer_edit::tri_count arg)

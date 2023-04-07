@@ -53,6 +53,7 @@ namespace tz::gl
 		std::span<vk2::ImageView> get_image_resource_views();
 		std::span<vk2::Sampler> get_image_resource_samplers();
 		void notify_image_dirty(tz::gl::resource_handle rh);
+		void reseat_resource(tz::gl::renderer_edit::resource_reference resref);
 	private:
 		void patch_resource_references(const tz::gl::renderer_info& rinfo);
 		void setup_dynamic_resource_spans();
