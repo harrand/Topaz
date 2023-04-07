@@ -80,6 +80,8 @@ namespace tz::gl
 			tz::vec4 clear_colour = tz::vec4::zero();
 			/// number of triangles to be rendered in the next draw call.
 			std::size_t tri_count = 0;
+			/// whether wireframe mode is enabled or not.
+			bool wireframe_mode = false;
 			bool operator==(const Graphics& rhs) const = default;
 		};
 		struct Compute

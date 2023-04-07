@@ -129,7 +129,7 @@ namespace tz::gl
 		pipeline_type_t get_pipeline_type() const;
 		const vk2::Pipeline& get_pipeline() const;
 		const vk2::PipelineLayout& get_pipeline_layout() const;
-		void update_pipeline();
+		void update_pipeline(const tz::gl::render_state& state);
 	private:
 		struct pipeline_invariant_config_t
 		{

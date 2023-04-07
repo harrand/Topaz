@@ -581,7 +581,7 @@ namespace tz::gl
 		this->deduce_pipeline_config(rinfo);
 		this->deduce_pipeline_layout();
 		this->create_shader(rinfo);
-		this->update_pipeline();
+		this->update_pipeline(rinfo.state());
 	}
 
 	renderer_pipeline::pipeline_type_t renderer_pipeline::get_pipeline_type() const
@@ -599,7 +599,7 @@ namespace tz::gl
 		return this->pipeline.layout;
 	}
 
-	void renderer_pipeline::update_pipeline()
+	void renderer_pipeline::update_pipeline(const tz::gl::render_state& state)
 	{
 		TZ_PROFZONE("renderer_pipeline - update pipeline", 0xFFAAAA00);
 		switch(this->get_pipeline_type())
@@ -627,6 +627,7 @@ namespace tz::gl
 					.state =
 					{
 						.viewport = vk2::create_basic_viewport(static_cast<tz::vec2>(renderer_output_manager::get_render_target_dimensions())),
+						.rasteriser = {.polygon_mode = (state.graphics.wireframe_mode ? vk2::PolygonMode::Line : vk2::PolygonMode::Fill)},
 						.depth_stencil =
 						{
 							.depth_testing = this->pipeline_config.depth_testing,
@@ -1445,6 +1446,23 @@ namespace tz::gl
 						side_effects.rerecord_work_commands = true;
 					}
 				},
+				// COMPUTE CONFIG
+				[&side_effects, this](tz::gl::renderer_edit::compute_config arg)
+				{
+					if(arg.kernel != state.compute.kernel)
+					{
+						state.compute.kernel = arg.kernel;
+						side_effects.rerecord_work_commands = true;
+					}
+				},
+				[&side_effects, this](tz::gl::renderer_edit::render_config arg)
+				{
+					if(arg.wireframe_mode != state.graphics.wireframe_mode)
+					{
+						state.graphics.wireframe_mode = arg.wireframe_mode;
+						side_effects.recreate_pipeline = true;
+					}
+				},
 				// UNKNOWN
 				[](auto arg)
 				{
@@ -1465,7 +1483,7 @@ namespace tz::gl
 		}
 		if(side_effects.recreate_pipeline)
 		{
-			renderer_pipeline::update_pipeline();
+			renderer_pipeline::update_pipeline(this->state);
 			side_effects.rerecord_work_commands = true;
 		}
 		if(side_effects.rerecord_work_commands)
@@ -1519,7 +1537,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_vulkan2 - do resize", 0xFFAAAA00);
 		tz::gl::get_device().vk_notify_resize();
 		renderer_output_manager::populate_render_targets(this->options);
-		renderer_pipeline::update_pipeline();
+		renderer_pipeline::update_pipeline(this->state);
 		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
 	}
 }
