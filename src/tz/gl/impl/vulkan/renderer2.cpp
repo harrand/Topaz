@@ -593,6 +593,7 @@ namespace tz::gl
 		this->deduce_pipeline_config(rinfo);
 		this->deduce_pipeline_layout();
 		this->create_shader(rinfo);
+		this->pipeline_cache = vk2::PipelineCache(tz::gl::get_device().vk_get_logical_device());
 		this->update_pipeline(rinfo.state());
 	}
 
@@ -663,7 +664,7 @@ namespace tz::gl
 						.depth_format = render_target_info.depth_attachment.is_null() ? VK_FORMAT_UNDEFINED : static_cast<VkFormat>(render_target_info.depth_attachment.get_image().get_format())
 					},
 					.device = &tz::gl::get_device().vk_get_logical_device(),
-				}};
+				}, this->pipeline_cache};
 			}
 			break;
 			case pipeline_type_t::compute:
@@ -672,7 +673,7 @@ namespace tz::gl
 					.shader = this->shader.native_data(),
 					.pipeline_layout = &this->pipeline.layout,
 					.device = &tz::gl::get_device().vk_get_logical_device(),
-				}};
+				}, this->pipeline_cache};
 			break;
 		}
 	}

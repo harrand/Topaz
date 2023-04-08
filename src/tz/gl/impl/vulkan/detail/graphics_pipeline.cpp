@@ -5,6 +5,60 @@
 
 namespace tz::gl::vk2
 {
+	PipelineCache::PipelineCache(const LogicalDevice& ldev):
+	cache(VK_NULL_HANDLE),
+	ldev(&ldev)
+	{
+		VkPipelineCacheCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.initialDataSize = 0,
+			.pInitialData = nullptr
+		};
+		[[maybe_unused]] VkResult res = vkCreatePipelineCache(this->ldev->native(), &create, nullptr, &this->cache);
+		tz::assert(res == VK_SUCCESS, "Failed to create pipeline cache. Probably OOM?");
+	}
+
+	PipelineCache::PipelineCache(PipelineCache&& move)
+	{
+		*this = std::move(move);
+	}
+
+	PipelineCache::~PipelineCache()
+	{
+		if(this->ldev != nullptr)
+		{
+			vkDestroyPipelineCache(this->ldev->native(), this->cache, nullptr);
+			this->cache = VK_NULL_HANDLE;
+		}
+	}
+
+	PipelineCache& PipelineCache::operator=(PipelineCache&& rhs)
+	{
+		std::swap(this->cache, rhs.cache);
+		std::swap(this->ldev, rhs.ldev);
+		return *this;
+	}
+
+	bool PipelineCache::is_null() const
+	{
+		return this->cache == VK_NULL_HANDLE;
+	}
+
+	PipelineCache PipelineCache::null()
+	{
+		return {nullptr};
+	}
+
+	PipelineCache::NativeType PipelineCache::native() const
+	{
+		return this->cache;
+	}
+
+	PipelineCache::PipelineCache(std::nullptr_t){}
+
 	bool GraphicsPipelineInfo::valid() const
 	{
 		return !this->shaders.create_infos.empty()
@@ -18,7 +72,7 @@ namespace tz::gl::vk2
 		return this->device != nullptr && !this->device->is_null();
 	}
 
-	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineInfo& info):
+	GraphicsPipeline::GraphicsPipeline(const GraphicsPipelineInfo& info, const PipelineCache& existing_cache):
 	pipeline(VK_NULL_HANDLE),
 	info(info)
 	{
@@ -146,7 +200,7 @@ namespace tz::gl::vk2
 			.basePipelineIndex = -1
 		};
 
-		VkResult res = vkCreateGraphicsPipelines(this->get_device().native(), VK_NULL_HANDLE, 1, &create, nullptr, &this->pipeline);
+		VkResult res = vkCreateGraphicsPipelines(this->get_device().native(), existing_cache.native(), 1, &create, nullptr, &this->pipeline);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -211,7 +265,7 @@ namespace tz::gl::vk2
 		return this->pipeline;
 	}
 
-	ComputePipeline::ComputePipeline(const ComputePipelineInfo& info):
+	ComputePipeline::ComputePipeline(const ComputePipelineInfo& info, const PipelineCache& existing_cache):
 	pipeline(VK_NULL_HANDLE),
 	info(info)
 	{
@@ -227,7 +281,7 @@ namespace tz::gl::vk2
 			.basePipelineIndex = 0
 		};
 
-		VkResult res = vkCreateComputePipelines(this->get_device().native(), VK_NULL_HANDLE, 1, &create, nullptr, &this->pipeline);
+		VkResult res = vkCreateComputePipelines(this->get_device().native(), existing_cache.native(), 1, &create, nullptr, &this->pipeline);
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -292,11 +346,11 @@ namespace tz::gl::vk2
 		return this->pipeline;
 	}
 
-	Pipeline::Pipeline(const GraphicsPipelineInfo& graphics_info):
-	pipeline_variant(GraphicsPipeline{graphics_info}){}
+	Pipeline::Pipeline(const GraphicsPipelineInfo& graphics_info, const PipelineCache& cache):
+	pipeline_variant(GraphicsPipeline{graphics_info, cache}){}
 
-	Pipeline::Pipeline(const ComputePipelineInfo& compute_info):
-	pipeline_variant(ComputePipeline{compute_info}){}
+	Pipeline::Pipeline(const ComputePipelineInfo& compute_info, const PipelineCache& cache):
+	pipeline_variant(ComputePipeline{compute_info, cache}){}
 
 	PipelineContext Pipeline::get_context() const
 	{

@@ -146,6 +146,7 @@ namespace tz::gl
 		void create_shader(const tz::gl::renderer_info& rinfo);
 		vk2::Shader shader = vk2::Shader::null();
 		vk2::PipelineData pipeline = {};
+		vk2::PipelineCache pipeline_cache = vk2::PipelineCache::null();
 		// depends purely on renderer options so this should never change.
 		pipeline_invariant_config_t pipeline_config = pipeline_invariant_config_t::null();
 	};

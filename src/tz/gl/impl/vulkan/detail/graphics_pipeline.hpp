@@ -9,6 +9,27 @@
 
 namespace tz::gl::vk2
 {
+	class PipelineCache
+	{
+	public:
+		PipelineCache(const LogicalDevice& ldev);
+		PipelineCache(const PipelineCache& copy) = delete;
+		PipelineCache(PipelineCache&& move);
+		~PipelineCache();
+		PipelineCache& operator=(const PipelineCache& rhs) = delete;
+		PipelineCache& operator=(PipelineCache&& rhs);
+
+
+		bool is_null() const;
+		static PipelineCache null();
+		using NativeType = VkPipelineCache;
+		NativeType native() const;
+	private:
+		PipelineCache(std::nullptr_t);
+
+		VkPipelineCache cache = VK_NULL_HANDLE;
+		const LogicalDevice* ldev = nullptr;
+	};
 	struct PipelineState
 	{
 		ViewportState viewport;
@@ -59,7 +80,7 @@ namespace tz::gl::vk2
 	class GraphicsPipeline
 	{
 	public:
-		GraphicsPipeline(const GraphicsPipelineInfo& info);
+		GraphicsPipeline(const GraphicsPipelineInfo& info, const PipelineCache& existing_cache = PipelineCache::null());
 		GraphicsPipeline(const GraphicsPipeline& copy) = delete;
 		GraphicsPipeline(GraphicsPipeline&& move);
 		~GraphicsPipeline();
@@ -81,7 +102,7 @@ namespace tz::gl::vk2
 	class ComputePipeline
 	{
 	public:
-		ComputePipeline(const ComputePipelineInfo& info);
+		ComputePipeline(const ComputePipelineInfo& info, const PipelineCache& existing_cache = PipelineCache::null());
 		ComputePipeline(const ComputePipeline& copy) = delete;
 		ComputePipeline(ComputePipeline&& move);
 		~ComputePipeline();
@@ -103,8 +124,8 @@ namespace tz::gl::vk2
 	class Pipeline
 	{
 	public:
-		Pipeline(const GraphicsPipelineInfo& graphics_info);
-		Pipeline(const ComputePipelineInfo& compute_info);
+		Pipeline(const GraphicsPipelineInfo& graphics_info, const PipelineCache& cache = PipelineCache::null());
+		Pipeline(const ComputePipelineInfo& compute_info, const PipelineCache& cache = PipelineCache::null());
 
 		PipelineContext get_context() const;
 		const LogicalDevice& get_device() const;
