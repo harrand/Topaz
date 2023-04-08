@@ -149,6 +149,22 @@ namespace tz::gl
 					ImGui::Text("Triangle Count: %zu", renderer.get_state().graphics.tri_count);
 				}
 			}
+			// Graphics - Wireframe Mode
+			{
+				bool wfm = renderer.get_state().graphics.wireframe_mode;
+				if(ImGui::Checkbox("Wireframe Mode", &wfm))
+				{
+					renderer.edit
+					(
+						tz::gl::RendererEditBuilder{}
+						.render_state
+						({
+							.wireframe_mode = wfm
+						})
+						.build()
+					);
+				}
+			}
 			ImGui::Unindent();
 			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Compute");
 			ImGui::Indent();
@@ -173,30 +189,6 @@ namespace tz::gl
 				ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
 				ImGui::PopTextWrapPos();
 			#endif //TZ_DEBUG
-		}
-		if(ImGui::CollapsingHeader("On-Demand Edits"))
-		{
-			ImGui::Text("Wireframe Mode");
-			if(ImGui::Button("Enable"))
-			{
-				renderer.edit
-				(
-					tz::gl::RendererEditBuilder{}
-					.render_state({.wireframe_mode = true})
-					.build()
-				);
-			}
-			ImGui::SameLine();
-			if(ImGui::Button("Disable"))
-			{
-				renderer.edit
-				(
-					tz::gl::RendererEditBuilder{}
-					.render_state({.wireframe_mode = false})
-					.build()
-				);
-			}
-			ImGui::Spacing();
 		}
 		ImGui::Separator();
 		ImGui::PopID();

@@ -1419,7 +1419,6 @@ namespace tz::gl
 							side_effects.rewrite_buffer_descriptors = true;
 						}
 					}
-					// todo: what if this is the index/draw buffer?
 				},
 				// IMAGE RESIZE
 				[&side_effects, this](tz::gl::renderer_edit::image_resize arg)
@@ -1431,7 +1430,6 @@ namespace tz::gl
 						renderer_resource_manager::notify_image_dirty(arg.image_handle);
 						side_effects.rewrite_image_descriptors = true;
 					}
-					// todo: what if this is the index/draw buffer?
 				},
 				// RESOURCE WRITE
 				[&resource_writes, &side_effects, this](tz::gl::renderer_edit::resource_write arg)
