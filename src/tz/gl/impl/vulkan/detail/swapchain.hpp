@@ -49,7 +49,7 @@ namespace tz::gl::vk2
 		{
 			enum class AcquisitionResultType
 			{
-				Success,
+				AcquireSuccess,
 				Suboptimal,
 				ErrorOutOfDate,
 				ErrorSurfaceLost,

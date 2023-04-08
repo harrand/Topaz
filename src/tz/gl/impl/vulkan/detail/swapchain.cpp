@@ -164,7 +164,7 @@ namespace tz::gl::vk2
 		{
 			using enum Swapchain::ImageAcquisitionResult::AcquisitionResultType;
 			case VK_SUCCESS:
-				result.type = Success;
+				result.type = AcquireSuccess;
 			break;
 			case VK_SUBOPTIMAL_KHR:
 				result.type = Suboptimal;

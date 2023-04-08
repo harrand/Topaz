@@ -238,7 +238,7 @@ namespace tz::gl
 			switch(this->recent_acquire->type)
 			{
 				using enum vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType;
-				case Success:
+				case AcquireSuccess:
 
 				break;
 				case Suboptimal:
