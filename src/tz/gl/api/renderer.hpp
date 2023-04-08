@@ -208,7 +208,7 @@ namespace tz::gl
 		/// List of renderers we are dependent on.
 		std::vector<renderer_handle> dependencies = {};
 		/// Describes the shader sources used.
-		shader_info shader_info;
+		shader_info sinfo;
 		/// The clear value for colour attachments.
 		tz::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// Workgroup sizes if we're doing compute.

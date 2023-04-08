@@ -158,12 +158,12 @@ namespace tz::gl
 
 	shader_info& renderer_info::shader()
 	{
-		return this->shader_info;
+		return this->sinfo;
 	}
 
 	const shader_info& renderer_info::shader() const
 	{
-		return this->shader_info;
+		return this->sinfo;
 	}
 
 	void renderer_info::debug_name(std::string debug_name)
