@@ -47,7 +47,16 @@ namespace tz::gl::vk2
 
 		struct ImageAcquisitionResult
 		{
+			enum class AcquisitionResultType
+			{
+				Success,
+				Suboptimal,
+				ErrorOutOfDate,
+				ErrorSurfaceLost,
+				ErrorUnknown
+			};
 			std::uint32_t image_index;
+			AcquisitionResultType type;
 		};
 		/**
 		 * Construct a new Swapchain.
@@ -113,6 +122,7 @@ namespace tz::gl::vk2
 		 * @return Swapchain image dimensions, in pixels.
 		 */
 		tz::vec2ui get_dimensions() const;
+		void refresh();
 	private:
 		Swapchain();
 		void initialise_images();

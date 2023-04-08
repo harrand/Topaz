@@ -61,6 +61,95 @@ namespace tz::gl::vk2
 		});
 	}
 
+	CommandBufferRecording::DynamicRenderingRun::DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment, DynamicRenderingRunInfo rinfo):
+	recording(&record)
+	{
+		tz::vec2ui dims = tz::vec2ui::zero();
+		std::vector<VkRenderingAttachmentInfo> colour_attachment_natives(colour_attachments.size());
+		std::transform(colour_attachments.begin(), colour_attachments.end(), colour_attachment_natives.begin(),
+		[rinfo](const auto& imgview)->VkRenderingAttachmentInfo
+		{
+			VkClearColorValue clearval;
+			clearval.float32[0] = rinfo.clear_colour[0];
+			clearval.float32[1] = rinfo.clear_colour[1];
+			clearval.float32[2] = rinfo.clear_colour[2];
+			clearval.float32[3] = rinfo.clear_colour[3];
+			return
+			{
+				.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+				.pNext = nullptr,
+				.imageView = imgview.native(),
+				.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				.resolveMode = VK_RESOLVE_MODE_NONE,
+				.resolveImageView = VK_NULL_HANDLE,
+				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.loadOp = static_cast<VkAttachmentLoadOp>(rinfo.colour_load),
+				.storeOp = static_cast<VkAttachmentStoreOp>(rinfo.colour_store),
+				.clearValue =
+				{
+					.color = {clearval}
+				}
+			};
+		});
+		if(colour_attachments.size())
+		{
+			dims = colour_attachments.front().get_image().get_dimensions();
+		}
+		tz::assert(std::all_of(colour_attachments.begin(), colour_attachments.end(), [dims](const auto& imgview){return imgview.get_image().get_dimensions() == dims;}));
+		VkClearDepthStencilValue clearvald;
+		clearvald.depth = 1.0f;
+		VkRenderingAttachmentInfo depth_attachment_native
+		{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+			.pNext = nullptr,
+			.imageView = VK_NULL_HANDLE,
+			.imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+			.resolveMode = VK_RESOLVE_MODE_NONE,
+			.resolveImageView = VK_NULL_HANDLE,
+			.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.loadOp = static_cast<VkAttachmentLoadOp>(rinfo.depth_load),
+			.storeOp = static_cast<VkAttachmentStoreOp>(rinfo.depth_store),
+			.clearValue = 
+			{
+				.depthStencil = {clearvald}
+			}
+		};
+		if(depth_attachment != nullptr)
+		{
+			depth_attachment_native.imageView = depth_attachment->native();
+			#if TZ_DEBUG
+				auto ddims = depth_attachment->get_image().get_dimensions();
+				tz::assert(ddims == dims, "Depth attachment dimensions (%zux%zu) does not match the dimensions of the render area derived from colour attachments (%zux%zu)", ddims[0], ddims[1], dims[0], dims[1]);
+			#endif // TZ_DEBUG
+		}
+		auto dims32 = static_cast<tz::vec2ui32>(dims);
+		VkRenderingInfo info =
+		{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.renderArea =
+			{
+				.offset = {0, 0},
+				.extent = {dims32[0], dims32[1]}
+			},
+			.layerCount = 1,
+			.viewMask = 0,
+			.colorAttachmentCount = static_cast<std::uint32_t>(colour_attachment_natives.size()),
+			.pColorAttachments = colour_attachment_natives.size() ? colour_attachment_natives.data() : nullptr,
+			.pDepthAttachment = (depth_attachment != nullptr) ? &depth_attachment_native : nullptr,
+			.pStencilAttachment = nullptr
+		};
+		vkCmdBeginRendering(this->recording->get_command_buffer().native(), &info);
+		this->recording->register_command(VulkanCommand::BeginDynamicRendering{});
+	}
+
+	CommandBufferRecording::DynamicRenderingRun::~DynamicRenderingRun()
+	{
+		vkCmdEndRendering(this->recording->get_command_buffer().native());
+		this->recording->register_command(VulkanCommand::EndDynamicRendering{});
+	}
+
 	CommandBufferRecording::CommandBufferRecording(CommandBuffer& command_buffer):
 	command_buffer(&command_buffer)
 	{
@@ -444,6 +533,11 @@ namespace tz::gl::vk2
 		return this->recording;
 	}
 
+	bool CommandBuffer::has_ever_recorded() const
+	{
+		return this->ever_recorded;
+	}
+
 	std::size_t CommandBuffer::command_count() const
 	{
 		return this->recorded_commands.size();
@@ -467,6 +561,7 @@ namespace tz::gl::vk2
 	void CommandBuffer::set_recording(bool recording)
 	{
 		this->recording = recording;
+		this->ever_recorded = true;
 	}
 
 	void CommandBuffer::add_command(VulkanCommand::variant command)
@@ -477,7 +572,8 @@ namespace tz::gl::vk2
 	CommandBuffer::CommandBuffer(const CommandPool& owner_pool, CommandBuffer::NativeType native):
 	command_buffer(native),
 	owner_pool(&owner_pool),
-	recording(false)
+	recording(false),
+	ever_recorded(false)
 	{
 
 	}
@@ -575,6 +671,17 @@ namespace tz::gl::vk2
 		}
 
 		return alloc_res;
+	}
+
+	void CommandPool::free_buffers(const AllocationResult& alloc_result)
+	{
+		std::vector<CommandBuffer::NativeType> cmd_natives(alloc_result.buffers.length());
+		std::transform(alloc_result.buffers.begin(), alloc_result.buffers.end(), cmd_natives.begin(),
+		[](const vk2::CommandBuffer& buf)
+		{
+			return buf.native();
+		});
+		vkFreeCommandBuffers(this->get_device().native(), this->pool, cmd_natives.size(), cmd_natives.data());
 	}
 
 	CommandPool::NativeType CommandPool::native() const

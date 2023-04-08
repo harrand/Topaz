@@ -150,7 +150,7 @@ namespace tz::gl::vk2
 		Fence::NativeType signal_fence_native = VK_NULL_HANDLE;
 
 		if(acquire.signal_semaphore != nullptr)
-		{
+		{	
 			signal_semaphore_native = acquire.signal_semaphore->native();
 		}
 		if(acquire.signal_fence != nullptr)
@@ -159,7 +159,26 @@ namespace tz::gl::vk2
 		}
 
 		Swapchain::ImageAcquisitionResult result;
-		vkAcquireNextImageKHR(this->get_device().native(), this->swapchain, acquire.timeout, signal_semaphore_native, signal_fence_native, &result.image_index);
+		VkResult res = vkAcquireNextImageKHR(this->get_device().native(), this->swapchain, acquire.timeout, signal_semaphore_native, signal_fence_native, &result.image_index);
+		switch(res)
+		{
+			using enum Swapchain::ImageAcquisitionResult::AcquisitionResultType;
+			case VK_SUCCESS:
+				result.type = Success;
+			break;
+			case VK_SUBOPTIMAL_KHR:
+				result.type = Suboptimal;
+			break;
+			case VK_ERROR_OUT_OF_DATE_KHR:
+				result.type = ErrorOutOfDate;
+			break;
+			case VK_ERROR_SURFACE_LOST_KHR:
+				result.type = ErrorSurfaceLost;
+			break;
+			default:
+				result.type = ErrorUnknown;
+			break;
+		}
 		return result;
 	}
 
@@ -211,6 +230,19 @@ namespace tz::gl::vk2
 	tz::vec2ui Swapchain::get_dimensions() const
 	{
 		return this->dimensions;
+	}
+
+	void Swapchain::refresh()
+	{
+		Swapchain second
+		{{
+			.device = this->info.device,
+			.swapchain_image_count_minimum = this->info.swapchain_image_count_minimum,
+			.format = this->info.format,
+			.present_mode = this->info.present_mode,
+			.old_swapchain = this
+		}};
+		*this = std::move(second);
 	}
 
 	Swapchain::Swapchain():

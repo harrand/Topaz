@@ -51,7 +51,12 @@ namespace tz::gl::vk2
 
 		using NativeType = VkFence;
 		NativeType native() const;
+
+		static Fence null();
+		bool is_null() const;
 	private:
+		Fence();
+
 		VkFence fence;
 		FenceInfo info;
 	};

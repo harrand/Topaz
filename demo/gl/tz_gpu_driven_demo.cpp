@@ -39,15 +39,18 @@ int main()
 		tz::gl::resource_handle dbufh_ref = rinfo.ref_resource(ch, dbufh);
 		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
 		rinfo.state().graphics.draw_buffer = dbufh_ref;
+		rinfo.state().graphics.tri_count = 1;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_gpu_driven_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_gpu_driven_demo_render, fragment));
 		tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
 
+		tz::gl::get_device().render_graph().timeline = {ch, rh};
+		tz::gl::get_device().render_graph().add_dependencies(rh, ch);
+
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			tz::gl::get_device().get_renderer(ch).render();
-			tz::gl::get_device().get_renderer(rh).render(1);	
+			tz::gl::get_device().render();
 			tz::dbgui::run([ch, count_bufh]()
 			{
 				ImGui::Begin("#countdbgui");

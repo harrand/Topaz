@@ -134,6 +134,10 @@ namespace tz::gl::vk2
 			/// Framebuffer containing the @ref RenderPass.
 			Framebuffer* framebuffer;
 		};
+
+		struct BeginDynamicRendering{};
+
+		struct EndDynamicRendering{};
 		
 		/**
 		 * Record the ending of some @ref RenderPass.
@@ -246,7 +250,7 @@ namespace tz::gl::vk2
 		struct DebugEndLabel{};
 
 		/// variant type which has alternatives for every single possible recordable command type.
-		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
+		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BeginDynamicRendering, EndDynamicRendering, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -267,6 +271,17 @@ namespace tz::gl::vk2
 	};
 
 	class CommandBuffer;
+
+
+	struct DynamicRenderingRunInfo
+	{
+		tz::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+		vk2::LoadOp colour_load = vk2::LoadOp::Clear;
+		vk2::StoreOp colour_store = vk2::StoreOp::Store;
+
+		vk2::LoadOp depth_load = vk2::LoadOp::Clear;
+		vk2::StoreOp depth_store = vk2::StoreOp::Store;
+	};
 
 	/**
 	 * @ingroup tz_gl_vk_commands
@@ -297,6 +312,18 @@ namespace tz::gl::vk2
 			RenderPassRun& operator=(RenderPassRun&& rhs) = delete;
 		private:
 			Framebuffer* framebuffer;
+			CommandBufferRecording* recording;
+		};
+
+		class DynamicRenderingRun
+		{
+		public:
+			DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment, DynamicRenderingRunInfo rinfo = {});
+			~DynamicRenderingRun();
+
+			DynamicRenderingRun& operator=(const DynamicRenderingRun& rhs) = delete;
+			DynamicRenderingRun& operator=(DynamicRenderingRun&& rhs) = delete;
+		private:
 			CommandBufferRecording* recording;
 		};
 
@@ -414,6 +441,10 @@ namespace tz::gl::vk2
 		 */
 		bool is_recording() const;
 		/**
+		 * Query as to whether this CommandBuffer is either recording, or ever has been recorded in the past, even if it doesn't contain any commands.
+		 */
+		bool has_ever_recorded() const;
+		/**
 		 * Retrieve the number of commands recorded into the buffer.
 		 * @return number of commands within the buffer.
 		 */
@@ -434,6 +465,7 @@ namespace tz::gl::vk2
 		VkCommandBuffer command_buffer;
 		const CommandPool* owner_pool;
 		bool recording;
+		bool ever_recorded;
 		std::vector<VulkanCommand::variant> recorded_commands;
 	};
 
@@ -489,6 +521,7 @@ namespace tz::gl::vk2
 		 * @return Structure with the resultant information, including newly-allocated CommandBuffers.
 		 */
 		AllocationResult allocate_buffers(const Allocation& alloc);
+		void free_buffers(const AllocationResult& alloc_result);
 
 		using NativeType = VkCommandPool;
 		NativeType native() const;
@@ -500,6 +533,31 @@ namespace tz::gl::vk2
 
 		VkCommandPool pool;
 		CommandPoolInfo info;
+	};
+
+	struct CommandBufferData
+	{
+		CommandBufferData() = default;
+		CommandBufferData(CommandBufferData&& move)
+		{
+			*this = std::move(move);
+		}
+		CommandBufferData& operator=(CommandBufferData&& rhs)
+		{
+			std::swap(this->pool, rhs.pool);
+			std::swap(this->data, rhs.data);
+			for(auto& buf : this->data.buffers)
+			{
+				buf.set_owner(this->pool);
+			}
+			for(auto& buf : rhs.data.buffers)
+			{
+				buf.set_owner(rhs.pool);
+			}
+			return *this;
+		}
+		vk2::CommandPool pool = vk2::CommandPool::null();
+		vk2::CommandPool::AllocationResult data = {};
 	};
 }
 

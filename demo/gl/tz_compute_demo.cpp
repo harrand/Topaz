@@ -36,6 +36,7 @@ int main()
 		tz::gl::renderer_handle compute_workerh = tz::gl::get_device().create_renderer(pinfo);
 
 		tz::gl::renderer_info rinfo;
+		rinfo.state().graphics.tri_count = 1;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_compute_demo_render, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_compute_demo_render, fragment));
 		tz::gl::resource_handle refbuf = rinfo.ref_resource(compute_workerh, cbuf);
@@ -44,6 +45,9 @@ int main()
 
 		tz::gl::renderer& compute_worker = tz::gl::get_device().get_renderer(compute_workerh);
 		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
+
+		tz::gl::get_device().render_graph().timeline = {compute_workerh, rendererh};
+		tz::gl::get_device().render_graph().add_dependencies(rendererh, compute_workerh);
 
 		bool game_menu_enabled = false;
 		tz::dbgui::game_menu().add_callback([&game_menu_enabled]()
@@ -54,8 +58,7 @@ int main()
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			compute_worker.render();
-			renderer.render(1);
+			tz::gl::get_device().render();
 
 			tz::dbgui::run([&game_menu_enabled, &compute_worker, &tbufh]()
 			{

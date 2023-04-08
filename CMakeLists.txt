@@ -121,10 +121,17 @@ add_library(topaz STATIC
 	src/tz/dbgui/dbgui.hpp
 	# tz::gl (API)
 	src/tz/gl/api/component.hpp
+	src/tz/gl/api/device.cpp
 	src/tz/gl/api/device.hpp
+	src/tz/gl/api/device.inl
 	src/tz/gl/api/output.hpp
+	src/tz/gl/api/renderer.cpp
 	src/tz/gl/api/renderer.hpp
 	src/tz/gl/api/resource.hpp
+	src/tz/gl/api/schedule.cpp
+	src/tz/gl/api/schedule.hpp
+	src/tz/gl/api/shader.cpp
+	src/tz/gl/api/shader.hpp
 	# tz::gl
 	src/tz/gl/component.hpp
 	src/tz/gl/device.cpp
@@ -138,21 +145,18 @@ add_library(topaz STATIC
 	src/tz/gl/resource.inl
 	src/tz/gl/tz_gl.hpp
 	# tz::gl (Common Impl)
-	src/tz/gl/impl/common/device.hpp
 	src/tz/gl/impl/common/renderer.cpp
 	src/tz/gl/impl/common/renderer.hpp
-	src/tz/gl/impl/common/shader.cpp
-	src/tz/gl/impl/common/shader.hpp
 	# tz::gl (Vulkan Frontend)
 	src/tz/gl/impl/vulkan/component.cpp
 	src/tz/gl/impl/vulkan/component.hpp
 	src/tz/gl/impl/vulkan/convert.hpp
 	src/tz/gl/impl/vulkan/convert.inl
-	src/tz/gl/impl/vulkan/device.cpp
-	src/tz/gl/impl/vulkan/device.hpp
-	src/tz/gl/impl/vulkan/renderer.cpp
-	src/tz/gl/impl/vulkan/renderer.hpp
+	src/tz/gl/impl/vulkan/device2.cpp
+	src/tz/gl/impl/vulkan/device2.hpp
 	src/tz/gl/impl/vulkan/renderer.inl
+	src/tz/gl/impl/vulkan/renderer2.cpp
+	src/tz/gl/impl/vulkan/renderer2.hpp
 	# tz::gl (OpenGL Frontend)
 	src/tz/gl/impl/opengl/component.cpp
 	src/tz/gl/impl/opengl/component.hpp
@@ -171,6 +175,7 @@ add_library(topaz STATIC
 	src/tz/gl/impl/vulkan/detail/debugname.inl
 	src/tz/gl/impl/vulkan/detail/descriptors.cpp
 	src/tz/gl/impl/vulkan/detail/descriptors.hpp
+	src/tz/gl/impl/vulkan/detail/draw.hpp
 	src/tz/gl/impl/vulkan/detail/extensions.hpp
 	src/tz/gl/impl/vulkan/detail/features.hpp
 	src/tz/gl/impl/vulkan/detail/fence.cpp

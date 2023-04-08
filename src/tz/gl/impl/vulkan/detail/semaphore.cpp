@@ -68,6 +68,16 @@ namespace tz::gl::vk2
 		return this->sem;
 	}
 
+	BinarySemaphore BinarySemaphore::null()
+	{
+		return {};
+	}
+	
+	bool BinarySemaphore::is_null() const
+	{
+		return this->sem == VK_NULL_HANDLE;
+	}
+
 	BinarySemaphore::BinarySemaphore():
 	sem(VK_NULL_HANDLE),
 	device(nullptr){}
@@ -170,6 +180,13 @@ namespace tz::gl::vk2
 				tz::error("Failed to wait on TimelineSemaphore but cannot determine why. Please submit a bug report.");
 			break;
 		}
+	}
+
+	std::uint64_t TimelineSemaphore::get_value() const
+	{
+		std::uint64_t ret;
+		vkGetSemaphoreCounterValue(BinarySemaphore::device->native(), this->sem, &ret);
+		return ret;
 	}
 	
 	bool TimelineSemaphore::supported(const LogicalDevice& device)

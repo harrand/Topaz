@@ -1,7 +1,6 @@
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/detail/features.hpp"
 #include "tz/gl/impl/vulkan/detail/image_format.hpp"
-#include "tz/gl/impl/common/shader.hpp"
 #include "tz/gl/impl/vulkan/detail/hardware/physical_device.hpp"
 #include <vector>
 
@@ -85,6 +84,10 @@ namespace tz::gl::vk2
 			{
 				ret |= DeviceFeature::FragmentShaderResourceWrite;
 			}
+			if(features.features13.dynamicRendering)
+			{
+				ret |= DeviceFeature::DynamicRendering;
+			}
 		
 			return ret;
 		}
@@ -112,6 +115,8 @@ namespace tz::gl::vk2
 				info.features12.descriptorBindingVariableDescriptorCount = VK_TRUE;
 				info.features12.runtimeDescriptorArray = VK_TRUE;
 			}
+
+			info.features13.dynamicRendering = feature_field.contains(DeviceFeature::DynamicRendering);
 			return info;
 		}
 

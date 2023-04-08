@@ -2,6 +2,7 @@
 #define TOPAZ_GL_2_API_DEVICE_HPP
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/api/renderer.hpp"
+#include "tz/gl/api/schedule.hpp"
 #include <functional>
 #include <type_traits>
 
@@ -20,7 +21,6 @@ namespace tz::gl
 	concept device_type = requires(T t, R& rinfo, renderer_handle h)
 	{
 		requires std::is_default_constructible_v<std::decay_t<T>>;
-		requires renderer_info_type<R>;
 		{t.create_renderer(rinfo)} -> std::same_as<renderer_handle>;
 		{t.destroy_renderer(h)} -> std::same_as<void>;
 		{t.renderer_count()} -> std::convertible_to<std::size_t>;
@@ -30,6 +30,32 @@ namespace tz::gl
 		{t.begin_frame()} -> std::same_as<void>;
 		{t.end_frame()} -> std::same_as<void>;
 	};
+
+	template<renderer_type R>
+	class device_common
+	{
+	public:
+		device_common() = default;
+		const R& get_renderer(tz::gl::renderer_handle handle) const;
+		R& get_renderer(tz::gl::renderer_handle handle);
+		void destroy_renderer(tz::gl::renderer_handle handle);
+		std::size_t renderer_count() const;
+		const tz::gl::schedule& render_graph() const;
+		tz::gl::schedule& render_graph();
+		void render();
+		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
+	protected:
+		tz::gl::renderer_handle emplace_renderer(const tz::gl::renderer_info& rinfo);
+		void internal_clear();
+		void post_add_renderer(std::size_t rid, const tz::gl::renderer_info& rinfo);
+	private:
+		std::vector<R> renderers;
+		std::vector<std::size_t> free_list = {};
+		tz::gl::schedule render_schedule = {};
+	};
+
+	template<tz::gl::device_type<tz::gl::renderer_info> T>
+	void common_device_dbgui(T& device);
 
 	#if TZ_VULKAN && TZ_OGL
 	// Documentation only.
@@ -83,4 +109,5 @@ namespace tz::gl
 	#endif
 }
 
+#include "tz/gl/api/device.inl"
 #endif // TOPAZ_GL_2_API_DEVICE_HPP

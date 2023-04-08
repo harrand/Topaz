@@ -110,7 +110,7 @@ namespace tz::gl::vk2
 	 * @}
 	 */
 
-	constexpr tz::version vulkan_version{1, 2, 0, tz::version_type::normal};
+	constexpr tz::version vulkan_version{1, 3, 0, tz::version_type::normal};
 
 	namespace util
 	{

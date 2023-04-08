@@ -352,7 +352,7 @@ namespace tz::gl::vk2
 		return *this->layout;
 	}
 
-	void DescriptorSet::set_layout(DescriptorLayout& layout)
+	void DescriptorSet::set_layout(const DescriptorLayout& layout)
 	{
 		this->layout = &layout;
 	}

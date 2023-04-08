@@ -277,7 +277,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 
-	ShaderManager::ShaderManager(const ShaderInfo& sinfo):
+	ShaderManager::ShaderManager(const shader_info& sinfo):
 	shader(this->make_shader(sinfo))
 	{
 
@@ -309,7 +309,7 @@ namespace tz::gl
 		return this->shader;
 	}
 
-	ogl2::shader ShaderManager::make_shader(const ShaderInfo& sinfo) const
+	ogl2::shader ShaderManager::make_shader(const shader_info& sinfo) const
 	{
 		tz::basic_list<ogl2::shader_module_info> modules;
 		if(sinfo.has_shader(shader_stage::compute))
@@ -326,8 +326,8 @@ namespace tz::gl
 		else
 		{
 			// Graphics, must contain a Vertex and Fragment shader.
-			tz::assert(sinfo.has_shader(shader_stage::vertex), "ShaderInfo must contain a non-empty vertex shader if no compute shader is present.");
-			tz::assert(sinfo.has_shader(shader_stage::fragment), "ShaderInfo must contain a non-empty fragment shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::vertex), "shader_info must contain a non-empty vertex shader if no compute shader is present.");
+			tz::assert(sinfo.has_shader(shader_stage::fragment), "shader_info must contain a non-empty fragment shader if no compute shader is present.");
 			modules =
 			{
 				{
@@ -659,12 +659,6 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_ogl::render(unsigned int tri_count)
-	{
-		this->state.graphics.tri_count = tri_count;
-		this->render();
-	}
-
 	void renderer_ogl::edit(const renderer_edit_request& edit_request)
 	{
 		TZ_PROFZONE("OpenGL Backend - renderer_ogl Edit", 0xFFAA0000);
@@ -752,7 +746,18 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::render_config>)
 				{
-					this->wireframe_mode = arg.wireframe_mode;
+					if(arg.wireframe_mode.has_value())
+					{
+						this->wireframe_mode = arg.wireframe_mode.value();
+					}
+					if(arg.clear_colour.has_value())
+					{
+						this->state.graphics.clear_colour = arg.clear_colour.value();
+					}
+					if(arg.tri_count.has_value())
+					{
+						this->state.graphics.tri_count = arg.tri_count.value();
+					}
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{

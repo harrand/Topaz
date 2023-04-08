@@ -81,7 +81,7 @@ namespace tz::gl
 		/**
 		 * Construct the shader program from the information provided.
 		 */
-		ShaderManager(const ShaderInfo& sinfo);
+		ShaderManager(const shader_info& sinfo);
 		/**
 		 * Construct a null shader manager. It is an error to do any render/compute work with a null shader manager.
 		 */
@@ -96,7 +96,7 @@ namespace tz::gl
 		ogl2::shader& get_program();
 
 	private:
-		ogl2::shader make_shader(const ShaderInfo& sinfo) const;
+		ogl2::shader make_shader(const shader_info& sinfo) const;
 
 		ogl2::shader shader;
 	};
@@ -180,11 +180,6 @@ namespace tz::gl
 		 * Invoke the renderer, emitting a single draw call of a set number of triangles. The number of triangles rendered is equal to the number of triangles rendered in the previous draw-call. If this is the first draw, zero triangles are rendered.
 		 */
 		void render();
-		/**
-		 * Invoke the renderer, emitting a single draw call of a set number of triangles.
-		 * @param tri_count number of triangles to render.
-		 */
-		void render(unsigned int tri_count);
 		/**
 		 * Confirm changes to a renderer.
 		 *

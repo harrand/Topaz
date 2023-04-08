@@ -9,6 +9,7 @@
 #include "tz/gl/output.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/gl/resource.hpp"
+#include "tz/gl/draw.hpp"
 #include "tz/gl/imported_shaders.hpp"
 #include "imgui.h"
 
@@ -45,6 +46,7 @@ namespace tz::dbgui
 		tz::gl::renderer_handle final_renderer = tz::nullhand;
 		tz::gl::resource_handle vertex_buffer = tz::nullhand;
 		tz::gl::resource_handle index_buffer = tz::nullhand;
+		tz::gl::resource_handle draw_buffer = tz::nullhand;
 		tz::gl::resource_handle shader_data_buffer = tz::nullhand;
 	};
 
@@ -341,6 +343,15 @@ namespace tz::dbgui
 		{
 			.access = tz::gl::resource_access::dynamic_variable
 		});
+		tz::gl::buffer_resource draw_buffer = tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command
+		{
+			.count = 0u,
+			.first = 0
+		},
+		{
+			.access = tz::gl::resource_access::dynamic_fixed,
+			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
+		});
 		tz::gl::buffer_resource shader_data_buffer = tz::gl::buffer_resource::from_one(TopazShaderRenderData{},
 		{
 			.access = tz::gl::resource_access::dynamic_fixed
@@ -361,12 +372,14 @@ namespace tz::dbgui
 		global_render_data->vertex_buffer = rinfo.add_resource(vertex_buffer);
 		global_render_data->shader_data_buffer = rinfo.add_resource(shader_data_buffer);
 		global_render_data->index_buffer = rinfo.add_resource(index_buffer);
+		global_render_data->draw_buffer = rinfo.add_resource(draw_buffer);
 		rinfo.add_resource(font_image);
+		rinfo.state().graphics.draw_buffer = global_render_data->draw_buffer;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(dbgui, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(dbgui, fragment));
 		rinfo.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::no_present, tz::gl::renderer_option::render_wait, tz::gl::renderer_option::_internal});
 		rinfo.set_output(wout);
-		rinfo.debug_name("ImGui Intermediate renderer");
+		rinfo.debug_name("Dbgui Renderer");
 		
 		global_render_data->renderer = tz::gl::get_device().create_renderer(rinfo);
 
@@ -374,7 +387,7 @@ namespace tz::dbgui
 		empty.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(empty, vertex));
 		empty.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 		empty.set_options({tz::gl::renderer_option::no_clear_output, tz::gl::renderer_option::no_depth_testing, tz::gl::renderer_option::_internal_final_dbgui_renderer, tz::gl::renderer_option::_internal});
-		empty.debug_name("ImGui Final renderer");
+		empty.debug_name("Dbgui Present");
 		global_render_data->final_renderer = tz::gl::get_device().create_renderer(empty);
 
 		io.Fonts->SetTexID(0);
@@ -408,27 +421,29 @@ namespace tz::dbgui
 		// We have no idea how big our vertex/index buffers need to be. Let's copy over the data now.
 		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
-		tz::gl::RendererEditBuilder edit;
-		if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() <= req_idx_size)
 		{
-			edit.buffer_resize
-			({
-				.buffer_handle = global_render_data->index_buffer,
-				.size = req_idx_size
-			});
-		}
-		if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() <= req_vtx_size)
-		{
-			edit.buffer_resize
-			({
-				.buffer_handle = global_render_data->vertex_buffer,
-				.size = req_vtx_size
-			});
-		}
-		static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
-		{
-			TZ_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
-			renderer.edit(edit.build());
+			tz::gl::RendererEditBuilder edit;
+			if(renderer.get_resource(global_render_data->index_buffer)->data().size_bytes() < req_idx_size)
+			{
+				edit.buffer_resize
+				({
+					.buffer_handle = global_render_data->index_buffer,
+					.size = req_idx_size
+				});
+			}
+			if(renderer.get_resource(global_render_data->vertex_buffer)->data().size_bytes() < req_vtx_size)
+			{
+				edit.buffer_resize
+				({
+					.buffer_handle = global_render_data->vertex_buffer,
+					.size = req_vtx_size
+				});
+			}
+			static_assert(sizeof(ImDrawIdx) == sizeof(unsigned int), "Topaz indices must be c++ unsigned ints under-the-hood. ImDrawIdx does not match its size.");
+			{
+				TZ_PROFZONE("Dbgui Render - IB/VB Resize", 0xFFAA00AA);
+				renderer.edit(edit.build());
+			}
 		}
 		auto indices = renderer.get_resource(global_render_data->index_buffer)->data();
 		auto vertices = renderer.get_resource(global_render_data->vertex_buffer)->data();
@@ -462,21 +477,30 @@ namespace tz::dbgui
 				shader_data.index_offset = draw_cmd.IdxOffset;
 				shader_data.vertex_offset = draw_cmd.VtxOffset;
 
-				tz::gl::ioutput* output = renderer.get_output();
-				tz::assert(output != nullptr, "");
 				ImVec2 min = {draw_cmd.ClipRect.x, draw_cmd.ClipRect.y};
 				ImVec2 max = {draw_cmd.ClipRect.z - draw_cmd.ClipRect.x, draw_cmd.ClipRect.w - draw_cmd.ClipRect.y};
-				output->scissor.offset = static_cast<tz::vec2ui>(tz::vec2{min.x, min.y} - tz::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
-				output->scissor.extent = static_cast<tz::vec2ui>(tz::vec2{max.x, max.y});
+				auto offset = static_cast<tz::vec2ui>(tz::vec2{min.x, min.y} - tz::vec2{draw->DisplayPos.x, draw->DisplayPos.y});
+				auto extent = static_cast<tz::vec2ui>(tz::vec2{max.x, max.y});
 #if TZ_OGL
-				output->scissor.offset[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
+				const tz::gl::ioutput* output = renderer.get_output();
+				extent[1] = io.DisplaySize.y - output->scissor.extent[1] - output->scissor.offset[1];
 #endif
+				tz::gl::RendererEditBuilder edit;
+				edit.set_scissor({.offset = offset, .extent = extent});
 
-				// Do a draw.
-				const std::size_t tri_count = draw_cmd.ElemCount / 3;
+				// TODO: Do the edit and apply the scissor rectangle. Uncomment the below line to actually do this, potentially incorrect results without scissor rectangles, however avoiding this renderer edit will yield a ~4x speed improvement.
+				//renderer.edit(edit.build());
+				renderer.get_resource(global_render_data->draw_buffer)->data_as<tz::gl::draw_indexed_indirect_command>().front() =
+				{
+					.count = draw_cmd.ElemCount,
+					.instance_count = 1u,
+					.first_index = 0u,
+					.base_vertex = 0,
+					.base_instance = 0u
+				};
 				if(draw_cmd.UserCallback == nullptr)
 				{
-					renderer.render(tri_count);
+					renderer.render();
 				}
 				else
 				{

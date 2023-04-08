@@ -43,6 +43,32 @@ int main()
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_dynamic_triangle_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_dynamic_triangle_demo, fragment));
+		tz::gl::resource_handle bufh = rinfo.add_resource
+		(
+			tz::gl::buffer_resource::from_many
+			(
+				{
+					TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
+					TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
+					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
+				}, 
+				{
+					.access = tz::gl::resource_access::dynamic_variable
+				}
+			)
+		);
+		tz::gl::resource_handle ibufh = rinfo.add_resource
+		(
+			tz::gl::buffer_resource::from_many
+			(
+				{0u, 1u, 2u},
+				{
+					.access = tz::gl::resource_access::dynamic_variable,
+					.flags = {tz::gl::resource_flag::index_buffer}
+				}
+			)
+		);
+		rinfo.state().graphics.index_buffer = ibufh;
 		tz::gl::resource_handle imgh = rinfo.add_resource
 		(
 			tz::gl::image_resource::from_memory
@@ -80,43 +106,19 @@ int main()
 				}
 			)
 		);
-		tz::gl::resource_handle bufh = rinfo.add_resource
-		(
-			tz::gl::buffer_resource::from_many
-			(
-				{
-					TriangleVertexData{.position = {-0.5f, -0.5f, 0.0f}, .texcoord = {0.0f, 0.0f}},
-					TriangleVertexData{.position = {0.0f, 0.5f, 0.0f}, .texcoord = {0.5f, 1.0f}},
-					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
-				}, 
-				{
-					.access = tz::gl::resource_access::dynamic_variable
-				}
-			)
-		);
-		tz::gl::resource_handle ibufh = rinfo.add_resource
-		(
-			tz::gl::buffer_resource::from_many
-			(
-				{0u, 1u, 2u},
-				{
-					.access = tz::gl::resource_access::dynamic_variable,
-					.flags = {tz::gl::resource_flag::index_buffer}
-				}
-			)
-		);
-		rinfo.state().graphics.index_buffer = ibufh;
 
 		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
 		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
 		std::default_random_engine rand;
 		tz::delay fixed_update{50_ms};
 
+		tz::gl::get_device().render_graph().timeline = {rendererh};
+
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			renderer.render(triangle_count);
-			tz::end_frame();
+			renderer.edit(tz::gl::RendererEditBuilder{}.set_tri_count({.tri_count = triangle_count}).build());
+			renderer.render();
 
 			static bool up = true;
 			if(fixed_update.done())
@@ -167,6 +169,7 @@ int main()
 				// But set the first pixel (bottom left) to always be white.
 				std::fill(img_data.begin(), img_data.begin() + 4, std::byte{255});
 			}
+			tz::end_frame();
 		}
 	}
 	tz::terminate();

@@ -15,7 +15,7 @@ namespace tz::gl
 	tz::gl::renderer_handle device_ogl::create_renderer(const renderer_info& info)
 	{
 		TZ_PROFZONE("OpenGL Frontend - renderer Create (via device)", 0xFFAA0000);
-		return DeviceCommon<renderer_ogl>::emplace_renderer(info);
+		return device_common<renderer_ogl>::emplace_renderer(info);
 	}
 	
 	image_format device_ogl::get_window_format() const

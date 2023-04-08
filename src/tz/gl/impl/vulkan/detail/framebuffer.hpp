@@ -72,6 +72,27 @@ namespace tz::gl::vk2
 		FramebufferInfo info;
 		VkFramebuffer framebuffer;
 	};
+
+	struct FramebufferData
+	{
+		FramebufferData() = default;
+		FramebufferData(FramebufferData&& move)
+		{
+			*this = std::move(move);
+		}
+		FramebufferData& operator=(FramebufferData&& rhs)
+		{
+			std::swap(this->render_pass, rhs.render_pass);
+			std::swap(this->framebuffers, rhs.framebuffers);
+			for(auto& fb : this->framebuffers)
+			{
+				fb.set_render_pass(this->render_pass);
+			}
+			return *this;
+		}
+		RenderPass render_pass = RenderPass::null();
+		std::vector<Framebuffer> framebuffers = {};
+	};
 }
 
 #endif // TZ_VULKAN

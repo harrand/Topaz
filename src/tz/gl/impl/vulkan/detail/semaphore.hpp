@@ -6,6 +6,11 @@
 
 namespace tz::gl::vk2
 {
+	enum class semaphore_type
+	{
+		binary,
+		timeline
+	};
 	/**
 	 * @ingroup tz_gl_vk_sync
 	 * Synchronisation primitive which is not interactable on the host and which has two states:
@@ -23,11 +28,15 @@ namespace tz::gl::vk2
 
 		BinarySemaphore& operator=(const BinarySemaphore& rhs) = delete;
 		BinarySemaphore& operator=(BinarySemaphore&& rhs);
+		virtual semaphore_type get_type() const{return semaphore_type::binary;}
 
 		const LogicalDevice& get_device() const;
 
 		using NativeType = VkSemaphore;
 		NativeType native() const;
+
+		static BinarySemaphore null();
+		bool is_null() const;
 	protected:
 		BinarySemaphore();
 		VkSemaphore sem;
@@ -60,6 +69,8 @@ namespace tz::gl::vk2
 		TimelineSemaphore& operator=(const TimelineSemaphore&& rhs) = delete;
 		TimelineSemaphore& operator=(TimelineSemaphore&& rhs);
 
+
+		virtual semaphore_type get_type() const{return semaphore_type::timeline;}
 		/**
 		 * Instantaneously set the semaphore to the given value.
 		 */
@@ -68,6 +79,10 @@ namespace tz::gl::vk2
 		 * Blocks the current thread and waits until the semaphore has reached the provided value.
 		 */
 		void wait_for(std::uint64_t value) const;
+		/**
+		 * Retrieve the current semaphore value.
+		 */
+		std::uint64_t get_value() const;
 
 		/**
 		 * Timeline Semaphores are optional features and must be enabled. This is a helper function which can determine if a @ref LogicalDevice has enabled Timeline Semaphores.

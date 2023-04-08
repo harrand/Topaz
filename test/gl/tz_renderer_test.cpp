@@ -322,6 +322,50 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_resourcereference_buffer)
+	// create an empty renderer with a buffer resource. buf contains 0.0f
+	tz::gl::renderer_info rinfo1;
+	rinfo1.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
+	tz::gl::resource_handle bufres = rinfo1.add_resource(tz::gl::buffer_resource::from_one(0.0f, {.access = tz::gl::resource_access::dynamic_fixed}));
+
+	// create a second empty renderer with buffer resource. buf contains 1.0f
+	tz::gl::renderer_info rinfo2;
+	rinfo2.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
+	rinfo2.add_resource(tz::gl::buffer_resource::from_one(1.0f, {.access = tz::gl::resource_access::dynamic_fixed}));
+
+	tz::gl::renderer_handle r1h = tz::gl::get_device().create_renderer(rinfo1);
+	tz::gl::renderer_handle r2h = tz::gl::get_device().create_renderer(rinfo2);
+	
+	// now a third renderer initially referring to r1h's buffer.
+	tz::gl::renderer_info rinfo3;
+	rinfo3.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
+	tz::gl::resource_handle bufres3 = rinfo3.ref_resource(r1h, bufres);
+
+	tz::gl::renderer_handle r3h = tz::gl::get_device().create_renderer(rinfo3);
+	// ensure that r3h's buffer ref value is 0.0f;
+	tz::gl::renderer& r3 = tz::gl::get_device().get_renderer(r3h);
+	tz::assert(r3.get_resource(bufres3)->data_as<float>().front() == 0.0f);
+	// do a resource reference renderer edit.
+	r3.edit(tz::gl::RendererEditBuilder{}
+	.resource_ref
+	({
+		.resource = bufres3,
+	  	.component = tz::gl::get_device().get_renderer(r2h).get_component(bufres)
+	})
+	.build());
+	tz::assert(r3.get_resource(bufres3)->data_as<float>().front() == 1.0f);
+
+	tz::gl::get_device().destroy_renderer(r1h);
+	tz::gl::get_device().destroy_renderer(r2h);
+	tz::gl::get_device().destroy_renderer(r3h);
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
+TESTFUNC_BEGIN(rendereredit_resourcereference_image)
+	// todo: implement. could simply do the same as buffer, but write the float in dynamic_fixed image memory, but that seems like a pointless test at this point? maybe it isnt?
+TESTFUNC_END
+
+//--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_computeconfig)
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
@@ -427,6 +471,8 @@ int main()
 		rendereredit_imageresize();
 		rendereredit_resourcewrite_buffer();
 		rendereredit_resourcewrite_image();
+		rendereredit_resourcereference_buffer();
+		rendereredit_resourcereference_image();
 		rendereredit_computeconfig();
 		rendereredit_renderconfig();
 

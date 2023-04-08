@@ -49,11 +49,12 @@ int main()
 		tz::gl::renderer_info rinfo;
 		tz::gl::resource_handle bufh = rinfo.add_resource(buf);
 		tz::gl::resource_handle bufh2 = rinfo.add_resource(buf2);
+		rinfo.state().graphics.tri_count = 4;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(tz_terrain_demo, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::tessellation_control, ImportedShaderSource(tz_terrain_demo, tesscon));
 		rinfo.shader().set_shader(tz::gl::shader_stage::tessellation_evaluation, ImportedShaderSource(tz_terrain_demo, tesseval));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(tz_terrain_demo, fragment));
-		//rinfo.state().graphics.clear_colour = {0.0f, 0.765f, 1.0f, 1.0f};
+		rinfo.debug_name("Terrain Renderer");
 
 		tz::gl::renderer_handle rendererh = tz::gl::get_device().create_renderer(rinfo);
 		tz::gl::renderer& renderer = tz::gl::get_device().get_renderer(rendererh);
@@ -67,12 +68,13 @@ int main()
 		{
 			ImGui::MenuItem("Control Panel", nullptr, &game_menu_enabled);
 		});
+		tz::gl::get_device().render_graph().timeline = {rendererh};
 
 		constexpr float multiplier = 3.5f;
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			renderer.render(4);
+			renderer.render();
 
 			tz::dbgui::run([&flight_enabled, &game_menu_enabled]()
 			{
