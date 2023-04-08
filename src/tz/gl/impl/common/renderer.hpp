@@ -127,7 +127,15 @@ namespace tz::gl
 				auto col = renderer.get_state().graphics.clear_colour;
 				if(ImGui::DragFloat4("Clear Colour", col.data().data(), 0.02f, 0.0f, 1.0f))
 				{
-					ImGui::Text("Direct edit is not yet supported.");
+					renderer.edit
+					(
+						tz::gl::RendererEditBuilder{}
+						.render_state
+						({
+							.clear_colour = col
+						})
+						.build()
+					);
 				}
 			}
 			// Graphics - Tri Count

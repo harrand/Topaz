@@ -41,12 +41,6 @@ namespace tz::gl
 		return *this;
 	}
 
-	RendererEditBuilder& RendererEditBuilder::set_tri_count(renderer_edit::tri_count req)
-	{
-		this->request.push_back(req);
-		return *this;
-	}
-
 	RendererEditBuilder& RendererEditBuilder::set_scissor(renderer_edit::scissor scis)
 	{
 		this->request.push_back(scis);

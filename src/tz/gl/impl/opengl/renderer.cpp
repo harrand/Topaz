@@ -746,11 +746,18 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::render_config>)
 				{
-					this->wireframe_mode = arg.wireframe_mode;
-				}
-				else if constexpr(std::is_same_v<T, renderer_edit::tri_count>)
-				{
-					this->state.graphics.tri_count = arg.tri_count;
+					if(arg.wireframe_mode.has_value())
+					{
+						this->wireframe_mode = arg.wireframe_mode.value();
+					}
+					if(arg.clear_colour.has_value())
+					{
+						this->state.graphics.clear_colour = arg.clear_colour.value();
+					}
+					if(arg.tri_count.has_value())
+					{
+						this->state.graphics.tri_count = arg.tri_count.value();
+					}
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{

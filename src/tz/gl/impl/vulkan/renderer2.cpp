@@ -1457,15 +1457,6 @@ namespace tz::gl
 						break;
 					}
 				},
-				// TRI COUNT
-				[&side_effects, this](tz::gl::renderer_edit::tri_count arg)
-				{
-					if(arg.tri_count != state.graphics.tri_count)
-					{
-						state.graphics.tri_count = arg.tri_count;
-						side_effects.rerecord_work_commands = true;
-					}
-				},
 				[&side_effects, this](tz::gl::renderer_edit::scissor arg)
 				{
 					ioutput* out = renderer_output_manager::get_output_mutable();
@@ -1488,10 +1479,20 @@ namespace tz::gl
 				},
 				[&side_effects, this](tz::gl::renderer_edit::render_config arg)
 				{
-					if(arg.wireframe_mode != state.graphics.wireframe_mode)
+					if(arg.wireframe_mode.has_value() && arg.wireframe_mode.value() != state.graphics.wireframe_mode)
 					{
-						state.graphics.wireframe_mode = arg.wireframe_mode;
+						state.graphics.wireframe_mode = arg.wireframe_mode.value();
 						side_effects.recreate_pipeline = true;
+					}
+					if(arg.clear_colour.has_value() && arg.clear_colour.value() != state.graphics.clear_colour)
+					{
+						state.graphics.clear_colour = arg.clear_colour.value();
+						side_effects.recreate_pipeline = true;
+					}
+					if(arg.tri_count.has_value() && arg.tri_count.value() != state.graphics.tri_count)
+					{
+						state.graphics.tri_count = arg.tri_count.value();
+						side_effects.rerecord_work_commands = true;
 					}
 				},
 				// UNKNOWN
