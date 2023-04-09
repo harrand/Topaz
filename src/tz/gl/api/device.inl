@@ -1,3 +1,4 @@
+#include "tz/core/profile.hpp"
 #include "imgui.h"
 #undef assert
 namespace tz::gl
@@ -49,6 +50,7 @@ namespace tz::gl
 	template<renderer_type R>
 	void device_common<R>::render()
 	{
+		TZ_PROFZONE("device - render", 0xFFAAAA00);
 		for(eid_t evt : this->render_schedule.timeline)
 		{
 			this->renderers[evt].render();
