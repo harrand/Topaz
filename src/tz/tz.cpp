@@ -95,12 +95,12 @@ namespace tz
 	{
 		TZ_FRAME_BEGIN;
 		tz::dbgui::begin_frame();
+		tz::job_system().new_frame();
 	}
 
 	void end_frame()
 	{
 		tz::dbgui::end_frame();
-		tz::job_system().new_frame();
 		tz::wsi::update();
 		TZ_FRAME_END;
 	}

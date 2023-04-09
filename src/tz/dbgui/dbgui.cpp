@@ -37,7 +37,7 @@ namespace tz::dbgui
 		std::size_t frame_counter = 0;
 		tz::duration last_update;
 		float frame_period = 0.0f;
-		tz::delay fps_update{tz::literals::operator""_ms(500.0f)};
+		tz::duration fps_update_duration;
 	};
 
 	struct TopazRenderData
@@ -754,10 +754,10 @@ namespace tz::dbgui
 
 		global_platform_data->frame_counter++;
 		auto now = tz::system_time();
-		if(global_platform_data->fps_update.done())
+		if(now.millis<std::uint64_t>() > global_platform_data->fps_update_duration.millis<std::uint64_t>() + 500)
 		{
-			global_platform_data->frame_period = (tz::system_time() - global_platform_data->last_update).millis<float>();
-			global_platform_data->fps_update.reset();
+			global_platform_data->frame_period = (now - global_platform_data->last_update).millis<float>();
+			global_platform_data->fps_update_duration = now;
 		}
 		global_platform_data->last_update = now;
 	}
