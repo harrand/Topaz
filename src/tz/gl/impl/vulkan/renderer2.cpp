@@ -1472,25 +1472,46 @@ namespace tz::gl
 					if(arg.kernel != state.compute.kernel)
 					{
 						state.compute.kernel = arg.kernel;
-						side_effects.rerecord_work_commands = true;
+						if(renderer_pipeline::get_pipeline_type() == pipeline_type_t::compute)
+						{
+							side_effects.rerecord_work_commands = true;
+						}
+						else
+						{
+							tz::report("Detected compute config renderer edit, but the renderer is not a compute renderer. Ignoring...");
+						}
 					}
 				},
 				[&side_effects, this](tz::gl::renderer_edit::render_config arg)
 				{
+					const bool valid = renderer_pipeline::get_pipeline_type() == pipeline_type_t::graphics;
+					if(!valid)
+					{
+						tz::report("Detected render config renderer edit, but the renderer is a compute renderer. Ignoring...");
+					}
 					if(arg.wireframe_mode.has_value() && arg.wireframe_mode.value() != state.graphics.wireframe_mode)
 					{
 						state.graphics.wireframe_mode = arg.wireframe_mode.value();
-						side_effects.recreate_pipeline = true;
+						if(valid)
+						{
+							side_effects.recreate_pipeline = true;
+						}
 					}
 					if(arg.clear_colour.has_value() && arg.clear_colour.value() != state.graphics.clear_colour)
 					{
 						state.graphics.clear_colour = arg.clear_colour.value();
-						side_effects.recreate_pipeline = true;
+						if(valid)
+						{
+							side_effects.recreate_pipeline = true;
+						}
 					}
 					if(arg.tri_count.has_value() && arg.tri_count.value() != state.graphics.tri_count)
 					{
 						state.graphics.tri_count = arg.tri_count.value();
-						side_effects.rerecord_work_commands = true;
+						if(valid)
+						{
+							side_effects.rerecord_work_commands = true;
+						}
 					}
 				},
 				// UNKNOWN

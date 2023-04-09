@@ -173,7 +173,15 @@ namespace tz::gl
 				auto kern = static_cast<tz::vec3i>(renderer.get_state().compute.kernel);
 				if(ImGui::DragInt3("Kernel", kern.data().data(), 0.25f, 0, 64))
 				{
-					ImGui::Text("Direct edit is not yet supported.");
+					renderer.edit
+					(
+						tz::gl::RendererEditBuilder{}
+						.compute
+						({
+							.kernel = kern
+						})
+						.build()
+					);
 				}
 			}
 			ImGui::Unindent();
