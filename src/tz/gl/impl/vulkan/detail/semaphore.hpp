@@ -24,7 +24,7 @@ namespace tz::gl::vk2
 		BinarySemaphore(const LogicalDevice& device);
 		BinarySemaphore(const BinarySemaphore& copy) = delete;
 		BinarySemaphore(BinarySemaphore&& move);
-		~BinarySemaphore();
+		virtual ~BinarySemaphore();
 
 		BinarySemaphore& operator=(const BinarySemaphore& rhs) = delete;
 		BinarySemaphore& operator=(BinarySemaphore&& rhs);
