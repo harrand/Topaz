@@ -757,7 +757,11 @@ namespace tz::gl
 
 	device_vulkan2::~device_vulkan2()
 	{
-		device_vulkan_base::vk_get_logical_device().wait_until_idle();
+		TZ_PROFZONE("device_vulkan2 - destroy", 0xFFAAAA00);
+		{
+			TZ_PROFZONE("wait until idle", 0xFFAAAA00);
+			device_vulkan_base::vk_get_logical_device().wait_until_idle();
+		}
 		device_common<renderer_vulkan2>::internal_clear();
 	}
 

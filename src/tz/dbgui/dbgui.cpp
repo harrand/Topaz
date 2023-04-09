@@ -571,7 +571,7 @@ namespace tz::dbgui
 		ImGui::SameLine();
 		ImGui::Text("%.2ffps |", 1000.0f / global_platform_data->frame_period);
 		ImGui::SameLine();
-		ImGui::Text("%u jobs", tz::job_system().size());
+		ImGui::Text("%u jobs", tz::job_system().jobs_started_this_frame());
 
 		//if(ImGui::CollapsingHeader("Graphics Backend"))
 		//{

@@ -21,7 +21,9 @@ namespace tz::impl
 		bool complete(job_handle j) const;
 		bool any_work_remaining() const;
 		void block_all() const;
+		void new_frame();
 		unsigned int size() const;
+		unsigned int jobs_started_this_frame() const;
 	private:
 		struct worker_t
 		{
@@ -41,6 +43,7 @@ namespace tz::impl
 		moodycamel::ConcurrentQueue<job_info_t> jobs;
 		std::atomic<bool> requires_exit = false;
 		std::atomic<std::size_t> lifetime_count = 0;
+		std::atomic<std::size_t> count_this_frame = 0;
 		std::vector<std::size_t> waiting_job_ids = {};
 		mutable std::mutex waiting_job_id_mutex;
 		mutable std::mutex wake_mutex;

@@ -50,6 +50,7 @@ namespace tz::impl
 		}
 		this->jobs.enqueue(jinfo);
 		this->wake_condition.notify_one();
+		this->count_this_frame++;
 		return static_cast<hanval>(this->lifetime_count++);
 	}
 
@@ -83,9 +84,19 @@ namespace tz::impl
 		}
 	}
 
+	void job_system_threadpool_lfq::new_frame()
+	{
+		this->count_this_frame = 0;
+	}
+
 	unsigned int job_system_threadpool_lfq::size() const
 	{
 		return this->jobs.size_approx();
+	}
+
+	unsigned int job_system_threadpool_lfq::jobs_started_this_frame() const
+	{
+		return this->count_this_frame.load();
 	}
 
 	void job_system_threadpool_lfq::tmain(std::size_t local_tid)

@@ -2,6 +2,7 @@
 #include "tz/core/tz_core.hpp"
 #include "tz/wsi/wsi.hpp"
 #include "tz/tz.hpp"
+#include "tz/core/job/job.hpp"
 #include "tz/core/debug.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
@@ -99,6 +100,7 @@ namespace tz
 	void end_frame()
 	{
 		tz::dbgui::end_frame();
+		tz::job_system().new_frame();
 		tz::wsi::update();
 		TZ_FRAME_END;
 	}
