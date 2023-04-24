@@ -133,8 +133,6 @@ namespace tz::gl
 
 	void image_component_vulkan::resize(tz::vec2ui new_dimensions)
 	{
-		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize an image_component_vulkan, but it does not have resource_access::dynamic_variable. Please submit a bug report.");
-
 		// Firstly, make a copy of the old image data.
 		std::vector<std::byte> old_data;
 		{
@@ -149,16 +147,19 @@ namespace tz::gl
 		std::string debug_name = this->image.debug_get_name();
 		this->image = make_image();
 		this->image.debug_set_name(debug_name);
-		// After that, let's re-validate the resource data span. It will still have undefined contents for now.
-		auto new_data = this->vk_get_image().map_as<std::byte>();
-		this->resource->set_mapped_data(new_data);
-		// Finally, copy over the old data.
-		std::size_t copy_size = std::min(new_data.size_bytes(), old_data.size());
-		std::copy(old_data.begin(), old_data.begin() + copy_size, new_data.begin());
-		// If the image has grown, then the new texels will still have undefined values because the copy didnt cover the entire contents.
-		// Let's zero it all.
-		std::size_t num_new_texels = std::max(new_data.size_bytes(), old_data.size()) - copy_size;
-		std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
+		if(ires->get_access() != tz::gl::resource_access::static_fixed)
+		{
+			// After that, let's re-validate the resource data span. It will still have undefined contents for now.
+			auto new_data = this->vk_get_image().map_as<std::byte>();
+			this->resource->set_mapped_data(new_data);
+			// Finally, copy over the old data.
+			std::size_t copy_size = std::min(new_data.size_bytes(), old_data.size());
+			std::copy(old_data.begin(), old_data.begin() + copy_size, new_data.begin());
+			// If the image has grown, then the new texels will still have undefined values because the copy didnt cover the entire contents.
+			// Let's zero it all.
+			std::size_t num_new_texels = std::max(new_data.size_bytes(), old_data.size()) - copy_size;
+			std::fill_n(new_data.begin() + copy_size, num_new_texels, std::byte{0});
+		}
 	}
 
 	const vk2::Image& image_component_vulkan::vk_get_image() const

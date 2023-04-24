@@ -1017,7 +1017,9 @@ namespace tz::gl
 			record.debug_begin_label({.name = label});
 			vk2::Image& cur_swapchain_image = tz::gl::get_device().get_swapchain().get_images()[render_target_id];
 
-			if(present)
+			// if 'no clear output' isn't specified, then we can say old layout is undefined, so we're guaranteed to be in colour attachment after.
+			// after a present, we want this to be the case so this should work?
+			if(!options.contains(tz::gl::renderer_option::no_clear_output))
 			{
 				record.transition_image_layout
 				(vk2::VulkanCommand::TransitionImageLayout{
@@ -1025,7 +1027,7 @@ namespace tz::gl
 					.target_layout = vk2::ImageLayout::ColourAttachment,
 					.source_access = {},
 					.destination_access = {vk2::AccessFlag::ColourAttachmentWrite},
-					.source_stage = vk2::PipelineStage::Top,
+					.source_stage = vk2::PipelineStage::Bottom,
 					.destination_stage = vk2::PipelineStage::ColourAttachmentOutput,
 					.image_aspects = {vk2::ImageAspectFlag::Colour}
 				});
@@ -1151,10 +1153,11 @@ namespace tz::gl
 				(vk2::VulkanCommand::TransitionImageLayout{
 					.image = &cur_swapchain_image,
 					.target_layout = vk2::ImageLayout::Present,
+		 			.old_layout = vk2::ImageLayout::ColourAttachment,
 					.source_access = {vk2::AccessFlag::ColourAttachmentWrite},
 					.destination_access = {},
 					.source_stage = vk2::PipelineStage::ColourAttachmentOutput,
-					.destination_stage = vk2::PipelineStage::Bottom,
+					.destination_stage = vk2::PipelineStage::Top,
 					.image_aspects = {vk2::ImageAspectFlag::Colour}
 				});
 			}
@@ -1306,7 +1309,7 @@ namespace tz::gl
 							.target_layout = vk2::ImageLayout::TransferDestination,
 							.source_access = {vk2::AccessFlag::NoneNeeded},
 							.destination_access = {vk2::AccessFlag::TransferOperationWrite},
-							.source_stage = vk2::PipelineStage::Top,
+							.source_stage = vk2::PipelineStage::Bottom,
 							.destination_stage = vk2::PipelineStage::TransferCommands,
 							.image_aspects = aspect
 						});
@@ -1587,6 +1590,17 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("renderer_vulkan2 - do resize", 0xFFAAAA00);
 		tz::gl::get_device().vk_notify_resize();
+		for(std::size_t i = 0; i < this->resource_count(); i++)
+		{
+			tz::gl::resource_handle rh{static_cast<tz::hanval>(i)};
+			icomponent* cmp = this->get_component(rh);
+			iresource* res = cmp->get_resource();
+			if(res->get_type() == tz::gl::resource_type::image && res->get_flags().contains(tz::gl::resource_flag::renderer_output))
+			{
+				static_cast<image_component_vulkan*>(cmp)->resize(tz::window().get_dimensions());
+				renderer_resource_manager::notify_image_dirty(rh);
+			}
+		}
 		renderer_output_manager::populate_render_targets(this->options);
 		renderer_pipeline::update_pipeline(this->state);
 		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);

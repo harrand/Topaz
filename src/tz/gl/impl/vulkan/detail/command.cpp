@@ -395,6 +395,10 @@ namespace tz::gl::vk2
 		};
 
 		ImageLayout cur_layout = this->get_layout_so_far(*command.image);
+		if(command.old_layout.has_value())
+		{
+			cur_layout = command.old_layout.value();
+		}
 		this->register_command(command);
 		tz::assert(command.target_layout != cur_layout, "Transitioning image layout, but it is apparantly already in this layout.");
 		VkImageMemoryBarrier barrier

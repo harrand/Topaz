@@ -217,6 +217,7 @@ namespace tz::gl::vk2
 			Image* image;
 			/// Desired ImageLayout of `image` after the command has finished execution.
 			ImageLayout target_layout;
+			std::optional<ImageLayout> old_layout = std::nullopt;
 
 			/// All preceeding operations within the recorded @ref CommandBuffer that satisfy an access method specified here will not be re-ordered (guaranteed to be before every candidate after the barrier)
 			AccessFlagField source_access;
