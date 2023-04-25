@@ -1019,7 +1019,7 @@ namespace tz::gl
 
 			// if 'no clear output' isn't specified, then we can say old layout is undefined, so we're guaranteed to be in colour attachment after.
 			// after a present, we want this to be the case so this should work?
-			if(!options.contains(tz::gl::renderer_option::no_clear_output))
+			if(!options.contains(tz::gl::renderer_option::no_clear_output) && renderer_output_manager::targets_window())
 			{
 				record.transition_image_layout
 				(vk2::VulkanCommand::TransitionImageLayout{
