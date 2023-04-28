@@ -5,9 +5,30 @@
 
 namespace tz
 {
+	template<int F, int L>
+	struct static_for_t
+	{
+		template<typename Functor>
+		static inline constexpr void apply(const Functor& f)
+		{
+			if(F < L)
+			{
+				f(std::integral_constant<int, F>{});
+				static_for_t<F + 1, L>::apply(f);
+			}
+		}
+
+		template<typename Functor>
+		void operator()(const Functor& f) const
+		{
+			apply(f);
+		}
+	};
+
 	/**
 	 * @ingroup tz_core_algorithms
 	 * Compute a compile-time for-loop.
+	 * Use `tz::static_for` as a value, i.e: `inline constexpr static_for_t static_for = {};`
 	 * 
 	 * Equivalent to:
 	 * ```
@@ -17,15 +38,15 @@ namespace tz
 	 * }
 	 * ```
 	 */
-	template<std::size_t begin, std::size_t end>
-	constexpr void static_for(tz::action<std::size_t> auto function)
+	template<int N>
+	struct static_for_t<N, N>
 	{
-		if constexpr(begin < end)
-		{
-			function(std::integral_constant<std::size_t, begin>{});
-			static_for<begin + 1, end>(function);
-		}
-	}
+		template<typename Functor>
+		static inline constexpr void apply([[maybe_unused]] const Functor& f){}
+	};
+
+	template<int F, int L>
+	inline constexpr static_for_t<F, L> static_for = {};
 
 	/**
 	 * @ingroup tz_core_algorithms
