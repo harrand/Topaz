@@ -125,11 +125,22 @@ namespace tz::gl
 		tz::gl::renderer_options options;
 	};
 
+	struct renderer_ogl_base
+	{
+		protected:
+		// devices have this concept of renderer handles, but they are not guaranteed to be unique (e.g if renderer handle 2 is deleted and a new renderer is created, that will also have handle 2.)
+		// this is a uid which will uniquely identify ths current renderer. renderers need to have their own identity because other manager classes (mainly device_vulkan2) does bookkeeping for renderers and needs to know who is who.
+		static unsigned int uid_counter;
+		unsigned int uid = uid_counter++;
+	public:
+		unsigned int ogl_get_uid() const{return this->uid;}
+	};
+
 	/**
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
 	 * renderer implementation which heavily calls into the backend at @ref tz_gl_ogl2.
 	 */
-	class renderer_ogl
+	class renderer_ogl : public renderer_ogl_base
 	{
 	public:
 		/**

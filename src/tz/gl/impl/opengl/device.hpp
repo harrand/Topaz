@@ -4,10 +4,26 @@
 #include "tz/gl/api/device.hpp"
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/impl/opengl/renderer.hpp"
+#include <unordered_map>
 
 namespace tz::gl
 {
-	class device_ogl : public device_common<renderer_ogl>
+	class device_render_scheduler_ogl
+	{
+	public:
+		device_render_scheduler_ogl(const tz::gl::schedule& sched);
+		void ogl_fingerprint(unsigned int fingerprint, std::size_t renderer_id);
+		void ogl_gpu_do_waits(unsigned int fingerprint);
+		void ogl_gpu_wait_on(tz::gl::renderer_handle dep);
+		void ogl_register_sync(unsigned int fingerprint);
+		void ogl_new_sync();
+	private:
+		std::vector<GLsync> renderer_syncs = {};
+		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
+		const tz::gl::schedule& sched;
+	};
+
+	class device_ogl : public device_render_scheduler_ogl, public device_common<renderer_ogl>
 	{
 	public:
 		device_ogl();
@@ -20,8 +36,6 @@ namespace tz::gl
 		void dbgui();
 		void begin_frame();
 		void end_frame();
-	private:
-		std::vector<renderer_ogl> renderers;
 	};
 	static_assert(device_type<device_ogl, renderer_info>);
 }

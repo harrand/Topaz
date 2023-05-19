@@ -12,6 +12,7 @@
 
 namespace tz::gl
 {
+	unsigned int renderer_ogl_base::uid_counter = 0;
 	namespace detail
 	{
 		void initialise_buffer(buffer_component_ogl& bufcomp)
@@ -546,6 +547,8 @@ namespace tz::gl
 		}
 		#endif
 
+		tz::gl::get_device().ogl_gpu_do_waits(renderer_ogl_base::ogl_get_uid());
+
 		if(this->shader.is_compute())
 		{
 			this->resources.write_dynamic_images();
@@ -657,6 +660,7 @@ namespace tz::gl
 			glClientWaitSync(fence, GL_SYNC_FLUSH_COMMANDS_BIT, std::numeric_limits<GLuint64>::max());
 			glDeleteSync(fence);
 		}
+		tz::gl::get_device().ogl_register_sync(renderer_ogl_base::ogl_get_uid());
 	}
 
 	void renderer_ogl::edit(const renderer_edit_request& edit_request)
