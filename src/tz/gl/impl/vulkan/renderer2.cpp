@@ -1437,6 +1437,7 @@ namespace tz::gl
 				// RESOURCE WRITE
 				[&resource_writes, &side_effects, this](tz::gl::renderer_edit::resource_write arg)
 				{
+					(void)side_effects;
 					renderer_command_processor::queue_resource_write(arg);
 					resource_writes = true;
 				},
