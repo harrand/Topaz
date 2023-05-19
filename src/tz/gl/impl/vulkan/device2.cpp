@@ -237,21 +237,20 @@ namespace tz::gl
 			});
 			switch(this->recent_acquire->type)
 			{
-				using enum vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType;
-				case AcquireSuccess:
+				case vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType::AcquireSuccess:
 
 				break;
-				case Suboptimal:
+				case vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType::Suboptimal:
 
 				break;
-				case ErrorOutOfDate:
+				case vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType::ErrorOutOfDate:
 					this->vk_notify_resize();
 					return this->acquire_image(signal_fence);
 				break;
-				case ErrorSurfaceLost:
+				case vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType::ErrorSurfaceLost:
 					tz::error("Failed to acquire swapchain image because surface was lost. Please submit a bug report.");
 				break;
-				case ErrorUnknown:
+				case vk2::Swapchain::ImageAcquisitionResult::AcquisitionResultType::ErrorUnknown:
 					tz::error("Failed to acquire swapchain image, but couldn't determine why. Please submit a bug report.");
 				break;
 				default: tz::error(); break;
