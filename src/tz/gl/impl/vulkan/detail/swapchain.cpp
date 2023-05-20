@@ -162,21 +162,20 @@ namespace tz::gl::vk2
 		VkResult res = vkAcquireNextImageKHR(this->get_device().native(), this->swapchain, acquire.timeout, signal_semaphore_native, signal_fence_native, &result.image_index);
 		switch(res)
 		{
-			using enum Swapchain::ImageAcquisitionResult::AcquisitionResultType;
 			case VK_SUCCESS:
-				result.type = AcquireSuccess;
+				result.type = Swapchain::ImageAcquisitionResult::AcquisitionResultType::AcquireSuccess;
 			break;
 			case VK_SUBOPTIMAL_KHR:
-				result.type = Suboptimal;
+				result.type = Swapchain::ImageAcquisitionResult::AcquisitionResultType::Suboptimal;
 			break;
 			case VK_ERROR_OUT_OF_DATE_KHR:
-				result.type = ErrorOutOfDate;
+				result.type = Swapchain::ImageAcquisitionResult::AcquisitionResultType::ErrorOutOfDate;
 			break;
 			case VK_ERROR_SURFACE_LOST_KHR:
-				result.type = ErrorSurfaceLost;
+				result.type = Swapchain::ImageAcquisitionResult::AcquisitionResultType::ErrorSurfaceLost;
 			break;
 			default:
-				result.type = ErrorUnknown;
+				result.type = Swapchain::ImageAcquisitionResult::AcquisitionResultType::ErrorUnknown;
 			break;
 		}
 		return result;
