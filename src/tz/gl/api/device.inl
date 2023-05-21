@@ -25,7 +25,8 @@ namespace tz::gl
 		tz::assert(this->renderers.size() > h, "Detected attempted destroy of renderer of invalid handle value %zu. device renderer storage does not have the capacity for this, meaning no renderer with this handle was ever returned by this device.", h);
 
 #endif // TZ_DEBUG
-		this->renderers[h] = R::null();
+		R tmp = R::null();
+		std::swap(tmp, this->renderers[h]);
 		this->free_list.push_back(h);
 	}
 
