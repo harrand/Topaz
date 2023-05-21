@@ -127,7 +127,7 @@ namespace tz::gl
 		const auto& renderer = device.get_renderer(static_cast<tz::hanval>(id));
 		if(renderer.get_options().contains(tz::gl::renderer_option::_internal) && !display_internal_renderers)
 		{
-			ImGui::Text("Internal renderer");
+			ImGui::Text("Internal Renderer");
 			ImGui::Spacing();
 			if(id > 0)
 			{

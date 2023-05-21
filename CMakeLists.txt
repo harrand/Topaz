@@ -283,7 +283,7 @@ message(STATUS "Render API: ${TOPAZ_RENDER_API}")
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC imgui glad textc_lib concurrentqueue)
+target_link_libraries(topaz PUBLIC imgui imgui_memory_editor glad textc_lib concurrentqueue)
 target_link_libraries(topaz PRIVATE debugbreak Threads::Threads)
 
 add_subdirectory(tools)

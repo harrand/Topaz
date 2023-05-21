@@ -4,9 +4,9 @@
 #include "tz/core/types.hpp"
 #include "tz/core/callback.hpp"
 #include "tz/gl/device.hpp"
+#include "tz/core/debug.hpp"
 #include "imgui.h"
-
-#undef assert
+#include "imgui_memory_editor.h"
 
 namespace tz::dbgui
 {

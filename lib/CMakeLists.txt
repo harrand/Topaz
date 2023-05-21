@@ -16,6 +16,9 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC "${PROJECT_SOURCE_DIR}/lib/imgui")
 target_compile_definitions(imgui PUBLIC "-DIMGUI_USER_CONFIG=\"../tz_imgui_config.hpp\"")
 
+add_library(imgui_memory_editor INTERFACE)
+target_include_directories(imgui_memory_editor INTERFACE imgui_club/imgui_memory_editor)
+
 add_library(tz_vma STATIC
 	tz_vma.cpp)
 target_link_libraries(tz_vma PUBLIC vma)

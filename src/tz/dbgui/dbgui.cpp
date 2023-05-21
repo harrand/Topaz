@@ -676,7 +676,7 @@ namespace tz::dbgui
 
 	void draw_tz_device_info()
 	{
-		if(ImGui::Begin("device", &tab_tz.show_device_info))
+		if(ImGui::Begin("Device", &tab_tz.show_device_info))
 		{
 			tz::gl::get_device().dbgui();
 			ImGui::End();
@@ -691,7 +691,7 @@ namespace tz::dbgui
 			{
 				ImGui::MenuItem("Top Bar", nullptr, &tab_tz.show_top_bar);
 				ImGui::MenuItem("Window", nullptr, &tab_tz.show_window_info);
-				ImGui::MenuItem("device", nullptr, &tab_tz.show_device_info);
+				ImGui::MenuItem("Device", nullptr, &tab_tz.show_device_info);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
 					tz::error("Manual debug breakpoint occurred.");

@@ -78,9 +78,9 @@ namespace tz::gl
 				type = "Unknown";
 			break;
 		}
-		ImGui::Text("resource Type: %s", type);
-		ImGui::Text("resource Access: %s", detail::resource_access_strings[static_cast<int>(this->get_access())]);
-		if(!this->get_flags().empty() && ImGui::CollapsingHeader("resource Flags"))
+		ImGui::Text("Resource Type: %s", type);
+		ImGui::Text("Resource Access: %s", detail::resource_access_strings[static_cast<int>(this->get_access())]);
+		if(!this->get_flags().empty() && ImGui::CollapsingHeader("Resource Flags"))
 		{
 			ImGui::Indent();
 			for(tz::gl::resource_flag flag : this->get_flags())
@@ -88,6 +88,19 @@ namespace tz::gl
 				ImGui::Text("%s", detail::resource_flag_strings[static_cast<int>(flag)]);
 			}
 			ImGui::Unindent();
+		}
+		// use imgui_memory_editor to display resource data.
+		static MemoryEditor res_mem_edit;
+		static bool show_mem = false;
+		if(this->access != tz::gl::resource_access::static_fixed && ImGui::Button("Memory Viewer"))
+		{
+			show_mem = true;
+		}
+		if(show_mem)
+		{
+			ImGui::Begin("Resource Memory Viewer", &show_mem);
+			res_mem_edit.DrawContents(this->resource_data.data(), this->resource_data.size());
+			ImGui::End();
 		}
 	}
 
