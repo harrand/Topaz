@@ -276,6 +276,28 @@ namespace tz::gl
 		this->image_handles[static_cast<std::size_t>(static_cast<tz::hanval>(h))] = bindless_handle;
 	}
 
+	void ResourceStorage::reseat_resource_reference(tz::gl::resource_handle h, icomponent* comp)
+	{
+		iresource* oldres = this->get(h);
+		iresource* newres = comp->get_resource();
+		tz::assert(oldres->get_type() == newres->get_type());
+		tz::assert(newres != nullptr);
+		AssetStorageCommon<iresource>::set(h, newres);
+		auto resid = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		this->components[resid] = comp;
+		if(newres->get_type() == tz::gl::resource_type::image)
+		{
+			// need to update image the bindless texture handle.
+			auto* imgcomp = static_cast<image_component_ogl*>(comp);
+			ogl2::image::bindless_handle newh = imgcomp->ogl_get_image().native();
+			if(ogl2::supports_bindless_textures())
+			{
+				newh = imgcomp->ogl_get_image().get_bindless_handle();
+			}
+			this->set_image_handle(h, newh);
+		}
+	}
+
 //--------------------------------------------------------------------------------------------------
 
 	ShaderManager::ShaderManager(const shader_info& sinfo):
@@ -765,7 +787,7 @@ namespace tz::gl
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)
 				{
-					tz::error("renderer_edit resource Reference re-seating is not yet implemented (OGL)");
+					this->resources.reseat_resource_reference(arg.resource, arg.component);
 				}
 				else
 				{

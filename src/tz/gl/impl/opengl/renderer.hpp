@@ -60,6 +60,7 @@ namespace tz::gl
 		void bind_image_buffer(bool has_index_buffer, bool has_draw_buffer);
 		void write_dynamic_images();
 		void set_image_handle(tz::gl::resource_handle h, ogl2::image::bindless_handle bindless_handle);
+		void reseat_resource_reference(tz::gl::resource_handle h, icomponent* comp);
 	private:
 		void fill_bindless_image_buffer();
 
