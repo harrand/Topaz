@@ -400,11 +400,6 @@ namespace tz::gl::vk2
 			cur_layout = command.old_layout.value();
 		}
 		this->register_command(command);
-		if(command.target_layout == cur_layout)
-		{
-			tz::report("[WARNING]: Requested image transition layout, but new and old layouts were the same. Likely render graph related error.");
-			return;
-		}
 		VkImageMemoryBarrier barrier
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,

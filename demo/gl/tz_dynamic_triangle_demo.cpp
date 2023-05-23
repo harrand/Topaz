@@ -117,7 +117,7 @@ int main()
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
-			renderer.edit(tz::gl::RendererEditBuilder{}.set_tri_count({.tri_count = triangle_count}).build());
+			renderer.edit(tz::gl::RendererEditBuilder{}.render_state({.tri_count = triangle_count}).build());
 			renderer.render();
 
 			static bool up = true;

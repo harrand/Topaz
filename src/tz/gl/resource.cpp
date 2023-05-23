@@ -99,7 +99,8 @@ namespace tz::gl
 		if(show_mem)
 		{
 			ImGui::Begin("Resource Memory Viewer", &show_mem);
-			res_mem_edit.DrawContents(this->resource_data.data(), this->resource_data.size());
+			auto dspan = this->data();
+			res_mem_edit.DrawContents(dspan.data(), dspan.size_bytes());
 			ImGui::End();
 		}
 	}
