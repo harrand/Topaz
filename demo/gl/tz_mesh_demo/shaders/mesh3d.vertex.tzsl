@@ -1,0 +1,6 @@
+shader(type = vertex);
+
+void main()
+{
+	out::position = vec4(0.0f);
+}

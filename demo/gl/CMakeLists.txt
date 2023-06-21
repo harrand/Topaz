@@ -4,6 +4,8 @@ elseif(${TOPAZ_OGL})
 	add_subdirectory(ogl2)
 endif()
 
+add_subdirectory(tz_mesh_demo)
+
 add_demo(
 	TARGET tz_terrain_demo
 	SOURCE_FILES tz_terrain_demo.cpp
