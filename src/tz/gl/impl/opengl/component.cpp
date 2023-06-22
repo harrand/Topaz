@@ -28,11 +28,22 @@ namespace tz::gl
 
 	void buffer_component_ogl::resize(std::size_t sz)
 	{
-		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested to resize a buffer_component_ogl, but the underlying resource was not resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::buffer& old_buffer = this->ogl_get_buffer();
 		ogl2::buffer new_buffer = ogl2::buffer_helper::clone_resized(old_buffer, sz);
 		// Just set the new buffer range, clone resized already sorts out the data for us.
-		this->resource->set_mapped_data(new_buffer.map_as<std::byte>());
+		if(this->resource->get_access() == tz::gl::resource_access::dynamic_access)
+		{
+			this->resource->set_mapped_data(new_buffer.map_as<std::byte>());
+		}
+		else
+		{
+			auto old_data = this->resource->data();
+			std::size_t copy_length = std::min(old_data.size_bytes(), sz);
+			std::vector<std::byte> new_data;
+			new_data.resize(sz);
+			std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
+			this->resource->set_mapped_data(new_data);
+		}
 		std::swap(old_buffer, new_buffer);
 	}
 
@@ -54,12 +65,10 @@ namespace tz::gl
 			default:
 				tz::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
-			case resource_access::static_fixed:
+			case resource_access::static_access:
 				residency = ogl2::buffer_residency::static_fixed;
 			break;
-			case resource_access::dynamic_fixed:
-			[[fallthrough]];
-			case resource_access::dynamic_variable:
+			case resource_access::dynamic_access:
 				residency = ogl2::buffer_residency::dynamic;
 			break;
 		}
@@ -98,7 +107,6 @@ namespace tz::gl
 
 	void image_component_ogl::resize(tz::vec2ui dims)
 	{
-		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Requested resize of image_component_ogl, but the underlying resource did not have resource_access::dynamic_variable. Please submit a bug report.");
 		ogl2::image& old_image = this->ogl_get_image();
 		ogl2::image new_image = ogl2::image_helper::clone_resized(old_image, dims);
 

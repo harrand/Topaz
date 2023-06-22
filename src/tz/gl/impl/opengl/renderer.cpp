@@ -22,7 +22,7 @@ namespace tz::gl
 			tz::assert(res != nullptr, "buffer_component had null resource");
 			switch(res->get_access())
 			{
-				case resource_access::static_fixed:
+				case resource_access::static_access:
 				{
 					// Create a staging buffer, write the resource data into it, and then do a buffer copy to the component.
 					ogl2::buffer_target tar = ogl2::buffer_target::shader_storage;
@@ -43,9 +43,7 @@ namespace tz::gl
 					ogl2::buffer_helper::copy(staging_buffer, buffer);
 				}
 				break;
-				case resource_access::dynamic_fixed:
-				[[fallthrough]];
-				case resource_access::dynamic_variable:
+				case resource_access::dynamic_access:
 				{
 					// Map component buffer and write resource data directly into it, then pass the mapped ptr back into the resource to set it as the new data source.
 					auto resdata = res->data();
@@ -262,7 +260,7 @@ namespace tz::gl
 		for(auto& component_ptr : this->components)
 		{
 			tz::gl::iresource* res = component_ptr->get_resource();
-			if(res->get_type() == resource_type::image && res->get_access() != resource_access::static_fixed)
+			if(res->get_type() == resource_type::image && res->get_access() != resource_access::static_access)
 			{
 				// Get the underlying image, and set its data to whatever the span said it was.
 				ogl2::image& img = static_cast<image_component_ogl*>(component_ptr.get())->ogl_get_image();
@@ -725,7 +723,10 @@ namespace tz::gl
 					iresource* res = comp->get_resource();
 					switch(res->get_access())
 					{
-						case resource_access::static_fixed:
+						default:
+							tz::error("Unrecognised resource access");
+							[[fallthrough]];
+						case resource_access::static_access:
 							switch(res->get_type())
 							{
 								case resource_type::buffer:
@@ -759,7 +760,7 @@ namespace tz::gl
 								break;
 							}
 						break;
-						default:
+						case resource_access::dynamic_access:
 							tz::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::hanval>(arg.resource)));
 							std::span<std::byte> data = res->data_as<std::byte>();
 							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
