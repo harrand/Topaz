@@ -32,7 +32,7 @@ namespace tz::gl
 
 	void buffer_component_vulkan::resize(std::size_t sz)
 	{
-		tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize buffer_component_vulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
+		//tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize buffer_component_vulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -43,10 +43,20 @@ namespace tz::gl
 			.residency = old_buf.get_residency()
 		}};
 		// Copy the data over.
+		if(this->resource->get_access() == resource_access::dynamic_access)
 		{
 			auto old_data = old_buf.map_as<const std::byte>();
 			auto new_data = new_buf.map_as<std::byte>();
 			std::size_t copy_length = std::min(old_data.size_bytes(), new_data.size_bytes());
+			std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
+			this->resource->set_mapped_data(new_data);
+		}
+		else
+		{
+			auto old_data = this->resource->data();
+			std::size_t copy_length = std::min(old_data.size_bytes(), sz);
+			std::vector<std::byte> new_data;
+			new_data.resize(sz);
 			std::copy(old_data.begin(), old_data.begin() + copy_length, new_data.begin());
 			this->resource->set_mapped_data(new_data);
 		}
@@ -89,12 +99,16 @@ namespace tz::gl
 				tz::error("Unrecognised resource_access. Please submit a bug report.");
 			[[fallthrough]];
 			case resource_access::static_fixed:
+			[[fallthrough]];
+			case resource_access::static_access:
 				usage_field |= vk2::BufferUsage::TransferDestination;
 				residency = vk2::MemoryResidency::GPU;
 			break;
 			case resource_access::dynamic_fixed:
 			[[fallthrough]];
 			case resource_access::dynamic_variable:
+			[[fallthrough]];
+			case resource_access::dynamic_access:
 				residency = vk2::MemoryResidency::CPUPersistent;
 			break;
 		}
@@ -195,11 +209,15 @@ namespace tz::gl
 				tz::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
 			case resource_access::static_fixed:
+			[[fallthrough]];
+			case resource_access::static_access:
 				residency = vk2::MemoryResidency::GPU;
 			break;
 			case resource_access::dynamic_fixed:
 			[[fallthrough]];
 			case resource_access::dynamic_variable:
+			[[fallthrough]];
+			case resource_access::dynamic_access:
 				residency = vk2::MemoryResidency::CPUPersistent;
 				tiling = vk2::ImageTiling::Linear;
 			break;

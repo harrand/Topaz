@@ -74,6 +74,7 @@ namespace tz::gl
 	{
 		TZ_PROFZONE("renderer_resource_manager - notify image dirty", 0xFFAAAA00);
 		// we need to know which image view index this corresponds to. just count resource image count until we reach rh vallue.
+		// a dirty image means that the underlying vk2::Image has been entirely replaced, and thus we need to replace the corresponding image view to refer to the new image.
 		std::size_t imgview_idx = 0;
 		for(std::size_t i = 0; i < static_cast<std::size_t>(static_cast<tz::hanval>(rh)); i++)
 		{
@@ -142,27 +143,26 @@ namespace tz::gl
 			tz::assert(comp != nullptr);
 			iresource* res = comp->get_resource();
 			tz::assert(res != nullptr);
-			if(res->get_access() == tz::gl::resource_access::static_fixed)
+			if(res->get_access() == tz::gl::resource_access::dynamic_access)
 			{
-				continue;
+				std::span<std::byte> underlying_component_data;
+				switch(res->get_type())
+				{
+					case tz::gl::resource_type::buffer:
+						underlying_component_data = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer().map_as<std::byte>();
+					break;
+					case tz::gl::resource_type::image:
+						underlying_component_data = static_cast<image_component_vulkan*>(comp)->vk_get_image().map_as<std::byte>();
+					break;
+					default:
+						tz::error("unrecognised resource_type");
+					break;
+				}
+				auto resdata = res->data();
+				tz::assert(resdata.size_bytes() <= underlying_component_data.size_bytes());
+				std::copy(resdata.begin(), resdata.end(), underlying_component_data.begin());
+				res->set_mapped_data(underlying_component_data);
 			}
-			std::span<std::byte> underlying_component_data;
-			switch(res->get_type())
-			{
-				case tz::gl::resource_type::buffer:
-					underlying_component_data = static_cast<buffer_component_vulkan*>(comp)->vk_get_buffer().map_as<std::byte>();
-				break;
-				case tz::gl::resource_type::image:
-					underlying_component_data = static_cast<image_component_vulkan*>(comp)->vk_get_image().map_as<std::byte>();
-				break;
-				default:
-					tz::error("unrecognised resource_type");
-				break;
-			}
-			auto resdata = res->data();
-			tz::assert(resdata.size_bytes() <= underlying_component_data.size_bytes());
-			std::copy(resdata.begin(), resdata.end(), underlying_component_data.begin());
-			res->set_mapped_data(underlying_component_data);
 		}
 	}
 
@@ -915,7 +915,7 @@ namespace tz::gl
 			tz::assert(cmp != nullptr);
 			const iresource* res = cmp->get_resource();
 			tz::assert(res != nullptr);
-			if(res->get_access() != tz::gl::resource_access::static_fixed)
+			if(res->get_access() != tz::gl::resource_access::static_access)
 			{
 				resource_staging_buffers.push_back(vk2::Buffer::null());
 				continue;
@@ -965,11 +965,11 @@ namespace tz::gl
 	{
 		iresource* res = renderer_resource_manager::get_resource(rwrite.resource);
 		tz::assert(res != nullptr);
-		if(res->get_access() != tz::gl::resource_access::static_fixed)
+		// if this is a dynamic resource, we can trivially do the write now.
+		tz::assert(res->data().size_bytes() >= (rwrite.offset + rwrite.data.size_bytes()), "resource write too long. resource is %zu bytes, write was (%zu + %zu) bytes", res->data().size_bytes(), rwrite.offset, rwrite.data.size_bytes());
+		std::memcpy(reinterpret_cast<char*>(res->data().data()) + rwrite.offset, rwrite.data.data(), rwrite.data.size_bytes());
+		if(res->get_access() == tz::gl::resource_access::dynamic_access)
 		{
-			// if this is a dynamic resource, we can trivially do the write now.
-			tz::assert(res->data().size_bytes() >= (rwrite.offset + rwrite.data.size_bytes()), "resource write too long. resource is %zu bytes, write was (%zu + %zu) bytes", res->data().size_bytes(), rwrite.offset, rwrite.data.size_bytes());
-			std::memcpy(reinterpret_cast<char*>(res->data().data()) + rwrite.offset, rwrite.data.data(), rwrite.data.size_bytes());
 			return;
 		}
 		auto id = static_cast<std::size_t>(static_cast<tz::hanval>(rwrite.resource));
@@ -1283,7 +1283,7 @@ namespace tz::gl
 				{
 					continue;
 				}
-				tz::assert(res->get_access() == tz::gl::resource_access::static_fixed, "while initialising static resources, detected non-static-fixed resource at handle %zu that somehow ended up with a non-null staging buffer. logic error. please submit a bug report.", i);
+				tz::assert(res->get_access() == tz::gl::resource_access::static_access, "while initialising static resources, detected non-static-fixed resource at handle %zu that somehow ended up with a non-null staging buffer. logic error. please submit a bug report.", i);
 				switch(res->get_type())
 				{
 					case tz::gl::resource_type::buffer:
@@ -1413,6 +1413,11 @@ namespace tz::gl
 					if(bufcomp->size() != arg.size)
 					{
 						bufcomp->resize(arg.size);
+						// if we're static, we need to write the resource data again.
+						if(bufcomp->get_resource()->get_access() == tz::gl::resource_access::static_access)
+						{
+							side_effects.rewrite_static_resources = true;
+						}
 						if(arg.buffer_handle == this->state.graphics.index_buffer || arg.buffer_handle == this->state.graphics.draw_buffer)
 						{
 							  side_effects.rerecord_work_commands = true;
@@ -1431,6 +1436,10 @@ namespace tz::gl
 					{
 						imgcomp->resize(arg.dimensions);
 						renderer_resource_manager::notify_image_dirty(arg.image_handle);
+						if(imgcomp->get_resource()->get_access() == tz::gl::resource_access::static_access)
+						{
+							side_effects.rewrite_static_resources = true;
+						}
 						side_effects.rewrite_image_descriptors = true;
 					}
 				},

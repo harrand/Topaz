@@ -59,6 +59,10 @@ namespace tz::gl
 	 */
 	enum class resource_access
 	{
+		/// - resource data can only be written initially, or modified via a renderer edit.
+		static_access,
+		/// - resource data can be modified at anytime.
+		dynamic_access,
 		/// - resource data is written once initially, and cannot be resized.
 		static_fixed,
 		/// - resource data is always writable, but cannot be resized.

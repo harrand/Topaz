@@ -53,7 +53,7 @@ int main()
 					TriangleVertexData{.position = {0.5f, -0.5f, 0.0f}, .texcoord = {1.0f, 0.0f}},
 				}, 
 				{
-					.access = tz::gl::resource_access::dynamic_variable
+					.access = tz::gl::resource_access::static_access
 				}
 			)
 		);
@@ -63,7 +63,7 @@ int main()
 			(
 				{0u, 1u, 2u},
 				{
-					.access = tz::gl::resource_access::dynamic_variable,
+					.access = tz::gl::resource_access::static_access,
 					.flags = {tz::gl::resource_flag::index_buffer}
 				}
 			)
@@ -97,7 +97,7 @@ int main()
 				{
 					.format = tz::gl::image_format::RGBA32,
 					.dimensions = {2u, 2u},
-					.access = tz::gl::resource_access::dynamic_variable,
+					.access = tz::gl::resource_access::dynamic_access,
 					.flags =
 					{
 						tz::gl::resource_flag::image_filter_linear,
@@ -168,6 +168,19 @@ int main()
 				std::random_shuffle(img_data.begin(), img_data.end());
 				// But set the first pixel (bottom left) to always be white.
 				std::fill(img_data.begin(), img_data.begin() + 4, std::byte{255});
+				renderer.edit
+				(tz::gl::RendererEditBuilder{}
+				.write
+	 			({
+					.resource = bufh,
+		  			.data = std::as_bytes(buf_data)
+	 			})
+				.write
+	 			({
+					.resource = ibufh,
+		  			.data = std::as_bytes(idx_data)
+	 			})
+				.build());
 			}
 			tz::end_frame();
 		}
