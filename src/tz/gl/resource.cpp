@@ -11,15 +11,12 @@ namespace tz::gl
 		{
 			"Static",
 			"Dynamic",
-			"Static Fixed (Legacy)",
-			"Dynamic Fixed (Legacy)",
-			"Dynamic Variable (Legacy)"
 		};
 
 		std::array<const char*, static_cast<int>(resource_flag::Count)> resource_flag_strings
 		{
 			"Index Buffer",
-			"renderer Output",
+			"Renderer Output",
 			"Image Filter: Nearest",
 			"Image Filter: Linear",
 			"Image Mip Filter: Nearest",
@@ -94,7 +91,7 @@ namespace tz::gl
 		// use imgui_memory_editor to display resource data.
 		static MemoryEditor res_mem_edit;
 		static bool show_mem = false;
-		if(this->access != tz::gl::resource_access::static_fixed && ImGui::Button("Memory Viewer"))
+		if(this->access != tz::gl::resource_access::static_access && ImGui::Button("Memory Viewer"))
 		{
 			show_mem = true;
 		}

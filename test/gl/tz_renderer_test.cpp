@@ -132,7 +132,7 @@ TESTFUNC_BEGIN(rendereredit_bufferresize)
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::buffer_resource::from_one(1.0f,
 	{
-		.access = tz::gl::resource_access::dynamic_variable
+		.access = tz::gl::resource_access::dynamic_access
 	}));
 	tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
 
@@ -183,7 +183,7 @@ TESTFUNC_BEGIN(rendereredit_imageresize)
 	({
 		.format = tz::gl::image_format::RGBA32,
 		.dimensions = old_dims,
-		.access = tz::gl::resource_access::dynamic_variable
+		.access = tz::gl::resource_access::dynamic_access
 	}));
 	tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
 
@@ -229,8 +229,8 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_buffer)
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(empty, fragment));
 	tz::gl::resource_handle bh = rinfo.add_resource(tz::gl::buffer_resource::from_many(old_data,
 	{
-		.access = tz::gl::resource_access::dynamic_fixed
-		// TODO: Test should pass even if static_fixed (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
+		.access = tz::gl::resource_access::dynamic_access
+		// TODO: Test should pass even if static_access (right now because component has no mapped data, the default resource data is unchanged so the asserts will fail)
 	}));
 	tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
 
@@ -290,7 +290,7 @@ TESTFUNC_BEGIN(rendereredit_resourcewrite_image)
 	{
 		.format = tz::gl::image_format::RGBA32,
 		.dimensions = {2u, 2u},
-		.access = tz::gl::resource_access::dynamic_fixed
+		.access = tz::gl::resource_access::dynamic_access
 	}));
 	tz::gl::renderer_handle rh = tz::gl::get_device().create_renderer(rinfo);
 
@@ -326,12 +326,12 @@ TESTFUNC_BEGIN(rendereredit_resourcereference_buffer)
 	// create an empty renderer with a buffer resource. buf contains 0.0f
 	tz::gl::renderer_info rinfo1;
 	rinfo1.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
-	tz::gl::resource_handle bufres = rinfo1.add_resource(tz::gl::buffer_resource::from_one(0.0f, {.access = tz::gl::resource_access::dynamic_fixed}));
+	tz::gl::resource_handle bufres = rinfo1.add_resource(tz::gl::buffer_resource::from_one(0.0f, {.access = tz::gl::resource_access::dynamic_access}));
 
 	// create a second empty renderer with buffer resource. buf contains 1.0f
 	tz::gl::renderer_info rinfo2;
 	rinfo2.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(empty, compute));
-	rinfo2.add_resource(tz::gl::buffer_resource::from_one(1.0f, {.access = tz::gl::resource_access::dynamic_fixed}));
+	rinfo2.add_resource(tz::gl::buffer_resource::from_one(1.0f, {.access = tz::gl::resource_access::dynamic_access}));
 
 	tz::gl::renderer_handle r1h = tz::gl::get_device().create_renderer(rinfo1);
 	tz::gl::renderer_handle r2h = tz::gl::get_device().create_renderer(rinfo2);
@@ -362,7 +362,7 @@ TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------
 TESTFUNC_BEGIN(rendereredit_resourcereference_image)
-	// todo: implement. could simply do the same as buffer, but write the float in dynamic_fixed image memory, but that seems like a pointless test at this point? maybe it isnt?
+	// todo: implement. could simply do the same as buffer, but write the float in dynamic_access image memory, but that seems like a pointless test at this point? maybe it isnt?
 TESTFUNC_END
 
 //--------------------------------------------------------------------------------------------------

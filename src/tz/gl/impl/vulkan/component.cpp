@@ -32,7 +32,6 @@ namespace tz::gl
 
 	void buffer_component_vulkan::resize(std::size_t sz)
 	{
-		//tz::assert(this->resource->get_access() == resource_access::dynamic_variable, "Attempted to resize buffer_component_vulkan, but it not resource_access::dynamic_variable. Please submit a bug report.");
 		// Let's create a new buffer of the correct size.
 		vk2::Buffer& old_buf = this->vk_get_buffer();
 		vk2::Buffer new_buf
@@ -98,16 +97,10 @@ namespace tz::gl
 			default:
 				tz::error("Unrecognised resource_access. Please submit a bug report.");
 			[[fallthrough]];
-			case resource_access::static_fixed:
-			[[fallthrough]];
 			case resource_access::static_access:
 				usage_field |= vk2::BufferUsage::TransferDestination;
 				residency = vk2::MemoryResidency::GPU;
 			break;
-			case resource_access::dynamic_fixed:
-			[[fallthrough]];
-			case resource_access::dynamic_variable:
-			[[fallthrough]];
 			case resource_access::dynamic_access:
 				residency = vk2::MemoryResidency::CPUPersistent;
 			break;
@@ -161,7 +154,7 @@ namespace tz::gl
 		std::string debug_name = this->image.debug_get_name();
 		this->image = make_image();
 		this->image.debug_set_name(debug_name);
-		if(ires->get_access() != tz::gl::resource_access::static_fixed)
+		if(ires->get_access() != tz::gl::resource_access::static_access)
 		{
 			// After that, let's re-validate the resource data span. It will still have undefined contents for now.
 			auto new_data = this->vk_get_image().map_as<std::byte>();
@@ -208,15 +201,9 @@ namespace tz::gl
 			default:
 				tz::error("Unknown resource_access. Please submit a bug report.");
 			[[fallthrough]];
-			case resource_access::static_fixed:
-			[[fallthrough]];
 			case resource_access::static_access:
 				residency = vk2::MemoryResidency::GPU;
 			break;
-			case resource_access::dynamic_fixed:
-			[[fallthrough]];
-			case resource_access::dynamic_variable:
-			[[fallthrough]];
 			case resource_access::dynamic_access:
 				residency = vk2::MemoryResidency::CPUPersistent;
 				tiling = vk2::ImageTiling::Linear;
