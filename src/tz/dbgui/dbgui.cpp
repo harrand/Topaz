@@ -337,11 +337,11 @@ namespace tz::dbgui
 
 		tz::gl::buffer_resource vertex_buffer = tz::gl::buffer_resource::from_one(Kibibyte{},
 		{
-			.access = tz::gl::resource_access::dynamic_variable
+			.access = tz::gl::resource_access::dynamic_access
 		});
 		tz::gl::buffer_resource index_buffer = tz::gl::buffer_resource::from_one(Kibibyte{},
 		{
-			.access = tz::gl::resource_access::dynamic_variable
+			.access = tz::gl::resource_access::dynamic_access
 		});
 		tz::gl::buffer_resource draw_buffer = tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command
 		{
@@ -349,12 +349,12 @@ namespace tz::dbgui
 			.first = 0
 		},
 		{
-			.access = tz::gl::resource_access::dynamic_fixed,
+			.access = tz::gl::resource_access::dynamic_access,
 			.flags = {tz::gl::resource_flag::draw_indirect_buffer}
 		});
 		tz::gl::buffer_resource shader_data_buffer = tz::gl::buffer_resource::from_one(TopazShaderRenderData{},
 		{
-			.access = tz::gl::resource_access::dynamic_fixed
+			.access = tz::gl::resource_access::dynamic_access
 		});
 
 		tz::gl::image_resource font_image = tz::gl::image_resource::from_memory

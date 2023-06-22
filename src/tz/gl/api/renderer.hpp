@@ -36,11 +36,11 @@ namespace tz::gl
 		no_depth_testing,
 		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
 		alpha_blending,
-		/// - When a compute renderer's `render()` is invoked, the thread will block until the compute-shader has finished processing.
+		/// - When a renderer submits its render work to the GPU, the caller thread blocks until the GPU work has been completed.
 		render_wait,
-		/// - When a renderer is invoked, the output image is not cleared before being rendered to. If nothing has been rendered into the output this frame, then the behaviour is undefined.
+		/// - A graphics renderer will not clear its output image when it performs its GPU work. This also means that the render target *must* have already been drawn into this frame prior, otherwise the behaviour is undefined..
 		no_clear_output,
-		/// - When a renderer is invoked, the output image is not presented to the screen. If the output is an image_output, this has no effect.
+		/// - A graphics renderer will not present the output image that it renders into after its GPU work is complete. If the renderer targets an image_output, then this has no effect.
 		no_present,
 		/// - The renderer's `state().graphics.draw_buffer` is assumed to contain a uint32 representing the draw count at the very start of the buffer, and the draw commands appear after that count in memory.
 		draw_indirect_count,
@@ -60,7 +60,7 @@ namespace tz::gl
 			"No Clear Output",
 			"No Present",
 			"Final Debug UI renderer (Internal)",
-			"Internal",
+			"Hidden (Internal)",
 		};
 	}
 
@@ -78,7 +78,7 @@ namespace tz::gl
 			resource_handle draw_buffer = tz::nullhand;
 			/// Normalised RGBA floating point colour.
 			tz::vec4 clear_colour = tz::vec4::zero();
-			/// number of triangles to be rendered in the next draw call.
+			/// number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified, this is ignored.
 			std::size_t tri_count = 0;
 			/// whether wireframe mode is enabled or not.
 			bool wireframe_mode = false;

@@ -9,15 +9,14 @@ namespace tz::gl
 	{
 		std::array<const char*, static_cast<int>(resource_access::Count)> resource_access_strings
 		{
-			"Static Fixed",
-			"Dynamic Fixed",
-			"Dynamic Variable"
+			"Static",
+			"Dynamic",
 		};
 
 		std::array<const char*, static_cast<int>(resource_flag::Count)> resource_flag_strings
 		{
 			"Index Buffer",
-			"renderer Output",
+			"Renderer Output",
 			"Image Filter: Nearest",
 			"Image Filter: Linear",
 			"Image Mip Filter: Nearest",
@@ -92,7 +91,7 @@ namespace tz::gl
 		// use imgui_memory_editor to display resource data.
 		static MemoryEditor res_mem_edit;
 		static bool show_mem = false;
-		if(this->access != tz::gl::resource_access::static_fixed && ImGui::Button("Memory Viewer"))
+		if(this->access != tz::gl::resource_access::static_access && ImGui::Button("Memory Viewer"))
 		{
 			show_mem = true;
 		}
@@ -123,8 +122,15 @@ namespace tz::gl
 
 	void resource::set_mapped_data(std::span<std::byte> mapped_resource_data)
 	{
-		tz::assert(this->get_access() == resource_access::dynamic_fixed || this->get_access() == resource_access::dynamic_variable, "Cannot set mapped data on a static resource.");
-		this->mapped_resource_data = mapped_resource_data;
+		if(this->get_access() == resource_access::dynamic_access)
+		{
+			this->mapped_resource_data = mapped_resource_data;
+		}
+		else
+		{
+			this->resource_data.resize(mapped_resource_data.size_bytes());
+			std::copy(mapped_resource_data.begin(), mapped_resource_data.end(), this->resource_data.begin());
+		}
 	}
 
 	bool buffer_resource::is_null() const

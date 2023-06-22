@@ -28,7 +28,7 @@ int main()
 		}));
 		tz::gl::resource_handle count_bufh = cinfo.add_resource(tz::gl::buffer_resource::from_one(std::uint32_t{1},
 		{
-			.access = tz::gl::resource_access::dynamic_fixed
+			.access = tz::gl::resource_access::dynamic_access
 		}));
 		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(tz_gpu_driven_demo, compute));
 		cinfo.debug_name("Compute Driver");

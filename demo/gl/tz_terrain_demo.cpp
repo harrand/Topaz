@@ -39,11 +39,11 @@ int main()
 
 		tz::gl::buffer_resource buf = tz::gl::buffer_resource::from_one(BufferData{},
 		{
-			.access = tz::gl::resource_access::dynamic_fixed
+			.access = tz::gl::resource_access::dynamic_access
 		});
 		tz::gl::buffer_resource buf2 = tz::gl::buffer_resource::from_one(FeedbackData{},
 		{
-			tz::gl::resource_access::dynamic_fixed
+			tz::gl::resource_access::dynamic_access
 		});
 
 		tz::gl::renderer_info rinfo;
@@ -91,7 +91,7 @@ int main()
 			{
 				fixed_update.reset();
 				// Retrieve the dynamic buffer resource data.
-				BufferData& bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
+				BufferData bufd = renderer.get_resource(bufh)->data_as<BufferData>().front();
 				tz::vec3& camera_position = bufd.camera_position;
 
 				// Dragging the mouse influences the camera rotation.
@@ -145,6 +145,14 @@ int main()
 					float dist_to_terrain = output_vertex_height - camera_position[1];
 					camera_position[1] += std::clamp(dist_to_terrain * 0.3f, -5.0f, 5.0f);
 				}
+
+				std::span<const BufferData> new_data_span{&bufd, 1};
+				renderer.edit(tz::gl::RendererEditBuilder{}
+					.write
+				  	({
+						.resource = bufh,
+						.data = std::as_bytes(new_data_span)
+					}).build());
 			}
 			tz::end_frame();
 		}
