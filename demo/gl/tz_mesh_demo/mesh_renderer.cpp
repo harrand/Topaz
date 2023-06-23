@@ -53,11 +53,18 @@ rh([this]()
 
 meshid_t mesh_renderer::add_mesh(mesh_t mesh, const char* name)
 {
+	(void)name;
+	std::uint32_t max_idx = 0;
+	auto max_iter = std::max_element(mesh.indices.begin(), mesh.indices.end());
+	if(max_iter != mesh.indices.end())
+	{
+		max_idx = *max_iter;
+	}
 	this->entries.push_back
 	({
 		.vtx_count = static_cast<unsigned int>(mesh.vertices.size()),
 	  	.idx_count = static_cast<unsigned int>(mesh.indices.size()),
-	  	.mesh_name = name
+	  	.max_idx = max_idx
 	});
 	this->append_mesh_to_buffers(mesh);
 	return this->entries.back().meshid;
@@ -89,7 +96,7 @@ void mesh_renderer::dbgui()
 
 		const mesh_renderer_entry& entry = this->entries[mesh_view_id];
 		ImGui::Indent();
-		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s (%zu)", entry.mesh_name, entry.meshid);
+		//ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s (%zu)", entry.mesh_name, entry.meshid);
 		ImGui::Text("vertex count: %zu (%zuB)", entry.vtx_count, (entry.vtx_count * sizeof(vertex_t)));
 		ImGui::Text("index count: %zu (%zuB)", entry.idx_count, (entry.idx_count * sizeof(std::uint32_t)));
 		ImGui::Unindent();
@@ -162,6 +169,8 @@ mesh_reference mesh_renderer::get_reference(meshid_t mesh) const
 				.entry = entry
 			};
 		}
+		voffset += entry.vtx_count;
+		ioffset += entry.idx_count;
 	}
 	tz::error("Could not find mesh reference. Did you delete it?");
 	return {};

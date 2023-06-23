@@ -12,7 +12,7 @@ struct mesh_renderer_entry
 	meshid_t meshid = meshid_internal_count++;
 	std::uint32_t vtx_count;
 	std::uint32_t idx_count;
-	const char* mesh_name;
+	std::uint32_t max_idx;
 };
 
 struct mesh_reference
