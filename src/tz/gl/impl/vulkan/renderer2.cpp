@@ -951,6 +951,7 @@ namespace tz::gl
 			}
 			// get the new staging buffer
 			vk2::Buffer& new_buf = resource_staging_buffers.back();
+			tz::assert(new_buf.size() == res->data().size_bytes());
 			// write resource data
 			{
 				void* mapped_ptr = new_buf.map();
@@ -980,14 +981,14 @@ namespace tz::gl
 		buf = vk2::Buffer
 		{{
 			.device = &tz::gl::get_device().vk_get_logical_device(),
-			.size_bytes = rwrite.data.size_bytes(),
+			.size_bytes = res->data().size_bytes(),
 			.usage = {vk2::BufferUsage::TransferSource},
 			.residency = vk2::MemoryResidency::CPU
 		}};
-		// write the resource write data.
+		// write the whole resource data into the buffer. could write directly from the rewrite.data but that could risk data diversion.
 		{
 			void* mapped_ptr = buf.map();
-			std::memcpy(static_cast<char*>(mapped_ptr) + rwrite.offset, rwrite.data.data(), rwrite.data.size_bytes());
+			std::memcpy(static_cast<char*>(mapped_ptr), res->data().data(), res->data().size_bytes());
 			buf.unmap();
 		}	
 		// pending changes are now resident in that cpu buffer. submit resource writes will send off the work to be done.

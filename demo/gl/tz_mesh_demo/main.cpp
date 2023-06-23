@@ -22,7 +22,7 @@ int main()
 		renderer.push_back_timeline();
 		meshid_t cube1 = renderer.add_mesh(create_cube_mesh(0.1f), "Small Cube");
 		// note: everything breaks if you add more than 1 mesh. the appending clearly doesnt work (looks particularly broken for the index buffer)
-		//meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
+		meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
 		//meshid_t cube3 = renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
 		renderer.add_to_draw_list(cube1);
 		//renderer.add_to_draw_list(cube2);
