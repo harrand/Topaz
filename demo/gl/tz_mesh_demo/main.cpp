@@ -20,9 +20,13 @@ int main()
 
 		mesh_renderer renderer;
 		renderer.push_back_timeline();
-		renderer.add_mesh(create_cube_mesh(0.1f), "Small Cube");
-		renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
-		renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
+		meshid_t cube1 = renderer.add_mesh(create_cube_mesh(0.1f), "Small Cube");
+		// note: everything breaks if you add more than 1 mesh. the appending clearly doesnt work (looks particularly broken for the index buffer)
+		//meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
+		//meshid_t cube3 = renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
+		renderer.add_to_draw_list(cube1);
+		//renderer.add_to_draw_list(cube2);
+		//renderer.add_to_draw_list(cube3);
 
 		while(!tz::window().is_close_requested())
 		{
@@ -61,16 +65,16 @@ mesh_t create_cube_mesh(float sz)
 		.vertices =
 		{
 			// Front face
-			vertex_t{ tz::vec3{-sz, -sz, sz}, tz::vec2{0.0f, 0.0f}, tz::vec3{0.0f, 0.0f, 1.0f}, tz::vec3{} },  // Bottom-left
-			vertex_t{ tz::vec3{sz, -sz, sz}, tz::vec2{1.0f, 0.0f}, tz::vec3{0.0f, 0.0f, 1.0f}, tz::vec3{} },   // Bottom-right
-			vertex_t{ tz::vec3{sz, sz, sz}, tz::vec2{1.0f, 1.0f}, tz::vec3{0.0f, 0.0f, 1.0f}, tz::vec3{} },    // Top-right
-			vertex_t{ tz::vec3{-sz, sz, sz}, tz::vec2{0.0f, 1.0f}, tz::vec3{0.0f, 0.0f, 1.0f}, tz::vec3{} },   // Top-left
+			vertex_t{ .pos = tz::vec3{-sz, -sz, sz}, .texc = tz::vec2{0.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },  // Bottom-left
+			vertex_t{ .pos = tz::vec3{sz, -sz, sz}, .texc = tz::vec2{1.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },   // Bottom-right
+			vertex_t{ .pos = tz::vec3{sz, sz, sz}, .texc = tz::vec2{1.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },    // Top-right
+			vertex_t{ .pos = tz::vec3{-sz, sz, sz}, .texc = tz::vec2{0.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },   // Top-left
 
 			// Back face
-			vertex_t{ tz::vec3{-sz, -sz, -sz}, tz::vec2{1.0f, 0.0f}, tz::vec3{0.0f, 0.0f, -1.0f}, tz::vec3{} }, // Bottom-left
-			vertex_t{ tz::vec3{-sz, sz, -sz}, tz::vec2{1.0f, 1.0f}, tz::vec3{0.0f, 0.0f, -1.0f}, tz::vec3{} },  // Top-left
-			vertex_t{ tz::vec3{sz, sz, -sz}, tz::vec2{0.0f, 1.0f}, tz::vec3{0.0f, 0.0f, -1.0f}, tz::vec3{} },   // Top-right
-			vertex_t{ tz::vec3{sz, -sz, -sz}, tz::vec2{0.0f, 0.0f}, tz::vec3{0.0f, 0.0f, -1.0f}, tz::vec3{} }   // Bottom-right
+			vertex_t{ .pos = tz::vec3{-sz, -sz, -sz}, .texc = tz::vec2{1.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} }, // Bottom-left
+			vertex_t{ .pos = tz::vec3{-sz, sz, -sz}, .texc = tz::vec2{1.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} },  // Top-left
+			vertex_t{ .pos = tz::vec3{sz, sz, -sz}, .texc = tz::vec2{0.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} },   // Top-right
+			vertex_t{ .pos = tz::vec3{sz, -sz, -sz}, .texc = tz::vec2{0.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} }   // Bottom-right
 		},
 		.indices =
 		{

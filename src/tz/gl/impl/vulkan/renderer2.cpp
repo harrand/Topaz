@@ -1104,7 +1104,8 @@ namespace tz::gl
 							({
 								.draw_indirect_buffer = &indirect_buffer->vk_get_buffer(),
 								.max_draw_count = static_cast<std::uint32_t>(indirect_buffer->get_resource()->data().size_bytes() / sizeof(VkDrawIndirectCommand)),
-								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand))
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndirectCommand)),
+								.offset = static_cast<VkDeviceSize>(sizeof(std::uint32_t))
 							});
 						}
 						else
@@ -1132,7 +1133,13 @@ namespace tz::gl
 					{
 						if(options.contains(tz::gl::renderer_option::draw_indirect_count))
 						{
-							tz::error("draw_indirect_count indexed is NYI");
+							record.draw_indexed_indirect_count
+							({
+								.draw_indirect_buffer = &indirect_buffer->vk_get_buffer(),
+								.max_draw_count = static_cast<std::uint32_t>(indirect_buffer->get_resource()->data().size_bytes() / sizeof(VkDrawIndexedIndirectCommand)),
+								.stride = static_cast<std::uint32_t>(sizeof(VkDrawIndexedIndirectCommand)),
+								.offset = static_cast<VkDeviceSize>(sizeof(std::uint32_t))
+							});
 						}
 						else
 						{

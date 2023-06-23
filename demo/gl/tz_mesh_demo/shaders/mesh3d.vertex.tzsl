@@ -1,6 +1,20 @@
 shader(type = vertex);
 
+struct vertex_t
+{
+	vec3 pos;
+	vec2 texc;
+	vec3 nrm;
+	vec3 tang;
+};
+
+resource(id = 0) const buffer vertex_buffer
+{
+	vertex_t data[];
+} vertex;
+
 void main()
 {
-	out::position = vec4(0.0f);
+	vertex_t vtx = vertex.data[in::vertex_id];
+	out::position = vec4(vtx.pos, 1.0f);
 }

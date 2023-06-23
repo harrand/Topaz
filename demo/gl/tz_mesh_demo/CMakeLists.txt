@@ -7,4 +7,5 @@ add_demo(
 	SHADER_SOURCES
 		demo/gl/tz_mesh_demo/shaders/mesh3d.vertex.tzsl
 		demo/gl/tz_mesh_demo/shaders/mesh3d.fragment.tzsl
+		demo/gl/tz_mesh_demo/shaders/preprocess.compute.tzsl
 )
