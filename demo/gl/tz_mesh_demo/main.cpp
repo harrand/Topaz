@@ -24,8 +24,9 @@ int main()
 		meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
 		meshid_t cube3 = renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
 		renderer.add_to_draw_list(cube1);
-		renderer.add_to_draw_list(cube2);
-		renderer.add_to_draw_list(cube3);
+		renderer.add_to_draw_list(cube1);
+		//renderer.add_to_draw_list(cube2);
+		//renderer.add_to_draw_list(cube3);
 
 		while(!tz::window().is_close_requested())
 		{
@@ -63,26 +64,56 @@ mesh_t create_cube_mesh(float sz)
 	{
 		.vertices =
 		{
-			// Front face
-			vertex_t{ .pos = tz::vec3{-sz, -sz, sz}, .texc = tz::vec2{0.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },  // Bottom-left
-			vertex_t{ .pos = tz::vec3{sz, -sz, sz}, .texc = tz::vec2{1.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },   // Bottom-right
-			vertex_t{ .pos = tz::vec3{sz, sz, sz}, .texc = tz::vec2{1.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },    // Top-right
-			vertex_t{ .pos = tz::vec3{-sz, sz, sz}, .texc = tz::vec2{0.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, 1.0f}, .tang = tz::vec3{} },   // Top-left
+			// BENNYBOX
+			vertex_t{.pos = {-sz, -sz, -sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
+			vertex_t{.pos = {-sz, sz, -sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
+			vertex_t{.pos = {sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
+			vertex_t{.pos = {sz, -sz, -sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
 
-			// Back face
-			vertex_t{ .pos = tz::vec3{-sz, -sz, -sz}, .texc = tz::vec2{1.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} }, // Bottom-left
-			vertex_t{ .pos = tz::vec3{-sz, sz, -sz}, .texc = tz::vec2{1.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} },  // Top-left
-			vertex_t{ .pos = tz::vec3{sz, sz, -sz}, .texc = tz::vec2{0.0f, 1.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} },   // Top-right
-			vertex_t{ .pos = tz::vec3{sz, -sz, -sz}, .texc = tz::vec2{0.0f, 0.0f}, .nrm = tz::vec3{0.0f, 0.0f, -1.0f}, .tang = tz::vec3{} }   // Bottom-right
+			vertex_t{.pos = {-sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
+			vertex_t{.pos = {-sz, sz, sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
+			vertex_t{.pos = {sz, sz, sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
+			vertex_t{.pos = {sz, -sz, sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
+
+			vertex_t{.pos = {-sz, -sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
+			vertex_t{.pos = {-sz, -sz, sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
+			vertex_t{.pos = {sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
+			vertex_t{.pos = {sz, -sz, -sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
+
+			vertex_t{.pos = {-sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
+			vertex_t{.pos = {-sz, sz, sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
+			vertex_t{.pos = {sz, sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
+			vertex_t{.pos = {sz, sz, -sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
+
+			vertex_t{.pos = {-sz, -sz, -sz}, .texc = {1.0f, 1.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
+			vertex_t{.pos = {-sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
+			vertex_t{.pos = {-sz, sz, sz}, .texc = {0.0f, 0.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
+			vertex_t{.pos = {-sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
+
+			vertex_t{.pos = {sz, -sz, -sz}, .texc = {1.0f, 1.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
+			vertex_t{.pos = {sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
+			vertex_t{.pos = {sz, sz, sz}, .texc = {0.0f, 0.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
+			vertex_t{.pos = {sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
 		},
 		.indices =
 		{
-			0, 1, 2, 2, 3, 0,       // Front face
-			1, 4, 7, 7, 2, 1,       // Right face
-			4, 5, 6, 6, 7, 4,       // Back face
-			5, 0, 3, 3, 6, 5,       // Left face
-			3, 2, 7, 7, 6, 3,       // Top face
-			1, 0, 5, 5, 4, 1        // Bottom face
+			0, 1, 2,
+			0, 2, 3,
+
+			6, 5, 4,
+			7, 6, 4,
+
+			10, 9, 8,
+			11, 10, 8,
+
+			12, 13, 14,
+			12, 14, 15,
+
+			16, 17, 18,
+			16, 18, 19,
+
+			22, 21, 20,
+			23, 22, 20
 		}
 	};
 }

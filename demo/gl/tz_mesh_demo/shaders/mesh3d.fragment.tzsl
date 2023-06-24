@@ -1,7 +1,9 @@
 shader(type = fragment);
 output(id = 0) vec4 out::colour;
+input(id = 0) vec2 in::texc;
 
 void main()
 {
-	out::colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	vec2 debug_col2 = in::texc + vec2(0.5f);
+	out::colour = vec4(debug_col2, 0.0f, 1.0f);
 }

@@ -1,5 +1,7 @@
 shader(type = vertex);
 
+import <debug>
+
 struct vertex_t
 {
 	vec3 pos;
@@ -13,8 +15,28 @@ resource(id = 0) const buffer vertex_buffer
 	vertex_t data[];
 } vertex;
 
+struct drawdata_t
+{
+	mat4 model;
+};
+
+resource(id = 1) const buffer drawdata_buffer
+{
+	drawdata_t data[];
+} draws;
+
+resource(id = 2) const buffer camera_buffer
+{
+	mat4 v;
+	mat4 p;
+} camera;
+
+output(id = 0) vec2 out::texc;
+
 void main()
 {
 	vertex_t vtx = vertex.data[in::vertex_id];
-	out::position = vec4(vtx.pos, 1.0f);
+	drawdata_t draw = draws.data[in::draw_id];
+	out::position = camera.p * camera.v * draw.model * vec4(vtx.pos, 1.0f);
+	out::texc = vtx.texc;
 }

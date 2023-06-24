@@ -2,6 +2,7 @@
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/draw.hpp"
+#include "tz/core/matrix_transform.hpp"
 #include "tz/dbgui/dbgui.hpp"
 
 #include ImportedShaderHeader(mesh3d, vertex)
@@ -41,6 +42,14 @@ rh([this]()
 		.flags = {tz::gl::resource_flag::index_buffer}
 	}));
 	this->vb = rinfo.add_resource(tz::gl::buffer_resource::from_one(std::byte{0}));
+	this->drawdata_buf = rinfo.add_resource(tz::gl::buffer_resource::from_one(drawdata_storage_t{},
+	{
+		.access = tz::gl::resource_access::dynamic_access
+	}));
+	this->camera_buf = rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_data_t{},
+	{
+		.access = tz::gl::resource_access::dynamic_access
+	}));
 	this->dbref = rinfo.ref_resource(this->ch, this->db);
 	rinfo.state().graphics.draw_buffer = this->dbref;
 	rinfo.state().graphics.index_buffer = this->ib;
@@ -48,12 +57,11 @@ rh([this]()
 	return tz::gl::get_device().create_renderer(rinfo);
 }())
 {
-
+	this->write_camera_buffer();
 }
 
 meshid_t mesh_renderer::add_mesh(mesh_t mesh, const char* name)
 {
-	(void)name;
 	std::uint32_t max_idx = 0;
 	auto max_iter = std::max_element(mesh.indices.begin(), mesh.indices.end());
 	if(max_iter != mesh.indices.end())
@@ -66,6 +74,7 @@ meshid_t mesh_renderer::add_mesh(mesh_t mesh, const char* name)
 	  	.idx_count = static_cast<unsigned int>(mesh.indices.size()),
 	  	.max_idx = max_idx
 	});
+	this->entry_names.push_back(name);
 	this->append_mesh_to_buffers(mesh);
 	return this->entries.back().meshid;
 }
@@ -88,18 +97,56 @@ void mesh_renderer::add_to_draw_list(meshid_t mesh)
 void mesh_renderer::dbgui()
 {
 	ImGui::Text("Mesh Count: %zu", this->entries.size());
-	if(this->entries.size())
+	if(ImGui::BeginTabBar("#mesh_renderer"))
 	{
-		static int mesh_view_id = 0;
-		ImGui::SliderInt("Mesh Viewer", &mesh_view_id, 0, this->entries.size() - 1);
-		mesh_view_id = std::min(static_cast<std::size_t>(mesh_view_id), this->entries.size());
+		if(ImGui::BeginTabItem("Mesh Data"))
+		{
+			if(this->entries.size())
+			{
+				static int mesh_view_id = 0;
+				ImGui::SliderInt("Mesh Viewer", &mesh_view_id, 0, this->entries.size() - 1);
+				mesh_view_id = std::min(static_cast<std::size_t>(mesh_view_id), this->entries.size() - 1);
 
-		const mesh_renderer_entry& entry = this->entries[mesh_view_id];
-		ImGui::Indent();
-		//ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s (%zu)", entry.mesh_name, entry.meshid);
-		ImGui::Text("vertex count: %zu (%zuB)", entry.vtx_count, (entry.vtx_count * sizeof(vertex_t)));
-		ImGui::Text("index count: %zu (%zuB)", entry.idx_count, (entry.idx_count * sizeof(std::uint32_t)));
-		ImGui::Unindent();
+				const mesh_renderer_entry& entry = this->entries[mesh_view_id];
+				const char* name = this->entry_names[mesh_view_id];
+				ImGui::Indent();
+				ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "%s (%zu)", name, entry.meshid);
+				ImGui::Text("vertex count: %zu (%zuB)", entry.vtx_count, (entry.vtx_count * sizeof(vertex_t)));
+				ImGui::Text("index count: %zu (%zuB)", entry.idx_count, (entry.idx_count * sizeof(std::uint32_t)));
+				ImGui::Unindent();
+			}
+			ImGui::EndTabItem();
+		}
+		if(ImGui::BeginTabItem("Renderable Objects"))
+		{
+			if(this->draw_list.size())
+			{
+				static int draw_id = 0;
+				ImGui::SliderInt("Object ID", &draw_id, 0, this->draw_list.size() - 1);
+				draw_id = std::min(static_cast<std::size_t>(draw_id), this->draw_list.size() - 1);
+
+				// write the draw data.
+				drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
+				drawdata_element_t& draw_elem = draw_data.draws[draw_id];
+				ImGui::InputFloat4("#mx", draw_elem.model[0].data());
+				ImGui::InputFloat4("#my", draw_elem.model[1].data());
+				ImGui::InputFloat4("#mz", draw_elem.model[2].data());
+				ImGui::InputFloat4("#m4", draw_elem.model[3].data());
+			}
+			ImGui::EndTabItem();
+		}
+		if(ImGui::BeginTabItem("Camera"))
+		{
+			bool changed = false;
+			changed |= ImGui::SliderFloat3("Position", this->camera_intermediate_data.pos.data().data(), -5.0f, 5.0f);
+			changed |= ImGui::SliderFloat3("Rotation", this->camera_intermediate_data.rot.data().data(), -3.14159f * 0.5f, 3.14159f * 0.5f);
+			if(changed)
+			{
+				this->write_camera_buffer();
+			}
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
 	}
 }
 
@@ -147,7 +194,10 @@ void mesh_renderer::append_mesh_to_buffers(const mesh_t& mesh)
 
 void mesh_renderer::append_meshid_to_draw_buffer(meshid_t mesh)
 {
-	// figure out what the draw command is gonna be.
+	// write the draw data.
+	drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
+	draw_data.draws[this->draw_list.size()] = {.model = tz::mat4::identity()};
+	// write out the mesh reference.
 	mesh_reference ref = this->get_reference(mesh);
 	meshref_storage_t& storage = tz::gl::get_device().get_renderer(this->ch).get_resource(this->meshref_buf)->data_as<meshref_storage_t>().front();
 	storage.draw_count = this->draw_list.size() + 1;
@@ -174,4 +224,11 @@ mesh_reference mesh_renderer::get_reference(meshid_t mesh) const
 	}
 	tz::error("Could not find mesh reference. Did you delete it?");
 	return {};
+}
+
+void mesh_renderer::write_camera_buffer()
+{
+	camera_data_t& camdata = tz::gl::get_device().get_renderer(this->rh).get_resource(this->camera_buf)->data_as<camera_data_t>().front();
+	camdata.v = tz::view(this->camera_intermediate_data.pos, this->camera_intermediate_data.rot);
+	camdata.p = tz::perspective(3.14159f / 2.0f, 1920.0f / 1080.0f, 0.1f, 1000.0f);
 }

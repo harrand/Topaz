@@ -45,7 +45,7 @@ void main()
 		draw_buffer.commands[i].vertex_offset = int(idx_displacement);
 		draw_buffer.commands[i].first_instance = 0;
 
-		idx_displacement += ref.entry.max_idx;
+		idx_displacement += ref.entry.max_idx + 1;
 	}
 	draw_buffer.count = draw_count;
 }
