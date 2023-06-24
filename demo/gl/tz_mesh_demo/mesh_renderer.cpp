@@ -128,10 +128,25 @@ void mesh_renderer::dbgui()
 				// write the draw data.
 				drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
 				drawdata_element_t& draw_elem = draw_data.draws[draw_id];
-				ImGui::InputFloat4("#mx", draw_elem.model[0].data());
-				ImGui::InputFloat4("#my", draw_elem.model[1].data());
-				ImGui::InputFloat4("#mz", draw_elem.model[2].data());
-				ImGui::InputFloat4("#m4", draw_elem.model[3].data());
+
+				if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Indent();
+					ImGui::InputFloat4("#mx", draw_elem.model[0].data());
+					ImGui::InputFloat4("#my", draw_elem.model[1].data());
+					ImGui::InputFloat4("#mz", draw_elem.model[2].data());
+					ImGui::InputFloat4("#m4", draw_elem.model[3].data());
+					ImGui::Unindent();
+				}
+
+				if(ImGui::CollapsingHeader("Colour", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Indent();
+					static int texel_id = 0;
+					ImGui::SliderInt("Texture Element ID", &texel_id, 0, object_attached_texture_count - 1);
+					ImGui::SliderFloat3("Tint Colour", draw_elem.textures[texel_id].tint.data().data(), 0.0f, 1.0f);
+					ImGui::Unindent();
+				}
 			}
 			ImGui::EndTabItem();
 		}

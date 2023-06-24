@@ -4,6 +4,7 @@
 #include "tz/core/matrix.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/renderer.hpp"
+#include "shaders/texcount.tzsl"
 
 using meshid_t = std::uint32_t;
 
@@ -31,9 +32,18 @@ struct meshref_storage_t
 	std::array<mesh_reference, max_draw_count> meshref_storage;
 };
 
+struct texture_data_t
+{
+	tz::vec3 tint = tz::vec3::filled(1.0f);
+	std::uint32_t texid = 0;
+};
+
+constexpr std::size_t object_attached_texture_count = TEX_COUNT;
+
 struct drawdata_element_t
 {
 	tz::mat4 model;
+	std::array<texture_data_t, object_attached_texture_count> textures;
 };
 
 struct drawdata_storage_t
@@ -48,6 +58,10 @@ struct camera_data_t
 };
 
 // responsible for rendering meshes.
+// meshes live in ib and vb. static resources, written/resized on-demand. you can add new meshes whenever you want.
+// draw list represents an element using one of the meshes. also has a transform.
+// every frame, compute shader is invoked which takes the draw list data and populates the draw commands via draw_indirect_count.
+// the the graphics renderer is sent with the draw commands and we're good to go.
 class mesh_renderer
 {
 public:

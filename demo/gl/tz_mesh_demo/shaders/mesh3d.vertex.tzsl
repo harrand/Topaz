@@ -1,6 +1,9 @@
 shader(type = vertex);
 
 import <debug>
+import "texcount"
+
+// TYPES
 
 struct vertex_t
 {
@@ -10,15 +13,24 @@ struct vertex_t
 	vec3 tang;
 };
 
-resource(id = 0) const buffer vertex_buffer
+struct texture_t
 {
-	vertex_t data[];
-} vertex;
+	vec3 tint;
+	uint texid;
+};
 
 struct drawdata_t
 {
 	mat4 model;
+	texture_t textures[TEX_COUNT];
 };
+
+// RESOURCES
+
+resource(id = 0) const buffer vertex_buffer
+{
+	vertex_t data[];
+} vertex;
 
 resource(id = 1) const buffer drawdata_buffer
 {
@@ -31,7 +43,10 @@ resource(id = 2) const buffer camera_buffer
 	mat4 p;
 } camera;
 
+// OUTPUTS
+
 output(id = 0) vec2 out::texc;
+output(id = 1) texture_t out::textures[TEX_COUNT];
 
 void main()
 {
@@ -39,4 +54,9 @@ void main()
 	drawdata_t draw = draws.data[in::draw_id];
 	out::position = camera.p * camera.v * draw.model * vec4(vtx.pos, 1.0f);
 	out::texc = vtx.texc;
+
+	for(uint i = 0; i < TEX_COUNT; i++)
+	{
+		out::textures[i] = draw.textures[i];
+	}
 }
