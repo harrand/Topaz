@@ -41,6 +41,13 @@ struct texture_data_t
 
 constexpr std::size_t object_attached_texture_count = TEX_COUNT;
 
+struct transform_t
+{
+	tz::vec3 pos = tz::vec3::zero();
+	tz::vec3 rot = tz::vec3::zero();
+	tz::vec3 scale = tz::vec3::filled(1.0f);
+};
+
 struct drawdata_element_t
 {
 	tz::mat4 model;
@@ -73,11 +80,11 @@ public:
 	texid_t add_texture(unsigned int width, unsigned int height, std::span<const std::byte> imgdata);
 
 	void push_back_timeline() const;
-	void add_to_draw_list(meshid_t mesh);
+	void add_to_draw_list(meshid_t mesh, transform_t transform = {}, texid_t tex = 0);
 	void dbgui();
 private:
 	void append_mesh_to_buffers(const mesh_t& mesh);
-	void append_meshid_to_draw_buffer(meshid_t mesh);
+	void append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, texid_t tex);
 	mesh_reference get_reference(meshid_t mesh) const;
 	void write_camera_buffer();
 	// draw indirect buffer

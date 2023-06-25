@@ -119,9 +119,9 @@ void mesh_renderer::push_back_timeline() const
 	tz::gl::get_device().render_graph().add_dependencies(this->rh, this->ch);
 }
 
-void mesh_renderer::add_to_draw_list(meshid_t mesh)
+void mesh_renderer::add_to_draw_list(meshid_t mesh, transform_t transform, texid_t tex)
 {
-	this->append_meshid_to_draw_buffer(mesh);
+	this->append_meshid_to_draw_buffer(mesh, transform, tex);
 	this->draw_list.push_back(mesh);
 }
 
@@ -150,34 +150,72 @@ void mesh_renderer::dbgui()
 		}
 		if(ImGui::BeginTabItem("Renderable Objects"))
 		{
-			if(this->draw_list.size())
+			if(ImGui::BeginTabBar("#renderable objects"))
 			{
-				static int draw_id = 0;
-				ImGui::SliderInt("Object ID", &draw_id, 0, this->draw_list.size() - 1);
-				draw_id = std::min(static_cast<std::size_t>(draw_id), this->draw_list.size() - 1);
-
-				// write the draw data.
-				drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
-				drawdata_element_t& draw_elem = draw_data.draws[draw_id];
-
-				if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+				if(ImGui::BeginTabItem("Add/Remove Objects"))
 				{
-					ImGui::Indent();
-					ImGui::InputFloat4("#mx", draw_elem.model[0].data());
-					ImGui::InputFloat4("#my", draw_elem.model[1].data());
-					ImGui::InputFloat4("#mz", draw_elem.model[2].data());
-					ImGui::InputFloat4("#m4", draw_elem.model[3].data());
-					ImGui::Unindent();
+					static int create_meshid = this->entries.front().meshid;
+					const char* create_meshname = this->entry_names.front();
+					if(ImGui::BeginCombo("Mesh", create_meshname))
+					{
+						for(int n = 0; n < this->entries.size(); n++)
+						{
+							bool is_selected = (create_meshid == this->entries[n].meshid);
+							if(ImGui::Selectable(this->entry_names[n], is_selected))
+							{
+								create_meshid = this->entries[n].meshid;
+								create_meshname = this->entry_names[n];
+							}
+							if(is_selected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+						ImGui::EndCombo();
+					}
+					static int create_texid = 0;
+					ImGui::SliderInt("Texture", &create_texid, 0, this->textures.size());
+					if(ImGui::Button("Create"))
+					{
+						this->add_to_draw_list(create_meshid, {}, create_texid);
+					}
+					ImGui::EndTabItem();
 				}
-
-				if(ImGui::CollapsingHeader("Colour", ImGuiTreeNodeFlags_DefaultOpen))
+				if(ImGui::BeginTabItem("Object Debugger"))
 				{
-					ImGui::Indent();
-					static int texel_id = 0;
-					ImGui::SliderInt("Texture Element ID", &texel_id, 0, object_attached_texture_count - 1);
-					ImGui::SliderFloat3("Tint Colour", draw_elem.textures[texel_id].tint.data().data(), 0.0f, 1.0f);
-					ImGui::Unindent();
+					if(this->draw_list.size())
+					{
+						static int draw_id = 0;
+						ImGui::SliderInt("Object ID", &draw_id, 0, this->draw_list.size() - 1);
+						draw_id = std::min(static_cast<std::size_t>(draw_id), this->draw_list.size() - 1);
+
+						// write the draw data.
+						drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
+						drawdata_element_t& draw_elem = draw_data.draws[draw_id];
+
+						if(ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
+						{
+							ImGui::Indent();
+							ImGui::InputFloat4("#mx", draw_elem.model[0].data());
+							ImGui::InputFloat4("#my", draw_elem.model[1].data());
+							ImGui::InputFloat4("#mz", draw_elem.model[2].data());
+							ImGui::InputFloat4("#m4", draw_elem.model[3].data());
+							ImGui::Unindent();
+						}
+
+						if(ImGui::CollapsingHeader("Colour", ImGuiTreeNodeFlags_DefaultOpen))
+						{
+							ImGui::Indent();
+							static int texel_id = 0;
+							ImGui::SliderInt("Texture Element ID", &texel_id, 0, object_attached_texture_count - 1);
+							ImGui::SliderInt("Texid", &reinterpret_cast<int&>(draw_elem.textures[texel_id].texid), 0, this->textures.size());
+							ImGui::SliderFloat3("Tint Colour", draw_elem.textures[texel_id].tint.data().data(), 0.0f, 1.0f);
+							ImGui::Unindent();
+						}
+					}
+					ImGui::EndTabItem();
 				}
+				ImGui::EndTabBar();
 			}
 			ImGui::EndTabItem();
 		}
@@ -238,11 +276,13 @@ void mesh_renderer::append_mesh_to_buffers(const mesh_t& mesh)
 	);
 }
 
-void mesh_renderer::append_meshid_to_draw_buffer(meshid_t mesh)
+void mesh_renderer::append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, texid_t tex)
 {
 	// write the draw data.
 	drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
-	draw_data.draws[this->draw_list.size()] = {.model = tz::mat4::identity()};
+	drawdata_element_t& elem = draw_data.draws[this->draw_list.size()];
+	elem.model = tz::model(transform.pos, transform.rot, transform.scale);
+	elem.textures[0] = {.tint = {1.0f, 1.0f, 1.0f}, .texid = tex};
 	// write out the mesh reference.
 	mesh_reference ref = this->get_reference(mesh);
 	meshref_storage_t& storage = tz::gl::get_device().get_renderer(this->ch).get_resource(this->meshref_buf)->data_as<meshref_storage_t>().front();
