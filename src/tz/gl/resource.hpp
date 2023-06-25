@@ -25,9 +25,9 @@ namespace tz::gl
 	protected:
 		resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, resource_type type, resource_flags flags = {});
 		virtual void set_mapped_data(std::span<std::byte> mapped_resource_data) override;
-	private:
 		resource_access access;
 		std::vector<std::byte> resource_data;
+	private:
 		std::optional<std::span<std::byte>> mapped_resource_data;
 		std::size_t initial_alignment_offset;
 		resource_type type;

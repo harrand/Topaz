@@ -11,7 +11,7 @@
 
 meshid_t mesh_renderer_entry::meshid_internal_count = 0;
 
-mesh_renderer::mesh_renderer():
+mesh_renderer::mesh_renderer(std::size_t max_texture_count):
 ch([this]()
 {
 	tz::gl::renderer_info cinfo;
@@ -31,8 +31,9 @@ ch([this]()
 	}));
 	return tz::gl::get_device().create_renderer(cinfo);
 }()),
-rh([this]()
+rh([this, max_texture_count]()
 {
+	this->textures.resize(max_texture_count);
 	tz::gl::renderer_info rinfo;
 	rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(mesh3d, vertex));
 	rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(mesh3d, fragment));
@@ -51,6 +52,14 @@ rh([this]()
 		.access = tz::gl::resource_access::dynamic_access
 	}));
 	this->dbref = rinfo.ref_resource(this->ch, this->db);
+	for(std::size_t i = 0; i < max_texture_count; i++)
+	{
+		this->textures[i] = rinfo.add_resource(tz::gl::image_resource::from_uninitialised
+		({
+	   		.format = tz::gl::image_format::RGBA32,
+			.dimensions = {1u, 1u},
+		}));
+	}
 	rinfo.state().graphics.draw_buffer = this->dbref;
 	rinfo.state().graphics.index_buffer = this->ib;
 	rinfo.debug_name("Mesh Renderer");
@@ -77,6 +86,28 @@ meshid_t mesh_renderer::add_mesh(mesh_t mesh, const char* name)
 	this->entry_names.push_back(name);
 	this->append_mesh_to_buffers(mesh);
 	return this->entries.back().meshid;
+}
+
+texid_t mesh_renderer::add_texture(unsigned int width, unsigned int height, std::span<const std::byte> imgdata)
+{
+	#if TZ_DEBUG
+		std::size_t sz = tz::gl::pixel_size_bytes(tz::gl::image_format::RGBA32) * width * height;
+		tz::assert(imgdata.size_bytes() == sz, "Unexpected image data length. Expected %zuB, but was %zuB", sz, imgdata.size_bytes());
+	#endif
+	auto& ren = tz::gl::get_device().get_renderer(this->rh);
+	tz::assert(this->texture_cursor < this->textures.size(), "ran out of textures.");
+	tz::gl::resource_handle imgh = this->textures[this->texture_cursor];
+	ren.edit(tz::gl::RendererEditBuilder{}
+	.image_resize({.image_handle = imgh, .dimensions = {width, height}})
+	.build());
+	ren.edit(tz::gl::RendererEditBuilder{}
+	.write
+	({
+		.resource = imgh,
+		.data = imgdata
+	})
+	.build());
+	return this->texture_cursor++;
 }
 
 void mesh_renderer::push_back_timeline() const

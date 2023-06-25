@@ -75,14 +75,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_resource_manager - notify image dirty", 0xFFAAAA00);
 		// we need to know which image view index this corresponds to. just count resource image count until we reach rh vallue.
 		// a dirty image means that the underlying vk2::Image has been entirely replaced, and thus we need to replace the corresponding image view to refer to the new image.
-		std::size_t imgview_idx = 0;
-		for(std::size_t i = 0; i < static_cast<std::size_t>(static_cast<tz::hanval>(rh)); i++)
-		{
-			if(this->get_resource(static_cast<tz::hanval>(i))->get_type() != tz::gl::resource_type::image)
-			{
-				imgview_idx++;
-			}
-		}
+		std::size_t imgview_idx = static_cast<std::size_t>(static_cast<tz::hanval>(rh));
 		// just replace the image view.
 		tz::assert(imgview_idx < this->get_image_resource_views().size());
 		vk2::Image& img = static_cast<image_component_vulkan*>(this->get_component(rh))->vk_get_image();

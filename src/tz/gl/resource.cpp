@@ -211,6 +211,10 @@ namespace tz::gl
 	void image_resource::set_dimensions(tz::vec2ui dims)
 	{
 		this->dimensions = dims;
+		if(this->get_access() == tz::gl::resource_access::static_access)
+		{
+			this->resource_data.resize(tz::gl::pixel_size_bytes(this->get_format()) * dims[0] * dims[1]);
+		}
 	}
 
 	image_resource::image_resource(resource_access access, std::vector<std::byte> resource_data, std::size_t initial_alignment_offset, image_format format, tz::vec2ui dimensions, resource_flags flags):

@@ -18,15 +18,58 @@ int main()
 	{
 		dbgui_init();
 
-		mesh_renderer renderer;
+		mesh_renderer renderer{8u};
 		renderer.push_back_timeline();
 		meshid_t cube1 = renderer.add_mesh(create_cube_mesh(0.1f), "Small Cube");
 		meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
 		meshid_t cube3 = renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
-		renderer.add_to_draw_list(cube1);
-		renderer.add_to_draw_list(cube1);
 		//renderer.add_to_draw_list(cube2);
 		//renderer.add_to_draw_list(cube3);
+		std::vector<std::byte> black_texdata
+		{
+			std::byte{0},
+			std::byte{0},
+			std::byte{0},
+			std::byte{0},
+		};
+		// pure white.
+		std::vector<std::byte> white_texdata
+		{
+			std::byte{255},
+			std::byte{255},
+			std::byte{255},
+			std::byte{255},
+		};
+
+		// missingtex.
+		std::vector<std::byte> texdata
+		{
+			std::byte{255},
+			std::byte{0},
+			std::byte{255},
+			std::byte{255},
+
+			std::byte{0},
+			std::byte{0},
+			std::byte{0},
+			std::byte{255},
+
+			std::byte{0},
+			std::byte{0},
+			std::byte{0},
+			std::byte{255},
+
+			std::byte{255},
+			std::byte{0},
+			std::byte{255},
+			std::byte{255},
+		};
+		renderer.add_texture(1, 1, black_texdata);
+		renderer.add_texture(1, 1, white_texdata);
+		renderer.add_texture(2, 2, texdata);
+
+		renderer.add_to_draw_list(cube1);
+		renderer.add_to_draw_list(cube1);
 
 		while(!tz::window().is_close_requested())
 		{

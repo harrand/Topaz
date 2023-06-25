@@ -7,6 +7,7 @@
 #include "shaders/texcount.tzsl"
 
 using meshid_t = std::uint32_t;
+using texid_t = std::uint32_t;
 
 struct mesh_renderer_entry
 {
@@ -35,7 +36,7 @@ struct meshref_storage_t
 struct texture_data_t
 {
 	tz::vec3 tint = tz::vec3::filled(1.0f);
-	std::uint32_t texid = 0;
+	texid_t texid = 0;
 };
 
 constexpr std::size_t object_attached_texture_count = TEX_COUNT;
@@ -65,9 +66,11 @@ struct camera_data_t
 class mesh_renderer
 {
 public:
-	mesh_renderer();
+	mesh_renderer(std::size_t max_texture_count);
 
 	meshid_t add_mesh(mesh_t mesh, const char* name = "Untitled Mesh");
+	// rgba32 only.
+	texid_t add_texture(unsigned int width, unsigned int height, std::span<const std::byte> imgdata);
 
 	void push_back_timeline() const;
 	void add_to_draw_list(meshid_t mesh);
@@ -87,11 +90,13 @@ private:
 	// index buffer
 	tz::gl::resource_handle ib = tz::nullhand;
 	tz::gl::resource_handle dbref = tz::nullhand;
+	std::vector<tz::gl::resource_handle> textures = {};
 	tz::gl::renderer_handle ch = tz::nullhand;
 	tz::gl::renderer_handle rh = tz::nullhand;
 	std::vector<mesh_renderer_entry> entries = {};
 	std::vector<const char*> entry_names = {};
 	std::vector<meshid_t> draw_list = {};
+	std::size_t texture_cursor = 0;
 	struct camera_intermediate_data_t
 	{
 		tz::vec3 pos = {0.2f, 0.2f, 2.5f};
