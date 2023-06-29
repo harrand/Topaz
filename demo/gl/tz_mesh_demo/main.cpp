@@ -4,7 +4,7 @@
 #include "tz/io/gltf.hpp"
 #include "mesh_renderer.hpp"
 
-#include ImportedTextHeader(cube, gltf)
+#include ImportedTextHeader(cube, glb)
 
 struct dbgui_data_t
 {
@@ -167,5 +167,5 @@ mesh_t create_cube_mesh(float sz)
 
 void temp_debug_load_cube_gltf()
 {
-	tz::io::gltf cube = tz::io::gltf::from_memory(ImportedTextData(cube, gltf));
+	tz::io::gltf cube = tz::io::gltf::from_memory(ImportedTextData(cube, glb));
 }
