@@ -1,6 +1,10 @@
 #include "tz/tz.hpp"
+#include "tz/core/imported_text.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/io/gltf.hpp"
 #include "mesh_renderer.hpp"
+
+#include ImportedTextHeader(cube, gltf)
 
 struct dbgui_data_t
 {
@@ -8,6 +12,7 @@ struct dbgui_data_t
 } dbgui_data;
 void dbgui_init();
 mesh_t create_cube_mesh(float sz);
+void temp_debug_load_cube_gltf();
 
 int main()
 {
@@ -17,6 +22,7 @@ int main()
 	});
 	{
 		dbgui_init();
+		temp_debug_load_cube_gltf();
 
 		mesh_renderer renderer{8u};
 		renderer.push_back_timeline();
@@ -157,4 +163,9 @@ mesh_t create_cube_mesh(float sz)
 			23, 22, 20
 		}
 	};
+}
+
+void temp_debug_load_cube_gltf()
+{
+	tz::io::gltf cube = tz::io::gltf::from_memory(ImportedTextData(cube, gltf));
 }

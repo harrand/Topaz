@@ -230,6 +230,11 @@ add_library(topaz STATIC
 	src/tz/gl/impl/opengl/detail/tz_opengl.hpp
 	src/tz/gl/impl/opengl/detail/vertex_array.cpp
 	src/tz/gl/impl/opengl/detail/vertex_array.hpp
+
+	# tz::io
+	# gltf
+	src/tz/io/gltf.cpp
+	src/tz/io/gltf.hpp
 	)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -283,7 +288,7 @@ message(STATUS "Render API: ${TOPAZ_RENDER_API}")
 add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
-target_link_libraries(topaz PUBLIC imgui imgui_memory_editor glad textc_lib concurrentqueue)
+target_link_libraries(topaz PUBLIC imgui imgui_memory_editor glad textc_lib concurrentqueue nlohmann_json)
 target_link_libraries(topaz PRIVATE debugbreak Threads::Threads)
 
 add_subdirectory(tools)

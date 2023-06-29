@@ -4,6 +4,7 @@ add_subdirectory(glad)# Special glad from https://glad.dav1d.de/ (ogl 4.6 with b
 add_subdirectory(VulkanMemoryAllocator)
 add_subdirectory(textc)
 add_subdirectory(concurrentqueue)
+add_subdirectory(json)
 add_subdirectory(debugbreak)
 add_subdirectory(tracy)
 
