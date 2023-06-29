@@ -81,12 +81,18 @@ namespace tz::io
 		return this->get_binary_data(view.offset, view.length);
 	}
 
+	std::span<const gltf_mesh> gltf::get_meshes() const
+	{
+		return this->meshes;
+	}
+
 	gltf::gltf(std::string_view glb_data)
 	{
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
 		this->load_resources();
 		this->create_views();
+		this->create_meshes();
 	}
 
 	void gltf::parse_header(std::string_view header)
@@ -197,6 +203,18 @@ namespace tz::io
 		}
 	}
 
+	void gltf::create_meshes()
+	{
+		json meshes = this->data["meshes"];
+		if(meshes.is_array())
+		{
+			for(auto mesh : meshes)
+			{
+				this->meshes.push_back(this->load_mesh(mesh));
+			}
+		}
+	}
+
 	gltf_resource gltf::load_buffer(json node)
 	{
 		std::string makeshift_bufname = "buffer" + std::to_string(this->parsed_buf_count);
@@ -222,6 +240,121 @@ namespace tz::io
 			.label = makeshift_bufname,
 			.data = this->get_binary_data(0, byte_length)
 		};	
+	}
+
+	gltf_mesh gltf::load_mesh(json node)
+	{
+		gltf_mesh ret;
+		ret.name = node["name"];
+		tz::assert(node["primitives"].is_array(), "Mesh did not contain a valid primitives array. Topaz does not support empty gltf meshes.");
+		for(auto prim : node["primitives"])
+		{
+			gltf_mesh::submesh& submesh = ret.submeshes.emplace_back();
+			// some explanation is sorely needed here for future harry.
+			// our submeshes could have various different attributes.
+			// we need to know: which attributes this submesh has, and which buffer views represent the values for each attribute.
+			// we also check for indices and materials.
+			if(!prim["indices"].is_null())
+			{
+				// has an index buffer.
+				submesh.indices_accessor = prim["indices"];
+			}
+			tz::assert(!prim["attributes"].is_null());
+			gltf_attributes attribs = {};
+			// let's figoure out which attributes this submesh has.
+			// start by setting all the attribute accessor references to -1. this means any missing attributes that this submesh doesnt use will not only be missing from the enum field, but also retain a reference of -1.
+			for(std::size_t i = 0; i < (int)gltf_attribute::_count; i++)
+			{
+				submesh.accessors[i] = -1;
+			}
+			// is there a position? if so, register it in the field and then patch the accessor reference.
+			if(!prim["attributes"]["POSITION"].is_null())
+			{
+				attribs |= gltf_attribute::position;
+				submesh.accessors[(int)gltf_attribute::position] = prim["attributes"]["POSITION"];
+			}
+			// same with the others!
+			if(!prim["attributes"]["NORMAL"].is_null())
+			{
+				attribs |= gltf_attribute::normal;
+				submesh.accessors[(int)gltf_attribute::normal] = prim["attributes"]["NORMAL"];
+			}
+			if(!prim["attributes"]["TANGENT"].is_null())
+			{
+				attribs |= gltf_attribute::tangent;
+				submesh.accessors[(int)gltf_attribute::tangent] = prim["attributes"]["TANGENT"];
+			}
+			// as we can have multiple texcoords, colours, joints and weights, we iterate through all possibilities here.
+			// texcoords
+			for(int i = 0; i < gltf_max_texcoord_attribs; i++)
+	  		{
+				std::string keyname = "TEXCOORD_" + std::to_string(i);
+				if(!prim["attributes"][keyname.c_str()].is_null())
+				{
+					attribs |= static_cast<gltf_attribute>((int)gltf_attribute::texcoord0 + i);
+					submesh.accessors[(int)gltf_attribute::texcoord0 + i] = prim["attributes"][keyname.c_str()];
+				}
+				// in our topaz implementation, we have a hardcoded limit of these.
+				// let's test if max+1 exists, if so we know we don't have enough to support this mesh.
+			}
+			std::string texcoord_large = "TEXCOORD_" + std::to_string((int)gltf_attribute::texcoord0 + gltf_max_texcoord_attribs);
+			tz::assert(prim["attributes"][texcoord_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", texcoord_large.c_str(), gltf_max_texcoord_attribs);
+			// and then the rest...
+			// colours.
+			for(int i = 0; i < gltf_max_color_attribs; i++)
+	  		{
+				std::string keyname = "COLOR_" + std::to_string(i);
+				if(!prim["attributes"][keyname.c_str()].is_null())
+				{
+					attribs |= static_cast<gltf_attribute>((int)gltf_attribute::color0 + i);
+					submesh.accessors[(int)gltf_attribute::color0 + i] = prim["attributes"][keyname.c_str()];
+				}
+			}
+			std::string color_large = "COLOR_" + std::to_string((int)gltf_attribute::color0 + gltf_max_color_attribs);
+			tz::assert(prim["attributes"][color_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", color_large.c_str(), gltf_max_color_attribs);
+			// joints.
+			for(int i = 0; i < gltf_max_joint_attribs; i++)
+	  		{
+				std::string keyname = "JOINT_" + std::to_string(i);
+				if(!prim["attributes"][keyname.c_str()].is_null())
+				{
+					attribs |= static_cast<gltf_attribute>((int)gltf_attribute::joint0 + i);
+					submesh.accessors[(int)gltf_attribute::joint0 + i] = prim["attributes"][keyname.c_str()];
+				}
+			}
+			std::string joint_large = "JOINT_" + std::to_string((int)gltf_attribute::joint0 + gltf_max_joint_attribs);
+			tz::assert(prim["attributes"][joint_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", joint_large.c_str(), gltf_max_joint_attribs);
+			// weights.
+			for(int i = 0; i < gltf_max_weight_attribs; i++)
+	  		{
+				std::string keyname = "WEIGHT_" + std::to_string(i);
+				if(!prim["attributes"][keyname.c_str()].is_null())
+				{
+					attribs |= static_cast<gltf_attribute>((int)gltf_attribute::weight0 + i);
+					submesh.accessors[(int)gltf_attribute::weight0 + i] = prim["attributes"][keyname.c_str()];
+				}
+			}
+			std::string weight_large = "WEIGHT_" + std::to_string((int)gltf_attribute::weight0 + gltf_max_weight_attribs);
+			tz::assert(prim["attributes"][weight_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", weight_large.c_str(), gltf_max_weight_attribs);
+			
+			// materials not yet implemented.
+			if(!prim["material"].is_null())
+			{
+				tz::report("detected gltf mesh with one or more materials associated with it. materials are NYI.");
+			}
+			submesh.attributes = attribs;
+			submesh.material_accessor = -1;
+			if(prim["mode"].is_null())
+			{
+				submesh.mode = gltf_primitive_mode::triangles;
+			}
+			else
+			{
+				submesh.mode = static_cast<gltf_primitive_mode>(prim["mode"]);
+				tz::assert(submesh.mode == gltf_primitive_mode::triangles, "Detected submesh that does not consist of triangle primitives. Only triangle primitives are allowed in Topaz. Please re-export your glb accordingly.");
+			}
+		}
+		return ret;
 	}
 
 	std::span<const std::byte> gltf::get_binary_data(std::size_t offset, std::size_t len) const

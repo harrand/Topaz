@@ -1,3 +1,4 @@
+#include "tz/core/data/enum_field.hpp"
 #include "nlohmann/json.hpp"
 #undef assert
 
@@ -79,9 +80,53 @@ namespace tz::io
 		gltf_accessor_type type;
 	};
 
-	struct gltf_scene
+	constexpr int gltf_max_texcoord_attribs = 8;
+	constexpr int gltf_max_color_attribs = 8;
+	constexpr int gltf_max_joint_attribs = 8;
+	constexpr int gltf_max_weight_attribs = 8;
+	enum class gltf_attribute
 	{
+		position,
+		normal,
+		tangent,
+		texcoord0,
+		texcoord_max = texcoord0 + gltf_max_texcoord_attribs,
+		color0,
+		colormax = color0 + gltf_max_color_attribs,
+		joint0,
+		jointmax = joint0 + gltf_max_joint_attribs,
+		weight0,
+		weightmax = weight0 + gltf_max_weight_attribs,
+		_count
+	};
+	using accessor_ref = std::array<int, static_cast<int>(gltf_attribute::_count)>;
 
+	using gltf_attributes = tz::enum_field<gltf_attribute>;
+
+	enum class gltf_primitive_mode
+	{
+		points,
+		lines,
+		line_loop,
+		line_strip,
+		triangles,
+		triangle_strip,
+		triangle_fan
+	};
+
+	struct gltf_mesh
+	{
+		std::string name = "Untitled Mesh";
+		struct submesh
+		{
+			gltf_attributes attributes = {};
+			accessor_ref accessors = {};
+			std::size_t indices_accessor = -1;
+			std::size_t material_accessor = -1;
+			gltf_primitive_mode mode;
+
+		};
+		std::vector<submesh> submeshes = {};
 	};
 
 	class gltf
@@ -91,13 +136,16 @@ namespace tz::io
 		// note: you should pass in the file contents of a .glb.
 		static gltf from_memory(std::string_view sv);
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
+		std::span<const gltf_mesh> get_meshes() const;
 	private:
 		gltf(std::string_view glb_data);
 		void parse_header(std::string_view header);
 		void parse_chunks(std::string_view chunkdata);
 		void load_resources();
 		void create_views();
+		void create_meshes();
 		gltf_resource load_buffer(json node);
+		gltf_mesh load_mesh(json node);
 		std::span<const std::byte> get_binary_data(std::size_t offset, std::size_t len) const;
 
 		gltf_header header;
@@ -105,6 +153,7 @@ namespace tz::io
 		json data = {};
 		std::vector<gltf_resource> resources = {};
 		std::vector<gltf_buffer_view> views = {};
+		std::vector<gltf_mesh> meshes = {};
 		std::size_t parsed_buf_count = 0;
 		std::size_t parsed_img_count = 0;
 	};
