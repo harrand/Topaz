@@ -12,7 +12,7 @@ struct dbgui_data_t
 } dbgui_data;
 void dbgui_init();
 mesh_t create_cube_mesh(float sz);
-void temp_debug_load_cube_gltf();
+mesh_t temp_debug_load_cube_gltf();
 
 int main()
 {
@@ -165,7 +165,24 @@ mesh_t create_cube_mesh(float sz)
 	};
 }
 
-void temp_debug_load_cube_gltf()
+mesh_t temp_debug_load_cube_gltf()
 {
 	tz::io::gltf cube = tz::io::gltf::from_memory(ImportedTextData(cube, glb));
+	tz::io::gltf_mesh_data cube_meshdata = cube.get_submesh_vertex_data(0, 0);
+
+	mesh_t ret;
+	ret.vertices.resize(cube_meshdata.vertices.size());
+	std::transform(cube_meshdata.vertices.begin(), cube_meshdata.vertices.end(), ret.vertices.begin(),
+	[](tz::io::gltf_vertex_data gltf_vtx) -> vertex_t
+	{
+		return
+		{
+			.pos = gltf_vtx.position,
+			.texc = gltf_vtx.texcoordn[0],
+			.nrm = gltf_vtx.normal,
+			.tang = gltf_vtx.tangent,
+		};
+	});
+	ret.indices = cube_meshdata.indices;
+	return ret;
 }

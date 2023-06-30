@@ -1,4 +1,5 @@
 #include "tz/core/data/enum_field.hpp"
+#include "tz/core/data/vector.hpp"
 #include "nlohmann/json.hpp"
 #undef assert
 
@@ -129,6 +130,24 @@ namespace tz::io
 		std::vector<submesh> submeshes = {};
 	};
 
+	struct gltf_vertex_data
+	{
+		tz::vec3 position;
+		tz::vec3 normal;
+		tz::vec3 tangent;
+		std::array<tz::vec2, gltf_max_texcoord_attribs> texcoordn;
+		std::array<tz::vec3, gltf_max_color_attribs> colorn;
+		// TODO: joints
+		// TODO: weights
+	};
+
+	struct gltf_mesh_data
+	{
+		std::vector<gltf_vertex_data> vertices = {};
+		std::vector<std::uint32_t> indices = {};
+		// TODO: materials
+	};
+
 	class gltf
 	{
 	public:
@@ -137,12 +156,14 @@ namespace tz::io
 		static gltf from_memory(std::string_view sv);
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
 		std::span<const gltf_mesh> get_meshes() const;
+		gltf_mesh_data get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const;
 	private:
 		gltf(std::string_view glb_data);
 		void parse_header(std::string_view header);
 		void parse_chunks(std::string_view chunkdata);
 		void load_resources();
 		void create_views();
+		void create_accessors();
 		void create_meshes();
 		gltf_resource load_buffer(json node);
 		gltf_mesh load_mesh(json node);
@@ -153,6 +174,7 @@ namespace tz::io
 		json data = {};
 		std::vector<gltf_resource> resources = {};
 		std::vector<gltf_buffer_view> views = {};
+		std::vector<gltf_accessor> accessors = {};
 		std::vector<gltf_mesh> meshes = {};
 		std::size_t parsed_buf_count = 0;
 		std::size_t parsed_img_count = 0;

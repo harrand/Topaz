@@ -86,12 +86,108 @@ namespace tz::io
 		return this->meshes;
 	}
 
+	gltf_mesh_data gltf::get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const
+	{
+		gltf_mesh_data ret;
+		tz::assert(this->get_meshes().size() > meshid, "Invalid meshid.");
+		gltf_mesh mesh = this->get_meshes()[meshid];
+		tz::assert(mesh.submeshes.size() > submeshid, "Invalid submeshid");
+		gltf_mesh::submesh submesh = mesh.submeshes[submeshid];
+		// we have a set of references to the positions, texcoords etc.
+		// we need to interleave them into singular vertex data.
+		// first we figure out how many vertices there are gonna be.
+		std::size_t vertex_count = 0;
+
+		// POS
+		std::size_t posid = submesh.accessors[(int)gltf_attribute::position];
+		tz::assert(posid != static_cast<std::size_t>(-1), "Detected submesh that was missing a position attribute. This cannmot be.");
+		gltf_accessor pos = this->accessors[posid];
+		tz::assert(pos.component_type == gltf_accessor_component_type::flt, "Position attribute was expected to be floats, but it is not. Please re-export the gltf with the expected config.");
+		tz::assert(pos.type == gltf_accessor_type::vec3, "Position attributes should be vec3s. Please re-export with the expected config");
+		vertex_count = pos.element_count;
+
+		// NORMAL
+		std::size_t nrmid = submesh.accessors[(int)gltf_attribute::normal];
+		// TODO: meshes missing normals should be allowed.
+		tz::assert(nrmid != static_cast<std::size_t>(-1));
+		gltf_accessor nrm = this->accessors[nrmid];
+		tz::assert(nrm.component_type == gltf_accessor_component_type::flt, "Normal attribute was expected to be floats, but it is not.");
+		tz::assert(nrm.type == gltf_accessor_type::vec3, "Normals should be vec3.");
+		tz::assert(vertex_count == nrm.element_count, "Number of normals did not match number of positions.");
+
+
+		// TEXCOORDN
+		std::array<std::size_t, gltf_max_texcoord_attribs> texcids;
+		std::array<std::optional<gltf_accessor>, gltf_max_texcoord_attribs> texcs;
+		for(std::size_t i = 0; i < gltf_max_texcoord_attribs; i++)
+		{
+			texcids[i] = submesh.accessors[(int)gltf_attribute::texcoord0 + i];
+			if(texcids[i] != static_cast<std::size_t>(-1))
+			{
+				texcs[i] = this->accessors[texcids[i]];
+				tz::assert(texcs[i]->component_type == gltf_accessor_component_type::flt, "Texcoord attribute was expected to be floats.");
+				tz::assert(texcs[i]->type == gltf_accessor_type::vec2, "Texcoords expected to be vec2.");
+				tz::assert(texcs[i]->element_count == vertex_count, "Number of texcoords did not match number of positions.");
+			}
+			else
+			{
+				texcs[i] = std::nullopt;
+			}
+		}
+		
+		ret.vertices.reserve(vertex_count);
+
+		gltf_buffer_view pos_view = this->views[pos.buffer_view_id];
+		std::span<const std::byte> pos_data = this->get_binary_data(pos_view.offset, pos_view.length);
+
+		gltf_buffer_view nrm_view = this->views[nrm.buffer_view_id];
+		std::span<const std::byte> nrm_data = this->get_binary_data(nrm_view.offset, nrm_view.length);
+
+		// TODO: more than texcoord0. was fine beforehand. now just cba.
+		tz::assert(texcs[0].has_value());
+		gltf_buffer_view texc0_view = this->views[texcs[0]->buffer_view_id];
+		std::span<const std::byte> texc0_data = this->get_binary_data(texc0_view.offset, texc0_view.length);
+
+		constexpr std::size_t vec3_stride = sizeof(float) * 3;
+		constexpr std::size_t vec2_stride = sizeof(float) * 2;
+		for(std::size_t i = 0; i < vertex_count; i++)
+		{
+			gltf_vertex_data& vtx = ret.vertices.emplace_back();
+			
+			std::memcpy(vtx.position.data().data(), pos_data.data() + (vec3_stride * i), sizeof(float) * 3);
+			std::memcpy(vtx.normal.data().data(), nrm_data.data() + (vec3_stride * i), sizeof(float) * 3);
+			std::memcpy(vtx.texcoordn[0].data().data(), texc0_data.data() + (vec2_stride * i), sizeof(float) * 2);
+		}
+
+		// finally, do indices.
+		gltf_accessor indices = this->accessors[submesh.indices_accessor];
+		std::size_t index_count = indices.element_count;
+		tz::assert(indices.component_type == gltf_accessor_component_type::ushort);
+		tz::assert(indices.type == gltf_accessor_type::scalar, "indices should be scalars. not sure whats going on there.");
+		gltf_buffer_view indices_view = this->views[indices.buffer_view_id];
+		std::span<const std::byte> indices_data = this->get_binary_data(indices_view.offset, indices_view.length);
+		ret.indices.resize(index_count);
+		std::vector<unsigned short> indices_intermediate;
+		indices_intermediate.resize(index_count);
+
+		std::memcpy(indices_intermediate.data(), indices_data.data(), sizeof(unsigned short) * index_count);
+		std::transform(indices_intermediate.begin(), indices_intermediate.end(), ret.indices.begin(),
+		[](unsigned short s) -> std::uint32_t
+		{
+			// just do implicit conversion.
+			return s;
+		});
+		
+		return ret;
+	}
+
 	gltf::gltf(std::string_view glb_data)
 	{
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
 		this->load_resources();
 		this->create_views();
+		this->create_accessors();
 		this->create_meshes();
 	}
 
@@ -198,6 +294,58 @@ namespace tz::io
 		 			.type = static_cast<gltf_buffer_view_type>(view["target"]),
 		 			.offset = view["byteOffset"],
 		 			.length = view["byteLength"]
+				});
+			}
+		}
+	}
+
+	void gltf::create_accessors()
+	{
+		json node = this->data["accessors"];
+		if(node.is_array())
+		{
+			for(auto accessor : node)
+			{
+				std::string type = accessor["type"];
+				gltf_accessor_type t = {};
+				if(type == "SCALAR")
+				{
+					t = gltf_accessor_type::scalar;
+				}
+				else if(type == "VEC2")
+				{
+					t = gltf_accessor_type::vec2;
+				}
+				else if(type == "VEC3")
+				{
+					t = gltf_accessor_type::vec3;
+				}
+				else if(type == "VEC4")
+				{
+					t = gltf_accessor_type::vec4;
+				}
+				else if(type == "MAT2")
+				{
+					t = gltf_accessor_type::mat2;
+				}
+				else if(type == "MAT3")
+				{
+					t = gltf_accessor_type::mat3;
+				}
+				else if(type == "MAT4")
+				{
+					t = gltf_accessor_type::mat4;
+				}
+				else
+				{
+					tz::assert("Unrecognised accessor type \"%s\". Corrupted GLB file or too new and somehow got past topaz verification.", type.c_str());
+				}
+				this->accessors.push_back
+				({
+					.buffer_view_id = accessor["bufferView"],
+		 			.component_type = static_cast<gltf_accessor_component_type>(accessor["componentType"]),
+		 			.element_count = accessor["count"],
+		 			.type = t
 				});
 			}
 		}
