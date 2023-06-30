@@ -34,7 +34,6 @@ resource(id = 1) const buffer meshref_buffer
 void main()
 {
 	uint draw_count = meshes.draw_count;
-	uint idx_displacement = 0;
 	for(uint i = 0; i < draw_count; i++)
 	{
 		meshref_t ref = meshes.refs[i];
@@ -42,10 +41,8 @@ void main()
 		draw_buffer.commands[i].index_count = ref.entry.idx_count;
 		draw_buffer.commands[i].instance_count = 1;
 		draw_buffer.commands[i].first_index = ref.idx_offset;
-		draw_buffer.commands[i].vertex_offset = int(idx_displacement);
+		draw_buffer.commands[i].vertex_offset = int(ref.entry.max_idx);
 		draw_buffer.commands[i].first_instance = 0;
-
-		idx_displacement += ref.entry.max_idx + 1;
 	}
 	draw_buffer.count = draw_count;
 }

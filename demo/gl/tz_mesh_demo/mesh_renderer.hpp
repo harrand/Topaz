@@ -103,6 +103,7 @@ private:
 	std::vector<mesh_renderer_entry> entries = {};
 	std::vector<const char*> entry_names = {};
 	std::vector<meshid_t> draw_list = {};
+	std::uint32_t cumulative_vertex_count = 0;
 	std::size_t texture_cursor = 0;
 	struct camera_intermediate_data_t
 	{

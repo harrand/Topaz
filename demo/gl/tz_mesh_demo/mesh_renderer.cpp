@@ -71,18 +71,13 @@ rh([this, max_texture_count]()
 
 meshid_t mesh_renderer::add_mesh(mesh_t mesh, const char* name)
 {
-	std::uint32_t max_idx = 0;
-	auto max_iter = std::max_element(mesh.indices.begin(), mesh.indices.end());
-	if(max_iter != mesh.indices.end())
-	{
-		max_idx = *max_iter;
-	}
 	this->entries.push_back
 	({
 		.vtx_count = static_cast<unsigned int>(mesh.vertices.size()),
 	  	.idx_count = static_cast<unsigned int>(mesh.indices.size()),
-	  	.max_idx = max_idx
+	  	.max_idx = this->cumulative_vertex_count
 	});
+	this->cumulative_vertex_count += mesh.vertices.size();
 	this->entry_names.push_back(name);
 	this->append_mesh_to_buffers(mesh);
 	return this->entries.back().meshid;

@@ -26,7 +26,7 @@ int main()
 
 		mesh_renderer renderer{8u};
 		renderer.push_back_timeline();
-		meshid_t cube1 = renderer.add_mesh(create_cube_mesh(0.1f), "Small Cube");
+		meshid_t cube1 = renderer.add_mesh(temp_debug_load_cube_gltf(), "Small Cube");
 		meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
 		meshid_t cube3 = renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
 		std::vector<std::byte> black_texdata
@@ -53,14 +53,14 @@ int main()
 			std::byte{255},
 			std::byte{255},
 
-			std::byte{0},
-			std::byte{0},
-			std::byte{0},
+			std::byte{128},
+			std::byte{128},
+			std::byte{128},
 			std::byte{255},
 
-			std::byte{0},
-			std::byte{0},
-			std::byte{0},
+			std::byte{128},
+			std::byte{128},
+			std::byte{128},
 			std::byte{255},
 
 			std::byte{255},
@@ -72,7 +72,7 @@ int main()
 		texid_t whte = renderer.add_texture(1, 1, white_texdata);
 		texid_t missingtex = renderer.add_texture(2, 2, texdata);
 
-		renderer.add_to_draw_list(cube1, {.pos = {1.0f, 0.0f, 0.0f}}, whte);
+		renderer.add_to_draw_list(cube2, {.pos = {1.0f, 0.0f, 0.0f}}, whte);
 		renderer.add_to_draw_list(cube1, {.pos = {-2.0f, 0.0f, 0.0f}}, missingtex);
 
 		while(!tz::window().is_close_requested())
