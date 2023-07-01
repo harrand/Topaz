@@ -77,6 +77,8 @@ The table below shows all the engine's dependencies.
 |[GLAD](https://github.com/Dav1dde/glad)													| OpenGL	  | All			  | Included in repository	|
 |[imgui](https://github.com/ocornut/imgui)													| Both		  | All			  | Git Submodule			|
 |[textc](https://github.com/Harrand/textc/)													| Both		  | All			  | Git Submodule			|
+|[stb](https://github.com/nothings/stb/)													| Both		  | All			  | Git Submodule			|
+|[nlohmann json](https://github.com/nlohmann/json/)													| Both		  | All			  | Git Submodule			|
 |[tracy](https://github.com/wolfpld/tracy)													| Both		  | Profile		  | Git Submodule			|
 |[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)											| Vulkan	  | All			  | Needs pre-installation	|
 |[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) | Vulkan	  | All			  | Git Submodule			|

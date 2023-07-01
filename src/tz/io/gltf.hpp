@@ -1,3 +1,5 @@
+#ifndef TOPAZ_IO_GLTF_HPP
+#define TOPAZ_IO_GLTF_HPP
 #include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
 #include "nlohmann/json.hpp"
@@ -182,3 +184,4 @@ namespace tz::io
 		std::size_t parsed_img_count = 0;
 	};
 }
+#endif // TOPAZ_IO_GLTF_HPP
