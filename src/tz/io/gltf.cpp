@@ -96,8 +96,12 @@ namespace tz::io
 		// we have a set of references to the positions, texcoords etc.
 		// we need to interleave them into singular vertex data.
 		// first we figure out how many vertices there are gonna be.
+		// 1. retrieve the data spans for each vertex attribute
+		// 2. iterate through each vertex and copy relevant snippets from the span into the resultant data. this requires manual interleaving.
+		// 3. finally, copy over the index data.
 		std::size_t vertex_count = 0;
 
+		// 1
 		// POS
 		std::size_t posid = submesh.accessors[(int)gltf_attribute::position];
 		tz::assert(posid != static_cast<std::size_t>(-1), "Detected submesh that was missing a position attribute. This cannmot be.");
@@ -114,7 +118,6 @@ namespace tz::io
 		tz::assert(nrm.component_type == gltf_accessor_component_type::flt, "Normal attribute was expected to be floats, but it is not.");
 		tz::assert(nrm.type == gltf_accessor_type::vec3, "Normals should be vec3.");
 		tz::assert(vertex_count == nrm.element_count, "Number of normals did not match number of positions.");
-
 
 		// TEXCOORDN
 		std::array<std::size_t, gltf_max_texcoord_attribs> texcids;
@@ -134,19 +137,59 @@ namespace tz::io
 				texcs[i] = std::nullopt;
 			}
 		}
+
+		// COLORN
+		std::array<std::size_t, gltf_max_color_attribs> colorids;
+		std::array<std::optional<gltf_accessor>, gltf_max_color_attribs> colors;
+		for(std::size_t i = 0; i < gltf_max_color_attribs; i++)
+		{
+			colorids[i] = submesh.accessors[(int)gltf_attribute::color0 + i];
+			if(colorids[i] != static_cast<std::size_t>(-1))
+			{
+				colors[i] = this->accessors[colorids[i]];
+				tz::assert(colors[i]->component_type == gltf_accessor_component_type::flt, "Color attribute was expected to be floats.");
+				tz::assert(colors[i]->type == gltf_accessor_type::vec3, "Colors expected to be vec2.");
+				tz::assert(colors[i]->element_count == vertex_count, "Number of colors did not match number of positions.");
+			}
+			else
+			{
+				colors[i] = std::nullopt;
+			}
+		}
+
+		// 2
 		
 		ret.vertices.reserve(vertex_count);
 
+		// POS
 		gltf_buffer_view pos_view = this->views[pos.buffer_view_id];
 		std::span<const std::byte> pos_data = this->get_binary_data(pos_view.offset, pos_view.length);
 
+		// NORMAL
 		gltf_buffer_view nrm_view = this->views[nrm.buffer_view_id];
 		std::span<const std::byte> nrm_data = this->get_binary_data(nrm_view.offset, nrm_view.length);
 
-		// TODO: more than texcoord0. was fine beforehand. now just cba.
-		tz::assert(texcs[0].has_value());
-		gltf_buffer_view texc0_view = this->views[texcs[0]->buffer_view_id];
-		std::span<const std::byte> texc0_data = this->get_binary_data(texc0_view.offset, texc0_view.length);
+		// TEXCOORN
+		std::array<std::span<const std::byte>, gltf_max_texcoord_attribs> texc_datas;
+		for(std::size_t i = 0; i < gltf_max_texcoord_attribs; i++)
+		{
+			if(texcs[i].has_value())
+			{
+				gltf_buffer_view texc_view = this->views[texcs[i]->buffer_view_id];
+				texc_datas[i] = this->get_binary_data(texc_view.offset, texc_view.length);
+			}
+		}
+
+		// COLORN
+		std::array<std::span<const std::byte>, gltf_max_color_attribs> color_datas;
+		for(std::size_t i = 0; i < gltf_max_color_attribs; i++)
+		{
+			if(colors[i].has_value())
+			{
+				gltf_buffer_view color_view = this->views[colors[i]->buffer_view_id];
+				color_datas[i] = this->get_binary_data(color_view.offset, color_view.length);
+			}
+		}
 
 		constexpr std::size_t vec3_stride = sizeof(float) * 3;
 		constexpr std::size_t vec2_stride = sizeof(float) * 2;
@@ -156,7 +199,20 @@ namespace tz::io
 			
 			std::memcpy(vtx.position.data().data(), pos_data.data() + (vec3_stride * i), sizeof(float) * 3);
 			std::memcpy(vtx.normal.data().data(), nrm_data.data() + (vec3_stride * i), sizeof(float) * 3);
-			std::memcpy(vtx.texcoordn[0].data().data(), texc0_data.data() + (vec2_stride * i), sizeof(float) * 2);
+			for(std::size_t j = 0; j < gltf_max_texcoord_attribs; j++)
+			{
+				if(texcs[j].has_value())
+				{
+					std::memcpy(vtx.texcoordn[j].data().data(), texc_datas[j].data() + (vec2_stride * i), sizeof(float) * 2);
+				}
+			}
+			for(std::size_t j = 0; j < gltf_max_color_attribs; j++)
+			{
+				if(colors[j].has_value())
+				{
+					std::memcpy(vtx.colorn[j].data().data(), color_datas[j].data() + (vec3_stride * i), sizeof(float) * 3);
+				}
+			}
 		}
 
 		// finally, do indices.
