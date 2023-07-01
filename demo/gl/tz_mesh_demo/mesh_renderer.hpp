@@ -82,6 +82,7 @@ public:
 	void push_back_timeline() const;
 	void add_to_draw_list(meshid_t mesh, transform_t transform = {}, texid_t tex = 0);
 	void dbgui();
+	void update(float dt);
 private:
 	void append_mesh_to_buffers(const mesh_t& mesh);
 	void append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, texid_t tex);
@@ -105,6 +106,9 @@ private:
 	std::vector<meshid_t> draw_list = {};
 	std::uint32_t cumulative_vertex_count = 0;
 	std::size_t texture_cursor = 0;
+	bool allow_controls = true;
+	float camera_speed = 10.0f;
+	float camera_rot_speed = 1.0f;
 	struct camera_intermediate_data_t
 	{
 		tz::vec3 pos = {0.0f, 0.5f, 0.0f};

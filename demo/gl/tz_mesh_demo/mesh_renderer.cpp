@@ -1,9 +1,12 @@
 #include "mesh_renderer.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/draw.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/wsi/keyboard.hpp"
+#include "tz/wsi/mouse.hpp"
 
 #include ImportedShaderHeader(mesh3d, vertex)
 #include ImportedShaderHeader(mesh3d, fragment)
@@ -58,6 +61,7 @@ rh([this, max_texture_count]()
 		({
 	   		.format = tz::gl::image_format::RGBA32,
 			.dimensions = {1u, 1u},
+	   		.flags = {tz::gl::resource_flag::image_wrap_repeat}
 		}));
 	}
 	rinfo.state().graphics.draw_buffer = this->dbref;
@@ -232,6 +236,9 @@ void mesh_renderer::dbgui()
 			bool changed = false;
 			changed |= ImGui::SliderFloat3("Position", this->camera_intermediate_data.pos.data().data(), -75.0f, 75.0f);
 			changed |= ImGui::SliderFloat3("Rotation", this->camera_intermediate_data.rot.data().data(), -3.14159f * 0.5f, 3.14159f * 0.5f);
+			ImGui::Checkbox("Enable Mouse + Keyboard Movement", &this->allow_controls);
+			ImGui::SliderFloat("Movement Speed", &this->camera_speed, 0.01f, 100.0f);
+			ImGui::SliderFloat("Rotation Speed", &this->camera_rot_speed, 0.1f, 2.0f);
 			if(changed)
 			{
 				this->write_camera_buffer();
@@ -239,6 +246,64 @@ void mesh_renderer::dbgui()
 			ImGui::EndTabItem();
 		}
 		ImGui::EndTabBar();
+	}
+}
+
+void mesh_renderer::update(float dt)
+{
+	if(!this->allow_controls)
+	{
+		return;
+	}
+	const auto& kstate = tz::window().get_keyboard_state();
+	const auto& mstate = tz::window().get_mouse_state();
+	static tz::vec2 old_mouse_pos;
+	tz::vec2 mpos = mstate.mouse_position;
+	bool cam_needs_update = false;
+	if(tz::wsi::is_mouse_button_down(mstate, tz::wsi::mouse_button::left) && !tz::dbgui::claims_mouse())
+	{
+		tz::vec2 mouse_delta = mpos - old_mouse_pos;
+		this->camera_intermediate_data.rot[1] -= mouse_delta[0] * this->camera_rot_speed * dt;
+		this->camera_intermediate_data.rot[0] -= mouse_delta[1] * this->camera_rot_speed * dt;
+		cam_needs_update = true;
+	}
+	old_mouse_pos = mpos;
+	tz::vec3 move_dir = tz::vec3::zero();
+
+	tz::mat4 temp_view = tz::view(this->camera_intermediate_data.pos, this->camera_intermediate_data.rot);
+	if(tz::wsi::is_key_down(kstate, tz::wsi::key::w))
+	{
+		move_dir += (temp_view * tz::vec4{0.0f, 0.0f, -1.0f, 0.0f}).swizzle<0, 1, 2>();
+	}
+	if(tz::wsi::is_key_down(kstate, tz::wsi::key::s))
+	{
+		move_dir += (temp_view * tz::vec4{0.0f, 0.0f, 1.0f, 0.0f}).swizzle<0, 1, 2>();
+	}
+	if(tz::wsi::is_key_down(kstate, tz::wsi::key::a))
+	{
+		move_dir += (temp_view * tz::vec4{-1.0f, 0.0f, 0.0f, 0.0f}).swizzle<0, 1, 2>();
+	}
+	if(tz::wsi::is_key_down(kstate, tz::wsi::key::d))
+	{
+		move_dir += (temp_view * tz::vec4{1.0f, 0.0f, 0.0f, 0.0f}).swizzle<0, 1, 2>();
+	}
+	if(tz::wsi::is_key_down(kstate, tz::wsi::key::space))
+	{
+		move_dir += (temp_view * tz::vec4{0.0f, 1.0f, 0.0f, 0.0f}).swizzle<0, 1, 2>();
+	}
+	if(tz::wsi::is_key_down(kstate, tz::wsi::key::left_shift))
+	{
+		move_dir += (temp_view * tz::vec4{0.0f, -1.0f, 0.0f, 0.0f}).swizzle<0, 1, 2>();
+	}
+	if(move_dir != tz::vec3::zero())
+	{
+		move_dir = move_dir.normalised() * this->camera_speed * dt;
+		this->camera_intermediate_data.pos += move_dir;
+		cam_needs_update = true;
+	}
+	if(cam_needs_update)
+	{
+		this->write_camera_buffer();
 	}
 }
 

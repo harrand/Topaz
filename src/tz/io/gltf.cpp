@@ -1,5 +1,6 @@
 #include "tz/io/gltf.hpp"
 #include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include <regex>
 #include <fstream>
 
@@ -73,11 +74,13 @@ namespace tz::io
 	 */
 	gltf gltf::from_memory(std::string_view sv)
 	{
+		TZ_PROFZONE("gltf - from memory", 0xFFFF2222);
 		return {sv};
 	}
 
 	gltf gltf::from_file(const char* path)
 	{
+		TZ_PROFZONE("gltf - from file", 0xFFFF2222);
 		std::ifstream file(path, std::ios::binary);
 		tz::assert(file.good(), "Could not load gltf from file because the path was wrong, or something else went wrong.");
 		std::string buffer(std::istreambuf_iterator<char>(file), {});
@@ -102,6 +105,7 @@ namespace tz::io
 
 	gltf_submesh_data gltf::get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const
 	{
+		TZ_PROFZONE("gltf - retrieve submesh", 0xFFFF2222);
 		gltf_submesh_data ret;
 		tz::assert(this->get_meshes().size() > meshid, "Invalid meshid.");
 		gltf_mesh mesh = this->get_meshes()[meshid];
@@ -258,6 +262,7 @@ namespace tz::io
 
 	tz::io::image gltf::get_image_data(std::size_t imageid) const
 	{
+		TZ_PROFZONE("gltf - get image data", 0xFFFF2222);
 		tz::assert(imageid < this->images.size(), "Invalid imageid %zu. Should be less than %zu", imageid, this->images.size());
 		gltf_image img = this->images[imageid];
 		std::span<const std::byte> imgdata = this->view_buffer(this->views[img.buffer_view_id]);
@@ -268,6 +273,7 @@ namespace tz::io
 
 	gltf::gltf(std::string_view glb_data)
 	{
+		TZ_PROFZONE("gltf - import", 0xFFFF2222);
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
 		this->load_resources();
@@ -280,6 +286,7 @@ namespace tz::io
 
 	void gltf::parse_header(std::string_view header)
 	{
+		TZ_PROFZONE("gltf - parse header", 0xFFFF2222);
 		tz::assert(header.length() == 12, "invalid header length. expected 12, got %zu", header.length());
 		tz::assert(header.starts_with("glTF"), "Invalid GLB file format. Header's first 4 bytes should be \"glTF\", but it is \"%s\"", std::string{header.substr(0, 4)}.c_str());
 		header.remove_prefix(4);
@@ -299,6 +306,7 @@ namespace tz::io
 
 	void gltf::parse_chunks(std::string_view chunkdata)
 	{
+		TZ_PROFZONE("gltf - parse chunks", 0xFFFF2222);
 		if(chunkdata.empty() || chunkdata == "\n")
 		{
 			return;
@@ -343,6 +351,7 @@ namespace tz::io
 		});
 		if(t == gltf_chunk_type::json)
 		{
+			TZ_PROFZONE("JSON Parse", 0xFFFF2222);
 			std::string json_str(chunkdata.data(), length);
 			this->data = json::parse(json_str);
 		}
@@ -352,6 +361,7 @@ namespace tz::io
 
 	void gltf::load_resources()
 	{
+		TZ_PROFZONE("gltf - load resources", 0xFFFF2222);
 		// according to spec, top level buffers and images contain lists of 'buffer' and 'image' respectively.
 		json buffers = this->data["buffers"];
 		tz::assert(buffers.is_array() || buffers.is_null());
@@ -369,6 +379,7 @@ namespace tz::io
 
 	void gltf::create_images()
 	{
+		TZ_PROFZONE("gltf - load images", 0xFFFF2222);
 		json imgs = this->data["images"];
 		if(imgs.is_array())
 		{
@@ -406,6 +417,7 @@ namespace tz::io
 
 	void gltf::create_materials()
 	{
+		TZ_PROFZONE("gltf - create materials", 0xFFFF2222);
 		json mats = this->data["materials"];
 		if(mats.is_array())
 		{
@@ -435,6 +447,7 @@ namespace tz::io
 
 	void gltf::create_views()
 	{
+		TZ_PROFZONE("gltf - create views", 0xFFFF2222);
 		json bufviews = this->data["bufferViews"];
 		if(bufviews.is_array())
 		{
@@ -463,6 +476,7 @@ namespace tz::io
 
 	void gltf::create_accessors()
 	{
+		TZ_PROFZONE("gltf - create accessors", 0xFFFF2222);
 		json node = this->data["accessors"];
 		if(node.is_array())
 		{
@@ -515,6 +529,7 @@ namespace tz::io
 
 	void gltf::create_meshes()
 	{
+		TZ_PROFZONE("gltf - create meshes", 0xFFFF2222);
 		json meshes = this->data["meshes"];
 		if(meshes.is_array())
 		{
@@ -527,6 +542,7 @@ namespace tz::io
 
 	gltf_resource gltf::load_buffer(json node)
 	{
+		TZ_PROFZONE("gltf - load buffer", 0xFFFF2222);
 		std::string makeshift_bufname = "buffer" + std::to_string(this->parsed_buf_count);
 		tz::assert(node.contains("byteLength"), "gltf json buffer object \"%s\" does not have an entry named `byteLength`", makeshift_bufname.c_str());
 		std::size_t byte_length = node["byteLength"];
@@ -554,6 +570,7 @@ namespace tz::io
 
 	gltf_mesh gltf::load_mesh(json node)
 	{
+		TZ_PROFZONE("gltf - load mesh", 0xFFFF2222);
 		gltf_mesh ret;
 		ret.name = "Untitled";
 		if(node["name"].is_string())

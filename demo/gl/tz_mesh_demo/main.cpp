@@ -1,5 +1,8 @@
 #include "tz/tz.hpp"
+#include "tz/core/job/job.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/core/imported_text.hpp"
+#include "tz/core/time.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/io/gltf.hpp"
 #include "mesh_renderer.hpp"
@@ -59,11 +62,16 @@ int main()
 		{
 			renderer.add_to_draw_list(scene_meshes[i], {.scale = {0.01f, 0.01f, 0.01f}}, scene_images[mesh_bound_images[i]]);
 		}
+
+		tz::duration update_timer = tz::system_time();
 		while(!tz::window().is_close_requested())
 		{
+			TZ_FRAME_BEGIN;
 			tz::begin_frame();
 			// draw
 			tz::gl::get_device().render();
+			renderer.update((tz::system_time() - update_timer).seconds<float>());
+			update_timer = tz::system_time();
 			// advance dbgui
 			tz::dbgui::run([&renderer]()
 			{
@@ -75,6 +83,7 @@ int main()
 				}
 			});
 			tz::end_frame();
+			TZ_FRAME_END;
 		}
 	}
 	tz::terminate();
@@ -151,6 +160,7 @@ mesh_t create_cube_mesh(float sz)
 
 scene_t temp_debug_load_cube_gltf()
 {
+	TZ_PROFZONE("Load GLTF", 0xFF44DD44);
 	scene_t ret;
 
 	tz::io::gltf cube = tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb");
@@ -179,9 +189,42 @@ scene_t temp_debug_load_cube_gltf()
 	}
 
 	std::vector<tz::io::image> images;
-	for(std::size_t i = 0; i < cube.get_images().size(); i++)
+	images.resize(cube.get_images().size());
+	if(cube.get_images().size() > 8)
 	{
-		images.push_back(cube.get_image_data(i));
+		TZ_PROFZONE("Load Images - Jobs", 0xFF44DD44);
+		// we should split this into threads.
+		std::size_t job_count = std::thread::hardware_concurrency();
+		std::size_t imgs_per_job = cube.get_images().size() / job_count; 
+		std::size_t remainder_imgs = cube.get_images().size() % job_count;
+		std::vector<tz::job_handle> jobs(job_count);
+		for(std::size_t i = 0; i < job_count; i++)
+		{
+			jobs[i] = tz::job_system().execute([&images, &cube, offset = i * imgs_per_job, img_count = imgs_per_job]()
+			{
+				for(std::size_t j = 0; j < img_count; j++)
+				{
+					images[offset + j] = cube.get_image_data(offset + j);
+				}
+			});
+		}
+		for(std::size_t i = (cube.get_images().size() - remainder_imgs); i < cube.get_images().size(); i++)
+		{
+			images[i] = cube.get_image_data(i);
+		}
+		for(tz::job_handle jh : jobs)
+		{
+			tz::job_system().block(jh);
+		}
+	}
+	else
+	{
+		TZ_PROFZONE("Load Images - Single Threaded", 0xFF44DD44);
+		// if there isn't many, just do it all now.
+		for(std::size_t i = 0; i < cube.get_images().size(); i++)
+		{
+			images[i] = cube.get_image_data(i);
+		}
 	}
 	ret.images = images;
 	return ret;
