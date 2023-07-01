@@ -86,13 +86,15 @@ namespace tz::io
 		return this->meshes;
 	}
 
-	gltf_mesh_data gltf::get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const
+	gltf_submesh_data gltf::get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const
 	{
-		gltf_mesh_data ret;
+		gltf_submesh_data ret;
 		tz::assert(this->get_meshes().size() > meshid, "Invalid meshid.");
 		gltf_mesh mesh = this->get_meshes()[meshid];
 		tz::assert(mesh.submeshes.size() > submeshid, "Invalid submeshid");
 		gltf_mesh::submesh submesh = mesh.submeshes[submeshid];
+		ret.name = mesh.name + ":" + std::to_string(submeshid + 1) + "/" + std::to_string(mesh.submeshes.size());
+		ret.attributes = submesh.attributes;
 		// we have a set of references to the positions, texcoords etc.
 		// we need to interleave them into singular vertex data.
 		// first we figure out how many vertices there are gonna be.

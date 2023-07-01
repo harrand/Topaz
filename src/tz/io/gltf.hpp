@@ -141,8 +141,10 @@ namespace tz::io
 		// TODO: weights
 	};
 
-	struct gltf_mesh_data
+	struct gltf_submesh_data
 	{
+		std::string name;
+		gltf_attributes attributes = {};
 		std::vector<gltf_vertex_data> vertices = {};
 		std::vector<std::uint32_t> indices = {};
 		// TODO: materials
@@ -156,7 +158,7 @@ namespace tz::io
 		static gltf from_memory(std::string_view sv);
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
 		std::span<const gltf_mesh> get_meshes() const;
-		gltf_mesh_data get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const;
+		gltf_submesh_data get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const;
 	private:
 		gltf(std::string_view glb_data);
 		void parse_header(std::string_view header);

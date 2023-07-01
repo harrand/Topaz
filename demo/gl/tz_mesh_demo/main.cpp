@@ -168,7 +168,7 @@ mesh_t create_cube_mesh(float sz)
 mesh_t temp_debug_load_cube_gltf()
 {
 	tz::io::gltf cube = tz::io::gltf::from_memory(ImportedTextData(cube, glb));
-	tz::io::gltf_mesh_data cube_meshdata = cube.get_submesh_vertex_data(0, 0);
+	tz::io::gltf_submesh_data cube_meshdata = cube.get_submesh_vertex_data(0, 0);
 
 	mesh_t ret;
 	ret.vertices.resize(cube_meshdata.vertices.size());
