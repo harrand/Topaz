@@ -107,7 +107,7 @@ private:
 	std::size_t texture_cursor = 0;
 	struct camera_intermediate_data_t
 	{
-		tz::vec3 pos = {0.2f, 0.2f, 2.5f};
+		tz::vec3 pos = {0.0f, 0.5f, 0.0f};
 		tz::vec3 rot = {0.0f, 0.0f, 0.0f};
 	} camera_intermediate_data;
 };

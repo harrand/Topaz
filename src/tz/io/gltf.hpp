@@ -2,6 +2,7 @@
 #define TOPAZ_IO_GLTF_HPP
 #include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
+#include "tz/io/image.hpp"
 #include "nlohmann/json.hpp"
 #undef assert
 
@@ -42,8 +43,9 @@ namespace tz::io
 
 	enum class gltf_buffer_view_type
 	{
+		none = 0,
 		vertex = 34962,
-		index = 34963
+		index = 34963,
 	};
 
 	struct gltf_buffer_view
@@ -125,11 +127,30 @@ namespace tz::io
 			gltf_attributes attributes = {};
 			accessor_ref accessors = {};
 			std::size_t indices_accessor = -1;
-			std::size_t material_accessor = -1;
+			std::size_t material_id = -1;
 			gltf_primitive_mode mode;
 
 		};
 		std::vector<submesh> submeshes = {};
+	};
+
+	enum class gltf_image_type
+	{
+		png,
+		jpg
+	};
+
+	struct gltf_image
+	{
+		std::string name;
+		gltf_image_type type;
+		std::size_t buffer_view_id;
+	};
+
+	struct gltf_material
+	{
+		std::string name = "Null Material";
+		std::size_t pbr_metallic_roughness_base_color_texture_id = -1;
 	};
 
 	struct gltf_vertex_data
@@ -149,7 +170,7 @@ namespace tz::io
 		gltf_attributes attributes = {};
 		std::vector<gltf_vertex_data> vertices = {};
 		std::vector<std::uint32_t> indices = {};
-		// TODO: materials
+		std::size_t bound_image_id = -1;
 	};
 
 	class gltf
@@ -158,14 +179,19 @@ namespace tz::io
 		gltf() = default;
 		// note: you should pass in the file contents of a .glb.
 		static gltf from_memory(std::string_view sv);
+		static gltf from_file(const char* path);
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
 		std::span<const gltf_mesh> get_meshes() const;
+		std::span<const gltf_image> get_images() const;
 		gltf_submesh_data get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const;
+		tz::io::image get_image_data(std::size_t imageid) const;
 	private:
 		gltf(std::string_view glb_data);
 		void parse_header(std::string_view header);
 		void parse_chunks(std::string_view chunkdata);
 		void load_resources();
+		void create_images();
+		void create_materials();
 		void create_views();
 		void create_accessors();
 		void create_meshes();
@@ -177,6 +203,8 @@ namespace tz::io
 		std::vector<gltf_chunk_data> chunks = {};
 		json data = {};
 		std::vector<gltf_resource> resources = {};
+		std::vector<gltf_image> images = {};
+		std::vector<gltf_material> materials = {};
 		std::vector<gltf_buffer_view> views = {};
 		std::vector<gltf_accessor> accessors = {};
 		std::vector<gltf_mesh> meshes = {};

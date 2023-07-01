@@ -118,6 +118,7 @@ void mesh_renderer::add_to_draw_list(meshid_t mesh, transform_t transform, texid
 {
 	this->append_meshid_to_draw_buffer(mesh, transform, tex);
 	this->draw_list.push_back(mesh);
+	this->write_camera_buffer();
 }
 
 void mesh_renderer::dbgui()
@@ -129,6 +130,18 @@ void mesh_renderer::dbgui()
 		{
 			if(this->entries.size())
 			{
+				if(ImGui::CollapsingHeader("Total Statistics"))
+				{
+					std::size_t cum_vertices = 0;
+					std::size_t cum_indices = 0;
+					for(const auto& entry : this->entries)
+					{
+						cum_vertices += entry.vtx_count;
+						cum_indices += entry.idx_count;
+					}
+					ImGui::Text("vertex count: %zu (%zuB)", cum_vertices, (cum_vertices * sizeof(vertex_t)));
+					ImGui::Text("index count: %zu (%zuB)", cum_indices, (cum_indices * sizeof(std::uint32_t)));
+				}
 				static int mesh_view_id = 0;
 				ImGui::SliderInt("Mesh Viewer", &mesh_view_id, 0, this->entries.size() - 1);
 				mesh_view_id = std::min(static_cast<std::size_t>(mesh_view_id), this->entries.size() - 1);
@@ -217,7 +230,7 @@ void mesh_renderer::dbgui()
 		if(ImGui::BeginTabItem("Camera"))
 		{
 			bool changed = false;
-			changed |= ImGui::SliderFloat3("Position", this->camera_intermediate_data.pos.data().data(), -5.0f, 5.0f);
+			changed |= ImGui::SliderFloat3("Position", this->camera_intermediate_data.pos.data().data(), -75.0f, 75.0f);
 			changed |= ImGui::SliderFloat3("Rotation", this->camera_intermediate_data.rot.data().data(), -3.14159f * 0.5f, 3.14159f * 0.5f);
 			if(changed)
 			{

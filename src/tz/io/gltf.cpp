@@ -1,6 +1,7 @@
 #include "tz/io/gltf.hpp"
 #include "tz/core/debug.hpp"
 #include <regex>
+#include <fstream>
 
 namespace tz::io
 {
@@ -75,6 +76,14 @@ namespace tz::io
 		return {sv};
 	}
 
+	gltf gltf::from_file(const char* path)
+	{
+		std::ifstream file(path, std::ios::binary);
+		tz::assert(file.good(), "Could not load gltf from file because the path was wrong, or something else went wrong.");
+		std::string buffer(std::istreambuf_iterator<char>(file), {});
+		return gltf::from_memory(buffer);
+	}
+
 	std::span<const std::byte> gltf::view_buffer(gltf_buffer_view view) const
 	{
 		tz::assert(view.buffer_id == 0, "only one buffer is supported, otherwise it implies external bin data files, which topaz doesn't support.");
@@ -84,6 +93,11 @@ namespace tz::io
 	std::span<const gltf_mesh> gltf::get_meshes() const
 	{
 		return this->meshes;
+	}
+
+	std::span<const gltf_image> gltf::get_images() const
+	{
+		return this->images;
 	}
 
 	gltf_submesh_data gltf::get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const
@@ -160,7 +174,6 @@ namespace tz::io
 		}
 
 		// 2
-		
 		ret.vertices.reserve(vertex_count);
 
 		// POS
@@ -235,8 +248,22 @@ namespace tz::io
 			// just do implicit conversion.
 			return s;
 		});
-		
+
+		if(submesh.material_id != static_cast<std::size_t>(-1))
+		{
+			ret.bound_image_id = this->materials[submesh.material_id].pbr_metallic_roughness_base_color_texture_id;
+		}
 		return ret;
+	}
+
+	tz::io::image gltf::get_image_data(std::size_t imageid) const
+	{
+		tz::assert(imageid < this->images.size(), "Invalid imageid %zu. Should be less than %zu", imageid, this->images.size());
+		gltf_image img = this->images[imageid];
+		std::span<const std::byte> imgdata = this->view_buffer(this->views[img.buffer_view_id]);
+
+		std::string_view imgdata_sv{reinterpret_cast<const char*>(imgdata.data()), imgdata.size_bytes()};
+		return tz::io::image::load_from_memory(imgdata_sv);
 	}
 
 	gltf::gltf(std::string_view glb_data)
@@ -244,6 +271,8 @@ namespace tz::io
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
 		this->load_resources();
+		this->create_images();
+		this->create_materials();
 		this->create_views();
 		this->create_accessors();
 		this->create_meshes();
@@ -270,7 +299,7 @@ namespace tz::io
 
 	void gltf::parse_chunks(std::string_view chunkdata)
 	{
-		if(chunkdata.empty())
+		if(chunkdata.empty() || chunkdata == "\n")
 		{
 			return;
 		}
@@ -338,6 +367,72 @@ namespace tz::io
 		}	
 	}
 
+	void gltf::create_images()
+	{
+		json imgs = this->data["images"];
+		if(imgs.is_array())
+		{
+			for(auto img : imgs)
+			{
+				std::string img_type_str = img["mimeType"];
+				gltf_image_type t;
+				if(img_type_str == "image/png")
+				{
+					t = gltf_image_type::png;
+				}
+				else if(img_type_str == "image/jpeg")
+				{
+					t = gltf_image_type::jpg;
+				}
+				else
+				{
+					tz::error("Unexpected image mime type \"%s\". Only support jpg or png.", img_type_str.c_str());
+					t = {};
+				}
+				std::string name = "Untitled";
+				if(img["name"].is_string())
+				{
+					name = img["name"];
+				}
+				this->images.push_back
+				({
+		 			.name = name,
+		 			.type = t,
+		 			.buffer_view_id = img["bufferView"],
+				});
+			}
+		}
+	}
+
+	void gltf::create_materials()
+	{
+		json mats = this->data["materials"];
+		if(mats.is_array())
+		{
+			for(auto mat : mats)
+			{
+				tz::assert(mat["pbrMetallicRoughness"].is_object(), "Missing pbrMetallicRoughness param on material. GLB is in an invalid format.");
+				if(!mat["pbrMetallicRoughness"]["baseColorTexture"].is_object())
+				{
+					this->materials.push_back({});
+					continue;
+				}
+				tz::assert(!mat["pbrMetallicRoughness"]["baseColorTexture"]["index"].is_null(), "Missing pbrMetallicRoughness.baseColorTexture.index on material. GLB is in an invalid format, or Topaz needs a patch to support this GLB.");
+				std::size_t imgid = mat["pbrMetallicRoughness"]["baseColorTexture"]["index"];
+				std::string name = "Untitled";
+				if(mat["name"].is_string())
+				{
+					name = mat["name"];
+				}
+				this->materials.push_back
+				({
+					.name = name,
+		 			.pbr_metallic_roughness_base_color_texture_id =	imgid
+				});
+			}
+		}
+	}
+
 	void gltf::create_views()
 	{
 		json bufviews = this->data["bufferViews"];
@@ -346,10 +441,19 @@ namespace tz::io
 			for(auto view : bufviews)
 			{
 				tz::assert(view["buffer"] == 0);
+				gltf_buffer_view_type t;
+				if(view["target"].is_null())
+				{
+					t = gltf_buffer_view_type::none;	
+				}
+				else
+				{
+					t = static_cast<gltf_buffer_view_type>(view["target"]);
+				}
 				this->views.push_back
 				({
 					.buffer_id = 0,
-		 			.type = static_cast<gltf_buffer_view_type>(view["target"]),
+		 			.type = t,
 		 			.offset = view["byteOffset"],
 		 			.length = view["byteLength"]
 				});
@@ -451,7 +555,11 @@ namespace tz::io
 	gltf_mesh gltf::load_mesh(json node)
 	{
 		gltf_mesh ret;
-		ret.name = node["name"];
+		ret.name = "Untitled";
+		if(node["name"].is_string())
+		{
+			ret.name = node["name"];
+		}
 		tz::assert(node["primitives"].is_array(), "Mesh did not contain a valid primitives array. Topaz does not support empty gltf meshes.");
 		for(auto prim : node["primitives"])
 		{
@@ -544,12 +652,12 @@ namespace tz::io
 			tz::assert(prim["attributes"][weight_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", weight_large.c_str(), gltf_max_weight_attribs);
 			
 			// materials not yet implemented.
+			submesh.material_id = -1;
 			if(!prim["material"].is_null())
 			{
-				tz::report("detected gltf mesh with one or more materials associated with it. materials are NYI.");
+				submesh.material_id = prim["material"];
 			}
 			submesh.attributes = attribs;
-			submesh.material_accessor = -1;
 			if(prim["mode"].is_null())
 			{
 				submesh.mode = gltf_primitive_mode::triangles;

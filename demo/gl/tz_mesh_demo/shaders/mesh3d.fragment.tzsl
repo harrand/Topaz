@@ -16,7 +16,7 @@ resource(id = 3) const texture textures[];
 void main()
 {
 	out::colour = vec4(vec3(0.0f), 1.0f);
-	for(uint i = 0; i < TEX_COUNT; i++)
+	for(uint i = 0; i < 1; i++)
 	{
 		texture_t this_tex = in::textures[i];
 		out::colour.xyz += texture(textures[this_tex.texid], in::texc).xyz * this_tex.tint;

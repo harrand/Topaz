@@ -17,4 +17,5 @@ struct mesh_t
 {
 	std::vector<vertex_t> vertices = {};
 	std::vector<std::uint32_t> indices = {};
+	std::size_t image_id = -1;
 };

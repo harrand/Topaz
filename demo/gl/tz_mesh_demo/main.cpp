@@ -12,7 +12,14 @@ struct dbgui_data_t
 } dbgui_data;
 void dbgui_init();
 mesh_t create_cube_mesh(float sz);
-mesh_t temp_debug_load_cube_gltf();
+
+struct scene_t
+{
+	std::vector<mesh_t> meshes;
+	std::vector<tz::io::image> images;
+};
+
+scene_t temp_debug_load_cube_gltf();
 
 int main()
 {
@@ -22,59 +29,36 @@ int main()
 	});
 	{
 		dbgui_init();
-		temp_debug_load_cube_gltf();
 
-		mesh_renderer renderer{8u};
+		scene_t scene = temp_debug_load_cube_gltf();
+		std::vector<meshid_t> scene_meshes(scene.meshes.size());
+		std::vector<texid_t> scene_images(scene.images.size());
+		std::vector<std::size_t> mesh_bound_images(scene.meshes.size());
+
+		mesh_renderer renderer{scene.images.size()};
 		renderer.push_back_timeline();
-		meshid_t cube1 = renderer.add_mesh(temp_debug_load_cube_gltf(), "Small Cube");
-		meshid_t cube2 = renderer.add_mesh(create_cube_mesh(0.5f), "Big Cube");
-		meshid_t cube3 = renderer.add_mesh(create_cube_mesh(2.5f), "Huge Cube");
-		std::vector<std::byte> black_texdata
+
+		for(std::size_t i = 0; i < scene.meshes.size(); i++)
 		{
-			std::byte{0},
-			std::byte{0},
-			std::byte{0},
-			std::byte{0},
-		};
-		// pure white.
-		std::vector<std::byte> white_texdata
+			std::string mname = "GLTF Mesh" + std::to_string(i);
+			scene_meshes[i] = renderer.add_mesh(scene.meshes[i], mname.c_str());
+			std::size_t iid = 0;
+			if(scene.meshes[i].image_id != static_cast<std::size_t>(-1))
+			{
+				iid = scene.meshes[i].image_id;
+			}
+			mesh_bound_images[i] = iid;
+		}
+		for(std::size_t i = 0; i < scene.images.size(); i++)
 		{
-			std::byte{255},
-			std::byte{255},
-			std::byte{255},
-			std::byte{255},
-		};
-
-		// missingtex.
-		std::vector<std::byte> texdata
+			//std::string iname = "GLTF Image" + std::to_string(i);
+			const tz::io::image& img = scene.images[i];
+			scene_images[i] = renderer.add_texture(img.width, img.height, img.data);
+		}
+		for(std::size_t i = 0; i < scene.meshes.size(); i++)
 		{
-			std::byte{255},
-			std::byte{255},
-			std::byte{255},
-			std::byte{255},
-
-			std::byte{128},
-			std::byte{128},
-			std::byte{128},
-			std::byte{255},
-
-			std::byte{128},
-			std::byte{128},
-			std::byte{128},
-			std::byte{255},
-
-			std::byte{255},
-			std::byte{255},
-			std::byte{255},
-			std::byte{255},
-		};
-		texid_t blk = renderer.add_texture(1, 1, black_texdata);
-		texid_t whte = renderer.add_texture(1, 1, white_texdata);
-		texid_t missingtex = renderer.add_texture(2, 2, texdata);
-
-		renderer.add_to_draw_list(cube2, {.pos = {1.0f, 0.0f, 0.0f}}, whte);
-		renderer.add_to_draw_list(cube1, {.pos = {-2.0f, 0.0f, 0.0f}}, missingtex);
-
+			renderer.add_to_draw_list(scene_meshes[i], {.scale = {0.01f, 0.01f, 0.01f}}, scene_images[mesh_bound_images[i]]);
+		}
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
@@ -165,24 +149,40 @@ mesh_t create_cube_mesh(float sz)
 	};
 }
 
-mesh_t temp_debug_load_cube_gltf()
+scene_t temp_debug_load_cube_gltf()
 {
-	tz::io::gltf cube = tz::io::gltf::from_memory(ImportedTextData(cube, glb));
-	tz::io::gltf_submesh_data cube_meshdata = cube.get_submesh_vertex_data(0, 0);
+	scene_t ret;
 
-	mesh_t ret;
-	ret.vertices.resize(cube_meshdata.vertices.size());
-	std::transform(cube_meshdata.vertices.begin(), cube_meshdata.vertices.end(), ret.vertices.begin(),
-	[](tz::io::gltf_vertex_data gltf_vtx) -> vertex_t
+	tz::io::gltf cube = tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb");
+	for(std::size_t i = 0; i < cube.get_meshes().size(); i++)
 	{
-		return
+		const tz::io::gltf_mesh& m = cube.get_meshes()[i];
+		for(std::size_t j = 0; j < m.submeshes.size(); j++)
 		{
-			.pos = gltf_vtx.position,
-			.texc = gltf_vtx.texcoordn[0],
-			.nrm = gltf_vtx.normal,
-			.tang = gltf_vtx.tangent,
-		};
-	});
-	ret.indices = cube_meshdata.indices;
+			tz::io::gltf_submesh_data data = cube.get_submesh_vertex_data(i, j);
+			mesh_t& cur = ret.meshes.emplace_back();
+			cur.vertices.resize(data.vertices.size());
+			cur.indices = data.indices;
+			std::transform(data.vertices.begin(), data.vertices.end(), cur.vertices.begin(),
+			[](const tz::io::gltf_vertex_data& gltf_vtx)->vertex_t
+			{
+				return
+				{
+					.pos = gltf_vtx.position,
+					.texc = gltf_vtx.texcoordn[0],
+					.nrm = gltf_vtx.normal,
+					.tang = gltf_vtx.tangent,
+				};
+			});
+			cur.image_id = data.bound_image_id;
+		}
+	}
+
+	std::vector<tz::io::image> images;
+	for(std::size_t i = 0; i < cube.get_images().size(); i++)
+	{
+		images.push_back(cube.get_image_data(i));
+	}
+	ret.images = images;
 	return ret;
 }
