@@ -8,6 +8,11 @@
 
 namespace tz::io
 {
+	namespace detail
+	{
+		// i hate msvc so damn much.
+		constexpr std::size_t badzu = static_cast<std::size_t>(-1);
+	}
 	using json = nlohmann::json;
 
 	enum class gltf_resource_type
@@ -37,8 +42,8 @@ namespace tz::io
 
 	struct gltf_header
 	{
-		std::size_t version = -1;
-		std::size_t size = -1;
+		std::size_t version = detail::badzu;
+		std::size_t size = detail::badzu;
 	};
 
 	enum class gltf_buffer_view_type
@@ -126,8 +131,8 @@ namespace tz::io
 		{
 			gltf_attributes attributes = {};
 			accessor_ref accessors = {};
-			std::size_t indices_accessor = -1;
-			std::size_t material_id = -1;
+			std::size_t indices_accessor = detail::badzu;
+			std::size_t material_id = detail::badzu;
 			gltf_primitive_mode mode;
 
 		};
@@ -150,16 +155,16 @@ namespace tz::io
 	struct gltf_material
 	{
 		std::string name = "Null Material";
-		std::size_t color_texture_id = -1;
-		std::size_t color_texcoord_id = -1;
-		std::size_t normal_texture_id = -1;
-		std::size_t normal_texcoord_id = -1;
+		std::size_t color_texture_id = detail::badzu;
+		std::size_t color_texcoord_id = detail::badzu;
+		std::size_t normal_texture_id = detail::badzu;
+		std::size_t normal_texcoord_id = detail::badzu;
 		float normal_scale = 1.0f;
-		std::size_t occlusion_texture_id = -1;
-		std::size_t occlusion_texcoord_id = -1;
+		std::size_t occlusion_texture_id = detail::badzu;
+		std::size_t occlusion_texcoord_id = detail::badzu;
 		float occlusion_strength = 1.0f;
-		std::size_t emissive_texture_id = -1;
-		std::size_t emissive_texcoord_id = -1;
+		std::size_t emissive_texture_id = detail::badzu;
+		std::size_t emissive_texcoord_id = detail::badzu;
 	};
 
 	struct gltf_vertex_data
