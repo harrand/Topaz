@@ -80,12 +80,12 @@ public:
 	texid_t add_texture(unsigned int width, unsigned int height, std::span<const std::byte> imgdata);
 
 	void push_back_timeline() const;
-	void add_to_draw_list(meshid_t mesh, transform_t transform = {}, texid_t tex = 0);
+	void add_to_draw_list(meshid_t mesh, transform_t transform = {}, std::vector<texid_t> tex = {});
 	void dbgui();
 	void update(float dt);
 private:
 	void append_mesh_to_buffers(const mesh_t& mesh);
-	void append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, texid_t tex);
+	void append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, std::vector<texid_t> tex);
 	mesh_reference get_reference(meshid_t mesh) const;
 	void write_camera_buffer();
 	// draw indirect buffer

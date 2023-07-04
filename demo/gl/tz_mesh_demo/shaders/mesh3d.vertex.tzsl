@@ -46,7 +46,8 @@ resource(id = 2) const buffer camera_buffer
 // OUTPUTS
 
 output(id = 0) vec2 out::texc;
-output(id = 1) texture_t out::textures[TEX_COUNT];
+output(id = 1) vec3 out::norm;
+output(id = 2) texture_t out::textures[TEX_COUNT];
 
 void main()
 {
@@ -54,6 +55,7 @@ void main()
 	drawdata_t draw = draws.data[in::draw_id];
 	out::position = camera.p * camera.v * draw.model * vec4(vtx.pos, 1.0f);
 	out::texc = vtx.texc;
+	out::norm = vtx.nrm;
 
 	for(uint i = 0; i < TEX_COUNT; i++)
 	{

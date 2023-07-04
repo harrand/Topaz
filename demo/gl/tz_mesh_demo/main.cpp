@@ -36,7 +36,7 @@ int main()
 		scene_t scene = temp_debug_load_cube_gltf();
 		std::vector<meshid_t> scene_meshes(scene.meshes.size());
 		std::vector<texid_t> scene_images(scene.images.size());
-		std::vector<std::size_t> mesh_bound_images(scene.meshes.size());
+		std::vector<std::vector<std::size_t>> mesh_bound_images(scene.meshes.size());
 
 		mesh_renderer renderer{scene.images.size()};
 		renderer.push_back_timeline();
@@ -46,11 +46,16 @@ int main()
 			std::string mname = "GLTF Mesh" + std::to_string(i);
 			scene_meshes[i] = renderer.add_mesh(scene.meshes[i], mname.c_str());
 			std::size_t iid = 0;
+			std::size_t nid = 0;
 			if(scene.meshes[i].image_id != static_cast<std::size_t>(-1))
 			{
 				iid = scene.meshes[i].image_id;
 			}
-			mesh_bound_images[i] = iid;
+			if(scene.meshes[i].norm_image_id != static_cast<std::size_t>(-1))
+			{
+				nid = scene.meshes[i].norm_image_id;
+			}
+			mesh_bound_images[i] = {iid, nid};
 		}
 		for(std::size_t i = 0; i < scene.images.size(); i++)
 		{
@@ -60,7 +65,12 @@ int main()
 		}
 		for(std::size_t i = 0; i < scene.meshes.size(); i++)
 		{
-			renderer.add_to_draw_list(scene_meshes[i], {.scale = {0.01f, 0.01f, 0.01f}}, scene_images[mesh_bound_images[i]]);
+			std::vector<texid_t> real_image_ids;
+			for(std::size_t id : mesh_bound_images[i])
+			{
+				real_image_ids.push_back(scene_images[id]);
+			}
+			renderer.add_to_draw_list(scene_meshes[i], {.scale = {0.01f, 0.01f, 0.01f}}, real_image_ids);
 		}
 
 		tz::duration update_timer = tz::system_time();
@@ -189,6 +199,11 @@ scene_t temp_debug_load_cube_gltf()
 				if(tex.type == tz::io::gltf_submesh_texture_type::color)
 				{
 					cur.image_id = tex.image_id;
+					tz::assert(tex.texcoord_id == 0, "use of multiple texcoords is NYI. GLTF wants to use texcoord %zu for colour", tex.texcoord_id);
+				}
+				else if(tex.type == tz::io::gltf_submesh_texture_type::normal)
+				{
+					cur.norm_image_id = tex.image_id;
 					tz::assert(tex.texcoord_id == 0, "use of multiple texcoords is NYI. GLTF wants to use texcoord %zu for colour", tex.texcoord_id);
 				}
 			}

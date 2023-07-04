@@ -118,7 +118,7 @@ void mesh_renderer::push_back_timeline() const
 	tz::gl::get_device().render_graph().add_dependencies(this->rh, this->ch);
 }
 
-void mesh_renderer::add_to_draw_list(meshid_t mesh, transform_t transform, texid_t tex)
+void mesh_renderer::add_to_draw_list(meshid_t mesh, transform_t transform, std::vector<texid_t> tex)
 {
 	this->append_meshid_to_draw_buffer(mesh, transform, tex);
 	this->draw_list.push_back(mesh);
@@ -189,7 +189,7 @@ void mesh_renderer::dbgui()
 					ImGui::SliderInt("Texture", &create_texid, 0, this->textures.size());
 					if(ImGui::Button("Create"))
 					{
-						this->add_to_draw_list(create_meshid, {}, create_texid);
+						this->add_to_draw_list(create_meshid, {}, {static_cast<std::uint32_t>(create_texid), 0u});
 					}
 					ImGui::EndTabItem();
 				}
@@ -349,13 +349,17 @@ void mesh_renderer::append_mesh_to_buffers(const mesh_t& mesh)
 	);
 }
 
-void mesh_renderer::append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, texid_t tex)
+void mesh_renderer::append_meshid_to_draw_buffer(meshid_t mesh, transform_t transform, std::vector<texid_t> tex)
 {
 	// write the draw data.
 	drawdata_storage_t& draw_data = tz::gl::get_device().get_renderer(this->rh).get_resource(this->drawdata_buf)->data_as<drawdata_storage_t>().front();
 	drawdata_element_t& elem = draw_data.draws[this->draw_list.size()];
 	elem.model = tz::model(transform.pos, transform.rot, transform.scale);
-	elem.textures[0] = {.tint = {1.0f, 1.0f, 1.0f}, .texid = tex};
+	tz::assert(tex.size() == 2, "Textures supported: {colour, normal}. You have specified %zu, we want 2.", tex.size());
+	for(std::size_t i = 0; i < tex.size(); i++)
+	{
+		elem.textures[i] = {.tint = {1.0f, 1.0f, 1.0f}, .texid = tex[i]};
+	}
 	// write out the mesh reference.
 	mesh_reference ref = this->get_reference(mesh);
 	meshref_storage_t& storage = tz::gl::get_device().get_renderer(this->ch).get_resource(this->meshref_buf)->data_as<meshref_storage_t>().front();
