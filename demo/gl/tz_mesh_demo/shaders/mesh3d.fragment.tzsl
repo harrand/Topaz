@@ -32,5 +32,18 @@ void main()
 		mat3 tbn = mat3(tangent, binormal, tangent_normal);
 		norm = normalize(tbn * sampled_normal);
 	}
-	out::colour.xyz = norm;
+
+	// we're gonna do some quick and dirty lighting here. basic phong.
+	// our inputs are `colour_tex`, `norm` and some hardcoded values here.
+	const float ambient_amt = 0.3f;
+	vec3 ambient_col = tex_colour * ambient_amt;
+
+	const vec3 light_direction = normalize(vec3(0.1f, 0.5f, 0.1f));
+	const vec3 light_colour = vec3(1.0f);
+	vec3 N = normalize(norm);
+	vec3 L = normalize(light_direction);
+	float diffuse_intensity = max(dot(N, L), 0.0f);
+	vec3 diffuse_col = tex_colour * light_colour * diffuse_intensity;
+
+	out::colour.xyz = ambient_col + diffuse_col;
 }
