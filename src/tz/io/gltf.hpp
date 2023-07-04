@@ -234,7 +234,6 @@ namespace tz::io
 		std::vector<gltf_accessor> accessors = {};
 		std::vector<gltf_mesh> meshes = {};
 		std::size_t parsed_buf_count = 0;
-		std::size_t parsed_img_count = 0;
 	};
 }
 #endif // TOPAZ_IO_GLTF_HPP
