@@ -150,7 +150,16 @@ namespace tz::io
 	struct gltf_material
 	{
 		std::string name = "Null Material";
-		std::size_t pbr_metallic_roughness_base_color_texture_id = -1;
+		std::size_t color_texture_id = -1;
+		std::size_t color_texcoord_id = -1;
+		std::size_t normal_texture_id = -1;
+		std::size_t normal_texcoord_id = -1;
+		float normal_scale = 1.0f;
+		std::size_t occlusion_texture_id = -1;
+		std::size_t occlusion_texcoord_id = -1;
+		float occlusion_strength = 1.0f;
+		std::size_t emissive_texture_id = -1;
+		std::size_t emissive_texcoord_id = -1;
 	};
 
 	struct gltf_vertex_data
@@ -164,13 +173,29 @@ namespace tz::io
 		// TODO: weights
 	};
 
+	enum class gltf_submesh_texture_type
+	{
+		color,
+		normal,
+		occlusion,
+		emissive
+	};
+;
+	struct gltf_submesh_texture_data
+	{
+		std::size_t texcoord_id;
+		std::size_t image_id;
+		float extra_data = 1.0f; // normal scale / occlusion strength.
+		gltf_submesh_texture_type type;
+	};
+
 	struct gltf_submesh_data
 	{
 		std::string name;
 		gltf_attributes attributes = {};
 		std::vector<gltf_vertex_data> vertices = {};
 		std::vector<std::uint32_t> indices = {};
-		std::size_t bound_image_id = -1;
+		std::vector<gltf_submesh_texture_data> textures = {};
 	};
 
 	class gltf

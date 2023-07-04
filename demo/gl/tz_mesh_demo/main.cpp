@@ -184,7 +184,14 @@ scene_t temp_debug_load_cube_gltf()
 					.tang = gltf_vtx.tangent,
 				};
 			});
-			cur.image_id = data.bound_image_id;
+			for(tz::io::gltf_submesh_texture_data tex : data.textures)
+			{
+				if(tex.type == tz::io::gltf_submesh_texture_type::color)
+				{
+					cur.image_id = tex.image_id;
+					tz::assert(tex.texcoord_id == 0, "use of multiple texcoords is NYI. GLTF wants to use texcoord %zu for colour", tex.texcoord_id);
+				}
+			}
 		}
 	}
 

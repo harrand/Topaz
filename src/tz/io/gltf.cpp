@@ -253,10 +253,52 @@ namespace tz::io
 			return s;
 		});
 
+		std::vector<gltf_submesh_texture_data> bound_textures = {};
 		if(submesh.material_id != static_cast<std::size_t>(-1))
 		{
-			ret.bound_image_id = this->materials[submesh.material_id].pbr_metallic_roughness_base_color_texture_id;
+			const auto& material = this->materials[submesh.material_id];
+			tz::assert(material.color_texture_id != static_cast<std::size_t>(-1), "Detected GLTF material without base color texture. This is illegal in Topaz.");
+			// base colour (required)
+			bound_textures.push_back
+			({
+				.texcoord_id = material.color_texcoord_id,
+				.image_id = material.color_texture_id,
+				.type = gltf_submesh_texture_type::color
+			});
+			// normal (optional)
+			if(material.normal_texture_id != static_cast<std::size_t>(-1))
+			{
+				bound_textures.push_back
+				({
+					.texcoord_id = material.normal_texcoord_id,
+					.image_id = material.normal_texture_id,
+		 			.extra_data = material.normal_scale,
+		 			.type = gltf_submesh_texture_type::normal
+				});
+			}
+			// occlusion (optional)
+			if(material.occlusion_texture_id != static_cast<std::size_t>(-1))
+			{
+				bound_textures.push_back
+				({
+					.texcoord_id = material.occlusion_texcoord_id,
+					.image_id = material.occlusion_texture_id,
+		 			.extra_data = material.occlusion_strength,
+		 			.type = gltf_submesh_texture_type::occlusion
+				});
+			}
+			// emissive (optional)
+			if(material.emissive_texture_id != static_cast<std::size_t>(-1))
+			{
+				bound_textures.push_back
+				({
+					.texcoord_id = material.emissive_texcoord_id,
+					.image_id = material.emissive_texture_id,
+		 			.type = gltf_submesh_texture_type::emissive
+				});
+			}
 		}
+		ret.textures = bound_textures;
 		return ret;
 	}
 
@@ -424,13 +466,66 @@ namespace tz::io
 			for(auto mat : mats)
 			{
 				tz::assert(mat["pbrMetallicRoughness"].is_object(), "Missing pbrMetallicRoughness param on material. GLB is in an invalid format.");
-				if(!mat["pbrMetallicRoughness"]["baseColorTexture"].is_object())
+				auto pbr = mat["pbrMetallicRoughness"];
+				auto normal = mat["normalTexture"];
+				auto occlusion = mat["occlusionTexture"];
+				auto emissive = mat["emissiveTexture"];
+				if(!pbr["baseColorTexture"].is_object())
 				{
 					this->materials.push_back({});
+					tz::assert(!normal.is_object(), "Detected GLTF material with no pbrmr base colour texture, but a normal map applied. In Topaz, normal maps require a base colour texture.");
+					tz::assert(!occlusion.is_object(), "Detected GLTF material with no pbrmr base colour texture, but a occlusion map applied. In Topaz, occlusion maps require a base colour texture.");
+					tz::assert(!emissive.is_object(), "Detected GLTF material with no pbrmr base colour texture, but an emissive map applied. In Topaz, emissive maps require a base colour texture.");
 					continue;
 				}
-				tz::assert(!mat["pbrMetallicRoughness"]["baseColorTexture"]["index"].is_null(), "Missing pbrMetallicRoughness.baseColorTexture.index on material. GLB is in an invalid format, or Topaz needs a patch to support this GLB.");
-				std::size_t imgid = mat["pbrMetallicRoughness"]["baseColorTexture"]["index"];
+				tz::assert(!pbr["baseColorTexture"]["index"].is_null(), "Missing pbrMetallicRoughness.baseColorTexture.index on material. GLB is in an invalid format, or Topaz needs a patch to support this GLB.");
+				std::size_t imgid = pbr["baseColorTexture"]["index"];
+				std::size_t img_texcoord_id = 0;
+				if(!pbr["baseColorTexture"]["texCoord"].is_null())
+				{
+					img_texcoord_id = pbr["baseColorTexture"]["texCoord"];
+				}
+				std::size_t normid = -1;
+				std::size_t norm_coord_id = 0;
+				float norm_scale = 1.0f;
+				std::size_t occid = -1;
+				std::size_t occ_coord_id = 0;
+				float occ_strength = 1.0f;
+				std::size_t emid = -1;
+				std::size_t em_coord_id = 0;
+				if(normal.is_object())
+				{
+					normid = normal["index"];
+					if(!normal["texCoord"].is_null())
+					{
+						norm_coord_id = normal["texCoord"];
+					}
+					if(!normal["scale"].is_null())
+					{
+						norm_scale = normal["scale"];
+					}
+				}
+				if(occlusion.is_object())
+				{
+					occid = occlusion["index"];
+					if(!occlusion["texCoord"].is_null())
+					{
+						occ_coord_id = occlusion["texCoord"];
+					}
+					if(!occlusion["scale"].is_null())
+					{
+						occ_strength = occlusion["scale"];
+					}
+				}
+				if(emissive.is_object())
+				{
+					emid = emissive["index"];
+					if(!emissive["texCoord"].is_null())
+					{
+						em_coord_id = emissive["texCoord"];
+					}
+					tz::assert(emissive["scale"].is_null(), "`emissiveTexture.scale` is not supported. Please re-export GLTF without this property.");
+				}
 				std::string name = "Untitled";
 				if(mat["name"].is_string())
 				{
@@ -439,7 +534,16 @@ namespace tz::io
 				this->materials.push_back
 				({
 					.name = name,
-		 			.pbr_metallic_roughness_base_color_texture_id =	imgid
+		 			.color_texture_id = imgid,
+		 			.color_texcoord_id = img_texcoord_id,
+		 			.normal_texture_id = normid,
+		 			.normal_texcoord_id = norm_coord_id,
+		 			.normal_scale = norm_scale,
+		 			.occlusion_texture_id = occid,
+		 			.occlusion_texcoord_id = occ_coord_id,
+		 			.occlusion_strength = occ_strength,
+		 			.emissive_texture_id = emid,
+		 			.emissive_texcoord_id = em_coord_id
 				});
 			}
 		}
@@ -668,7 +772,6 @@ namespace tz::io
 			std::string weight_large = "WEIGHT_" + std::to_string((int)gltf_attribute::weight0 + gltf_max_weight_attribs);
 			tz::assert(prim["attributes"][weight_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", weight_large.c_str(), gltf_max_weight_attribs);
 			
-			// materials not yet implemented.
 			submesh.material_id = -1;
 			if(!prim["material"].is_null())
 			{
