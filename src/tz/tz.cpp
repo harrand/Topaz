@@ -96,12 +96,14 @@ namespace tz
 		TZ_FRAME_BEGIN;
 		tz::dbgui::begin_frame();
 		tz::job_system().new_frame();
+		tz::gl::get_device().begin_frame();
 	}
 
 	void end_frame()
 	{
 		tz::dbgui::end_frame();
 		tz::wsi::update();
+		tz::gl::get_device().end_frame();
 		TZ_FRAME_END;
 	}
 
