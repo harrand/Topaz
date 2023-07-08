@@ -163,39 +163,27 @@ namespace tz::gl
 				static bool show_chronological_ranks = false;
 				ImGui::Checkbox("Hide Internal Renderers", &hide_internal);
 				ImGui::Checkbox("Show Chronological Ranks", &show_chronological_ranks);
-				for(std::size_t i = 0; i < sched.timeline.size(); i++)
+				auto max_rank = sched.max_chronological_rank();
+				for(std::size_t r = 0; r <= max_rank; r++)
 				{
-					eid_t e = sched.timeline[i];
-					auto& ren = device.get_renderer(static_cast<tz::hanval>(e));
-					std::string namedata{ren.debug_get_name()};
-					if(show_chronological_ranks)
+					for(std::size_t j = 0; j < sched.timeline.size(); j++)
 					{
-						namedata += " (" + std::to_string(sched.chronological_rank(static_cast<tz::hanval>(e))) + ")";
+						auto& ren = device.get_renderer(static_cast<tz::hanval>(sched.timeline[j]));
+						if(sched.chronological_rank_eid(sched.timeline[j]) == r)
+						{
+							std::string namedata{ren.debug_get_name()};
+							if(show_chronological_ranks)
+							{
+								namedata += " (" + std::to_string(r) + ")";
+							}
+							if(ImGui::Button(namedata.c_str()))
+							{
+								id = sched.timeline[j];
+							}
+							ImGui::SameLine();
+						}
 					}
-					if(ImGui::Button(namedata.c_str()))
-					{
-						id = e;
-					}
-					ImGui::SameLine();
-					ImVec4 col = edge_default;
-					if(ren.get_options().contains(tz::gl::renderer_option::render_wait))
-					{
-						col = edge_renderwait;
-					}
-					auto deps = sched.get_dependencies(sched.timeline[i + 1]);
-					if(i < (sched.timeline.size() - 1) && std::find(deps.begin(), deps.end(), e) != deps.end())
-					{
-						col = edge_dependency;
-					}
-					if(i == sched.timeline.size() - 1)
-					{
-						col = edge_implicit;
-					}
-					if(!hide_internal || i < (sched.timeline.size() - 1))
-					{
-						ImGui::TextColored(col, " -> ");
-						ImGui::SameLine();
-					}
+					ImGui::Spacing();
 				}
 				#if TZ_DEBUG
 				if(!hide_internal)
