@@ -74,6 +74,7 @@ namespace tz::gl
 	public:
 		device_render_sync(device_common<renderer_vulkan2>& devcom);
 		void vk_frame_wait(unsigned int fingerprint);
+		void vk_skip_renderer(unsigned int fingerprint);
 		const tz::gl::schedule& get_schedule() const;
 		const tz::gl::timeline_t& get_timeline() const;
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);

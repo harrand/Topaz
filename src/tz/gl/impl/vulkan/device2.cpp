@@ -364,6 +364,25 @@ namespace tz::gl
 		}
 	}
 
+	void device_render_sync::vk_skip_renderer(unsigned int fingerprint)
+	{
+		// a renderer isn't going to submit any commands this frame, but we want to pretend as if it did in terms of sync.
+		// to do this, we instantly set the dependency timeline semaphore to what it needs to be.
+		vk2::TimelineSemaphore& dep_sem = device_render_sync::get_dependency_sync_objects()[device_vulkan_base::frame_id];
+		std::size_t eid = device_vulkan_base::get_rid(fingerprint);
+		unsigned int our_rank = this->get_schedule().chronological_rank_eid(eid);
+		unsigned int signal_target = our_rank + 1 + device_vulkan_base::global_timeline;
+		if(signal_target > device_vulkan_base::max_signal_rank_this_frame && signal_target > dep_sem.get_value())
+		{
+			dep_sem.signal(signal_target);
+		}
+		if(our_rank == this->get_schedule().max_chronological_rank() && !device_vulkan_base::frame_signal_sent_this_frame)
+		{
+			device_vulkan_base::frame_signal_sent_this_frame = true;
+			device_render_sync::get_frame_sync_objects()[device_vulkan_base::frame_id].signal(device_vulkan_base::frame_counter + 1);
+		}
+	}
+
 	const tz::gl::schedule& device_render_sync::get_schedule() const
 	{
 		return this->sched;

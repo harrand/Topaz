@@ -1385,6 +1385,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_vulkan2 - render", 0xFFAAAA00);
 		if(!this->check_and_handle_resize())
 		{
+			tz::gl::get_device().vk_skip_renderer(renderer_vulkan_base::uid);
 			return;
 		}
 		renderer_command_processor::do_frame();
