@@ -5,6 +5,7 @@
 #include <vector>
 #include <span>
 #include <unordered_set>
+#include <optional>
 
 namespace tz::gl
 {
@@ -40,6 +41,51 @@ namespace tz::gl
 			auto iter = std::find_if(this->events.begin(), this->events.end(), [evt](const auto& event){return event.eid == evt;});
 			tz::assert(iter != this->events.end());
 			(iter->dependencies.push_back(static_cast<eid_t>(static_cast<tz::hanval>(deps))), ...);
+		}
+
+		template<typename H>
+		unsigned int chronological_rank(H handle) const
+		{
+			auto evt = static_cast<eid_t>(static_cast<tz::hanval>(handle));
+			return chronological_rank_eid(evt);
+		}
+
+		unsigned int max_chronological_rank() const
+		{
+			unsigned int maxrank = 0;
+			for(eid_t evt : this->timeline)
+			{
+				maxrank = std::max(maxrank, this->chronological_rank_eid(evt));
+			}
+			return maxrank;
+		}
+
+		std::optional<unsigned int> get_wait_rank(eid_t evt) const
+		{
+			if(this->chronological_rank_eid(evt) == 0)
+			{
+				return std::nullopt;
+			}
+			unsigned int max_wait_rank = 0;
+			for(eid_t dep : this->get_dependencies(evt))
+			{
+				max_wait_rank = std::max(max_wait_rank, this->chronological_rank_eid(dep));
+			}
+			return {max_wait_rank};
+		}
+
+		unsigned int chronological_rank_eid(eid_t evt) const
+		{
+			unsigned int rank = 0;
+			if(this->get_dependencies(evt).size())
+			{
+				for(std::size_t dep : this->get_dependencies(evt))
+				{
+					rank = std::max(rank, this->chronological_rank_eid(dep));
+				}
+				rank++;
+			}
+			return rank;
 		}
 	};
 

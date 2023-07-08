@@ -7,6 +7,13 @@
 #include "tz/core/profile.hpp"
 #include <algorithm>
 
+#define TZ_VK_RENDER_DEBUG_LOGGING 0
+
+#if TZ_VK_RENDER_DEBUG_LOGGING
+#include <iostream>
+#endif
+
+
 namespace tz::gl
 {
 
@@ -352,7 +359,8 @@ namespace tz::gl
 		// if the first renderer of the frame needs to go, we need to make sure it waits on the frame fence.
 		if(device_vulkan_base::frame_counter > 0 && this->get_timeline().front() == device_vulkan_base::get_rid(fingerprint))
 		{
-			this->frame_syncs[frame_id].wait_for(device_vulkan_base::global_timeline + 1);
+			// we are waiting for the current work to finish.
+			this->frame_syncs[device_vulkan_base::old_frame_id].wait_for(device_vulkan_base::frame_counter);
 		}
 	}
 
@@ -611,31 +619,57 @@ namespace tz::gl
 
 		vk2::hardware::Queue::SubmitInfo submit;
 		tz::basic_list<vk2::hardware::Queue::SubmitInfo::WaitInfo> waits = {};
-		std::size_t timeline_id = device_render_sync::get_renderer_sync_id(fingerprint) + device_vulkan_base::global_timeline;
-		if(dep_sem.get_value() < timeline_id)
-		{
-			waits.add({.wait_semaphore = &dep_sem, .wait_stage = vk2::PipelineStage::AllCommands, .timeline = timeline_id});
-		}
-		// TODO: fill waits with timeline semaphores frmo dependencies. probably signals too?
+		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals = {};
 
+		// does this have a set of dependencies? if so we wait on it.
+		std::size_t eid = device_vulkan_base::get_rid(fingerprint);
+		#if TZ_VK_RENDER_DEBUG_LOGGING
+			std::cout << "===========" << eid << "===========\n";
+		#endif
+		auto maybe_wait_rank = this->get_schedule().get_wait_rank(eid);
+		if(maybe_wait_rank.has_value())
+		{
+			const std::size_t wait_value = maybe_wait_rank.value() + device_vulkan_base::global_timeline + 1;
+			waits.add({.wait_semaphore = &dep_sem, .wait_stage = vk2::PipelineStage::AllCommands, .timeline = wait_value});
+			#if TZ_VK_RENDER_DEBUG_LOGGING
+				std::cout << "wait dep: " << wait_value << "\n";
+			#endif
+		}
+
+		// also add the waits someone else gave us. just assume its necessary binary semaphores.
 		for(const vk2::Semaphore* wait : extra_waits)
 		{
 			waits.add({.wait_semaphore = wait, .wait_stage = vk2::PipelineStage::AllCommands});
 		}
 
-		tz::basic_list<vk2::hardware::Queue::SubmitInfo::SignalInfo> signals = {};
-		if(dep_sem.get_value() < timeline_id + 1)
+		// so heres a problem. we could have multiple renderers with this same chronological rank. if so, we only signal once.
+		// so we store a value telling us the max signal rank this frame.
+		// if nobodys signalled our rank yet, then we send it.
+		unsigned int our_rank = this->get_schedule().chronological_rank_eid(eid);
+		unsigned int signal_target = our_rank + 1 + device_vulkan_base::global_timeline;
+		if(signal_target > device_vulkan_base::max_signal_rank_this_frame)
 		{
-			signals.add({.signal_semaphore = &dep_sem, .timeline = timeline_id + 1});
+			device_vulkan_base::max_signal_rank_this_frame = signal_target;
+			signals.add({.signal_semaphore = &dep_sem, .timeline = signal_target});
+			#if TZ_VK_RENDER_DEBUG_LOGGING
+				std::cout << "signal dep: " << signal_target << "\n";
+			#endif
 		}
+		// also we might have some binary semaphores we need to signal to, make sure we send those.
 		for(const vk2::Semaphore* signal : extra_signals)
 		{
 			signals.add({.signal_semaphore = signal});
 		}
-		if(device_render_sync::get_timeline().size() && device_render_sync::get_timeline().back() == device_vulkan_base::get_rid(fingerprint))
+
+		// the last thing. we want to be able to wait on frames, or the first renderer of the next frame needs to be aware.
+		// we should signal that magic semaphore if: we are the max rank, and it hasn't been signalled already yet.
+		if(our_rank == this->get_schedule().max_chronological_rank() && !device_vulkan_base::frame_signal_sent_this_frame)
 		{
-			signals.add({.signal_semaphore = &device_render_sync::get_frame_sync_objects()[device_vulkan_base::frame_id], .timeline = device_vulkan_base::global_timeline + 1});
-			device_vulkan_base::global_timeline++;
+			device_vulkan_base::frame_signal_sent_this_frame = true;
+			signals.add({.signal_semaphore = &device_render_sync::get_frame_sync_objects()[device_vulkan_base::frame_id], .timeline = device_vulkan_base::frame_counter + 1});
+			#if TZ_VK_RENDER_DEBUG_LOGGING
+				std::cout << "signal frame: " << device_vulkan_base::frame_counter + 1 << "\n";
+			#endif
 		}
 
 		tz::basic_list<const vk2::CommandBuffer*> buffers = {};
@@ -648,6 +682,9 @@ namespace tz::gl
 		submit.signals = signals;
 		submit.execution_complete_fence = signal_fence;
 		q->submit(submit);
+		#if TZ_VK_RENDER_DEBUG_LOGGING
+			std::cout << "======================\n\n";
+		#endif
 	}
 
 	vk2::hardware::Queue::PresentResult device_command_pool::present_image(unsigned int fingerprint, const tz::basic_list<const vk2::BinarySemaphore*>& wait_semaphores)
@@ -780,8 +817,16 @@ namespace tz::gl
 	void device_vulkan2::end_frame()
 	{
 		TZ_PROFZONE("device_vulkan2 - end frame", 0xFFAA0000);
+		device_vulkan_base::global_timeline += device_common<renderer_vulkan2>::render_graph().max_chronological_rank() + 1;
+		#if TZ_VK_RENDER_DEBUG_LOGGING
+			std::cout << "end frame " << device_vulkan_base::frame_counter << ". global timeline = " << device_vulkan_base::global_timeline << "\n";
+		#endif
 		device_vulkan_base::frame_counter++;
+		device_vulkan_base::old_frame_id = device_vulkan_base::frame_id;
 		device_vulkan_base::frame_id = (device_vulkan_base::frame_id + 1) % device_window::get_swapchain().get_images().size();
+		device_vulkan_base::max_signal_rank_this_frame = 0;
+		tz::assert(device_vulkan_base::frame_signal_sent_this_frame);
+		device_vulkan_base::frame_signal_sent_this_frame = false;
 	}
 
 }

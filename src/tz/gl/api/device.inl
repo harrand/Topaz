@@ -160,13 +160,19 @@ namespace tz::gl
 			if(ImGui::BeginTabItem("Timeline"))
 			{
 				static bool hide_internal = true;
+				static bool show_chronological_ranks = false;
 				ImGui::Checkbox("Hide Internal Renderers", &hide_internal);
+				ImGui::Checkbox("Show Chronological Ranks", &show_chronological_ranks);
 				for(std::size_t i = 0; i < sched.timeline.size(); i++)
 				{
 					eid_t e = sched.timeline[i];
 					auto& ren = device.get_renderer(static_cast<tz::hanval>(e));
-					std::string_view name = ren.debug_get_name();
-					if(ImGui::Button(name.data()))
+					std::string namedata{ren.debug_get_name()};
+					if(show_chronological_ranks)
+					{
+						namedata += " (" + std::to_string(sched.chronological_rank(static_cast<tz::hanval>(e))) + ")";
+					}
+					if(ImGui::Button(namedata.c_str()))
 					{
 						id = e;
 					}

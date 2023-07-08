@@ -26,8 +26,11 @@ namespace tz::gl
 		std::size_t get_rid(unsigned int fingerprint) const;
 
 		std::size_t frame_id = 0;
+		std::size_t old_frame_id = 0;
 		std::size_t frame_counter = 0;
 		std::size_t global_timeline = 0;
+		std::size_t max_signal_rank_this_frame = 0;
+		bool frame_signal_sent_this_frame = false;
 		std::unordered_map<unsigned int, std::size_t> fingerprint_to_renderer_id = {};
 		vk2::LogicalDevice ldev;
 	};
