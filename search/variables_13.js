@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['usage_0',['usage',['../structtz_1_1gl_1_1vk2_1_1_buffer_info.html#ac7c1d9c25ec9a523d25d3b581ec506d7',1,'tz::gl::vk2::BufferInfo::usage()'],['../structtz_1_1gl_1_1vk2_1_1_image_info.html#a64b2bbd1d8fab5b1a0739fa2236fee5e',1,'tz::gl::vk2::ImageInfo::usage()']]]
+  ['version_0',['version',['../structtz_1_1initialise__info.html#ad869820ee345fd5b23e8afe5ef4bf40d',1,'tz::initialise_info']]],
+  ['vertex_5fcount_1',['vertex_count',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html#aa20ea4668944d738431db311f2a67ea5',1,'tz::gl::vk2::VulkanCommand::Draw']]]
 ];

@@ -1,13 +1,15 @@
 var searchData=
 [
-  ['edit_0',['edit',['../classtz_1_1gl_1_1_renderer_o_g_l.html#ac2328f2321e7896ce6bd7a8f133b1bd7',1,'tz::gl::RendererOGL::edit()'],['../classtz_1_1gl_1_1_renderer_vulkan.html#ac7d7ab5df374b27cf96175033e3add99',1,'tz::gl::RendererVulkan::edit()']]],
-  ['emplace_1',['emplace',['../classtz_1_1_basic_list.html#ae4a0d579ac84ec0b77b493f087c3b898',1,'tz::BasicList::emplace()'],['../classtz_1_1_polymorphic_list.html#abcd45264b9a32adcfde7d7469d526bac',1,'tz::PolymorphicList::emplace()']]],
-  ['empty_2',['empty',['../classtz_1_1_basic_list.html#af32c2cc288f273c7983c57216bfc0e81',1,'tz::BasicList::empty()'],['../classtz_1_1_enum_field.html#ac5a41220a9c1a857794de061751749cd',1,'tz::EnumField::empty()'],['../classtz_1_1gl_1_1_resource_storage.html#ac9dd63dc7c7a8635aa6cfc4c4b2c5c40',1,'tz::gl::ResourceStorage::empty()']]],
-  ['end_3',['end',['../classtz_1_1_basic_list.html#ada63442e7add7f1a66e06295f42947a9',1,'tz::BasicList::end()'],['../classtz_1_1_basic_list.html#abeca63e13a83c36aec08b81992c29fec',1,'tz::BasicList::end() const'],['../classtz_1_1_enum_field.html#a66bbfabdc1244105301f43c4c8d694ed',1,'tz::EnumField::end() const'],['../classtz_1_1_enum_field.html#a731057d2cf7aa6276e8a0fc06e1fddca',1,'tz::EnumField::end()'],['../classtz_1_1_polymorphic_list.html#a005d33c6203712c5304224285b389c50',1,'tz::PolymorphicList::end()'],['../classtz_1_1_polymorphic_list.html#a01e936a09d95b4898311f84ddc356e97',1,'tz::PolymorphicList::end() const']]],
-  ['enumfield_4',['EnumField',['../classtz_1_1_enum_field.html#a8146bc9b29cf066120e2db88cb926ba6',1,'tz::EnumField::EnumField()=default'],['../classtz_1_1_enum_field.html#abe7be7e2e213b76b26587622f992dd2f',1,'tz::EnumField::EnumField(std::initializer_list&lt; E &gt; types)'],['../classtz_1_1_enum_field.html#ae34bccd601304e19fe35ea117ed0391d',1,'tz::EnumField::EnumField(E type)']]],
-  ['erase_5',['erase',['../classtz_1_1_basic_list.html#abe7b2c2f5ae52a55fe1e81ccd28f116f',1,'tz::BasicList::erase(Iterator position)'],['../classtz_1_1_basic_list.html#ad8b2b3307114db19edf2481570f4aec8',1,'tz::BasicList::erase(Iterator first, Iterator last)']]],
-  ['error_6',['error',['../group__hdk.html#ga49e1b48d9d0e9a5fed41ac01168f808a',1,'hdk']]],
-  ['exchange_7',['exchange',['../group__tzsl__atomic.html#gac66c88e078d10e049838618e5c5d80f6',1,'tz::atomic']]],
-  ['exp_8',['exp',['../group__tzsl__math.html#ga0b3e83e179fee3b947ff6725d85ea9bc',1,'tz::math']]],
-  ['exp2_9',['exp2',['../group__tzsl__math.html#ga62b92e38309339005fea6213dfda3454',1,'tz::math']]]
+  ['edit_0',['edit',['../classtz_1_1gl_1_1renderer__ogl.html#a191c8012bb11868f5934fd61fbacf168',1,'tz::gl::renderer_ogl']]],
+  ['elapsed_1',['elapsed',['../classtz_1_1delay.html#a58f202ee61907e36e13d89e2c8c4d950',1,'tz::delay']]],
+  ['emplace_2',['emplace',['../classtz_1_1basic__list.html#af3feb8b0f4a28360f8cb2b79550c9eb5',1,'tz::basic_list::emplace()'],['../classtz_1_1_polymorphic_list.html#abcd45264b9a32adcfde7d7469d526bac',1,'tz::PolymorphicList::emplace()']]],
+  ['empty_3',['empty',['../classtz_1_1basic__list.html#a7dd603cfac91d0de0a80fa7a3f92ad5e',1,'tz::basic_list::empty()'],['../classtz_1_1enum__field.html#abfb91b134d35e4f0454cd6eecf859b88',1,'tz::enum_field::empty()']]],
+  ['end_4',['end',['../classtz_1_1basic__list.html#a2eabfdf0380450d59fff93772dbe9761',1,'tz::basic_list::end()'],['../classtz_1_1basic__list.html#a647d9ad1f6dcfb9e86d5a98da3e6d90e',1,'tz::basic_list::end() const'],['../classtz_1_1enum__field.html#a23110e1ac51df35ef76022ba30bd2a24',1,'tz::enum_field::end() const'],['../classtz_1_1enum__field.html#a92f4bc051ebc80adea4dab7424b8676d',1,'tz::enum_field::end()'],['../classtz_1_1_polymorphic_list.html#a005d33c6203712c5304224285b389c50',1,'tz::PolymorphicList::end()'],['../classtz_1_1_polymorphic_list.html#a01e936a09d95b4898311f84ddc356e97',1,'tz::PolymorphicList::end() const']]],
+  ['end_5fframe_5',['end_frame',['../group__tz__core.html#ga3444884fd2ee290340864428de1df82f',1,'tz']]],
+  ['enum_5ffield_6',['enum_field',['../classtz_1_1enum__field.html#a991dd804357b394f7036c3c86ffd2649',1,'tz::enum_field::enum_field()=default'],['../classtz_1_1enum__field.html#a5454e8b8f31861b47b412554d4e2a9df',1,'tz::enum_field::enum_field(std::initializer_list&lt; E &gt; types)'],['../classtz_1_1enum__field.html#ab03fd94decf6143e89651bbe5eaa0c02',1,'tz::enum_field::enum_field(E type)']]],
+  ['erase_7',['erase',['../classtz_1_1basic__list.html#af77955ee7383d5cae6bb09fae8a104e6',1,'tz::basic_list::erase(Iterator position)'],['../classtz_1_1basic__list.html#a68e81beb140765454649325ea15418b9',1,'tz::basic_list::erase(Iterator first, Iterator last)']]],
+  ['error_8',['error',['../group__tz__core.html#ga51d5f1707ccebf785a59cbb6a90b0fad',1,'tz']]],
+  ['exchange_9',['exchange',['../group__tzsl__atomic.html#gac66c88e078d10e049838618e5c5d80f6',1,'tz::atomic']]],
+  ['exp_10',['exp',['../group__tzsl__math.html#ga0b3e83e179fee3b947ff6725d85ea9bc',1,'tz::math']]],
+  ['exp2_11',['exp2',['../group__tzsl__math.html#ga62b92e38309339005fea6213dfda3454',1,'tz::math']]]
 ];

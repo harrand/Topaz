@@ -1,9 +1,20 @@
 var searchData=
 [
-  ['gameinfo_0',['GameInfo',['../structtz_1_1_game_info.html',1,'tz']]],
-  ['graphics_1',['Graphics',['../structtz_1_1gl_1_1_render_state_1_1_graphics.html',1,'tz::gl::RenderState']]],
-  ['graphicspipeline_2',['GraphicsPipeline',['../classtz_1_1gl_1_1vk2_1_1_graphics_pipeline.html',1,'tz::gl::vk2']]],
-  ['graphicspipelineinfo_3',['GraphicsPipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html',1,'tz::gl::vk2']]],
-  ['graphicspipelinemanager_4',['GraphicsPipelineManager',['../classtz_1_1gl_1_1_graphics_pipeline_manager.html',1,'tz::gl']]],
-  ['gridview_5',['GridView',['../classtz_1_1_grid_view.html',1,'tz']]]
+  ['game_5finfo_0',['game_info',['../structtz_1_1game__info.html',1,'tz']]],
+  ['gltf_1',['gltf',['../classtz_1_1io_1_1gltf.html',1,'tz::io']]],
+  ['gltf_5faccessor_2',['gltf_accessor',['../structtz_1_1io_1_1gltf__accessor.html',1,'tz::io']]],
+  ['gltf_5fbuffer_5fview_3',['gltf_buffer_view',['../structtz_1_1io_1_1gltf__buffer__view.html',1,'tz::io']]],
+  ['gltf_5fchunk_5fdata_4',['gltf_chunk_data',['../structtz_1_1io_1_1gltf__chunk__data.html',1,'tz::io']]],
+  ['gltf_5fheader_5',['gltf_header',['../structtz_1_1io_1_1gltf__header.html',1,'tz::io']]],
+  ['gltf_5fimage_6',['gltf_image',['../structtz_1_1io_1_1gltf__image.html',1,'tz::io']]],
+  ['gltf_5fmaterial_7',['gltf_material',['../structtz_1_1io_1_1gltf__material.html',1,'tz::io']]],
+  ['gltf_5fmesh_8',['gltf_mesh',['../structtz_1_1io_1_1gltf__mesh.html',1,'tz::io']]],
+  ['gltf_5fresource_9',['gltf_resource',['../structtz_1_1io_1_1gltf__resource.html',1,'tz::io']]],
+  ['gltf_5fsubmesh_5fdata_10',['gltf_submesh_data',['../structtz_1_1io_1_1gltf__submesh__data.html',1,'tz::io']]],
+  ['gltf_5fsubmesh_5ftexture_5fdata_11',['gltf_submesh_texture_data',['../structtz_1_1io_1_1gltf__submesh__texture__data.html',1,'tz::io']]],
+  ['gltf_5fvertex_5fdata_12',['gltf_vertex_data',['../structtz_1_1io_1_1gltf__vertex__data.html',1,'tz::io']]],
+  ['graphics_13',['Graphics',['../structtz_1_1gl_1_1render__state_1_1_graphics.html',1,'tz::gl::render_state']]],
+  ['graphicspipeline_14',['GraphicsPipeline',['../classtz_1_1gl_1_1vk2_1_1_graphics_pipeline.html',1,'tz::gl::vk2']]],
+  ['graphicspipelineinfo_15',['GraphicsPipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html',1,'tz::gl::vk2']]],
+  ['grid_5fview_16',['grid_view',['../classtz_1_1grid__view.html',1,'tz']]]
 ];

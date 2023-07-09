@@ -1,13 +1,8 @@
 var searchData=
 [
-  ['kernel_0',['kernel',['../structtz_1_1gl_1_1_render_state_1_1_compute.html#a973c7d8dc62210bc7d8f47f2b89411df',1,'tz::gl::RenderState::Compute::kernel()'],['../structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html#a475c23ec78c746d217b62e0b94bdcbcd',1,'tz::gl::RendererEdit::ComputeConfig::kernel()']]],
-  ['key_1',['key',['../structtz_1_1_key_press_info.html#a60a404a510b48d5106bf2813405c71b0',1,'tz::KeyPressInfo']]],
-  ['key_5fname_2',['key_name',['../structtz_1_1_key_info.html#ae1ba153fc018c099f11d07f572de5d0d',1,'tz::KeyInfo']]],
-  ['key_5fnull_3',['key_null',['../group__tz__core__peripherals__keyboard.html#gad7a3112931627390745e976cb762e5f8',1,'tz::peripherals::keyboard']]],
-  ['keyboards_4',['Keyboards',['../group__tz__core__peripherals__keyboard.html',1,'']]],
-  ['keyboardstate_5',['KeyboardState',['../classtz_1_1_keyboard_state.html',1,'tz']]],
-  ['keycode_6',['KeyCode',['../group__tz__core__peripherals__keyboard.html#gab9503db6c504e1839d2f88d4912f2f83',1,'tz']]],
-  ['keyinfo_7',['KeyInfo',['../structtz_1_1_key_info.html',1,'tz']]],
-  ['keypressinfo_8',['KeyPressInfo',['../structtz_1_1_key_press_info.html',1,'tz']]],
-  ['keypresstype_9',['KeyPressType',['../group__tz__core__peripherals__keyboard.html#ga2a5c5d9eaa96e125a641c7aa72ce4106',1,'tz']]]
+  ['kernel_0',['kernel',['../structtz_1_1gl_1_1render__state_1_1_compute.html#ab24ad64cfe49f3dce8eeb8cf91cce48e',1,'tz::gl::render_state::Compute::kernel'],['../structtz_1_1gl_1_1renderer__edit_1_1compute__config.html#a7309d7bd259c9b449ca1e9f818d8189e',1,'tz::gl::renderer_edit::compute_config::kernel']]],
+  ['key_1',['key',['../group__tz__wsi__keyboard.html#ga6c853393f015f781b34a6f1cde094e85',1,'tz::wsi']]],
+  ['keyboard_20input_2',['Keyboard Input',['../group__tz__wsi__keyboard.html',1,'']]],
+  ['keyboard_5fstate_3',['keyboard_state',['../structtz_1_1wsi_1_1keyboard__state.html',1,'tz::wsi']]],
+  ['keys_5fdown_4',['keys_down',['../structtz_1_1wsi_1_1keyboard__state.html#ad5daea270a32a5c90478336768d6fed3',1,'tz::wsi::keyboard_state']]]
 ];

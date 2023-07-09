@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['precomputed_20meshes_0',['Precomputed Meshes',['../group__tzsl__mesh.html',1,'']]],
-  ['presentation_20and_20window_20surface_20interation_20_28wsi_29_1',['Presentation and Window Surface Interation (WSI)',['../group__tz__gl__vk__presentation.html',1,'']]],
-  ['profiling_20and_20instrumentation_2',['Profiling and Instrumentation',['../group__tz__core__profiling.html',1,'']]]
+  ['render_20passes_0',['Render Passes',['../group__tz__gl__vk__graphics__pipeline__render__pass.html',1,'']]],
+  ['renderer_20implementation_1',['renderer Implementation',['../group__tz__gl2__graphicsapi__ogl__frontend__renderer.html',1,'']]],
+  ['renderers_2',['Renderers',['../group__tz__gl2__renderer.html',1,'']]],
+  ['resources_3',['Resources',['../group__tz__gl2__res.html',1,'']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['renderereditrequest_0',['RendererEditRequest',['../group__tz__gl2__renderer.html#ga53143e1ce3567a5f1b619d8277d3950f',1,'tz::gl']]],
-  ['rendererhandle_1',['RendererHandle',['../group__tz__gl2__renderer.html#gac268657354562d9bfefd90beb18f4d23',1,'tz::gl']]],
-  ['rendereroptions_2',['RendererOptions',['../group__tz__gl2__renderer.html#ga554dd35b24386d751b1c6dc2a379a3d6',1,'tz::gl']]],
-  ['row_3',['Row',['../classtz_1_1_matrix.html#a50ef4911814e693caafba0b1d506e612',1,'tz::Matrix']]]
+  ['renderer_5fedit_5frequest_0',['renderer_edit_request',['../group__tz__gl2__renderer.html#gaf8ed980ac9dca61a89e98615c27a8085',1,'tz::gl']]],
+  ['renderer_5fhandle_1',['renderer_handle',['../group__tz__gl2__renderer.html#gac87fead64cd4f4650e0315adb0841297',1,'tz::gl']]],
+  ['renderer_5foptions_2',['renderer_options',['../group__tz__gl2__renderer.html#ga73b4edabed4b0091a8b1fa6c8f618438',1,'tz::gl']]],
+  ['row_3',['Row',['../classtz_1_1matrix.html#a6f7afc1df98e3a9a74430908f0db308a',1,'tz::matrix']]]
 ];

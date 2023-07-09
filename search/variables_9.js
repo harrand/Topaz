@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['kernel_0',['kernel',['../structtz_1_1gl_1_1_render_state_1_1_compute.html#a973c7d8dc62210bc7d8f47f2b89411df',1,'tz::gl::RenderState::Compute::kernel()'],['../structtz_1_1gl_1_1_renderer_edit_1_1_compute_config.html#a475c23ec78c746d217b62e0b94bdcbcd',1,'tz::gl::RendererEdit::ComputeConfig::kernel()']]],
-  ['key_1',['key',['../structtz_1_1_key_press_info.html#a60a404a510b48d5106bf2813405c71b0',1,'tz::KeyPressInfo']]],
-  ['key_5fname_2',['key_name',['../structtz_1_1_key_info.html#ae1ba153fc018c099f11d07f572de5d0d',1,'tz::KeyInfo']]],
-  ['key_5fnull_3',['key_null',['../group__tz__core__peripherals__keyboard.html#gad7a3112931627390745e976cb762e5f8',1,'tz::peripherals::keyboard']]]
+  ['last_5fkey_0',['last_key',['../structtz_1_1wsi_1_1keyboard__state.html#ad0106b85346333b84bcf529b5547bc90',1,'tz::wsi::keyboard_state']]],
+  ['limits_1',['limits',['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_info_1_1_pool_limits.html#ab40cdfd71afa53843549b7d15a00487f',1,'tz::gl::vk2::DescriptorPoolInfo::PoolLimits::limits'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_info.html#aa6f231bec37b767f12357542a86a99f6',1,'tz::gl::vk2::DescriptorPoolInfo::limits']]],
+  ['logical_5fdevice_2',['logical_device',['../structtz_1_1gl_1_1vk2_1_1_descriptor_layout_info.html#af62a5ae0b0d0ecd5936c4efc36569cf7',1,'tz::gl::vk2::DescriptorLayoutInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_info.html#aec347e650449b8bb1e4d2ddba4e7312e',1,'tz::gl::vk2::DescriptorPoolInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_pipeline_layout_info.html#a54a3f0e47bb70c14d39bf1e57551e85d',1,'tz::gl::vk2::PipelineLayoutInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html#a1dc269fba5204ec4558be348e043353e',1,'tz::gl::vk2::RenderPassInfo::logical_device']]]
 ];

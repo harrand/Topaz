@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['framebuffertexture_0',['FramebufferTexture',['../group__tz__gl__ogl2__framebuffer.html#ga0ca5030b95c0c5b75f8f817694d1a948',1,'tz::gl::ogl2']]]
+  ['framebuffer_5ftexture_0',['framebuffer_texture',['../group__tz__gl__ogl2__framebuffer.html#ga0fa9020fa6ae934e10f13a3793ec6c46',1,'tz::gl::ogl2']]]
 ];

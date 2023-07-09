@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zero_0',['zero',['../classhdk_1_1vector.html#a136da776a62e3fc103fc8955aaeb8cea',1,'hdk::vector']]]
+  ['zero_0',['zero',['../classtz_1_1vector.html#a0b3b989ec3fc4a0af094f76e1d2204b2',1,'tz::vector']]]
 ];

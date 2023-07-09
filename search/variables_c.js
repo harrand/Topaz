@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['name_0',['name',['../structtz_1_1_monitor_info.html#a0d8d626efc750a8a14ec7060e80e0e94',1,'tz::MonitorInfo::name()'],['../structtz_1_1_initialise_info.html#a020101b6a72aa4f60480dfea019b7381',1,'tz::InitialiseInfo::name()']]]
+  ['old_5fswapchain_0',['old_swapchain',['../structtz_1_1gl_1_1vk2_1_1_swapchain_info.html#a3250b11e92a4f4f5bc8ed7dd00c8a26d',1,'tz::gl::vk2::SwapchainInfo']]]
 ];

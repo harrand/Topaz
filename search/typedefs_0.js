@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['bindlesstexturehandle_0',['BindlessTextureHandle',['../classtz_1_1gl_1_1ogl2_1_1_image.html#a4ca532f97dd570fb247fe8bc219d5ec8',1,'tz::gl::ogl2::Image']]]
+  ['bindless_5fhandle_0',['bindless_handle',['../classtz_1_1gl_1_1ogl2_1_1image.html#a95cc3a29802146fa924deac10a64fc72',1,'tz::gl::ogl2::image']]]
 ];

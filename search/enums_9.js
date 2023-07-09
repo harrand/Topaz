@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['renderbackend_0',['RenderBackend',['../group__tz__gl2.html#gae47acbb5345bf8410f2ed591757d124a',1,'tz::gl']]],
-  ['rendereroption_1',['RendererOption',['../group__tz__gl2__renderer.html#ga3f915e283a9998c54f738b2735c206ce',1,'tz::gl']]],
-  ['resourceaccess_2',['ResourceAccess',['../group__tz__gl2__res.html#gaac6c9b5f2142e64f58da44ba1b7dedca',1,'tz::gl']]],
-  ['resourceflag_3',['ResourceFlag',['../group__tz__gl2__res.html#ga49d5e99134986b45c3e73f9c2e3f3c31',1,'tz::gl']]],
-  ['resourcetype_4',['ResourceType',['../group__tz__gl2__res.html#gac6834632961a6223450b780b32ced684',1,'tz::gl']]]
+  ['renderer_5foption_0',['renderer_option',['../group__tz__gl2__renderer.html#gac6f74feb8cd57f49c051f5d83a12be5d',1,'tz::gl']]],
+  ['resource_5faccess_1',['resource_access',['../group__tz__gl2__res.html#gac9293366fa49e7f476827595ca80fbbb',1,'tz::gl']]],
+  ['resource_5fflag_2',['resource_flag',['../group__tz__gl2__res.html#gaacaeec69fc5b83e204af317250a47eb8',1,'tz::gl']]],
+  ['resource_5ftype_3',['resource_type',['../group__tz__gl2__res.html#ga4a7818551bb2ef3d04edb95ec731d041',1,'tz::gl']]]
 ];
