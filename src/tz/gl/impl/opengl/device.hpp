@@ -36,6 +36,8 @@ namespace tz::gl
 		void dbgui();
 		void begin_frame();
 		void end_frame();
+		void full_wait() const;
+		void frame_wait() const;
 	};
 	static_assert(device_type<device_ogl, renderer_info>);
 }

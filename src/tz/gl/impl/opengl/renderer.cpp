@@ -246,6 +246,11 @@ namespace tz::gl
 			for(std::size_t i = 0; i < this->image_handles.size(); i++)
 			{
 				auto img_nat = static_cast<ogl2::image::NativeType>(this->image_handles[i]);
+				#if TZ_DEBUG
+					int max_textures;
+					glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_textures);
+					tz::assert(std::cmp_less(i, max_textures), "Too many textures bound at once. Max of %d, but we have %zu", max_textures, this->image_handles.size());
+				#endif
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, img_nat);
 
@@ -631,7 +636,7 @@ namespace tz::gl
 					const ogl2::buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
 					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
 					{
-						tz::error("test");
+						this->vao.draw_indexed_indirect_count(dbuf.size() / sizeof(ogl2::draw_indexed_indirect_command), ibuf, dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), this->shader.has_tessellation());
 					}
 					else
 					{
@@ -736,7 +741,7 @@ namespace tz::gl
 									{{
 										.target = ogl2::buffer_target::uniform,
 										.residency = ogl2::buffer_residency::dynamic,
-										.size_bytes = res->data().size_bytes()
+										.size_bytes = arg.data.size_bytes()
 									}};
 									{
 										void* ptr = staging_buffer.map();

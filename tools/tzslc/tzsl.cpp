@@ -94,6 +94,7 @@ namespace tzslc
 		else if(dialect == GLSLDialect::OpenGL)
 		{
 			ret += "#define TZ_OGL 1\n#define TZ_VULKAN 0\n#extension GL_ARB_bindless_texture : enable\n";
+			ret += "layout(std430) buffer;\n";
 		}
 		else
 		{

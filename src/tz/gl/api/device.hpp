@@ -29,6 +29,8 @@ namespace tz::gl
 		{t.dbgui()} -> std::same_as<void>;
 		{t.begin_frame()} -> std::same_as<void>;
 		{t.end_frame()} -> std::same_as<void>;
+		{t.full_wait()} -> std::same_as<void>;
+		{t.frame_wait()} -> std::same_as<void>;
 	};
 
 	template<renderer_type R>

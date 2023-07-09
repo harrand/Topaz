@@ -96,6 +96,17 @@ namespace tz::gl
 	{
 
 	}
+
+	void device_ogl::full_wait() const
+	{
+		glFinish();
+	}
+
+	void device_ogl::frame_wait() const
+	{
+		tz::report("ogl frame wait NYI. doing full wait...");
+		this->full_wait();
+	}
 }
 
 #endif // TZ_OGL

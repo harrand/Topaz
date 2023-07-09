@@ -80,6 +80,7 @@ namespace tz::gl
 		std::vector<const vk2::Semaphore*> vk_get_dependency_waits(unsigned int fingerprint);
 		std::vector<const vk2::Semaphore*> vk_get_dependency_signals(unsigned int fingerprint);
 	protected:
+		std::span<const vk2::TimelineSemaphore> get_frame_sync_objects() const;
 		std::span<vk2::TimelineSemaphore> get_frame_sync_objects();
 		std::span<vk2::TimelineSemaphore> get_dependency_sync_objects();
 		std::uint64_t get_sync_id(std::size_t renderer_id) const;
@@ -158,6 +159,8 @@ namespace tz::gl
 		void dbgui();
 		void begin_frame(){}
 		void end_frame();
+		void full_wait() const;
+		void frame_wait() const;
 	};
 	static_assert(device_type<device_vulkan2, renderer_info>);
 }

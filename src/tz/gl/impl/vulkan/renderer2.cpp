@@ -1402,7 +1402,7 @@ namespace tz::gl
 		{
 			return;
 		}
-		tz::gl::get_device().vk_get_logical_device().wait_until_idle();
+		tz::gl::get_device().full_wait();
 		edit_side_effects side_effects = {};
 		bool resource_writes = false;
 		for(const auto& edit : req)

@@ -405,6 +405,11 @@ namespace tz::gl
 		return {};
 	}
 
+	std::span<const vk2::TimelineSemaphore> device_render_sync::get_frame_sync_objects() const
+	{
+		return this->frame_syncs;
+	}
+
 	std::span<vk2::TimelineSemaphore> device_render_sync::get_frame_sync_objects()
 	{
 		return this->frame_syncs;
@@ -846,6 +851,18 @@ namespace tz::gl
 		device_vulkan_base::max_signal_rank_this_frame = 0;
 		tz::assert(device_vulkan_base::frame_signal_sent_this_frame);
 		device_vulkan_base::frame_signal_sent_this_frame = false;
+	}
+
+	void device_vulkan2::full_wait() const
+	{
+		TZ_PROFZONE("device_vulkan2 - full wait", 0xFFAAAA00);
+		device_vulkan_base::vk_get_logical_device().wait_until_idle();
+	}
+
+	void device_vulkan2::frame_wait() const
+	{
+		TZ_PROFZONE("device_vulkan2 - frame wait", 0xFFAAAA00);
+		device_render_sync::get_frame_sync_objects()[device_vulkan_base::old_frame_id].wait_for(device_vulkan_base::frame_counter);
 	}
 
 }
