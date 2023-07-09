@@ -25,19 +25,19 @@ namespace tz
 			switch(this->type)
 			{
 				case version_type::alpha:
-					suffix = "alpha";
+					suffix = " alpha";
 				break;
 				case version_type::beta:
-					suffix = "beta";
+					suffix = " beta";
 				break;
 				case version_type::rc:
-					suffix = "rc";
+					suffix = " release candidate";
 				break;
 				default:
 					suffix = "";
 				break;
 			}
-			return std::to_string(this->major) + "." + std::to_string(this->minor) + "." + std::to_string(this->patch) + std::string{" "} + suffix;
+			return std::to_string(this->major) + "." + std::to_string(this->minor) + "." + std::to_string(this->patch) + std::string(suffix);
 		}
 
 		static version from_string(std::string_view sv)
