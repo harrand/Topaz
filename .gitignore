@@ -6,6 +6,9 @@ extern/
 build/
 tracy_server/
 
+# Big binaries
+*.glb
+
 # I don't want the idea directory in my repo at all
 .idea
 # No vim cache either
