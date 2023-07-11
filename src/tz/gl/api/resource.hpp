@@ -11,7 +11,7 @@ namespace tz::gl
 
 	/**
 	 * @ingroup tz_gl2_res
-	 * <a href="https://github.com/harrand/Topaz/wiki/Renderer-Resources">Resources</a> 
+	 * Specifies the type of the resource; which is how a renderer or Processor will interpret the usage of the resource within a shader.
 	 */
 	enum class resource_type
 	{

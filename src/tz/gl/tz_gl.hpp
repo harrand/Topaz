@@ -26,7 +26,7 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_gl2
 	 * @defgroup tz_gl2_res Resources
-	 * Documentation for renderer and Processor resources. Namely, buffers and images.
+	 * <a href="https://github.com/harrand/Topaz/wiki/Renderer-Resources">Resources Wiki</a> 
 	 */
 
 	/**
