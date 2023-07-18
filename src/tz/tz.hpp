@@ -50,6 +50,8 @@ namespace tz
 
 	enum class application_flag
 	{
+		no_graphics,
+		no_dbgui,
 		window_hidden,
 		window_noresize,
 		window_transparent,

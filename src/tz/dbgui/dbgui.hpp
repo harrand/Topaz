@@ -24,6 +24,8 @@ namespace tz::dbgui
 	{
 		/// Information about the running application.
 		tz::game_info game_info;
+		bool graphics_enabled;
+		bool dbgui_enabled;
 	};
 
 	/**

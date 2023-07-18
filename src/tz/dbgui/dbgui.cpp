@@ -30,6 +30,7 @@ namespace tz::dbgui
 {
 	struct TopazPlatformData
 	{
+		bool enabled = true;
 		tz::game_info game_info;
 		tz::wsi::keyboard_state kb_state;
 		tz::wsi::mouse_state mouse_state;
@@ -58,7 +59,7 @@ namespace tz::dbgui
 
 	void imgui_impl_handle_inputs();
 
-	bool imgui_impl_tz_init();
+	bool imgui_impl_tz_init(const init_info& info);
 	void imgui_impl_tz_term();
 	void imgui_impl_render();
 	void imgui_impl_begin_commands();
@@ -77,7 +78,7 @@ namespace tz::dbgui
 		TZ_PROFZONE("tz::dbgui::initialise", 0xFFAA00AA);
 		#if TZ_DEBUG
 			global_info = info.game_info;
-			bool ret = imgui_impl_tz_init();
+			bool ret = imgui_impl_tz_init(info);
 			tz::assert(ret, "Failed to initialise tz imgui backend.");
 		#endif // TZ_DEBUG
 	}
@@ -94,6 +95,10 @@ namespace tz::dbgui
 	{
 		TZ_PROFZONE("tz::dbgui::begin_frame", 0xFFAA00AA);
 		#if TZ_DEBUG
+			if(!global_platform_data->enabled)
+			{
+				return;
+			}
 			ImGuiIO& io = ImGui::GetIO();
 			auto dims = tz::window().get_dimensions();
 			io.DisplaySize = ImVec2
@@ -109,6 +114,10 @@ namespace tz::dbgui
 	{
 		TZ_PROFZONE("tz::dbgui::end_frame", 0xFFAA00AA);
 		#if TZ_DEBUG
+			if(!global_platform_data->enabled)
+			{
+				return;
+			}
 			ImGui::EndFrame();
 			ImGui::Render();
 			imgui_impl_render();
@@ -312,11 +321,21 @@ namespace tz::dbgui
 		#endif // TZ_DEBUG
 	}
 
-	bool imgui_impl_tz_init()
+	bool imgui_impl_tz_init(const init_info& info)
 	{
 		ImGui::CreateContext();
 		global_platform_data = new TopazPlatformData;
 		global_render_data = new TopazRenderData;
+
+		if(info.dbgui_enabled && info.graphics_enabled)
+		{
+			global_platform_data->enabled = true;
+		}
+		else
+		{
+			global_platform_data->enabled = false;
+			return true;
+		}
 
 		ImGuiIO& io = ImGui::GetIO();
 		tz::assert(io.BackendPlatformUserData == NULL, "Already initialised imgui backend!");
@@ -410,6 +429,11 @@ namespace tz::dbgui
 	void imgui_impl_render()
 	{
 		TZ_PROFZONE("Dbgui Render", 0xFFAA00AA);
+
+		if(!global_platform_data->enabled)
+		{
+			return;
+		}
 
 		ImDrawData* draw = ImGui::GetDrawData();
 		tz::assert(draw != nullptr, "Null imgui draw data!");

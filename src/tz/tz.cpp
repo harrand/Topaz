@@ -59,6 +59,7 @@ namespace tz
 			});
 		}
 		// Finally, initialise render backends.
+		if(!init.flags.contains(tz::application_flag::no_graphics))
 		{
 			#if TZ_VULKAN
 				tz::gl::vk2::initialise(game_info);
@@ -69,7 +70,12 @@ namespace tz
 		initialised = true;
 		init_info = init;
 
-		tz::dbgui::initialise({.game_info = game_info});
+		tz::dbgui::initialise
+		({
+	   		.game_info = game_info,
+	   		.graphics_enabled = !init.flags.contains(tz::application_flag::no_graphics),
+	   		.dbgui_enabled = !init.flags.contains(tz::application_flag::no_dbgui)
+		});
 	}
 
 	void terminate()
@@ -77,12 +83,15 @@ namespace tz
 		TZ_PROFZONE("Topaz Terminate", 0xFF0000AA);
 		tz::assert(wnd != tz::nullhand && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
+		if(!init_info.flags.contains(tz::application_flag::no_graphics))
+		{
 		tz::gl::destroy_device();
 		#if TZ_VULKAN
 			tz::gl::vk2::terminate();
 		#elif TZ_OGL
 			tz::gl::ogl2::terminate();
 		#endif
+		}
 
 		tz::wsi::destroy_window(wnd);
 		wnd = tz::nullhand;
@@ -96,14 +105,20 @@ namespace tz
 		TZ_FRAME_BEGIN;
 		tz::dbgui::begin_frame();
 		tz::job_system().new_frame();
-		tz::gl::get_device().begin_frame();
+		if(!init_info.flags.contains(tz::application_flag::no_graphics))
+		{
+			tz::gl::get_device().begin_frame();
+		}
 	}
 
 	void end_frame()
 	{
 		tz::dbgui::end_frame();
 		tz::wsi::update();
-		tz::gl::get_device().end_frame();
+		if(!init_info.flags.contains(tz::application_flag::no_graphics))
+		{
+			tz::gl::get_device().end_frame();
+		}
 		TZ_FRAME_END;
 	}
 
