@@ -48,15 +48,25 @@ namespace tz
 	 * Documentation for custom Topaz algorithms. These do not attempt to replace standard library algorithms, but in niché circumstances these may come in useful.
 	 */
 
+	/**
+	 * @ingroup tz_core
+	 * Represents custom functionality to be enabled/disabled during initialisation.
+	 */
 	enum class application_flag
 	{
+		/// - Disables all graphics and rendering.
 		no_graphics,
+		/// - Disable all debug-ui functionality.
 		no_dbgui,
+		/// - The created window is invisible.
 		window_hidden,
+		/// - The created window cannot be resized.
 		window_noresize,
+		/// - The created window is transparent, meaning a translucent clear colour is respected.
 		window_transparent,
 	};
 
+	/// A set of @ref tz::application_flag
 	using application_flags = tz::enum_field<application_flag>;
 
 	/**
