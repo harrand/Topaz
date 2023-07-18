@@ -837,13 +837,17 @@ div.header {
     background-image: none;
 }
 
+/*
+* HH disable.
 div.contents, div.header .title, div.header .summary {
     max-width: var(--content-maxwidth);
 }
+*/
 
 div.contents, div.header .title  {
     line-height: initial;
-    margin: calc(var(--spacing-medium) + .2em) auto var(--spacing-medium) auto;
+    /*margin: calc(var(--spacing-medium) + .2em) auto var(--spacing-medium) auto;*/
+	margin-left: var(--spacing-large)
 }
 
 div.header .summary {

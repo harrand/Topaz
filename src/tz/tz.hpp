@@ -129,11 +129,10 @@ namespace tz
 /*! @mainpage Home
  * ## Introduction
  *
- * Welcome to the home page of the Topaz documentation. Here you can find detailed information about the vast majority of modules, classes and functions within the Topaz engine.
- *
- * If you've come here looking for documentation for a specific topaz technology, you can view documentation for all modules at your heart's content. Oftentimes you will find usages of most topaz functionality in the existing demos and tests.
- *
- * If you're looking for an introduction to the engine, you're best suited to visiting [the wiki](https://github.com/Harrand/Topaz/wiki).
+ * Welcome to the Topaz documentation.
+ * - To read documentation for a specific API function or type, you should try searching for it using the searchbox above.
+ * - To read documentation for a subsystem/module, you can navigate to the @ref tz_cpp or @ref tzsl sections.
+ * - If you're still learning the basics, or need a general overview of the engine, you'd prefer [the wiki](https://github.com/harrand/Topaz/wiki).
  *
  * ## Links
  * These might come in useful, or you might find some of these interesting.

@@ -28,12 +28,6 @@ namespace tz::core
 	{
 		bool is_initialised();
 	}
-
-	/*! @mainpage Home
-	 * ## Introduction
-	 *
-	 * Welcome to the home page of the tz documentation. Here you can find detailed information about the vast majority of modules, classes and functions within tz.
-	 */
 }
 
 #endif // TZ_HPP
