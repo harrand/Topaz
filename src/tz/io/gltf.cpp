@@ -237,21 +237,41 @@ namespace tz::io
 		// finally, do indices.
 		gltf_accessor indices = this->accessors[submesh.indices_accessor];
 		std::size_t index_count = indices.element_count;
-		tz::assert(indices.component_type == gltf_accessor_component_type::ushort);
 		tz::assert(indices.type == gltf_accessor_type::scalar, "indices should be scalars. not sure whats going on there.");
 		gltf_buffer_view indices_view = this->views[indices.buffer_view_id];
+
 		std::span<const std::byte> indices_data = this->get_binary_data(indices_view.offset, indices_view.length);
 		ret.indices.resize(index_count);
 		std::vector<unsigned short> indices_intermediate;
 		indices_intermediate.resize(index_count);
 
 		std::memcpy(indices_intermediate.data(), indices_data.data(), sizeof(unsigned short) * index_count);
-		std::transform(indices_intermediate.begin(), indices_intermediate.end(), ret.indices.begin(),
-		[](unsigned short s) -> std::uint32_t
+		#define EVIL_DO_TRANSFORM_BASED_ON(type) std::transform(indices_intermediate.begin(), indices_intermediate.end(), ret.indices.begin(),[](type t) -> std::uint32_t{return static_cast<std::uint32_t>(t);})
+		//EVIL_DO_TRANSFORM_BASED_ON(unsigned short);
+		switch(indices.component_type)
 		{
-			// just do implicit conversion.
-			return s;
-		});
+			case gltf_accessor_component_type::sbyte:
+				EVIL_DO_TRANSFORM_BASED_ON(signed char);
+			break;
+			case gltf_accessor_component_type::ubyte:
+				EVIL_DO_TRANSFORM_BASED_ON(unsigned char);
+			break;
+			case gltf_accessor_component_type::sshort:
+				EVIL_DO_TRANSFORM_BASED_ON(std::int16_t);	
+			break;
+			case gltf_accessor_component_type::ushort:
+				EVIL_DO_TRANSFORM_BASED_ON(std::uint16_t);
+			break;
+			case gltf_accessor_component_type::uint:
+				EVIL_DO_TRANSFORM_BASED_ON(std::uint32_t);
+			break;
+			case gltf_accessor_component_type::flt:
+				EVIL_DO_TRANSFORM_BASED_ON(float);
+			break;
+			default:
+				tz::error("unrecognised accessor component type");
+			break;
+		}
 
 		std::vector<gltf_submesh_texture_data> bound_textures = {};
 		if(submesh.material_id != static_cast<std::size_t>(-1))
@@ -319,6 +339,7 @@ namespace tz::io
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
 		this->load_resources();
+		this->create_animations();
 		this->create_images();
 		this->create_materials();
 		this->create_views();
@@ -417,6 +438,97 @@ namespace tz::io
 				this->resources.push_back(this->load_buffer(buf));
 			}
 		}	
+	}
+
+	void gltf::create_animations()
+	{
+		TZ_PROFZONE("gltf - create animations", 0xFFFF2222);
+		json anims = this->data["animations"];
+		tz::assert(anims.is_array() || anims.is_null());
+		if(anims.is_array())
+		{
+			for(auto anim : anims)
+			{
+				std::string name = "Unnamed";
+				if(anim["name"].is_string())
+				{
+					name = anim["name"];
+				}
+
+				std::vector<gltf_animation_sampler> samplers;
+				
+				tz::assert(anim["samplers"].is_array());
+				for(auto samp : anim["samplers"])
+				{
+					tz::assert(samp["interpolation"].is_string());
+					std::string erp = samp["interpolation"];
+					gltf_animation_key_interpolation interp = gltf_animation_key_interpolation::linear;
+					if(erp == "LINEAR")
+					{
+						interp = gltf_animation_key_interpolation::linear;
+					}
+					else if(erp == "STEP")
+					{
+						interp = gltf_animation_key_interpolation::step;
+					}
+					else if(erp == "CUBICSPLINE")
+					{
+						interp = gltf_animation_key_interpolation::cubic_spline;
+					}
+					else
+					{
+						tz::error("Unexpected animation sampler key interpolation \"%s\". Should be either \"LINEAR\", \"STEP\", or \"CUBICSPLINE\".", erp.c_str());
+					}
+					samplers.push_back
+					({
+						.input = samp["input"],
+		  				.output = samp["output"],
+		  				.interpolation = interp
+					});
+				}
+
+				std::vector<gltf_animation_channel> channels;
+
+				tz::assert(anim["channels"].is_array());
+				for(auto chan : anim["channels"])
+				{
+					auto tar = chan["target"];
+					tz::assert(tar.is_object());
+					tz::assert(!tar["node"].is_null());
+					gltf_animation_channel_target_path path = gltf_animation_channel_target_path::rotation;
+					std::string path_str = tar["path"];
+					if(path_str == "translation")
+					{
+						path = gltf_animation_channel_target_path::translation;
+					}
+					else if(path_str == "rotation")
+					{
+						path = gltf_animation_channel_target_path::rotation;
+					}
+					else if(path_str == "scale")
+					{
+						path = gltf_animation_channel_target_path::scale;
+					}
+					else if(path_str == "weights")
+					{
+						path = gltf_animation_channel_target_path::weights;
+					}
+					else
+					{
+						tz::error("Unexpected animation channel target path \"%s\". Should be either \"translation\", \"rotation\", \"scale\", or \"weights\".", path_str.c_str());
+					}
+					channels.push_back
+					({
+						.sampler_id = chan["sampler"],
+		  				.target =
+		  				{
+							.node = static_cast<std::size_t>(tar["node"]),
+			  				.path = path
+						}
+					});
+				}
+			}
+		}
 	}
 
 	void gltf::create_images()
@@ -567,11 +679,17 @@ namespace tz::io
 				{
 					t = static_cast<gltf_buffer_view_type>(view["target"]);
 				}
+				// byteOffset is optional - defaults to 0.
+				std::size_t offset = 0;
+				if(view["byteOffset"].is_number())
+				{
+					offset = view["byteOffset"];
+				}
 				this->views.push_back
 				({
 					.buffer_id = 0,
 		 			.type = t,
-		 			.offset = view["byteOffset"],
+		 			.offset = offset,
 		 			.length = view["byteLength"]
 				});
 			}

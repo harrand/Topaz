@@ -10,6 +10,7 @@ namespace tz
 	 * A collection of platform-agnostic core interfaces.
 	 * @{
 	 */
+
 	/**
 	 * Represents information about the current engine used.
 	 * @note This struct is within the Initial Group.

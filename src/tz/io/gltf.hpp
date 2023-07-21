@@ -139,6 +139,47 @@ namespace tz::io
 		std::vector<submesh> submeshes = {};
 	};
 
+	enum class gltf_animation_channel_target_path
+	{
+		translation,
+		rotation,
+		scale,
+		weights
+	};
+
+	struct gltf_animation_channel_target
+	{
+		std::size_t node;
+		gltf_animation_channel_target_path path;
+	};
+
+	struct gltf_animation_channel
+	{
+		std::size_t sampler_id;
+		gltf_animation_channel_target target;
+	};
+
+	enum class gltf_animation_key_interpolation
+	{
+		linear,
+		step,
+		cubic_spline
+	};
+
+	struct gltf_animation_sampler
+	{
+		float input;
+		float output;
+		gltf_animation_key_interpolation interpolation;
+	};
+
+	struct gltf_animation
+	{
+		std::string name = "Unnamed";
+		std::vector<gltf_animation_channel> channels = {};
+		std::vector<gltf_animation_sampler> samplers = {};
+	};
+
 	enum class gltf_image_type
 	{
 		png,
@@ -220,6 +261,7 @@ namespace tz::io
 		void parse_header(std::string_view header);
 		void parse_chunks(std::string_view chunkdata);
 		void load_resources();
+		void create_animations();
 		void create_images();
 		void create_materials();
 		void create_views();
@@ -233,6 +275,7 @@ namespace tz::io
 		std::vector<gltf_chunk_data> chunks = {};
 		json data = {};
 		std::vector<gltf_resource> resources = {};
+		std::vector<gltf_animation> animations = {};
 		std::vector<gltf_image> images = {};
 		std::vector<gltf_material> materials = {};
 		std::vector<gltf_buffer_view> views = {};
