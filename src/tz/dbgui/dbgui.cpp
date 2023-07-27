@@ -693,6 +693,10 @@ namespace tz::dbgui
 			//ImGui::Text("Minimised = %s", wnd.is_minimised() ? "true" : "false");
 			//ImGui::Text("Maximised = %s", wnd.is_maximised() ? "true" : "false");
 			//ImGui::Text("Focused = %s", wnd.is_focused() ? "true" : "false");
+			if(ImGui::Button("Close"))
+			{
+				wnd.request_close();
+			}
 			ImGui::End();
 		}
 

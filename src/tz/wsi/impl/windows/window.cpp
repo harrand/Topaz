@@ -90,6 +90,13 @@ namespace tz::wsi::impl
 
 //--------------------------------------------------------------------------------------------------
 
+	void window_winapi::request_close()
+	{
+		this->close_requested = true;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	bool window_winapi::is_close_requested() const
 	{
 		return this->close_requested;

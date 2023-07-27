@@ -38,6 +38,11 @@ namespace tz::wsi::impl
 		return this->wnd;
 	}
 
+	void window_x11::request_close()
+	{
+		this->close_requested = true;
+	}
+
 	bool window_x11::is_close_requested() const
 	{
 		return this->close_requested;
@@ -77,7 +82,7 @@ namespace tz::wsi::impl
 	void window_x11::update()
 	{
 		XEvent* evt = impl::get_current_event();
-		if(evt == nullptr || evt->xclient.window != this->wnd) return;
+		if(evt == nullptr || evt->xclient.window != this->wnd || this->close_requested) return;
 		XEvent e = *evt;
 		if(e.type == Expose)
 		{

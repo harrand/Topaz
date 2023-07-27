@@ -19,6 +19,7 @@ namespace tz::wsi::impl
 		// tz::wsi::window_api<> begin
 		using native = HWND;
 		native get_native() const;
+		void request_close();
 		bool is_close_requested() const;
 		tz::vec2ui get_dimensions() const;
 		void set_dimensions(tz::vec2ui dimensions);
