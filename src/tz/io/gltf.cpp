@@ -1,6 +1,7 @@
 #include "tz/io/gltf.hpp"
 #include "tz/core/debug.hpp"
 #include "tz/core/profile.hpp"
+#include "tz/core/matrix_transform.hpp"
 #include <regex>
 #include <fstream>
 
@@ -101,6 +102,26 @@ namespace tz::io
 	std::span<const gltf_image> gltf::get_images() const
 	{
 		return this->images;
+	}
+
+	std::span<const gltf_node> gltf::get_nodes() const
+	{
+		return this->nodes;
+	}
+	
+	std::vector<gltf_node> gltf::get_active_nodes() const
+	{
+		if(this->active_scene_id == detail::badzu)
+		{
+			return {};
+		}
+		std::vector<gltf_node> top_level_nodes = {};
+		const gltf_scene& scene = this->scenes[this->active_scene_id];
+		for(std::size_t node_id : scene.nodes)
+		{
+			top_level_nodes.push_back(this->nodes[node_id]);
+		}
+		return top_level_nodes;
 	}
 
 	gltf_submesh_data gltf::get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const
@@ -338,6 +359,12 @@ namespace tz::io
 		TZ_PROFZONE("gltf - import", 0xFFFF2222);
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
+		if(this->data["scene"].is_number_integer())
+		{
+			this->active_scene_id = this->data["scene"];
+		}
+		this->create_scenes();
+		this->create_nodes();
 		this->load_resources();
 		this->create_animations();
 		this->create_images();
@@ -420,6 +447,115 @@ namespace tz::io
 		}
 		chunkdata.remove_prefix(length);
 		this->parse_chunks(chunkdata);
+	}
+
+	void gltf::create_scenes()
+	{
+		TZ_PROFZONE("gltf - create scenes", 0xFFFF2222);
+		json scenes = this->data["scenes"];
+		tz::assert(scenes.is_array() || scenes.is_null());
+		if(scenes.is_array())
+		{
+			for(auto jscene : scenes)
+			{
+				auto& scene = this->scenes.emplace_back();
+				if(jscene["name"].is_string())
+				{
+					scene.name = jscene["name"];
+				}
+				if(jscene["nodes"].is_array())
+				{
+					for(std::size_t node_id : jscene["nodes"])
+					{
+						scene.nodes.push_back(node_id);
+					}
+				}
+			}
+		}
+	}
+
+	void gltf::create_nodes()
+	{
+		TZ_PROFZONE("gltf - create nodes", 0xFFFF2222);
+		json nodes = this->data["nodes"];
+		tz::assert(nodes.is_array() || nodes.is_null());
+		if(nodes.is_array())
+		{
+			for(auto jnode : nodes)
+			{
+				auto& node = this->nodes.emplace_back();
+				tz::assert(jnode["camera"].is_null(), "Node camera is not supported.");
+				tz::assert(jnode["children"].is_array() || jnode["children"].is_null());
+				if(jnode["children"].is_array())
+				{
+					for(std::size_t jchild : jnode["children"])
+					{
+						node.children.push_back(jchild);
+					}
+				}
+				tz::assert(jnode["skin"].is_null(), "Node skin is not supported");
+				if(jnode["matrix"].is_array())
+				{
+					for(std::size_t i = 0; i < 16; i++)
+					{
+						node.transform(i / 4, i % 4) = jnode["matrix"][i];
+					}
+				}
+				else
+				{
+					tz::vec3 pos = tz::vec3::zero();
+					tz::vec3 rot = tz::vec3::zero();
+					tz::vec3 scale = tz::vec3::filled(1.0f);
+					// TODO: handle pos, rot and scale
+					if(jnode["translation"].is_array())
+					{
+						for(std::size_t i = 0; i < 3; i++)
+						{
+							pos[i] = jnode["translation"][i];
+						}
+					}
+					if(jnode["rotation"].is_array())
+					{
+						tz::vec4 q;
+						for(std::size_t i = 0; i < 4; i++)
+						{
+							q[i] = jnode["rotation"][i];
+						}
+						// convert quat to euler.
+						float sinr_cosp = 2.0f * (q[3] * q[0] + q[1] * q[2]);
+						float cosr_cosp = 1.0f - 2.0f * (q[0] * q[0] + q[1] * q[1]);
+
+						rot[2] = std::atan2(sinr_cosp, cosr_cosp);
+
+						float sinp = std::sqrt(1.0f + 2.0f * (q[3] * q[1] - q[0] * q[2]));
+						float cosp = std::sqrt(1.0f - 2.0f * (q[3] * q[1] - q[0] * q[2]));
+
+						rot[0] = 2.0f * std::atan2(sinp, cosp) - 3.14159f / 2.0f;
+
+						float siny_cosp = 2.0f * (q[3] * q[2] + q[0] * q[1]);
+						float cosy_cosp = 1.0f - 2.0f * (q[1] * q[1] + q[2] * q[2]);
+
+						rot[1] = std::atan2(siny_cosp, cosy_cosp);
+					}
+					if(jnode["scale"].is_array())
+					{
+						for(std::size_t i = 0; i < 3; i++)
+						{
+							scale[i] = jnode["scale"][i];
+						}
+					}
+					node.transform = tz::model(pos, rot, scale);
+				}
+				if(jnode["mesh"].is_number_integer())
+				{
+					node.mesh = jnode["mesh"];
+				}
+				if(jnode["name"].is_string())
+				{
+					node.name = jnode["name"];
+				}
+			}
+		}
 	}
 
 	void gltf::load_resources()

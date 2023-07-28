@@ -2,6 +2,7 @@
 #define TOPAZ_IO_GLTF_HPP
 #include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
+#include "tz/core/matrix.hpp"
 #include "tz/io/image.hpp"
 #include "nlohmann/json.hpp"
 #undef assert
@@ -44,6 +45,20 @@ namespace tz::io
 	{
 		std::size_t version = detail::badzu;
 		std::size_t size = detail::badzu;
+	};
+
+	struct gltf_scene
+	{
+		std::vector<std::size_t> nodes = {};
+		std::string name = "Unnamed Scene";
+	};
+
+	struct gltf_node
+	{
+		std::string name = "Unnamed Node";
+		std::size_t mesh = detail::badzu;
+		tz::mat4 transform = tz::mat4::identity();
+		std::vector<std::size_t> children = {};
 	};
 
 	enum class gltf_buffer_view_type
@@ -254,12 +269,16 @@ namespace tz::io
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
 		std::span<const gltf_mesh> get_meshes() const;
 		std::span<const gltf_image> get_images() const;
+		std::span<const gltf_node> get_nodes() const;
+		std::vector<gltf_node> get_active_nodes() const;
 		gltf_submesh_data get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const;
 		tz::io::image get_image_data(std::size_t imageid) const;
 	private:
 		gltf(std::string_view glb_data);
 		void parse_header(std::string_view header);
 		void parse_chunks(std::string_view chunkdata);
+		void create_scenes();
+		void create_nodes();
 		void load_resources();
 		void create_animations();
 		void create_images();
@@ -274,6 +293,9 @@ namespace tz::io
 		gltf_header header;
 		std::vector<gltf_chunk_data> chunks = {};
 		json data = {};
+		std::size_t active_scene_id = detail::badzu;
+		std::vector<gltf_scene> scenes = {};
+		std::vector<gltf_node> nodes = {};
 		std::vector<gltf_resource> resources = {};
 		std::vector<gltf_animation> animations = {};
 		std::vector<gltf_image> images = {};
