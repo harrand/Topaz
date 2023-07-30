@@ -372,6 +372,7 @@ namespace tz::io
 		this->create_nodes();
 		this->create_buffers();
 		this->create_images();
+		this->create_skins();
 		this->create_materials();
 		this->create_animations();
 		this->create_views();
@@ -498,7 +499,10 @@ namespace tz::io
 						node.children.push_back(jchild);
 					}
 				}
-				tz::assert(jnode["skin"].is_null(), "Node skin is not supported");
+				if(jnode["skin"].is_number_integer())
+				{
+					node.skin = jnode["skin"];
+				}
 				if(jnode["matrix"].is_array())
 				{
 					for(std::size_t i = 0; i < 16; i++)
@@ -703,6 +707,36 @@ namespace tz::io
 		 			.type = t,
 		 			.buffer_view_id = img["bufferView"],
 				});
+			}
+		}
+	}
+
+	void gltf::create_skins()
+	{
+		TZ_PROFZONE("gltf - create skins", 0xFFFF2222);
+		json jskins = this->data["skins"];	
+		if(jskins.is_array())
+		{
+			for(auto jskin : jskins)
+			{
+				auto& skin = this->skins.emplace_back();
+				if(jskin["inverseBindMatrices"].is_number_integer())
+				{
+					skin.inverse_bind_matrix_accessor_id = jskin["inverseBindMatrices"];
+				}
+				if(jskin["skeleton"].is_number_integer())
+				{
+					skin.skeleton_id = jskin["skeleton"];
+				}
+				tz::assert(jskin["joints"].is_array(), "A skin must have a joints array according to the gltf spec. Malformed GLB.");
+				for(std::size_t joint_id : jskin["joints"])
+				{
+					skin.joints.push_back(joint_id);
+				}
+				if(jskin["name"].is_string())
+				{
+					skin.name = jskin["name"];
+				}
 			}
 		}
 	}

@@ -51,6 +51,7 @@ namespace tz::io
 	{
 		std::string name = "Unnamed Node";
 		std::size_t mesh = detail::badzu;
+		std::size_t skin = detail::badzu;
 		tz::mat4 transform = tz::mat4::identity();
 		std::vector<std::size_t> children = {};
 	};
@@ -146,6 +147,14 @@ namespace tz::io
 
 		};
 		std::vector<submesh> submeshes = {};
+	};
+
+	struct gltf_skin
+	{
+		std::size_t inverse_bind_matrix_accessor_id = detail::badzu;
+		std::size_t skeleton_id = detail::badzu;
+		std::vector<std::size_t> joints = {};
+		std::string name = "Unnamed Skin";
 	};
 
 	enum class gltf_animation_channel_target_path
@@ -277,6 +286,7 @@ namespace tz::io
 		void create_buffers();
 		void create_images();
 		void create_materials();
+		void create_skins();
 		void create_animations();
 		void create_views();
 		void create_accessors();
@@ -294,6 +304,7 @@ namespace tz::io
 		std::vector<gltf_buffer> buffers = {};
 		std::vector<gltf_image> images = {};
 		std::vector<gltf_material> materials = {};
+		std::vector<gltf_skin> skins = {};
 		std::vector<gltf_animation> animations = {};
 		std::vector<gltf_buffer_view> views = {};
 		std::vector<gltf_accessor> accessors = {};
