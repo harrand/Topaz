@@ -16,13 +16,7 @@ namespace tz::io
 	}
 	using json = nlohmann::json;
 
-	enum class gltf_resource_type
-	{
-		buffer,
-		image
-	};
-
-	struct gltf_resource
+	struct gltf_buffer
 	{
 		std::string label;
 		std::span<const std::byte> data;
@@ -268,6 +262,7 @@ namespace tz::io
 		static gltf from_file(const char* path);
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
 		std::span<const gltf_mesh> get_meshes() const;
+		std::span<const gltf_buffer> get_buffers() const;
 		std::span<const gltf_image> get_images() const;
 		std::span<const gltf_node> get_nodes() const;
 		std::vector<gltf_node> get_active_nodes() const;
@@ -279,14 +274,14 @@ namespace tz::io
 		void parse_chunks(std::string_view chunkdata);
 		void create_scenes();
 		void create_nodes();
-		void load_resources();
-		void create_animations();
+		void create_buffers();
 		void create_images();
 		void create_materials();
+		void create_animations();
 		void create_views();
 		void create_accessors();
 		void create_meshes();
-		gltf_resource load_buffer(json node);
+		gltf_buffer load_buffer(json node);
 		gltf_mesh load_mesh(json node);
 		std::span<const std::byte> get_binary_data(std::size_t offset, std::size_t len) const;
 
@@ -296,10 +291,10 @@ namespace tz::io
 		std::size_t active_scene_id = detail::badzu;
 		std::vector<gltf_scene> scenes = {};
 		std::vector<gltf_node> nodes = {};
-		std::vector<gltf_resource> resources = {};
-		std::vector<gltf_animation> animations = {};
+		std::vector<gltf_buffer> buffers = {};
 		std::vector<gltf_image> images = {};
 		std::vector<gltf_material> materials = {};
+		std::vector<gltf_animation> animations = {};
 		std::vector<gltf_buffer_view> views = {};
 		std::vector<gltf_accessor> accessors = {};
 		std::vector<gltf_mesh> meshes = {};

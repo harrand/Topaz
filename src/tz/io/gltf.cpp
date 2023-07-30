@@ -99,6 +99,11 @@ namespace tz::io
 		return this->meshes;
 	}
 
+	std::span<const gltf_buffer> gltf::get_buffers() const
+	{
+		return this->buffers;
+	}
+
 	std::span<const gltf_image> gltf::get_images() const
 	{
 		return this->images;
@@ -365,10 +370,10 @@ namespace tz::io
 		}
 		this->create_scenes();
 		this->create_nodes();
-		this->load_resources();
-		this->create_animations();
+		this->create_buffers();
 		this->create_images();
 		this->create_materials();
+		this->create_animations();
 		this->create_views();
 		this->create_accessors();
 		this->create_meshes();
@@ -558,20 +563,17 @@ namespace tz::io
 		}
 	}
 
-	void gltf::load_resources()
+	void gltf::create_buffers()
 	{
-		TZ_PROFZONE("gltf - load resources", 0xFFFF2222);
-		// according to spec, top level buffers and images contain lists of 'buffer' and 'image' respectively.
+		TZ_PROFZONE("gltf - create buffers", 0xFFFF2222);
 		json buffers = this->data["buffers"];
 		tz::assert(buffers.is_array() || buffers.is_null());
-		json images = this->data["images"];
-		tz::assert(images.is_array() || images.is_null());
 
 		if(buffers.is_array())
 		{
 			for(auto buf : buffers)
 			{
-				this->resources.push_back(this->load_buffer(buf));
+				this->buffers.push_back(this->load_buffer(buf));
 			}
 		}	
 	}
@@ -898,7 +900,7 @@ namespace tz::io
 		}
 	}
 
-	gltf_resource gltf::load_buffer(json node)
+	gltf_buffer gltf::load_buffer(json node)
 	{
 		TZ_PROFZONE("gltf - load buffer", 0xFFFF2222);
 		std::string makeshift_bufname = "buffer" + std::to_string(this->parsed_buf_count);
