@@ -585,22 +585,20 @@ namespace tz::io
 	void gltf::create_animations()
 	{
 		TZ_PROFZONE("gltf - create animations", 0xFFFF2222);
-		json anims = this->data["animations"];
-		tz::assert(anims.is_array() || anims.is_null());
-		if(anims.is_array())
+		json janims = this->data["animations"];
+		tz::assert(janims.is_array() || janims.is_null());
+		if(janims.is_array())
 		{
-			for(auto anim : anims)
+			for(auto janim : janims)
 			{
-				std::string name = "Unnamed";
-				if(anim["name"].is_string())
+				auto& anim = this->animations.emplace_back();
+				if(janim["name"].is_string())
 				{
-					name = anim["name"];
+					anim.name = janim["name"];
 				}
-
-				std::vector<gltf_animation_sampler> samplers;
 				
-				tz::assert(anim["samplers"].is_array());
-				for(auto samp : anim["samplers"])
+				tz::assert(janim["samplers"].is_array());
+				for(auto samp : janim["samplers"])
 				{
 					tz::assert(samp["interpolation"].is_string());
 					std::string erp = samp["interpolation"];
@@ -619,9 +617,9 @@ namespace tz::io
 					}
 					else
 					{
-						tz::error("Unexpected animation sampler key interpolation \"%s\". Should be either \"LINEAR\", \"STEP\", or \"CUBICSPLINE\".", erp.c_str());
+						tz::error("Unexpected janimation sampler key interpolation \"%s\". Should be either \"LINEAR\", \"STEP\", or \"CUBICSPLINE\".", erp.c_str());
 					}
-					samplers.push_back
+					anim.samplers.push_back
 					({
 						.input = samp["input"],
 		  				.output = samp["output"],
@@ -629,10 +627,8 @@ namespace tz::io
 					});
 				}
 
-				std::vector<gltf_animation_channel> channels;
-
-				tz::assert(anim["channels"].is_array());
-				for(auto chan : anim["channels"])
+				tz::assert(janim["channels"].is_array());
+				for(auto chan : janim["channels"])
 				{
 					auto tar = chan["target"];
 					tz::assert(tar.is_object());
@@ -659,7 +655,7 @@ namespace tz::io
 					{
 						tz::error("Unexpected animation channel target path \"%s\". Should be either \"translation\", \"rotation\", \"scale\", or \"weights\".", path_str.c_str());
 					}
-					channels.push_back
+					anim.channels.push_back
 					({
 						.sampler_id = chan["sampler"],
 		  				.target =
