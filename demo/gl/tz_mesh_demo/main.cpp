@@ -14,7 +14,6 @@ struct dbgui_data_t
 	bool mesh_renderer_enabled = false;
 } dbgui_data;
 void dbgui_init();
-mesh_t create_cube_mesh(float sz);
 
 struct scene_t
 {
@@ -22,7 +21,7 @@ struct scene_t
 	std::vector<tz::io::image> images;
 };
 
-scene_t temp_debug_load_cube_gltf();
+scene_t load_gltf(const char* path);
 
 int main()
 {
@@ -33,7 +32,7 @@ int main()
 	{
 		dbgui_init();
 
-		scene_t scene = temp_debug_load_cube_gltf();
+		scene_t scene = load_gltf("../../demo/gl/tz_mesh_demo/res/sponza.glb");
 		std::vector<meshid_t> scene_meshes(scene.meshes.size());
 		std::vector<texid_t> scene_images(scene.images.size());
 		std::vector<std::vector<std::size_t>> mesh_bound_images(scene.meshes.size());
@@ -108,72 +107,12 @@ void dbgui_init()
 	});
 }
 
-mesh_t create_cube_mesh(float sz)
-{
-	return mesh_t
-	{
-		.vertices =
-		{
-			// BENNYBOX
-			vertex_t{.pos = {-sz, -sz, -sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
-			vertex_t{.pos = {-sz, sz, -sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
-			vertex_t{.pos = {sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
-			vertex_t{.pos = {sz, -sz, -sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, 0.0f, -1.0f}},
-
-			vertex_t{.pos = {-sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
-			vertex_t{.pos = {-sz, sz, sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
-			vertex_t{.pos = {sz, sz, sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
-			vertex_t{.pos = {sz, -sz, sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, 0.0f, 1.0f}},
-
-			vertex_t{.pos = {-sz, -sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
-			vertex_t{.pos = {-sz, -sz, sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
-			vertex_t{.pos = {sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
-			vertex_t{.pos = {sz, -sz, -sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, -1.0f, 0.0f}},
-
-			vertex_t{.pos = {-sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
-			vertex_t{.pos = {-sz, sz, sz}, .texc = {1.0f, 1.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
-			vertex_t{.pos = {sz, sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
-			vertex_t{.pos = {sz, sz, -sz}, .texc = {0.0f, 0.0f}, .nrm = {0.0f, 1.0f, 0.0f}},
-
-			vertex_t{.pos = {-sz, -sz, -sz}, .texc = {1.0f, 1.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
-			vertex_t{.pos = {-sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
-			vertex_t{.pos = {-sz, sz, sz}, .texc = {0.0f, 0.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
-			vertex_t{.pos = {-sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {-1.0f, 0.0f, 0.0f}},
-
-			vertex_t{.pos = {sz, -sz, -sz}, .texc = {1.0f, 1.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
-			vertex_t{.pos = {sz, -sz, sz}, .texc = {1.0f, 0.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
-			vertex_t{.pos = {sz, sz, sz}, .texc = {0.0f, 0.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
-			vertex_t{.pos = {sz, sz, -sz}, .texc = {0.0f, 1.0f}, .nrm = {1.0f, 0.0f, 0.0f}},
-		},
-		.indices =
-		{
-			0, 1, 2,
-			0, 2, 3,
-
-			6, 5, 4,
-			7, 6, 4,
-
-			10, 9, 8,
-			11, 10, 8,
-
-			12, 13, 14,
-			12, 14, 15,
-
-			16, 17, 18,
-			16, 18, 19,
-
-			22, 21, 20,
-			23, 22, 20
-		}
-	};
-}
-
-scene_t temp_debug_load_cube_gltf()
+scene_t load_gltf(const char* path)
 {
 	TZ_PROFZONE("Load GLTF", 0xFF44DD44);
 	scene_t ret;
 
-	tz::io::gltf cube = tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb");
+	tz::io::gltf cube = tz::io::gltf::from_file(path);
 	for(std::size_t i = 0; i < cube.get_meshes().size(); i++)
 	{
 		const tz::io::gltf_mesh& m = cube.get_meshes()[i];
