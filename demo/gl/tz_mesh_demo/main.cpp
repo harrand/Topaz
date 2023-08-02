@@ -1,13 +1,10 @@
 #include "tz/tz.hpp"
 #include "tz/core/job/job.hpp"
 #include "tz/core/profile.hpp"
-#include "tz/core/imported_text.hpp"
 #include "tz/core/time.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/io/gltf.hpp"
 #include "mesh_renderer.hpp"
-
-#include ImportedTextHeader(cube, glb)
 
 struct dbgui_data_t
 {

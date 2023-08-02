@@ -233,8 +233,8 @@ namespace tz::io
 		tz::vec3 tangent;
 		std::array<tz::vec2, gltf_max_texcoord_attribs> texcoordn;
 		std::array<tz::vec3, gltf_max_color_attribs> colorn;
-		// TODO: joints
-		// TODO: weights
+		std::array<tz::vec4us, gltf_max_joint_attribs> jointn;
+		std::array<tz::vec4, gltf_max_weight_attribs> weightn;
 	};
 
 	enum class gltf_submesh_texture_type

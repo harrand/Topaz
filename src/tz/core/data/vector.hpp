@@ -206,6 +206,21 @@ namespace tz
 	/// A vector of four floats.
 	using vec4 = vector<float, 4>;
 
+
+	/// A vector of two shorts.
+	using vec2s = vector<short, 2>;
+	/// A vector of three shorts.
+	using vec3s = vector<short, 3>;
+	/// A vector of four shorts.
+	using vec4s = vector<short, 4>;
+
+	/// A vector of two unsigned shorts.
+	using vec2us = vector<unsigned short, 2>;
+	/// A vector of three shorts.
+	using vec3us = vector<unsigned short, 3>;
+	/// A vector of four shorts.
+	using vec4us = vector<unsigned short, 4>;
+
 	/// A vector of two ints.
 	using vec2i = vector<int, 2>;
 	/// A vector of three ints.

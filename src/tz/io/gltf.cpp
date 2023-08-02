@@ -203,6 +203,40 @@ namespace tz::io
 			}
 		}
 
+		// JOINTN
+		std::array<std::size_t, gltf_max_joint_attribs> jointids;
+		std::array<std::optional<gltf_accessor>, gltf_max_joint_attribs> joints;
+		for(std::size_t i = 0; i < gltf_max_joint_attribs; i++)
+		{
+			jointids[i] = submesh.accessors[(int)gltf_attribute::joint0 + i];
+			if(jointids[i] != detail::badzu)
+			{
+				joints[i] = this->accessors[jointids[i]];
+				tz::assert(joints[i]->component_type == gltf_accessor_component_type::ushort, "Joint attribute was expected to be unsigned shorts.");
+				tz::assert(joints[i]->type == gltf_accessor_type::vec4, "Joints expected to be vec4.");
+				tz::assert(joints[i]->element_count == vertex_count, "Number of joints did not match number of positions.");
+			}
+			else
+			{
+				joints[i] = std::nullopt;
+			}
+		}
+
+		// WEIGHTN
+		std::array<std::size_t, gltf_max_weight_attribs> weightids;
+		std::array<std::optional<gltf_accessor>, gltf_max_weight_attribs> weights;
+		for(std::size_t i = 0; i < gltf_max_weight_attribs; i++)
+		{
+			weightids[i] = submesh.accessors[(int)gltf_attribute::weight0 + i];
+			if(weightids[i] != detail::badzu)
+			{
+				weights[i] = this->accessors[weightids[i]];
+				tz::assert(weights[i]->component_type == gltf_accessor_component_type::flt, "Weight attribute was expected to be float.");
+				tz::assert(weights[i]->type == gltf_accessor_type::vec4, "Weights expected to be vec4.");
+				tz::assert(weights[i]->element_count == vertex_count, "Number of weight did not match number of positions.");
+			}
+		}
+
 		// 2
 		ret.vertices.reserve(vertex_count);
 
@@ -236,6 +270,30 @@ namespace tz::io
 			}
 		}
 
+		// JOINTN
+		std::array<std::span<const std::byte>, gltf_max_joint_attribs> joint_datas;
+		for(std::size_t i = 0; i < gltf_max_joint_attribs; i++)
+		{
+			if(joints[i].has_value())
+			{
+				gltf_buffer_view joint_view = this->views[joints[i]->buffer_view_id];
+				joint_datas[i] = this->get_binary_data(joint_view.offset, joint_view.length);
+			}
+		}
+
+		// WEIGHTN
+		std::array<std::span<const std::byte>, gltf_max_weight_attribs> weight_datas;
+		for(std::size_t i = 0; i < gltf_max_weight_attribs; i++)
+		{
+			if(weights[i].has_value())
+			{
+				gltf_buffer_view weight_view = this->views[weights[i]->buffer_view_id];
+				weight_datas[i] = this->get_binary_data(weight_view.offset, weight_view.length);
+			}
+		}
+
+		constexpr std::size_t vec4us_stride = sizeof(unsigned short) * 4;
+		constexpr std::size_t vec4_stride = sizeof(float) * 4;
 		constexpr std::size_t vec3_stride = sizeof(float) * 3;
 		constexpr std::size_t vec2_stride = sizeof(float) * 2;
 		for(std::size_t i = 0; i < vertex_count; i++)
@@ -256,6 +314,22 @@ namespace tz::io
 				if(colors[j].has_value())
 				{
 					std::memcpy(vtx.colorn[j].data().data(), color_datas[j].data() + (vec3_stride * i), sizeof(float) * 3);
+				}
+			}
+
+			for(std::size_t j = 0; j < gltf_max_joint_attribs; j++)
+			{
+				if(joints[j].has_value())
+				{
+					std::memcpy(vtx.jointn[j].data().data(), joint_datas[j].data() + (vec4us_stride * i), sizeof(unsigned short) * 4);
+				}
+			}
+
+			for(std::size_t j = 0; j < gltf_max_weight_attribs; j++)
+			{
+				if(weights[j].has_value())
+				{
+					std::memcpy(vtx.weightn[j].data().data(), weight_datas[j].data() + (vec4_stride * i), sizeof(float) * 4);
 				}
 			}
 		}
@@ -1036,26 +1110,26 @@ namespace tz::io
 			// joints.
 			for(int i = 0; i < gltf_max_joint_attribs; i++)
 	  		{
-				std::string keyname = "JOINT_" + std::to_string(i);
+				std::string keyname = "JOINTS_" + std::to_string(i);
 				if(!prim["attributes"][keyname.c_str()].is_null())
 				{
 					attribs |= static_cast<gltf_attribute>((int)gltf_attribute::joint0 + i);
 					submesh.accessors[(int)gltf_attribute::joint0 + i] = prim["attributes"][keyname.c_str()];
 				}
 			}
-			std::string joint_large = "JOINT_" + std::to_string((int)gltf_attribute::joint0 + gltf_max_joint_attribs);
+			std::string joint_large = "JOINTS_" + std::to_string((int)gltf_attribute::joint0 + gltf_max_joint_attribs);
 			tz::assert(prim["attributes"][joint_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", joint_large.c_str(), gltf_max_joint_attribs);
 			// weights.
 			for(int i = 0; i < gltf_max_weight_attribs; i++)
 	  		{
-				std::string keyname = "WEIGHT_" + std::to_string(i);
+				std::string keyname = "WEIGHTS_" + std::to_string(i);
 				if(!prim["attributes"][keyname.c_str()].is_null())
 				{
 					attribs |= static_cast<gltf_attribute>((int)gltf_attribute::weight0 + i);
 					submesh.accessors[(int)gltf_attribute::weight0 + i] = prim["attributes"][keyname.c_str()];
 				}
 			}
-			std::string weight_large = "WEIGHT_" + std::to_string((int)gltf_attribute::weight0 + gltf_max_weight_attribs);
+			std::string weight_large = "WEIGHTS_" + std::to_string((int)gltf_attribute::weight0 + gltf_max_weight_attribs);
 			tz::assert(prim["attributes"][weight_large.c_str()].is_null(), "Detected GLTF attribute %s on a submesh, but we only support upto %d of those", weight_large.c_str(), gltf_max_weight_attribs);
 			
 			submesh.material_id = -1;
