@@ -92,6 +92,40 @@ namespace tz::lua
 		return ret;
 	}
 
+	std::string state::collect_stack() const
+	{
+		if(!this->impl_check_stack(3))
+		{
+			return "<cant collect - oom>";
+		}
+		std::string ret;
+
+		auto* s = static_cast<lua_State*>(this->lstate);
+		int top = lua_gettop(s);
+		int bottom = 1;
+		ret = "=== stack (size: " + std::to_string(top - bottom + 1) + ") ===\n";
+		lua_getglobal(s, "tostring");
+		for(int i = top; i >= bottom; i--)
+		{
+			lua_pushvalue(s, -1);
+			lua_pushvalue(s, i);
+			lua_pcall(s, 1, 1, 0);
+			const char* str = lua_tostring(s, -1);
+			ret += std::string(">") + std::to_string(i) + ": ";
+			if(str == nullptr)
+			{
+				ret += luaL_typename(s, i) + std::string("\n");
+			}
+			else
+			{
+				ret += str + std::string("\n");
+			}
+			lua_pop(s, 1);
+		}
+		lua_pop(s, 1);
+		return ret + "=== end ===";
+	}
+
 	bool state::impl_check_stack(std::size_t sz) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
@@ -117,10 +151,11 @@ namespace tz::lua
 	int tz_lua_assert(lua_State* state)
 	{
 		bool b = lua_toboolean(state, 1);
+		std::string stack = lua::state{state}.collect_stack();
 		lua_Debug ar;
 		lua_getstack(state, 1, &ar);
 		lua_getinfo(state, "nSl", &ar);
-		tz::assert(b, "Lua Assertion: ```lua\n\n%s\n\n```\nOn line %d", ar.source, ar.currentline);
+		tz::assert(b, "Lua Assertion Failure: ```lua\n\n%s\n\n```\nOn line %d\nStack:\n%s", ar.source, ar.currentline, stack.c_str());
 		return 0;
 	}
 

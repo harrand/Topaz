@@ -42,6 +42,7 @@ namespace tz::lua
 		bool define_int(const char* varname, std::int64_t i) const;
 		bool define_uint(const char* varname, std::uint64_t u) const;
 		bool define_func(const char* varname, void* func_ptr) const;
+		std::string collect_stack() const;
 	private:
 		bool impl_check_stack(std::size_t sz) const;
 		void* lstate = nullptr;
