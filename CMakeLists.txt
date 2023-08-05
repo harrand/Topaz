@@ -238,6 +238,10 @@ add_library(topaz STATIC
 	# image
 	src/tz/io/image.cpp
 	src/tz/io/image.hpp
+
+	# tz::lua
+	src/tz/lua/state.cpp
+	src/tz/lua/state.hpp
 	)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -292,7 +296,7 @@ add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz PUBLIC imgui imgui_memory_editor glad textc_lib concurrentqueue nlohmann_json stb_image)
-target_link_libraries(topaz PRIVATE debugbreak Threads::Threads)
+target_link_libraries(topaz PRIVATE debugbreak Threads::Threads tz_lua)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)
