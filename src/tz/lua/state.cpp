@@ -1,11 +1,13 @@
 #include "tz/lua/state.hpp"
+#include "tz/core/debug.hpp"
+#include <cstdint>
+
 extern "C"
 {
 #include "lauxlib.h"
 #include "lua.h"
 #include "lualib.h"
 }
-#include <cstdint>
 
 namespace tz::lua
 {
@@ -17,14 +19,20 @@ namespace tz::lua
 		return this->lstate != nullptr;
 	}
 
-	bool state::execute_file(const char* path) const
+	bool state::execute_file(const char* path, bool assert_on_failure) const
 	{
-		return luaL_dofile(static_cast<lua_State*>(this->lstate), path) == false;
+		auto* s = static_cast<lua_State*>(this->lstate);
+		bool ret = luaL_dofile(s, path) == false;
+		tz::assert(!assert_on_failure || ret, "Lua Error: %s", lua_tostring(s, -1));
+		return ret;
 	}
 
-	bool state::execute(const char* lua_src) const
+	bool state::execute(const char* lua_src, bool assert_on_failure) const
 	{
-		return luaL_dostring(static_cast<lua_State*>(this->lstate), lua_src) == false;
+		auto* s = static_cast<lua_State*>(this->lstate);
+		bool ret = luaL_dostring(s, lua_src) == false;
+		tz::assert(!assert_on_failure || ret, "Lua Error: %s", lua_tostring(s, -1));
+		return ret;
 	}
 
 	state defstate = {};
