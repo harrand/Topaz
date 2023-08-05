@@ -1,6 +1,8 @@
 #ifndef TZ_LUA_STATE_HPP
 #define TZ_LUA_STATE_HPP
 #include "tz/core/data/handle.hpp"
+#include <string>
+#include <cstdint>
 
 namespace tz::lua
 {
@@ -32,7 +34,16 @@ namespace tz::lua
 		* @return Whether the executed code experienced any errors.
 		*/
 		bool execute(const char* lua_src, bool assert_on_failure = true) const;
+
+		bool define_nil(const char* varname) const;
+		bool define_bool(const char* varname, bool b) const;
+		bool define_float(const char* varname, float f) const;
+		bool define_double(const char* varname, double d) const;
+		bool define_int(const char* varname, std::int64_t i) const;
+		bool define_uint(const char* varname, std::uint64_t u) const;
+		bool define_func(const char* varname, void* func_ptr) const;
 	private:
+		bool impl_check_stack(std::size_t sz) const;
 		void* lstate = nullptr;
 	};
 
