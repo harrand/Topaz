@@ -4,6 +4,7 @@
   <navindex>
     <tab type="mainpage" visible="yes" title="Topaz Home"/>
     <tab type="user" visible="yes" title="C++ API" url="@ref tz_cpp"/>
+    <tab type="user" visible="yes" title="Lua API" url="@ref tz_lua"/>
     <tab type="user" visible="yes" title="TZSL API" url="@ref tzsl"/>
     <tab type="user" visible="yes" title="Wiki" url="https://github.com/harrand/Topaz/wiki"/ target="_blank">
   </navindex>
