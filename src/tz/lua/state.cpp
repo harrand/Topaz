@@ -37,6 +37,7 @@ namespace tz::lua
 
 	state defstate = {};
 
+	void tz_inject_state(lua_State* state);
 
 	state& get_state()
 	{
@@ -44,8 +45,31 @@ namespace tz::lua
 		{
 			lua_State* l = luaL_newstate();
 			luaL_openlibs(l);
+			tz_inject_state(l);
 			defstate = state{static_cast<void*>(l)};
 		}
 		return defstate;
+	}
+
+	int tz_lua_assert(lua_State* state)
+	{
+		bool b = lua_toboolean(state, 1);
+		lua_Debug ar;
+		lua_getstack(state, 1, &ar);
+		lua_getinfo(state, "nSl", &ar);
+		tz::assert(b, "Lua Assertion: ```lua\n\n%s\n\n```\nOn line %d", ar.source, ar.currentline);
+		return 0;
+	}
+
+	void tz_inject_state(lua_State* state)
+	{
+		tz::assert(luaL_dostring(state, R"lua(
+			tz = {}
+		 )lua") == false, "Failed to inject topaz lua state: %s", lua_tostring(state, -1));
+		lua_getglobal(state, "tz");
+		// tz.assert
+		lua_pushcfunction(state, tz_lua_assert);
+		lua_setfield(state, -2, "assert");
+		lua_pop(state, 1);
 	}
 }

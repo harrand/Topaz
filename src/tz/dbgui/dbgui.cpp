@@ -41,7 +41,7 @@ namespace tz::dbgui
 		float frame_period = 0.0f;
 		tz::duration fps_update_duration;
 
-		char lua_console_buf[512];
+		char lua_console_buf[512] = "";
 		std::string lua_console_history = "";
 	};
 
