@@ -11,6 +11,7 @@
 #include "tz/gl/resource.hpp"
 #include "tz/gl/draw.hpp"
 #include "tz/gl/imported_shaders.hpp"
+#include "tz/lua/state.hpp"
 #include "imgui.h"
 
 #if TZ_VULKAN
@@ -39,6 +40,9 @@ namespace tz::dbgui
 		tz::duration last_update;
 		float frame_period = 0.0f;
 		tz::duration fps_update_duration;
+
+		char lua_console_buf[512];
+		std::string lua_console_history = "";
 	};
 
 	struct TopazRenderData
@@ -272,11 +276,20 @@ namespace tz::dbgui
 			for(const auto& press : delta.newly_pressed)
 			{
 				io.AddKeyEvent(tz_key_to_imgui(press), true);
+				// i dont know why, but with specifically backspace, we need to release it instantly or it spams forever.
+				if(press == tz::wsi::key::backspace)
+				{
+					io.AddKeyEvent(tz_key_to_imgui(press), false);
+				}
 			}
 			if(!delta.newly_pressed.empty())
 			{
 				// Note: This might be wrong.
-				io.AddInputCharacter(tz::wsi::get_chars_typed(delta.newly_pressed.back(), global_platform_data->kb_state).back());
+				std::string input = tz::wsi::get_chars_typed(delta.newly_pressed.back(), global_platform_data->kb_state);
+				if(input.size())
+				{
+					io.AddInputCharactersUTF8(input.c_str());
+				}
 			}
 			for(const auto& release : delta.newly_released)
 			{
@@ -543,6 +556,7 @@ namespace tz::dbgui
 		bool show_top_bar = true;
 		bool show_window_info = false;
 		bool show_device_info = false;
+		bool show_lua_console = false;
 	};
 
 	ImGuiTabTZ tab_tz;
@@ -711,6 +725,27 @@ namespace tz::dbgui
 		}
 	}
 
+	void draw_tz_lua_console()
+	{
+		if(ImGui::Begin("Lua Console", &tab_tz.show_lua_console))
+		{
+			ImGui::Text("%s", global_platform_data->lua_console_history.c_str());
+			ImGui::Spacing();
+			ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
+			if(ImGui::InputText("Input", global_platform_data->lua_console_buf, IM_ARRAYSIZE(global_platform_data->lua_console_buf), input_text_flags))
+			{
+				bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf, false);
+				global_platform_data->lua_console_history += std::string("\n") + global_platform_data->lua_console_buf;
+				if(!success)
+				{
+					global_platform_data->lua_console_history += "\nLua Error\n";
+				}
+				global_platform_data->lua_console_buf[0] = '\0';
+			}
+			ImGui::End();
+		}
+	}
+
 	void imgui_impl_begin_commands()
 	{
 		if(ImGui::BeginMainMenuBar())
@@ -720,6 +755,7 @@ namespace tz::dbgui
 				ImGui::MenuItem("Top Bar", nullptr, &tab_tz.show_top_bar);
 				ImGui::MenuItem("Window", nullptr, &tab_tz.show_window_info);
 				ImGui::MenuItem("Device", nullptr, &tab_tz.show_device_info);
+				ImGui::MenuItem("Lua Console", nullptr, &tab_tz.show_lua_console);
 				if(ImGui::MenuItem("Debug Breakpoint"))
 				{
 					tz::error("Manual debug breakpoint occurred.");
@@ -777,6 +813,10 @@ namespace tz::dbgui
 			if(tab_tz.show_device_info)
 			{
 				draw_tz_device_info();
+			}
+			if(tab_tz.show_lua_console)
+			{
+				draw_tz_lua_console();
 			}
 		}
 
