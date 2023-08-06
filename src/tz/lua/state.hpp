@@ -51,10 +51,7 @@ namespace tz::lua
 			{
 				return this->assign_func(varname, reinterpret_cast<void*>(anon_ptr));
 			}
-			else
-			{
-				static_assert(false, "assign_func does not work with lambdas, sorry");
-			}
+			return false;
 		}
 		bool assign_func(const char* varname, void* func_ptr) const;
 		bool assign_string(const char* varname, std::string str) const;
