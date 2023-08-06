@@ -50,7 +50,7 @@ namespace tz::lua
 
 	bool state::assign_bool(const char* varname, bool b) const
 	{
-		std::string cmd = std::string(varname) + " = " + std::to_string(b);
+		std::string cmd = std::string(varname) + " = " + (b ? "true" : "false");
 		return this->execute(cmd.c_str(), false);
 	}
 
@@ -93,6 +93,97 @@ namespace tz::lua
 	{
 		std::string cmd = std::string(varname) + " = \"" + str + "\"";
 		return this->execute(cmd.c_str(), false);
+	}
+
+	std::vector<std::string> impl_string_split(const std::string& str, const std::string& delim)
+	{
+		std::vector<std::string> result;
+		std::size_t start = 0;
+
+		for(std::size_t found = str.find(delim); found != std::string::npos; found = str.find(delim, start))
+		{
+			result.emplace_back(str.begin() + start, str.begin() + found);
+			start = found + delim.size();
+		}
+		if (start != str.size())
+			result.emplace_back(str.begin() + start, str.end());
+		return result;      
+	}
+
+	// leaves 1 extra on the stack.
+	int impl_lua_get_var(std::string varname, lua_State* s, int& stack_sz)
+	{
+		auto bits = impl_string_split(varname, ".");		
+		tz::assert(bits.size());
+		int type = lua_getglobal(s, bits.front().c_str());
+		bits.erase(bits.begin());
+		stack_sz++;
+		for(const std::string& bit : bits)
+		{
+			type = lua_getfield(s, -1, bit.c_str());
+			stack_sz++;
+			if(type == LUA_TNIL)
+			{
+				break;
+			}
+		}
+		return type;	
+	}
+
+	std::optional<bool> state::get_bool(const char* varname) const
+	{
+		std::optional<bool> ret = std::nullopt;
+		int stack_usage = 0;
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(impl_lua_get_var(varname, s, stack_usage) == LUA_TBOOLEAN)
+		{
+			ret = lua_toboolean(s, -1);
+		}
+		lua_pop(s, stack_usage);
+		return ret;
+	}
+
+	std::optional<float> state::get_float(const char* varname) const
+	{
+		auto ret = this->get_double(varname);
+		if(ret.has_value())
+		{
+			return static_cast<float>(ret.value());
+		}
+		return std::nullopt;
+	}
+
+	std::optional<double> state::get_double(const char* varname) const
+	{
+		std::optional<double> ret = std::nullopt;
+		int stack_usage = 0;
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(impl_lua_get_var(varname, s, stack_usage) == LUA_TNUMBER)
+		{
+			ret = lua_tonumber(s, -1);
+		}
+		lua_pop(s, stack_usage);
+		return ret;
+	}
+
+	std::optional<std::int64_t> state::get_int(const char* varname) const
+	{
+		auto ret = this->get_double(varname);
+		if(ret.has_value())
+		{
+			return static_cast<std::int64_t>(ret.value());
+		}
+		return std::nullopt;
+	}
+
+	std::optional<std::uint64_t> state::get_uint(const char* varname) const
+	{
+		auto ret = this->get_int(varname);
+		if(ret.has_value())
+		{
+			return static_cast<std::uint64_t>(ret.value());
+		}
+		return std::nullopt;
 	}
 
 	std::string state::collect_stack() const

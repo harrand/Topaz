@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <functional>
+#include <optional>
 
 namespace tz::lua
 {
@@ -55,6 +56,12 @@ namespace tz::lua
 		}
 		bool assign_func(const char* varname, void* func_ptr) const;
 		bool assign_string(const char* varname, std::string str) const;
+
+		std::optional<bool> get_bool(const char* varname) const;
+		std::optional<float> get_float(const char* varname) const;
+		std::optional<double> get_double(const char* varname) const;
+		std::optional<std::int64_t> get_int(const char* varname) const;
+		std::optional<std::uint64_t> get_uint(const char* varname) const;
 		std::string collect_stack() const;
 	private:
 		bool impl_check_stack(std::size_t sz) const;
