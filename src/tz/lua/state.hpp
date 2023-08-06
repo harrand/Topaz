@@ -38,6 +38,7 @@ namespace tz::lua
 		bool execute(const char* lua_src, bool assert_on_failure = true) const;
 
 		bool assign_nil(const char* varname) const;
+		bool assign_emptytable(const char* varname) const;
 		bool assign_bool(const char* varname, bool b) const;
 		bool assign_float(const char* varname, float f) const;
 		bool assign_double(const char* varname, double d) const;

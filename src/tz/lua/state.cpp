@@ -42,6 +42,12 @@ namespace tz::lua
 		return this->execute(cmd.c_str(), false);
 	}
 
+	bool state::assign_emptytable(const char* varname) const
+	{
+		std::string cmd = std::string(varname) + " = {}";
+		return this->execute(cmd.c_str(), false);
+	}
+
 	bool state::assign_bool(const char* varname, bool b) const
 	{
 		std::string cmd = std::string(varname) + " = " + std::to_string(b);
@@ -158,7 +164,8 @@ namespace tz::lua
 
 	void tz_inject_state(state& s)
 	{
-		s.execute("tz = {}; tz.version = {}");
+		s.assign_emptytable("tz");
+		s.assign_emptytable("tz.version");
 		s.assign_func("tz.assert", tz_lua_assert);	
 
 		tz::version ver = tz::get_version();
