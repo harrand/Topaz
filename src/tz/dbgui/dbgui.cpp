@@ -131,6 +131,11 @@ namespace tz::dbgui
 		#endif //TZ_DEBUG
 	}
 
+	void add_to_lua_log(std::string msg)
+	{
+		global_platform_data->lua_console_history += "\n" + msg;
+	}
+
 	game_menu_callback_type& game_menu()
 	{
 		return game_menu_callback;
@@ -734,8 +739,8 @@ namespace tz::dbgui
 			ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
 			if(ImGui::InputText("Input", global_platform_data->lua_console_buf, IM_ARRAYSIZE(global_platform_data->lua_console_buf), input_text_flags))
 			{
+				global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
 				bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf, false);
-				global_platform_data->lua_console_history += std::string("\n") + global_platform_data->lua_console_buf;
 				if(!success)
 				{
 					global_platform_data->lua_console_history += "\nLua Error\n";

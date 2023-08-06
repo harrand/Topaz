@@ -1,7 +1,11 @@
 #include "tz/lua/state.hpp"
 #include "tz/core/debug.hpp"
 #include "tz/core/data/version.hpp"
+#include "tz/dbgui/dbgui.hpp"
+#include <sstream>
+#include <iostream>
 #include <cstdint>
+#include <map>
 
 extern "C"
 {
@@ -237,6 +241,7 @@ namespace tz::lua
 			lua_State* l = luaL_newstate();
 			luaL_openlibs(l);
 			defstate = state{static_cast<void*>(l)};
+
 			tz_inject_state(defstate);
 		}
 		return defstate;
@@ -253,11 +258,28 @@ namespace tz::lua
 		return 0;
 	}
 
+	int tz_print(lua_State* state)
+	{
+		int nargs = lua_gettop(state);
+		for(int i = 1; i <= nargs; i++)
+		{
+			const char* msg = luaL_tolstring(state, i, nullptr);
+			if(msg != nullptr)
+			{
+				tz::dbgui::add_to_lua_log(msg);
+			}
+		}
+		tz::dbgui::add_to_lua_log("\n");
+		lua_pop(state, nargs);
+		return 0;
+	}
+
 	void tz_inject_state(state& s)
 	{
 		s.assign_emptytable("tz");
 		s.assign_emptytable("tz.version");
 		s.assign_func("tz.assert", tz_lua_assert);	
+		s.assign_func("print", tz_print);
 
 		tz::version ver = tz::get_version();
 

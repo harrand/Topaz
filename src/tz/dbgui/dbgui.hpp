@@ -73,6 +73,8 @@ namespace tz::dbgui
 		#endif
 	}
 
+	void add_to_lua_log(std::string msg);
+
 	/// Represents a function taking no parameters and returning void.
 	using game_menu_callback_type = tz::callback<>;
 	using game_bar_callback_type = game_menu_callback_type;
