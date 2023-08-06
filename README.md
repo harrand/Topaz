@@ -22,6 +22,12 @@
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
+## Notable Features
+- Low-level graphics API, with either a Vulkan or OpenGL backend, configured at compile-time.
+- Barebones lua scripting support
+- GLTF model importing
+- Ability to embed arbitrary text-files within built executables.
+
 ## Version History
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes. Patch versions are not formally shipped unless they contain emergency bugfixes for a flawed release.
 | Topaz Version | Release Date | Branch      | Documentation        |
