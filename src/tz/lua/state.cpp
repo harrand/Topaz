@@ -36,60 +36,57 @@ namespace tz::lua
 		return ret;
 	}
 
-	bool state::define_nil(const char* varname) const
+	bool state::assign_nil(const char* varname) const
 	{
-		bool ret = impl_check_stack(1);
-		auto* s = static_cast<lua_State*>(this->lstate);
-		lua_pushnil(s);
-		lua_setglobal(s, varname);
-		return ret;
+		std::string cmd = std::string(varname) + " = nil";
+		return this->execute(cmd.c_str(), false);
 	}
 
-	bool state::define_bool(const char* varname, bool b) const
+	bool state::assign_bool(const char* varname, bool b) const
 	{
-		bool ret = impl_check_stack(1);
-		auto* s = static_cast<lua_State*>(this->lstate);
-		lua_pushboolean(s, b);
-		lua_setglobal(s, varname);
-		return ret;
+		std::string cmd = std::string(varname) + " = " + std::to_string(b);
+		return this->execute(cmd.c_str(), false);
 	}
 
-	bool state::define_float(const char* varname, float f) const
+	bool state::assign_float(const char* varname, float f) const
 	{
-		return this->define_double(varname, f);
+		return this->assign_double(varname, f);
 	}
 
-	bool state::define_double(const char* varname, double d) const
+	bool state::assign_double(const char* varname, double d) const
 	{
-		bool ret = impl_check_stack(1);
-		auto* s = static_cast<lua_State*>(this->lstate);
-		lua_pushnumber(s, d);
-		lua_setglobal(s, varname);
-		return ret;
+		std::string cmd = std::string(varname) + " = " + std::to_string(d);
+		return this->execute(cmd.c_str(), false);
 	}
 
-	bool state::define_int(const char* varname, std::int64_t i) const
+	bool state::assign_int(const char* varname, std::int64_t i) const
 	{
-		bool ret = impl_check_stack(1);
-		auto* s = static_cast<lua_State*>(this->lstate);
-		lua_pushinteger(s, i);
-		lua_setglobal(s, varname);
-		return ret;
+		std::string cmd = std::string(varname) + " = " + std::to_string(i);
+		return this->execute(cmd.c_str(), false);
 	}
 
-	bool state::define_uint(const char* varname, std::uint64_t u) const
+	bool state::assign_uint(const char* varname, std::uint64_t u) const
 	{
 		// ugh...
-		return this->define_int(varname, static_cast<std::int64_t>(u));
+		return this->assign_int(varname, static_cast<std::int64_t>(u));
 	}
 
-	bool state::define_func(const char* varname, void* func_ptr) const
+	bool state::assign_func(const char* varname, void* func_ptr) const
 	{
 		bool ret = impl_check_stack(1);
 		auto* s = static_cast<lua_State*>(this->lstate);
+		std::string temp_varname = "tmp" + std::to_string(reinterpret_cast<std::intptr_t>(func_ptr));
 		lua_pushcfunction(s, reinterpret_cast<lua_CFunction>(func_ptr));
-		lua_setglobal(s, varname);
+		lua_setglobal(s, temp_varname.c_str());
+		std::string cmd = std::string(varname) + " = " + temp_varname;
+		ret &= this->execute(cmd.c_str(), false);
 		return ret;
+	}
+
+	bool state::assign_string(const char* varname, std::string str) const
+	{
+		std::string cmd = std::string(varname) + " = \"" + str + "\"";
+		return this->execute(cmd.c_str(), false);
 	}
 
 	std::string state::collect_stack() const
@@ -134,7 +131,7 @@ namespace tz::lua
 
 	state defstate = {};
 
-	void tz_inject_state(lua_State* state);
+	void tz_inject_state(state& s);
 
 	state& get_state()
 	{
@@ -142,8 +139,8 @@ namespace tz::lua
 		{
 			lua_State* l = luaL_newstate();
 			luaL_openlibs(l);
-			tz_inject_state(l);
 			defstate = state{static_cast<void*>(l)};
+			tz_inject_state(defstate);
 		}
 		return defstate;
 	}
@@ -159,38 +156,16 @@ namespace tz::lua
 		return 0;
 	}
 
-	void tz_inject_state(lua_State* state)
+	void tz_inject_state(state& s)
 	{
-		tz::assert(luaL_dostring(state, R"lua(
-			tz = {}
-			tz.version = {}
-		 )lua") == false, "Failed to inject topaz lua state: %s", lua_tostring(state, -1));
-		lua_getglobal(state, "tz");
-		// tz.assert
-		lua_pushcfunction(state, tz_lua_assert);
-		lua_setfield(state, -2, "assert");
+		s.execute("tz = {}; tz.version = {}");
+		s.assign_func("tz.assert", tz_lua_assert);	
 
 		tz::version ver = tz::get_version();
 
-		// tz.version = {.major = X, .minor = Y, .patch = Z, .string = "vX.Y.Z-something"}
-		lua_newtable(state);
-		lua_pushstring(state, "major");
-		lua_pushinteger(state, ver.major);
-		lua_settable(state, -3);
-
-		lua_pushstring(state, "minor");
-		lua_pushinteger(state, ver.minor);
-		lua_settable(state, -3);
-		
-		lua_pushstring(state, "patch");
-		lua_pushinteger(state, ver.patch);
-		lua_settable(state, -3);
-
-		lua_pushstring(state, "string");
-		lua_pushstring(state, ver.to_string().c_str());
-		lua_settable(state, -3);
-
-		lua_setfield(state, -2, "version");
-		lua_pop(state, 1);
+		s.assign_uint("tz.version.major", ver.major);
+		s.assign_uint("tz.version.minor", ver.minor);
+		s.assign_uint("tz.version.patch", ver.patch);
+		s.assign_string("tz.version.string", ver.to_string());
 	}
 }

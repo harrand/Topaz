@@ -35,13 +35,18 @@ namespace tz::lua
 		*/
 		bool execute(const char* lua_src, bool assert_on_failure = true) const;
 
-		bool define_nil(const char* varname) const;
-		bool define_bool(const char* varname, bool b) const;
-		bool define_float(const char* varname, float f) const;
-		bool define_double(const char* varname, double d) const;
-		bool define_int(const char* varname, std::int64_t i) const;
-		bool define_uint(const char* varname, std::uint64_t u) const;
-		bool define_func(const char* varname, void* func_ptr) const;
+		bool assign_nil(const char* varname) const;
+		bool assign_bool(const char* varname, bool b) const;
+		bool assign_float(const char* varname, float f) const;
+		bool assign_double(const char* varname, double d) const;
+		bool assign_int(const char* varname, std::int64_t i) const;
+		bool assign_uint(const char* varname, std::uint64_t u) const;
+		bool assign_func(const char* varname, auto anon_ptr) const
+		{
+			return this->assign_func(varname, reinterpret_cast<void*>(anon_ptr));
+		}
+		bool assign_func(const char* varname, void* func_ptr) const;
+		bool assign_string(const char* varname, std::string str) const;
 		std::string collect_stack() const;
 	private:
 		bool impl_check_stack(std::size_t sz) const;
