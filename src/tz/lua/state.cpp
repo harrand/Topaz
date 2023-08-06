@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstdint>
 #include <map>
+#include <filesystem>
 
 extern "C"
 {
@@ -299,6 +300,8 @@ namespace tz::lua
 		s.assign_emptytable("tz.version");
 		s.assign_func("tz.assert", tz_lua_assert);	
 		s.assign_func("print", tz_print);
+
+		s.assign_string("LUA_PATH", std::filesystem::current_path().generic_string());
 
 		tz::version ver = tz::get_version();
 
