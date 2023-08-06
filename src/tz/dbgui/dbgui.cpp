@@ -381,10 +381,10 @@ namespace tz::dbgui
 		{
 			.access = tz::gl::resource_access::dynamic_access
 		});
-		tz::gl::buffer_resource draw_buffer = tz::gl::buffer_resource::from_one(tz::gl::draw_indirect_command
+		tz::gl::buffer_resource draw_buffer = tz::gl::buffer_resource::from_one(tz::gl::draw_indexed_indirect_command
 		{
 			.count = 0u,
-			.first = 0
+			.first_index = 0
 		},
 		{
 			.access = tz::gl::resource_access::dynamic_access,
