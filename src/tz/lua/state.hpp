@@ -3,6 +3,8 @@
 #include "tz/core/data/handle.hpp"
 #include <string>
 #include <cstdint>
+#include <type_traits>
+#include <functional>
 
 namespace tz::lua
 {
@@ -43,7 +45,15 @@ namespace tz::lua
 		bool assign_uint(const char* varname, std::uint64_t u) const;
 		bool assign_func(const char* varname, auto anon_ptr) const
 		{
-			return this->assign_func(varname, reinterpret_cast<void*>(anon_ptr));
+			using T = std::decay_t<decltype(anon_ptr)>;
+			if constexpr(std::is_pointer_v<T>)
+			{
+				return this->assign_func(varname, reinterpret_cast<void*>(anon_ptr));
+			}
+			else
+			{
+				static_assert(false, "assign_func does not work with lambdas, sorry");
+			}
 		}
 		bool assign_func(const char* varname, void* func_ptr) const;
 		bool assign_string(const char* varname, std::string str) const;
