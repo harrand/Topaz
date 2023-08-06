@@ -13,7 +13,9 @@ add_library(imgui STATIC
 	imgui/imgui_demo.cpp
 	imgui/imgui_draw.cpp
 	imgui/imgui_tables.cpp
-	imgui/imgui_widgets.cpp)
+	imgui/imgui_widgets.cpp
+
+	imgui/misc/cpp/imgui_stdlib.cpp)
 target_include_directories(imgui PUBLIC "${PROJECT_SOURCE_DIR}/lib/imgui")
 target_compile_definitions(imgui PUBLIC "-DIMGUI_USER_CONFIG=\"../tz_imgui_config.hpp\"")
 

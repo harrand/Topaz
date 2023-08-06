@@ -28,7 +28,12 @@ namespace tz::lua
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
 		bool ret = luaL_dofile(s, path) == false;
-		tz::assert(!assert_on_failure || ret, "Lua Error: %s", lua_tostring(s, -1));
+		const char* err = lua_tostring(s, -1);
+		if(err != nullptr)
+		{
+			this->last_error = err;
+		}
+		tz::assert(!assert_on_failure || ret, "Lua Error: %s", err);
 		return ret;
 	}
 
@@ -36,7 +41,12 @@ namespace tz::lua
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
 		bool ret = luaL_dostring(s, lua_src) == false;
-		tz::assert(!assert_on_failure || ret, "Lua Error: %s", lua_tostring(s, -1));
+		const char* err = lua_tostring(s, -1);
+		if(err != nullptr)
+		{
+			this->last_error = err;
+		}
+		tz::assert(!assert_on_failure || ret, "Lua Error: %s", err);
 		return ret;
 	}
 
@@ -224,6 +234,11 @@ namespace tz::lua
 		return ret + "=== end ===";
 	}
 
+	const std::string& state::get_last_error() const
+	{
+		return this->last_error;
+	}
+
 	bool state::impl_check_stack(std::size_t sz) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
@@ -254,6 +269,10 @@ namespace tz::lua
 		lua_Debug ar;
 		lua_getstack(state, 1, &ar);
 		lua_getinfo(state, "nSl", &ar);
+		if(!b && TZ_DEBUG)
+		{
+			tz::dbgui::add_to_lua_log("<<Lua Assert Failure Detected>>");
+		}
 		tz::assert(b, "Lua Assertion Failure: ```lua\n\n%s\n\n```\nOn line %d\nStack:\n%s", ar.source, ar.currentline, stack.c_str());
 		return 0;
 	}

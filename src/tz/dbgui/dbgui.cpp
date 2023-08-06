@@ -13,6 +13,7 @@
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/lua/state.hpp"
 #include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
@@ -41,7 +42,7 @@ namespace tz::dbgui
 		float frame_period = 0.0f;
 		tz::duration fps_update_duration;
 
-		char lua_console_buf[512] = "";
+		std::string lua_console_buf = "";
 		std::string lua_console_history = "";
 	};
 
@@ -732,7 +733,7 @@ namespace tz::dbgui
 
 	void draw_tz_lua_console()
 	{
-		if(ImGui::Begin("Lua Console", &tab_tz.show_lua_console))
+		if(ImGui::Begin("Lua Console", &tab_tz.show_lua_console, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 		{
 			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetTextLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Adjust item spacing to make it look more like a console
@@ -743,17 +744,17 @@ namespace tz::dbgui
 			ImGui::Separator();
 
 			ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
-			if(ImGui::InputText("Input", global_platform_data->lua_console_buf, IM_ARRAYSIZE(global_platform_data->lua_console_buf), input_text_flags))
+			if(ImGui::InputText("Input", &global_platform_data->lua_console_buf, input_text_flags))
 			{
 				if(ImGui::IsItemDeactivatedAfterEdit()) // Check if Enter key caused deactivation of the input field
 				{
 					global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
-					bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf, false);
+					bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf.c_str(), false);
 					if (!success)
 					{
-						global_platform_data->lua_console_history += "\nLua Error\n";
+						global_platform_data->lua_console_history += "\nLua Error: \"" + tz::lua::get_state().get_last_error() + "\"\n";
 					}
-					global_platform_data->lua_console_buf[0] = '\0';
+					global_platform_data->lua_console_buf.clear();
 					ImGui::SetKeyboardFocusHere(-1); // Set focus back to the input text field
 				}
 			}

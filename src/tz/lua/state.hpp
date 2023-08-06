@@ -63,8 +63,10 @@ namespace tz::lua
 		std::optional<std::int64_t> get_int(const char* varname) const;
 		std::optional<std::uint64_t> get_uint(const char* varname) const;
 		std::string collect_stack() const;
+		const std::string& get_last_error() const;
 	private:
 		bool impl_check_stack(std::size_t sz) const;
+		mutable std::string last_error = "";
 		void* lstate = nullptr;
 	};
 
