@@ -281,8 +281,8 @@ namespace tz::dbgui
 			for(const auto& press : delta.newly_pressed)
 			{
 				io.AddKeyEvent(tz_key_to_imgui(press), true);
-				// i dont know why, but with specifically backspace, we need to release it instantly or it spams forever.
-				if(press == tz::wsi::key::backspace)
+				// i dont know why, but with these certain keys, we need to release it instantly or it spams forever.
+				if(press == tz::wsi::key::backspace || press == tz::wsi::key::enter)
 				{
 					io.AddKeyEvent(tz_key_to_imgui(press), false);
 				}
@@ -734,18 +734,28 @@ namespace tz::dbgui
 	{
 		if(ImGui::Begin("Lua Console", &tab_tz.show_lua_console))
 		{
-			ImGui::Text("%s", global_platform_data->lua_console_history.c_str());
-			ImGui::Spacing();
+			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetTextLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Adjust item spacing to make it look more like a console
+			ImGui::TextUnformatted(global_platform_data->lua_console_history.c_str());
+			ImGui::PopStyleVar();
+			ImGui::EndChild();
+
+			ImGui::Separator();
+
 			ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue;
 			if(ImGui::InputText("Input", global_platform_data->lua_console_buf, IM_ARRAYSIZE(global_platform_data->lua_console_buf), input_text_flags))
 			{
-				global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
-				bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf, false);
-				if(!success)
+				if(ImGui::IsItemDeactivatedAfterEdit()) // Check if Enter key caused deactivation of the input field
 				{
-					global_platform_data->lua_console_history += "\nLua Error\n";
+					global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
+					bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf, false);
+					if (!success)
+					{
+						global_platform_data->lua_console_history += "\nLua Error\n";
+					}
+					global_platform_data->lua_console_buf[0] = '\0';
+					ImGui::SetKeyboardFocusHere(-1); // Set focus back to the input text field
 				}
-				global_platform_data->lua_console_buf[0] = '\0';
 			}
 			ImGui::End();
 		}
