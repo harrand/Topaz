@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <functional>
 #include <optional>
+#include <thread>
 
 namespace tz::lua
 {
@@ -64,10 +65,12 @@ namespace tz::lua
 		std::optional<std::uint64_t> get_uint(const char* varname) const;
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
+		std::thread::id get_owner_thread_id() const;
 	private:
 		bool impl_check_stack(std::size_t sz) const;
 		mutable std::string last_error = "";
 		void* lstate = nullptr;
+		std::thread::id owner = std::this_thread::get_id();
 	};
 
 	/**

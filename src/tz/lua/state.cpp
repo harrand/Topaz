@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <filesystem>
+#include <mutex>
 
 extern "C"
 {
@@ -240,20 +241,28 @@ namespace tz::lua
 		return this->last_error;
 	}
 
+	std::thread::id state::get_owner_thread_id() const
+	{
+		return this->owner;
+	}
+
 	bool state::impl_check_stack(std::size_t sz) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
 		return lua_checkstack(s, sz);
 	}
 
-	state defstate = {};
-
 	void tz_inject_state(state& s);
+
+	thread_local state defstate = {};
+	std::mutex state_creation_mtx;
 
 	state& get_state()
 	{
 		if(!defstate.valid())
 		{
+			// luaL_newstate needs external synchronisation. once it's done though every thread has its own lua state.
+			std::unique_lock<std::mutex>{state_creation_mtx};
 			lua_State* l = luaL_newstate();
 			luaL_openlibs(l);
 			defstate = state{static_cast<void*>(l)};
