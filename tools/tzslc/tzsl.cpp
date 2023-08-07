@@ -434,6 +434,9 @@ namespace tzslc
 				xmog("in::local_id", "gl_LocalInvocationID");
 				xmog("in::global_id", "gl_GlobalInvocationID");
 			break;
+			case ShaderStage::Count:
+				tzslc_assert(false, "Detected invalid shader stage. Internal tzslc error. Please submit a bug report.");
+			break;
 		}
 	}
 

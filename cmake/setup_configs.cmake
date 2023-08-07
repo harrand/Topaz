@@ -1,19 +1,25 @@
 function(configure_common target)
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 		# GCC/Clang options
-		target_compile_options(${target} PRIVATE -Wall -Wextra -Werror -pedantic-errors -Wno-format-security)
+		message(STATUS "GNU|Clang")
+		target_compile_options(${target} PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+		target_compile_options(${target} PUBLIC -Wno-format-security)
 		if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+			message(STATUS "Clang")
 			# Clang-only options
 			# Use GNU's `, __VA_ARGS__` extension (used for tz::assert, tz::error, tz::report)
 			target_compile_options(${target} PRIVATE -Wno-gnu-zero-variadic-macro-arguments)
 		elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			# GCC-only options
 			target_compile_options(${target} PRIVATE -Wshadow=local)
+			message(STATUS "GNU")
 		endif()
 	elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+		message(STATUS "MSVC")
 		# MSVC-only options
 	endif()
-	target_compile_definitions(${target} PUBLIC -DGLFW_INCLUDE_NONE -DTZ_VERSION=0x${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}${PROJECT_VERSION_TWEAK} -D_CRT_SECURE_NO_WARNINGS=1)
+	target_compile_definitions(${target} PUBLIC -D_CRT_SECURE_NO_WARNINGS)
+	target_compile_definitions(${target} PUBLIC -DGLFW_INCLUDE_NONE -DTZ_VERSION=0x${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}${PROJECT_VERSION_TWEAK})
 
 endfunction()
 
