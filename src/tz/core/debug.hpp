@@ -1,5 +1,6 @@
 #ifndef TZ_DEBUG_HPP
 #define TZ_DEBUG_HPP
+#include "debugbreak.h"
 #include <concepts>
 #include <string>
 #include <functional>
@@ -12,7 +13,7 @@ namespace tz::detail
 	using source_loc = std::source_location;
 }
 #else
-#pragma message("std::source_location support not detected, using a stub instead. Source information in report/assert/error will be wrong.")
+//#pragma message("std::source_location support not detected, using a stub instead. Source information in report/assert/error will be wrong.")
 #include <cstdint>
 namespace tz::detail
 {
@@ -65,7 +66,7 @@ namespace tz
 	template<typename... Args>
 	void report(detail::format_string fmt, Args&&... args);
 
-	void debug_break();
+	inline void debug_break(){::debug_break();}
 }
 
 /**

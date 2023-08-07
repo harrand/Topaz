@@ -262,7 +262,7 @@ namespace tz::lua
 		if(!defstate.valid())
 		{
 			// luaL_newstate needs external synchronisation. once it's done though every thread has its own lua state.
-			std::unique_lock<std::mutex>{state_creation_mtx};
+			std::unique_lock<std::mutex> lock{state_creation_mtx};
 			lua_State* l = luaL_newstate();
 			luaL_openlibs(l);
 			defstate = state{static_cast<void*>(l)};
