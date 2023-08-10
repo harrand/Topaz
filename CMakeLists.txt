@@ -242,6 +242,10 @@ add_library(topaz STATIC
 	# tz::lua
 	src/tz/lua/state.cpp
 	src/tz/lua/state.hpp
+
+	# tz::ren
+	src/tz/ren/mesh.cpp
+	src/tz/ren/mesh.hpp
 	)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
