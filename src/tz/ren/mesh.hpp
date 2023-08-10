@@ -37,21 +37,34 @@ namespace tz::ren
 	class mesh_renderer
 	{
 	public:
-		mesh_renderer() = default;
+		mesh_renderer(unsigned int total_textures = 128);
 		void append_to_render_graph();
+		void dbgui();
 	private:
 		struct compute_pass_t
 		{
 			compute_pass_t();
+
+			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
+			tz::gl::resource_handle draw_list_buffer = tz::nullhand;
 			tz::gl::renderer_handle handle = tz::nullhand;
 		};
 		struct render_pass_t
 		{
-			render_pass_t();
+			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures = 128);
+			tz::gl::resource_handle index_buffer = tz::nullhand;
+			tz::gl::resource_handle vertex_buffer = tz::nullhand;
+			tz::gl::resource_handle object_buffer = tz::nullhand;
+			tz::gl::resource_handle camera_buffer = tz::nullhand;
+			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
+			std::vector<tz::gl::resource_handle> textures = {};
 			tz::gl::renderer_handle handle = tz::nullhand;
 		};
+
+		void dbgui_impl();
+
 		compute_pass_t compute_pass = {};
-		render_pass_t render_pass = {};
+		render_pass_t render_pass;
 	};
 }
 
