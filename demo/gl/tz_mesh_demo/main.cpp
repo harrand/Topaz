@@ -84,12 +84,13 @@ int main()
 			renderer.update((tz::system_time() - update_timer).seconds<float>());
 			update_timer = tz::system_time();
 			// advance dbgui
-			tz::dbgui::run([&renderer]()
+			tz::dbgui::run([&renderer, &mr]()
 			{
 				if(dbgui_data.mesh_renderer_enabled)
 				{
 					ImGui::Begin("Mesh Renderer", &dbgui_data.mesh_renderer_enabled);
-					renderer.dbgui();
+					//renderer.dbgui();
+					mr.dbgui();
 					ImGui::End();
 				}
 			});

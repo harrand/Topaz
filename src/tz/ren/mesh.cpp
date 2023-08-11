@@ -239,7 +239,7 @@ namespace tz::ren
 		static int object_id = 0;
 		if(object_count > 0)
 		{
-			ImGui::VSliderInt("Object", ImVec2{18.0f, 160.0f}, &object_id, 0, object_count);
+			ImGui::VSliderInt("Object", ImVec2{18.0f, 160.0f}, &object_id, 0, object_count - 1);
 			object_data& obj = ren.get_resource(this->object_buffer)->data_as<object_data>()[object_id];
 			ImGui::Text("Object %d", object_id);	
 			// TODO: object information display
@@ -412,11 +412,14 @@ namespace tz::ren
 			if(ImGui::BeginTabItem("Compute Pass"))
 			{
 				this->compute_pass.dbgui();
+				ImGui::EndTabItem();
 			}
 			if(ImGui::BeginTabItem("Render Pass"))
 			{
 				this->render_pass.dbgui();
+				ImGui::EndTabItem();
 			}
+			ImGui::EndTabBar();
 		}
 	}
 }
