@@ -93,6 +93,7 @@ namespace tz::ren
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
+		// not to be confused with the draw-list (part of the compute pass), which only contains the mesh locators that are gonna be drawn. this contains every mesh ever added.
 		std::vector<mesh_locator> meshes = {};
 	};
 }

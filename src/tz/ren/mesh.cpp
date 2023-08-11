@@ -165,6 +165,20 @@ namespace tz::ren
 		
 	}
 
+	void imgui_helper_tooltip(const char* msg)
+	{
+		ImGui::SameLine();
+		ImGui::TextDisabled("(?)");
+		if(ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(msg);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
+
 	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
 	{
 		// we have a draw buffer which we write into upon render.
@@ -237,6 +251,7 @@ namespace tz::ren
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
+		imgui_helper_tooltip("An object represents a drawable element. It consists of a model matrix and a set of bound textures. Drawables are obviously associated with a mesh. Specifically, `object X` will use the mesh locator at element `X` of the draw-list. The draw-list is visible within the compute pass section, not here.");
 		std::size_t object_count = ren.get_resource(this->object_buffer)->data_as<const object_data>().size();
 		static int object_id = 0;
 		if(object_count > 0)
@@ -283,6 +298,9 @@ namespace tz::ren
 					}
 				}
 
+				ImGui::Separator();
+				ImGui::Text("Model");
+				imgui_helper_tooltip("The list of object data does not contain info on which mesh it corresponds to. To do that, view the corresponding element of the draw list within the compute pass.");
 				ImGui::EndChild();
 			}
 		}
