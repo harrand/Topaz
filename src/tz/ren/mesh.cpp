@@ -1,4 +1,5 @@
 #include "tz/ren/mesh.hpp"
+#include "imgui.h"
 #include "tz/gl/api/schedule.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/draw.hpp"
@@ -72,6 +73,7 @@ namespace tz::ren
 	// represents one of the textures bound to an object (drawable)
 	struct texture_locator
 	{
+		bool is_null() const{return this->texture_id == static_cast<std::uint32_t>(-1);}
 		// colour multiplier on the sampled texel
 		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 		// id within the overarching texture resource array to be sampled.
@@ -82,7 +84,7 @@ namespace tz::ren
 	struct object_data
 	{
 		// represents the transform of the drawable, in world space.
-		tz::mat4 model;
+		tz::mat4 model = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 	};
@@ -239,17 +241,83 @@ namespace tz::ren
 		static int object_id = 0;
 		if(object_count > 0)
 		{
-			ImGui::VSliderInt("Object", ImVec2{18.0f, 160.0f}, &object_id, 0, object_count - 1);
-			object_data& obj = ren.get_resource(this->object_buffer)->data_as<object_data>()[object_id];
-			ImGui::Text("Object %d", object_id);	
+			constexpr float slider_height = 160.0f;
+			ImGui::VSliderInt("##object", ImVec2{18.0f, slider_height}, &object_id, 0, object_count - 1);
 			// TODO: object information display
-			(void)obj;
+			std::string objname = "Object " + std::to_string(object_id);
+			ImGui::SameLine();
+			// add slight horizontal spacing between slider and child.
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
+			object_data& obj = ren.get_resource(this->object_buffer)->data_as<object_data>()[object_id];
+			if(ImGui::BeginChild(objname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
+			{
+				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, objname.c_str());
+				ImGui::Separator();
+				ImGui::Text("Model Matrix");
+				for (int row = 0; row < 4; row++)
+				{
+					for (int col = 0; col < 4; col++)
+					{
+						std::string label = "##" + std::to_string(row) + std::to_string(col);
+						constexpr float matrix_cell_width = 35.0f;
+						ImGui::SetNextItemWidth(matrix_cell_width);
+						ImGui::InputFloat(label.c_str(), &obj.model(row, col));
+						ImGui::SameLine();
+					}
+					ImGui::NewLine();
+				}
+
+				ImGui::Separator();
+				ImGui::Text("Textures");
+				for(std::size_t i = 0; i < mesh_renderer_max_tex_count; i++)
+				{
+					ImGui::Text("[%zu] =", i);
+					ImGui::SameLine();
+					if(obj.bound_textures[i].is_null())
+					{
+						ImGui::TextColored({1.0f, 0.0f, 0.0f, 1.0f}, "unbound");
+					}
+					else
+					{
+						ImGui::Text("id %u", obj.bound_textures[i].texture_id);
+					}
+				}
+
+				ImGui::EndChild();
+			}
 		}
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "CAMERA DATA");
 		auto& cam = ren.get_resource(this->camera_buffer)->data_as<camera_data>().front();
-		ImGui::Text("camera data placeholder...");
+		ImGui::Text("View Matrix");
+		for (int row = 0; row < 4; row++)
+		{
+			for (int col = 0; col < 4; col++)
+			{
+				std::string label = "##" + std::to_string(row) + std::to_string(col);
+				constexpr float matrix_cell_width = 35.0f;
+				ImGui::SetNextItemWidth(matrix_cell_width);
+				ImGui::InputFloat(label.c_str(), &cam.view(row, col));
+				ImGui::SameLine();
+			}
+			ImGui::NewLine();
+		}
+		ImGui::Spacing();
+
+		ImGui::Text("Projection Matrix");
+		for (int row = 0; row < 4; row++)
+		{
+			for (int col = 0; col < 4; col++)
+			{
+				std::string label = "##" + std::to_string(row) + std::to_string(col);
+				constexpr float matrix_cell_width = 35.0f;
+				ImGui::SetNextItemWidth(matrix_cell_width);
+				ImGui::InputFloat(label.c_str(), &cam.projection(row, col));
+				ImGui::SameLine();
+			}
+			ImGui::NewLine();
+		}
 		ImGui::Separator();
 	}
 
@@ -407,16 +475,29 @@ namespace tz::ren
 		// impl details ->
 		// compute pass | render pass
 		// and then for each pass, expose dynamic resources, typical stuff etc...
-		if(ImGui::BeginTabBar("Render or Compute"))
+		if(ImGui::BeginTabBar("#123"))
 		{
-			if(ImGui::BeginTabItem("Compute Pass"))
+			if(ImGui::BeginTabItem("Unclear!"))
 			{
-				this->compute_pass.dbgui();
+
 				ImGui::EndTabItem();
 			}
-			if(ImGui::BeginTabItem("Render Pass"))
+			if(ImGui::BeginTabItem("Render"))
 			{
-				this->render_pass.dbgui();
+				if(ImGui::BeginTabBar("Render or Compute"))
+				{
+					if(ImGui::BeginTabItem("Compute Pass"))
+					{
+						this->compute_pass.dbgui();
+						ImGui::EndTabItem();
+					}
+					if(ImGui::BeginTabItem("Render Pass"))
+					{
+						this->render_pass.dbgui();
+						ImGui::EndTabItem();
+					}
+					ImGui::EndTabBar();
+				}
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
