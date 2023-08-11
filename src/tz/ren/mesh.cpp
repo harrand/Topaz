@@ -4,6 +4,7 @@
 #include "tz/gl/draw.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/core/matrix.hpp"
+#include "tz/dbgui/dbgui.hpp"
 
 namespace tz::ren
 {
@@ -77,18 +78,25 @@ namespace tz::ren
 		std::array<mesh_locator, max_drawn_meshes> meshes;
 	};
 
+	// represents one of the textures bound to an object (drawable)
 	struct texture_locator
 	{
+		// colour multiplier on the sampled texel
 		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
+		// id within the overarching texture resource array to be sampled.
 		std::uint32_t texture_id = static_cast<std::uint32_t>(-1);
 	};
 
+	// represents the data of an object (drawable).
 	struct object_data
 	{
+		// represents the transform of the drawable, in world space.
 		tz::mat4 model;
+		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 	};
 
+	// represents the data of the camera.
 	struct camera_data
 	{
 		tz::mat4 view = tz::mat4::identity();
@@ -151,6 +159,11 @@ namespace tz::ren
 		this->handle = tz::gl::get_device().create_renderer(cinfo);
 	}
 
+	void mesh_renderer::compute_pass_t::dbgui()
+	{
+		
+	}
+
 	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
 	{
 		// we have a draw buffer which we write into upon render.
@@ -209,15 +222,59 @@ namespace tz::ren
 		this->handle = tz::gl::get_device().create_renderer(rinfo);
 	}
 
+	void mesh_renderer::render_pass_t::dbgui()
+	{
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(this->handle);
+
+		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "VERTEX DATA");
+		std::size_t vertex_count = ren.get_resource(this->vertex_buffer)->data_as<const mesh_renderer::vertex_t>().size();
+		std::size_t index_count = ren.get_resource(this->index_buffer)->data_as<const index>().size();
+		ImGui::Text("%zu vertices, %zu indices (%zu triangles)", vertex_count, index_count, (index_count / 3));
+
+		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
+		std::size_t object_count = ren.get_resource(this->object_buffer)->data_as<const object_data>().size();
+		static int object_id = 0;
+		if(object_count > 0)
+		{
+			ImGui::VSliderInt("Object", ImVec2{18.0f, 160.0f}, &object_id, 0, object_count);
+			object_data& obj = ren.get_resource(this->object_buffer)->data_as<object_data>()[object_id];
+			ImGui::Text("Object %d", object_id);	
+			// TODO: object information display
+			(void)obj;
+		}
+
+		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "CAMERA DATA");
+		auto& cam = ren.get_resource(this->camera_buffer)->data_as<camera_data>().front();
+		ImGui::Text("camera data placeholder...");
+		ImGui::Separator();
+	}
+
+	// dbgui
+
 	void mesh_renderer::dbgui_impl()
 	{
 		// before trying to re-understand this, read the explanation of
 		// how the renderer works at the top of this file. seriously.
 
+		// possible implementation (feel free to do something else)
 		// probably worth making a few tab bars.
 		// unused | impl details
 		// impl details ->
 		// compute pass | render pass
 		// and then for each pass, expose dynamic resources, typical stuff etc...
+		if(ImGui::BeginTabBar("Render or Compute"))
+		{
+			if(ImGui::BeginTabItem("Compute Pass"))
+			{
+				this->compute_pass.dbgui();
+			}
+			if(ImGui::BeginTabItem("Render Pass"))
+			{
+				this->render_pass.dbgui();
+			}
+		}
 	}
 }
