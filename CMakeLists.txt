@@ -311,6 +311,10 @@ add_shader(
 		src/tz/dbgui/dbgui.fragment.tzsl
 		src/tz/dbgui/empty.vertex.tzsl
 		src/tz/dbgui/empty.fragment.tzsl
+
+		src/tz/ren/shaders/mesh.compute.tzsl
+		src/tz/ren/shaders/mesh.vertex.tzsl
+		src/tz/ren/shaders/mesh.fragment.tzsl
 	)
 
 add_subdirectory(demo)

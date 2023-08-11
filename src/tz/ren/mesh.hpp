@@ -28,6 +28,21 @@ namespace tz::ren
 		std::vector<index> indices = {};
 	};
 
+	// describes the location and dimensions of a mesh within the giant vertex and index buffers.
+	struct mesh_locator
+	{
+		// how far into the vertex buffer does this mesh's vertices live?
+		std::uint32_t vertex_offset = 0;
+		// how many vertices does this mesh have?
+		std::uint32_t vertex_count = 0;
+		// how far into the index buffer does this mesh's indices live?
+		std::uint32_t index_offset = 0;	
+		// how many indices does this mesh have?
+		std::uint32_t index_count = 0;
+		// X, where all indices of this mesh are between 0 and X.
+		std::uint32_t max_index_value = 0;
+	};
+
 	/**
 	* @ingroup tz_ren
 	* todo: document
@@ -39,6 +54,10 @@ namespace tz::ren
 	public:
 		mesh_renderer(unsigned int total_textures = 128);
 		using vertex_t = vertex<mesh_renderer_max_tex_count>;
+		using mesh_t = mesh<mesh_renderer_max_tex_count>;
+		using mesh_handle_t = tz::handle<mesh_t>;
+
+		mesh_handle_t add_mesh(mesh_t m);
 		void append_to_render_graph();
 		void dbgui();
 	private:
@@ -55,6 +74,9 @@ namespace tz::ren
 		{
 			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures = 128);
 			void dbgui();
+			tz::gl::iresource* get_index_buffer_resource();
+			tz::gl::iresource* get_vertex_buffer_resource();
+
 			tz::gl::resource_handle index_buffer = tz::nullhand;
 			tz::gl::resource_handle vertex_buffer = tz::nullhand;
 			tz::gl::resource_handle object_buffer = tz::nullhand;
@@ -64,10 +86,14 @@ namespace tz::ren
 			tz::gl::renderer_handle handle = tz::nullhand;
 		};
 
+		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
+		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
+		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 		void dbgui_impl();
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
+		std::vector<mesh_locator> meshes = {};
 	};
 }
 

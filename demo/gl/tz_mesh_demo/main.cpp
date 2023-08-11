@@ -6,6 +6,8 @@
 #include "tz/io/gltf.hpp"
 #include "mesh_renderer.hpp"
 
+#include "tz/ren/mesh.hpp"
+
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -28,6 +30,9 @@ int main()
 	});
 	{
 		dbgui_init();
+
+		tz::ren::mesh_renderer mr;
+		mr.add_mesh({});
 
 		scene_t scene = load_gltf("../../demo/gl/tz_mesh_demo/res/sponza.glb");
 		std::vector<meshid_t> scene_meshes(scene.meshes.size());

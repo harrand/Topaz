@@ -3,8 +3,13 @@
 #include "tz/gl/device.hpp"
 #include "tz/gl/draw.hpp"
 #include "tz/gl/resource.hpp"
+#include "tz/gl/imported_shaders.hpp"
 #include "tz/core/matrix.hpp"
 #include "tz/dbgui/dbgui.hpp"
+
+#include ImportedShaderHeader(mesh, compute)
+#include ImportedShaderHeader(mesh, vertex)
+#include ImportedShaderHeader(mesh, fragment)
 
 namespace tz::ren
 {
@@ -52,20 +57,6 @@ namespace tz::ren
 
 	*/
 
-	// describes the location and dimensions of a mesh within the giant vertex and index buffers.
-	struct mesh_locator
-	{
-		// how far into the vertex buffer does this mesh's vertices live?
-		std::uint32_t vertex_offset = 0;
-		// how many vertices does this mesh have?
-		std::uint32_t vertex_count = 0;
-		// how far into the index buffer does this mesh's indices live?
-		std::uint32_t index_offset = 0;	
-		// how many indices does this mesh have?
-		std::uint32_t index_count = 0;
-		// X, where all indices of this mesh are between 0 and X.
-		std::uint32_t max_index_value = 0;
-	};
 	// only support 64 meshes being drawn at a time. todo: dynamic resize?
 	constexpr std::size_t max_drawn_meshes = 64;
 
@@ -110,6 +101,14 @@ namespace tz::ren
 
 	}
 
+	mesh_renderer::mesh_handle_t mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
+	{
+		std::size_t hanval = this->meshes.size();
+		mesh_locator locator = this->add_mesh_impl(m);
+		this->meshes.push_back(locator);
+		return static_cast<tz::hanval>(hanval);
+	}
+
 	void mesh_renderer::append_to_render_graph()
 	{
 		auto hanval_ch = static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->compute_pass.handle));
@@ -129,7 +128,7 @@ namespace tz::ren
 	mesh_renderer::compute_pass_t::compute_pass_t()
 	{
 		tz::gl::renderer_info cinfo;
-		// todo: shaders
+		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(mesh, compute));
 		struct draw_indirect_buffer_data
 		{
 			std::uint32_t count;
@@ -169,6 +168,8 @@ namespace tz::ren
 		// we have a draw buffer which we write into upon render.
 		tz::gl::renderer_info rinfo;
 		// todo: shaders
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(mesh, vertex));
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(mesh, fragment));
 		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
 		// index buffer (initially contains a single index. empty buffers should be a thing aaaa)
 		this->index_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
@@ -250,6 +251,147 @@ namespace tz::ren
 		auto& cam = ren.get_resource(this->camera_buffer)->data_as<camera_data>().front();
 		ImGui::Text("camera data placeholder...");
 		ImGui::Separator();
+	}
+
+	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
+	{
+		// Sort mesh locators by vertex offset
+        std::vector<mesh_locator> sorted_meshes = this->meshes;
+        std::sort(sorted_meshes.begin(), sorted_meshes.end(),
+                  [](const mesh_locator& a, const mesh_locator& b) {
+                      return a.index_offset < b.index_offset;
+                  });
+
+        // Iterate through sorted mesh locators to find gaps
+        std::uint32_t current_offset = 0;
+        for (const mesh_locator &locator : sorted_meshes)
+        {
+            std::uint32_t gap_size = locator.index_offset - current_offset;
+            if (gap_size >= index_count)
+            {
+                // Found a gap large enough
+                return current_offset;
+            }
+            current_offset = locator.index_offset + locator.index_count;
+        }
+
+        // Check for space at the end of the buffer
+        std::uint32_t last_mesh_end = sorted_meshes.empty() ? 0 : sorted_meshes.back().index_offset + sorted_meshes.back().index_count;
+		std::size_t total_index_count = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.index_buffer)->data_as<index>().size();
+        if (total_index_count - last_mesh_end >= index_count)
+        {
+            return last_mesh_end;
+        }
+
+        // No suitable gap found
+		return std::nullopt;
+	}
+
+	std::optional<std::uint32_t> mesh_renderer::try_find_vertex_section(std::size_t vertex_count) const
+	{
+		// Sort mesh locators by vertex offset
+        std::vector<mesh_locator> sorted_meshes = this->meshes;
+        std::sort(sorted_meshes.begin(), sorted_meshes.end(),
+                  [](const mesh_locator& a, const mesh_locator& b) {
+                      return a.vertex_offset < b.vertex_offset;
+                  });
+
+        // Iterate through sorted mesh locators to find gaps
+        std::uint32_t current_offset = 0;
+        for (const mesh_locator &locator : sorted_meshes)
+        {
+            std::uint32_t gap_size = locator.vertex_offset - current_offset;
+            if (gap_size >= vertex_count)
+            {
+                // Found a gap large enough
+                return current_offset;
+            }
+            current_offset = locator.vertex_offset + locator.vertex_count;
+        }
+
+        // Check for space at the end of the buffer
+        std::uint32_t last_mesh_end = sorted_meshes.empty() ? 0 : sorted_meshes.back().vertex_offset + sorted_meshes.back().vertex_count;
+		std::size_t total_vertex_count = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.vertex_buffer)->data_as<mesh_renderer::vertex_t>().size();
+        if (total_vertex_count - last_mesh_end >= vertex_count)
+        {
+            return last_mesh_end;
+        }
+
+        // No suitable gap found
+		return std::nullopt;
+	}
+
+	mesh_locator mesh_renderer::add_mesh_impl(const mesh_renderer::mesh_t& m)
+	{
+		auto& ren = tz::gl::get_device().get_renderer(this->render_pass.handle);
+		tz::gl::RendererEditBuilder edit;
+
+		std::span<const index> index_src = m.indices;
+		std::span<const vertex_t> vertex_src = m.vertices;
+
+		// let's check if our vertex and index buffers currently have enough free capacity to store the mesh.
+		auto maybe_index_section = this->try_find_index_section(m.indices.size());
+		if(maybe_index_section.has_value())
+		{
+			// write the index data into the spot.
+			edit.write
+			({
+				.resource = this->render_pass.index_buffer,
+				.data = std::as_bytes(index_src),
+				.offset = maybe_index_section.value()
+			});
+		}
+		else
+		{
+			// resize to make it large enough.
+			edit.buffer_resize
+			({
+				.buffer_handle = this->render_pass.index_buffer,
+				.size = ren.get_resource(this->render_pass.index_buffer)->data().size_bytes() + index_src.size_bytes()
+			});
+			// try again
+			ren.edit(edit.build());
+			return add_mesh_impl(m);
+		}
+
+		auto maybe_vertex_section = this->try_find_vertex_section(m.vertices.size());
+		if(maybe_vertex_section.has_value())
+		{
+			// write the vertex data.
+			edit.write
+			({
+				.resource = this->render_pass.vertex_buffer,
+				.data = std::as_bytes(vertex_src),
+				.offset = maybe_vertex_section.value()	
+			});
+		}
+		else
+		{
+			// resize to make it large enough.
+			edit.buffer_resize
+			({
+				.buffer_handle = this->render_pass.vertex_buffer,
+				.size = ren.get_resource(this->render_pass.vertex_buffer)->data().size_bytes() + vertex_src.size_bytes()
+			});
+			// try again
+			ren.edit(edit.build());
+			return add_mesh_impl(m);
+		}
+
+		index max_idx = 0;
+		for(index idx : index_src)
+		{
+			max_idx = std::max(max_idx, idx);
+		}
+
+		return
+		{
+			.vertex_offset = maybe_vertex_section.value(),
+			.vertex_count = static_cast<std::uint32_t>(vertex_src.size()),
+			.index_offset = maybe_index_section.value(),
+			.index_count = static_cast<std::uint32_t>(index_src.size()),
+			.max_index_value = max_idx
+		};
 	}
 
 	// dbgui
