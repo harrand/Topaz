@@ -69,13 +69,13 @@ namespace tz::ren
 			compute_pass_t();
 			std::span<const mesh_locator> get_draw_list_meshes() const;
 			std::span<mesh_locator> get_draw_list_meshes();
+			std::uint32_t get_draw_count() const;
+			void set_draw_count(std::uint32_t new_draw_count);
 			void dbgui();
 
 			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_list_buffer = tz::nullhand;
 			tz::gl::renderer_handle handle = tz::nullhand;
-			// the draw list contains space for a fixed number of mesh locators, however, only 0-X of the locators in the list are actually used, where X is this value.
-			std::size_t draw_list_cursor = 0;
 		};
 		struct render_pass_t
 		{

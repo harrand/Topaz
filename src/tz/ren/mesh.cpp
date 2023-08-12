@@ -180,6 +180,16 @@ namespace tz::ren
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().meshes;
 	}
 
+	std::uint32_t mesh_renderer::compute_pass_t::get_draw_count() const
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().draw_count;
+	}
+
+	void mesh_renderer::compute_pass_t::set_draw_count(std::uint32_t new_draw_count)
+	{
+		tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().draw_count = new_draw_count;
+	}
+
 	void imgui_helper_tooltip(const char* msg)
 	{
 		ImGui::SameLine();
@@ -207,14 +217,14 @@ namespace tz::ren
 		int draw_list_limit = draw_list.size();
 		if(only_show_active_draws)
 		{
-			draw_list_limit = this->draw_list_cursor;
+			draw_list_limit = this->get_draw_count();
 		}
 		if(draw_list_limit > 0)
 		{
 			constexpr float slider_height = 160.0f;
 			ImGui::VSliderInt("##drawelem", ImVec2{18.0f, slider_height}, &draw_id, 0, draw_list_limit - 1);
 			std::string drawname = "Draw " + std::to_string(draw_id);
-			bool is_active_draw = std::cmp_less(draw_id, this->draw_list_cursor);
+			bool is_active_draw = std::cmp_less(draw_id, this->get_draw_count());
 			if(!is_active_draw)
 			{
 				drawname = "Inactive " + drawname;
