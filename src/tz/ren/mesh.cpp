@@ -70,25 +70,6 @@ namespace tz::ren
 		std::array<mesh_locator, max_drawn_meshes> meshes;
 	};
 
-	// represents one of the textures bound to an object (drawable)
-	struct texture_locator
-	{
-		bool is_null() const{return this->texture_id == static_cast<std::uint32_t>(-1);}
-		// colour multiplier on the sampled texel
-		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
-		// id within the overarching texture resource array to be sampled.
-		std::uint32_t texture_id = static_cast<std::uint32_t>(-1);
-	};
-
-	// represents the data of an object (drawable).
-	struct object_data
-	{
-		// represents the transform of the drawable, in world space.
-		tz::mat4 model = tz::mat4::identity();
-		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
-		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
-	};
-
 	// represents the data of the camera.
 	struct camera_data
 	{
@@ -103,11 +84,25 @@ namespace tz::ren
 
 	}
 
-	mesh_renderer::mesh_handle_t mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
+	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
 	{
 		std::size_t hanval = this->render_pass.meshes.size();
 		mesh_locator locator = this->add_mesh_impl(m);
 		this->render_pass.meshes.push_back(locator);
+		return static_cast<tz::hanval>(hanval);
+	}
+
+	mesh_renderer::object_handle mesh_renderer::add_object(mesh_handle m, object_data data)
+	{
+		std::size_t hanval = this->draw_count();
+		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(m));
+		// draw list at this position is now equal to the associated mesh_locator.
+		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
+		// now need to fill the object data
+		this->render_pass.get_object_datas()[hanval] = data;
+		// finally, increment the draw count.
+		this->compute_pass.set_draw_count(this->compute_pass.get_draw_count() + 1);
+
 		return static_cast<tz::hanval>(hanval);
 	}
 
@@ -463,6 +458,16 @@ namespace tz::ren
 		ImGui::Separator();
 	}
 
+	std::span<const object_data> mesh_renderer::render_pass_t::get_object_datas() const
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<const object_data>();
+	}
+
+	std::span<object_data> mesh_renderer::render_pass_t::get_object_datas()
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<object_data>();
+	}
+
 	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
 	{
 		// Sort mesh locators by vertex offset
@@ -632,6 +637,18 @@ namespace tz::ren
 				ImGui::Text("Meshes Stored:  %zu", this->mesh_count());
 				ImGui::Text("Total Indices:  %zu", index_count);
 				ImGui::Text("Total Vertices: %zu", vertex_count);
+				if(ImGui::Button("Add empty mesh"))
+				{
+					this->add_mesh({});
+				}
+				if(this->render_pass.meshes.size())
+				{
+					if(ImGui::Button("Add first-mesh drawable"))
+					{
+						this->add_object(static_cast<tz::hanval>(0));
+					}
+					imgui_helper_tooltip("Press this to add a drawable with all the defaults, using the first mesh.");
+				}
 				if(ImGui::Button("Remove all drawables"))
 				{
 					this->clear_draws();

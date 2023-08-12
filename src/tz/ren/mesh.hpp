@@ -2,6 +2,7 @@
 #define TOPAZ_REN_MESH_HPP
 #include "tz/gl/renderer.hpp"
 #include "tz/core/data/vector.hpp"
+#include "tz/core/matrix.hpp"
 #include <cstdint>
 #include <array>
 
@@ -44,25 +45,48 @@ namespace tz::ren
 		bool operator==(const mesh_locator& rhs) const = default;
 	};
 
+	// represents one of the textures bound to an object (drawable)
+	struct texture_locator
+	{
+		bool is_null() const{return this->texture_id == static_cast<std::uint32_t>(-1);}
+		// colour multiplier on the sampled texel
+		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
+		// id within the overarching texture resource array to be sampled.
+		std::uint32_t texture_id = static_cast<std::uint32_t>(-1);
+	};
+
+	constexpr unsigned int mesh_renderer_max_tex_count = 8;
+
+	// represents the data of an object (drawable).
+	struct object_data
+	{
+		// represents the transform of the drawable, in world space.
+		tz::mat4 model = tz::mat4::identity();
+		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
+		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
+	};
+
 	/**
 	* @ingroup tz_ren
 	* todo: document
 	* a two-pass (compute gpu command generation => render) mesh renderer. pbr?
 	*/
-	constexpr unsigned int mesh_renderer_max_tex_count = 8;
 	class mesh_renderer
 	{
+		struct object_tag_t{};
 	public:
 		mesh_renderer(unsigned int total_textures = 128);
 		using vertex_t = vertex<mesh_renderer_max_tex_count>;
 		using mesh_t = mesh<mesh_renderer_max_tex_count>;
-		using mesh_handle_t = tz::handle<mesh_t>;
+		using mesh_handle = tz::handle<mesh_t>;
+		using object_handle = tz::handle<object_tag_t>;
 
 		std::size_t mesh_count() const;
 		std::size_t draw_count() const;
 		void clear();
 		void clear_draws();
-		mesh_handle_t add_mesh(mesh_t m);
+		mesh_handle add_mesh(mesh_t m);
+		object_handle add_object(mesh_handle m, object_data data = {});
 		void append_to_render_graph();
 		void dbgui();
 	private:
@@ -83,8 +107,8 @@ namespace tz::ren
 		{
 			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures = 128);
 			void dbgui();
-			tz::gl::iresource* get_index_buffer_resource();
-			tz::gl::iresource* get_vertex_buffer_resource();
+			std::span<const object_data> get_object_datas() const;
+			std::span<object_data> get_object_datas();
 
 			tz::gl::resource_handle index_buffer = tz::nullhand;
 			tz::gl::resource_handle vertex_buffer = tz::nullhand;
