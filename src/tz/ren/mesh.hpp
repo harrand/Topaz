@@ -120,6 +120,7 @@ namespace tz::ren
 
 			// not to be confused with the draw-list (part of the compute pass), which only contains the mesh locators that are gonna be drawn. this contains every mesh ever added.
 			std::vector<mesh_locator> meshes = {};
+			std::size_t cumulative_vertex_count = 0;
 		};
 
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;

@@ -1,6 +1,46 @@
 shader(type = vertex);
 
+#define MAX_TEX_COUNT 8
+
+struct vertex_t
+{
+	vec3 position;
+	vec4 texcoord4[MAX_TEX_COUNT];
+	vec3 normal;
+	vec3 tangent;
+};
+
+struct texture_locator
+{
+	vec3 colour_tint;
+	uint texture_id;
+};
+
+struct object_t
+{
+	mat4 model;
+	texture_locator[MAX_TEX_COUNT] textures;
+};
+
+resource(id = 0) const buffer vertex_buffer
+{
+	vertex_t data[];
+} vertices;
+
+resource(id = 1) const buffer object_buffer
+{
+	object_t data[];
+} objects;
+
+resource(id = 2) const buffer camera_buffer
+{
+	mat4 view;
+	mat4 projection;
+} camera;
+
 void main()
 {
-	
+	vertex_t vtx = vertices.data[in::vertex_id];
+	object_t obj = objects.data[in::draw_id];	
+	out::position = camera.projection * camera.view * obj.model * vec4(vtx.position, 1.0f);
 }

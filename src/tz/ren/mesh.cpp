@@ -593,11 +593,9 @@ namespace tz::ren
 			return add_mesh_impl(m);
 		}
 
-		index max_idx = 0;
-		for(index idx : index_src)
-		{
-			max_idx = std::max(max_idx, idx);
-		}
+		ren.edit(edit.build());
+		std::uint32_t vertex_offset = this->render_pass.cumulative_vertex_count;
+		this->render_pass.cumulative_vertex_count += m.vertices.size();
 
 		return
 		{
@@ -605,7 +603,7 @@ namespace tz::ren
 			.vertex_count = static_cast<std::uint32_t>(vertex_src.size()),
 			.index_offset = maybe_index_section.value(),
 			.index_count = static_cast<std::uint32_t>(index_src.size()),
-			.max_index_value = max_idx
+			.max_index_value = vertex_offset
 		};
 	}
 
