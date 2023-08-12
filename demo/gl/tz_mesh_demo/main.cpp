@@ -32,7 +32,15 @@ int main()
 		dbgui_init();
 
 		tz::ren::mesh_renderer mr;
-		mr.add_mesh({});
+		tz::ren::mesh_renderer::mesh_t m;
+		m.indices = {0u, 1u, 2u};
+		m.vertices = 
+		{
+			{},
+			{},
+			{}
+		};
+		mr.add_mesh(m);
 
 		scene_t scene = load_gltf("../../demo/gl/tz_mesh_demo/res/sponza.glb");
 		std::vector<meshid_t> scene_meshes(scene.meshes.size());

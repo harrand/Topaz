@@ -111,6 +111,16 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
+	std::size_t mesh_renderer::mesh_count() const
+	{
+		return this->meshes.size();
+	}
+
+	std::size_t mesh_renderer::object_count() const
+	{
+		return this->compute_pass.get_draw_list_meshes().size();
+	}
+
 	void mesh_renderer::append_to_render_graph()
 	{
 		auto hanval_ch = static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->compute_pass.handle));
@@ -160,9 +170,14 @@ namespace tz::ren
 		this->handle = tz::gl::get_device().create_renderer(cinfo);
 	}
 
-	void mesh_renderer::compute_pass_t::dbgui()
+	std::span<const mesh_locator> mesh_renderer::compute_pass_t::get_draw_list_meshes() const
 	{
-		
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<const draw_list>().front().meshes;
+	}
+
+	std::span<mesh_locator> mesh_renderer::compute_pass_t::get_draw_list_meshes()
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().meshes;
 	}
 
 	void imgui_helper_tooltip(const char* msg)
@@ -179,6 +194,58 @@ namespace tz::ren
 		}
 	}
 
+	void mesh_renderer::compute_pass_t::dbgui()
+	{
+		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(this->handle);
+
+		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "DRAW LIST");
+		auto draw_list = this->get_draw_list_meshes();
+		static int draw_id = 0;
+		static bool only_show_active_draws = true;
+		ImGui::Checkbox("Only display active draws", &only_show_active_draws);
+		int draw_list_limit = draw_list.size();
+		if(only_show_active_draws)
+		{
+			draw_list_limit = this->draw_list_cursor;
+		}
+		if(draw_list_limit > 0)
+		{
+			constexpr float slider_height = 160.0f;
+			ImGui::VSliderInt("##drawelem", ImVec2{18.0f, slider_height}, &draw_id, 0, draw_list_limit - 1);
+			std::string drawname = "Draw " + std::to_string(draw_id);
+			bool is_active_draw = std::cmp_less(draw_id, this->draw_list_cursor);
+			if(!is_active_draw)
+			{
+				drawname = "Inactive " + drawname;
+			}
+			ImGui::SameLine();
+
+			// add slight horizontal spacing between slider and child.
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
+			const mesh_locator& mloc = draw_list[draw_id];
+			if(ImGui::BeginChild(drawname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
+			{
+				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, drawname.c_str());
+				if(!is_active_draw)
+				{
+					imgui_helper_tooltip("This draw is inactive. This means that you are viewing unused data within the draw-list's GPU buffer, but this doesn't represent an object currently being drawn.");
+				}
+				ImGui::Text("Vertex Offset: %u", mloc.vertex_offset);
+				ImGui::Text("Vertex Count:  %u", mloc.vertex_count);
+				ImGui::Text("Index Offset:  %u", mloc.index_offset);
+				ImGui::Text("Index Count:   %u", mloc.index_count);
+				ImGui::Spacing();
+				ImGui::Text("To see bound textures and transform, see Object %d within the render pass section", draw_id);
+				ImGui::EndChild();
+			}
+		}
+		else
+		{
+			ImGui::Text("There are no active draws.");
+		}
+	}
+
 	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
 	{
 		// we have a draw buffer which we write into upon render.
@@ -190,7 +257,7 @@ namespace tz::ren
 		// index buffer (initially contains a single index. empty buffers should be a thing aaaa)
 		this->index_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
 		(
-			std::uint32_t{0},
+			std::byte{0},
 			{
 				.flags = {tz::gl::resource_flag::index_buffer}
 			}

@@ -41,6 +41,7 @@ namespace tz::ren
 		std::uint32_t index_count = 0;
 		// X, where all indices of this mesh are between 0 and X.
 		std::uint32_t max_index_value = 0;
+		bool operator==(const mesh_locator& rhs) const = default;
 	};
 
 	/**
@@ -57,6 +58,8 @@ namespace tz::ren
 		using mesh_t = mesh<mesh_renderer_max_tex_count>;
 		using mesh_handle_t = tz::handle<mesh_t>;
 
+		std::size_t mesh_count() const;
+		std::size_t object_count() const;
 		mesh_handle_t add_mesh(mesh_t m);
 		void append_to_render_graph();
 		void dbgui();
@@ -64,11 +67,15 @@ namespace tz::ren
 		struct compute_pass_t
 		{
 			compute_pass_t();
+			std::span<const mesh_locator> get_draw_list_meshes() const;
+			std::span<mesh_locator> get_draw_list_meshes();
 			void dbgui();
 
 			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_list_buffer = tz::nullhand;
 			tz::gl::renderer_handle handle = tz::nullhand;
+			// the draw list contains space for a fixed number of mesh locators, however, only 0-X of the locators in the list are actually used, where X is this value.
+			std::size_t draw_list_cursor = 0;
 		};
 		struct render_pass_t
 		{
