@@ -59,7 +59,9 @@ namespace tz::ren
 		using mesh_handle_t = tz::handle<mesh_t>;
 
 		std::size_t mesh_count() const;
-		std::size_t object_count() const;
+		std::size_t draw_count() const;
+		void clear();
+		void clear_draws();
 		mesh_handle_t add_mesh(mesh_t m);
 		void append_to_render_graph();
 		void dbgui();

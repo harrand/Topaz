@@ -116,9 +116,22 @@ namespace tz::ren
 		return this->meshes.size();
 	}
 
-	std::size_t mesh_renderer::object_count() const
+	std::size_t mesh_renderer::draw_count() const
 	{
-		return this->compute_pass.get_draw_list_meshes().size();
+		return this->compute_pass.get_draw_count();
+	}
+
+	void mesh_renderer::clear()
+	{
+		// does not change capacities of any buffers.
+		this->clear_draws();
+		// next mesh to be added will simply be right at the front and begin overwriting.
+		this->meshes.clear();
+	}
+
+	void mesh_renderer::clear_draws()
+	{
+		this->compute_pass.set_draw_count(0);
 	}
 
 	void mesh_renderer::append_to_render_graph()
@@ -322,9 +335,10 @@ namespace tz::ren
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "VERTEX DATA");
-		std::size_t vertex_count = ren.get_resource(this->vertex_buffer)->data_as<const mesh_renderer::vertex_t>().size();
-		std::size_t index_count = ren.get_resource(this->index_buffer)->data_as<const index>().size();
-		ImGui::Text("%zu vertices, %zu indices (%zu triangles)", vertex_count, index_count, (index_count / 3));
+		std::size_t vertex_capacity = ren.get_resource(this->vertex_buffer)->data_as<const mesh_renderer::vertex_t>().size();
+		std::size_t index_capacity = ren.get_resource(this->index_buffer)->data_as<const index>().size();
+		ImGui::Text("Vertex Capacity: %zu (%zub)", vertex_capacity, vertex_capacity * sizeof(mesh_renderer::vertex_t));
+		ImGui::Text("Index Capacity:  %zu (%zub)", index_capacity, index_capacity * sizeof(index));
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
@@ -572,9 +586,29 @@ namespace tz::ren
 		// and then for each pass, expose dynamic resources, typical stuff etc...
 		if(ImGui::BeginTabBar("#123"))
 		{
-			if(ImGui::BeginTabItem("Unclear!"))
+			if(ImGui::BeginTabItem("Overview"))
 			{
-
+				std::size_t vertex_count = 0;
+				std::size_t index_count = 0;
+				for(const mesh_locator& loc : this->meshes)
+				{
+					vertex_count += loc.vertex_count;
+					index_count += loc.index_count;
+				}
+				ImGui::Text("Draw Count:     %zu", this->draw_count());
+				ImGui::Text("Meshes Stored:  %zu", this->mesh_count());
+				ImGui::Text("Total Indices:  %zu", index_count);
+				ImGui::Text("Total Vertices: %zu", vertex_count);
+				if(ImGui::Button("Remove all drawables"))
+				{
+					this->clear_draws();
+				}
+				imgui_helper_tooltip("Press this to clear all drawable objects. This means nothing is drawn, but all the mesh data is untouched.");
+				if(ImGui::Button("Remove All"))
+				{
+					this->clear();
+				}
+				imgui_helper_tooltip("Press this to clear everything, removing all objects and all mesh data.");
 				ImGui::EndTabItem();
 			}
 			if(ImGui::BeginTabItem("Render"))
