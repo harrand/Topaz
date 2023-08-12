@@ -93,6 +93,9 @@ namespace tz::ren
 			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
 			std::vector<tz::gl::resource_handle> textures = {};
 			tz::gl::renderer_handle handle = tz::nullhand;
+
+			// not to be confused with the draw-list (part of the compute pass), which only contains the mesh locators that are gonna be drawn. this contains every mesh ever added.
+			std::vector<mesh_locator> meshes = {};
 		};
 
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
@@ -102,8 +105,6 @@ namespace tz::ren
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
-		// not to be confused with the draw-list (part of the compute pass), which only contains the mesh locators that are gonna be drawn. this contains every mesh ever added.
-		std::vector<mesh_locator> meshes = {};
 	};
 }
 

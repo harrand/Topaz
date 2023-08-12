@@ -105,15 +105,15 @@ namespace tz::ren
 
 	mesh_renderer::mesh_handle_t mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
 	{
-		std::size_t hanval = this->meshes.size();
+		std::size_t hanval = this->render_pass.meshes.size();
 		mesh_locator locator = this->add_mesh_impl(m);
-		this->meshes.push_back(locator);
+		this->render_pass.meshes.push_back(locator);
 		return static_cast<tz::hanval>(hanval);
 	}
 
 	std::size_t mesh_renderer::mesh_count() const
 	{
-		return this->meshes.size();
+		return this->render_pass.meshes.size();
 	}
 
 	std::size_t mesh_renderer::draw_count() const
@@ -126,7 +126,7 @@ namespace tz::ren
 		// does not change capacities of any buffers.
 		this->clear_draws();
 		// next mesh to be added will simply be right at the front and begin overwriting.
-		this->meshes.clear();
+		this->render_pass.meshes.clear();
 	}
 
 	void mesh_renderer::clear_draws()
@@ -335,10 +335,43 @@ namespace tz::ren
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "VERTEX DATA");
+
+		std::size_t vertex_count = 0;
+		std::size_t index_count = 0;
+		for(const mesh_locator& loc : this->meshes)
+		{
+			vertex_count += loc.vertex_count;
+			index_count += loc.index_count;
+		}
+
 		std::size_t vertex_capacity = ren.get_resource(this->vertex_buffer)->data_as<const mesh_renderer::vertex_t>().size();
 		std::size_t index_capacity = ren.get_resource(this->index_buffer)->data_as<const index>().size();
-		ImGui::Text("Vertex Capacity: %zu (%zub)", vertex_capacity, vertex_capacity * sizeof(mesh_renderer::vertex_t));
-		ImGui::Text("Index Capacity:  %zu (%zub)", index_capacity, index_capacity * sizeof(index));
+
+		ImGui::Text("Vertex Usage: %zu/%zu (%zub/%zub - %.2f%%)", vertex_count, vertex_capacity, vertex_count * sizeof(mesh_renderer::vertex_t), vertex_capacity * sizeof(mesh_renderer::vertex_t), (vertex_count * 100.0f) / vertex_capacity);
+		ImGui::Text("Index Usage:  %zu/%zu (%zub/%zub - %.2f%%)", index_count, index_capacity, index_count * sizeof(index), index_capacity * sizeof(index), (index_count * 100.0f) / index_capacity);
+
+		static int mesh_locator_id = 0;
+		if(this->meshes.size())
+		{
+			constexpr float slider_height = 160.0f;
+			ImGui::VSliderInt("##mesh_locator", ImVec2{18.0f, slider_height}, &mesh_locator_id, 0, this->meshes.size() - 1);
+			std::string locname = "Mesh Locator " + std::to_string(mesh_locator_id);
+			ImGui::SameLine();
+
+			// add slight horizontal spacing between slider and child.
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
+			const mesh_locator& mloc = this->meshes[mesh_locator_id];
+			if(ImGui::BeginChild(locname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
+			{
+				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, locname.c_str());
+				ImGui::Separator();
+				ImGui::Text("Vertex Offset: %u", mloc.vertex_offset);
+				ImGui::Text("Vertex Count:  %u", mloc.vertex_count);
+				ImGui::Text("Index Offset:  %u", mloc.index_offset);
+				ImGui::Text("Index Count:   %u", mloc.index_count);
+				ImGui::EndChild();
+			}
+		}
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
@@ -433,7 +466,7 @@ namespace tz::ren
 	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
 	{
 		// Sort mesh locators by vertex offset
-        std::vector<mesh_locator> sorted_meshes = this->meshes;
+        std::vector<mesh_locator> sorted_meshes = this->render_pass.meshes;
         std::sort(sorted_meshes.begin(), sorted_meshes.end(),
                   [](const mesh_locator& a, const mesh_locator& b) {
                       return a.index_offset < b.index_offset;
@@ -467,7 +500,7 @@ namespace tz::ren
 	std::optional<std::uint32_t> mesh_renderer::try_find_vertex_section(std::size_t vertex_count) const
 	{
 		// Sort mesh locators by vertex offset
-        std::vector<mesh_locator> sorted_meshes = this->meshes;
+        std::vector<mesh_locator> sorted_meshes = this->render_pass.meshes;
         std::sort(sorted_meshes.begin(), sorted_meshes.end(),
                   [](const mesh_locator& a, const mesh_locator& b) {
                       return a.vertex_offset < b.vertex_offset;
@@ -590,7 +623,7 @@ namespace tz::ren
 			{
 				std::size_t vertex_count = 0;
 				std::size_t index_count = 0;
-				for(const mesh_locator& loc : this->meshes)
+				for(const mesh_locator& loc : this->render_pass.meshes)
 				{
 					vertex_count += loc.vertex_count;
 					index_count += loc.index_count;
