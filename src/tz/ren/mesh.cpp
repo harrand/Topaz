@@ -255,8 +255,8 @@ namespace tz::ren
 				ImGui::Text("Index Count:   %u", mloc.index_count);
 				ImGui::Spacing();
 				ImGui::Text("To see bound textures and transform, see Object %d within the render pass section", draw_id);
-				ImGui::EndChild();
 			}
+			ImGui::EndChild();
 		}
 		else
 		{
@@ -364,8 +364,8 @@ namespace tz::ren
 				ImGui::Text("Vertex Count:  %u", mloc.vertex_count);
 				ImGui::Text("Index Offset:  %u", mloc.index_offset);
 				ImGui::Text("Index Count:   %u", mloc.index_count);
-				ImGui::EndChild();
 			}
+			ImGui::EndChild();
 		}
 
 		ImGui::Separator();
@@ -420,8 +420,8 @@ namespace tz::ren
 				ImGui::Separator();
 				ImGui::Text("Model");
 				imgui_helper_tooltip("The list of object data does not contain info on which mesh it corresponds to. To do that, view the corresponding element of the draw list within the compute pass.");
-				ImGui::EndChild();
 			}
+			ImGui::EndChild();
 		}
 
 		ImGui::Separator();

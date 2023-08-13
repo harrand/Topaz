@@ -38,9 +38,20 @@ resource(id = 2) const buffer camera_buffer
 	mat4 projection;
 } camera;
 
+output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
+output(id = 9) vec3 out::normal;
+output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
+
 void main()
 {
 	vertex_t vtx = vertices.data[in::vertex_id];
 	object_t obj = objects.data[in::draw_id];	
 	out::position = camera.projection * camera.view * obj.model * vec4(vtx.position, 1.0f);
+
+	out::normal = vtx.normal;
+	for(uint i = 0; i < MAX_TEX_COUNT; i++)
+	{
+		out::texcoord[i] = vtx.texcoord4[i].xy;
+		out::textures[i] = obj.textures[i];
+	}
 }
