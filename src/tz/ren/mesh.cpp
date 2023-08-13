@@ -392,7 +392,7 @@ namespace tz::ren
 				{
 					for (int col = 0; col < 4; col++)
 					{
-						std::string label = "##" + std::to_string(row) + std::to_string(col);
+						std::string label = "##m" + std::to_string(row) + std::to_string(col);
 						constexpr float matrix_cell_width = 35.0f;
 						ImGui::SetNextItemWidth(matrix_cell_width);
 						ImGui::InputFloat(label.c_str(), &obj.model(row, col));
@@ -413,7 +413,7 @@ namespace tz::ren
 					}
 					else
 					{
-						ImGui::Text("id %u", obj.bound_textures[i].texture_id);
+						ImGui::Text("id %u", static_cast<unsigned int>(static_cast<tz::hanval>(obj.bound_textures[i].texture)));
 					}
 				}
 
@@ -432,7 +432,7 @@ namespace tz::ren
 		{
 			for (int col = 0; col < 4; col++)
 			{
-				std::string label = "##" + std::to_string(row) + std::to_string(col);
+				std::string label = "##v" + std::to_string(row) + std::to_string(col);
 				constexpr float matrix_cell_width = 35.0f;
 				ImGui::SetNextItemWidth(matrix_cell_width);
 				ImGui::InputFloat(label.c_str(), &cam.view(row, col));
@@ -447,7 +447,7 @@ namespace tz::ren
 		{
 			for (int col = 0; col < 4; col++)
 			{
-				std::string label = "##" + std::to_string(row) + std::to_string(col);
+				std::string label = "##p" + std::to_string(row) + std::to_string(col);
 				constexpr float matrix_cell_width = 35.0f;
 				ImGui::SetNextItemWidth(matrix_cell_width);
 				ImGui::InputFloat(label.c_str(), &cam.projection(row, col));

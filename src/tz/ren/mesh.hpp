@@ -45,14 +45,21 @@ namespace tz::ren
 		bool operator==(const mesh_locator& rhs) const = default;
 	};
 
+	namespace detail
+	{
+		struct texture_tag_t{};
+	}
+
+	using texture_handle = tz::handle<detail::texture_tag_t>;
+
 	// represents one of the textures bound to an object (drawable)
 	struct texture_locator
 	{
-		bool is_null() const{return this->texture_id == static_cast<std::uint32_t>(-1);}
+		bool is_null() const{return this->texture == tz::nullhand;}
 		// colour multiplier on the sampled texel
 		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 		// id within the overarching texture resource array to be sampled.
-		std::uint32_t texture_id = static_cast<std::uint32_t>(-1);
+		texture_handle texture = tz::nullhand;
 	};
 
 	constexpr unsigned int mesh_renderer_max_tex_count = 8;

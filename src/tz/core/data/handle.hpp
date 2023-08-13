@@ -6,7 +6,7 @@
 
 namespace tz
 {
-	enum class hanval : std::size_t{};
+	enum class hanval : std::uint32_t{};
 
 	struct nullhand_t{};
 	constexpr nullhand_t nullhand;
