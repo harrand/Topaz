@@ -106,6 +106,26 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
+	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)
+	{
+		#if TZ_DEBUG
+			std::size_t sz = tz::gl::pixel_size_bytes(tz::gl::image_format::RGBA32) * dimensions[0] * dimensions[1];
+			tz::assert(image_data.size_bytes() == sz, "Unexpected image data length. Expected %zuB, but was %zuB", sz, image_data.size_bytes());
+		#endif
+		tz::assert(this->render_pass.texture_cursor < this->render_pass.textures.size(), "ran out of textures");
+		tz::gl::resource_handle imgh = this->render_pass.textures[this->render_pass.texture_cursor];
+
+		tz::gl::get_device().get_renderer(this->render_pass.handle).edit
+		(
+			tz::gl::RendererEditBuilder{}
+			.image_resize({.image_handle = imgh, .dimensions = dimensions})
+			.write({.resource = imgh, .data = image_data})
+			.build()
+		);
+
+		return static_cast<tz::hanval>(this->render_pass.texture_cursor++);
+	}
+
 	std::size_t mesh_renderer::mesh_count() const
 	{
 		return this->render_pass.meshes.size();
@@ -122,6 +142,8 @@ namespace tz::ren
 		this->clear_draws();
 		// next mesh to be added will simply be right at the front and begin overwriting.
 		this->render_pass.meshes.clear();
+		this->render_pass.cumulative_vertex_count = 0;
+		this->render_pass.texture_cursor = 0;
 	}
 
 	void mesh_renderer::clear_draws()
@@ -455,7 +477,33 @@ namespace tz::ren
 			}
 			ImGui::NewLine();
 		}
+
 		ImGui::Separator();
+		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "TEXTURES");
+		std::size_t texture_count = this->texture_cursor;
+		static int texture_id = 0;
+		if(texture_count > 0)
+		{
+			constexpr float slider_height = 160.0f;
+			ImGui::VSliderInt("##texture", ImVec2{18.0f, slider_height}, &texture_id, 0, texture_count - 1);
+			// TODO: object information display
+			std::string texname = "Texture " + std::to_string(texture_id);
+			ImGui::SameLine();
+			// add slight horizontal spacing between slider and child.
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
+			const tz::gl::image_resource& img = *static_cast<tz::gl::image_resource*>(ren.get_resource(this->textures[texture_id]));
+			if(ImGui::BeginChild(texname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
+			{
+				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, texname.c_str());
+				ImGui::Text("Dimensions: %ux%u", img.get_dimensions()[0], img.get_dimensions()[1]);
+				ImGui::Text("Size: %zub", img.data().size_bytes());
+			}
+			ImGui::EndChild();
+		}
+		else
+		{
+			ImGui::Text("There are no textures.");
+		}
 	}
 
 	std::span<const object_data> mesh_renderer::render_pass_t::get_object_datas() const

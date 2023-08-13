@@ -30,7 +30,30 @@ int main()
 			{.position = {0.5f, -0.5f, 0.0f}},
 			{.position = {-0.5f, 0.5f, 0.0f}}
 		};
-		mr.add_mesh(m);
+		auto mesh = mr.add_mesh(m);
+		auto tex = mr.add_texture({2u, 2u},
+		{{
+			std::byte{0xff},
+			std::byte{0x00},
+			std::byte{0xff},
+			std::byte{0xff},
+
+			std::byte{0x00},
+			std::byte{0x00},
+			std::byte{0x00},
+			std::byte{0xff},
+
+			std::byte{0x00},
+			std::byte{0x00},
+			std::byte{0x00},
+			std::byte{0xff},
+
+			std::byte{0xff},
+			std::byte{0x00},
+			std::byte{0xff},
+			std::byte{0xff}
+		}});
+		mr.add_object(mesh, {.bound_textures = {{{.texture = tex}}}});
 		mr.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();

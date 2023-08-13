@@ -87,6 +87,7 @@ namespace tz::ren
 		using mesh_t = mesh<mesh_renderer_max_tex_count>;
 		using mesh_handle = tz::handle<mesh_t>;
 		using object_handle = tz::handle<object_tag_t>;
+		using texture_handle = texture_handle;
 
 		std::size_t mesh_count() const;
 		std::size_t draw_count() const;
@@ -94,6 +95,7 @@ namespace tz::ren
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
 		object_handle add_object(mesh_handle m, object_data data = {});
+		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		void append_to_render_graph();
 		void dbgui();
 	private:
@@ -128,6 +130,7 @@ namespace tz::ren
 			// not to be confused with the draw-list (part of the compute pass), which only contains the mesh locators that are gonna be drawn. this contains every mesh ever added.
 			std::vector<mesh_locator> meshes = {};
 			std::size_t cumulative_vertex_count = 0;
+			std::size_t texture_cursor = 0;
 		};
 
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
