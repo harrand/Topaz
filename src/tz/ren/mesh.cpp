@@ -745,6 +745,7 @@ namespace tz::ren
 		// todo: only add meshes referenced by the nodes?
 		// each mesh contains zero or more submeshes. for mesh i, gltf_mesh_index_begin[i] represents the index into the flatenned submesh array that the first submesh begins.
 		std::vector<std::size_t> gltf_mesh_index_begin = {};
+		std::vector<std::optional<tz::io::gltf_material>> gltf_submesh_bound_textures = {};
 		std::size_t gltf_submesh_total = 0;
 		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
 		{
@@ -755,6 +756,13 @@ namespace tz::ren
 			{
 				mesh_t submesh;
 
+				std::size_t material_id = gltf.get_meshes()[i].submeshes[j].material_id;
+				auto& maybe_material = gltf_submesh_bound_textures.emplace_back();
+				if(material_id != static_cast<std::size_t>(-1))
+				{
+					// no material bound, so no textures bound.
+					maybe_material = gltf.get_materials()[material_id];
+				}
 				tz::io::gltf_submesh_data gltf_submesh = gltf.get_submesh_vertex_data(i, j);
 				// copy over indices.
 				submesh.indices.resize(gltf_submesh.indices.size());
@@ -834,12 +842,12 @@ namespace tz::ren
 		for(tz::io::gltf_node active_node : nodes)
 		{
 			// add this node's submeshes as objects (recursively for children too).
-			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin);
+			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin, gltf_submesh_bound_textures);
 		}
 		return ret;
 	}
 
-	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, mat4 transform)
+	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, mat4 transform)
 	{
 		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
 		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
@@ -850,12 +858,21 @@ namespace tz::ren
 			// todo: materials
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
-				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform * node.transform}));
+				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
+				if(submesh_materials[i].has_value())
+				{
+					bound_textures[0] =
+					{
+						.colour_tint = tz::vec3::filled(1.0f),
+						.texture = assets.textures[submesh_materials[i]->color_texture_id]
+					};
+				}
+				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform * node.transform, .bound_textures = bound_textures}));
 			}
 		}
 		for(std::size_t child_idx : node.children)
 		{
-			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, transform * node.transform);
+			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, submesh_materials, transform * node.transform);
 		}
 	}
 }
