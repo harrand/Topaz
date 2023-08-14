@@ -8,6 +8,8 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/io/gltf.hpp"
 #include "tz/core/matrix_transform.hpp"
+#include "tz/core/job/job.hpp"
+#include "tz/core/profile.hpp"
 
 #include ImportedShaderHeader(mesh, compute)
 #include ImportedShaderHeader(mesh, vertex)
@@ -59,8 +61,8 @@ namespace tz::ren
 
 	*/
 
-	// only support 64 meshes being drawn at a time. todo: dynamic resize?
-	constexpr std::size_t max_drawn_meshes = 64;
+	// only support a certain number of meshes being drawn at a time. todo: dynamic resize?
+	constexpr std::size_t max_drawn_meshes = 256;
 
 	// a draw list contains all the meshes that need to be drawn in the right order.
 	// the compute pass will take this list and populate the draw-indirect buffer,
@@ -98,6 +100,7 @@ namespace tz::ren
 		std::size_t hanval = this->draw_count();
 		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(m));
 		// draw list at this position is now equal to the associated mesh_locator.
+		tz::assert(hanval < this->compute_pass.get_draw_list_meshes().size(), "ran out of objects! can only have %zu", this->compute_pass.get_draw_list_meshes().size());
 		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
 		// now need to fill the object data
 		this->render_pass.get_object_datas()[hanval] = data;
@@ -740,9 +743,15 @@ namespace tz::ren
 		mesh_renderer::stored_assets ret;
 		// firstly, add all the meshes in the scene.
 		// todo: only add meshes referenced by the nodes?
+		// each mesh contains zero or more submeshes. for mesh i, gltf_mesh_index_begin[i] represents the index into the flatenned submesh array that the first submesh begins.
+		std::vector<std::size_t> gltf_mesh_index_begin = {};
+		std::size_t gltf_submesh_total = 0;
 		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
 		{
-			for(std::size_t j = 0; j < gltf.get_meshes()[i].submeshes.size(); j++)
+			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
+			gltf_mesh_index_begin.push_back(gltf_submesh_total);
+			gltf_submesh_total += submesh_count;
+			for(std::size_t j = 0; j < submesh_count; j++)
 			{
 				mesh_t submesh;
 
@@ -773,6 +782,69 @@ namespace tz::ren
 				});
 				// add the mesh!
 				ret.meshes.push_back(this->add_mesh(submesh));
+			}
+		}
+
+		// now, textures
+		std::vector<tz::io::image> images;
+		images.resize(gltf.get_images().size());
+		if(gltf.get_images().size() > 8)
+		{
+			TZ_PROFZONE("Load Images - Jobs", 0xFF44DD44);
+			// we should split this into threads.
+			std::size_t job_count = std::thread::hardware_concurrency();
+			std::size_t imgs_per_job = gltf.get_images().size() / job_count; 
+			std::size_t remainder_imgs = gltf.get_images().size() % job_count;
+			std::vector<tz::job_handle> jobs(job_count);
+			for(std::size_t i = 0; i < job_count; i++)
+			{
+				jobs[i] = tz::job_system().execute([&images, &gltf, offset = i * imgs_per_job, img_count = imgs_per_job]()
+				{
+					for(std::size_t j = 0; j < img_count; j++)
+					{
+						images[offset + j] = gltf.get_image_data(offset + j);
+					}
+				});
+			}
+			for(std::size_t i = (gltf.get_images().size() - remainder_imgs); i < gltf.get_images().size(); i++)
+			{
+				images[i] = gltf.get_image_data(i);
+			}
+			for(tz::job_handle jh : jobs)
+			{
+				tz::job_system().block(jh);
+			}
+		}
+		else
+		{
+			TZ_PROFZONE("Load Images - Single Threaded", 0xFF44DD44);
+			// if there isn't many, just do it all now.
+			for(std::size_t i = 0; i < gltf.get_images().size(); i++)
+			{
+				images[i] = gltf.get_image_data(i);
+			}
+		}
+		for(const tz::io::image& img : images)
+		{
+			ret.textures.push_back(this->add_texture(tz::vec2ui{img.width, img.height}, img.data));
+		}
+
+		// finally, objects (aka nodes)
+		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
+		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
+		for(tz::io::gltf_node active_node : gltf.get_active_nodes())
+		{
+			volatile int x = 5;
+			if(active_node.mesh != static_cast<std::size_t>(-1))
+			{
+				std::size_t submesh_count = gltf.get_meshes()[active_node.mesh].submeshes.size();
+				std::size_t submesh_offset = gltf_mesh_index_begin[active_node.mesh];
+				// todo: materials
+				for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
+				{
+					ret.objects.push_back(this->add_object(ret.meshes[i], {.model = active_node.transform}));
+				}
+				// todo: children
 			}
 		}
 		return ret;
