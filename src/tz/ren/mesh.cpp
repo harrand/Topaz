@@ -10,6 +10,7 @@
 #include "tz/core/matrix_transform.hpp"
 #include "tz/core/job/job.hpp"
 #include "tz/core/profile.hpp"
+#include <filesystem>
 
 #include ImportedShaderHeader(mesh, compute)
 #include ImportedShaderHeader(mesh, vertex)
@@ -731,10 +732,25 @@ namespace tz::ren
 				// Add ability to import meshes at runtime. How cool.
 				ImGui::Text("Import GLTF file");
 				static std::string mesh_path = "../abc.glb";
+				static bool failed_to_load = false;
+				static std::string failure_str = "No error";
 				ImGui::InputText("Path to GLB", &mesh_path);
 				if(ImGui::Button("Add to scene"))
 				{
-					this->add_gltf(tz::io::gltf::from_file(mesh_path.c_str()));
+					if(std::filesystem::exists(mesh_path))
+					{
+						this->add_gltf(tz::io::gltf::from_file(mesh_path.c_str()));
+						failed_to_load = false;
+					}
+					else
+					{
+						failed_to_load = true;
+						failure_str = "No file exists at the path \"" + mesh_path + "\"";
+					}
+				}
+				if(failed_to_load)
+				{
+					ImGui::Text("Failed to Load: %s", failure_str.c_str());
 				}
 				ImGui::EndTabItem();
 
