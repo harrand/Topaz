@@ -22,6 +22,7 @@ int main()
 		dbgui_init();
 
 		tz::ren::mesh_renderer mr;
+		tz::ren::mesh_renderer::stored_assets sponza = mr.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb"));
 		tz::ren::mesh_renderer::mesh_t m;
 		m.indices = {0u, 1u, 2u};
 		m.vertices = 

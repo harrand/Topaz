@@ -3,6 +3,7 @@
 #include "tz/gl/renderer.hpp"
 #include "tz/core/data/vector.hpp"
 #include "tz/core/matrix.hpp"
+#include "tz/io/gltf.hpp"
 #include <cstdint>
 #include <array>
 
@@ -89,6 +90,13 @@ namespace tz::ren
 		using object_handle = tz::handle<object_tag_t>;
 		using texture_handle = texture_handle;
 
+		struct stored_assets
+		{
+			std::vector<mesh_handle> meshes = {};
+			std::vector<texture_handle> textures = {};
+			std::vector<object_handle> objects = {};
+		};
+
 		std::size_t mesh_count() const;
 		std::size_t draw_count() const;
 		void clear();
@@ -96,6 +104,7 @@ namespace tz::ren
 		mesh_handle add_mesh(mesh_t m);
 		object_handle add_object(mesh_handle m, object_data data = {});
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
+		stored_assets add_gltf(const tz::io::gltf& gltf);
 		void append_to_render_graph();
 		void dbgui();
 	private:
@@ -137,6 +146,7 @@ namespace tz::ren
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 		void dbgui_impl();
+		stored_assets add_gltf_impl(const tz::io::gltf& gltf);
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;

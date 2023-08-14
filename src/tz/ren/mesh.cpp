@@ -1,5 +1,4 @@
 #include "tz/ren/mesh.hpp"
-#include "imgui.h"
 #include "tz/gl/api/schedule.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/draw.hpp"
@@ -7,6 +6,8 @@
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/core/matrix.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/io/gltf.hpp"
+#include "tz/core/matrix_transform.hpp"
 
 #include ImportedShaderHeader(mesh, compute)
 #include ImportedShaderHeader(mesh, vertex)
@@ -74,7 +75,7 @@ namespace tz::ren
 	struct camera_data
 	{
 		tz::mat4 view = tz::mat4::identity();
-		tz::mat4 projection = tz::mat4::identity();
+		tz::mat4 projection = tz::perspective(3.14159f * 0.5f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 	};
 
 	mesh_renderer::mesh_renderer(unsigned int total_textures):
@@ -124,6 +125,11 @@ namespace tz::ren
 		);
 
 		return static_cast<tz::hanval>(this->render_pass.texture_cursor++);
+	}
+
+	mesh_renderer::stored_assets mesh_renderer::add_gltf(const tz::io::gltf& gltf)
+	{
+		return this->add_gltf_impl(gltf);
 	}
 
 	std::size_t mesh_renderer::mesh_count() const
@@ -601,7 +607,7 @@ namespace tz::ren
 			({
 				.resource = this->render_pass.index_buffer,
 				.data = std::as_bytes(index_src),
-				.offset = maybe_index_section.value()
+				.offset = maybe_index_section.value() * sizeof(index)
 			});
 		}
 		else
@@ -625,7 +631,7 @@ namespace tz::ren
 			({
 				.resource = this->render_pass.vertex_buffer,
 				.data = std::as_bytes(vertex_src),
-				.offset = maybe_vertex_section.value()	
+				.offset = maybe_vertex_section.value() * sizeof(vertex_t)
 			});
 		}
 		else
@@ -727,5 +733,48 @@ namespace tz::ren
 			}
 			ImGui::EndTabBar();
 		}
+	}
+
+	mesh_renderer::stored_assets mesh_renderer::add_gltf_impl(const tz::io::gltf& gltf)
+	{
+		mesh_renderer::stored_assets ret;
+		// firstly, add all the meshes in the scene.
+		// todo: only add meshes referenced by the nodes?
+		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
+		{
+			for(std::size_t j = 0; j < gltf.get_meshes()[i].submeshes.size(); j++)
+			{
+				mesh_t submesh;
+
+				tz::io::gltf_submesh_data gltf_submesh = gltf.get_submesh_vertex_data(i, j);
+				// copy over indices.
+				submesh.indices.resize(gltf_submesh.indices.size());
+				std::transform(gltf_submesh.indices.begin(), gltf_submesh.indices.end(), submesh.indices.begin(),
+				[](std::uint32_t idx)-> index{return idx;});
+				// copy over vertices.
+				std::transform(gltf_submesh.vertices.begin(), gltf_submesh.vertices.end(), std::back_inserter(submesh.vertices),
+				[](tz::io::gltf_vertex_data vtx)-> vertex_t
+				{
+					vertex_t ret;
+
+					// these are easy.
+					ret.position = vtx.position;
+					ret.normal = vtx.normal;
+					ret.tangent = vtx.tangent;
+
+					// texcoord a little more troublesome!
+					constexpr std::size_t texcoord_count = std::min(static_cast<int>(mesh_renderer_max_tex_count), tz::io::gltf_max_texcoord_attribs);
+					for(std::size_t i = 0; i < texcoord_count; i++)
+					{
+						ret.texcoordn[i] = vtx.texcoordn[i].with_more(0.0f).with_more(0.0f);
+					}
+					// ignore colours, joints and weights for now.
+					return ret;
+				});
+				// add the mesh!
+				ret.meshes.push_back(this->add_mesh(submesh));
+			}
+		}
+		return ret;
 	}
 }
