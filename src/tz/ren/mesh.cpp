@@ -84,7 +84,12 @@ namespace tz::ren
 	compute_pass(),
 	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, total_textures)
 	{
+		this->add_mesh({});
+	}
 
+	mesh_renderer::mesh_handle empty_mesh()
+	{
+		return static_cast<tz::hanval>(0);
 	}
 
 	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
@@ -417,6 +422,12 @@ namespace tz::ren
 			if(ImGui::BeginChild(objname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
 			{
 				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, objname.c_str());
+				std::string parent_str = std::to_string(obj.parent);
+				if(obj.parent == static_cast<std::uint32_t>(-1))
+				{
+					parent_str = "none";
+				}
+				ImGui::Text("Parent: %s", parent_str.c_str());
 				ImGui::Separator();
 				ImGui::Text("Model Matrix");
 				for (int row = 0; row < 4; row++)
@@ -847,15 +858,19 @@ namespace tz::ren
 		return ret;
 	}
 
-	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, mat4 transform)
+	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::uint32_t parent)
 	{
+		std::uint32_t our_object_id = assets.objects.size();
 		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
 		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
+
+		// however, if a node has no mesh attached, we add an object for it anyway. that object is a zero draw (i know, that kinda sucks for efficiency).
+		// this is so we can fully respect the transform hierarchy - a bone for example might not have any drawable component, but is an important parent
+		// for something that *is* drawable.
 		if(node.mesh != static_cast<std::size_t>(-1))
 		{
 			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
 			std::size_t submesh_offset = mesh_submesh_indices[node.mesh];
-			// todo: materials
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
@@ -867,12 +882,17 @@ namespace tz::ren
 						.texture = assets.textures[submesh_materials[i]->color_texture_id]
 					};
 				}
-				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform * node.transform, .bound_textures = bound_textures}));
+				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = node.transform, .bound_textures = bound_textures, .parent = parent}));
 			}
+		}
+		else
+		{
+			// add a single object referencing the null mesh, so we can still have it in the transform hierarchy.
+			assets.objects.push_back(this->add_object(empty_mesh(), {.model = node.transform, .parent = parent}));
 		}
 		for(std::size_t child_idx : node.children)
 		{
-			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, submesh_materials, transform * node.transform);
+			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, submesh_materials, our_object_id);
 		}
 	}
 }

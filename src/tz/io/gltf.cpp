@@ -351,7 +351,7 @@ namespace tz::io
 		indices_intermediate.resize(index_count);
 
 		std::memcpy(indices_intermediate.data(), indices_data.data(), sizeof(unsigned short) * index_count);
-		#define EVIL_DO_TRANSFORM_BASED_ON(type) std::transform(indices_intermediate.begin(), indices_intermediate.end(), ret.indices.begin(),[](type t) -> std::uint32_t{return static_cast<std::uint32_t>(t);})
+		#define EVIL_DO_TRANSFORM_BASED_ON(type) do{auto* idxptr = reinterpret_cast<const type*>(indices_data.data()); std::span<const type> typedata{idxptr, index_count}; std::transform(typedata.begin(), typedata.end(), ret.indices.begin(), [](const type& d)->std::uint32_t{return static_cast<std::uint32_t>(d);});}while(false)
 		//EVIL_DO_TRANSFORM_BASED_ON(unsigned short);
 		switch(indices.component_type)
 		{

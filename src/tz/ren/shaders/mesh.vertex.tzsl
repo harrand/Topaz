@@ -20,6 +20,7 @@ struct object_t
 {
 	mat4 model;
 	texture_locator[MAX_TEX_COUNT] textures;
+	uint parent;
 };
 
 resource(id = 0) const buffer vertex_buffer
@@ -41,6 +42,18 @@ resource(id = 2) const buffer camera_buffer
 output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
 output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
+
+mat4 get_object_transform(object_t obj)
+{
+	object_t o = obj;
+	mat4 ret = o.model;
+	while(o.parent != ~0u)
+	{
+		o = objects.data[o.parent];
+		ret *= o.model;
+	}
+	return ret;
+}
 
 void main()
 {

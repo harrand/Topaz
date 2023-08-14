@@ -54,6 +54,7 @@ namespace tz::io
 		std::size_t skin = detail::badzu;
 		tz::mat4 transform = tz::mat4::identity();
 		std::vector<std::size_t> children = {};
+		bool operator==(const gltf_node& rhs) const = default;
 	};
 
 	enum class gltf_buffer_view_type
