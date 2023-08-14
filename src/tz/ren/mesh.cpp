@@ -830,23 +830,32 @@ namespace tz::ren
 		}
 
 		// finally, objects (aka nodes)
-		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
-		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
-		for(tz::io::gltf_node active_node : gltf.get_active_nodes())
+		std::vector<tz::io::gltf_node> nodes = gltf.get_active_nodes();
+		for(tz::io::gltf_node active_node : nodes)
 		{
-			volatile int x = 5;
-			if(active_node.mesh != static_cast<std::size_t>(-1))
-			{
-				std::size_t submesh_count = gltf.get_meshes()[active_node.mesh].submeshes.size();
-				std::size_t submesh_offset = gltf_mesh_index_begin[active_node.mesh];
-				// todo: materials
-				for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
-				{
-					ret.objects.push_back(this->add_object(ret.meshes[i], {.model = active_node.transform}));
-				}
-				// todo: children
-			}
+			// add this node's submeshes as objects (recursively for children too).
+			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin);
 		}
 		return ret;
+	}
+
+	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, mat4 transform)
+	{
+		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
+		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
+		if(node.mesh != static_cast<std::size_t>(-1))
+		{
+			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
+			std::size_t submesh_offset = mesh_submesh_indices[node.mesh];
+			// todo: materials
+			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
+			{
+				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform * node.transform}));
+			}
+		}
+		for(std::size_t child_idx : node.children)
+		{
+			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, transform * node.transform);
+		}
 	}
 }
