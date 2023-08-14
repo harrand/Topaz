@@ -725,7 +725,19 @@ namespace tz::ren
 					this->clear();
 				}
 				imgui_helper_tooltip("Press this to clear everything, removing all objects and all mesh data.");
+				
+				ImGui::Separator();
+
+				// Add ability to import meshes at runtime. How cool.
+				ImGui::Text("Import GLTF file");
+				static std::string mesh_path = "../abc.glb";
+				ImGui::InputText("Path to GLB", &mesh_path);
+				if(ImGui::Button("Add to scene"))
+				{
+					this->add_gltf(tz::io::gltf::from_file(mesh_path.c_str()));
+				}
 				ImGui::EndTabItem();
+
 			}
 			if(ImGui::BeginTabItem("Render"))
 			{

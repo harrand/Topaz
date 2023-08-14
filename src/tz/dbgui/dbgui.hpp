@@ -7,6 +7,7 @@
 #include "tz/core/debug.hpp"
 #include "imgui.h"
 #include "imgui_memory_editor.h"
+#include "misc/cpp/imgui_stdlib.h"
 
 namespace tz::dbgui
 {

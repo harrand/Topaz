@@ -1019,6 +1019,7 @@ namespace tz::gl
 				(vk2::VulkanCommand::TransitionImageLayout{
 					.image = &cur_swapchain_image,
 					.target_layout = vk2::ImageLayout::ColourAttachment,
+					.old_layout = vk2::ImageLayout::Undefined,
 					.source_access = {},
 					.destination_access = {vk2::AccessFlag::ColourAttachmentWrite},
 					.source_stage = vk2::PipelineStage::Bottom,
