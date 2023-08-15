@@ -895,6 +895,18 @@ namespace tz::ren
 		// however, if a node has no mesh attached, we add an object for it anyway. that object is a zero draw (i know, that kinda sucks for efficiency).
 		// this is so we can fully respect the transform hierarchy - a bone for example might not have any drawable component, but is an important parent
 		// for something that *is* drawable.
+
+		// gltf spec says:
+		// Only the joint transforms are applied to the skinned mesh; the transform of the skinned mesh node MUST be ignored.
+		// this means, if a node has a skin, ignore its transform and use the transform of the skin (joints etc) instead.
+		tz::mat4 transform = node.transform;
+		if(node.skin != static_cast<std::size_t>(-1))
+		{
+			tz::io::gltf_skin skin = gltf.get_skins()[node.skin];
+			// skin might not have a skeleton, but if it does, it points to the node that is the common root of a joints hierarchy (aka pivot point)
+			// todo: implement proper transform if mesh is skinned.
+			tz::report("warning: skins within a mesh_renderer is NYI");
+		}
 		if(node.mesh != static_cast<std::size_t>(-1))
 		{
 			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
@@ -910,13 +922,13 @@ namespace tz::ren
 						.texture = assets.textures[submesh_materials[i]->color_texture_id]
 					};
 				}
-				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = node.transform, .bound_textures = bound_textures, .parent = parent}));
+				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform, .bound_textures = bound_textures, .parent = parent}));
 			}
 		}
 		else
 		{
 			// add a single object referencing the null mesh, so we can still have it in the transform hierarchy.
-			assets.objects.push_back(this->add_object(empty_mesh(), {.model = node.transform, .parent = parent}));
+			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
 		}
 		for(std::size_t child_idx : node.children)
 		{

@@ -114,6 +114,11 @@ namespace tz::io
 		return this->materials;
 	}
 
+	std::span<const gltf_skin> gltf::get_skins() const
+	{
+		return this->skins;
+	}
+
 	std::span<const gltf_node> gltf::get_nodes() const
 	{
 		return this->nodes;
