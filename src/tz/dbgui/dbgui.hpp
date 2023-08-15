@@ -74,6 +74,8 @@ namespace tz::dbgui
 		#endif
 	}
 
+	void text_memory(unsigned int bytes);
+
 	void add_to_lua_log(std::string msg);
 
 	/// Represents a function taking no parameters and returning void.

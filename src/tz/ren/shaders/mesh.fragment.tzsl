@@ -1,5 +1,5 @@
 shader(type = fragment);
-#define MAX_TEX_COUNT 8
+#define MAX_TEX_COUNT 2
 #define BADU ~0u
 
 struct texture_locator

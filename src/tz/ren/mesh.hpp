@@ -65,7 +65,7 @@ namespace tz::ren
 		texture_handle texture = tz::nullhand;
 	};
 
-	constexpr unsigned int mesh_renderer_max_tex_count = 8;
+	constexpr unsigned int mesh_renderer_max_tex_count = 2;
 	constexpr unsigned int mesh_renderer_max_joint4_count = 1;
 
 	// represents the data of an object (drawable).

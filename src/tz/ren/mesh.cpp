@@ -378,8 +378,17 @@ namespace tz::ren
 		std::size_t vertex_capacity = ren.get_resource(this->vertex_buffer)->data_as<const mesh_renderer::vertex_t>().size();
 		std::size_t index_capacity = ren.get_resource(this->index_buffer)->data_as<const index>().size();
 
-		ImGui::Text("Vertex Usage: %zu/%zu (%zub/%zub - %.2f%%)", vertex_count, vertex_capacity, vertex_count * sizeof(mesh_renderer::vertex_t), vertex_capacity * sizeof(mesh_renderer::vertex_t), (vertex_count * 100.0f) / vertex_capacity);
-		ImGui::Text("Index Usage:  %zu/%zu (%zub/%zub - %.2f%%)", index_count, index_capacity, index_count * sizeof(index), index_capacity * sizeof(index), (index_count * 100.0f) / index_capacity);
+		ImGui::Text("Vertex Usage: %zu/%zu |", vertex_count, vertex_capacity); ImGui::SameLine();
+		tz::dbgui::text_memory(vertex_count * sizeof(mesh_renderer::vertex_t)); ImGui::SameLine();
+		ImGui::Text("/"); ImGui::SameLine();
+		tz::dbgui::text_memory(vertex_capacity * sizeof(mesh_renderer::vertex_t)); ImGui::SameLine();
+		ImGui::Text(" - %.2f%%", (vertex_count * 100.0f) / vertex_capacity);
+
+		ImGui::Text("Index Usage: %zu/%zu |", index_count, index_capacity); ImGui::SameLine();
+		tz::dbgui::text_memory(index_count * sizeof(index)); ImGui::SameLine();
+		ImGui::Text("/"); ImGui::SameLine();
+		tz::dbgui::text_memory(index_capacity * sizeof(index)); ImGui::SameLine();
+		ImGui::Text(" - %.2f%%", (index_count * 100.0f) / index_capacity);
 
 		static int mesh_locator_id = 0;
 		if(this->meshes.size())
@@ -813,13 +822,14 @@ namespace tz::ren
 						ret.texcoordn[i] = vtx.texcoordn[i].with_more(0.0f).with_more(0.0f);
 					}
 
+					// similar with weights.
 					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_joint4_count), tz::io::gltf_max_joint_attribs);
 					for(std::size_t i = 0; i < weight_count; i++)
 					{
 						ret.joint_indices[i] = vtx.jointn[i];
 						ret.joint_weights[i] = vtx.weightn[i];
 					}
-					// ignore colours, joints and weights for now.
+					// ignore colours. could theoretically incorporate that into tints, but will be very difficult to translate to texture locator tints properly.
 					return ret;
 				});
 				// add the mesh!

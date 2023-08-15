@@ -132,6 +132,27 @@ namespace tz::dbgui
 		#endif //TZ_DEBUG
 	}
 
+	void text_memory(unsigned int bytes)
+	{
+		const char* unit = "B";
+		if(bytes > (1024 * 1024 * 1024))
+		{
+			bytes /= (1024 * 1024 * 1024);
+			unit = "GiB";
+		}
+		else if(bytes > (1024 * 1024))
+		{
+			bytes /= (1024 * 1024);
+			unit = "MiB";
+		}
+		else if(bytes > 1024)
+		{
+			bytes /= 1024;
+			unit = "KiB";
+		}
+		ImGui::Text("%u%s", bytes, unit);
+	}
+
 	void add_to_lua_log(std::string msg)
 	{
 		global_platform_data->lua_console_history += "\n" + msg;

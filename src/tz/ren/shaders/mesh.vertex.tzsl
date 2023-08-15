@@ -1,6 +1,6 @@
 shader(type = vertex);
 
-#define MAX_TEX_COUNT 8
+#define MAX_TEX_COUNT 2
 #define MAX_JOINT4_COUNT 1
 
 struct vertex_t
@@ -62,7 +62,7 @@ void main()
 {
 	vertex_t vtx = vertices.data[in::vertex_id];
 	object_t obj = objects.data[in::draw_id];	
-	out::position = camera.projection * camera.view * obj.model * vec4(vtx.position, 1.0f);
+	out::position = camera.projection * camera.view * get_object_transform(obj) * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
