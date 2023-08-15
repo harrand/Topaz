@@ -812,6 +812,13 @@ namespace tz::ren
 					{
 						ret.texcoordn[i] = vtx.texcoordn[i].with_more(0.0f).with_more(0.0f);
 					}
+
+					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_joint4_count), tz::io::gltf_max_joint_attribs);
+					for(std::size_t i = 0; i < weight_count; i++)
+					{
+						ret.joint_indices[i] = vtx.jointn[i];
+						ret.joint_weights[i] = vtx.weightn[i];
+					}
 					// ignore colours, joints and weights for now.
 					return ret;
 				});
