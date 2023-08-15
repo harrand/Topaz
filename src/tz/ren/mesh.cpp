@@ -13,6 +13,9 @@
 #include "tz/core/profile.hpp"
 #include <filesystem>
 
+//temp
+#include <iostream>
+
 #include ImportedShaderHeader(mesh, compute)
 #include ImportedShaderHeader(mesh, vertex)
 #include ImportedShaderHeader(mesh, fragment)
@@ -82,6 +85,12 @@ namespace tz::ren
 		tz::mat4 projection = tz::perspective(3.14159f * 0.5f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 	};
 
+	struct id_pair
+	{
+		std::uint32_t node_id;
+		std::uint32_t object_id;
+	};
+
 	mesh_renderer::mesh_renderer(unsigned int total_textures):
 	compute_pass(),
 	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, total_textures)
@@ -110,7 +119,10 @@ namespace tz::ren
 		tz::assert(hanval < this->compute_pass.get_draw_list_meshes().size(), "ran out of objects! can only have %zu", this->compute_pass.get_draw_list_meshes().size());
 		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
 		// now need to fill the object data
+		// note: skin might have already been filled in, due to skeleton iteration happening potentially before this object was added. weird. i know.
+		auto old_skin = this->render_pass.get_object_datas()[hanval].skin;
 		this->render_pass.get_object_datas()[hanval] = data;
+		this->render_pass.get_object_datas()[hanval].skin = old_skin;
 		// finally, increment the draw count.
 		this->compute_pass.set_draw_count(this->compute_pass.get_draw_count() + 1);
 
@@ -338,6 +350,17 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
+		// joint matrix buffer
+		this->joint_matrix_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(tz::mat4::identity(),
+		{
+			.access = tz::gl::resource_access::dynamic_access
+		}));
+
+		std::array<std::uint32_t, max_drawn_meshes> initial_nodeidobj_data{};
+		this->node_to_object_id_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(initial_nodeidobj_data,
+		{
+			.access = tz::gl::resource_access::dynamic_access
+		}));
 		// draw indirect buffer (resource reference -> compute pass)
 		this->draw_indirect_buffer_ref = rinfo.ref_resource(compute_pass, compute_draw_indirect_buffer);
 		// textures
@@ -521,6 +544,18 @@ namespace tz::ren
 	std::span<object_data> mesh_renderer::render_pass_t::get_object_datas()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<object_data>();
+	}
+
+	void mesh_renderer::render_pass_t::set_node_id_to_object(std::uint32_t gltf_node_id, std::uint32_t object_id)
+	{
+		tz::assert(gltf_node_id < max_drawn_meshes);
+		tz::gl::get_device().get_renderer(this->handle).get_resource(this->node_to_object_id_buffer)->data_as<std::uint32_t>()[gltf_node_id] = object_id;
+	}
+
+	std::uint32_t mesh_renderer::render_pass_t::get_object_id_from_node_id(std::uint32_t gltf_node_id) const
+	{
+		tz::assert(gltf_node_id < max_drawn_meshes);
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->node_to_object_id_buffer)->data_as<std::uint32_t>()[gltf_node_id];
 	}
 
 	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
@@ -774,6 +809,17 @@ namespace tz::ren
 		}
 	}
 
+	std::uint32_t gltf_get_node_index(const tz::io::gltf& gltf, const tz::io::gltf_node& node)
+	{
+		auto nodes = gltf.get_nodes();
+		auto iter = std::find(nodes.begin(), nodes.end(), node);
+		if(iter == nodes.end())
+		{
+			return static_cast<std::uint32_t>(-1);
+		}
+		return std::distance(nodes.begin(), iter);
+	}
+
 	mesh_renderer::stored_assets mesh_renderer::add_gltf_impl(const tz::io::gltf& gltf)
 	{
 		mesh_renderer::stored_assets ret;
@@ -883,17 +929,25 @@ namespace tz::ren
 
 		// finally, objects (aka nodes)
 		std::vector<tz::io::gltf_node> nodes = gltf.get_active_nodes();
+		std::vector<std::size_t> expanded_node_ids = {};
 		for(tz::io::gltf_node active_node : nodes)
 		{
 			// add this node's submeshes as objects (recursively for children too).
-			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin, gltf_submesh_bound_textures);
+			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin, gltf_submesh_bound_textures, expanded_node_ids);
 		}
+		this->postprocess_skins();
 		return ret;
 	}
 
-	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::uint32_t parent)
+	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::vector<std::size_t>& expanded_node_ids, std::uint32_t parent)
 	{
 		std::uint32_t our_object_id = assets.objects.size();
+		std::uint32_t our_gltf_node_id = gltf_get_node_index(gltf, node);
+		if(std::find(expanded_node_ids.begin(), expanded_node_ids.end(), our_gltf_node_id) != expanded_node_ids.end())
+		{
+			return;
+		}
+		expanded_node_ids.push_back(our_gltf_node_id);
 		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
 		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
 
@@ -903,15 +957,14 @@ namespace tz::ren
 
 		// gltf spec says:
 		// Only the joint transforms are applied to the skinned mesh; the transform of the skinned mesh node MUST be ignored.
-		// this means, if a node has a skin, ignore its transform and use the transform of the skin (joints etc) instead.
 		tz::mat4 transform = node.transform;
 		if(node.skin != static_cast<std::size_t>(-1))
 		{
 			tz::io::gltf_skin skin = gltf.get_skins()[node.skin];
-			// skin might not have a skeleton, but if it does, it points to the node that is the common root of a joints hierarchy (aka pivot point)
-			// todo: implement proper transform if mesh is skinned.
-			tz::report("warning: skins within a mesh_renderer is NYI");
+			this->skins_to_process.push_back(skin);
 		}
+		this->render_pass.set_node_id_to_object(our_gltf_node_id, our_object_id);
+		std::cout << "processing gltf node id " << our_gltf_node_id << "...\n";
 		if(node.mesh != static_cast<std::size_t>(-1))
 		{
 			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
@@ -927,17 +980,35 @@ namespace tz::ren
 						.texture = assets.textures[submesh_materials[i]->color_texture_id]
 					};
 				}
+				std::cout << "\t=> " << assets.objects.size() << "\n";
 				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform, .bound_textures = bound_textures, .parent = parent}));
 			}
 		}
 		else
 		{
 			// add a single object referencing the null mesh, so we can still have it in the transform hierarchy.
+			std::cout << "\t=> " << assets.objects.size() << "\n";
 			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
 		}
-		for(std::size_t child_idx : node.children)
+		std::cout << "=========\n";
+		for(std::size_t child_node_id : node.children)
 		{
-			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, submesh_materials, our_object_id);
+			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_node_id], assets, mesh_submesh_indices, submesh_materials, expanded_node_ids, our_object_id);
 		}
+	}
+
+	void mesh_renderer::postprocess_skins()
+	{
+		for(const auto& skin : this->skins_to_process)
+		{
+			for(std::size_t i = 0; i < skin.joints.size(); i++)
+			{
+				tz::mat4 inverse_bind_matrix = skin.inverse_bind_matrices[i];
+
+				auto& obj = this->render_pass.get_object_datas()[this->render_pass.get_object_id_from_node_id(i)];
+				obj.skin = inverse_bind_matrix;
+			}
+		}
+		this->skins_to_process.clear();
 	}
 }

@@ -462,6 +462,8 @@ namespace tz::io
 		this->create_views();
 		this->create_accessors();
 		this->create_meshes();
+
+		this->process_inverse_bind_matrices();
 	}
 
 	void gltf::parse_header(std::string_view header)
@@ -591,7 +593,7 @@ namespace tz::io
 				{
 					for(std::size_t i = 0; i < 16; i++)
 					{
-						node.transform(i / 4, i % 4) = jnode["matrix"][i];
+						node.transform(i % 4, i / 4) = jnode["matrix"][i];
 					}
 				}
 				else
@@ -614,21 +616,9 @@ namespace tz::io
 						{
 							q[i] = jnode["rotation"][i];
 						}
-						// convert quat to euler.
-						float sinr_cosp = 2.0f * (q[3] * q[0] + q[1] * q[2]);
-						float cosr_cosp = 1.0f - 2.0f * (q[0] * q[0] + q[1] * q[1]);
-
-						rot[2] = std::atan2(sinr_cosp, cosr_cosp);
-
-						float sinp = std::sqrt(1.0f + 2.0f * (q[3] * q[1] - q[0] * q[2]));
-						float cosp = std::sqrt(1.0f - 2.0f * (q[3] * q[1] - q[0] * q[2]));
-
-						rot[0] = 2.0f * std::atan2(sinp, cosp) - 3.14159f / 2.0f;
-
-						float siny_cosp = 2.0f * (q[3] * q[2] + q[0] * q[1]);
-						float cosy_cosp = 1.0f - 2.0f * (q[1] * q[1] + q[2] * q[2]);
-
-						rot[1] = std::atan2(siny_cosp, cosy_cosp);
+						rot[0] = std::asin(2.0f * (q[3] * q[1] - q[2] * q[0]));
+						rot[1] = std::atan2(2.0f * (q[3] * q[2] + q[0] * q[1]), 1.0f - 2.0f * (q[1] * q[1]) + q[2] * q[2]);
+						rot[2] = std::atan2(2.0f * (q[3] * q[0] + q[1] * q[2]), 1.0f - 2.0f * (q[0] * q[0] + q[1] * q[1]));
 					}
 					if(jnode["scale"].is_array())
 					{
@@ -817,6 +807,9 @@ namespace tz::io
 				{
 					skin.name = jskin["name"];
 				}
+
+				// post-process inverse bind matrices to populate them now, as we will want to do that.
+				skin.inverse_bind_matrices.resize(skin.joints.size());
 			}
 		}
 	}
@@ -1010,6 +1003,29 @@ namespace tz::io
 			for(auto mesh : meshes)
 			{
 				this->meshes.push_back(this->load_mesh(mesh));
+			}
+		}
+	}
+
+	void gltf::process_inverse_bind_matrices()
+	{
+		for(gltf_skin& skin : this->skins)
+		{
+			skin.inverse_bind_matrices.resize(skin.joints.size(), tz::mat4::identity());
+			// if we have an accessor for the inverse bind matrices, we read the data.
+			// if not, we assume they're all 4x4 identity as the spec requires.
+			// The index of the accessor containing the floating-point 4x4 inverse-bind matrices. Its accessor.count property MUST be greater than or equal to the number of elements of the joints array. When undefined, each matrix is a 4x4 identity matrix.
+			if(skin.inverse_bind_matrix_accessor_id != detail::badzu)
+			{
+				const auto& accessor = this->accessors[skin.inverse_bind_matrix_accessor_id];
+				tz::assert(accessor.type == gltf_accessor_type::mat4);
+				tz::assert(accessor.component_type == gltf_accessor_component_type::flt);
+				auto bytes = this->view_buffer(this->views[accessor.buffer_view_id]);
+				const std::byte* ptr = bytes.data();
+				// undefined behaviour.
+				std::span<const tz::mat4> as_matrices{reinterpret_cast<const tz::mat4*>(ptr), accessor.element_count};
+				tz::assert(as_matrices.size() == skin.inverse_bind_matrices.size());
+				std::copy(as_matrices.begin(), as_matrices.end(), skin.inverse_bind_matrices.begin());
 			}
 		}
 	}
