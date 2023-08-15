@@ -1,6 +1,7 @@
 shader(type = vertex);
 
 #define MAX_TEX_COUNT 8
+#define MAX_JOINT4_COUNT 1
 
 struct vertex_t
 {
@@ -8,6 +9,8 @@ struct vertex_t
 	vec4 texcoord4[MAX_TEX_COUNT];
 	vec3 normal;
 	vec3 tangent;
+	uvec4 joint_indices[MAX_JOINT4_COUNT];
+	vec4 joint_weights[MAX_JOINT4_COUNT];
 };
 
 struct texture_locator
