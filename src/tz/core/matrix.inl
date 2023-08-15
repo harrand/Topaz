@@ -1,4 +1,5 @@
 #include "tz/core/debug.hpp"
+#include "tz/dbgui/dbgui.hpp"
 #if TOPAZ_DEBUG
 #include <cstdio>
 #endif
@@ -396,6 +397,24 @@ namespace tz
 		std::printf("\n");
 	}
 	#endif
+
+	template<tz::number T, std::size_t R, std::size_t C>
+	void matrix<T, R, C>::dbgui()
+	{
+		constexpr float matrix_cell_width = 35.0f;
+		for(std::size_t row = 0; row < R; row++)
+		{
+			for(std::size_t col = 0; col < C; col++)
+			{
+				std::string address = std::to_string((unsigned long long)(void**)this);
+				std::string label = "##m" + address + std::to_string(row) + std::to_string(col);
+				ImGui::SetNextItemWidth(matrix_cell_width);
+				ImGui::InputFloat(label.c_str(), &this->operator()(row, col));
+				ImGui::SameLine();
+			}
+			ImGui::NewLine();
+		}
+	}
 
 	template<tz::number T, std::size_t R, std::size_t C>
 	const T& matrix<T, R, C>::internal_get(std::size_t row, std::size_t column) const

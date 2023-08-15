@@ -192,6 +192,7 @@ namespace tz
 		 */
 		void debug_print() const;
 		#endif
+		void dbgui();
 	private:
 		const T& internal_get(std::size_t row, std::size_t column) const;
 		T& internal_get(std::size_t row, std::size_t column);

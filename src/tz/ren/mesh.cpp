@@ -1,4 +1,5 @@
 #include "tz/ren/mesh.hpp"
+#include "imgui.h"
 #include "tz/gl/api/schedule.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/draw.hpp"
@@ -429,18 +430,7 @@ namespace tz::ren
 				ImGui::Text("Parent: %s", parent_str.c_str());
 				ImGui::Separator();
 				ImGui::Text("Model Matrix");
-				for (int row = 0; row < 4; row++)
-				{
-					for (int col = 0; col < 4; col++)
-					{
-						std::string label = "##m" + std::to_string(row) + std::to_string(col);
-						constexpr float matrix_cell_width = 35.0f;
-						ImGui::SetNextItemWidth(matrix_cell_width);
-						ImGui::InputFloat(label.c_str(), &obj.model(row, col));
-						ImGui::SameLine();
-					}
-					ImGui::NewLine();
-				}
+				tz::dbgui_model(obj.model);
 
 				ImGui::Separator();
 				ImGui::Text("Textures");
@@ -469,18 +459,7 @@ namespace tz::ren
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "CAMERA DATA");
 		auto& cam = ren.get_resource(this->camera_buffer)->data_as<camera_data>().front();
 		ImGui::Text("View Matrix");
-		for (int row = 0; row < 4; row++)
-		{
-			for (int col = 0; col < 4; col++)
-			{
-				std::string label = "##v" + std::to_string(row) + std::to_string(col);
-				constexpr float matrix_cell_width = 35.0f;
-				ImGui::SetNextItemWidth(matrix_cell_width);
-				ImGui::InputFloat(label.c_str(), &cam.view(row, col));
-				ImGui::SameLine();
-			}
-			ImGui::NewLine();
-		}
+		tz::dbgui_view(cam.view);
 		ImGui::Spacing();
 
 		ImGui::Text("Projection Matrix");

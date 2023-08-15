@@ -56,6 +56,10 @@ namespace tz
 	 * Generates an orthographic projection matrix using the given camera properties. The properties generate a cube-shaped projection.
 	 */
 	mat4 orthographic(float left, float right, float top, float bottom, float near, float far);
+
+	void dbgui_model(tz::mat4& mat);
+	void dbgui_view(tz::mat4& mat);
+	void dbgui_perspective(tz::mat4& mat);
 }
 
 #endif // TOPAZ_CORE_MATRIX_TRANSFORM_HPP
