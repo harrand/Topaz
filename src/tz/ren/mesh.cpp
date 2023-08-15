@@ -251,8 +251,6 @@ namespace tz::ren
 
 	void mesh_renderer::compute_pass_t::dbgui()
 	{
-		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(this->handle);
-
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "DRAW LIST");
 		auto draw_list = this->get_draw_list_meshes();
@@ -607,6 +605,17 @@ namespace tz::ren
 
 	mesh_locator mesh_renderer::add_mesh_impl(const mesh_renderer::mesh_t& m)
 	{
+		if(m.indices.empty() && m.vertices.empty())
+		{
+			return 
+			{
+				.vertex_offset = 0,
+				.vertex_count = 0,
+				.index_offset = 0,
+				.index_count = 0,
+				.max_index_value = static_cast<std::uint32_t>(this->render_pass.cumulative_vertex_count)
+			};
+		}
 		auto& ren = tz::gl::get_device().get_renderer(this->render_pass.handle);
 		tz::gl::RendererEditBuilder edit;
 

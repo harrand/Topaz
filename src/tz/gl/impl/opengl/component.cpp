@@ -109,6 +109,7 @@ namespace tz::gl
 	{
 		ogl2::image& old_image = this->ogl_get_image();
 		ogl2::image new_image = ogl2::image_helper::clone_resized(old_image, dims);
+		new_image.debug_set_name(old_image.debug_get_name());
 
 		auto* ires = static_cast<image_resource*>(this->resource);
 		ires->set_dimensions(dims);

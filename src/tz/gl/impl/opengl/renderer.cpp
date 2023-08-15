@@ -720,6 +720,7 @@ namespace tz::gl
 							h = imgcomp->ogl_get_image().get_bindless_handle();
 						}
 						this->resources.set_image_handle(arg.image_handle, h);
+						this->resources.fill_bindless_image_buffer();
 					}
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_write>)

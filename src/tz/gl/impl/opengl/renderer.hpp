@@ -61,8 +61,8 @@ namespace tz::gl
 		void write_dynamic_images();
 		void set_image_handle(tz::gl::resource_handle h, ogl2::image::bindless_handle bindless_handle);
 		void reseat_resource_reference(tz::gl::resource_handle h, icomponent* comp);
-	private:
 		void fill_bindless_image_buffer();
+	private:
 
 		/// Stores components corresponding to each resource.
 		std::vector<tz::maybe_owned_ptr<icomponent>> components;
