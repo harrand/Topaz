@@ -338,6 +338,15 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
+		std::array<std::uint32_t, max_drawn_meshes> itoib_data{};
+		std::fill(itoib_data.begin(), itoib_data.end(), static_cast<std::uint32_t>(-1));
+		this->index_to_object_id_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
+		(
+			itoib_data,
+			{
+				.access = tz::gl::resource_access::dynamic_access
+			}
+		));
 		// draw indirect buffer (resource reference -> compute pass)
 		this->draw_indirect_buffer_ref = rinfo.ref_resource(compute_pass, compute_draw_indirect_buffer);
 		// textures
@@ -521,6 +530,11 @@ namespace tz::ren
 	std::span<object_data> mesh_renderer::render_pass_t::get_object_datas()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<object_data>();
+	}
+
+	std::span<std::uint32_t> mesh_renderer::render_pass_t::get_index_to_object_ids()
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->index_to_object_id_buffer)->data_as<std::uint32_t>();
 	}
 
 	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
@@ -894,7 +908,14 @@ namespace tz::ren
 
 	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::uint32_t parent)
 	{
+		auto nodes = gltf.get_nodes();
+		auto iter = std::find(nodes.begin(), nodes.end(), node);
+		tz::assert(iter != nodes.end());
+		std::uint32_t our_gltf_node_id = std::distance(nodes.begin(), iter);
+
 		std::uint32_t our_object_id = assets.objects.size();
+
+		this->render_pass.get_index_to_object_ids()[our_gltf_node_id] = our_object_id;
 		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
 		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
 
@@ -908,10 +929,7 @@ namespace tz::ren
 		tz::mat4 transform = node.transform;
 		if(node.skin != static_cast<std::size_t>(-1))
 		{
-			tz::io::gltf_skin skin = gltf.get_skins()[node.skin];
-			// skin might not have a skeleton, but if it does, it points to the node that is the common root of a joints hierarchy (aka pivot point)
-			// todo: implement proper transform if mesh is skinned.
-			tz::report("warning: skins within a mesh_renderer is NYI");
+			this->skins_to_process.push_back(gltf.get_skins()[node.skin]);
 		}
 		if(node.mesh != static_cast<std::size_t>(-1))
 		{
@@ -960,5 +978,20 @@ namespace tz::ren
 		{
 			objs[i].global_transform = this->compute_global_transform(i);
 		}
+	}
+
+	void mesh_renderer::process_skins()
+	{
+		for(const tz::io::gltf_skin& skin : this->skins_to_process)
+		{
+			for(std::size_t i = 0; i < skin.joints.size(); i++)
+			{
+				std::uint32_t joint_id = skin.joints[i];
+				// remember, this is a gltf node id. we want the corresponding object.
+				std::uint32_t obj_id = this->render_pass.get_index_to_object_ids()[joint_id];
+				this->render_pass.get_object_datas()[obj_id].inverse_bind_matrix = skin.inverse_bind_matrices[i];
+			}
+		}
+		this->skins_to_process.clear();
 	}
 }

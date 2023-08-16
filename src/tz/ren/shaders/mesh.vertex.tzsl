@@ -2,6 +2,9 @@ shader(type = vertex);
 
 #define MAX_TEX_COUNT 2
 #define MAX_JOINT4_COUNT 1
+#define BADU ~0u
+
+import <debug>
 
 struct vertex_t
 {
@@ -22,6 +25,7 @@ struct texture_locator
 struct object_t
 {
 	mat4 model;
+	mat4 inverse_bind_matrix;
 	mat4 global_transform;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uint parent;
@@ -43,27 +47,49 @@ resource(id = 2) const buffer camera_buffer
 	mat4 projection;
 } camera;
 
+resource(id = 3) const buffer node_to_object_id_buffer
+{
+	uint object_id[];
+} node_to;
+
 output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
 output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
 
 mat4 get_object_transform(object_t obj)
 {
-	object_t o = obj;
-	mat4 ret = o.model;
-	while(o.parent != ~0u)
-	{
-		o = objects.data[o.parent];
-		ret *= o.model;
-	}
-	return ret;
+	return obj.global_transform;
+}
+
+mat4 get_joint_matrix(object_t obj)
+{
+	return get_object_transform(obj) * obj.inverse_bind_matrix;
+}
+
+object_t get_object_from_joint_id(uint joint_id)
+{
+	uint object_id = node_to.object_id[joint_id];	
+	tz::debug::assert(object_id != BADU);
+	return objects.data[object_id];
 }
 
 void main()
 {
 	vertex_t vtx = vertices.data[in::vertex_id];
 	object_t obj = objects.data[in::draw_id + in::base_instance];	
-	out::position = camera.projection * camera.view * get_object_transform(obj) * vec4(vtx.position, 1.0f);
+
+	mat4 skin_mat =
+		vtx.joint_weights[0].x * get_joint_matrix(get_object_from_joint_id(vtx.joint_indices[0].x)) +
+		vtx.joint_weights[0].y * get_joint_matrix(get_object_from_joint_id(vtx.joint_indices[0].y)) +
+		vtx.joint_weights[0].z * get_joint_matrix(get_object_from_joint_id(vtx.joint_indices[0].z)) +
+		vtx.joint_weights[0].w * get_joint_matrix(get_object_from_joint_id(vtx.joint_indices[0].w));
+	if(vtx.joint_weights[0] == vec4(0.0))
+	{
+		skin_mat = mat4(1.0f);
+	}
+
+	vec4 world_pos = skin_mat * vec4(vtx.position, 1.0f);
+	out::position = camera.projection * camera.view * world_pos;
 
 	out::normal = vtx.normal;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
