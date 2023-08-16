@@ -888,6 +888,7 @@ namespace tz::ren
 			// add this node's submeshes as objects (recursively for children too).
 			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin, gltf_submesh_bound_textures);
 		}
+		this->compute_global_transforms();
 		return ret;
 	}
 
@@ -938,6 +939,26 @@ namespace tz::ren
 		for(std::size_t child_idx : node.children)
 		{
 			this->impl_expand_gltf_node(gltf, gltf.get_nodes()[child_idx], assets, mesh_submesh_indices, submesh_materials, our_object_id);
+		}
+	}
+
+	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
+	{
+		auto& obj = this->render_pass.get_object_datas()[obj_id];
+		tz::mat4 global = obj.model;
+		if(obj.parent != static_cast<std::uint32_t>(-1))
+		{
+			global = compute_global_transform(obj.parent) * global;
+		}
+		return global;
+	}
+
+	void mesh_renderer::compute_global_transforms()
+	{
+		auto objs = this->render_pass.get_object_datas();
+		for(std::size_t i = 0; i < objs.size(); i++)
+		{
+			objs[i].global_transform = this->compute_global_transform(i);
 		}
 	}
 }

@@ -153,6 +153,7 @@ namespace tz::io
 	struct gltf_skin
 	{
 		std::size_t inverse_bind_matrix_accessor_id = detail::badzu;
+		std::vector<tz::mat4> inverse_bind_matrices = {};	
 		std::size_t skeleton_id = detail::badzu;
 		std::vector<std::size_t> joints = {};
 		std::string name = "Unnamed Skin";
@@ -297,6 +298,7 @@ namespace tz::io
 		gltf_buffer load_buffer(json node);
 		gltf_mesh load_mesh(json node);
 		std::span<const std::byte> get_binary_data(std::size_t offset, std::size_t len) const;
+		void compute_inverse_bind_matrices();
 
 		gltf_header header;
 		std::vector<gltf_chunk_data> chunks = {};

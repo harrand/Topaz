@@ -462,6 +462,7 @@ namespace tz::io
 		this->create_views();
 		this->create_accessors();
 		this->create_meshes();
+		this->compute_inverse_bind_matrices();
 	}
 
 	void gltf::parse_header(std::string_view header)
@@ -1173,5 +1174,24 @@ namespace tz::io
 		});
 		tz::assert(iter != this->chunks.end(), "Could not find a binary chunk within the GLB after being requested binary data.");
 		return std::span<const std::byte>{iter->data}.subspan(offset, len);
+	}
+
+	void gltf::compute_inverse_bind_matrices()
+	{
+		for(auto& skin : this->skins)
+		{
+			skin.inverse_bind_matrices.resize(skin.joints.size(), tz::mat4::identity());
+			if(skin.inverse_bind_matrix_accessor_id != detail::badzu)
+			{
+				gltf_accessor accessor = this->accessors[skin.inverse_bind_matrix_accessor_id];
+				tz::assert(accessor.component_type == gltf_accessor_component_type::flt);
+				tz::assert(accessor.type == gltf_accessor_type::mat4);
+				tz::assert(accessor.buffer_view_id != detail::badzu);
+				std::span<const std::byte> matrix_data = this->view_buffer(this->views[accessor.buffer_view_id]);
+				std::span<const tz::mat4> matrices{reinterpret_cast<const tz::mat4*>(matrix_data.data()), accessor.element_count};
+				tz::assert(matrices.size() == accessor.element_count);
+				std::copy(matrices.begin(), matrices.end(), skin.inverse_bind_matrices.begin());
+			}
+		}
 	}
 }

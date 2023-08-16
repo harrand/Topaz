@@ -22,6 +22,7 @@ struct texture_locator
 struct object_t
 {
 	mat4 model;
+	mat4 global_transform;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uint parent;
 };
