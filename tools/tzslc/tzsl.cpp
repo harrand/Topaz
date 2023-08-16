@@ -408,6 +408,8 @@ namespace tzslc
 				xmog("in::vertex_id", vertexid);
 				xmog("in::instance_id", instanceid);
 				xmog("in::draw_id", "gl_DrawID");
+				xmog("in::base_instance", "gl_BaseInstance");
+				xmog("in::base_vertex", "gl_BaseVertex");
 				xmog("out::position", "gl_Position");
 			}
 			case ShaderStage::TessellationControl:
