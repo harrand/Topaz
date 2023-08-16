@@ -12,7 +12,7 @@ output(id = 0) vec4 out::colour;
 input(id = 0) vec2 in::texcoord[MAX_TEX_COUNT];
 input(id = 9) vec3 in::normal;
 input(id = 10, flat) texture_locator in::textures[MAX_TEX_COUNT];
-resource(id = 5) const texture res::textures[];
+resource(id = 3) const texture res::textures[];
 
 void main()
 {

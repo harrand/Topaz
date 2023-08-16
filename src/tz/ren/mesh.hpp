@@ -73,7 +73,6 @@ namespace tz::ren
 	{
 		// represents the transform of the drawable, in world space.
 		tz::mat4 model = tz::mat4::identity();
-		tz::mat4 skin = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
@@ -133,15 +132,11 @@ namespace tz::ren
 			void dbgui();
 			std::span<const object_data> get_object_datas() const;
 			std::span<object_data> get_object_datas();
-			void set_node_id_to_object(std::uint32_t gltf_node_id, std::uint32_t object_id);
-			std::uint32_t get_object_id_from_node_id(std::uint32_t gltf_node_id) const;
 
 			tz::gl::resource_handle index_buffer = tz::nullhand;
 			tz::gl::resource_handle vertex_buffer = tz::nullhand;
 			tz::gl::resource_handle object_buffer = tz::nullhand;
 			tz::gl::resource_handle camera_buffer = tz::nullhand;
-			tz::gl::resource_handle joint_matrix_buffer = tz::nullhand;
-			tz::gl::resource_handle node_to_object_id_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
 			std::vector<tz::gl::resource_handle> textures = {};
 			tz::gl::renderer_handle handle = tz::nullhand;
@@ -157,11 +152,9 @@ namespace tz::ren
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 		void dbgui_impl();
 		stored_assets add_gltf_impl(const tz::io::gltf& gltf);
-		void impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_textures, std::vector<std::size_t>& expanded_node_ids, std::uint32_t parent = static_cast<std::uint32_t>(-1));
-		void postprocess_skins();
+		void impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_textures, std::uint32_t parent = static_cast<std::uint32_t>(-1));
 
 		compute_pass_t compute_pass = {};
-		std::vector<tz::io::gltf_skin> skins_to_process = {};
 		render_pass_t render_pass;
 	};
 }
