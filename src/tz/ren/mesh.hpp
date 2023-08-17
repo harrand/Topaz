@@ -113,6 +113,7 @@ namespace tz::ren
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		stored_assets add_gltf(const tz::io::gltf& gltf);
 		void append_to_render_graph();
+		void update();
 		void dbgui();
 	private:
 		struct compute_pass_t

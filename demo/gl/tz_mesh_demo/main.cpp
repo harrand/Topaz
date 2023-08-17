@@ -77,6 +77,7 @@ int main()
 					}
 				}
 			});
+			mr.update();
 			tz::end_frame();
 			TZ_FRAME_END;
 		}

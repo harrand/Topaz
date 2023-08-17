@@ -178,6 +178,11 @@ namespace tz::ren
 		tz::gl::get_device().render_graph().add_dependencies(this->render_pass.handle, this->compute_pass.handle);
 	}
 
+	void mesh_renderer::update()
+	{
+		this->compute_global_transforms();
+	}
+
 	void mesh_renderer::dbgui()
 	{
 		this->dbgui_impl();
@@ -926,7 +931,7 @@ namespace tz::ren
 		tz::assert(iter != nodes.end());
 		std::uint32_t our_gltf_node_id = std::distance(nodes.begin(), iter);
 
-		std::uint32_t our_object_id = assets.objects.size();
+		std::uint32_t our_object_id = this->draw_count();
 
 		this->render_pass.get_index_to_object_ids()[our_gltf_node_id] = our_object_id;
 		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
