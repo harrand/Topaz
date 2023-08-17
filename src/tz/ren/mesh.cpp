@@ -1064,6 +1064,18 @@ namespace tz::ren
 			return tz::translate(this->translate) * rot * tz::scale(this->scale);
 		}
 	};
+
+	tz::vec4 quaternion_multiply(const tz::vec4& lhs, const tz::vec4& rhs)
+	{
+		vec4 result;
+
+		result[0] = lhs[0] * rhs[0] - lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3];
+		result[1] = lhs[0] * rhs[1] + lhs[1] * rhs[0] + lhs[2] * rhs[3] - lhs[3] * rhs[2];
+		result[2] = lhs[0] * rhs[2] - lhs[1] * rhs[3] + lhs[2] * rhs[0] + lhs[3] * rhs[1];
+		result[3] = lhs[0] * rhs[3] + lhs[1] * rhs[2] - lhs[2] * rhs[1] + lhs[3] * rhs[0];
+
+		return result;
+	}
 	
 	void mesh_renderer::process_animations(mesh_renderer::animation_data& anim)
 	{
@@ -1090,6 +1102,7 @@ namespace tz::ren
 				auto[before_id, after_id] = anim.get_relevant_sampler_event_ids(sampler);
 				std::size_t gltf_target_node_id = gltf_channel.target.node;
 				std::size_t object_id = this->render_pass.get_index_to_object_ids()[gltf_target_node_id];
+				tz::assert(object_id < this->draw_count());
 
 				// lerp between before and after.
 				float after_relative = sampler.time_points[after_id] - sampler.time_points[before_id];
@@ -1117,6 +1130,7 @@ namespace tz::ren
 					break;
 					case tz::io::gltf_animation_channel_target_path::rotation:
 					{
+						tz::vec4 new_quat = tz::vec4::zero();
 						// slerp between two quats
 						float dot = before_transform.dot(after_transform);
 						if(dot < 0.0f)
@@ -1127,7 +1141,7 @@ namespace tz::ren
 						if(dot > 0.9995f)
 						{
 							// too close, just linear interp
-							animated_transforms[object_id].rotate = before_transform + (after_transform - before_transform) * factor;
+							new_quat = before_transform + (after_transform - before_transform) * factor;
 						}
 						else
 						{
@@ -1138,8 +1152,9 @@ namespace tz::ren
 
 							float scale_previous_quat = std::cos(theta) - dot * sin_theta / sin_theta_0;
 							float scale_next_quat = sin_theta / sin_theta_0;
-							animated_transforms[object_id].rotate = before_transform * scale_previous_quat + after_transform * scale_next_quat;
+							new_quat = before_transform * scale_previous_quat + after_transform * scale_next_quat;
 						}
+						animated_transforms[object_id].rotate = quaternion_multiply(animated_transforms[object_id].rotate, new_quat);
 					}
 					break;
 					case tz::io::gltf_animation_channel_target_path::scale:
