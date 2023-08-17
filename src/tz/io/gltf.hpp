@@ -188,9 +188,15 @@ namespace tz::io
 
 	struct gltf_animation_sampler
 	{
-		float input;
-		float output;
+		std::size_t input;
+		std::size_t output;
 		gltf_animation_key_interpolation interpolation;
+		// time_points[x] corresponds to transformations[x]
+		std::vector<float> time_points = {};
+		// if translation: data is {translation, 0.0f}
+		// if rotation: data is quat representation of rot
+		// if scale: data is {scale, 0.0f}
+		std::vector<tz::vec4> transformations = {};
 	};
 
 	struct gltf_animation
@@ -299,6 +305,7 @@ namespace tz::io
 		gltf_mesh load_mesh(json node);
 		std::span<const std::byte> get_binary_data(std::size_t offset, std::size_t len) const;
 		void compute_inverse_bind_matrices();
+		void compute_sampler_data();
 
 		gltf_header header;
 		std::vector<gltf_chunk_data> chunks = {};

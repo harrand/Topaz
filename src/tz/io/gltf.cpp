@@ -463,6 +463,7 @@ namespace tz::io
 		this->create_accessors();
 		this->create_meshes();
 		this->compute_inverse_bind_matrices();
+		this->compute_sampler_data();
 	}
 
 	void gltf::parse_header(std::string_view header)
@@ -699,6 +700,8 @@ namespace tz::io
 					{
 						tz::error("Unexpected janimation sampler key interpolation \"%s\". Should be either \"LINEAR\", \"STEP\", or \"CUBICSPLINE\".", erp.c_str());
 					}
+					tz::assert(samp["input"].is_number_integer());
+					tz::assert(samp["output"].is_number_integer());
 					anim.samplers.push_back
 					({
 						.input = samp["input"],
@@ -1186,6 +1189,57 @@ namespace tz::io
 				std::span<const tz::mat4> matrices{reinterpret_cast<const tz::mat4*>(matrix_data.data()), accessor.element_count};
 				tz::assert(matrices.size() == accessor.element_count);
 				std::copy(matrices.begin(), matrices.end(), skin.inverse_bind_matrices.begin());
+			}
+		}
+	}
+
+	void gltf::compute_sampler_data()
+	{
+		for(auto& anim : this->animations)
+		{
+			for(auto& sampler : anim.samplers)
+			{
+				gltf_accessor input_acc = this->accessors[sampler.input];
+				// input should be array of single floats.
+				tz::assert(input_acc.component_type == gltf_accessor_component_type::flt);
+				tz::assert(input_acc.type == gltf_accessor_type::scalar);
+
+				// get time span.
+				auto time_bytes = this->view_buffer(this->views[input_acc.buffer_view_id]);
+				std::span<const float> times{reinterpret_cast<const float*>(time_bytes.data()), input_acc.element_count};
+				sampler.time_points.resize(times.size());
+				// copy data
+				std::copy(times.begin(), times.end(), sampler.time_points.begin());
+
+				// now with output. this is a bit trickier.
+				gltf_accessor output_acc = this->accessors[sampler.output];
+				sampler.transformations.resize(output_acc.element_count);
+				// output is either an array of vec3 (translation, scale) or vec4 (rotation).
+				// there is also a weights type, but we don't support that.
+				tz::assert(output_acc.component_type == gltf_accessor_component_type::flt);
+				tz::assert(output_acc.type == gltf_accessor_type::vec3 || output_acc.type == gltf_accessor_type::vec4);
+				auto transform_bytes = this->view_buffer(this->views[output_acc.buffer_view_id]);
+				switch(output_acc.type)
+				{
+					case gltf_accessor_type::vec3:
+					{
+						std::span<const tz::vec3> transforms{reinterpret_cast<const tz::vec3*>(transform_bytes.data()), output_acc.element_count};
+						// if vec3, just copy them over as vec4s, where w component is 0.
+						std::transform(transforms.begin(), transforms.end(), sampler.transformations.begin(),
+						[](const tz::vec3& v3)->tz::vec4{return v3.with_more(0.0f);});
+					}
+					break;
+					case gltf_accessor_type::vec4:
+					{
+						// if vec4, just copy them over directly.
+						std::span<const tz::vec4> transforms{reinterpret_cast<const tz::vec4*>(transform_bytes.data()), output_acc.element_count};
+						std::copy(transforms.begin(), transforms.end(), sampler.transformations.begin());
+					}
+					break;
+					default:
+						tz::error();
+					break;
+				}
 			}
 		}
 	}
