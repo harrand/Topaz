@@ -340,6 +340,13 @@ namespace tz::ren
 		));
 		std::array<std::uint32_t, max_drawn_meshes> itoib_data{};
 		std::fill(itoib_data.begin(), itoib_data.end(), static_cast<std::uint32_t>(-1));
+		this->joint_id_to_node_index = rinfo.add_resource(tz::gl::buffer_resource::from_one
+		(
+			itoib_data,
+			{
+				.access = tz::gl::resource_access::dynamic_access
+			}
+		));
 		this->index_to_object_id_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
 		(
 			itoib_data,
@@ -530,6 +537,11 @@ namespace tz::ren
 	std::span<object_data> mesh_renderer::render_pass_t::get_object_datas()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<object_data>();
+	}
+
+	std::span<std::uint32_t> mesh_renderer::render_pass_t::get_joint_id_to_node_ids()
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->joint_id_to_node_index)->data_as<std::uint32_t>();
 	}
 
 	std::span<std::uint32_t> mesh_renderer::render_pass_t::get_index_to_object_ids()
@@ -992,6 +1004,7 @@ namespace tz::ren
 				std::uint32_t joint_id = skin.joints[i];
 				// remember, this is a gltf node id. we want the corresponding object.
 				std::uint32_t obj_id = this->render_pass.get_index_to_object_ids()[joint_id];
+				this->render_pass.get_joint_id_to_node_ids()[i] = joint_id;
 				this->render_pass.get_object_datas()[obj_id].inverse_bind_matrix = skin.inverse_bind_matrices[i];
 			}
 		}

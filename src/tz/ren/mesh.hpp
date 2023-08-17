@@ -134,12 +134,14 @@ namespace tz::ren
 			void dbgui();
 			std::span<const object_data> get_object_datas() const;
 			std::span<object_data> get_object_datas();
+			std::span<std::uint32_t> get_joint_id_to_node_ids();
 			std::span<std::uint32_t> get_index_to_object_ids();
 
 			tz::gl::resource_handle index_buffer = tz::nullhand;
 			tz::gl::resource_handle vertex_buffer = tz::nullhand;
 			tz::gl::resource_handle object_buffer = tz::nullhand;
 			tz::gl::resource_handle camera_buffer = tz::nullhand;
+			tz::gl::resource_handle joint_id_to_node_index = tz::nullhand;
 			tz::gl::resource_handle index_to_object_id_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
 			std::vector<tz::gl::resource_handle> textures = {};
