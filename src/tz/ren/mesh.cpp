@@ -78,7 +78,7 @@ namespace tz::ren
 	// represents the data of the camera.
 	struct camera_data
 	{
-		tz::mat4 view = tz::mat4::identity();
+		tz::mat4 view = tz::view({0.0f, 0.0f, 5.0f}, {});
 		tz::mat4 projection = tz::perspective(3.14159f * 0.5f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 	};
 

@@ -598,7 +598,7 @@ namespace tz::io
 				else
 				{
 					tz::vec3 pos = tz::vec3::zero();
-					tz::vec3 rot = tz::vec3::zero();
+					tz::mat4 rot = tz::mat4::identity();
 					tz::vec3 scale = tz::vec3::filled(1.0f);
 					// TODO: handle pos, rot and scale
 					if(jnode["translation"].is_array())
@@ -616,20 +616,15 @@ namespace tz::io
 							q[i] = jnode["rotation"][i];
 						}
 						// convert quat to euler.
-						float sinr_cosp = 2.0f * (q[3] * q[0] + q[1] * q[2]);
-						float cosr_cosp = 1.0f - 2.0f * (q[0] * q[0] + q[1] * q[1]);
-
-						rot[2] = std::atan2(sinr_cosp, cosr_cosp);
-
-						float sinp = std::sqrt(1.0f + 2.0f * (q[3] * q[1] - q[0] * q[2]));
-						float cosp = std::sqrt(1.0f - 2.0f * (q[3] * q[1] - q[0] * q[2]));
-
-						rot[0] = 2.0f * std::atan2(sinp, cosp) - 3.14159f / 2.0f;
-
-						float siny_cosp = 2.0f * (q[3] * q[2] + q[0] * q[1]);
-						float cosy_cosp = 1.0f - 2.0f * (q[1] * q[1] + q[2] * q[2]);
-
-						rot[1] = std::atan2(siny_cosp, cosy_cosp);
+						rot(0, 0) = 1.0f - (2 * q[1] * q[1]) - (2 * q[2] * q[2]);
+						rot(1, 0) = (2 * q[0] * q[1]) + (2 * q[2] * q[3]);
+						rot(2, 0) = (2 * q[0] * q[2]) - (2 * q[1] * q[3]);
+						rot(0, 1) = (2 * q[0] * q[1]) - (2 * q[2] * q[3]);
+						rot(1, 1) = 1.0f - (2 * q[0] * q[0]) - (2 * q[2] * q[2]);
+						rot(2, 1) = (2 * q[1] * q[2]) + (2 * q[0] * q[3]);
+						rot(0, 2) = (2 * q[0] * q[2]) + (2 * q[1] * q[3]);
+						rot(1, 2) = (2 * q[1] * q[2]) - (2 * q[0] * q[3]);
+						rot(2, 2) = 1.0f - (2 * q[0] * q[0]) - (2 * q[1] * q[1]);
 					}
 					if(jnode["scale"].is_array())
 					{
@@ -638,7 +633,7 @@ namespace tz::io
 							scale[i] = jnode["scale"][i];
 						}
 					}
-					node.transform = tz::model(pos, rot, scale);
+					node.transform = tz::translate(pos) * rot * tz::scale(scale);
 				}
 				if(jnode["mesh"].is_number_integer())
 				{

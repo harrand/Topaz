@@ -100,7 +100,7 @@ void main()
 		tz::debug::assert(total > 0.98f && total < 1.02f);
 	}
 
-	vec4 world_pos = inverse(get_object_transform(obj)) * skin_mat * vec4(vtx.position, 1.0f);
+	vec4 world_pos = skin_mat * vec4(vtx.position, 1.0f);
 	out::position = camera.projection * camera.view * world_pos;
 
 	out::normal = vtx.normal;
