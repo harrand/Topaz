@@ -989,7 +989,7 @@ namespace tz::ren
 	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
 	{
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
-		tz::mat4 global = obj.model * obj.anim_transform;
+		tz::mat4 global = obj.anim_transform * obj.model;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent) * global;
@@ -1024,21 +1024,17 @@ namespace tz::ren
 
 	std::pair<std::size_t, std::size_t> mesh_renderer::animation_data::get_relevant_sampler_event_ids(const tz::io::gltf_animation_sampler& sampler) const
 	{
-		std::size_t before_cursor = 0;
 		std::size_t after_cursor = sampler.time_points.size() - 1;
-		for(std::size_t i = 0; i < sampler.time_points.size(); i++)
+		for(std::size_t i = 1; i < sampler.time_points.size(); i++)
 		{
 			float t = sampler.time_points[i];
-			if(t < this->time)
-			{
-				before_cursor = std::max(before_cursor, i);
-			}
 			if(t > this->time)
 			{
-				after_cursor = std::min(after_cursor, i);
+				after_cursor = i;
+				break;
 			}
 		}
-		return {before_cursor, after_cursor};
+		return {after_cursor - 1, after_cursor};
 	}
 
 	struct trs
@@ -1100,6 +1096,9 @@ namespace tz::ren
 					anim.time = 0.0f;
 				}
 				auto[before_id, after_id] = anim.get_relevant_sampler_event_ids(sampler);
+				tz::assert(before_id < after_id);
+				tz::assert(before_id + 1 == after_id);
+				tz::assert(after_id < sampler.time_points.size());
 				std::size_t gltf_target_node_id = gltf_channel.target.node;
 				std::size_t object_id = this->render_pass.get_index_to_object_ids()[gltf_target_node_id];
 				tz::assert(object_id < this->draw_count());
