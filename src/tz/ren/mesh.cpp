@@ -139,6 +139,7 @@ namespace tz::ren
 
 	mesh_renderer::stored_assets mesh_renderer::add_gltf(const tz::io::gltf& gltf)
 	{
+		this->animations.push_back({.gltf = gltf});
 		return this->add_gltf_impl(gltf);
 	}
 
@@ -178,9 +179,14 @@ namespace tz::ren
 		tz::gl::get_device().render_graph().add_dependencies(this->render_pass.handle, this->compute_pass.handle);
 	}
 
-	void mesh_renderer::update()
+	void mesh_renderer::update(float delta)
 	{
 		this->compute_global_transforms();
+		for(auto& anim : this->animations)
+		{
+			anim.time += delta * 0.1f;
+			this->process_animations(anim);
+		}
 	}
 
 	void mesh_renderer::dbgui()
@@ -359,7 +365,6 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
-		this->animation_sampler_data_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(std::byte{0}));
 		// draw indirect buffer (resource reference -> compute pass)
 		this->draw_indirect_buffer_ref = rinfo.ref_resource(compute_pass, compute_draw_indirect_buffer);
 		// textures
@@ -922,7 +927,6 @@ namespace tz::ren
 		}
 		this->compute_global_transforms();
 		this->process_skins();
-		this->process_animations(gltf);
 		return ret;
 	}
 
@@ -985,7 +989,7 @@ namespace tz::ren
 	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
 	{
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
-		tz::mat4 global = obj.model;
+		tz::mat4 global = obj.model * obj.anim_transform;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent) * global;
@@ -1017,52 +1021,152 @@ namespace tz::ren
 		}
 		this->skins_to_process.clear();
 	}
-	
-	void mesh_renderer::process_animations(const tz::io::gltf& gltf)
+
+	std::pair<std::size_t, std::size_t> mesh_renderer::animation_data::get_relevant_sampler_event_ids(const tz::io::gltf_animation_sampler& sampler) const
 	{
-		for(const auto& anim : gltf.get_animations())
+		std::size_t before_cursor = 0;
+		std::size_t after_cursor = sampler.time_points.size() - 1;
+		for(std::size_t i = 0; i < sampler.time_points.size(); i++)
 		{
-			// problem: animation channels refer to samplers by id. if we store all animation samplers in one big array, there will be sampler offsets required.
-			// how do we best handle it? probably store a sampler_offset in the animation data, and don't worry about it here.
-			for(const auto& sampler : anim.samplers)
+			float t = sampler.time_points[i];
+			if(t < this->time)
 			{
-				tz::assert(sampler.time_points.size() == sampler.transformations.size());
-				std::vector<mesh_renderer::animation_sampler_data> data;
-				data.resize(sampler.time_points.size());
-				for(std::size_t i = 0; i < sampler.time_points.size(); i++)
-				{
-					data[i].time = sampler.time_points[i];
-					data[i].transform = sampler.transformations[i];	
-				}
-				this->add_samplers_impl(data);
+				before_cursor = std::max(before_cursor, i);
+			}
+			if(t > this->time)
+			{
+				after_cursor = std::min(after_cursor, i);
 			}
 		}
+		return {before_cursor, after_cursor};
 	}
 
-	void mesh_renderer::add_samplers_impl(std::span<const animation_sampler_data> samplers)
+	struct trs
 	{
-		// no clever repositioning of data here. we append it to the list as-is.
-		std::size_t new_space_needed = samplers.size_bytes();
-		auto& ren = tz::gl::get_device().get_renderer(this->render_pass.handle);
-		std::size_t cur_size = ren.get_resource(this->render_pass.animation_sampler_data_buffer)->data().size_bytes();
-		// note: we have a hack to default to 1 byte in the buffer.
-		// if the size is smaller than a single sampler data, just start from scrathc.
-		if(cur_size < sizeof(animation_sampler_data))
+		tz::vec3 translate = tz::vec3::zero();
+		tz::vec4 rotate = tz::vec4::zero();
+		tz::vec3 scale = tz::vec3::filled(1.0f);
+		
+		tz::mat4 model() const
 		{
-			cur_size = 0;
+			tz::mat4 rot = tz::mat4::identity();
+			tz::vec4 q = this->rotate;
+			rot(0, 0) = 1.0f - (2 * q[1] * q[1]) - (2 * q[2] * q[2]);
+			rot(1, 0) = (2 * q[0] * q[1]) + (2 * q[2] * q[3]);
+			rot(2, 0) = (2 * q[0] * q[2]) - (2 * q[1] * q[3]);
+			rot(0, 1) = (2 * q[0] * q[1]) - (2 * q[2] * q[3]);
+			rot(1, 1) = 1.0f - (2 * q[0] * q[0]) - (2 * q[2] * q[2]);
+			rot(2, 1) = (2 * q[1] * q[2]) + (2 * q[0] * q[3]);
+			rot(0, 2) = (2 * q[0] * q[2]) + (2 * q[1] * q[3]);
+			rot(1, 2) = (2 * q[1] * q[2]) - (2 * q[0] * q[3]);
+			rot(2, 2) = 1.0f - (2 * q[0] * q[0]) - (2 * q[1] * q[1]);
+
+			return tz::translate(this->translate) * rot * tz::scale(this->scale);
 		}
-		ren.edit(tz::gl::RendererEditBuilder{}
-		.buffer_resize
-		({
-			.buffer_handle = this->render_pass.animation_sampler_data_buffer,
-			.size = static_cast<std::uint32_t>(cur_size + new_space_needed)
-		})
-		.write
-		({
-			.resource = this->render_pass.animation_sampler_data_buffer,
-			.data = std::as_bytes(samplers),
-			.offset = cur_size
-		})
-		.build());
+	};
+	
+	void mesh_renderer::process_animations(mesh_renderer::animation_data& anim)
+	{
+		// gather the TRS for every object that needs it, and then convert them into animated_transform matrices to be used in the shader.
+		std::vector<trs> animated_transforms;
+		animated_transforms.resize(this->draw_count());
+		// we want to figure out the current TRS.
+		for(const auto& gltf_anim : anim.gltf.get_animations())
+		{
+			for(const auto& gltf_channel : gltf_anim.channels)
+			{
+				const auto& sampler = gltf_anim.samplers[gltf_channel.sampler_id];
+				if(sampler.time_points.size() <= 1)
+				{
+					continue;
+				}
+				float max_time = *std::max_element(sampler.time_points.begin(), sampler.time_points.end());
+				if(anim.time > max_time)
+				{
+					// loop
+					tz::report("loop!");
+					anim.time = 0.0f;
+				}
+				auto[before_id, after_id] = anim.get_relevant_sampler_event_ids(sampler);
+				std::size_t gltf_target_node_id = gltf_channel.target.node;
+				std::size_t object_id = this->render_pass.get_index_to_object_ids()[gltf_target_node_id];
+
+				// lerp between before and after.
+				float after_relative = sampler.time_points[after_id] - sampler.time_points[before_id];
+				tz::assert(after_relative != 0);
+				float factor = (anim.time - sampler.time_points[before_id]) / (sampler.time_points[after_id] - sampler.time_points[before_id]);
+				if(factor > 1.0f)
+				{
+					anim.time = 0.0f;
+					continue;
+				}
+				tz::vec4 before_transform = sampler.transformations[before_id];
+				tz::vec4 after_transform = sampler.transformations[after_id];
+
+				switch(gltf_channel.target.path)
+				{
+					case tz::io::gltf_animation_channel_target_path::translation:
+					{
+						tz::vec3 translation = tz::vec3::zero();
+						for(std::size_t i = 0; i < 3; i++)
+						{
+							translation[i] = before_transform[i] + (after_transform[i] - before_transform[i]) * factor;
+						}
+						animated_transforms[object_id].translate += translation;
+					}
+					break;
+					case tz::io::gltf_animation_channel_target_path::rotation:
+					{
+						// slerp between two quats
+						float dot = before_transform.dot(after_transform);
+						if(dot < 0.0f)
+						{
+							after_transform *= -1.0f;
+							dot = -dot;
+						}
+						if(dot > 0.9995f)
+						{
+							// too close, just linear interp
+							animated_transforms[object_id].rotate = before_transform + (after_transform - before_transform) * factor;
+						}
+						else
+						{
+							float theta_0 = std::acos(dot);
+							float theta = factor * theta_0;
+							float sin_theta = std::sin(theta);
+							float sin_theta_0 = std::sin(theta_0);
+
+							float scale_previous_quat = std::cos(theta) - dot * sin_theta / sin_theta_0;
+							float scale_next_quat = sin_theta / sin_theta_0;
+							animated_transforms[object_id].rotate = before_transform * scale_previous_quat + after_transform * scale_next_quat;
+						}
+					}
+					break;
+					case tz::io::gltf_animation_channel_target_path::scale:
+					{
+						tz::vec3 scale = tz::vec3::zero();
+						for(std::size_t i = 0; i < 3; i++)
+						{
+							scale[i] = before_transform[i] + (after_transform[i] - before_transform[i]) * factor;
+						}
+						for(std::size_t i = 0; i < 3; i++)
+						{
+							animated_transforms[object_id].scale[i] += scale[i];
+						}
+					}
+					break;
+					default:
+						tz::error("rip");
+					break;
+				}
+			}
+		}
+
+		for(std::size_t i = 0; i < this->draw_count(); i++)
+		{
+			trs trans = animated_transforms[i];
+			object_data& obj = this->render_pass.get_object_datas()[i];
+			obj.anim_transform = trans.model();
+		}
 	}
 }

@@ -27,14 +27,9 @@ struct object_t
 	mat4 model;
 	mat4 inverse_bind_matrix;
 	mat4 global_transform;
+	mat4 anim_transform;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uint parent;
-};
-
-struct animation_sampler_data
-{
-	float time;
-	vec4 transform;
 };
 
 resource(id = 0) const buffer vertex_buffer
@@ -62,11 +57,6 @@ resource(id = 4) const buffer node_to_object_id_buffer
 {
 	uint object_id[];
 } node_to;
-
-resource(id = 5) const buffer animation_sampler_buffer
-{
-	animation_sampler_data data[];
-} animation_samples;
 
 output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;

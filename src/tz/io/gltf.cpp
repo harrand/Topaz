@@ -621,7 +621,6 @@ namespace tz::io
 						{
 							q[i] = jnode["rotation"][i];
 						}
-						// convert quat to euler.
 						rot(0, 0) = 1.0f - (2 * q[1] * q[1]) - (2 * q[2] * q[2]);
 						rot(1, 0) = (2 * q[0] * q[1]) + (2 * q[2] * q[3]);
 						rot(2, 0) = (2 * q[0] * q[2]) - (2 * q[1] * q[3]);

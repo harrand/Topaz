@@ -75,6 +75,7 @@ namespace tz::ren
 		tz::mat4 model = tz::mat4::identity();
 		tz::mat4 inverse_bind_matrix = tz::mat4::identity();
 		tz::mat4 global_transform = tz::mat4::identity();
+		tz::mat4 anim_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
@@ -113,7 +114,7 @@ namespace tz::ren
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		stored_assets add_gltf(const tz::io::gltf& gltf);
 		void append_to_render_graph();
-		void update();
+		void update(float delta_millis);
 		void dbgui();
 	private:
 		struct compute_pass_t
@@ -144,8 +145,6 @@ namespace tz::ren
 			tz::gl::resource_handle camera_buffer = tz::nullhand;
 			tz::gl::resource_handle joint_id_to_node_index = tz::nullhand;
 			tz::gl::resource_handle index_to_object_id_buffer = tz::nullhand;
-			//tz::gl::resource_handle animation_data_buffer = tz::nullhand;
-			tz::gl::resource_handle animation_sampler_data_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
 			std::vector<tz::gl::resource_handle> textures = {};
 			tz::gl::renderer_handle handle = tz::nullhand;
@@ -155,13 +154,16 @@ namespace tz::ren
 			std::size_t cumulative_vertex_count = 0;
 			std::size_t texture_cursor = 0;
 		};
-
-		struct animation_sampler_data
+		struct animation_data
 		{
+			tz::io::gltf gltf;
+			//std::size_t active_animation_id = 0;
 			float time = 0.0f;
-			float pad0[3];
-			tz::vec4 transform;
+
+			// the current time ought to fall between 2 samples (i.e ahead of previous, but before the next)
+			std::pair<std::size_t, std::size_t> get_relevant_sampler_event_ids(const tz::io::gltf_animation_sampler& sampler) const;
 		};
+
 
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
@@ -172,12 +174,12 @@ namespace tz::ren
 		tz::mat4 compute_global_transform(std::uint32_t obj_id) const;
 		void compute_global_transforms();
 		void process_skins();
-		void process_animations(const tz::io::gltf& gltf);
-		void add_samplers_impl(std::span<const animation_sampler_data> samplers);
+		void process_animations(animation_data& anim);
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 		std::vector<tz::io::gltf_skin> skins_to_process = {};
+		std::vector<animation_data> animations = {};
 	};
 }
 
