@@ -22,11 +22,20 @@ struct texture_locator
 	uint texture_id;
 };
 
+struct trs
+{
+	vec3 position;
+	vec4 quat;
+	vec3 scale;
+};
+
 struct object_t
 {
 	mat4 model;
 	mat4 inverse_bind_matrix;
 	mat4 global_transform;
+	trs trs;
+	trs anim_trs;
 	mat4 anim_transform;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uint parent;
@@ -64,7 +73,7 @@ output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
 
 mat4 get_object_transform(object_t obj)
 {
-	return obj.global_transform * obj.anim_transform;
+	return obj.global_transform;
 }
 
 mat4 get_joint_matrix(object_t obj)

@@ -47,11 +47,27 @@ namespace tz::io
 		std::string name = "Unnamed Scene";
 	};
 
+	tz::vec4 quaternion_multiply(const tz::vec4& lhs, const tz::vec4& rhs);
+
+	struct gltf_trs
+	{
+		tz::vec3 position = tz::vec3::zero();
+		float pad0;
+		tz::vec4 rotquat = tz::vec4::zero();
+		tz::vec3 scale = tz::vec3::filled(1.0f);
+		float pa1;
+
+		gltf_trs combine(const gltf_trs& rhs) const;
+		tz::mat4 matrix() const;
+		bool operator==(const gltf_trs& rhs) const = default;
+	};
+
 	struct gltf_node
 	{
 		std::string name = "Unnamed Node";
 		std::size_t mesh = detail::badzu;
 		std::size_t skin = detail::badzu;
+		std::optional<gltf_trs> trs = std::nullopt;
 		tz::mat4 transform = tz::mat4::identity();
 		std::vector<std::size_t> children = {};
 		bool operator==(const gltf_node& rhs) const = default;

@@ -75,6 +75,8 @@ namespace tz::ren
 		tz::mat4 model = tz::mat4::identity();
 		tz::mat4 inverse_bind_matrix = tz::mat4::identity();
 		tz::mat4 global_transform = tz::mat4::identity();
+		tz::io::gltf_trs trs = {};
+		tz::io::gltf_trs anim_trs = {};
 		tz::mat4 anim_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};

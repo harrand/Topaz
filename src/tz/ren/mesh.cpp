@@ -951,6 +951,11 @@ namespace tz::ren
 		// Only the joint transforms are applied to the skinned mesh; the transform of the skinned mesh node MUST be ignored.
 		// this means, if a node has a skin, ignore its transform and use the transform of the skin (joints etc) instead.
 		tz::mat4 transform = node.transform;
+		tz::io::gltf_trs trs = {};
+		if(node.trs.has_value())
+		{
+			trs = node.trs.value();
+		}
 		if(node.skin != static_cast<std::size_t>(-1))
 		{
 			this->skins_to_process.push_back(gltf.get_skins()[node.skin]);
@@ -960,7 +965,7 @@ namespace tz::ren
 			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
 			std::size_t submesh_offset = mesh_submesh_indices[node.mesh];
 			// add an empty object, and a bunch of children for each submesh.
-			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
+			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .trs = trs, .parent = parent}));
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
@@ -978,7 +983,7 @@ namespace tz::ren
 		else
 		{
 			// add a single object referencing the null mesh, so we can still have it in the transform hierarchy.
-			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
+			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .trs = trs, .parent = parent}));
 		}
 		for(std::size_t child_idx : node.children)
 		{
@@ -989,7 +994,7 @@ namespace tz::ren
 	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
 	{
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
-		tz::mat4 global = obj.model * obj.anim_transform;
+		tz::mat4 global = obj.trs.combine(obj.anim_trs).matrix();
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent) * global;
@@ -1041,46 +1046,10 @@ namespace tz::ren
 		return {before_cursor, after_cursor};
 	}
 
-	struct trs
-	{
-		tz::vec3 translate = tz::vec3::zero();
-		tz::vec4 rotate = tz::vec4::zero();
-		tz::vec3 scale = tz::vec3::filled(1.0f);
-		
-		tz::mat4 model() const
-		{
-			tz::mat4 rot = tz::mat4::identity();
-			tz::vec4 q = this->rotate;
-			rot(0, 0) = 1.0f - (2 * q[1] * q[1]) - (2 * q[2] * q[2]);
-			rot(1, 0) = (2 * q[0] * q[1]) + (2 * q[2] * q[3]);
-			rot(2, 0) = (2 * q[0] * q[2]) - (2 * q[1] * q[3]);
-			rot(0, 1) = (2 * q[0] * q[1]) - (2 * q[2] * q[3]);
-			rot(1, 1) = 1.0f - (2 * q[0] * q[0]) - (2 * q[2] * q[2]);
-			rot(2, 1) = (2 * q[1] * q[2]) + (2 * q[0] * q[3]);
-			rot(0, 2) = (2 * q[0] * q[2]) + (2 * q[1] * q[3]);
-			rot(1, 2) = (2 * q[1] * q[2]) - (2 * q[0] * q[3]);
-			rot(2, 2) = 1.0f - (2 * q[0] * q[0]) - (2 * q[1] * q[1]);
-
-			return tz::translate(this->translate) * rot * tz::scale(this->scale);
-		}
-	};
-
-	tz::vec4 quaternion_multiply(const tz::vec4& lhs, const tz::vec4& rhs)
-	{
-		vec4 result;
-
-		result[0] = lhs[0] * rhs[0] - lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3];
-		result[1] = lhs[0] * rhs[1] + lhs[1] * rhs[0] + lhs[2] * rhs[3] - lhs[3] * rhs[2];
-		result[2] = lhs[0] * rhs[2] - lhs[1] * rhs[3] + lhs[2] * rhs[0] + lhs[3] * rhs[1];
-		result[3] = lhs[0] * rhs[3] + lhs[1] * rhs[2] - lhs[2] * rhs[1] + lhs[3] * rhs[0];
-
-		return result;
-	}
-	
 	void mesh_renderer::process_animations(mesh_renderer::animation_data& anim)
 	{
 		// gather the TRS for every object that needs it, and then convert them into animated_transform matrices to be used in the shader.
-		std::vector<trs> animated_transforms;
+		std::vector<tz::io::gltf_trs> animated_transforms;
 		animated_transforms.resize(this->draw_count());
 		// we want to figure out the current TRS.
 		for(const auto& gltf_anim : anim.gltf.get_animations())
@@ -1125,7 +1094,7 @@ namespace tz::ren
 						{
 							translation[i] = before_transform[i] + (after_transform[i] - before_transform[i]) * factor;
 						}
-						animated_transforms[object_id].translate += translation;
+						animated_transforms[object_id].combine({.position = translation});
 					}
 					break;
 					case tz::io::gltf_animation_channel_target_path::rotation:
@@ -1154,7 +1123,7 @@ namespace tz::ren
 							float scale_next_quat = sin_theta / sin_theta_0;
 							new_quat = before_transform * scale_previous_quat + after_transform * scale_next_quat;
 						}
-						animated_transforms[object_id].rotate = quaternion_multiply(animated_transforms[object_id].rotate, new_quat);
+						animated_transforms[object_id].combine({.rotquat = new_quat});
 					}
 					break;
 					case tz::io::gltf_animation_channel_target_path::scale:
@@ -1164,10 +1133,7 @@ namespace tz::ren
 						{
 							scale[i] = before_transform[i] + (after_transform[i] - before_transform[i]) * factor;
 						}
-						for(std::size_t i = 0; i < 3; i++)
-						{
-							animated_transforms[object_id].scale[i] += scale[i];
-						}
+						animated_transforms[object_id].combine({.scale = scale});
 					}
 					break;
 					default:
@@ -1179,9 +1145,8 @@ namespace tz::ren
 
 		for(std::size_t i = 0; i < this->draw_count(); i++)
 		{
-			trs trans = animated_transforms[i];
 			object_data& obj = this->render_pass.get_object_datas()[i];
-			obj.anim_transform = trans.model();
+			obj.anim_trs = animated_transforms[i];
 		}
 	}
 }

@@ -73,6 +73,51 @@ namespace tz::io
 		- accessors seem to define essentially data spans of various types. in this case just buffer views.
 		- buffer views show spans within buffers (which live in bin chunks not shown in this example).
 	 */
+
+	tz::vec4 quaternion_multiply(const tz::vec4& lhs, const tz::vec4& rhs)
+	{
+		vec4 result;
+
+		result[0] = lhs[0] * rhs[0] - lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3];
+		result[1] = lhs[0] * rhs[1] + lhs[1] * rhs[0] + lhs[2] * rhs[3] - lhs[3] * rhs[2];
+		result[2] = lhs[0] * rhs[2] - lhs[1] * rhs[3] + lhs[2] * rhs[0] + lhs[3] * rhs[1];
+		result[3] = lhs[0] * rhs[3] + lhs[1] * rhs[2] - lhs[2] * rhs[1] + lhs[3] * rhs[0];
+
+		return result;
+	}
+
+	gltf_trs gltf_trs::combine(const gltf_trs& rhs) const
+	{
+		gltf_trs ret = *this;
+		// just add positions.
+		ret.position += rhs.position;
+		// for rotation, do a quat multiply.
+		ret.rotquat = quaternion_multiply(ret.rotquat, rhs.rotquat);
+		// multiply scales together?
+		for(std::size_t i = 0; i < 3; i++)
+		{
+			ret.scale[i] *= rhs.scale[i];
+		}
+
+		return ret;
+	}
+
+	tz::mat4 gltf_trs::matrix() const
+	{
+		tz::mat4 rot = tz::mat4::identity();
+		rot(0, 0) = 1.0f - (2 * this->rotquat[1] * this->rotquat[1]) - (2 * this->rotquat[2] * this->rotquat[2]);
+		rot(1, 0) = (2 * this->rotquat[0] * this->rotquat[1]) + (2 * this->rotquat[2] * this->rotquat[3]);
+		rot(2, 0) = (2 * this->rotquat[0] * this->rotquat[2]) - (2 * this->rotquat[1] * this->rotquat[3]);
+		rot(0, 1) = (2 * this->rotquat[0] * this->rotquat[1]) - (2 * this->rotquat[2] * this->rotquat[3]);
+		rot(1, 1) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[2] * this->rotquat[2]);
+		rot(2, 1) = (2 * this->rotquat[1] * this->rotquat[2]) + (2 * this->rotquat[0] * this->rotquat[3]);
+		rot(0, 2) = (2 * this->rotquat[0] * this->rotquat[2]) + (2 * this->rotquat[1] * this->rotquat[3]);
+		rot(1, 2) = (2 * this->rotquat[1] * this->rotquat[2]) - (2 * this->rotquat[0] * this->rotquat[3]);
+		rot(2, 2) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[1] * this->rotquat[1]);
+
+		return tz::translate(this->position) * rot * tz::scale(this->scale);
+	}
+
 	gltf gltf::from_memory(std::string_view sv)
 	{
 		TZ_PROFZONE("gltf - from memory", 0xFFFF2222);
@@ -603,42 +648,30 @@ namespace tz::io
 				}
 				else
 				{
-					tz::vec3 pos = tz::vec3::zero();
-					tz::mat4 rot = tz::mat4::identity();
-					tz::vec3 scale = tz::vec3::filled(1.0f);
-					// TODO: handle pos, rot and scale
+					gltf_trs trs;
 					if(jnode["translation"].is_array())
 					{
 						for(std::size_t i = 0; i < 3; i++)
 						{
-							pos[i] = jnode["translation"][i];
+							trs.position[i] = jnode["translation"][i];
 						}
 					}
 					if(jnode["rotation"].is_array())
 					{
-						tz::vec4 q;
 						for(std::size_t i = 0; i < 4; i++)
 						{
-							q[i] = jnode["rotation"][i];
+							trs.rotquat[i] = jnode["rotation"][i];
 						}
-						rot(0, 0) = 1.0f - (2 * q[1] * q[1]) - (2 * q[2] * q[2]);
-						rot(1, 0) = (2 * q[0] * q[1]) + (2 * q[2] * q[3]);
-						rot(2, 0) = (2 * q[0] * q[2]) - (2 * q[1] * q[3]);
-						rot(0, 1) = (2 * q[0] * q[1]) - (2 * q[2] * q[3]);
-						rot(1, 1) = 1.0f - (2 * q[0] * q[0]) - (2 * q[2] * q[2]);
-						rot(2, 1) = (2 * q[1] * q[2]) + (2 * q[0] * q[3]);
-						rot(0, 2) = (2 * q[0] * q[2]) + (2 * q[1] * q[3]);
-						rot(1, 2) = (2 * q[1] * q[2]) - (2 * q[0] * q[3]);
-						rot(2, 2) = 1.0f - (2 * q[0] * q[0]) - (2 * q[1] * q[1]);
 					}
 					if(jnode["scale"].is_array())
 					{
 						for(std::size_t i = 0; i < 3; i++)
 						{
-							scale[i] = jnode["scale"][i];
+							trs.scale[i] = jnode["scale"][i];
 						}
 					}
-					node.transform = tz::translate(pos) * rot * tz::scale(scale);
+					node.trs = trs;
+					node.transform = trs.matrix();
 				}
 				if(jnode["mesh"].is_number_integer())
 				{
