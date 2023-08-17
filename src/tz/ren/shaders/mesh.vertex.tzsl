@@ -87,6 +87,12 @@ void main()
 	{
 		skin_mat = mat4(1.0f);
 	}
+	else
+	{
+		float total = vtx.joint_weights[0].x + vtx.joint_weights[0].y + vtx.joint_weights[0].z + vtx.joint_weights[0].w;
+		// weights must roughly add up to 1.
+		tz::debug::assert(total > 0.98f && total < 1.02f);
+	}
 
 	vec4 world_pos = skin_mat * vec4(vtx.position, 1.0f);
 	out::position = camera.projection * camera.view * world_pos;

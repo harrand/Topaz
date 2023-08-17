@@ -903,6 +903,7 @@ namespace tz::ren
 			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin, gltf_submesh_bound_textures);
 		}
 		this->compute_global_transforms();
+		this->process_skins();
 		return ret;
 	}
 
