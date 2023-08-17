@@ -119,6 +119,11 @@ namespace tz::io
 		return this->skins;
 	}
 
+	std::span<const gltf_animation> gltf::get_animations() const
+	{
+		return this->animations;
+	}
+
 	std::span<const gltf_node> gltf::get_nodes() const
 	{
 		return this->nodes;

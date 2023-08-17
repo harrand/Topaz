@@ -31,6 +31,12 @@ struct object_t
 	uint parent;
 };
 
+struct animation_sampler_data
+{
+	float time;
+	vec4 transform;
+};
+
 resource(id = 0) const buffer vertex_buffer
 {
 	vertex_t data[];
@@ -56,6 +62,11 @@ resource(id = 4) const buffer node_to_object_id_buffer
 {
 	uint object_id[];
 } node_to;
+
+resource(id = 5) const buffer animation_sampler_buffer
+{
+	animation_sampler_data data[];
+} animation_samples;
 
 output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
@@ -102,7 +113,6 @@ void main()
 
 	vec4 world_pos = skin_mat * vec4(vtx.position, 1.0f);
 	out::position = camera.projection * camera.view * world_pos;
-
 	out::normal = vtx.normal;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
 	{

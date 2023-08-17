@@ -359,6 +359,7 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
+		this->animation_sampler_data_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(std::byte{0}));
 		// draw indirect buffer (resource reference -> compute pass)
 		this->draw_indirect_buffer_ref = rinfo.ref_resource(compute_pass, compute_draw_indirect_buffer);
 		// textures
@@ -921,6 +922,7 @@ namespace tz::ren
 		}
 		this->compute_global_transforms();
 		this->process_skins();
+		this->process_animations(gltf);
 		return ret;
 	}
 
@@ -1014,5 +1016,53 @@ namespace tz::ren
 			}
 		}
 		this->skins_to_process.clear();
+	}
+	
+	void mesh_renderer::process_animations(const tz::io::gltf& gltf)
+	{
+		for(const auto& anim : gltf.get_animations())
+		{
+			// problem: animation channels refer to samplers by id. if we store all animation samplers in one big array, there will be sampler offsets required.
+			// how do we best handle it? probably store a sampler_offset in the animation data, and don't worry about it here.
+			for(const auto& sampler : anim.samplers)
+			{
+				tz::assert(sampler.time_points.size() == sampler.transformations.size());
+				std::vector<mesh_renderer::animation_sampler_data> data;
+				data.resize(sampler.time_points.size());
+				for(std::size_t i = 0; i < sampler.time_points.size(); i++)
+				{
+					data[i].time = sampler.time_points[i];
+					data[i].transform = sampler.transformations[i];	
+				}
+				this->add_samplers_impl(data);
+			}
+		}
+	}
+
+	void mesh_renderer::add_samplers_impl(std::span<const animation_sampler_data> samplers)
+	{
+		// no clever repositioning of data here. we append it to the list as-is.
+		std::size_t new_space_needed = samplers.size_bytes();
+		auto& ren = tz::gl::get_device().get_renderer(this->render_pass.handle);
+		std::size_t cur_size = ren.get_resource(this->render_pass.animation_sampler_data_buffer)->data().size_bytes();
+		// note: we have a hack to default to 1 byte in the buffer.
+		// if the size is smaller than a single sampler data, just start from scrathc.
+		if(cur_size < sizeof(animation_sampler_data))
+		{
+			cur_size = 0;
+		}
+		ren.edit(tz::gl::RendererEditBuilder{}
+		.buffer_resize
+		({
+			.buffer_handle = this->render_pass.animation_sampler_data_buffer,
+			.size = static_cast<std::uint32_t>(cur_size + new_space_needed)
+		})
+		.write
+		({
+			.resource = this->render_pass.animation_sampler_data_buffer,
+			.data = std::as_bytes(samplers),
+			.offset = cur_size
+		})
+		.build());
 	}
 }

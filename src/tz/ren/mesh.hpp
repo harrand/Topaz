@@ -144,6 +144,8 @@ namespace tz::ren
 			tz::gl::resource_handle camera_buffer = tz::nullhand;
 			tz::gl::resource_handle joint_id_to_node_index = tz::nullhand;
 			tz::gl::resource_handle index_to_object_id_buffer = tz::nullhand;
+			//tz::gl::resource_handle animation_data_buffer = tz::nullhand;
+			tz::gl::resource_handle animation_sampler_data_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
 			std::vector<tz::gl::resource_handle> textures = {};
 			tz::gl::renderer_handle handle = tz::nullhand;
@@ -152,6 +154,13 @@ namespace tz::ren
 			std::vector<mesh_locator> meshes = {};
 			std::size_t cumulative_vertex_count = 0;
 			std::size_t texture_cursor = 0;
+		};
+
+		struct animation_sampler_data
+		{
+			float time = 0.0f;
+			float pad0[3];
+			tz::vec4 transform;
 		};
 
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
@@ -163,6 +172,8 @@ namespace tz::ren
 		tz::mat4 compute_global_transform(std::uint32_t obj_id) const;
 		void compute_global_transforms();
 		void process_skins();
+		void process_animations(const tz::io::gltf& gltf);
+		void add_samplers_impl(std::span<const animation_sampler_data> samplers);
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;

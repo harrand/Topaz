@@ -283,6 +283,7 @@ namespace tz::io
 		std::span<const gltf_image> get_images() const;
 		std::span<const gltf_material> get_materials() const;
 		std::span<const gltf_skin> get_skins() const;
+		std::span<const gltf_animation> get_animations() const;
 		std::span<const gltf_node> get_nodes() const;
 		std::vector<gltf_node> get_active_nodes() const;
 		gltf_submesh_data get_submesh_vertex_data(std::size_t meshid, std::size_t submeshid) const;
