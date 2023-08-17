@@ -64,7 +64,7 @@ output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
 
 mat4 get_object_transform(object_t obj)
 {
-	return obj.global_transform * obj.anim_transform;
+	return obj.global_transform;
 }
 
 mat4 get_joint_matrix(object_t obj)
