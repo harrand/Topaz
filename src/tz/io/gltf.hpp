@@ -57,9 +57,11 @@ namespace tz::io
 		tz::vec3 scale = tz::vec3::filled(1.0f);
 		float pa1;
 
-		gltf_trs combine(const gltf_trs& rhs) const;
+		void combine(const gltf_trs& rhs);
+		gltf_trs combined(const gltf_trs& rhs) const;
 		tz::mat4 matrix() const;
-		bool operator==(const gltf_trs& rhs) const = default;
+		static gltf_trs from_matrix(tz::mat4 trs_matrix);
+		bool operator==(const gltf_trs& rhs) const;
 	};
 
 	struct gltf_node

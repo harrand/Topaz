@@ -76,29 +76,37 @@ namespace tz::io
 
 	tz::vec4 quaternion_multiply(const tz::vec4& lhs, const tz::vec4& rhs)
 	{
-		vec4 result;
-
-		result[0] = lhs[0] * rhs[0] - lhs[1] * rhs[1] - lhs[2] * rhs[2] - lhs[3] * rhs[3];
-		result[1] = lhs[0] * rhs[1] + lhs[1] * rhs[0] + lhs[2] * rhs[3] - lhs[3] * rhs[2];
-		result[2] = lhs[0] * rhs[2] - lhs[1] * rhs[3] + lhs[2] * rhs[0] + lhs[3] * rhs[1];
-		result[3] = lhs[0] * rhs[3] + lhs[1] * rhs[2] - lhs[2] * rhs[1] + lhs[3] * rhs[0];
+		tz::vec4 result = tz::vec4::zero();
+		// wx + xw + yz - zy;
+		result[0] = lhs[3] * rhs[0] + lhs[0] * rhs[3] + lhs[1] * rhs[2] - lhs[2] * rhs[1];
+		// wy + yw + zx - xz
+		result[1] = lhs[3] * rhs[1] + lhs[1] * rhs[3] + lhs[2] * rhs[0] - lhs[0] * rhs[2];
+		// wz + zw + xy - yx
+		result[2] = lhs[3] * rhs[2] + lhs[2] * rhs[3] + lhs[0] * rhs[1] - lhs[1] * rhs[0];
+		// w:
+		// ww - xx - yy - zz
+		result[3] = lhs[3] * rhs[3] - lhs[0] * rhs[0] - lhs[1] * rhs[1] - lhs[2] * rhs[2];
 
 		return result;
 	}
 
-	gltf_trs gltf_trs::combine(const gltf_trs& rhs) const
+	void gltf_trs::combine(const gltf_trs& rhs)
 	{
-		gltf_trs ret = *this;
-		// just add positions.
-		ret.position += rhs.position;
-		// for rotation, do a quat multiply.
-		ret.rotquat = quaternion_multiply(ret.rotquat, rhs.rotquat);
 		// multiply scales together?
 		for(std::size_t i = 0; i < 3; i++)
 		{
-			ret.scale[i] *= rhs.scale[i];
+			this->scale[i] = this->scale[i] * rhs.scale[i];
 		}
+		// for rotation, do a quat multiply.
+		this->rotquat = quaternion_multiply(this->rotquat, rhs.rotquat);
+		// just add positions.
+		this->position += rhs.position;
+	}
 
+	gltf_trs gltf_trs::combined(const gltf_trs& rhs) const
+	{
+		gltf_trs ret = *this;
+		ret.combine(rhs);
 		return ret;
 	}
 
@@ -116,6 +124,63 @@ namespace tz::io
 		rot(2, 2) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[1] * this->rotquat[1]);
 
 		return tz::translate(this->position) * rot * tz::scale(this->scale);
+	}
+
+	gltf_trs gltf_trs::from_matrix(tz::mat4 mat)
+	{
+		gltf_trs ret;
+		ret.position = {mat[0][3], mat[1][3], mat[2][3]};
+		// Extract scale
+		ret.scale = {
+			std::sqrt(mat[0][0] * mat[0][0] + mat[1][0] * mat[1][0] + mat[2][0] * mat[2][0]),
+			std::sqrt(mat[0][1] * mat[0][1] + mat[1][1] * mat[1][1] + mat[2][1] * mat[2][1]),
+			std::sqrt(mat[0][2] * mat[0][2] + mat[1][2] * mat[1][2] + mat[2][2] * mat[2][2])
+		};
+		// Extract rotation matrix
+		mat4 rot_matrix = mat;
+		for (int i = 0; i < 3; ++i) {
+			rot_matrix[i][3] = 0.0f;
+			rot_matrix[3][i] = 0.0f;
+		}
+		rot_matrix[3][3] = 1.0f;
+		
+		// Convert rotation matrix to quaternion
+		float trace = rot_matrix[0][0] + rot_matrix[1][1] + rot_matrix[2][2];
+		if (trace > 0) {
+			float s = 0.5f / std::sqrt(trace + 1.0f);
+			ret.rotquat[0] = (rot_matrix[2][1] - rot_matrix[1][2]) * s;
+			ret.rotquat[1] = (rot_matrix[0][2] - rot_matrix[2][0]) * s;
+			ret.rotquat[2] = (rot_matrix[1][0] - rot_matrix[0][1]) * s;
+			ret.rotquat[3] = 0.25f / s;
+		} else {
+			if (rot_matrix[0][0] > rot_matrix[1][1] && rot_matrix[0][0] > rot_matrix[2][2]) {
+				float s = 2.0f * std::sqrt(1.0f + rot_matrix[0][0] - rot_matrix[1][1] - rot_matrix[2][2]);
+				ret.rotquat[0] = 0.25f * s;
+				ret.rotquat[1] = (rot_matrix[0][1] + rot_matrix[1][0]) / s;
+				ret.rotquat[2] = (rot_matrix[0][2] + rot_matrix[2][0]) / s;
+				ret.rotquat[3] = (rot_matrix[2][1] - rot_matrix[1][2]) / s;
+			} else if (rot_matrix[1][1] > rot_matrix[2][2]) {
+				float s = 2.0f * std::sqrt(1.0f + rot_matrix[1][1] - rot_matrix[0][0] - rot_matrix[2][2]);
+				ret.rotquat[0] = (rot_matrix[0][1] + rot_matrix[1][0]) / s;
+				ret.rotquat[1] = 0.25f * s;
+				ret.rotquat[2] = (rot_matrix[1][2] + rot_matrix[2][1]) / s;
+				ret.rotquat[3] = (rot_matrix[0][2] - rot_matrix[2][0]) / s;
+			} else {
+				float s = 2.0f * std::sqrt(1.0f + rot_matrix[2][2] - rot_matrix[0][0] - rot_matrix[1][1]);
+				ret.rotquat[0] = (rot_matrix[0][2] + rot_matrix[2][0]) / s;
+				ret.rotquat[1] = (rot_matrix[1][2] + rot_matrix[2][1]) / s;
+				ret.rotquat[2] = 0.25f * s;
+				ret.rotquat[3] = (rot_matrix[1][0] - rot_matrix[0][1]) / s;
+			}
+		}
+		return ret;
+	}
+
+	bool gltf_trs::operator==(const gltf_trs& rhs) const
+	{
+		return 	this->position == rhs.position
+		&&		this->rotquat == rhs.rotquat
+		&&		this->scale == rhs.scale;
 	}
 
 	gltf gltf::from_memory(std::string_view sv)
@@ -645,6 +710,7 @@ namespace tz::io
 					{
 						node.transform(i / 4, i % 4) = jnode["matrix"][i];
 					}
+					node.trs = gltf_trs::from_matrix(node.transform);
 				}
 				else
 				{

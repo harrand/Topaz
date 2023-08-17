@@ -991,10 +991,24 @@ namespace tz::ren
 		}
 	}
 
-	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
+	tz::io::gltf_trs mesh_renderer::compute_global_trs(std::uint32_t obj_id) const
 	{
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
-		tz::mat4 global = obj.trs.combine(obj.anim_trs).matrix();
+		tz::io::gltf_trs trs = obj.trs;//obj.trs.combined(obj.anim_trs);
+		if(obj.parent != static_cast<std::uint32_t>(-1))
+		{
+			trs = this->compute_global_trs(obj.parent).combined(trs);
+		}
+		return trs;
+	}
+
+	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
+	{
+		//auto trs = this->compute_global_trs(obj_id);
+		//tz::mat4 ret = trs.matrix();
+		//return ret;
+		auto& obj = this->render_pass.get_object_datas()[obj_id];
+		tz::mat4 global = obj.trs.combined(obj.anim_trs).matrix();
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent) * global;

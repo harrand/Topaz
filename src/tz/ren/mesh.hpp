@@ -173,6 +173,7 @@ namespace tz::ren
 		void dbgui_impl();
 		stored_assets add_gltf_impl(const tz::io::gltf& gltf);
 		void impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_textures, std::uint32_t parent = static_cast<std::uint32_t>(-1));
+		tz::io::gltf_trs compute_global_trs(std::uint32_t obj_id) const;
 		tz::mat4 compute_global_transform(std::uint32_t obj_id) const;
 		void compute_global_transforms();
 		void process_skins();
