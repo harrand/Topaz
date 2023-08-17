@@ -837,7 +837,7 @@ namespace tz::ren
 				[](std::uint32_t idx)-> index{return idx;});
 				// copy over vertices.
 				std::transform(gltf_submesh.vertices.begin(), gltf_submesh.vertices.end(), std::back_inserter(submesh.vertices),
-				[](tz::io::gltf_vertex_data vtx)-> vertex_t
+				[this](tz::io::gltf_vertex_data vtx)-> vertex_t
 				{
 					vertex_t ret;
 
@@ -857,7 +857,7 @@ namespace tz::ren
 					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_joint4_count), tz::io::gltf_max_joint_attribs);
 					for(std::size_t i = 0; i < weight_count; i++)
 					{
-						ret.joint_indices[i] = vtx.jointn[i];
+						ret.joint_indices[i] = vtx.jointn[i] + tz::vec4us::filled(this->get_gltf_node_offset());
 						ret.joint_weights[i] = vtx.weightn[i];
 					}
 					// ignore colours. could theoretically incorporate that into tints, but will be very difficult to translate to texture locator tints properly.
@@ -921,6 +921,7 @@ namespace tz::ren
 		}
 		this->compute_global_transforms();
 		this->process_skins();
+		this->gltf_metas.push_back({.node_count = gltf.get_nodes().size()});
 		return ret;
 	}
 
@@ -929,7 +930,7 @@ namespace tz::ren
 		auto nodes = gltf.get_nodes();
 		auto iter = std::find(nodes.begin(), nodes.end(), node);
 		tz::assert(iter != nodes.end());
-		std::uint32_t our_gltf_node_id = std::distance(nodes.begin(), iter);
+		std::uint32_t our_gltf_node_id = this->get_gltf_node_offset() + std::distance(nodes.begin(), iter);
 
 		std::uint32_t our_object_id = this->draw_count();
 
@@ -1006,13 +1007,23 @@ namespace tz::ren
 		{
 			for(std::size_t i = 0; i < skin.joints.size(); i++)
 			{
-				std::uint32_t joint_id = skin.joints[i];
+				std::uint32_t joint_id = skin.joints[i] + this->get_gltf_node_offset();
 				// remember, this is a gltf node id. we want the corresponding object.
+				this->render_pass.get_joint_id_to_node_ids()[i + this->get_gltf_node_offset()] = joint_id;
 				std::uint32_t obj_id = this->render_pass.get_index_to_object_ids()[joint_id];
-				this->render_pass.get_joint_id_to_node_ids()[i] = joint_id;
 				this->render_pass.get_object_datas()[obj_id].inverse_bind_matrix = skin.inverse_bind_matrices[i];
 			}
 		}
 		this->skins_to_process.clear();
+	}
+
+	std::size_t mesh_renderer::get_gltf_node_offset() const
+	{
+		std::size_t nc = 0;
+		for(const auto& meta : this->gltf_metas)
+		{
+			nc += meta.node_count;
+		}
+		return nc;
 	}
 }

@@ -154,6 +154,11 @@ namespace tz::ren
 			std::size_t texture_cursor = 0;
 		};
 
+		struct gltf_meta
+		{
+			std::size_t node_count = 0;
+		};
+
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
@@ -163,10 +168,12 @@ namespace tz::ren
 		tz::mat4 compute_global_transform(std::uint32_t obj_id) const;
 		void compute_global_transforms();
 		void process_skins();
+		std::size_t get_gltf_node_offset() const;
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 		std::vector<tz::io::gltf_skin> skins_to_process = {};
+		std::vector<gltf_meta> gltf_metas = {};
 	};
 }
 
