@@ -936,6 +936,8 @@ namespace tz::ren
 		{
 			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
 			std::size_t submesh_offset = mesh_submesh_indices[node.mesh];
+			// add an empty object, and a bunch of children for each submesh.
+			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
@@ -947,7 +949,7 @@ namespace tz::ren
 						.texture = assets.textures[submesh_materials[i]->color_texture_id]
 					};
 				}
-				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = transform, .bound_textures = bound_textures, .parent = parent}));
+				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = tz::mat4::identity(), .bound_textures = bound_textures, .parent = our_object_id}));
 			}
 		}
 		else
