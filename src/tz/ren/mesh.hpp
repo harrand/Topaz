@@ -124,6 +124,7 @@ namespace tz::ren
 			std::uint32_t get_draw_count() const;
 			void set_draw_count(std::uint32_t new_draw_count);
 			void dbgui();
+			void increase_draw_list_capacity(std::size_t count);
 
 			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_list_buffer = tz::nullhand;
@@ -137,6 +138,8 @@ namespace tz::ren
 			std::span<object_data> get_object_datas();
 			std::span<std::uint32_t> get_joint_id_to_node_ids();
 			std::span<std::uint32_t> get_index_to_object_ids();
+			std::size_t object_list_capacity() const;
+			void increase_object_list_capacity(std::size_t count);
 
 			tz::gl::resource_handle index_buffer = tz::nullhand;
 			tz::gl::resource_handle vertex_buffer = tz::nullhand;
@@ -159,6 +162,7 @@ namespace tz::ren
 			std::size_t node_count = 0;
 		};
 
+		void expand_object_capacity(std::size_t extra_count);
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);

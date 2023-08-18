@@ -64,15 +64,15 @@ namespace tz::ren
 	*/
 
 	// only support a certain number of meshes being drawn at a time. todo: dynamic resize?
-	constexpr std::size_t max_drawn_meshes = 256;
 
 	// a draw list contains all the meshes that need to be drawn in the right order.
 	// the compute pass will take this list and populate the draw-indirect buffer,
 	// which the renderer will the use to draw everything.
+	constexpr std::size_t initial_draw_capacity = 64;
 	struct draw_list
 	{
 		std::uint32_t draw_count = 0;
-		std::array<mesh_locator, max_drawn_meshes> meshes;
+		std::array<mesh_locator, initial_draw_capacity> meshes;
 	};
 
 	// represents the data of the camera.
@@ -107,6 +107,11 @@ namespace tz::ren
 		std::size_t hanval = this->draw_count();
 		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(m));
 		// draw list at this position is now equal to the associated mesh_locator.
+		const std::size_t object_capacity = this->render_pass.object_list_capacity();
+		if(hanval >= object_capacity)
+		{
+			this->expand_object_capacity(object_capacity);
+		}
 		tz::assert(hanval < this->compute_pass.get_draw_list_meshes().size(), "ran out of objects! can only have %zu", this->compute_pass.get_draw_list_meshes().size());
 		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
 		// now need to fill the object data
@@ -195,7 +200,7 @@ namespace tz::ren
 		struct draw_indirect_buffer_data
 		{
 			std::uint32_t count;
-			std::array<tz::gl::draw_indexed_indirect_command, max_drawn_meshes> cmds;
+			std::array<tz::gl::draw_indexed_indirect_command, initial_draw_capacity> cmds;
 		};
 		// create draw indirect buffer. one draw cmd per mesh locator, upto our max.
 		// todo: make this resizeable?
@@ -228,7 +233,10 @@ namespace tz::ren
 
 	std::span<mesh_locator> mesh_renderer::compute_pass_t::get_draw_list_meshes()
 	{
-		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().meshes;
+		std::span<std::byte> data = tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data();
+		// draw list starts with a uint32_t, rest are draw data.
+		data = data.subspan(sizeof(std::uint32_t));
+		return {reinterpret_cast<mesh_locator*>(data.data()), data.size_bytes() / sizeof(mesh_locator)};
 	}
 
 	std::uint32_t mesh_renderer::compute_pass_t::get_draw_count() const
@@ -305,6 +313,35 @@ namespace tz::ren
 		}
 	}
 
+	void mesh_renderer::compute_pass_t::increase_draw_list_capacity(std::size_t count)
+	{
+		auto& ren = tz::gl::get_device().get_renderer(this->handle);
+		{
+			std::size_t byte_count = sizeof(mesh_locator) * count;
+			std::size_t cursor = ren.get_resource(this->draw_list_buffer)->data().size_bytes();
+			ren.edit(tz::gl::RendererEditBuilder{}
+			.buffer_resize
+			({
+				.buffer_handle = this->draw_list_buffer,
+				.size = cursor + byte_count
+			})
+			.build());
+		}
+
+		// same with indirect buffer!
+		{
+			std::size_t byte_count = sizeof(tz::gl::draw_indexed_indirect_command) * count;
+			std::size_t cursor = ren.get_resource(this->draw_indirect_buffer)->data().size_bytes();
+			ren.edit(tz::gl::RendererEditBuilder{}
+			.buffer_resize
+			({
+				.buffer_handle = this->draw_indirect_buffer,
+				.size = cursor + byte_count
+			})
+			.build());
+		}
+	}
+
 	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
 	{
 		// we have a draw buffer which we write into upon render.
@@ -327,7 +364,7 @@ namespace tz::ren
 			std::byte{0}
 		));
 		// object buffer (contains textures, position data etc)
-		std::array<object_data, max_drawn_meshes> initial_object_data = {};
+		std::array<object_data, initial_draw_capacity> initial_object_data = {};
 		this->object_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_many
 		(
 			initial_object_data,
@@ -343,7 +380,7 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
-		std::array<std::uint32_t, max_drawn_meshes> itoib_data{};
+		std::array<std::uint32_t, initial_draw_capacity> itoib_data{};
 		std::fill(itoib_data.begin(), itoib_data.end(), static_cast<std::uint32_t>(-1));
 		this->joint_id_to_node_index = rinfo.add_resource(tz::gl::buffer_resource::from_one
 		(
@@ -552,6 +589,70 @@ namespace tz::ren
 	std::span<std::uint32_t> mesh_renderer::render_pass_t::get_index_to_object_ids()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->index_to_object_id_buffer)->data_as<std::uint32_t>();
+	}
+
+	std::size_t mesh_renderer::render_pass_t::object_list_capacity() const
+	{
+		return this->get_object_datas().size();
+	}
+
+	void mesh_renderer::render_pass_t::increase_object_list_capacity(std::size_t count)
+	{
+		tz::gl::RendererEditBuilder builder;
+		std::size_t prev_object_count = 0;
+		auto& ren = tz::gl::get_device().get_renderer(this->handle);
+		{
+			std::size_t byte_count = sizeof(object_data) * count;
+			std::size_t cursor = ren.get_resource(this->object_buffer)->data().size_bytes();
+			prev_object_count = cursor / sizeof(object_data);
+			builder.buffer_resize
+			({
+				.buffer_handle = this->object_buffer,
+				.size = cursor + byte_count
+			});
+		}
+
+		// and id resolution buffers...
+		{
+			std::size_t byte_count = sizeof(std::uint32_t) * count;
+			std::size_t cursor = ren.get_resource(this->joint_id_to_node_index)->data().size_bytes();
+			builder.buffer_resize
+			({
+				.buffer_handle = this->joint_id_to_node_index,
+				.size = cursor + byte_count
+			});
+		}
+		
+		{
+			std::size_t byte_count = sizeof(std::uint32_t) * count;
+			std::size_t cursor = ren.get_resource(this->index_to_object_id_buffer)->data().size_bytes();
+			builder.buffer_resize
+			({
+				.buffer_handle = this->index_to_object_id_buffer,
+				.size = cursor + byte_count
+			});
+		}
+		ren.edit(builder.build());
+
+		// we also iterate through all objects, so we can't have garbage data here.
+		for(std::size_t i = 0; i < count; i++)
+		{
+			this->get_object_datas()[i + prev_object_count] = object_data{};
+		}
+	}
+
+	void mesh_renderer::expand_object_capacity(std::size_t extra_count)
+	{
+		// we ran out of space.
+		// resize compute's draw list and render's object buffer.
+		// add new slots equal to current count (i.e double capacity)
+		#if TZ_DEBUG
+		const std::size_t object_capacity = this->render_pass.object_list_capacity();
+		tz::report("expanding object capacity %zu => %zu", object_capacity, object_capacity + extra_count);
+		#endif // TZ_DEBUG
+		this->compute_pass.increase_draw_list_capacity(extra_count);
+		this->render_pass.increase_object_list_capacity(extra_count);
+
 	}
 
 	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
@@ -919,9 +1020,10 @@ namespace tz::ren
 			// add this node's submeshes as objects (recursively for children too).
 			this->impl_expand_gltf_node(gltf, active_node, ret, gltf_mesh_index_begin, gltf_submesh_bound_textures);
 		}
+		std::size_t node_count = gltf.get_nodes().size();
 		this->compute_global_transforms();
 		this->process_skins();
-		this->gltf_metas.push_back({.node_count = gltf.get_nodes().size()});
+		this->gltf_metas.push_back({.node_count = node_count});
 		return ret;
 	}
 
@@ -934,6 +1036,11 @@ namespace tz::ren
 
 		std::uint32_t our_object_id = this->draw_count();
 
+		const std::size_t object_capacity = this->render_pass.object_list_capacity();
+		if(our_gltf_node_id >= object_capacity)
+		{
+			this->expand_object_capacity(object_capacity);
+		}
 		this->render_pass.get_index_to_object_ids()[our_gltf_node_id] = our_object_id;
 		// a node might have a mesh attached. remember, a gltf mesh is a set of submeshes, so we want multiple objects per node.
 		// number of objects per node = number of submeshes within the node's mesh, if it has one. recurse for its children.
