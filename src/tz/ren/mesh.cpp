@@ -1104,14 +1104,19 @@ namespace tz::ren
 		}
 	}
 
-	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
+	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id, std::vector<std::uint32_t>& visited_node_ids) const
 	{
-		TZ_PROFZONE("Mesh Renderer - Compite Global Transform", 0xFF44DD44);
+		TZ_PROFZONE("Mesh Renderer - Compute Global Transform", 0xFF44DD44);
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
+		if(std::find(visited_node_ids.begin(), visited_node_ids.end(), obj_id) != visited_node_ids.end())
+		{
+			return obj.global_transform;
+		}
+		visited_node_ids.push_back(obj_id);
 		tz::mat4 global = obj.model;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
-			global = compute_global_transform(obj.parent) * global;
+			global = compute_global_transform(obj.parent, visited_node_ids) * global;
 		}
 		return global;
 	}
@@ -1120,9 +1125,11 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("Mesh Renderer - Compute All Transforms", 0xFF44DD44);
 		auto objs = this->render_pass.get_object_datas();
-		for(std::size_t i = 0; i < objs.size(); i++)
+		std::vector<std::uint32_t> visited_node_ids = {};
+		// this can get pretty costly
+		for(std::size_t i = 0; i < this->draw_count(); i++)
 		{
-			objs[i].global_transform = this->compute_global_transform(i);
+			objs[i].global_transform = this->compute_global_transform(i, visited_node_ids);
 		}
 	}
 
