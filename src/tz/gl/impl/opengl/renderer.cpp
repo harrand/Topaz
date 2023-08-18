@@ -796,6 +796,10 @@ namespace tz::gl
 				{
 					this->resources.reseat_resource_reference(arg.resource, arg.component);
 				}
+				else if constexpr(std::is_same_v<T, renderer_edit::mark_dirty>)
+				{
+					// mark dirty has no impl for ogl! hooray!
+				}
 				else
 				{
 					tz::error("renderer_edit requested that is not yet supported.");

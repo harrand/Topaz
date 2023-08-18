@@ -47,6 +47,12 @@ namespace tz::gl
 		return *this;
 	}
 
+	RendererEditBuilder& RendererEditBuilder::mark_dirty(renderer_edit::mark_dirty dirty)
+	{
+		this->request.push_back(dirty);
+		return *this;
+	}
+
 	renderer_edit_request RendererEditBuilder::build() const
 	{
 		return this->request;

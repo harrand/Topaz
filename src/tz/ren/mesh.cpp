@@ -316,30 +316,30 @@ namespace tz::ren
 	void mesh_renderer::compute_pass_t::increase_draw_list_capacity(std::size_t count)
 	{
 		auto& ren = tz::gl::get_device().get_renderer(this->handle);
+		tz::gl::RendererEditBuilder builder{};
 		{
 			std::size_t byte_count = sizeof(mesh_locator) * count;
 			std::size_t cursor = ren.get_resource(this->draw_list_buffer)->data().size_bytes();
-			ren.edit(tz::gl::RendererEditBuilder{}
-			.buffer_resize
+			builder.buffer_resize
 			({
 				.buffer_handle = this->draw_list_buffer,
 				.size = cursor + byte_count
-			})
-			.build());
+			});
 		}
 
-		// same with indirect buffer!
+		// finally, the draw indirect buffer
+		// note we have to do it here, not on the compute renderer, as it has side effects and we will need to rerecord work commands.
 		{
 			std::size_t byte_count = sizeof(tz::gl::draw_indexed_indirect_command) * count;
 			std::size_t cursor = ren.get_resource(this->draw_indirect_buffer)->data().size_bytes();
-			ren.edit(tz::gl::RendererEditBuilder{}
-			.buffer_resize
+			builder.buffer_resize
 			({
 				.buffer_handle = this->draw_indirect_buffer,
 				.size = cursor + byte_count
-			})
-			.build());
+			});
 		}
+
+		ren.edit(builder.build());
 	}
 
 	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
@@ -632,6 +632,9 @@ namespace tz::ren
 				.size = cursor + byte_count
 			});
 		}
+
+		builder.mark_dirty({});
+
 		ren.edit(builder.build());
 
 		// we also iterate through all objects, so we can't have garbage data here.

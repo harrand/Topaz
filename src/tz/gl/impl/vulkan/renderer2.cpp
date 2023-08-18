@@ -1423,7 +1423,7 @@ namespace tz::gl
 						}
 						if(arg.buffer_handle == this->state.graphics.index_buffer || arg.buffer_handle == this->state.graphics.draw_buffer)
 						{
-							  side_effects.rerecord_work_commands = true;
+							side_effects.rerecord_work_commands = true;
 						}
 						else
 						{
@@ -1528,6 +1528,21 @@ namespace tz::gl
 						{
 							side_effects.rerecord_work_commands = true;
 						}
+					}
+				},
+				[&side_effects](tz::gl::renderer_edit::mark_dirty arg)
+				{
+					if(arg.work_commands)
+					{
+						side_effects.rerecord_work_commands = true;
+					}
+					if(arg.buffers)
+					{
+						side_effects.rewrite_buffer_descriptors = true;
+					}
+					if(arg.rewrite_statics)
+					{
+						side_effects.rewrite_static_resources = true;
 					}
 				},
 				// UNKNOWN

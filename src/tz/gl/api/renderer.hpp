@@ -279,7 +279,14 @@ namespace tz::gl
 			tz::vec2ui extent;
 		};
 
-		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config, scissor>;
+		struct mark_dirty
+		{
+			bool work_commands = true;
+			bool buffers = true;
+			bool rewrite_statics = true;
+		};
+
+		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config, scissor, mark_dirty>;
 	};
 
 	/**
@@ -317,6 +324,7 @@ namespace tz::gl
 		RendererEditBuilder& write(renderer_edit::resource_write req);
 		RendererEditBuilder& resource_ref(renderer_edit::resource_reference req);
 		RendererEditBuilder& set_scissor(renderer_edit::scissor scis);
+		RendererEditBuilder& mark_dirty(renderer_edit::mark_dirty dirty);
 		/**
 		 * Retrieve a @ref renderer_edit_request corresponding to all edits specified within the builder so far.
 		 */
