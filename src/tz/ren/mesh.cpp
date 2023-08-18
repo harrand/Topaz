@@ -96,6 +96,7 @@ namespace tz::ren
 
 	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
 	{
+		TZ_PROFZONE("Mesh Renderer - Add Mesh", 0xFF44DD44);
 		std::size_t hanval = this->render_pass.meshes.size();
 		mesh_locator locator = this->add_mesh_impl(m);
 		this->render_pass.meshes.push_back(locator);
@@ -104,6 +105,7 @@ namespace tz::ren
 
 	mesh_renderer::object_handle mesh_renderer::add_object(mesh_handle m, object_data data)
 	{
+		TZ_PROFZONE("Mesh Renderer - Add Object", 0xFF44DD44);
 		std::size_t hanval = this->draw_count();
 		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(m));
 		// draw list at this position is now equal to the associated mesh_locator.
@@ -124,6 +126,7 @@ namespace tz::ren
 
 	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)
 	{
+		TZ_PROFZONE("Mesh Renderer - Add Texture", 0xFF44DD44);
 		#if TZ_DEBUG
 			std::size_t sz = tz::gl::pixel_size_bytes(tz::gl::image_format::RGBA32) * dimensions[0] * dimensions[1];
 			tz::assert(image_data.size_bytes() == sz, "Unexpected image data length. Expected %zuB, but was %zuB", sz, image_data.size_bytes());
@@ -144,6 +147,7 @@ namespace tz::ren
 
 	mesh_renderer::stored_assets mesh_renderer::add_gltf(const tz::io::gltf& gltf)
 	{
+		TZ_PROFZONE("Mesh Renderer - Add GLTF", 0xFF44DD44);
 		return this->add_gltf_impl(gltf);
 	}
 
@@ -185,16 +189,19 @@ namespace tz::ren
 
 	void mesh_renderer::update()
 	{
+		TZ_PROFZONE("Mesh Renderer - Update", 0xFF44DD44);
 		this->compute_global_transforms();
 	}
 
 	void mesh_renderer::dbgui()
 	{
+		TZ_PROFZONE("Mesh Renderer - Dbgui", 0xFF44DD44);
 		this->dbgui_impl();
 	}
 
 	mesh_renderer::compute_pass_t::compute_pass_t()
 	{
+		TZ_PROFZONE("Mesh Renderer - Create Compute Pass", 0xFF44DD44);
 		tz::gl::renderer_info cinfo;
 		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(mesh, compute));
 		struct draw_indirect_buffer_data
@@ -315,6 +322,7 @@ namespace tz::ren
 
 	void mesh_renderer::compute_pass_t::increase_draw_list_capacity(std::size_t count)
 	{
+		TZ_PROFZONE("Mesh Renderer - Draw List Append", 0xFF44DD44);
 		auto& ren = tz::gl::get_device().get_renderer(this->handle);
 		tz::gl::RendererEditBuilder builder{};
 		{
@@ -344,6 +352,7 @@ namespace tz::ren
 
 	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
 	{
+		TZ_PROFZONE("Mesh Renderer - Render Pass Create", 0xFF44DD44);
 		// we have a draw buffer which we write into upon render.
 		tz::gl::renderer_info rinfo;
 		// todo: shaders
@@ -598,6 +607,7 @@ namespace tz::ren
 
 	void mesh_renderer::render_pass_t::increase_object_list_capacity(std::size_t count)
 	{
+		TZ_PROFZONE("Mesh Renderer - Object List Append", 0xFF44DD44);
 		tz::gl::RendererEditBuilder builder;
 		std::size_t prev_object_count = 0;
 		auto& ren = tz::gl::get_device().get_renderer(this->handle);
@@ -646,6 +656,7 @@ namespace tz::ren
 
 	void mesh_renderer::expand_object_capacity(std::size_t extra_count)
 	{
+		TZ_PROFZONE("Mesh Renderer - Expand Capacity", 0xFF44DD44);
 		// we ran out of space.
 		// resize compute's draw list and render's object buffer.
 		// add new slots equal to current count (i.e double capacity)
@@ -920,6 +931,7 @@ namespace tz::ren
 		std::size_t gltf_submesh_total = 0;
 		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
 		{
+			TZ_PROFZONE("Mesh Renderer - Add GLTF Mesh", 0xFF44DD44);
 			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
 			gltf_mesh_index_begin.push_back(gltf_submesh_total);
 			gltf_submesh_total += submesh_count;
@@ -1032,6 +1044,7 @@ namespace tz::ren
 
 	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::uint32_t parent)
 	{
+		TZ_PROFZONE("Mesh Renderer - Expand GLTF Node", 0xFF44DD44);
 		auto nodes = gltf.get_nodes();
 		auto iter = std::find(nodes.begin(), nodes.end(), node);
 		tz::assert(iter != nodes.end());
@@ -1093,6 +1106,7 @@ namespace tz::ren
 
 	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id) const
 	{
+		TZ_PROFZONE("Mesh Renderer - Compite Global Transform", 0xFF44DD44);
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
 		tz::mat4 global = obj.model;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
@@ -1104,6 +1118,7 @@ namespace tz::ren
 
 	void mesh_renderer::compute_global_transforms()
 	{
+		TZ_PROFZONE("Mesh Renderer - Compute All Transforms", 0xFF44DD44);
 		auto objs = this->render_pass.get_object_datas();
 		for(std::size_t i = 0; i < objs.size(); i++)
 		{
@@ -1113,6 +1128,7 @@ namespace tz::ren
 
 	void mesh_renderer::process_skins()
 	{
+		TZ_PROFZONE("Mesh Renderer - Process Skins", 0xFF44DD44);
 		for(const tz::io::gltf_skin& skin : this->skins_to_process)
 		{
 			for(std::size_t i = 0; i < skin.joints.size(); i++)
