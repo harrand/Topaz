@@ -1283,6 +1283,9 @@ namespace tz::io
 
 	void gltf::compute_animation_data()
 	{
+		#if TZ_DEBUG
+		std::size_t debug_total_keyframe_count = 0;
+		#endif
 		// retrieve the time points and transforms and populate gltf_animation::node_animation_data
 		for(gltf_animation& anim : this->animations)
 		{
@@ -1330,6 +1333,7 @@ namespace tz::io
 				tz::assert(keyframe_count == output_accessor.element_count);
 				std::span<const float> time_floats{reinterpret_cast<const float*>(time_bytes.data()), keyframe_count};
 
+				tz::assert(target.path != gltf_animation_channel_target_path::weights, "Animation channel target path `weights` is not supported in Topaz.");
 				if(target.path == gltf_animation_channel_target_path::rotation)
 				{
 					std::span<const tz::vec4> transform_vec4s{reinterpret_cast<const tz::vec4*>(transform_bytes.data()), keyframe_count};
@@ -1357,6 +1361,9 @@ namespace tz::io
 						}
 					}
 				}
+				#if TZ_DEBUG
+				debug_total_keyframe_count += keyframes.size();
+				#endif
 			}
 
 			// ensure that there are no duplicate keyframes. for each duplicate keyframe for a node, combine them.
@@ -1371,5 +1378,8 @@ namespace tz::io
 			}
 			#endif // TZ_DEBUG
 		}
+		#if TZ_DEBUG
+		tz::report("Evaluated animation keyframes totalling %zu", debug_total_keyframe_count);
+		#endif
 	}
 }

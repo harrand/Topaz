@@ -1263,7 +1263,7 @@ namespace tz::ren
 				{
 					// only one keyframe, so interpolate between identity matrix and the keyframe transform.
 					const auto& kf = *keyframes.begin();
-					if(kf.time_point == 1.0f)
+					if(kf.time_point == 0.0f)
 					{
 						objimpl.anim_transform = kf.transform.matrix();
 					}
@@ -1271,6 +1271,7 @@ namespace tz::ren
 					{
 						float interp = std::max(this->animation.time / kf.time_point, 1.0f);
 						tz::io::gltf_trs resultant = trs_lerp({}, kf.transform, interp);
+						objimpl.anim_transform = resultant.matrix();
 					}
 					continue;
 				}
@@ -1279,6 +1280,7 @@ namespace tz::ren
 				{
 					// we're at the end.
 					this->animation.time = 0.0f;
+					objimpl.anim_transform = keyframes.begin()->transform.matrix();
 					continue;
 				}
 				auto before_iter = keyframes.begin();
