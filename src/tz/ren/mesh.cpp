@@ -103,7 +103,7 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
-	mesh_renderer::object_handle mesh_renderer::add_object(mesh_handle m, object_data data)
+	mesh_renderer::object_handle mesh_renderer::add_object(mesh_handle m, object_data data, object_impl_data impl)
 	{
 		TZ_PROFZONE("Mesh Renderer - Add Object", 0xFF44DD44);
 		std::size_t hanval = this->draw_count();
@@ -118,6 +118,7 @@ namespace tz::ren
 		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
 		// now need to fill the object data
 		this->render_pass.get_object_datas()[hanval] = data;
+		this->object_impls.push_back(impl);
 		// finally, increment the draw count.
 		this->compute_pass.set_draw_count(this->compute_pass.get_draw_count() + 1);
 
@@ -507,8 +508,8 @@ namespace tz::ren
 				}
 				ImGui::Text("Parent: %s", parent_str.c_str());
 				ImGui::Separator();
-				ImGui::Text("Model Matrix");
-				tz::dbgui_model(obj.model);
+				ImGui::Text("Global Transform");
+				tz::dbgui_model(obj.global_transform);
 
 				ImGui::Separator();
 				ImGui::Text("Textures");
@@ -1080,7 +1081,7 @@ namespace tz::ren
 			std::size_t submesh_count = gltf.get_meshes()[node.mesh].submeshes.size();
 			std::size_t submesh_offset = mesh_submesh_indices[node.mesh];
 			// add an empty object, and a bunch of children for each submesh.
-			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
+			assets.objects.push_back(this->add_object(empty_mesh(), {.parent = parent}, {.model = transform}));
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
@@ -1092,13 +1093,13 @@ namespace tz::ren
 						.texture = assets.textures[submesh_materials[i]->color_texture_id]
 					};
 				}
-				assets.objects.push_back(this->add_object(assets.meshes[i], {.model = tz::mat4::identity(), .bound_textures = bound_textures, .parent = our_object_id}));
+				assets.objects.push_back(this->add_object(assets.meshes[i], {.bound_textures = bound_textures, .parent = our_object_id}));
 			}
 		}
 		else
 		{
 			// add a single object referencing the null mesh, so we can still have it in the transform hierarchy.
-			assets.objects.push_back(this->add_object(empty_mesh(), {.model = transform, .parent = parent}));
+			assets.objects.push_back(this->add_object(empty_mesh(), {.parent = parent}, {.model = transform}));
 		}
 		for(std::size_t child_idx : node.children)
 		{
@@ -1110,12 +1111,13 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("Mesh Renderer - Compute Global Transform", 0xFF44DD44);
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
+		const auto& objimpl = this->object_impls[obj_id];
 		if(std::find(visited_node_ids.begin(), visited_node_ids.end(), obj_id) != visited_node_ids.end())
 		{
 			return obj.global_transform;
 		}
 		visited_node_ids.push_back(obj_id);
-		tz::mat4 global = obj.anim_transform * obj.model;
+		tz::mat4 global = objimpl.anim_transform * objimpl.model;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent, visited_node_ids) * global;
@@ -1249,12 +1251,12 @@ namespace tz::ren
 			{
 				auto offset = this->get_gltf_node_offset(this->animation.gltf_cursor);
 				std::uint32_t object_id = this->render_pass.get_index_to_object_ids()[nid + offset];
-				object_data& obj = this->render_pass.get_object_datas()[object_id];
+				object_impl_data& objimpl = this->object_impls[object_id];
 
 				const auto& keyframes = anim.node_animation_data[nid];
 				if(keyframes.size() == 0)
 				{
-					obj.anim_transform = tz::mat4::identity();
+					objimpl.anim_transform = tz::mat4::identity();
 					continue;
 				}
 				if(keyframes.size() == 1)
@@ -1263,7 +1265,7 @@ namespace tz::ren
 					const auto& kf = *keyframes.begin();
 					if(kf.time_point == 1.0f)
 					{
-						obj.anim_transform = kf.transform.matrix();
+						objimpl.anim_transform = kf.transform.matrix();
 					}
 					else
 					{
@@ -1294,7 +1296,7 @@ namespace tz::ren
 				tz::io::gltf_trs trs_before = before_iter->transform;
 				tz::io::gltf_trs trs_after = after_iter->transform;
 				tz::io::gltf_trs resultant_trs = trs_lerp(trs_before, trs_after, interpolation_value);
-				obj.anim_transform = resultant_trs.matrix();
+				objimpl.anim_transform = resultant_trs.matrix();
 			}
 		}
 	}

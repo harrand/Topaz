@@ -69,13 +69,17 @@ namespace tz::ren
 	constexpr unsigned int mesh_renderer_max_joint4_count = 1;
 
 	// represents the data of an object (drawable).
+
+	struct object_impl_data
+	{
+		tz::mat4 model = tz::mat4::identity();
+		tz::mat4 anim_transform = tz::mat4::identity();
+	};
 	struct object_data
 	{
 		// represents the transform of the drawable, in world space.
-		tz::mat4 model = tz::mat4::identity();
 		tz::mat4 inverse_bind_matrix = tz::mat4::identity();
 		tz::mat4 global_transform = tz::mat4::identity();
-		tz::mat4 anim_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
@@ -110,7 +114,7 @@ namespace tz::ren
 		void clear();
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
-		object_handle add_object(mesh_handle m, object_data data = {});
+		object_handle add_object(mesh_handle m, object_data data = {}, object_impl_data impl = {});
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		stored_assets add_gltf(const tz::io::gltf& gltf);
 		void append_to_render_graph();
@@ -190,6 +194,7 @@ namespace tz::ren
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 		std::vector<tz::io::gltf_skin> skins_to_process = {};
+		std::vector<object_impl_data> object_impls = {};
 		std::vector<gltf_meta> gltf_metas = {};
 		gltf_animation_data animation = {};
 	};
