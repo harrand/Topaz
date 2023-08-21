@@ -1154,10 +1154,20 @@ namespace tz::ren
 
 	std::size_t mesh_renderer::get_gltf_node_offset() const
 	{
-		std::size_t nc = 0;
-		for(const auto& meta : this->gltf_metas)
+		if(this->gltf_metas.empty())
 		{
-			nc += meta.node_count;
+			return 0;
+		}
+		return this->get_gltf_node_offset(this->gltf_metas.size() - 1);
+	}
+
+	std::size_t mesh_renderer::get_gltf_node_offset(std::size_t gltf_cursor) const
+	{
+		std::size_t nc = 0;
+		tz::assert(gltf_cursor < this->gltf_metas.size());
+		for(std::size_t i = 0; i < gltf_cursor; i++)
+		{
+			nc += this->gltf_metas[i].node_count;
 		}
 		return nc;
 	}
@@ -1237,8 +1247,7 @@ namespace tz::ren
 		{
 			for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
 			{
-				//auto offset = this->get_gltf_node_offset();
-				std::size_t offset = 0;
+				auto offset = this->get_gltf_node_offset(this->animation.gltf_cursor);
 				std::uint32_t object_id = this->render_pass.get_index_to_object_ids()[nid + offset];
 				object_data& obj = this->render_pass.get_object_datas()[object_id];
 

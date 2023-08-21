@@ -184,6 +184,7 @@ namespace tz::ren
 		void compute_global_transforms();
 		void process_skins();
 		std::size_t get_gltf_node_offset() const;
+		std::size_t get_gltf_node_offset(std::size_t gltf_cursor) const;
 		void update_animated_nodes(float dt);
 
 		compute_pass_t compute_pass = {};
