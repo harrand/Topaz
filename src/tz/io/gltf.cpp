@@ -772,7 +772,11 @@ namespace tz::io
 				{
 					auto tar = chan["target"];
 					tz::assert(tar.is_object());
-					tz::assert(!tar["node"].is_null());
+					// gltf2: When node isn’t defined, channel SHOULD be ignored 
+					if(tar["node"].is_null())
+					{
+						continue;
+					}
 					gltf_animation_channel_target_path path = gltf_animation_channel_target_path::rotation;
 					std::string path_str = tar["path"];
 					if(path_str == "translation")
@@ -1262,11 +1266,16 @@ namespace tz::io
 		{
 			// contains!
 			tz::assert(iter->time_point == elem.time_point, "logic error in gltf impl::combine_or_add. iter returns non end but timepoints don't actually match.");
+			// note: multiplying the scales together seems incredibly sus. why are the scale vectors so incredibly small?
+			//tz::assert(iter->transform.scale == tz::vec3::filled(1.0f) && elem.transform.scale == tz::vec3::filled(1.0f));
 			iter->transform.combine(elem.transform);
 		}
 		else
 		{
-			keyframes.insert(elem);
+			const auto[resiter, retbool] = keyframes.insert(elem);
+			tz::assert(retbool);
+			(void)retbool;
+			(void)resiter;
 		}
 	}
 
@@ -1324,7 +1333,7 @@ namespace tz::io
 					std::span<const tz::vec4> transform_vec4s{reinterpret_cast<const tz::vec4*>(transform_bytes.data()), keyframe_count};
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
-						keyframes.insert({.time_point = time_floats[i], .transform = {.rotquat = transform_vec4s[i]}});
+						combine_or_add(keyframes, {.time_point = time_floats[i], .transform = {.rotquat = transform_vec4s[i]}});
 					}
 				}
 				else
@@ -1335,10 +1344,10 @@ namespace tz::io
 						switch(target.path)
 						{
 							case gltf_animation_channel_target_path::translation:
-								keyframes.insert({.time_point = time_floats[i], .transform = {.translate = transform_vec3s[i]}});
+								combine_or_add(keyframes, {.time_point = time_floats[i], .transform = {.translate = transform_vec3s[i]}});
 							break;
 							case gltf_animation_channel_target_path::scale:
-								keyframes.insert({.time_point = time_floats[i], .transform = {.scale = transform_vec3s[i]}});
+								combine_or_add(keyframes, {.time_point = time_floats[i], .transform = {.scale = transform_vec3s[i]}});
 							break;
 							default:
 								tz::error();
