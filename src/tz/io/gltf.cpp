@@ -73,6 +73,23 @@ namespace tz::io
 		- accessors seem to define essentially data spans of various types. in this case just buffer views.
 		- buffer views show spans within buffers (which live in bin chunks not shown in this example).
 	 */
+
+	tz::mat4 gltf_trs::matrix() const
+	{
+		tz::mat4 rot = tz::mat4::identity();
+		rot(0, 0) = 1.0f - (2 * this->rotquat[1] * this->rotquat[1]) - (2 * this->rotquat[2] * this->rotquat[2]);
+		rot(1, 0) = (2 * this->rotquat[0] * this->rotquat[1]) + (2 * this->rotquat[2] * this->rotquat[3]);
+		rot(2, 0) = (2 * this->rotquat[0] * this->rotquat[2]) - (2 * this->rotquat[1] * this->rotquat[3]);
+		rot(0, 1) = (2 * this->rotquat[0] * this->rotquat[1]) - (2 * this->rotquat[2] * this->rotquat[3]);
+		rot(1, 1) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[2] * this->rotquat[2]);
+		rot(2, 1) = (2 * this->rotquat[1] * this->rotquat[2]) + (2 * this->rotquat[0] * this->rotquat[3]);
+		rot(0, 2) = (2 * this->rotquat[0] * this->rotquat[2]) + (2 * this->rotquat[1] * this->rotquat[3]);
+		rot(1, 2) = (2 * this->rotquat[1] * this->rotquat[2]) - (2 * this->rotquat[0] * this->rotquat[3]);
+		rot(2, 2) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[1] * this->rotquat[1]);
+
+		return tz::translate(this->position) * rot * tz::scale(this->scale);
+	}
+
 	gltf gltf::from_memory(std::string_view sv)
 	{
 		TZ_PROFZONE("gltf - from memory", 0xFFFF2222);
@@ -468,6 +485,7 @@ namespace tz::io
 		this->create_accessors();
 		this->create_meshes();
 		this->compute_inverse_bind_matrices();
+		this->compute_animation_data();
 	}
 
 	void gltf::parse_header(std::string_view header)
@@ -1191,6 +1209,43 @@ namespace tz::io
 				std::span<const tz::mat4> matrices{reinterpret_cast<const tz::mat4*>(matrix_data.data()), accessor.element_count};
 				tz::assert(matrices.size() == accessor.element_count);
 				std::copy(matrices.begin(), matrices.end(), skin.inverse_bind_matrices.begin());
+			}
+		}
+	}
+
+	void gltf::compute_animation_data()
+	{
+		// retrieve the time points and transforms and populate gltf_animation::node_animation_data
+		for(gltf_animation& anim : this->animations)
+		{
+			for(const gltf_animation_channel& channel : anim.channels)
+			{
+				const gltf_animation_sampler& sampler = anim.samplers[channel.sampler_id];
+				const gltf_animation_channel_target& target = channel.target;
+				
+				const gltf_accessor& input_accessor = this->accessors[sampler.input];
+				const gltf_accessor& output_accessor = this->accessors[sampler.output];
+
+				// do some validation.
+				// inputs are expected to be an array of floats.
+				tz::assert(input_accessor.component_type == gltf_accessor_component_type::flt);
+				tz::assert(input_accessor.type == gltf_accessor_type::scalar);
+				// outputs are expected to either be: an array of vec4s (if rotation), otherwise an array of vec3s. always floats.
+				tz::assert(output_accessor.component_type == gltf_accessor_component_type::flt);
+				if(target.path == gltf_animation_channel_target_path::rotation)
+				{
+					tz::assert(output_accessor.type == gltf_accessor_type::vec4);
+				}
+				else
+				{
+					tz::assert(output_accessor.type == gltf_accessor_type::vec3);
+				}
+
+				// once we validated everythings in the correct format, let's extract out the data.
+				auto time_bytes = this->view_buffer(this->views[input_accessor.buffer_view_id]);
+				auto transform_bytes = this->view_buffer(this->views[output_accessor.buffer_view_id]);
+
+				// todo: populate `node_animation_data`.
 			}
 		}
 	}

@@ -193,11 +193,27 @@ namespace tz::io
 		gltf_animation_key_interpolation interpolation;
 	};
 
+	struct gltf_trs
+	{
+		tz::vec3 position = tz::vec3::zero();
+		tz::vec4 rotquat = tz::vec4::zero();	
+		tz::vec3 scale = tz::vec3::filled(1.0f);
+
+		tz::mat4 matrix() const;
+	};
+
 	struct gltf_animation
 	{
+		struct keyframe_data_element
+		{
+			float time_point;
+			gltf_trs transform;
+		};
+		using keyframe_data = std::vector<keyframe_data_element>;
 		std::string name = "Unnamed";
 		std::vector<gltf_animation_channel> channels = {};
 		std::vector<gltf_animation_sampler> samplers = {};
+		std::vector<keyframe_data> node_animation_data;
 	};
 
 	enum class gltf_image_type
@@ -300,6 +316,7 @@ namespace tz::io
 		gltf_mesh load_mesh(json node);
 		std::span<const std::byte> get_binary_data(std::size_t offset, std::size_t len) const;
 		void compute_inverse_bind_matrices();
+		void compute_animation_data();
 
 		gltf_header header;
 		std::vector<gltf_chunk_data> chunks = {};
