@@ -1116,7 +1116,6 @@ namespace tz::ren
 		{
 			return obj.global_transform;
 		}
-		visited_node_ids.push_back(obj_id);
 		tz::mat4 global = objimpl.anim_transform * objimpl.model;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
@@ -1134,6 +1133,7 @@ namespace tz::ren
 		for(std::size_t i = 0; i < this->draw_count(); i++)
 		{
 			objs[i].global_transform = this->compute_global_transform(i, visited_node_ids);
+			visited_node_ids.push_back(i);
 		}
 	}
 
@@ -1176,6 +1176,7 @@ namespace tz::ren
 
 	std::pair<std::size_t, std::size_t> mesh_renderer::gltf_animation_data::get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const
 	{
+		TZ_PROFZONE("Mesh Renderer - Keyframe Pair Retrieve", 0xFF44DD44);
 		keyframe_iterator iter = front;
 		while(iter != back && iter->time_point <= this->time)
 		{
@@ -1191,6 +1192,7 @@ namespace tz::ren
 
 	tz::vec4 quat_slerp(const tz::vec4& lhs, const tz::vec4& rhs, float interp)
 	{
+		TZ_PROFZONE("Mesh Renderer - Quaternion Slerp", 0xFF44DD44);
 		float cos_theta = lhs.dot(rhs);
 
 		if (cos_theta < 0.0f) {
@@ -1228,6 +1230,7 @@ namespace tz::ren
 
 	tz::io::gltf_trs trs_lerp(const tz::io::gltf_trs& lhs, const tz::io::gltf_trs& rhs, float interp)
 	{
+		TZ_PROFZONE("Mesh Renderer - TRS Lerp", 0xFF44DD44);
 		// translation is easy.
 		tz::io::gltf_trs ret;
 		ret.translate = lhs.translate + ((rhs.translate - lhs.translate) * interp);
@@ -1243,12 +1246,15 @@ namespace tz::ren
 
 	void mesh_renderer::update_animated_nodes(float dt)
 	{
+		TZ_PROFZONE("Mesh Renderer - Update Animations", 0xFF44DD44);
 		this->animation.time += dt;
 		const tz::io::gltf& gltf = this->animation.gltfs[this->animation.gltf_cursor];
 		for(const tz::io::gltf_animation& anim : gltf.get_animations())
 		{
+			TZ_PROFZONE("Mesh Renderer - Update Animation", 0xFF44DD44);
 			for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
 			{
+				TZ_PROFZONE("Mesh Renderer - Animation Node Update", 0xFF44DD44);
 				auto offset = this->get_gltf_node_offset(this->animation.gltf_cursor);
 				std::uint32_t object_id = this->render_pass.get_index_to_object_ids()[nid + offset];
 				object_impl_data& objimpl = this->object_impls[object_id];
