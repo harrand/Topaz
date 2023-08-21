@@ -5,6 +5,7 @@
 #include "tz/core/matrix.hpp"
 #include "tz/io/image.hpp"
 #include "nlohmann/json.hpp"
+#include <set>
 #undef assert
 
 namespace tz::io
@@ -195,11 +196,13 @@ namespace tz::io
 
 	struct gltf_trs
 	{
-		tz::vec3 position = tz::vec3::zero();
+		tz::vec3 translate = tz::vec3::zero();
 		tz::vec4 rotquat = tz::vec4::zero();	
 		tz::vec3 scale = tz::vec3::filled(1.0f);
 
 		tz::mat4 matrix() const;
+		gltf_trs& combine(const gltf_trs& trs);
+		gltf_trs combined(const gltf_trs& trs) const;
 	};
 
 	struct gltf_animation
@@ -207,12 +210,19 @@ namespace tz::io
 		struct keyframe_data_element
 		{
 			float time_point;
-			gltf_trs transform;
+			// mutable is safe here even in use in std::set because the transform is not used in comparison (set iterators are always const)
+			mutable gltf_trs transform;
+
+			bool operator<(const keyframe_data_element& rhs) const{return this->time_point < rhs.time_point;}
 		};
-		using keyframe_data = std::vector<keyframe_data_element>;
+		using keyframe_data = std::set<keyframe_data_element>;
 		std::string name = "Unnamed";
 		std::vector<gltf_animation_channel> channels = {};
 		std::vector<gltf_animation_sampler> samplers = {};
+		// node_animation_data[n] contains a list of keyframes for the corresponding node id `n`.
+		// keyframes are guaranteed to be in-order in terms of time points, and only one combined
+		// TRS per time point. you should be fine to convert these into matrices and apply them
+		// at your whims.
 		std::vector<keyframe_data> node_animation_data;
 	};
 
