@@ -1177,6 +1177,43 @@ namespace tz::ren
 		return {idx - 1, idx};
 	}
 
+	tz::vec4 quat_slerp(const tz::vec4& lhs, const tz::vec4& rhs, float interp)
+	{
+		float cos_theta = lhs.dot(rhs);
+
+		if (cos_theta < 0.0f) {
+			// If the quaternions are in opposite directions, negate one to take the shortest path
+			tz::vec4 neg_rhs = { -rhs[0], -rhs[1], -rhs[2], -rhs[3] };
+			return quat_slerp(lhs, neg_rhs, interp);
+		}
+
+		const float threshold = 0.9995f;
+		if (cos_theta > threshold) {
+			// Linear interpolation for small angles
+			tz::vec4 result = {
+				lhs[0] + interp * (rhs[0] - lhs[0]),
+				lhs[1] + interp * (rhs[1] - lhs[1]),
+				lhs[2] + interp * (rhs[2] - lhs[2]),
+				lhs[3] + interp * (rhs[3] - lhs[3])
+			};
+			return result.normalised();
+		}
+
+		float angle = std::acos(cos_theta);
+		float sin_angle = std::sin(angle);
+		float t0 = std::sin((1.0f - interp) * angle) / sin_angle;
+		float t1 = std::sin(interp * angle) / sin_angle;
+
+		tz::vec4 result = {
+			t0 * lhs[0] + t1 * rhs[0],
+			t0 * lhs[1] + t1 * rhs[1],
+			t0 * lhs[2] + t1 * rhs[2],
+			t0 * lhs[3] + t1 * rhs[3]
+		};
+		
+		return result.normalised();
+	}
+
 	tz::io::gltf_trs trs_lerp(const tz::io::gltf_trs& lhs, const tz::io::gltf_trs& rhs, float interp)
 	{
 		// translation is easy.
@@ -1184,10 +1221,10 @@ namespace tz::ren
 		ret.translate = lhs.translate + ((rhs.translate - lhs.translate) * interp);
 
 		// todo: rotate
-		ret.rotquat = lhs.rotquat;
+		ret.rotquat = quat_slerp(lhs.rotquat, rhs.rotquat, interp);
 
 		// todo: scale
-		ret.scale = lhs.scale;
+		ret.scale = lhs.scale + ((rhs.scale - lhs.scale) * interp);
 
 		return ret;
 	}
@@ -1212,6 +1249,12 @@ namespace tz::ren
 					continue;
 				}
 				auto [before, after] = this->animation.get_keyframe_indices_at(keyframes.begin(), keyframes.end());
+				if(after >= keyframes.size())
+				{
+					// we're at the end.
+					this->animation.time = 0.0f;
+					continue;
+				}
 				auto before_iter = keyframes.begin();
 				auto after_iter = before_iter;
 				std::advance(before_iter, before);
