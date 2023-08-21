@@ -148,6 +148,7 @@ namespace tz::ren
 	mesh_renderer::stored_assets mesh_renderer::add_gltf(const tz::io::gltf& gltf)
 	{
 		TZ_PROFZONE("Mesh Renderer - Add GLTF", 0xFF44DD44);
+		this->animation.gltfs.push_back(gltf);
 		return this->add_gltf_impl(gltf);
 	}
 
@@ -187,9 +188,10 @@ namespace tz::ren
 		tz::gl::get_device().render_graph().add_dependencies(this->render_pass.handle, this->compute_pass.handle);
 	}
 
-	void mesh_renderer::update()
+	void mesh_renderer::update(float dt)
 	{
 		TZ_PROFZONE("Mesh Renderer - Update", 0xFF44DD44);
+		this->update_animated_nodes(dt);
 		this->compute_global_transforms();
 	}
 
@@ -1113,7 +1115,7 @@ namespace tz::ren
 			return obj.global_transform;
 		}
 		visited_node_ids.push_back(obj_id);
-		tz::mat4 global = obj.model;
+		tz::mat4 global = obj.anim_transform * obj.model;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent, visited_node_ids) * global;
@@ -1158,5 +1160,75 @@ namespace tz::ren
 			nc += meta.node_count;
 		}
 		return nc;
+	}
+
+	std::pair<std::size_t, std::size_t> mesh_renderer::gltf_animation_data::get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const
+	{
+		keyframe_iterator iter = front;
+		while(iter != back && iter->time_point <= this->time)
+		{
+			iter++;
+		}
+		std::size_t idx = std::distance(front, iter);
+		if(idx == 0)
+		{
+			return {0u, 1u};
+		}
+		return {idx - 1, idx};
+	}
+
+	tz::io::gltf_trs trs_lerp(const tz::io::gltf_trs& lhs, const tz::io::gltf_trs& rhs, float interp)
+	{
+		// translation is easy.
+		tz::io::gltf_trs ret;
+		ret.translate = lhs.translate + ((rhs.translate - lhs.translate) * interp);
+
+		// todo: rotate
+		ret.rotquat = lhs.rotquat;
+
+		// todo: scale
+		ret.scale = lhs.scale;
+
+		return ret;
+	}
+
+	void mesh_renderer::update_animated_nodes(float dt)
+	{
+		this->animation.time += dt;
+		const tz::io::gltf& gltf = this->animation.gltfs[this->animation.gltf_cursor];
+		for(const tz::io::gltf_animation& anim : gltf.get_animations())
+		{
+			for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
+			{
+				//auto offset = this->get_gltf_node_offset();
+				std::size_t offset = 0;
+				std::uint32_t object_id = this->render_pass.get_index_to_object_ids()[nid + offset];
+				object_data& obj = this->render_pass.get_object_datas()[object_id];
+
+				const auto& keyframes = anim.node_animation_data[nid];
+				if(keyframes.size() <= 1)
+				{
+					obj.anim_transform = tz::mat4::identity();
+					continue;
+				}
+				auto [before, after] = this->animation.get_keyframe_indices_at(keyframes.begin(), keyframes.end());
+				auto before_iter = keyframes.begin();
+				auto after_iter = before_iter;
+				std::advance(before_iter, before);
+				std::advance(after_iter, after);
+
+				const float time_before = before_iter->time_point;
+				const float time_after = after_iter->time_point;
+				tz::assert(time_before <= time_after);
+				const float current_time = this->animation.time;
+				float interpolation_value = (current_time - time_before) / (time_after - time_before);
+				tz::assert(interpolation_value >= 0.0f && interpolation_value <= 1.0f, "interpolation is incorrect!");
+
+				tz::io::gltf_trs trs_before = before_iter->transform;
+				tz::io::gltf_trs trs_after = after_iter->transform;
+				tz::io::gltf_trs resultant_trs = trs_lerp(trs_before, trs_after, interpolation_value);
+				obj.anim_transform = resultant_trs.matrix();
+			}
+		}
 	}
 }

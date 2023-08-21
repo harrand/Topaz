@@ -113,7 +113,9 @@ namespace tz::io
 	gltf_trs& gltf_trs::combine(const gltf_trs& trs)
 	{
 		this->translate += trs.translate;
+		// are we sure we don't just add these aswell?
 		this->rotquat = quat_combine(this->rotquat, trs.rotquat);
+		// possibly ignore scale entirely?
 		for(std::size_t i = 0; i < this->scale.data().size(); i++)
 		{
 			this->scale[i] *= trs.scale[i];

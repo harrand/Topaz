@@ -64,6 +64,7 @@ int main()
 			tz::begin_frame();
 			// draw
 			tz::gl::get_device().render();
+			mr.update((tz::system_time() - update_timer).seconds<float>());
 			update_timer = tz::system_time();
 			// advance dbgui
 			tz::dbgui::run([&mr]()
@@ -77,7 +78,6 @@ int main()
 					}
 				}
 			});
-			mr.update();
 			tz::end_frame();
 			TZ_FRAME_END;
 		}

@@ -27,6 +27,7 @@ struct object_t
 	mat4 model;
 	mat4 inverse_bind_matrix;
 	mat4 global_transform;
+	mat4 anim_transform;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uint parent;
 };

@@ -75,6 +75,7 @@ namespace tz::ren
 		tz::mat4 model = tz::mat4::identity();
 		tz::mat4 inverse_bind_matrix = tz::mat4::identity();
 		tz::mat4 global_transform = tz::mat4::identity();
+		tz::mat4 anim_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
@@ -113,7 +114,7 @@ namespace tz::ren
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		stored_assets add_gltf(const tz::io::gltf& gltf);
 		void append_to_render_graph();
-		void update();
+		void update(float dt);
 		void dbgui();
 	private:
 		struct compute_pass_t
@@ -162,6 +163,16 @@ namespace tz::ren
 			std::size_t node_count = 0;
 		};
 
+		struct gltf_animation_data
+		{
+			std::vector<tz::io::gltf> gltfs = {};
+			std::size_t gltf_cursor = 0; // todo: change to support animation from multiple gltfs.
+			float time = 0.0f;
+
+			using keyframe_iterator = tz::io::gltf_animation::keyframe_data::const_iterator;
+			std::pair<std::size_t, std::size_t> get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const;
+		};
+
 		void expand_object_capacity(std::size_t extra_count);
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
@@ -173,11 +184,13 @@ namespace tz::ren
 		void compute_global_transforms();
 		void process_skins();
 		std::size_t get_gltf_node_offset() const;
+		void update_animated_nodes(float dt);
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 		std::vector<tz::io::gltf_skin> skins_to_process = {};
 		std::vector<gltf_meta> gltf_metas = {};
+		gltf_animation_data animation = {};
 	};
 }
 
