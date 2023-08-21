@@ -1243,9 +1243,24 @@ namespace tz::ren
 				object_data& obj = this->render_pass.get_object_datas()[object_id];
 
 				const auto& keyframes = anim.node_animation_data[nid];
-				if(keyframes.size() <= 1)
+				if(keyframes.size() == 0)
 				{
 					obj.anim_transform = tz::mat4::identity();
+					continue;
+				}
+				if(keyframes.size() == 1)
+				{
+					// only one keyframe, so interpolate between identity matrix and the keyframe transform.
+					const auto& kf = *keyframes.begin();
+					if(kf.time_point == 1.0f)
+					{
+						obj.anim_transform = kf.transform.matrix();
+					}
+					else
+					{
+						float interp = std::max(this->animation.time / kf.time_point, 1.0f);
+						tz::io::gltf_trs resultant = trs_lerp({}, kf.transform, interp);
+					}
 					continue;
 				}
 				auto [before, after] = this->animation.get_keyframe_indices_at(keyframes.begin(), keyframes.end());
