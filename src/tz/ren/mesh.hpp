@@ -171,7 +171,9 @@ namespace tz::ren
 		{
 			std::vector<tz::io::gltf> gltfs = {};
 			std::size_t gltf_cursor = 0; // todo: change to support animation from multiple gltfs.
+			std::size_t animation_cursor = 0;
 			float time = 0.0f;
+			float speed = 1.0f;
 
 			using keyframe_iterator = tz::io::gltf_animation::keyframe_data::const_iterator;
 			std::pair<std::size_t, std::size_t> get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const;
@@ -190,6 +192,7 @@ namespace tz::ren
 		std::size_t get_gltf_node_offset() const;
 		std::size_t get_gltf_node_offset(std::size_t gltf_cursor) const;
 		void update_animated_nodes(float dt);
+		void dbgui_anim();
 
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;

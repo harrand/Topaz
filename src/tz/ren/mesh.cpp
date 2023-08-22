@@ -919,6 +919,11 @@ namespace tz::ren
 				}
 				ImGui::EndTabItem();
 			}
+			if(ImGui::BeginTabItem("Animation"))
+			{
+				this->dbgui_anim();
+				ImGui::EndTabItem();
+			}
 			ImGui::EndTabBar();
 		}
 	}
@@ -1247,7 +1252,11 @@ namespace tz::ren
 	void mesh_renderer::update_animated_nodes(float dt)
 	{
 		TZ_PROFZONE("Mesh Renderer - Update Animations", 0xFF44DD44);
-		this->animation.time += dt;
+		this->animation.time += dt * this->animation.speed;
+		if(this->animation.time < 0.0f)
+		{
+			this->animation.time = 99999.0f;
+		}
 		const tz::io::gltf& gltf = this->animation.gltfs[this->animation.gltf_cursor];
 		for(const tz::io::gltf_animation& anim : gltf.get_animations())
 		{
@@ -1285,7 +1294,14 @@ namespace tz::ren
 				if(after >= keyframes.size())
 				{
 					// we're at the end.
-					this->animation.time = 0.0f;
+					if(this->animation.speed >= 0.0f)
+					{
+						this->animation.time = 0.0f;
+					}
+					else
+					{
+						this->animation.time = keyframes.rbegin()->time_point - std::numeric_limits<float>::epsilon();
+					}
 					objimpl.anim_transform = keyframes.begin()->transform.matrix();
 					continue;
 				}
@@ -1306,6 +1322,53 @@ namespace tz::ren
 				tz::io::gltf_trs resultant_trs = trs_lerp(trs_before, trs_after, interpolation_value);
 				objimpl.anim_transform = resultant_trs.matrix();
 			}
+		}
+	}
+
+	void mesh_renderer::dbgui_anim()
+	{
+		if(this->animation.gltfs.empty())
+		{
+			ImGui::Text("No animations present");
+			return;
+		}
+		ImGui::SliderInt("GLTF ID", reinterpret_cast<int*>(&this->animation.gltf_cursor), 0, this->animation.gltfs.size() - 1);
+		const auto& anims = this->animation.gltfs[this->animation.gltf_cursor].get_animations();
+		const auto& anim = anims[this->animation.animation_cursor];
+		if(ImGui::BeginCombo("Animation", anim.name.c_str()))
+		{
+			for(std::size_t i = 0; i < anims.size(); i++)
+			{
+				bool is_selected = (i == this->animation.animation_cursor);
+				if(ImGui::Selectable(anims[i].name.c_str(), is_selected))
+				{
+					
+				}
+				if(is_selected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		float max_time = 0.0f;
+		for(const auto& node_keyframe_data : anim.node_animation_data)
+		{
+			for(const auto& keyframes : node_keyframe_data)
+			{
+				max_time = std::max(max_time, keyframes.time_point);
+			}
+		}
+		if(max_time == 0)
+		{
+			return;
+		}
+		ImGui::Text("Progress (%.2fs/%.2fs)", this->animation.time, max_time);
+		ImGui::ProgressBar(this->animation.time / max_time);
+		ImGui::SliderFloat("Animation Speed", &this->animation.speed, -2.0f, 2.0f);
+		if(ImGui::Button("Reset"))
+		{
+			this->animation.time = 0.0f;
 		}
 	}
 }
