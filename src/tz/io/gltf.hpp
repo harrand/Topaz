@@ -189,8 +189,8 @@ namespace tz::io
 
 	struct gltf_animation_sampler
 	{
-		float input;
-		float output;
+		std::size_t input;
+		std::size_t output;
 		gltf_animation_key_interpolation interpolation;
 	};
 
