@@ -1192,6 +1192,11 @@ namespace tz::ren
 		{
 			return {0u, 1u};
 		}
+		auto dist = std::distance(front, back);
+		if(std::cmp_greater_equal(idx, dist))
+		{
+			return {dist - 2, dist - 1};
+		}
 		return {idx - 1, idx};
 	}
 
@@ -1268,59 +1273,48 @@ namespace tz::ren
 				std::uint32_t object_id = this->render_pass.get_index_to_object_ids()[nid + offset];
 				object_impl_data& objimpl = this->object_impls[object_id];
 
-				const auto& keyframes = anim.node_animation_data[nid];
-				if(keyframes.size() == 0)
+				const auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[nid];
+				auto [pos_before_id, pos_after_id] = this->animation.get_keyframe_indices_at(kf_positions.begin(), kf_positions.end());
+				auto [rot_before_id, rot_after_id] = this->animation.get_keyframe_indices_at(kf_rotations.begin(), kf_rotations.end());
+				auto [scale_before_id, scale_after_id] = this->animation.get_keyframe_indices_at(kf_scales.begin(), kf_scales.end());
+				tz::io::gltf_trs trs;
+				// pos
+				if(kf_positions.size() > 1)
 				{
-					objimpl.anim_transform = tz::mat4::identity();
-					continue;
+					auto before = kf_positions.begin();
+					auto after = before;
+					std::advance(before, pos_before_id);
+					std::advance(after, pos_after_id);
+					float pos_interp = (this->animation.time - before->time_point) / (after->time_point - before->time_point);
+					tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
+					tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
+					trs.translate = beforet + ((aftert - beforet) * pos_interp);
 				}
-				if(keyframes.size() == 1)
+				// rot
+				if(kf_rotations.size() > 1)
 				{
-					// only one keyframe, so interpolate between identity matrix and the keyframe transform.
-					const auto& kf = *keyframes.begin();
-					if(kf.time_point == 0.0f)
-					{
-						objimpl.anim_transform = kf.transform.matrix();
-					}
-					else
-					{
-						float interp = std::max(this->animation.time / kf.time_point, 1.0f);
-						tz::io::gltf_trs resultant = trs_lerp({}, kf.transform, interp);
-						objimpl.anim_transform = resultant.matrix();
-					}
-					continue;
+					auto before = kf_rotations.begin();
+					auto after = before;
+					std::advance(before, rot_before_id);
+					std::advance(after, rot_after_id);
+					float rot_interp = (this->animation.time - before->time_point) / (after->time_point - before->time_point);
+					tz::vec4 beforer = before->transform;
+					tz::vec4 afterr = after->transform;
+					trs.rotquat = quat_slerp(beforer, afterr, rot_interp);
 				}
-				auto [before, after] = this->animation.get_keyframe_indices_at(keyframes.begin(), keyframes.end());
-				if(after >= keyframes.size())
+				// scale
+				if(kf_scales.size() > 1)
 				{
-					// we're at the end.
-					if(this->animation.speed >= 0.0f)
-					{
-						this->animation.time = 0.0f;
-					}
-					else
-					{
-						this->animation.time = keyframes.rbegin()->time_point - std::numeric_limits<float>::epsilon();
-					}
-					objimpl.anim_transform = keyframes.begin()->transform.matrix();
-					continue;
+					auto before = kf_scales.begin();
+					auto after = before;
+					std::advance(before, scale_before_id);
+					std::advance(after, scale_after_id);
+					float scale_interp = (this->animation.time - before->time_point) / (after->time_point - before->time_point);
+					tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
+					tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
+					//trs.scale = befores + ((afters - befores) * scale_interp);
 				}
-				auto before_iter = keyframes.begin();
-				auto after_iter = before_iter;
-				std::advance(before_iter, before);
-				std::advance(after_iter, after);
-
-				const float time_before = before_iter->time_point;
-				const float time_after = after_iter->time_point;
-				tz::assert(time_before <= time_after);
-				const float current_time = this->animation.time;
-				float interpolation_value = (current_time - time_before) / (time_after - time_before);
-				tz::assert(interpolation_value >= 0.0f && interpolation_value <= 1.0f, "interpolation is incorrect!");
-
-				tz::io::gltf_trs trs_before = before_iter->transform;
-				tz::io::gltf_trs trs_after = after_iter->transform;
-				tz::io::gltf_trs resultant_trs = trs_lerp(trs_before, trs_after, interpolation_value);
-				objimpl.anim_transform = resultant_trs.matrix();
+				objimpl.anim_transform = trs.matrix();
 			}
 		}
 	}
@@ -1352,13 +1346,13 @@ namespace tz::ren
 			ImGui::EndCombo();
 		}
 		float max_time = 0.0f;
-		for(const auto& node_keyframe_data : anim.node_animation_data)
-		{
-			for(const auto& keyframes : node_keyframe_data)
-			{
-				max_time = std::max(max_time, keyframes.time_point);
-			}
-		}
+		//for(const auto& node_keyframe_data : anim.node_animation_data)
+		//{
+		//	for(const auto& keyframes : node_keyframe_data)
+		//	{
+		//		max_time = std::max(max_time, keyframes.time_point);
+		//	}
+		//}
 		if(max_time == 0)
 		{
 			return;

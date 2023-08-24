@@ -1269,47 +1269,12 @@ namespace tz::io
 		}
 	}
 
-	void combine_or_add(gltf_animation::keyframe_data& keyframes, gltf_animation::keyframe_data_element elem)
-	{
-		// if a keyframe at this time point already exists, combine them. if no keyframe at this time point exists, simply add it!
-		auto iter = std::find_if(keyframes.begin(), keyframes.end(),
-		[elem](const auto& kf)
-		{
-			return kf.time_point == elem.time_point;
-		});
-		if(iter != keyframes.end())
-		{
-			// contains!
-			tz::assert(iter->time_point == elem.time_point, "logic error in gltf impl::combine_or_add. iter returns non end but timepoints don't actually match.");
-			iter->transform.combine(elem.transform);
-		}
-		else
-		{
-			const auto[resiter, retbool] = keyframes.insert(elem);
-			tz::assert(retbool);
-			(void)retbool;
-			(void)resiter;
-		}
-	}
-
 	void gltf::compute_animation_data()
 	{
-		#if TZ_DEBUG
-		std::size_t debug_total_keyframe_count = 0;
-		#endif
 		// retrieve the time points and transforms and populate gltf_animation::node_animation_data
 		for(gltf_animation& anim : this->animations)
 		{
 			anim.node_animation_data.resize(this->get_nodes().size());
-			#if TZ_DEBUG
-			for(const auto& kfd : anim.node_animation_data)
-			{
-				for(const auto& keyframe : kfd)
-				{
-					tz::assert(keyframe.transform.matrix() == tz::mat4::identity(), "initial keyframe data contained a non-identity matrix before processing.");
-				}
-			}
-			#endif
 
 			for(const gltf_animation_channel& channel : anim.channels)
 			{
@@ -1317,7 +1282,7 @@ namespace tz::io
 				const gltf_animation_channel_target& target = channel.target;
 
 				const std::size_t node_id = target.node;
-				auto& keyframes = anim.node_animation_data[node_id];
+				auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[node_id];
 				const gltf_accessor& input_accessor = this->accessors[sampler.input];
 				const gltf_accessor& output_accessor = this->accessors[sampler.output];
 
@@ -1350,7 +1315,7 @@ namespace tz::io
 					std::span<const tz::vec4> transform_vec4s{reinterpret_cast<const tz::vec4*>(transform_bytes.data()), keyframe_count};
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
-						combine_or_add(keyframes, {.time_point = time_floats[i], .transform = {.rotquat = transform_vec4s[i]}});
+						kf_rotations.insert({.time_point = time_floats[i], .transform = transform_vec4s[i]});
 					}
 				}
 				else
@@ -1361,10 +1326,10 @@ namespace tz::io
 						switch(target.path)
 						{
 							case gltf_animation_channel_target_path::translation:
-								combine_or_add(keyframes, {.time_point = time_floats[i], .transform = {.translate = transform_vec3s[i]}});
+								kf_positions.insert({.time_point = time_floats[i], .transform = transform_vec3s[i].with_more(0.0f)});
 							break;
 							case gltf_animation_channel_target_path::scale:
-								combine_or_add(keyframes, {.time_point = time_floats[i], .transform = {.scale = transform_vec3s[i]}});
+								kf_scales.insert({.time_point = time_floats[i], .transform = transform_vec3s[i].with_more(0.0f)});
 							break;
 							default:
 								tz::error();
@@ -1372,25 +1337,7 @@ namespace tz::io
 						}
 					}
 				}
-				#if TZ_DEBUG
-				debug_total_keyframe_count += keyframes.size();
-				#endif
 			}
-
-			// ensure that there are no duplicate keyframes. for each duplicate keyframe for a node, combine them.
-			#if TZ_DEBUG
-			for(auto& keyframes : anim.node_animation_data)
-			{
-				tz::assert(std::is_sorted(keyframes.begin(), keyframes.end(), 
-					[](const auto& lhs, const auto& rhs)
-					{
-						return lhs.time_point < rhs.time_point;
-					}));
-			}
-			#endif // TZ_DEBUG
 		}
-		#if TZ_DEBUG
-		tz::report("Evaluated animation keyframes totalling %zu", debug_total_keyframe_count);
-		#endif
 	}
 }

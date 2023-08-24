@@ -175,7 +175,7 @@ namespace tz::ren
 			float time = 0.0f;
 			float speed = 1.0f;
 
-			using keyframe_iterator = tz::io::gltf_animation::keyframe_data::const_iterator;
+			using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
 			std::pair<std::size_t, std::size_t> get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const;
 		};
 

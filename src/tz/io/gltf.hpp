@@ -211,11 +211,13 @@ namespace tz::io
 		{
 			float time_point;
 			// mutable is safe here even in use in std::set because the transform is not used in comparison (set iterators are always const)
-			mutable gltf_trs transform;
+			//mutable gltf_trs transform;
+			mutable tz::vec4 transform = tz::vec4::zero();
 
 			bool operator<(const keyframe_data_element& rhs) const{return this->time_point < rhs.time_point;}
 		};
-		using keyframe_data = std::set<keyframe_data_element>;
+		using keyframe_data = std::tuple<std::set<keyframe_data_element>, std::set<keyframe_data_element>, std::set<keyframe_data_element>>;
+		using keyframe_iterator = std::set<keyframe_data_element>::iterator;
 		std::string name = "Unnamed";
 		std::vector<gltf_animation_channel> channels = {};
 		std::vector<gltf_animation_sampler> samplers = {};
