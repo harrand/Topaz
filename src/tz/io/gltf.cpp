@@ -110,11 +110,24 @@ namespace tz::io
 		return quat_multiply(rhs, lhs);
 	}
 
+	tz::vec3 quat_rotate_vec(tz::vec3 v, tz::vec4 q)
+	{
+		tz::vec3 uv = tz::cross(q.swizzle<0, 1, 2>(), v);
+		tz::vec3 uuv = tz::cross(q.swizzle<0, 1, 2>(), uv);
+		return v + ((uv * q[3]) + uuv) * 2.0f;
+	}
+
 	gltf_trs& gltf_trs::combine(const gltf_trs& trs)
 	{
-		this->translate += trs.translate;
+		tz::vec3 rotated = quat_rotate_vec(this->translate, trs.rotquat);
+		tz::vec3 scaled = trs.scale;
+		for(std::size_t i = 0; i < 3; i++)
+		{
+			scaled[i] *= rotated[i];
+		}
+		this->translate = trs.translate + scaled;
 		// are we sure we don't just add these aswell?
-		this->rotquat = quat_combine(this->rotquat, trs.rotquat);
+		this->rotquat = quat_combine(this->rotquat, trs.rotquat).normalised();
 		// possibly ignore scale entirely?
 		for(std::size_t i = 0; i < this->scale.data().size(); i++)
 		{
@@ -1268,8 +1281,6 @@ namespace tz::io
 		{
 			// contains!
 			tz::assert(iter->time_point == elem.time_point, "logic error in gltf impl::combine_or_add. iter returns non end but timepoints don't actually match.");
-			// note: multiplying the scales together seems incredibly sus. why are the scale vectors so incredibly small?
-			//tz::assert(iter->transform.scale == tz::vec3::filled(1.0f) && elem.transform.scale == tz::vec3::filled(1.0f));
 			iter->transform.combine(elem.transform);
 		}
 		else
