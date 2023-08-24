@@ -100,6 +100,8 @@ namespace tz::io
 		gltf_accessor_component_type component_type;
 		std::size_t element_count;
 		gltf_accessor_type type;
+		tz::mat4 max = tz::mat4::identity();
+		tz::mat4 min = tz::mat4::identity();
 	};
 
 	constexpr int gltf_max_texcoord_attribs = 8;
@@ -221,6 +223,7 @@ namespace tz::io
 		std::string name = "Unnamed";
 		std::vector<gltf_animation_channel> channels = {};
 		std::vector<gltf_animation_sampler> samplers = {};
+		float max_time = 0.0f;
 		// node_animation_data[n] contains a list of keyframes for the corresponding node id `n`.
 		// keyframes are guaranteed to be in-order in terms of time points, and only one combined
 		// TRS per time point. you should be fine to convert these into matrices and apply them

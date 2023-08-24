@@ -1265,6 +1265,10 @@ namespace tz::ren
 		const tz::io::gltf& gltf = this->animation.gltfs[this->animation.gltf_cursor];
 		for(const tz::io::gltf_animation& anim : gltf.get_animations())
 		{
+			if(this->animation.time > anim.max_time)
+			{
+				this->animation.time = 0.0f;
+			}
 			TZ_PROFZONE("Mesh Renderer - Update Animation", 0xFF44DD44);
 			for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
 			{
@@ -1285,7 +1289,7 @@ namespace tz::ren
 					auto after = before;
 					std::advance(before, pos_before_id);
 					std::advance(after, pos_after_id);
-					float pos_interp = (this->animation.time - before->time_point) / (after->time_point - before->time_point);
+					float pos_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
 					tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
 					trs.translate = beforet + ((aftert - beforet) * pos_interp);
@@ -1297,10 +1301,10 @@ namespace tz::ren
 					auto after = before;
 					std::advance(before, rot_before_id);
 					std::advance(after, rot_after_id);
-					float rot_interp = (this->animation.time - before->time_point) / (after->time_point - before->time_point);
+					float rot_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::vec4 beforer = before->transform;
 					tz::vec4 afterr = after->transform;
-					trs.rotquat = quat_slerp(beforer, afterr, rot_interp);
+					trs.rotquat = quat_slerp(beforer, afterr, rot_interp).normalised();
 				}
 				// scale
 				if(kf_scales.size() > 1)
@@ -1309,10 +1313,10 @@ namespace tz::ren
 					auto after = before;
 					std::advance(before, scale_before_id);
 					std::advance(after, scale_after_id);
-					float scale_interp = (this->animation.time - before->time_point) / (after->time_point - before->time_point);
+					float scale_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
 					tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
-					//trs.scale = befores + ((afters - befores) * scale_interp);
+					trs.scale = befores + ((afters - befores) * scale_interp);
 				}
 				objimpl.anim_transform = trs.matrix();
 			}
@@ -1345,20 +1349,12 @@ namespace tz::ren
 			}
 			ImGui::EndCombo();
 		}
-		float max_time = 0.0f;
-		//for(const auto& node_keyframe_data : anim.node_animation_data)
-		//{
-		//	for(const auto& keyframes : node_keyframe_data)
-		//	{
-		//		max_time = std::max(max_time, keyframes.time_point);
-		//	}
-		//}
-		if(max_time == 0)
+		if(anim.max_time == 0)
 		{
 			return;
 		}
-		ImGui::Text("Progress (%.2fs/%.2fs)", this->animation.time, max_time);
-		ImGui::ProgressBar(this->animation.time / max_time);
+		ImGui::Text("Progress (%.2fs/%.2fs)", this->animation.time, anim.max_time);
+		ImGui::ProgressBar(this->animation.time / anim.max_time);
 		ImGui::SliderFloat("Animation Speed", &this->animation.speed, -2.0f, 2.0f);
 		if(ImGui::Button("Reset"))
 		{

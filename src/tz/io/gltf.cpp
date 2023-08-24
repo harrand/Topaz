@@ -1065,12 +1065,57 @@ namespace tz::io
 				{
 					tz::assert("Unrecognised accessor type \"%s\". Corrupted GLB file or too new and somehow got past topaz verification.", type.c_str());
 				}
+				auto comp_type = static_cast<gltf_accessor_component_type>(accessor["componentType"]);
+				tz::mat4 max{};
+				tz::mat4 min{};
+				for(std::size_t i = 0; i < 4; i++)
+				{
+					for(std::size_t j = 0; j < 4; j++)
+					{
+						max(i, j) = std::numeric_limits<float>::max();
+						min(i, j) = 0.0f;
+					}
+				}
+				if(!accessor["max"].is_null())
+				{
+					if(accessor["max"].is_array())
+					{
+						std::size_t i = 0;
+						for(auto val : accessor["max"])
+						{
+							max(i / 4, i % 4) = val;
+							i++;
+						}
+					}
+					else
+					{
+						max(0, 0) = accessor["max"];
+					}
+				}
+				if(!accessor["min"].is_null())
+				{
+					if(accessor["min"].is_array())
+					{
+						std::size_t i = 0;
+						for(auto val : accessor["min"])
+						{
+							min(i / 4, i % 4) = val;
+							i++;
+						}
+					}
+					else
+					{
+						min(0, 0) = accessor["min"];
+					}
+				}
 				this->accessors.push_back
 				({
 					.buffer_view_id = accessor["bufferView"],
-		 			.component_type = static_cast<gltf_accessor_component_type>(accessor["componentType"]),
+		 			.component_type = comp_type,
 		 			.element_count = accessor["count"],
-		 			.type = t
+		 			.type = t,
+					.max = max,
+					.min = min
 				});
 			}
 		}
@@ -1278,12 +1323,13 @@ namespace tz::io
 
 			for(const gltf_animation_channel& channel : anim.channels)
 			{
-				const gltf_animation_sampler& sampler = anim.samplers[channel.sampler_id];
+				gltf_animation_sampler& sampler = anim.samplers[channel.sampler_id];
 				const gltf_animation_channel_target& target = channel.target;
 
 				const std::size_t node_id = target.node;
 				auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[node_id];
 				const gltf_accessor& input_accessor = this->accessors[sampler.input];
+				anim.max_time = std::max(input_accessor.max(0, 0), anim.max_time);
 				const gltf_accessor& output_accessor = this->accessors[sampler.output];
 
 				// do some validation.
@@ -1315,7 +1361,12 @@ namespace tz::io
 					std::span<const tz::vec4> transform_vec4s{reinterpret_cast<const tz::vec4*>(transform_bytes.data()), keyframe_count};
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
-						kf_rotations.insert({.time_point = time_floats[i], .transform = transform_vec4s[i]});
+						tz::vec4 data = transform_vec4s[i];
+						for(std::size_t i = 0; i < 4; i++)
+						{
+							data[i] = std::clamp(data[i], output_accessor.min(0, i), output_accessor.max(0, i));
+						}
+						kf_rotations.insert({.time_point = time_floats[i], .transform = data});
 					}
 				}
 				else
@@ -1323,13 +1374,18 @@ namespace tz::io
 					std::span<const tz::vec3> transform_vec3s{reinterpret_cast<const tz::vec3*>(transform_bytes.data()), keyframe_count};
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
+						tz::vec3 data = transform_vec3s[i];
+						for(std::size_t i = 0; i < 3; i++)
+						{
+							data[i] = std::clamp(data[i], output_accessor.min(0, i), output_accessor.max(0, i));
+						}
 						switch(target.path)
 						{
 							case gltf_animation_channel_target_path::translation:
-								kf_positions.insert({.time_point = time_floats[i], .transform = transform_vec3s[i].with_more(0.0f)});
+								kf_positions.insert({.time_point = time_floats[i], .transform = data.with_more(0.0f)});
 							break;
 							case gltf_animation_channel_target_path::scale:
-								kf_scales.insert({.time_point = time_floats[i], .transform = transform_vec3s[i].with_more(0.0f)});
+								kf_scales.insert({.time_point = time_floats[i], .transform = data.with_more(0.0f)});
 							break;
 							default:
 								tz::error();
