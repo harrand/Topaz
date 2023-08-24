@@ -1121,7 +1121,7 @@ namespace tz::ren
 		{
 			return obj.global_transform;
 		}
-		tz::mat4 global = objimpl.anim_transform * objimpl.model;
+		tz::mat4 global = objimpl.anim_transform;
 		if(obj.parent != static_cast<std::uint32_t>(-1))
 		{
 			global = compute_global_transform(obj.parent, visited_node_ids) * global;
@@ -1267,7 +1267,14 @@ namespace tz::ren
 		{
 			if(this->animation.time > anim.max_time)
 			{
-				this->animation.time = 0.0f;
+				if(this->animation.speed >= 0.0f)
+				{
+					this->animation.time = 0.0f;
+				}
+				else
+				{
+					this->animation.time = anim.max_time;
+				}
 			}
 			TZ_PROFZONE("Mesh Renderer - Update Animation", 0xFF44DD44);
 			for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
@@ -1282,25 +1289,34 @@ namespace tz::ren
 				auto [rot_before_id, rot_after_id] = this->animation.get_keyframe_indices_at(kf_rotations.begin(), kf_rotations.end());
 				auto [scale_before_id, scale_after_id] = this->animation.get_keyframe_indices_at(kf_scales.begin(), kf_scales.end());
 				tz::io::gltf_trs trs;
+				bool no_transform = true;
 				// pos
 				if(kf_positions.size() > 1)
 				{
+					no_transform = false;
 					auto before = kf_positions.begin();
 					auto after = before;
 					std::advance(before, pos_before_id);
 					std::advance(after, pos_after_id);
+					tz::assert(this->animation.time >= before->time_point);
 					float pos_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
 					tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
 					trs.translate = beforet + ((aftert - beforet) * pos_interp);
 				}
+				else if(kf_positions.size() == 1)
+				{
+					trs.translate = kf_positions.begin()->transform.swizzle<0, 1, 2>();
+				}
 				// rot
 				if(kf_rotations.size() > 1)
 				{
+					no_transform = false;
 					auto before = kf_rotations.begin();
 					auto after = before;
 					std::advance(before, rot_before_id);
 					std::advance(after, rot_after_id);
+					tz::assert(this->animation.time >= before->time_point);
 					float rot_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::vec4 beforer = before->transform;
 					tz::vec4 afterr = after->transform;
@@ -1313,12 +1329,20 @@ namespace tz::ren
 					auto after = before;
 					std::advance(before, scale_before_id);
 					std::advance(after, scale_after_id);
+					tz::assert(this->animation.time >= before->time_point);
 					float scale_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
 					tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
 					trs.scale = befores + ((afters - befores) * scale_interp);
 				}
-				objimpl.anim_transform = trs.matrix();
+				if(no_transform)
+				{
+					objimpl.anim_transform = objimpl.model;
+				}
+				else
+				{
+					objimpl.anim_transform = trs.matrix();
+				}
 			}
 		}
 	}

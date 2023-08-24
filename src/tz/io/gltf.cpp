@@ -1338,12 +1338,14 @@ namespace tz::io
 				tz::assert(input_accessor.type == gltf_accessor_type::scalar);
 				// outputs are expected to either be: an array of vec4s (if rotation), otherwise an array of vec3s. always floats.
 				tz::assert(output_accessor.component_type == gltf_accessor_component_type::flt);
+				tz::assert(target.path != gltf_animation_channel_target_path::weights, "Animation channel target path `weights` is not supported in Topaz.");
 				if(target.path == gltf_animation_channel_target_path::rotation)
 				{
 					tz::assert(output_accessor.type == gltf_accessor_type::vec4);
 				}
 				else
 				{
+					tz::assert(target.path == gltf_animation_channel_target_path::translation || target.path == gltf_animation_channel_target_path::scale);
 					tz::assert(output_accessor.type == gltf_accessor_type::vec3);
 				}
 
@@ -1355,7 +1357,6 @@ namespace tz::io
 				tz::assert(keyframe_count == output_accessor.element_count);
 				std::span<const float> time_floats{reinterpret_cast<const float*>(time_bytes.data()), keyframe_count};
 
-				tz::assert(target.path != gltf_animation_channel_target_path::weights, "Animation channel target path `weights` is not supported in Topaz.");
 				if(target.path == gltf_animation_channel_target_path::rotation)
 				{
 					std::span<const tz::vec4> transform_vec4s{reinterpret_cast<const tz::vec4*>(transform_bytes.data()), keyframe_count};
