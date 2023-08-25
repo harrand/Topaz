@@ -1,11 +1,11 @@
 #include "tz/ren/mesh.hpp"
-#include "imgui.h"
 #include "tz/gl/api/schedule.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/draw.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/core/matrix.hpp"
+#include "tz/core/data/trs.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/io/gltf.hpp"
 #include "tz/core/matrix_transform.hpp"
@@ -1238,22 +1238,6 @@ namespace tz::ren
 		return result.normalised();
 	}
 
-	tz::io::gltf_trs trs_lerp(const tz::io::gltf_trs& lhs, const tz::io::gltf_trs& rhs, float interp)
-	{
-		TZ_PROFZONE("Mesh Renderer - TRS Lerp", 0xFF44DD44);
-		// translation is easy.
-		tz::io::gltf_trs ret;
-		ret.translate = lhs.translate + ((rhs.translate - lhs.translate) * interp);
-
-		// todo: rotate
-		ret.rotquat = lhs.rotquat.slerp(rhs.rotquat, interp);
-
-		// todo: scale
-		ret.scale = lhs.scale + ((rhs.scale - lhs.scale) * interp);
-
-		return ret;
-	}
-
 	void mesh_renderer::update_animated_nodes(float dt)
 	{
 		TZ_PROFZONE("Mesh Renderer - Update Animations", 0xFF44DD44);
@@ -1288,7 +1272,7 @@ namespace tz::ren
 				auto [pos_before_id, pos_after_id] = this->animation.get_keyframe_indices_at(kf_positions.begin(), kf_positions.end());
 				auto [rot_before_id, rot_after_id] = this->animation.get_keyframe_indices_at(kf_rotations.begin(), kf_rotations.end());
 				auto [scale_before_id, scale_after_id] = this->animation.get_keyframe_indices_at(kf_scales.begin(), kf_scales.end());
-				tz::io::gltf_trs trs;
+				tz::trs trs;
 				bool no_transform = true;
 				// pos
 				if(kf_positions.size() > 1)
@@ -1320,7 +1304,7 @@ namespace tz::ren
 					float rot_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 					tz::quat beforer = before->transform;
 					tz::quat afterr = after->transform;
-					trs.rotquat = beforer.slerp(afterr, rot_interp);
+					trs.rotate = beforer.slerp(afterr, rot_interp);
 				}
 				// scale
 				if(kf_scales.size() > 1)

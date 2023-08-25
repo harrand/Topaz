@@ -74,37 +74,6 @@ namespace tz::io
 		- buffer views show spans within buffers (which live in bin chunks not shown in this example).
 	 */
 
-	tz::mat4 gltf_trs::matrix() const
-	{
-		return tz::translate(this->translate) * this->rotquat.matrix() * tz::scale(this->scale);
-	}
-
-	gltf_trs& gltf_trs::combine(const gltf_trs& trs)
-	{
-		tz::vec3 rotated = trs.rotquat.rotate(this->translate);
-		tz::vec3 scaled = trs.scale;
-		for(std::size_t i = 0; i < 3; i++)
-		{
-			scaled[i] *= rotated[i];
-		}
-		this->translate = trs.translate + scaled;
-		// are we sure we don't just add these aswell?
-		this->rotquat.combine(trs.rotquat);
-		this->rotquat.normalise();
-		// possibly ignore scale entirely?
-		for(std::size_t i = 0; i < this->scale.data().size(); i++)
-		{
-			this->scale[i] *= trs.scale[i];
-		}
-		return *this;
-	}
-
-	gltf_trs gltf_trs::combined(const gltf_trs& trs) const
-	{
-		gltf_trs cpy = *this;
-		return cpy.combine(trs);
-	}
-
 	gltf gltf::from_memory(std::string_view sv)
 	{
 		TZ_PROFZONE("gltf - from memory", 0xFFFF2222);

@@ -197,24 +197,12 @@ namespace tz::io
 		gltf_animation_key_interpolation interpolation;
 	};
 
-	struct gltf_trs
-	{
-		tz::vec3 translate = tz::vec3::zero();
-		tz::quat rotquat = tz::quat::zero();
-		tz::vec3 scale = tz::vec3::filled(1.0f);
-
-		tz::mat4 matrix() const;
-		gltf_trs& combine(const gltf_trs& trs);
-		gltf_trs combined(const gltf_trs& trs) const;
-	};
-
 	struct gltf_animation
 	{
 		struct keyframe_data_element
 		{
 			float time_point;
 			// mutable is safe here even in use in std::set because the transform is not used in comparison (set iterators are always const)
-			//mutable gltf_trs transform;
 			mutable tz::vec4 transform = tz::vec4::zero();
 
 			bool operator<(const keyframe_data_element& rhs) const{return this->time_point < rhs.time_point;}

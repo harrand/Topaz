@@ -36,6 +36,8 @@ add_library(topaz STATIC
 	src/tz/core/data/polymorphic_list.inl
 	src/tz/core/data/quat.cpp
 	src/tz/core/data/quat.hpp
+	src/tz/core/data/trs.cpp
+	src/tz/core/data/trs.hpp
 	src/tz/core/data/vector.cpp
 	src/tz/core/data/vector.hpp
 	src/tz/core/data/vector.inl
