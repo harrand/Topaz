@@ -1246,7 +1246,7 @@ namespace tz::ren
 		ret.translate = lhs.translate + ((rhs.translate - lhs.translate) * interp);
 
 		// todo: rotate
-		ret.rotquat = quat_slerp(lhs.rotquat, rhs.rotquat, interp);
+		ret.rotquat = lhs.rotquat.slerp(rhs.rotquat, interp);
 
 		// todo: scale
 		ret.scale = lhs.scale + ((rhs.scale - lhs.scale) * interp);
@@ -1318,9 +1318,9 @@ namespace tz::ren
 					std::advance(after, rot_after_id);
 					tz::assert(this->animation.time >= before->time_point);
 					float rot_interp = std::clamp((this->animation.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
-					tz::vec4 beforer = before->transform;
-					tz::vec4 afterr = after->transform;
-					trs.rotquat = quat_slerp(beforer, afterr, rot_interp).normalised();
+					tz::quat beforer = before->transform;
+					tz::quat afterr = after->transform;
+					trs.rotquat = beforer.slerp(afterr, rot_interp);
 				}
 				// scale
 				if(kf_scales.size() > 1)

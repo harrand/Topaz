@@ -2,6 +2,7 @@
 #define TOPAZ_IO_GLTF_HPP
 #include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
+#include "tz/core/data/quat.hpp"
 #include "tz/core/matrix.hpp"
 #include "tz/io/image.hpp"
 #include "nlohmann/json.hpp"
@@ -199,7 +200,7 @@ namespace tz::io
 	struct gltf_trs
 	{
 		tz::vec3 translate = tz::vec3::zero();
-		tz::vec4 rotquat = tz::vec4::zero();	
+		tz::quat rotquat = tz::quat::zero();
 		tz::vec3 scale = tz::vec3::filled(1.0f);
 
 		tz::mat4 matrix() const;

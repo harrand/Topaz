@@ -76,50 +76,12 @@ namespace tz::io
 
 	tz::mat4 gltf_trs::matrix() const
 	{
-		tz::mat4 rot = tz::mat4::identity();
-		rot(0, 0) = 1.0f - (2 * this->rotquat[1] * this->rotquat[1]) - (2 * this->rotquat[2] * this->rotquat[2]);
-		rot(1, 0) = (2 * this->rotquat[0] * this->rotquat[1]) + (2 * this->rotquat[2] * this->rotquat[3]);
-		rot(2, 0) = (2 * this->rotquat[0] * this->rotquat[2]) - (2 * this->rotquat[1] * this->rotquat[3]);
-		rot(0, 1) = (2 * this->rotquat[0] * this->rotquat[1]) - (2 * this->rotquat[2] * this->rotquat[3]);
-		rot(1, 1) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[2] * this->rotquat[2]);
-		rot(2, 1) = (2 * this->rotquat[1] * this->rotquat[2]) + (2 * this->rotquat[0] * this->rotquat[3]);
-		rot(0, 2) = (2 * this->rotquat[0] * this->rotquat[2]) + (2 * this->rotquat[1] * this->rotquat[3]);
-		rot(1, 2) = (2 * this->rotquat[1] * this->rotquat[2]) - (2 * this->rotquat[0] * this->rotquat[3]);
-		rot(2, 2) = 1.0f - (2 * this->rotquat[0] * this->rotquat[0]) - (2 * this->rotquat[1] * this->rotquat[1]);
-
-		return tz::translate(this->translate) * rot * tz::scale(this->scale);
-	}
-
-	tz::vec4 quat_multiply(const tz::vec4& lhs, const tz::vec4& rhs)
-	{
-		tz::vec4 result = tz::vec4::zero();
-			
-		// Quaternion multiplication
-		result[0] = rhs[3] * lhs[0] + rhs[0] * lhs[3] + rhs[1] * lhs[2] - rhs[2] * lhs[1];
-		result[1] = rhs[3] * lhs[1] + rhs[1] * lhs[3] + rhs[2] * lhs[0] - rhs[0] * lhs[2];
-		result[2] = rhs[3] * lhs[2] + rhs[2] * lhs[3] + rhs[0] * lhs[1] - rhs[1] * lhs[0];
-		result[3] = rhs[3] * lhs[3] - rhs[0] * lhs[0] - rhs[1] * lhs[1] - rhs[2] * lhs[2];
-		
-		return result;
-	}
-
-	// The quaternion multiplication operation can be defined as:
-	// quat_combine(lhs, rhs) = rhs * lhs
-	tz::vec4 quat_combine(const tz::vec4& lhs, const tz::vec4& rhs)
-	{
-		return quat_multiply(rhs, lhs);
-	}
-
-	tz::vec3 quat_rotate_vec(tz::vec3 v, tz::vec4 q)
-	{
-		tz::vec3 uv = tz::cross(q.swizzle<0, 1, 2>(), v);
-		tz::vec3 uuv = tz::cross(q.swizzle<0, 1, 2>(), uv);
-		return v + ((uv * q[3]) + uuv) * 2.0f;
+		return tz::translate(this->translate) * this->rotquat.matrix() * tz::scale(this->scale);
 	}
 
 	gltf_trs& gltf_trs::combine(const gltf_trs& trs)
 	{
-		tz::vec3 rotated = quat_rotate_vec(this->translate, trs.rotquat);
+		tz::vec3 rotated = trs.rotquat.rotate(this->translate);
 		tz::vec3 scaled = trs.scale;
 		for(std::size_t i = 0; i < 3; i++)
 		{
@@ -127,7 +89,8 @@ namespace tz::io
 		}
 		this->translate = trs.translate + scaled;
 		// are we sure we don't just add these aswell?
-		this->rotquat = quat_combine(this->rotquat, trs.rotquat).normalised();
+		this->rotquat.combine(trs.rotquat);
+		this->rotquat.normalise();
 		// possibly ignore scale entirely?
 		for(std::size_t i = 0; i < this->scale.data().size(); i++)
 		{
