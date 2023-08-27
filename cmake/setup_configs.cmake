@@ -11,7 +11,6 @@ function(configure_common target)
 			target_compile_options(${target} PRIVATE -Wno-gnu-zero-variadic-macro-arguments)
 		elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			# GCC-only options
-			target_compile_options(${target} PRIVATE -Wshadow=local)
 			message(STATUS "GNU")
 		endif()
 	elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
