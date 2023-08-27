@@ -1295,9 +1295,9 @@ namespace tz::io
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
 						tz::vec4 data = transform_vec4s[i];
-						for(std::size_t i = 0; i < 4; i++)
+						for(std::size_t j = 0; j < 4; j++)
 						{
-							data[i] = std::clamp(data[i], output_accessor.min(0, i), output_accessor.max(0, i));
+							data[j] = std::clamp(data[j], output_accessor.min(0, j), output_accessor.max(0, j));
 						}
 						kf_rotations.insert({.time_point = time_floats[i], .transform = data});
 					}
@@ -1308,9 +1308,9 @@ namespace tz::io
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
 						tz::vec3 data = transform_vec3s[i];
-						for(std::size_t i = 0; i < 3; i++)
+						for(std::size_t j = 0; j < 3; j++)
 						{
-							data[i] = std::clamp(data[i], output_accessor.min(0, i), output_accessor.max(0, i));
+							data[j] = std::clamp(data[j], output_accessor.min(0, j), output_accessor.max(0, j));
 						}
 						switch(target.path)
 						{
