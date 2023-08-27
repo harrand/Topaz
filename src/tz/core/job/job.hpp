@@ -2,7 +2,6 @@
 #define TZ_JOB_JOB_HPP
 
 // TODO: Configurable
-#include "tz/core/job/impl/stdasync/job.hpp"
 #include "tz/core/job/impl/threadpool_lfq/job.hpp"
 #undef assert
 

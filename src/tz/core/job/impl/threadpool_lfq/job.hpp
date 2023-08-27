@@ -10,19 +10,19 @@
 
 namespace tz::impl
 {
-	class job_system_threadpool_lfq
+	class job_system_threadpool_lfq : public i_job_system
 	{
 	public:
 		job_system_threadpool_lfq();
 		~job_system_threadpool_lfq();
 
-		job_handle execute(job_t job);
-		void block(job_handle j) const;
-		bool complete(job_handle j) const;
-		bool any_work_remaining() const;
-		void block_all() const;
+		virtual job_handle execute(job_t job) override;
+		virtual void block(job_handle j) const override;
+		virtual bool complete(job_handle j) const override;
+		virtual bool any_work_remaining() const override;
+		virtual void block_all() const override;
 		void new_frame();
-		unsigned int size() const;
+		virtual std::size_t size() const override;
 		unsigned int jobs_started_this_frame() const;
 	private:
 		struct worker_t
@@ -49,8 +49,6 @@ namespace tz::impl
 		mutable std::mutex wake_mutex;
 		mutable std::condition_variable wake_condition;
 	};
-
-	static_assert(job_system_type<job_system_threadpool_lfq>);
 }
 
 #endif // TZ_JOB_IMPL_THREADPOOL_LFQ_JOB_HPP

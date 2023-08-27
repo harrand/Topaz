@@ -89,7 +89,7 @@ namespace tz::impl
 		this->count_this_frame = 0;
 	}
 
-	unsigned int job_system_threadpool_lfq::size() const
+	std::size_t job_system_threadpool_lfq::size() const
 	{
 		return this->jobs.size_approx();
 	}
