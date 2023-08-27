@@ -1,6 +1,7 @@
 #ifndef TZ_DATA_HANDLE_HPP
 #define TZ_DATA_HANDLE_HPP
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <type_traits>
 
