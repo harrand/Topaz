@@ -71,6 +71,21 @@ namespace tz
 	}
 
 	template<tz::number T, std::size_t S>
+	vector<T, S>& vector<T, S>::operator*=(const vector<T, S>& rhs)
+	{
+		for(std::size_t i = 0; i < S; i++)
+			this->vec[i] *= rhs[i];
+		return *this;
+	}
+
+	template<tz::number T, std::size_t S>
+	vector<T, S> vector<T, S>::operator*(const vector<T, S>& rhs) const
+	{
+		vector<T, S> copy = *this;
+		return copy *= rhs;
+	}
+
+	template<tz::number T, std::size_t S>
 	vector<T, S>& vector<T, S>::operator/=(T scalar)
 	{
 		for(std::size_t i = 0; i < S; i++)

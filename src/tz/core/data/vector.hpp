@@ -99,6 +99,18 @@ namespace tz
 		 */
 		vector<T, S> operator*(T scalar) const;
 		/**
+		 * Multiply each element of the current vector by the corresponding element of the parameter vector.
+		 * @param rhs Vector whose elements should be multiplied with ours.
+		 * @return The modified original vector.
+		 */
+		vector<T, S>& operator*=(const vector<T, S>& rhs);
+		/**
+		 * Create a copy of the current vector, multiply each element of the copied vector with the corresponding element of the parameter vector, and return the result.
+		 * @param rhs Vector whose elements should be multiplied with ours.
+		 * @return A modified copy of the original vector. The initial vector is unchanged.
+		 **/
+		vector<T, S> operator*(const vector<T, S>& rhs) const;
+		/**
 		 * Divide each element of the current vector by the given value.
 		 * @param scalar Value to divide by each element of the current vector.
 		 * @return The modified original vector.

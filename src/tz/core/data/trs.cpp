@@ -20,11 +20,7 @@ namespace tz
 	trs& trs::combine(const trs& t)
 	{
 		tz::vec3 rotated = t.rotate.rotate(this->translate);
-		tz::vec3 scaled = t.scale;
-		for(std::size_t i = 0; i < 3; i++)
-		{
-			scaled[i] *= rotated[i];
-		}
+		tz::vec3 scaled = t.scale * rotated;
 		this->translate = t.translate + scaled;
 		// are we sure we don't just add these aswell?
 		this->rotate.combine(t.rotate);
