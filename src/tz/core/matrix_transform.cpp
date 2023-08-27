@@ -230,5 +230,6 @@ namespace tz
 	void dbgui_perspective(tz::mat4& mat)
 	{
 		ImGui::Text("Projection widget NYI");
+		(void)mat;
 	}
 }
