@@ -51,9 +51,9 @@ namespace tz::ren
 	namespace detail
 	{
 		struct texture_tag_t{};
+		using texture_handle = tz::handle<detail::texture_tag_t>;
 	}
 
-	using texture_handle = tz::handle<detail::texture_tag_t>;
 
 	// represents one of the textures bound to an object (drawable)
 	struct texture_locator
@@ -62,7 +62,7 @@ namespace tz::ren
 		// colour multiplier on the sampled texel
 		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 		// id within the overarching texture resource array to be sampled.
-		texture_handle texture = tz::nullhand;
+		detail::texture_handle texture = tz::nullhand;
 	};
 
 	constexpr unsigned int mesh_renderer_max_tex_count = 2;
@@ -83,7 +83,7 @@ namespace tz::ren
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
-		float pad0[3];
+		float pad0[3] = {};
 	};
 
 	/**
@@ -100,7 +100,7 @@ namespace tz::ren
 		using mesh_t = mesh<mesh_renderer_max_tex_count>;
 		using mesh_handle = tz::handle<mesh_t>;
 		using object_handle = tz::handle<object_tag_t>;
-		using texture_handle = texture_handle;
+		using texture_handle = detail::texture_handle;
 
 		struct stored_assets
 		{
