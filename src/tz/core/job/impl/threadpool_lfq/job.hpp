@@ -16,25 +16,30 @@ namespace tz::impl
 		job_system_threadpool_lfq();
 		~job_system_threadpool_lfq();
 
-		virtual job_handle execute(job_t job) override;
+		/// important note: if the job has an affinity, block(j) and complete(j) will not function correctly.
+		virtual job_handle execute(job_t job, execution_info einfo = {}) override;
 		virtual void block(job_handle j) const override;
 		virtual bool complete(job_handle j) const override;
 		virtual bool any_work_remaining() const override;
 		virtual void block_all() const override;
 		void new_frame();
 		virtual std::size_t size() const override;
+		virtual std::size_t worker_count() const override;
+		virtual std::vector<worker_id_t> get_worker_ids() const override;
 		unsigned int jobs_started_this_frame() const;
 	private:
+		struct job_info_t
+		{
+			job_t func;
+			std::size_t id;
+			std::optional<worker_id_t> affinity = std::nullopt;
+		};
 		struct worker_t
 		{
 			std::thread thread;
 			std::size_t local_tid;
 			std::atomic<std::size_t> current_job;
-		};
-		struct job_info_t
-		{
-			job_t func;
-			std::size_t id;
+			moodycamel::ConcurrentQueue<job_info_t> affine_jobs;
 		};
 		void tmain(std::size_t local_tid);
 		static void wait_a_bit();

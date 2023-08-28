@@ -1,4 +1,5 @@
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/core/job/api/job.hpp"
 #include "tz/wsi/keyboard.hpp"
 #include "tz/wsi/mouse.hpp"
 #include "tz/core/time.hpp"
@@ -43,7 +44,8 @@ namespace tz::dbgui
 		tz::duration fps_update_duration;
 
 		std::string lua_console_buf = "";
-		std::string lua_console_history = "";
+		std::string lua_console_history = "=On Main Thread=\n";
+		std::optional<tz::worker_id_t> thread_context = std::nullopt;
 	};
 
 	struct TopazRenderData
@@ -752,10 +754,47 @@ namespace tz::dbgui
 		}
 	}
 
+	void do_lua_cmd()
+	{
+		global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
+		bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf.c_str(), false);
+		if (!success)
+		{
+			global_platform_data->lua_console_history += "\nLua Error: \"" + tz::lua::get_state().get_last_error() + "\"\n";
+		}
+		global_platform_data->lua_console_buf.clear();
+	}
+
 	void draw_tz_lua_console()
 	{
 		if(ImGui::Begin("Lua Console", &tab_tz.show_lua_console, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse))
 		{
+			if(ImGui::CollapsingHeader("Thread Context"))
+			{
+				// allow user to select the thread context call from.
+				auto wids = tz::job_system().get_worker_ids();
+				static int wid_selector = -1;
+				for(std::size_t i = 0; i < wids.size(); i++)
+				{
+					tz::worker_id_t wid = wids[i];
+					if(ImGui::RadioButton(("Worker " + std::to_string(wid)).c_str(), &wid_selector, wid))
+					{
+						global_platform_data->thread_context = wid_selector;
+						global_platform_data->lua_console_history += "\n=Swapping to context " + std::to_string(wid) + "=\n";
+					}
+					if((i + 1) % 3 != 0)
+					{
+						ImGui::SameLine();
+					}
+				}
+				if(ImGui::RadioButton("Main Thread", &wid_selector, -1))
+				{
+					global_platform_data->thread_context = std::nullopt;
+					global_platform_data->lua_console_history += "\n=Returning to main thread=\n";
+				}
+				ImGui::TextWrapped("Note: Every thread has its own lua state, but things should be designed such that everything works on any lua state. Sometimes however things go wrong, so this is here to debug results on different threads (note that threads are the job system workers)");
+			}
+			// console actually lives here.
 			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -ImGui::GetTextLineHeightWithSpacing()), false, ImGuiWindowFlags_HorizontalScrollbar);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Adjust item spacing to make it look more like a console
 			ImGui::TextUnformatted(global_platform_data->lua_console_history.c_str());
@@ -769,13 +808,17 @@ namespace tz::dbgui
 			{
 				if(ImGui::IsItemDeactivatedAfterEdit()) // Check if Enter key caused deactivation of the input field
 				{
-					global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
-					bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf.c_str(), false);
-					if (!success)
+					if(!global_platform_data->thread_context.has_value())
 					{
-						global_platform_data->lua_console_history += "\nLua Error: \"" + tz::lua::get_state().get_last_error() + "\"\n";
+						do_lua_cmd();
 					}
-					global_platform_data->lua_console_buf.clear();
+					else
+					{
+						// send it as a job with affinity.
+						auto wid = global_platform_data->thread_context.value();
+						auto han = tz::job_system().execute(do_lua_cmd, {.maybe_worker_affinity = wid});
+						tz::job_system().block(han);
+					}
 					ImGui::SetKeyboardFocusHere(-1); // Set focus back to the input text field
 				}
 			}

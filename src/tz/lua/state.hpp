@@ -78,6 +78,9 @@ namespace tz::lua
 	* Retrieve the main lua @ref tz::lua::state.
 	*/
 	state& get_state();
+
+	using state_applicator = std::function<void(state&)>;
+	void for_all_states(state_applicator fn);
 }
 
 #endif // TZ_LUA_STATE_HPP

@@ -2,8 +2,10 @@
 #include "tz/core/debug.hpp"
 #include "tz/core/data/version.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/core/job/job.hpp"
 #include <sstream>
 #include <iostream>
+#include <sstream>
 #include <cstdint>
 #include <map>
 #include <filesystem>
@@ -257,6 +259,12 @@ namespace tz::lua
 	thread_local state defstate = {};
 	std::mutex state_creation_mtx;
 
+	int morb(lua_State* state)
+	{
+		tz::report("its morbin' time!");
+		return 0;
+	}
+
 	state& get_state()
 	{
 		if(!defstate.valid())
@@ -272,6 +280,27 @@ namespace tz::lua
 		return defstate;
 	}
 
+	void for_all_states(state_applicator fn)
+	{
+		// for each worker, execute a new job to register the function with the necessary affinity.
+		// this is incredibly slow, as it causes massive job queue contention.
+		std::vector<tz::job_handle> handles = {};
+		for(tz::worker_id_t wid : tz::job_system().get_worker_ids())
+		{
+			handles.push_back(tz::job_system().execute([fn]()
+			{
+				fn(get_state());
+			}, {.maybe_worker_affinity = wid}));
+		}
+		// dont return till its all done.
+		for(tz::job_handle jh : handles)
+		{
+			tz::job_system().block(jh);
+		}
+		// remember also add it for main thread (which is us).
+		fn(get_state());
+	}
+
 	int tz_lua_assert(lua_State* state)
 	{
 		bool b = lua_toboolean(state, 1);
@@ -285,6 +314,12 @@ namespace tz::lua
 		}
 		tz::assert(b, "Lua Assertion Failure: ```lua\n\n%s\n\n```\nOn line %d\nStack:\n%s", ar.source, ar.currentline, stack.c_str());
 		return 0;
+	}
+
+	int tz_lua_error(lua_State* state)
+	{
+		lua_pushboolean(state, false);
+		return 1 + tz_lua_assert(state);
 	}
 
 	int tz_print(lua_State* state)
@@ -308,7 +343,12 @@ namespace tz::lua
 		s.assign_emptytable("tz");
 		s.assign_emptytable("tz.version");
 		s.assign_func("tz.assert", tz_lua_assert);	
+		s.assign_func("tz.error", tz_lua_error);	
 		s.assign_func("print", tz_print);
+
+		std::ostringstream sstr;
+		sstr << std::this_thread::get_id();
+		s.assign_string("tz.thread", sstr.str());
 
 		s.assign_string("LUA_PATH", std::filesystem::current_path().generic_string());
 
