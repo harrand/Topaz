@@ -39,6 +39,7 @@ namespace tz::lua
 		*/
 		bool execute(const char* lua_src, bool assert_on_failure = true) const;
 
+		// assigning variables
 		bool assign_nil(const char* varname) const;
 		bool assign_emptytable(const char* varname) const;
 		bool assign_bool(const char* varname, bool b) const;
@@ -57,20 +58,29 @@ namespace tz::lua
 		}
 		bool assign_func(const char* varname, void* func_ptr) const;
 		bool assign_string(const char* varname, std::string str) const;
-
+		// retrieving variable values
 		std::optional<bool> get_bool(const char* varname) const;
 		std::optional<float> get_float(const char* varname) const;
 		std::optional<double> get_double(const char* varname) const;
 		std::optional<std::int64_t> get_int(const char* varname) const;
 		std::optional<std::uint64_t> get_uint(const char* varname) const;
+		// stack operations
 		std::size_t stack_size() const;
 		void stack_pop(std::size_t count = 1);
+		// read a value off of the stack
 		bool stack_get_bool(std::size_t idx, bool type_check = true) const;
 		double stack_get_double(std::size_t idx, bool type_check = true) const;
 		float stack_get_float(std::size_t idx, bool type_check = true) const;
 		std::int64_t stack_get_int(std::size_t idx, bool type_check = true) const;
 		std::uint64_t stack_get_uint(std::size_t idx, bool type_check = true) const;
 		std::string stack_get_string(std::size_t idx, bool type_check = true) const;
+		// push a new value onto the stack
+		void stack_push_bool(bool b) const;
+		void stack_push_double(double d) const;
+		void stack_push_float(float f) const;
+		void stack_push_int(std::int64_t i) const;
+		void stack_push_uint(std::uint64_t u) const;
+		void stack_push_string(std::string_view sv) const;
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;

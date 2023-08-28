@@ -48,12 +48,18 @@ namespace tz::lua
 		return 0;
 	LUA_END
 
+	LUA_BEGIN(stack_dump)
+		tz::dbgui::add_to_lua_log(state.collect_stack());
+		return 0;
+	LUA_END
+
 	void api_initialise(state& s)
 	{
 		s.assign_emptytable("tz");
 		s.assign_func("tz.assert", LUA_FN_NAME(assert));
 		s.assign_func("tz.error", LUA_FN_NAME(error));
 		LUA_REGISTER_ONE(print, s);
+		LUA_REGISTER_ONE(stack_dump, s);
 		s.assign_emptytable("tz.version");
 		s.assign_emptytable("thread");
 

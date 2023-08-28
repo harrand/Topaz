@@ -280,6 +280,39 @@ namespace tz::lua
 		}
 	}
 
+	void state::stack_push_bool(bool b) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_pushboolean(s, b);
+	}
+
+	void state::stack_push_double(double d) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_pushnumber(s, d);
+	}
+
+	void state::stack_push_float(float f) const
+	{
+		this->stack_push_double(f);
+	}
+
+	void state::stack_push_int(std::int64_t i) const
+	{
+		this->stack_push_double(static_cast<double>(i));
+	}
+
+	void state::stack_push_uint(std::uint64_t u) const
+	{
+		this->stack_push_double(static_cast<double>(u));
+	}
+
+	void state::stack_push_string(std::string_view sv) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_pushlstring(s, sv.data(), sv.size());
+	}
+
 	std::string state::collect_stack() const
 	{
 		if(!this->impl_check_stack(3))
@@ -356,7 +389,6 @@ namespace tz::lua
 	void for_all_states(state_applicator fn)
 	{
 		// for each worker, execute a new job to register the function with the necessary affinity.
-		// this is incredibly slow, as it causes massive job queue contention.
 		std::vector<tz::job_handle> handles = {};
 		for(tz::worker_id_t wid : tz::job_system().get_worker_ids())
 		{
