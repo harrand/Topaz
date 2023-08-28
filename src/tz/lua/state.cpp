@@ -1,14 +1,13 @@
 #include "tz/lua/state.hpp"
+#include "tz/lua/api.hpp"
 #include "tz/core/debug.hpp"
 #include "tz/core/data/version.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/job/job.hpp"
-#include <sstream>
 #include <iostream>
 #include <sstream>
 #include <cstdint>
 #include <map>
-#include <filesystem>
 #include <mutex>
 
 extern "C"
@@ -204,6 +203,83 @@ namespace tz::lua
 		return std::nullopt;
 	}
 
+	std::size_t state::stack_size() const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		return lua_gettop(s);
+	}
+
+	void state::stack_pop(std::size_t count)
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_pop(s, count);
+	}
+
+	bool state::stack_get_bool(std::size_t idx, bool type_check) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(lua_isboolean(s, idx) || !type_check)
+		{
+			return lua_toboolean(s, idx);
+		}
+		else
+		{
+			std::string stackdata = this->collect_stack();
+			tz::error("Lua stack entry %zu requested as `bool`, type error. Stack:\n%s", idx, stackdata.c_str());
+			return false;
+		}
+	}
+
+	double state::stack_get_double(std::size_t idx, bool type_check) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(lua_isnumber(s, idx) || !type_check)
+		{
+			return lua_tonumber(s, idx);
+		}
+		else
+		{
+			std::string stackdata = this->collect_stack();
+			tz::error("Lua stack entry %zu requested as `double/float`, type error. Stack:\n%s", idx, stackdata.c_str());
+			return false;
+		}
+	}
+
+	float state::stack_get_float(std::size_t idx, bool type_check) const
+	{
+		return static_cast<float>(this->stack_get_double(idx, type_check));
+	}
+
+	std::int64_t state::stack_get_int(std::size_t idx, bool type_check) const
+	{
+		return static_cast<std::int64_t>(this->stack_get_double(idx, type_check));
+	}
+
+	std::uint64_t state::stack_get_uint(std::size_t idx, bool type_check) const
+	{
+		return static_cast<std::uint64_t>(this->stack_get_double(idx, type_check));
+	}
+
+	std::string state::stack_get_string(std::size_t idx, bool type_check) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		// important note: lua under-the-hood does implicit conversions to-and-from
+		// string unless i explicitly disable them (e.g -DLUA_NOCVTN2S). this means
+		// that type check will always succeed for strings, even when they are not.
+		// however, i'm keeping the logic here still just for consistency.
+		if(lua_isstring(s, idx) || !type_check)
+		{
+			std::size_t len;
+			return {lua_tolstring(s, idx, &len), len};
+		}
+		else
+		{
+			std::string stackdata = this->collect_stack();
+			tz::error("Lua stack entry %zu requested as `string`, type error. Stack:\n%s", idx, stackdata.c_str());
+			return "";
+		}
+	}
+
 	std::string state::collect_stack() const
 	{
 		if(!this->impl_check_stack(3))
@@ -248,22 +324,19 @@ namespace tz::lua
 		return this->owner;
 	}
 
+	void* state::operator()() const
+	{
+		return this->lstate;
+	}
+
 	bool state::impl_check_stack(std::size_t sz) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
 		return lua_checkstack(s, sz);
 	}
 
-	void tz_inject_state(state& s);
-
 	thread_local state defstate = {};
 	std::mutex state_creation_mtx;
-
-	int morb(lua_State* state)
-	{
-		tz::report("its morbin' time!");
-		return 0;
-	}
 
 	state& get_state()
 	{
@@ -275,7 +348,7 @@ namespace tz::lua
 			luaL_openlibs(l);
 			defstate = state{static_cast<void*>(l)};
 
-			tz_inject_state(defstate);
+			api_initialise(defstate);
 		}
 		return defstate;
 	}
@@ -299,64 +372,5 @@ namespace tz::lua
 		}
 		// remember also add it for main thread (which is us).
 		fn(get_state());
-	}
-
-	int tz_lua_assert(lua_State* state)
-	{
-		bool b = lua_toboolean(state, 1);
-		std::string stack = lua::state{state}.collect_stack();
-		lua_Debug ar;
-		lua_getstack(state, 1, &ar);
-		lua_getinfo(state, "nSl", &ar);
-		if(!b && TZ_DEBUG)
-		{
-			tz::dbgui::add_to_lua_log("<<Lua Assert Failure Detected>>");
-		}
-		tz::assert(b, "Lua Assertion Failure: ```lua\n\n%s\n\n```\nOn line %d\nStack:\n%s", ar.source, ar.currentline, stack.c_str());
-		return 0;
-	}
-
-	int tz_lua_error(lua_State* state)
-	{
-		lua_pushboolean(state, false);
-		return 1 + tz_lua_assert(state);
-	}
-
-	int tz_print(lua_State* state)
-	{
-		int nargs = lua_gettop(state);
-		for(int i = 1; i <= nargs; i++)
-		{
-			const char* msg = luaL_tolstring(state, i, nullptr);
-			if(msg != nullptr)
-			{
-				tz::dbgui::add_to_lua_log(msg);
-			}
-		}
-		tz::dbgui::add_to_lua_log("\n");
-		lua_pop(state, nargs);
-		return 0;
-	}
-
-	void tz_inject_state(state& s)
-	{
-		s.assign_emptytable("tz");
-		s.assign_emptytable("tz.version");
-		s.assign_func("tz.assert", tz_lua_assert);	
-		s.assign_func("tz.error", tz_lua_error);	
-		s.assign_func("print", tz_print);
-
-		std::ostringstream sstr;
-		sstr << std::this_thread::get_id();
-		s.assign_string("tz.thread", sstr.str());
-
-		s.assign_string("LUA_PATH", std::filesystem::current_path().generic_string());
-
-		tz::version ver = tz::get_version();
-
-		s.assign_uint("tz.version.major", ver.major);
-		s.assign_uint("tz.version.minor", ver.minor);
-		s.assign_uint("tz.version.patch", ver.patch);
-		s.assign_string("tz.version.string", ver.to_string());
 	}
 }

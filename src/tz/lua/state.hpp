@@ -63,9 +63,18 @@ namespace tz::lua
 		std::optional<double> get_double(const char* varname) const;
 		std::optional<std::int64_t> get_int(const char* varname) const;
 		std::optional<std::uint64_t> get_uint(const char* varname) const;
+		std::size_t stack_size() const;
+		void stack_pop(std::size_t count = 1);
+		bool stack_get_bool(std::size_t idx, bool type_check = true) const;
+		double stack_get_double(std::size_t idx, bool type_check = true) const;
+		float stack_get_float(std::size_t idx, bool type_check = true) const;
+		std::int64_t stack_get_int(std::size_t idx, bool type_check = true) const;
+		std::uint64_t stack_get_uint(std::size_t idx, bool type_check = true) const;
+		std::string stack_get_string(std::size_t idx, bool type_check = true) const;
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;
+		void* operator()() const;
 	private:
 		bool impl_check_stack(std::size_t sz) const;
 		mutable std::string last_error = "";
