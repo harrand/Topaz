@@ -40,7 +40,7 @@ namespace tz::lua
 		int nargs = state.stack_size();
 		for(int i = 1; i <= nargs; i++)
 		{
-			std::string msg = state.stack_get_string(i);
+			std::string msg = state.stack_get_string(i, false);
 			tz::dbgui::add_to_lua_log(msg);
 		}
 		tz::dbgui::add_to_lua_log("\n");
