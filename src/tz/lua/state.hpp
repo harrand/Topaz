@@ -74,6 +74,7 @@ namespace tz::lua
 		std::int64_t stack_get_int(std::size_t idx, bool type_check = true) const;
 		std::uint64_t stack_get_uint(std::size_t idx, bool type_check = true) const;
 		std::string stack_get_string(std::size_t idx, bool type_check = true) const;
+		void* stack_get_ptr(std::size_t idx, bool type_check = true) const;
 		// push a new value onto the stack
 		void stack_push_bool(bool b) const;
 		void stack_push_double(double d) const;
@@ -81,6 +82,14 @@ namespace tz::lua
 		void stack_push_int(std::int64_t i) const;
 		void stack_push_uint(std::uint64_t u) const;
 		void stack_push_string(std::string_view sv) const;
+		// light user data
+		void stack_push_ptr(void* ptr) const;
+		template<typename T>
+		void stack_push_ref(T& t) const
+		{
+			stack_push_ptr(&t);
+		}
+
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;

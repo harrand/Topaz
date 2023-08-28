@@ -280,6 +280,21 @@ namespace tz::lua
 		}
 	}
 
+	void* state::stack_get_ptr(std::size_t idx, bool type_check) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(lua_islightuserdata(s, idx) || !type_check)
+		{
+			return lua_touserdata(s, idx);
+		}
+		else
+		{
+			std::string stackdata = this->collect_stack();
+			tz::error("Lua stack entry %zu requested as `ptr (light userdata)`, type error. Stack:\n%s", idx, stackdata.c_str());
+			return nullptr;
+		}
+	}
+
 	void state::stack_push_bool(bool b) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
@@ -311,6 +326,12 @@ namespace tz::lua
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
 		lua_pushlstring(s, sv.data(), sv.size());
+	}
+
+	void state::stack_push_ptr(void* ptr) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_pushlightuserdata(s, ptr);
 	}
 
 	std::string state::collect_stack() const
