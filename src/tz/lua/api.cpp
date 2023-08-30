@@ -37,10 +37,19 @@ namespace tz::lua
 	LUA_END
 
 	LUA_BEGIN(print)
+		auto st = reinterpret_cast<lua_State*>(s);
 		int nargs = state.stack_size();
 		for(int i = 1; i <= nargs; i++)
 		{
 			std::string msg = state.stack_get_string(i, false);
+			if(msg.empty())
+			{
+				lua_getglobal(st, "tostring");
+				lua_pushvalue(st, i);
+				lua_pcall(st, 1, 1, 0);
+				msg = state.stack_get_string(-1);
+				lua_pop(st, 1);
+			}
 			tz::dbgui::add_to_lua_log(msg);
 		}
 		tz::dbgui::add_to_lua_log("\n");
