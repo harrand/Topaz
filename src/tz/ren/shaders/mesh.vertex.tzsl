@@ -58,7 +58,7 @@ mat4 get_object_transform(object_t obj)
 void main()
 {
 	vertex_t vtx = vertices.data[in::vertex_id];
-	object_t obj = objects.data[in::draw_id];	
+	object_t obj = objects.data[in::draw_id + in::base_instance];	
 	out::position = camera.projection * camera.view * obj.model * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;

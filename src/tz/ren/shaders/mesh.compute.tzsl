@@ -28,15 +28,22 @@ resource(id = 1) const buffer draw_list_buffer
 void main()
 {
 	uint draw_count = draw_list.draw_count;
+	uint skip_count = 0;
 	for(uint i = 0; i < draw_count; i++)
 	{
 		mesh_locator loc = draw_list.mesh_locs[i];
-		draw_buffer.commands[i] = tz::draw::DrawIndexedIndirectCommand::new();
-		draw_buffer.commands[i].index_count = loc.index_count;
-		draw_buffer.commands[i].instance_count = 1;
-		draw_buffer.commands[i].first_index = loc.index_offset;
-		draw_buffer.commands[i].vertex_offset = int(loc.max_index_value);
-		draw_buffer.commands[i].first_instance = 0;
+		// discard empty draws.
+		if(loc.index_count == 0)
+		{
+			skip_count++;
+			continue;
+		}
+		draw_buffer.commands[i - skip_count] = tz::draw::DrawIndexedIndirectCommand::new();
+		draw_buffer.commands[i - skip_count].index_count = loc.index_count;
+		draw_buffer.commands[i - skip_count].instance_count = 1;
+		draw_buffer.commands[i - skip_count].first_index = loc.index_offset;
+		draw_buffer.commands[i - skip_count].vertex_offset = int(loc.max_index_value);
+		draw_buffer.commands[i - skip_count].first_instance = skip_count;
 	}
-	draw_buffer.count = draw_count;
+	draw_buffer.count = draw_count - skip_count;
 }
