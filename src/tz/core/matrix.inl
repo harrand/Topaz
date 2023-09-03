@@ -1,4 +1,5 @@
 #include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #if TOPAZ_DEBUG
 #include <cstdio>
@@ -126,6 +127,7 @@ namespace tz
 	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator*=(T scalar)
 	{
+		TZ_PROFZONE("Matrix - Scalar Multiply", 0xFF0000AA);
 		for(std::size_t i = 0; i < R; i++)
 		{
 			for(std::size_t j = 0; j < C; j++)
@@ -139,6 +141,7 @@ namespace tz
 	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C>& matrix<T, R, C>::operator*=(const matrix<T, R, C>& mat)
 	{
+		TZ_PROFZONE("Matrix - Matrix Multiply", 0xFF0000AA);
 		matrix<T, R, C> m = *this;
 		for(std::size_t i = 0; i < R; i++)
 		{
@@ -174,6 +177,7 @@ namespace tz
 	template<tz::number T, std::size_t R, std::size_t C>
 	tz::vector<T, R> matrix<T, R, C>::operator*(const tz::vector<T, C>& vec) const
 	{
+		TZ_PROFZONE("Matrix - Vector Multiply", 0xFF0000AA);
 		tz::vector<T, R> ret;
 		for(std::size_t i = 0; i < R; i++)
 		{
@@ -213,6 +217,7 @@ namespace tz
 	template<tz::number T, std::size_t R, std::size_t C>
 	matrix<T, R, C> matrix<T, R, C>::inverse() const
 	{
+		TZ_PROFZONE("Matrix - Inverse", 0xFF0000AA);
 		// Create copy of the current matrix to work with.
 		matrix<T, R, C> mat = matrix<T, R, C>::identity();
 		// TODO: Replace with Jacobi's Method.
@@ -362,6 +367,7 @@ namespace tz
 	//template<std::size_t X, std::size_t Y, typename std::enable_if_t<X == Y>>
 	matrix<T, R, C> matrix<T, R, C>::transpose() const
 	{
+		TZ_PROFZONE("Matrix - Transpose", 0xFF0000AA);
 		matrix<T, R, C> m = *this;
 		for(std::size_t i = 0; i < R; i++)
 		{

@@ -1,4 +1,5 @@
 #include "tz/core/data/quat.hpp"
+#include "tz/core/profile.hpp"
 
 namespace tz
 {
@@ -7,6 +8,7 @@ namespace tz
 
 	tz::mat4 quat::matrix() const
 	{
+		TZ_PROFZONE("Quaternion - Generate Matrix", 0xFF0000AA);
 		tz::mat4 rot = tz::mat4::identity();
 		rot(0, 0) = 1.0f - (2 * this->operator[](1) * this->operator[](1)) - (2 * this->operator[](2) * this->operator[](2));
 		rot(1, 0) = (2 * this->operator[](0) * this->operator[](1)) + (2 * this->operator[](2) * this->operator[](3));
@@ -23,6 +25,7 @@ namespace tz
 
 	void quat::combine(const quat& rhs)
 	{
+		TZ_PROFZONE("Quaternion - Combine", 0xFF0000AA);
 		*this = rhs * (*this);
 	}
 
@@ -35,6 +38,7 @@ namespace tz
 
 	tz::vec3 quat::rotate(tz::vec3 position) const
 	{
+		TZ_PROFZONE("Quaternion - Rotate Vec3", 0xFF0000AA);
 		tz::vec3 uv = tz::cross(this->swizzle<0, 1, 2>(), position);
 		tz::vec3 uuv = tz::cross(this->swizzle<0, 1, 2>(), uv);
 		return position + ((uv * this->operator[](3)) + uuv) * 2.0f;
@@ -42,6 +46,7 @@ namespace tz
 
 	void quat::normalise()
 	{
+		TZ_PROFZONE("Quaternion - Normalise", 0xFF0000AA);
 		float l = this->length();
 		if(l == 0.0f)
 		{
@@ -62,6 +67,7 @@ namespace tz
 
 	quat quat::slerp(const quat& rhs, float factor) const
 	{
+		TZ_PROFZONE("Quaternion - Slerp", 0xFF0000AA);
 		float cos_theta = this->dot(rhs);
 
 		if (cos_theta < 0.0f)
@@ -101,6 +107,7 @@ namespace tz
 
 	quat& quat::operator*=(const quat& rhs)
 	{
+		TZ_PROFZONE("Quaternion - Multiply", 0xFF0000AA);
 		quat& lhs = *this;
 		quat result = quat::zero();
 

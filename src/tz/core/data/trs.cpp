@@ -5,6 +5,7 @@ namespace tz
 {
 	trs trs::lerp(const trs& rhs, float factor) const
 	{
+		TZ_PROFZONE("TRS - Lerp", 0xFF0000AA);
 		trs ret;
 		ret.translate = this->translate + ((rhs.translate - this->translate) * factor);
 		ret.rotate = this->rotate.slerp(rhs.rotate, factor);
@@ -14,11 +15,13 @@ namespace tz
 
 	tz::mat4 trs::matrix() const
 	{
+		TZ_PROFZONE("TRS - Generate Matrix", 0xFF0000AA);
 		return tz::translate(this->translate) * this->rotate.matrix() * tz::scale(this->scale);
 	}
 
 	trs& trs::combine(const trs& t)
 	{
+		TZ_PROFZONE("TRS - Combine", 0xFF0000AA);
 		tz::vec3 rotated = t.rotate.rotate(this->translate);
 		tz::vec3 scaled = t.scale * rotated;
 		this->translate = t.translate + scaled;

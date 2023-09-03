@@ -1,4 +1,5 @@
 #include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include <utility>
 #include <cmath>
 #include <algorithm>
@@ -141,6 +142,7 @@ namespace tz
 	template<tz::number T, std::size_t S>
 	T vector<T, S>::dot(const vector<T, S>& rhs) const
 	{
+		TZ_PROFZONE("Vector - Dot Product", 0xFF0000AA);
 		T sum = T();
 		for(std::size_t i = 0; i < S; i++)
 		{
@@ -152,6 +154,7 @@ namespace tz
 	template<tz::number T, std::size_t S>
 	T vector<T, S>::length() const
 	{
+		TZ_PROFZONE("Vector - Length", 0xFF0000AA);
 		T sum_squares = T();
 		for(std::size_t i = 0; i < S; i++)
 		{
@@ -163,6 +166,7 @@ namespace tz
 	template<tz::number T, std::size_t S>
 	void vector<T, S>::normalise()
 	{
+		TZ_PROFZONE("Vector - Normalise", 0xFF0000AA);
 		T l = this->length();
 		if(l == T{}) [[unlikely]]
 		{
@@ -226,6 +230,7 @@ namespace tz
 	template<tz::number T>
 	vector<T, 3> cross(const vector<T, 3>& lhs, const vector<T, 3>& rhs)
 	{
+		TZ_PROFZONE("Vector - Cross", 0xFF0000AA);
 		vector<T, 3> ret;
 		//cx = aybz − azby
 		ret[0] = (lhs[1] * rhs[2]) - (lhs[2] * rhs[1]);
