@@ -70,6 +70,47 @@ void combine_hierarchy_into_node()
 	tz::assert(lhs.get_node(rhsroot + offset).parent == lhschild);
 }
 
+void export_hierarchy()
+{
+	tz::transform_hierarchy<std::string> lhs;
+	unsigned int lhsroot = lhs.add_node({.translate = {10.0f, 0.0f, 0.0f}}, "LHS ROOT");
+	unsigned int lhschild = lhs.add_node({}, "LHS CHILD", lhsroot);
+	unsigned int lhsgrandchild = lhs.add_node({}, "LHS GRANDCHILD", lhschild);
+	unsigned int lhsgreatgrandchild = lhs.add_node({}, "LHS GREAT-GRANDCHILD", lhsgrandchild);
+	tz::assert(lhs.size() == 4);
+
+	tz::transform_hierarchy<std::string> exported = lhs.export_node(lhschild);
+	tz::assert(exported.size() == 3);
+	tz::assert(exported.get_root_node_ids().size() == 1);
+	unsigned int exported_root = exported.get_root_node_ids().front();
+	tz::assert(exported.get_node(exported_root).data == "LHS CHILD");
+	tz::assert(exported.get_node(exported_root).children.size() == 1);
+	auto grandchild_new_idx = exported.get_node(exported_root).children.front();
+	tz::assert(exported.get_node(grandchild_new_idx).data == "LHS GRANDCHILD");
+	tz::assert(exported.get_node(grandchild_new_idx).children.size() == 1);
+	auto greatgrandchild_new_idx = exported.get_node(grandchild_new_idx).children.front();
+	tz::assert(exported.get_node(greatgrandchild_new_idx).data == "LHS GREAT-GRANDCHILD");
+}
+
+void iterate_nodes()
+{
+	std::size_t count = 0;
+
+	tz::transform_hierarchy<std::string> lhs;
+	unsigned int lhsroot = lhs.add_node({.translate = {10.0f, 0.0f, 0.0f}}, "LHS ROOT");
+	unsigned int lhschild = lhs.add_node({}, "LHS CHILD", lhsroot);
+	unsigned int lhsgrandchild = lhs.add_node({}, "LHS GRANDCHILD", lhschild);
+	unsigned int lhsgreatgrandchild = lhs.add_node({}, "LHS GREAT-GRANDCHILD", lhsgrandchild);
+	tz::assert(lhs.size() == 4);
+
+	lhs.iterate_nodes([&count](unsigned int id)
+	{
+		count++;
+		(void)id;
+	});
+	tz::assert(count >= lhs.size());
+}
+
 int main()
 {
 	empty_hierarchy_tests();
@@ -77,4 +118,6 @@ int main()
 	parent_moves_child();
 	combine_hierarchies();
 	combine_hierarchy_into_node();
+	export_hierarchy();
+	iterate_nodes();
 }

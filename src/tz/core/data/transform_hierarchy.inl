@@ -1,4 +1,5 @@
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include <type_traits>
 
@@ -14,6 +15,12 @@ namespace tz
 	std::size_t transform_hierarchy<T>::size() const
 	{
 		return this->nodes.size();
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::clear()
+	{
+		this->nodes.clear();
 	}
 
 	template<typename T>
@@ -95,6 +102,31 @@ namespace tz
 	}
 
 	template<typename T>
+	void expand_children(const transform_hierarchy<T>& src, transform_hierarchy<T>& hier, unsigned int src_id, unsigned int node_id)
+	{
+		const auto& src_node = src.get_node(src_id);
+		const auto& node = hier.get_node(node_id);
+		for(std::size_t i = 0; i < src_node.children.size(); i++)
+		{
+			// get the children of the source node. make a copy for the dest node and recursce on children.
+			unsigned int src_child = src_node.children[i];
+			const auto& src_child_node = src.get_node(src_child);
+			unsigned int child = hier.add_node(src_child_node.local_transform, src_child_node.data, node_id);
+			expand_children(src, hier, src_child, child);
+		}
+	}
+
+	template<typename T>
+	transform_hierarchy<T> transform_hierarchy<T>::export_node(unsigned int id) const
+	{
+		auto node = this->get_node(id);
+		transform_hierarchy<T> ret;
+		unsigned int new_root = ret.add_node(this->get_global_transform(id), node.data);
+		expand_children<T>(*this, ret, id, new_root);
+		return ret;
+	}
+
+	template<typename T>
 	const transform_node<T>& transform_hierarchy<T>::get_node(unsigned int id) const
 	{
 		return this->nodes[id];
@@ -113,6 +145,49 @@ namespace tz
 			p = pn.parent;
 		}
 		return global;
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::iterate_children(unsigned int id, tz::action<unsigned int> auto callback) const
+	{
+		const auto& node = this->get_node(id);
+		for(unsigned int child : node.children)
+		{
+			callback(child);
+		}
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::iterate_descendants(unsigned int id, tz::action<unsigned int> auto callback) const
+	{
+		const auto& node = this->get_node(id);
+		for(unsigned int child : node.children)
+		{
+			callback(child);
+			this->iterate_descendants(child, callback);
+		}
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::iterate_ancestors(unsigned int id, tz::action<unsigned int> auto callback) const
+	{
+		auto maybe_parent = this->get_node(id).parent;
+		if(maybe_parent.has_value())
+		{
+			callback(maybe_parent.value());
+			this->iterate_ancestors(maybe_parent.value(), callback);
+		}
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::iterate_nodes(tz::action<unsigned int> auto callback) const
+	{
+		auto root_node_ids = this->get_root_node_ids();
+		for(unsigned int root_node : root_node_ids)
+		{
+			callback(root_node);
+			this->iterate_descendants(root_node, callback);
+		}
 	}
 
 	template<typename T>
@@ -137,10 +212,13 @@ namespace tz
 			}
 			tz::mat4 local = node.local_transform.matrix();
 			tz::mat4 global = this->get_global_transform(node_id).matrix();
-			ImGui::Text("Local Transform");
-			tz::dbgui_model(local);
-			ImGui::Text("Global Transform");
-			tz::dbgui_model(global);
+			if(local != tz::mat4::identity())
+			{
+				ImGui::Text("Local Transform");
+				tz::dbgui_model(local);
+				ImGui::Text("Global Transform");
+				tz::dbgui_model(global);
+			}
 			for(unsigned int child_idx : node.children)
 			{
 				this->dbgui_node(child_idx);
