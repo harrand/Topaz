@@ -73,7 +73,7 @@ namespace tz::ren
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
-		float pad0[3];
+		float pad0[3] = {};
 	};
 
 	/**

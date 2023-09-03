@@ -251,8 +251,6 @@ namespace tz::ren
 
 	void mesh_renderer::compute_pass_t::dbgui()
 	{
-		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(this->handle);
-
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "DRAW LIST");
 		auto draw_list = this->get_draw_list_meshes();
