@@ -31,6 +31,10 @@ add_tz_test(NAME tz_text_test
 	TEXT_FILES core/test_file.txt
 	)
 
+add_tz_test(NAME tz_transform_hierarchy_test
+	SOURCE_FILES transform_hierarchy_test.cpp
+	)
+
 add_tz_test(NAME tz_types_test
 	SOURCE_FILES types_test.cpp
 	)
