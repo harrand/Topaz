@@ -129,6 +129,7 @@ namespace tz
 	template<typename T>
 	const transform_node<T>& transform_hierarchy<T>::get_node(unsigned int id) const
 	{
+		tz::assert(id < this->nodes.size(), "Invalid node id %u", id);
 		return this->nodes[id];
 	}
 
