@@ -253,6 +253,8 @@ add_library(topaz STATIC
 	# tz::ren
 	src/tz/ren/anim.cpp
 	src/tz/ren/anim.hpp
+	src/tz/ren/mesh.cpp
+	src/tz/ren/mesh.hpp
 	)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
@@ -322,6 +324,9 @@ add_shader(
 		src/tz/ren/shaders/anim.compute.tzsl
 		src/tz/ren/shaders/anim.vertex.tzsl
 		src/tz/ren/shaders/anim.fragment.tzsl
+		src/tz/ren/shaders/mesh.compute.tzsl
+		src/tz/ren/shaders/mesh.vertex.tzsl
+		src/tz/ren/shaders/mesh.fragment.tzsl
 	)
 
 add_subdirectory(demo)

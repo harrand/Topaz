@@ -1,0 +1,42 @@
+shader(type = compute);
+kernel(1, 1, 1);
+
+import <draw>
+import <debug>
+
+resource(id = 0) buffer draw_indirect_buffer
+{
+	uint count;
+	tz::draw::DrawIndexedIndirectCommand commands[];
+} draw_buffer;
+
+struct mesh_locator
+{
+	uint vertex_offset;
+	uint vertex_count;
+	uint index_offset;
+	uint index_count;
+	uint max_index_value;
+};
+
+resource(id = 1) const buffer draw_list_buffer
+{
+	uint draw_count;
+	mesh_locator mesh_locs[];
+} draw_list;
+
+void main()
+{
+	uint draw_count = draw_list.draw_count;
+	for(uint i = 0; i < draw_count; i++)
+	{
+		mesh_locator loc = draw_list.mesh_locs[i];
+		draw_buffer.commands[i] = tz::draw::DrawIndexedIndirectCommand::new();
+		draw_buffer.commands[i].index_count = loc.index_count;
+		draw_buffer.commands[i].instance_count = 1;
+		draw_buffer.commands[i].first_index = loc.index_offset;
+		draw_buffer.commands[i].vertex_offset = int(loc.max_index_value);
+		draw_buffer.commands[i].first_instance = 0;
+	}
+	draw_buffer.count = draw_count;
+}
