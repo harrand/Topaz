@@ -13,9 +13,9 @@
 #include "tz/core/profile.hpp"
 #include <filesystem>
 
-#include ImportedShaderHeader(mesh, compute)
-#include ImportedShaderHeader(mesh, vertex)
-#include ImportedShaderHeader(mesh, fragment)
+#include ImportedShaderHeader(anim, compute)
+#include ImportedShaderHeader(anim, vertex)
+#include ImportedShaderHeader(anim, fragment)
 
 namespace tz::ren
 {
@@ -206,7 +206,7 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("Anim Renderer - Create Compute Pass", 0xFF44DD44);
 		tz::gl::renderer_info cinfo;
-		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(mesh, compute));
+		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(anim, compute));
 		struct draw_indirect_buffer_data
 		{
 			std::uint32_t count;
@@ -359,8 +359,8 @@ namespace tz::ren
 		// we have a draw buffer which we write into upon render.
 		tz::gl::renderer_info rinfo;
 		// todo: shaders
-		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(mesh, vertex));
-		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(mesh, fragment));
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(anim, vertex));
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(anim, fragment));
 		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
 		// index buffer (initially contains a single index. empty buffers should be a thing aaaa)
 		this->index_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
