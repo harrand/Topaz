@@ -65,8 +65,8 @@ namespace tz::ren
 		detail::texture_handle texture = tz::nullhand;
 	};
 
-	constexpr unsigned int mesh_renderer_max_tex_count = 2;
-	constexpr unsigned int mesh_renderer_max_joint4_count = 1;
+	constexpr unsigned int anim_renderer_max_tex_count = 2;
+	constexpr unsigned int anim_renderer_max_joint4_count = 1;
 
 	// represents the data of an object (drawable).
 
@@ -81,7 +81,7 @@ namespace tz::ren
 		tz::mat4 inverse_bind_matrix = tz::mat4::identity();
 		tz::mat4 global_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
-		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
+		std::array<texture_locator, anim_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);
 		float pad0[3] = {};
 	};
@@ -91,13 +91,13 @@ namespace tz::ren
 	* todo: document
 	* a two-pass (compute gpu command generation => render) mesh renderer. pbr?
 	*/
-	class mesh_renderer
+	class anim_renderer
 	{
 		struct object_tag_t{};
 	public:
-		mesh_renderer(unsigned int total_textures = 128);
-		using vertex_t = vertex<mesh_renderer_max_tex_count, mesh_renderer_max_joint4_count>;
-		using mesh_t = mesh<mesh_renderer_max_tex_count>;
+		anim_renderer(unsigned int total_textures = 128);
+		using vertex_t = vertex<anim_renderer_max_tex_count, anim_renderer_max_joint4_count>;
+		using mesh_t = mesh<anim_renderer_max_tex_count>;
 		using mesh_handle = tz::handle<mesh_t>;
 		using object_handle = tz::handle<object_tag_t>;
 		using texture_handle = detail::texture_handle;
@@ -182,7 +182,7 @@ namespace tz::ren
 		void expand_object_capacity(std::size_t extra_count);
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
-		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
+		mesh_locator add_mesh_impl(const anim_renderer::mesh_t& m);
 		void dbgui_impl();
 		stored_assets add_gltf_impl(const tz::io::gltf& gltf);
 		void impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_textures, std::uint32_t parent = static_cast<std::uint32_t>(-1));

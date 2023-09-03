@@ -1,4 +1,4 @@
-#include "tz/ren/mesh.hpp"
+#include "tz/ren/anim.hpp"
 #include "tz/gl/api/schedule.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/draw.hpp"
@@ -19,7 +19,7 @@
 
 namespace tz::ren
 {
-	/* mesh_renderer implementation details
+	/* anim_renderer implementation details
 	   ====================================
 
 	   - there are two large buffers, one containing vertices, and the other indices.
@@ -82,30 +82,30 @@ namespace tz::ren
 		tz::mat4 projection = tz::perspective(3.14159f * 0.5f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 	};
 
-	mesh_renderer::mesh_renderer(unsigned int total_textures):
+	anim_renderer::anim_renderer(unsigned int total_textures):
 	compute_pass(),
 	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, total_textures)
 	{
 		this->add_mesh({});
 	}
 
-	mesh_renderer::mesh_handle empty_mesh()
+	anim_renderer::mesh_handle empty_mesh()
 	{
 		return static_cast<tz::hanval>(0);
 	}
 
-	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
+	anim_renderer::mesh_handle anim_renderer::add_mesh(anim_renderer::mesh_t m)
 	{
-		TZ_PROFZONE("Mesh Renderer - Add Mesh", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Add Mesh", 0xFF44DD44);
 		std::size_t hanval = this->render_pass.meshes.size();
 		mesh_locator locator = this->add_mesh_impl(m);
 		this->render_pass.meshes.push_back(locator);
 		return static_cast<tz::hanval>(hanval);
 	}
 
-	mesh_renderer::object_handle mesh_renderer::add_object(mesh_handle m, object_data data, object_impl_data impl)
+	anim_renderer::object_handle anim_renderer::add_object(mesh_handle m, object_data data, object_impl_data impl)
 	{
-		TZ_PROFZONE("Mesh Renderer - Add Object", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Add Object", 0xFF44DD44);
 		std::size_t hanval = this->draw_count();
 		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(m));
 		// draw list at this position is now equal to the associated mesh_locator.
@@ -125,9 +125,9 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
-	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)
+	anim_renderer::texture_handle anim_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)
 	{
-		TZ_PROFZONE("Mesh Renderer - Add Texture", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Add Texture", 0xFF44DD44);
 		#if TZ_DEBUG
 			std::size_t sz = tz::gl::pixel_size_bytes(tz::gl::image_format::RGBA32) * dimensions[0] * dimensions[1];
 			tz::assert(image_data.size_bytes() == sz, "Unexpected image data length. Expected %zuB, but was %zuB", sz, image_data.size_bytes());
@@ -146,24 +146,24 @@ namespace tz::ren
 		return static_cast<tz::hanval>(this->render_pass.texture_cursor++);
 	}
 
-	mesh_renderer::stored_assets mesh_renderer::add_gltf(const tz::io::gltf& gltf)
+	anim_renderer::stored_assets anim_renderer::add_gltf(const tz::io::gltf& gltf)
 	{
-		TZ_PROFZONE("Mesh Renderer - Add GLTF", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Add GLTF", 0xFF44DD44);
 		this->animation.gltfs.push_back(gltf);
 		return this->add_gltf_impl(gltf);
 	}
 
-	std::size_t mesh_renderer::mesh_count() const
+	std::size_t anim_renderer::mesh_count() const
 	{
 		return this->render_pass.meshes.size();
 	}
 
-	std::size_t mesh_renderer::draw_count() const
+	std::size_t anim_renderer::draw_count() const
 	{
 		return this->compute_pass.get_draw_count();
 	}
 
-	void mesh_renderer::clear()
+	void anim_renderer::clear()
 	{
 		// does not change capacities of any buffers.
 		this->clear_draws();
@@ -173,12 +173,12 @@ namespace tz::ren
 		this->render_pass.texture_cursor = 0;
 	}
 
-	void mesh_renderer::clear_draws()
+	void anim_renderer::clear_draws()
 	{
 		this->compute_pass.set_draw_count(0);
 	}
 
-	void mesh_renderer::append_to_render_graph()
+	void anim_renderer::append_to_render_graph()
 	{
 		auto hanval_ch = static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->compute_pass.handle));
 		auto hanval_rh = static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->render_pass.handle));
@@ -189,22 +189,22 @@ namespace tz::ren
 		tz::gl::get_device().render_graph().add_dependencies(this->render_pass.handle, this->compute_pass.handle);
 	}
 
-	void mesh_renderer::update(float dt)
+	void anim_renderer::update(float dt)
 	{
-		TZ_PROFZONE("Mesh Renderer - Update", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Update", 0xFF44DD44);
 		this->update_animated_nodes(dt);
 		this->compute_global_transforms();
 	}
 
-	void mesh_renderer::dbgui()
+	void anim_renderer::dbgui()
 	{
-		TZ_PROFZONE("Mesh Renderer - Dbgui", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Dbgui", 0xFF44DD44);
 		this->dbgui_impl();
 	}
 
-	mesh_renderer::compute_pass_t::compute_pass_t()
+	anim_renderer::compute_pass_t::compute_pass_t()
 	{
-		TZ_PROFZONE("Mesh Renderer - Create Compute Pass", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Create Compute Pass", 0xFF44DD44);
 		tz::gl::renderer_info cinfo;
 		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(mesh, compute));
 		struct draw_indirect_buffer_data
@@ -232,16 +232,16 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
-		cinfo.debug_name("Mesh Renderer - Compute Pass");
+		cinfo.debug_name("Anim Renderer - Compute Pass");
 		this->handle = tz::gl::get_device().create_renderer(cinfo);
 	}
 
-	std::span<const mesh_locator> mesh_renderer::compute_pass_t::get_draw_list_meshes() const
+	std::span<const mesh_locator> anim_renderer::compute_pass_t::get_draw_list_meshes() const
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<const draw_list>().front().meshes;
 	}
 
-	std::span<mesh_locator> mesh_renderer::compute_pass_t::get_draw_list_meshes()
+	std::span<mesh_locator> anim_renderer::compute_pass_t::get_draw_list_meshes()
 	{
 		std::span<std::byte> data = tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data();
 		// draw list starts with a uint32_t, rest are draw data.
@@ -249,12 +249,12 @@ namespace tz::ren
 		return {reinterpret_cast<mesh_locator*>(data.data()), data.size_bytes() / sizeof(mesh_locator)};
 	}
 
-	std::uint32_t mesh_renderer::compute_pass_t::get_draw_count() const
+	std::uint32_t anim_renderer::compute_pass_t::get_draw_count() const
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().draw_count;
 	}
 
-	void mesh_renderer::compute_pass_t::set_draw_count(std::uint32_t new_draw_count)
+	void anim_renderer::compute_pass_t::set_draw_count(std::uint32_t new_draw_count)
 	{
 		tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().draw_count = new_draw_count;
 	}
@@ -273,7 +273,7 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer::compute_pass_t::dbgui()
+	void anim_renderer::compute_pass_t::dbgui()
 	{
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "DRAW LIST");
@@ -323,9 +323,9 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer::compute_pass_t::increase_draw_list_capacity(std::size_t count)
+	void anim_renderer::compute_pass_t::increase_draw_list_capacity(std::size_t count)
 	{
-		TZ_PROFZONE("Mesh Renderer - Draw List Append", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Draw List Append", 0xFF44DD44);
 		auto& ren = tz::gl::get_device().get_renderer(this->handle);
 		tz::gl::RendererEditBuilder builder{};
 		{
@@ -353,9 +353,9 @@ namespace tz::ren
 		ren.edit(builder.build());
 	}
 
-	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
+	anim_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
 	{
-		TZ_PROFZONE("Mesh Renderer - Render Pass Create", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Render Pass Create", 0xFF44DD44);
 		// we have a draw buffer which we write into upon render.
 		tz::gl::renderer_info rinfo;
 		// todo: shaders
@@ -426,11 +426,11 @@ namespace tz::ren
 		rinfo.state().graphics.draw_buffer = this->draw_indirect_buffer_ref;
 		rinfo.state().graphics.index_buffer = this->index_buffer;
 		// create renderer.
-		rinfo.debug_name("Mesh Renderer - Render Pass");
+		rinfo.debug_name("Anim Renderer - Render Pass");
 		this->handle = tz::gl::get_device().create_renderer(rinfo);
 	}
 
-	void mesh_renderer::render_pass_t::dbgui()
+	void anim_renderer::render_pass_t::dbgui()
 	{
 		tz::gl::renderer& ren = tz::gl::get_device().get_renderer(this->handle);
 
@@ -445,13 +445,13 @@ namespace tz::ren
 			index_count += loc.index_count;
 		}
 
-		std::size_t vertex_capacity = ren.get_resource(this->vertex_buffer)->data_as<const mesh_renderer::vertex_t>().size();
+		std::size_t vertex_capacity = ren.get_resource(this->vertex_buffer)->data_as<const anim_renderer::vertex_t>().size();
 		std::size_t index_capacity = ren.get_resource(this->index_buffer)->data_as<const index>().size();
 
 		ImGui::Text("Vertex Usage: %zu/%zu |", vertex_count, vertex_capacity); ImGui::SameLine();
-		tz::dbgui::text_memory(vertex_count * sizeof(mesh_renderer::vertex_t)); ImGui::SameLine();
+		tz::dbgui::text_memory(vertex_count * sizeof(anim_renderer::vertex_t)); ImGui::SameLine();
 		ImGui::Text("/"); ImGui::SameLine();
-		tz::dbgui::text_memory(vertex_capacity * sizeof(mesh_renderer::vertex_t)); ImGui::SameLine();
+		tz::dbgui::text_memory(vertex_capacity * sizeof(anim_renderer::vertex_t)); ImGui::SameLine();
 		ImGui::Text(" - %.2f%%", (vertex_count * 100.0f) / vertex_capacity);
 
 		ImGui::Text("Index Usage: %zu/%zu |", index_count, index_capacity); ImGui::SameLine();
@@ -513,7 +513,7 @@ namespace tz::ren
 
 				ImGui::Separator();
 				ImGui::Text("Textures");
-				for(std::size_t i = 0; i < mesh_renderer_max_tex_count; i++)
+				for(std::size_t i = 0; i < anim_renderer_max_tex_count; i++)
 				{
 					ImGui::Text("[%zu] =", i);
 					ImGui::SameLine();
@@ -583,34 +583,34 @@ namespace tz::ren
 		}
 	}
 
-	std::span<const object_data> mesh_renderer::render_pass_t::get_object_datas() const
+	std::span<const object_data> anim_renderer::render_pass_t::get_object_datas() const
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<const object_data>();
 	}
 
-	std::span<object_data> mesh_renderer::render_pass_t::get_object_datas()
+	std::span<object_data> anim_renderer::render_pass_t::get_object_datas()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->object_buffer)->data_as<object_data>();
 	}
 
-	std::span<std::uint32_t> mesh_renderer::render_pass_t::get_joint_id_to_node_ids()
+	std::span<std::uint32_t> anim_renderer::render_pass_t::get_joint_id_to_node_ids()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->joint_id_to_node_index)->data_as<std::uint32_t>();
 	}
 
-	std::span<std::uint32_t> mesh_renderer::render_pass_t::get_index_to_object_ids()
+	std::span<std::uint32_t> anim_renderer::render_pass_t::get_index_to_object_ids()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->index_to_object_id_buffer)->data_as<std::uint32_t>();
 	}
 
-	std::size_t mesh_renderer::render_pass_t::object_list_capacity() const
+	std::size_t anim_renderer::render_pass_t::object_list_capacity() const
 	{
 		return this->get_object_datas().size();
 	}
 
-	void mesh_renderer::render_pass_t::increase_object_list_capacity(std::size_t count)
+	void anim_renderer::render_pass_t::increase_object_list_capacity(std::size_t count)
 	{
-		TZ_PROFZONE("Mesh Renderer - Object List Append", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Object List Append", 0xFF44DD44);
 		tz::gl::RendererEditBuilder builder;
 		std::size_t prev_object_count = 0;
 		auto& ren = tz::gl::get_device().get_renderer(this->handle);
@@ -657,9 +657,9 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer::expand_object_capacity(std::size_t extra_count)
+	void anim_renderer::expand_object_capacity(std::size_t extra_count)
 	{
-		TZ_PROFZONE("Mesh Renderer - Expand Capacity", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Expand Capacity", 0xFF44DD44);
 		// we ran out of space.
 		// resize compute's draw list and render's object buffer.
 		// add new slots equal to current count (i.e double capacity)
@@ -672,7 +672,7 @@ namespace tz::ren
 
 	}
 
-	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
+	std::optional<std::uint32_t> anim_renderer::try_find_index_section(std::size_t index_count) const
 	{
 		// Sort mesh locators by vertex offset
         std::vector<mesh_locator> sorted_meshes = this->render_pass.meshes;
@@ -706,7 +706,7 @@ namespace tz::ren
 		return std::nullopt;
 	}
 
-	std::optional<std::uint32_t> mesh_renderer::try_find_vertex_section(std::size_t vertex_count) const
+	std::optional<std::uint32_t> anim_renderer::try_find_vertex_section(std::size_t vertex_count) const
 	{
 		// Sort mesh locators by vertex offset
         std::vector<mesh_locator> sorted_meshes = this->render_pass.meshes;
@@ -730,7 +730,7 @@ namespace tz::ren
 
         // Check for space at the end of the buffer
         std::uint32_t last_mesh_end = sorted_meshes.empty() ? 0 : sorted_meshes.back().vertex_offset + sorted_meshes.back().vertex_count;
-		std::size_t total_vertex_count = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.vertex_buffer)->data_as<mesh_renderer::vertex_t>().size();
+		std::size_t total_vertex_count = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.vertex_buffer)->data_as<anim_renderer::vertex_t>().size();
         if (total_vertex_count - last_mesh_end >= vertex_count)
         {
             return last_mesh_end;
@@ -740,7 +740,7 @@ namespace tz::ren
 		return std::nullopt;
 	}
 
-	mesh_locator mesh_renderer::add_mesh_impl(const mesh_renderer::mesh_t& m)
+	mesh_locator anim_renderer::add_mesh_impl(const anim_renderer::mesh_t& m)
 	{
 		if(m.indices.empty() && m.vertices.empty())
 		{
@@ -824,7 +824,7 @@ namespace tz::ren
 
 	// dbgui
 
-	void mesh_renderer::dbgui_impl()
+	void anim_renderer::dbgui_impl()
 	{
 		// before trying to re-understand this, read the explanation of
 		// how the renderer works at the top of this file. seriously.
@@ -928,9 +928,9 @@ namespace tz::ren
 		}
 	}
 
-	mesh_renderer::stored_assets mesh_renderer::add_gltf_impl(const tz::io::gltf& gltf)
+	anim_renderer::stored_assets anim_renderer::add_gltf_impl(const tz::io::gltf& gltf)
 	{
-		mesh_renderer::stored_assets ret;
+		anim_renderer::stored_assets ret;
 		// firstly, add all the meshes in the scene.
 		// todo: only add meshes referenced by the nodes?
 		// each mesh contains zero or more submeshes. for mesh i, gltf_mesh_index_begin[i] represents the index into the flatenned submesh array that the first submesh begins.
@@ -939,7 +939,7 @@ namespace tz::ren
 		std::size_t gltf_submesh_total = 0;
 		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
 		{
-			TZ_PROFZONE("Mesh Renderer - Add GLTF Mesh", 0xFF44DD44);
+			TZ_PROFZONE("Anim Renderer - Add GLTF Mesh", 0xFF44DD44);
 			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
 			gltf_mesh_index_begin.push_back(gltf_submesh_total);
 			gltf_submesh_total += submesh_count;
@@ -971,14 +971,14 @@ namespace tz::ren
 					ret.tangent = vtx.tangent;
 
 					// texcoord a little more troublesome!
-					constexpr std::size_t texcoord_count = std::min(static_cast<int>(mesh_renderer_max_tex_count), tz::io::gltf_max_texcoord_attribs);
+					constexpr std::size_t texcoord_count = std::min(static_cast<int>(anim_renderer_max_tex_count), tz::io::gltf_max_texcoord_attribs);
 					for(std::size_t i = 0; i < texcoord_count; i++)
 					{
 						ret.texcoordn[i] = vtx.texcoordn[i].with_more(0.0f).with_more(0.0f);
 					}
 
 					// similar with weights.
-					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_joint4_count), tz::io::gltf_max_joint_attribs);
+					constexpr std::size_t weight_count = std::min(static_cast<int>(anim_renderer_max_joint4_count), tz::io::gltf_max_joint_attribs);
 					for(std::size_t i = 0; i < weight_count; i++)
 					{
 						ret.joint_indices[i] = vtx.jointn[i] + tz::vec4us::filled(this->get_gltf_node_offset());
@@ -1050,9 +1050,9 @@ namespace tz::ren
 		return ret;
 	}
 
-	void mesh_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, mesh_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::uint32_t parent)
+	void anim_renderer::impl_expand_gltf_node(const tz::io::gltf& gltf, const tz::io::gltf_node& node, anim_renderer::stored_assets& assets, std::span<std::size_t> mesh_submesh_indices, std::span<std::optional<tz::io::gltf_material>> submesh_materials, std::uint32_t parent)
 	{
-		TZ_PROFZONE("Mesh Renderer - Expand GLTF Node", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Expand GLTF Node", 0xFF44DD44);
 		auto nodes = gltf.get_nodes();
 		auto iter = std::find(nodes.begin(), nodes.end(), node);
 		tz::assert(iter != nodes.end());
@@ -1089,7 +1089,7 @@ namespace tz::ren
 			assets.objects.push_back(this->add_object(empty_mesh(), {.parent = parent}, {.model = transform}));
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
-				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
+				std::array<texture_locator, anim_renderer_max_tex_count> bound_textures = {};
 				if(submesh_materials[i].has_value())
 				{
 					bound_textures[0] =
@@ -1112,9 +1112,9 @@ namespace tz::ren
 		}
 	}
 
-	tz::mat4 mesh_renderer::compute_global_transform(std::uint32_t obj_id, std::vector<std::uint32_t>& visited_node_ids) const
+	tz::mat4 anim_renderer::compute_global_transform(std::uint32_t obj_id, std::vector<std::uint32_t>& visited_node_ids) const
 	{
-		TZ_PROFZONE("Mesh Renderer - Compute Global Transform", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Compute Global Transform", 0xFF44DD44);
 		auto& obj = this->render_pass.get_object_datas()[obj_id];
 		const auto& objimpl = this->object_impls[obj_id];
 		if(std::find(visited_node_ids.begin(), visited_node_ids.end(), obj_id) != visited_node_ids.end())
@@ -1129,9 +1129,9 @@ namespace tz::ren
 		return global;
 	}
 
-	void mesh_renderer::compute_global_transforms()
+	void anim_renderer::compute_global_transforms()
 	{
-		TZ_PROFZONE("Mesh Renderer - Compute All Transforms", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Compute All Transforms", 0xFF44DD44);
 		auto objs = this->render_pass.get_object_datas();
 		std::vector<std::uint32_t> visited_node_ids = {};
 		// this can get pretty costly
@@ -1142,9 +1142,9 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer::process_skins()
+	void anim_renderer::process_skins()
 	{
-		TZ_PROFZONE("Mesh Renderer - Process Skins", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Process Skins", 0xFF44DD44);
 		for(const tz::io::gltf_skin& skin : this->skins_to_process)
 		{
 			for(std::size_t i = 0; i < skin.joints.size(); i++)
@@ -1159,7 +1159,7 @@ namespace tz::ren
 		this->skins_to_process.clear();
 	}
 
-	std::size_t mesh_renderer::get_gltf_node_offset() const
+	std::size_t anim_renderer::get_gltf_node_offset() const
 	{
 		if(this->gltf_metas.empty())
 		{
@@ -1168,7 +1168,7 @@ namespace tz::ren
 		return this->get_gltf_node_offset(this->gltf_metas.size() - 1);
 	}
 
-	std::size_t mesh_renderer::get_gltf_node_offset(std::size_t gltf_cursor) const
+	std::size_t anim_renderer::get_gltf_node_offset(std::size_t gltf_cursor) const
 	{
 		std::size_t nc = 0;
 		tz::assert(gltf_cursor < this->gltf_metas.size());
@@ -1179,9 +1179,9 @@ namespace tz::ren
 		return nc;
 	}
 
-	std::pair<std::size_t, std::size_t> mesh_renderer::gltf_animation_data::get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const
+	std::pair<std::size_t, std::size_t> anim_renderer::gltf_animation_data::get_keyframe_indices_at(keyframe_iterator front, keyframe_iterator back) const
 	{
-		TZ_PROFZONE("Mesh Renderer - Keyframe Pair Retrieve", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Keyframe Pair Retrieve", 0xFF44DD44);
 		keyframe_iterator iter = front;
 		while(iter != back && iter->time_point <= this->time)
 		{
@@ -1202,7 +1202,7 @@ namespace tz::ren
 
 	tz::vec4 quat_slerp(const tz::vec4& lhs, const tz::vec4& rhs, float interp)
 	{
-		TZ_PROFZONE("Mesh Renderer - Quaternion Slerp", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Quaternion Slerp", 0xFF44DD44);
 		float cos_theta = lhs.dot(rhs);
 
 		if (cos_theta < 0.0f) {
@@ -1238,9 +1238,9 @@ namespace tz::ren
 		return result.normalised();
 	}
 
-	void mesh_renderer::update_animated_nodes(float dt)
+	void anim_renderer::update_animated_nodes(float dt)
 	{
-		TZ_PROFZONE("Mesh Renderer - Update Animations", 0xFF44DD44);
+		TZ_PROFZONE("Anim Renderer - Update Animations", 0xFF44DD44);
 		this->animation.time += dt * this->animation.speed;
 		if(this->animation.time < 0.0f)
 		{
@@ -1260,10 +1260,10 @@ namespace tz::ren
 					this->animation.time = anim.max_time;
 				}
 			}
-			TZ_PROFZONE("Mesh Renderer - Update Animation", 0xFF44DD44);
+			TZ_PROFZONE("Anim Renderer - Update Animation", 0xFF44DD44);
 			for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
 			{
-				TZ_PROFZONE("Mesh Renderer - Animation Node Update", 0xFF44DD44);
+				TZ_PROFZONE("Anim Renderer - Animation Node Update", 0xFF44DD44);
 				auto offset = this->get_gltf_node_offset(this->animation.gltf_cursor);
 				std::uint32_t object_id = this->render_pass.get_index_to_object_ids()[nid + offset];
 				object_impl_data& objimpl = this->object_impls[object_id];
@@ -1331,7 +1331,7 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer::dbgui_anim()
+	void anim_renderer::dbgui_anim()
 	{
 		if(this->animation.gltfs.empty())
 		{

@@ -5,7 +5,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/io/gltf.hpp"
 
-#include "tz/ren/mesh.hpp"
+#include "tz/ren/anim.hpp"
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -21,9 +21,9 @@ int main()
 	{
 		dbgui_init();
 
-		tz::ren::mesh_renderer mr;
-		tz::ren::mesh_renderer::stored_assets sponza = mr.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb"));
-		tz::ren::mesh_renderer::mesh_t m;
+		tz::ren::anim_renderer mr;
+		tz::ren::anim_renderer::stored_assets sponza = mr.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb"));
+		tz::ren::anim_renderer::mesh_t m;
 		m.indices = {0u, 1u, 2u};
 		m.vertices = 
 		{
@@ -71,7 +71,7 @@ int main()
 			{
 				if(dbgui_data.mesh_renderer_enabled)
 				{
-					if(ImGui::Begin("Mesh Renderer", &dbgui_data.mesh_renderer_enabled))
+					if(ImGui::Begin("Anim Renderer", &dbgui_data.mesh_renderer_enabled))
 					{
 						mr.dbgui();
 						ImGui::End();
@@ -90,6 +90,6 @@ void dbgui_init()
 {
 	tz::dbgui::game_menu().add_callback([]()
 	{
-		ImGui::MenuItem("Mesh Renderer", nullptr, &dbgui_data.mesh_renderer_enabled);
+		ImGui::MenuItem("Anim Renderer", nullptr, &dbgui_data.mesh_renderer_enabled);
 	});
 }
