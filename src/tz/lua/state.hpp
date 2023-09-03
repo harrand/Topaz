@@ -1,6 +1,7 @@
 #ifndef TZ_LUA_STATE_HPP
 #define TZ_LUA_STATE_HPP
 #include "tz/core/data/handle.hpp"
+#include "tz/core/memory/memblk.hpp"
 #include <string>
 #include <cstdint>
 #include <type_traits>
@@ -75,6 +76,11 @@ namespace tz::lua
 		std::uint64_t stack_get_uint(std::size_t idx, bool type_check = true) const;
 		std::string stack_get_string(std::size_t idx, bool type_check = true) const;
 		void* stack_get_ptr(std::size_t idx, bool type_check = true) const;
+		template<typename T>
+		T& stack_get_userdata(std::size_t idx, bool type_check = true) const
+		{
+			return *reinterpret_cast<T*>(this->stack_get_ptr(idx, type_check));
+		}
 		// push a new value onto the stack
 		void stack_push_bool(bool b) const;
 		void stack_push_double(double d) const;
@@ -89,12 +95,20 @@ namespace tz::lua
 		{
 			stack_push_ptr(&t);
 		}
+		template<typename T>
+		void stack_push_userdata(const T& t)
+		{
+			constexpr std::size_t sz = sizeof(T);
+			auto blk = lua_userdata_stack_push(sz);
+			new (blk.ptr) T{t};
+		}
 
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;
 		void* operator()() const;
 	private:
+		tz::memblk lua_userdata_stack_push(std::size_t byte_count) const;
 		bool impl_check_stack(std::size_t sz) const;
 		mutable std::string last_error = "";
 		void* lstate = nullptr;

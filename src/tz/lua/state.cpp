@@ -283,7 +283,7 @@ namespace tz::lua
 	void* state::stack_get_ptr(std::size_t idx, bool type_check) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
-		if(lua_islightuserdata(s, idx) || !type_check)
+		if((lua_islightuserdata(s, idx) || lua_isuserdata(s, idx)) || !type_check)
 		{
 			return lua_touserdata(s, idx);
 		}
@@ -387,6 +387,12 @@ namespace tz::lua
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
 		return lua_checkstack(s, sz);
+	}
+
+	tz::memblk state::lua_userdata_stack_push(std::size_t byte_count) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		return {.ptr = lua_newuserdata(s, byte_count), .size = byte_count};
 	}
 
 	thread_local state defstate = {};
