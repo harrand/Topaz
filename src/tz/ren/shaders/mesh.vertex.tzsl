@@ -18,9 +18,8 @@ struct texture_locator
 
 struct object_t
 {
-	mat4 model;
+	mat4 global_transform;
 	texture_locator[MAX_TEX_COUNT] textures;
-	uint parent;
 };
 
 resource(id = 0) const buffer vertex_buffer
@@ -43,23 +42,11 @@ output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
 output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
 
-mat4 get_object_transform(object_t obj)
-{
-	object_t o = obj;
-	mat4 ret = o.model;
-	while(o.parent != ~0u)
-	{
-		o = objects.data[o.parent];
-		ret *= o.model;
-	}
-	return ret;
-}
-
 void main()
 {
 	vertex_t vtx = vertices.data[in::vertex_id];
 	object_t obj = objects.data[in::draw_id + in::base_instance];	
-	out::position = camera.projection * camera.view * obj.model * vec4(vtx.position, 1.0f);
+	out::position = camera.projection * camera.view * obj.global_transform * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)

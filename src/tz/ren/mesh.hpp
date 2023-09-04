@@ -68,7 +68,7 @@ namespace tz::ren
 	struct object_data
 	{
 		// represents the transform of the drawable, in world space.
-		tz::mat4 model = tz::mat4::identity();
+		tz::mat4 global_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		std::uint32_t parent = static_cast<std::uint32_t>(-1);

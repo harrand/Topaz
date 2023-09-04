@@ -45,16 +45,16 @@ namespace tz::ren
 		resources:
 		- index buffer
 		- vertex buffer
-		- object buffer (contains the model matrix and list of texture ids used by each drawable)
+		- object buffer (contains the global_transform matrix and list of texture ids used by each drawable)
 		- draw indirect buffer (owned by the compute pass)
 		- camera buffer, containing camera data.
 		- an array of textures.
 		when: happens once every frame, after the compute pass completes.
 		1. retrieve the current vertex from the vertex buffer. remember
 		that in::vertex_id is actually the index_id in TZSL.
-		2. retrieve the texture and model matrix info from the object
+		2. retrieve the texture and global_transform matrix info from the object
 		buffer using the draw_id.
-		3. combine the model matrix with the projection and view matrices
+		3. combine the global_transform matrix with the projection and view matrices
 		from the camera buffer.
 		4. pass the relevant texture ids to the fragment shader.
 		--- vertex shading occurs... ---
@@ -400,7 +400,7 @@ namespace tz::ren
 
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
-		imgui_helper_tooltip("An object represents a drawable element. It consists of a model matrix and a set of bound textures. Drawables are obviously associated with a mesh. Specifically, `object X` will use the mesh locator at element `X` of the draw-list. The draw-list is visible within the compute pass section, not here.");
+		imgui_helper_tooltip("An object represents a drawable element. It consists of a global_transform matrix and a set of bound textures. Drawables are obviously associated with a mesh. Specifically, `object X` will use the mesh locator at element `X` of the draw-list. The draw-list is visible within the compute pass section, not here.");
 		std::size_t object_count = ren.get_resource(this->object_buffer)->data_as<const object_data>().size();
 		static int object_id = 0;
 		if(object_count > 0)
@@ -423,19 +423,8 @@ namespace tz::ren
 				}
 				ImGui::Text("Parent: %s", parent_str.c_str());
 				ImGui::Separator();
-				ImGui::Text("Model Matrix");
-				for (int row = 0; row < 4; row++)
-				{
-					for (int col = 0; col < 4; col++)
-					{
-						std::string label = "##m" + std::to_string(row) + std::to_string(col);
-						constexpr float matrix_cell_width = 35.0f;
-						ImGui::SetNextItemWidth(matrix_cell_width);
-						ImGui::InputFloat(label.c_str(), &obj.model(row, col));
-						ImGui::SameLine();
-					}
-					ImGui::NewLine();
-				}
+				ImGui::Text("Global Transform Matrix");
+				tz::dbgui_model(obj.global_transform);
 
 				ImGui::Separator();
 				ImGui::Text("Textures");
@@ -454,8 +443,6 @@ namespace tz::ren
 				}
 
 				ImGui::Separator();
-				ImGui::Text("Model");
-				imgui_helper_tooltip("The list of object data does not contain info on which mesh it corresponds to. To do that, view the corresponding element of the draw list within the compute pass.");
 			}
 			ImGui::EndChild();
 		}
