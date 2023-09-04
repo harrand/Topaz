@@ -265,6 +265,12 @@ namespace tz
 	template<typename T = float>
 	vector<T, 3> cross(const vector<T, 3>& lhs, const vector<T, 3>& rhs);
 
+	template<std::size_t I, tz::number T, std::size_t S>
+	inline std::tuple_element_t<I, tz::vector<T, S>> get(const tz::vector<T, S>& vec)
+	{
+		return vec[I];
+	}
+
 	/**
 	 * @}
 	 */
@@ -284,6 +290,15 @@ namespace std
 			}
 			return ret;
 		}
+	};
+
+	template<tz::number T, std::size_t S>
+	struct tuple_size<tz::vector<T, S>> : std::integral_constant<std::size_t, S>{};
+	
+	template<std::size_t I, tz::number T, std::size_t S>
+	struct tuple_element<I, tz::vector<T, S>>
+	{
+		using type = T;
 	};
 }
 
