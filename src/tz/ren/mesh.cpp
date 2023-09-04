@@ -84,14 +84,7 @@ namespace tz::ren
 	mesh_renderer::mesh_renderer(unsigned int total_textures):
 	compute_pass(),
 	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, total_textures)
-	{
-		this->add_mesh({});
-	}
-
-	mesh_renderer::mesh_handle empty_mesh()
-	{
-		return static_cast<tz::hanval>(0);
-	}
+	{}
 
 	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
 	{
@@ -104,10 +97,17 @@ namespace tz::ren
 	mesh_renderer::object_handle mesh_renderer::add_object(object_init_data init)
 	{
 		std::size_t hanval = this->draw_count();
-		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(init.mesh));
 		// draw list at this position is now equal to the associated mesh_locator.
 		tz::assert(hanval < this->compute_pass.get_draw_list_meshes().size(), "ran out of objects! can only have %zu", this->compute_pass.get_draw_list_meshes().size());
-		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
+		if(init.mesh == tz::nullhand)
+		{
+			this->compute_pass.get_draw_list_meshes()[hanval] = mesh_locator{};
+		}
+		else
+		{
+			auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(init.mesh));
+			this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
+		}
 
 		// now need to fill the object data
 		this->render_pass.get_object_datas()[hanval] =
@@ -729,7 +729,7 @@ namespace tz::ren
 				{
 					if(ImGui::Button("Add first-mesh drawable"))
 					{
-						this->add_object({.mesh = static_cast<tz::hanval>(0)});
+						this->add_object({.mesh = tz::nullhand});
 					}
 					imgui_helper_tooltip("Press this to add a drawable with all the defaults, using the first mesh.");
 				}
