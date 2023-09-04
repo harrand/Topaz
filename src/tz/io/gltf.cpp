@@ -597,50 +597,36 @@ namespace tz::io
 				}
 				if(jnode["matrix"].is_array())
 				{
+					tz::mat4 mat;
 					for(std::size_t i = 0; i < 16; i++)
 					{
-						node.transform(i / 4, i % 4) = jnode["matrix"][i];
+						mat(i / 4, i % 4) = jnode["matrix"][i];
 					}
+					node.transform = tz::trs::from_matrix(mat);
 				}
 				else
 				{
-					tz::vec3 pos = tz::vec3::zero();
-					tz::mat4 rot = tz::mat4::identity();
-					tz::vec3 scale = tz::vec3::filled(1.0f);
-					// TODO: handle pos, rot and scale
 					if(jnode["translation"].is_array())
 					{
 						for(std::size_t i = 0; i < 3; i++)
 						{
-							pos[i] = jnode["translation"][i];
+							node.transform.translate[i] = jnode["translation"][i];
 						}
 					}
 					if(jnode["rotation"].is_array())
 					{
-						tz::vec4 q;
 						for(std::size_t i = 0; i < 4; i++)
 						{
-							q[i] = jnode["rotation"][i];
+							node.transform.rotate[i] = jnode["rotation"][i];
 						}
-						// convert quat to euler.
-						rot(0, 0) = 1.0f - (2 * q[1] * q[1]) - (2 * q[2] * q[2]);
-						rot(1, 0) = (2 * q[0] * q[1]) + (2 * q[2] * q[3]);
-						rot(2, 0) = (2 * q[0] * q[2]) - (2 * q[1] * q[3]);
-						rot(0, 1) = (2 * q[0] * q[1]) - (2 * q[2] * q[3]);
-						rot(1, 1) = 1.0f - (2 * q[0] * q[0]) - (2 * q[2] * q[2]);
-						rot(2, 1) = (2 * q[1] * q[2]) + (2 * q[0] * q[3]);
-						rot(0, 2) = (2 * q[0] * q[2]) + (2 * q[1] * q[3]);
-						rot(1, 2) = (2 * q[1] * q[2]) - (2 * q[0] * q[3]);
-						rot(2, 2) = 1.0f - (2 * q[0] * q[0]) - (2 * q[1] * q[1]);
 					}
 					if(jnode["scale"].is_array())
 					{
 						for(std::size_t i = 0; i < 3; i++)
 						{
-							scale[i] = jnode["scale"][i];
+							node.transform.scale[i] = jnode["scale"][i];
 						}
 					}
-					node.transform = tz::translate(pos) * rot * tz::scale(scale);
 				}
 				if(jnode["mesh"].is_number_integer())
 				{

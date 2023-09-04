@@ -3,6 +3,7 @@
 #include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
 #include "tz/core/data/quat.hpp"
+#include "tz/core/data/trs.hpp"
 #include "tz/core/matrix.hpp"
 #include "tz/io/image.hpp"
 #include "nlohmann/json.hpp"
@@ -54,7 +55,7 @@ namespace tz::io
 		std::string name = "Unnamed Node";
 		std::size_t mesh = detail::badzu;
 		std::size_t skin = detail::badzu;
-		tz::mat4 transform = tz::mat4::identity();
+		tz::trs transform = {};
 		std::vector<std::size_t> children = {};
 		bool operator==(const gltf_node& rhs) const = default;
 	};
