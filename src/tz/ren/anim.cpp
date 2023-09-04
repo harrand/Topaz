@@ -1076,7 +1076,7 @@ namespace tz::ren
 		// gltf spec says:
 		// Only the joint transforms are applied to the skinned mesh; the transform of the skinned mesh node MUST be ignored.
 		// this means, if a node has a skin, ignore its transform and use the transform of the skin (joints etc) instead.
-		tz::mat4 transform = node.transform;
+		tz::mat4 transform = node.transform.matrix();
 		if(node.skin != static_cast<std::size_t>(-1))
 		{
 			this->skins_to_process.push_back(gltf.get_skins()[node.skin]);

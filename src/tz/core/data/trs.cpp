@@ -54,6 +54,8 @@ namespace tz
 		ret.rotate[0] = (rotmat[2][1] - rotmat[1][2]) / (w * 4.0f);
 		ret.rotate[1] = (rotmat[0][2] - rotmat[2][0]) / (w * 4.0f);
 		ret.rotate[2] = (rotmat[1][0] - rotmat[0][1]) / (w * 4.0f);
+
+		ret.translate = tz::vec4{mat[3]}.swizzle<0, 1, 2>();
 		return ret;
 	}
 
