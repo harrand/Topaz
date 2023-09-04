@@ -131,6 +131,18 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
+	void mesh_renderer::remove_object(object_handle oh)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+		// set to front mesh (which needs to be a null locator);
+		this->compute_pass.get_draw_list_meshes()[hanval] = {};
+		auto maybe_node = this->object_tree.find_node(hanval);
+		if(maybe_node.has_value())
+		{
+			this->object_tree.remove_node(maybe_node.value(), tz::transform_hierarchy<std::uint32_t>::remove_strategy::patch_children_to_parent);
+		}
+	}
+
 	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)
 	{
 		#if TZ_DEBUG

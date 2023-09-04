@@ -2,6 +2,7 @@
 #include "tz/core/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
 #include <type_traits>
+#include <sstream>
 
 namespace tz
 {
@@ -9,6 +10,12 @@ namespace tz
 	concept has_dbgui_method = requires(T t)
 	{
 		{t.dbgui()} -> std::same_as<void>;
+	};
+
+	template<typename T>
+	concept is_printable = requires(T t)
+	{
+		{std::ostringstream{} << t};
 	};
 
 	template<typename T>
@@ -96,9 +103,46 @@ namespace tz
 	}
 
 	template<typename T>
-	void transform_hierarchy<T>::remove_node(unsigned int node_id)
+	void transform_hierarchy<T>::remove_node(unsigned int node_id, remove_strategy strategy)
 	{
 		tz::assert(node_id < this->nodes.size(), "Invalid node_id %zu (node count: %zu)", node_id, this->nodes.size());
+		// what if the node had a parent?
+		const auto& node = this->get_node(node_id);
+		if(node.parent.has_value())
+		{
+			auto& parent = this->nodes[node.parent.value()];
+			parent.children.erase(std::remove(parent.children.begin(), parent.children.end(), node_id), parent.children.end());
+		}
+		switch(strategy)
+		{
+			case remove_strategy::patch_children_to_parent:
+				if(node.parent.has_value())
+				{
+					for(unsigned int child_node_idx : node.children)
+					{
+						auto& parent = this->nodes[node.parent.value()];
+						this->nodes[child_node_idx].parent = node.parent.value();
+						parent.children.push_back(child_node_idx);
+					}
+				}
+				for(unsigned int child_node_idx : node.children)
+				{
+					this->nodes[child_node_idx].parent = std::nullopt;
+				}
+			break;
+			case remove_strategy::remove_children:
+				for(unsigned int child_node_idx : node.children)
+				{
+					this->remove_node(child_node_idx, strategy);
+				}
+			break;
+			case remove_strategy::detach_children:
+				for(unsigned int child_node_idx : node.children)
+				{
+					this->nodes[child_node_idx].parent = std::nullopt;
+				}
+			break;
+		}
 		this->nodes.erase(this->nodes.begin() + node_id);
 	}
 
@@ -233,20 +277,38 @@ namespace tz
 	{
 		for(unsigned int root : this->get_root_node_ids())
 		{
-			this->dbgui_node(root);
+			if(!this->dbgui_node(root))
+			{
+				break;
+			}
 		}
 	}
 
 	template<typename T>
-	void transform_hierarchy<T>::dbgui_node(unsigned int node_id)
+	bool transform_hierarchy<T>::dbgui_node(unsigned int node_id)
 	{
 		const transform_node<T>& node = this->get_node(node_id);
-		std::string node_name = "Node " + std::to_string(node_id);
+		std::string node_name;
+		if constexpr(is_printable<T>)
+		{
+			std::ostringstream oss;
+			oss << node.data;
+			node_name = "Node " + oss.str();
+		}
+		else
+		{
+			node_name = "Node " + std::to_string(node_id);
+		}
+		bool ret = true;
 		if(ImGui::TreeNode(node_name.c_str()))
 		{
 			if constexpr(has_dbgui_method<T>)
 			{
 				node.data.dbgui();
+			}
+			if constexpr(is_printable<T>)
+			{
+
 			}
 			node.local_transform.dbgui();
 			tz::mat4 local = node.local_transform.matrix();
@@ -260,9 +322,18 @@ namespace tz
 			}
 			for(unsigned int child_idx : node.children)
 			{
-				this->dbgui_node(child_idx);
+				if(!this->dbgui_node(child_idx))
+				{
+					break;
+				}
+			}
+			if(ImGui::Button("X"))
+			{
+				this->remove_node(node_id, remove_strategy::patch_children_to_parent);
+				ret = false;
 			}
 			ImGui::TreePop();
 		}
+		return ret;
 	}
 }

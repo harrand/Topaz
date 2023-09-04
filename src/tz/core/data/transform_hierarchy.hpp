@@ -35,6 +35,15 @@ namespace tz
 	public:
 		/// Node type
 		using node = transform_node<T>;
+		enum class remove_strategy
+		{
+			/// When the node is removed, any children are set to become children of the node's parent instead - essentially skipping the generation
+			patch_children_to_parent,
+			/// When the node is removed, any children are also removed.
+			remove_children,
+			/// When the node is removed, any children are detached, becoming root nodes - even if the original node had a parent.
+			detach_children,
+		};
 		/// Create a new, empty hierarchy.
 		transform_hierarchy() = default;
 		/**
@@ -82,9 +91,10 @@ namespace tz
 		/**
 		 * Remove a node.
 		 * @param node_id Node corresponding to the id that should be removed.
+		 * @param strategy Describes behaviour of how the remove should affect children.
 		 * @note Invalidates indices.
 		 **/
-		void remove_node(unsigned int node_id);
+		void remove_node(unsigned int node_id, remove_strategy strategy);
 		// returns offset to be applied to the previous hierarchy's set of nodes to get their corresponding node ids
 		// within this hierarchy
 		/**
@@ -149,7 +159,7 @@ namespace tz
 
 		void dbgui();
 	private:
-		void dbgui_node(unsigned int node_id);
+		bool dbgui_node(unsigned int node_id);
 		std::vector<transform_node<T>> nodes = {};
 	};
 }

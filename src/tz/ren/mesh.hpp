@@ -105,6 +105,7 @@ namespace tz::ren
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
 		object_handle add_object(object_init_data init);
+		void remove_object(object_handle oh);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		void append_to_render_graph();
 		void dbgui();
