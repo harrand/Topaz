@@ -3,7 +3,7 @@
 #include "tz/core/profile.hpp"
 #include "tz/core/time.hpp"
 #include "tz/dbgui/dbgui.hpp"
-#include "tz/io/gltf.hpp"
+#include "tz/core/matrix_transform.hpp"
 
 #include "tz/ren/mesh.hpp"
 struct dbgui_data_t
@@ -22,7 +22,6 @@ int main()
 		dbgui_init();
 
 		tz::ren::mesh_renderer mr;
-		tz::ren::mesh_renderer::stored_assets sponza = mr.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_mesh_demo/res/sponza.glb"));
 		tz::ren::mesh_renderer::mesh_t m;
 		m.indices = {0u, 1u, 2u};
 		m.vertices = 
@@ -54,7 +53,7 @@ int main()
 			std::byte{0xff},
 			std::byte{0xff}
 		}});
-		mr.add_object(mesh, {.bound_textures = {{{.texture = tex}}}});
+		mr.add_object(mesh, {.model = tz::translate({0.0f, 0.0f, -5.0f}), .bound_textures = {{{.texture = tex}}}});
 		mr.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();
