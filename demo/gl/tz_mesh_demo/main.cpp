@@ -53,7 +53,11 @@ int main()
 			std::byte{0xff},
 			std::byte{0xff}
 		}});
-		mr.add_object(mesh, {.global_transform = tz::translate({0.0f, 0.0f, -5.0f}), .bound_textures = {{{.texture = tex}}}});
+		mr.add_object
+		({
+			.mesh = mesh,
+			.bound_textures = {{{.texture = tex}}}
+		});
 		mr.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();

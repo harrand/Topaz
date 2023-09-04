@@ -77,7 +77,7 @@ namespace tz::ren
 	// represents the data of the camera.
 	struct camera_data
 	{
-		tz::mat4 view = tz::mat4::identity();
+		tz::mat4 view = tz::view({0.0f, 0.0f, 5.0f}, tz::vec3::zero());
 		tz::mat4 projection = tz::perspective(3.14159f * 0.5f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 	};
 
@@ -101,15 +101,21 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
-	mesh_renderer::object_handle mesh_renderer::add_object(mesh_handle m, object_data data)
+	mesh_renderer::object_handle mesh_renderer::add_object(object_init_data init)
 	{
 		std::size_t hanval = this->draw_count();
-		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(m));
+		auto mesh_id = static_cast<std::size_t>(static_cast<tz::hanval>(init.mesh));
 		// draw list at this position is now equal to the associated mesh_locator.
 		tz::assert(hanval < this->compute_pass.get_draw_list_meshes().size(), "ran out of objects! can only have %zu", this->compute_pass.get_draw_list_meshes().size());
 		this->compute_pass.get_draw_list_meshes()[hanval] = this->render_pass.meshes[mesh_id];
+
 		// now need to fill the object data
-		this->render_pass.get_object_datas()[hanval] = data;
+		this->render_pass.get_object_datas()[hanval] =
+		{
+			.global_transform = init.trs.matrix(),
+			.bound_textures = init.bound_textures
+		};
+
 		// finally, increment the draw count.
 		this->compute_pass.set_draw_count(this->compute_pass.get_draw_count() + 1);
 
@@ -260,6 +266,10 @@ namespace tz::ren
 		if(draw_list_limit > 0)
 		{
 			constexpr float slider_height = 160.0f;
+			if(ImGui::Button("+"))
+			{
+				draw_id = std::clamp(draw_id + 1, 0, draw_list_limit - 1);
+			}
 			ImGui::VSliderInt("##drawelem", ImVec2{18.0f, slider_height}, &draw_id, 0, draw_list_limit - 1);
 			std::string drawname = "Draw " + std::to_string(draw_id);
 			bool is_active_draw = std::cmp_less(draw_id, this->get_draw_count());
@@ -287,6 +297,10 @@ namespace tz::ren
 				ImGui::Text("To see bound textures and transform, see Object %d within the render pass section", draw_id);
 			}
 			ImGui::EndChild();
+			if(ImGui::Button("-"))
+			{
+				draw_id = std::clamp(draw_id - 1, 0, draw_list_limit - 1);
+			}
 		}
 		else
 		{
@@ -406,6 +420,10 @@ namespace tz::ren
 		if(object_count > 0)
 		{
 			constexpr float slider_height = 160.0f;
+			if(ImGui::Button("+"))
+			{
+				object_id = std::clamp(object_id + 1, 0, static_cast<int>(object_count) - 1);
+			}
 			ImGui::VSliderInt("##object", ImVec2{18.0f, slider_height}, &object_id, 0, object_count - 1);
 			// TODO: object information display
 			std::string objname = "Object " + std::to_string(object_id);
@@ -416,13 +434,6 @@ namespace tz::ren
 			if(ImGui::BeginChild(objname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
 			{
 				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, objname.c_str());
-				std::string parent_str = std::to_string(obj.parent);
-				if(obj.parent == static_cast<std::uint32_t>(-1))
-				{
-					parent_str = "none";
-				}
-				ImGui::Text("Parent: %s", parent_str.c_str());
-				ImGui::Separator();
 				ImGui::Text("Global Transform Matrix");
 				tz::dbgui_model(obj.global_transform);
 
@@ -445,6 +456,10 @@ namespace tz::ren
 				ImGui::Separator();
 			}
 			ImGui::EndChild();
+			if(ImGui::Button("-"))
+			{
+				object_id = std::clamp(object_id - 1, 0, static_cast<int>(object_count) - 1);
+			}
 		}
 
 		ImGui::Separator();
@@ -680,7 +695,7 @@ namespace tz::ren
 				{
 					if(ImGui::Button("Add first-mesh drawable"))
 					{
-						this->add_object(static_cast<tz::hanval>(0));
+						this->add_object({.mesh = static_cast<tz::hanval>(0)});
 					}
 					imgui_helper_tooltip("Press this to add a drawable with all the defaults, using the first mesh.");
 				}

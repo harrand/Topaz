@@ -3,6 +3,7 @@
 #include "tz/gl/renderer.hpp"
 #include "tz/core/data/vector.hpp"
 #include "tz/core/matrix.hpp"
+#include "tz/core/data/transform_hierarchy.hpp"
 #include <cstdint>
 #include <array>
 
@@ -71,8 +72,6 @@ namespace tz::ren
 		tz::mat4 global_transform = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
-		std::uint32_t parent = static_cast<std::uint32_t>(-1);
-		float pad0[3] = {};
 	};
 
 	/**
@@ -91,11 +90,11 @@ namespace tz::ren
 		using object_handle = tz::handle<object_tag_t>;
 		using texture_handle = detail::texture_handle;
 
-		struct stored_assets
+		struct object_init_data
 		{
-			std::vector<mesh_handle> meshes = {};
-			std::vector<texture_handle> textures = {};
-			std::vector<object_handle> objects = {};
+			tz::trs trs = {};
+			mesh_handle mesh = tz::nullhand;
+			std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		};
 
 		std::size_t mesh_count() const;
@@ -103,7 +102,7 @@ namespace tz::ren
 		void clear();
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
-		object_handle add_object(mesh_handle m, object_data data = {});
+		object_handle add_object(object_init_data init);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		void append_to_render_graph();
 		void dbgui();
@@ -147,6 +146,7 @@ namespace tz::ren
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 		void dbgui_impl();
 
+		tz::transform_hierarchy<std::uint32_t> object_hierarchy = {};
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 	};
