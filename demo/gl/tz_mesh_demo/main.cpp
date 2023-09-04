@@ -53,10 +53,16 @@ int main()
 			std::byte{0xff},
 			std::byte{0xff}
 		}});
-		mr.add_object
+		auto obj = mr.add_object
 		({
 			.mesh = mesh,
 			.bound_textures = {{{.texture = tex}}}
+		});
+		mr.add_object
+		({
+			.trs = {.translate = {0.0f, 0.0f, -1.0f}, .scale = {2.5f, 2.5f, 2.5f}},
+			.mesh = mesh,
+			.parent = obj
 		});
 		mr.append_to_render_graph();
 

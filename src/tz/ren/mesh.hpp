@@ -95,6 +95,7 @@ namespace tz::ren
 			tz::trs trs = {};
 			mesh_handle mesh = tz::nullhand;
 			std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
+			object_handle parent = tz::nullhand;
 		};
 
 		std::size_t mesh_count() const;

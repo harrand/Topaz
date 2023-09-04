@@ -57,6 +57,18 @@ namespace tz
 		 * @return Vector containing indices of root nodes (nodes without a parent).
 		 **/
 		std::vector<unsigned int> get_root_node_ids() const;
+		/**
+		 * Attempt to retrieve the index of the node whose value matches the parameter.
+		 * @param value Data value whose node should be retrieved.
+		 * @return Index of the node with the provided value. If there was no node, nullopt is returned.
+		 **/
+		std::optional<unsigned int> find_node(const T& value) const;
+		/**
+		 * Attempt to retrieve the index of the node whose value satisfies the provided predicate.
+		 * @param predicate Predicate of the signature `booL(const T&)` that returns true if the value of the node is what you're looking for.
+		 * @return Index of the first node whose value satisfies the given predicate. If there was no such node, nullopt is returned.
+		 **/
+		std::optional<unsigned int> find_node_if(tz::function<bool, const T&> auto predicate) const;
 
 		// returns id of the new node.
 		/**
@@ -67,6 +79,12 @@ namespace tz
 		 * @return Index of the newly-created node.
 		 **/
 		unsigned int add_node(tz::trs local_transform = {}, T data = {}, std::optional<unsigned int> parent = std::nullopt);
+		/**
+		 * Remove a node.
+		 * @param node_id Node corresponding to the id that should be removed.
+		 * @note Invalidates indices.
+		 **/
+		void remove_node(unsigned int node_id);
 		// returns offset to be applied to the previous hierarchy's set of nodes to get their corresponding node ids
 		// within this hierarchy
 		/**

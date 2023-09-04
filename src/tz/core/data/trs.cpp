@@ -44,10 +44,15 @@ namespace tz
 
 	void trs::dbgui()
 	{
-		ImGui::InputFloat("Position Limits", &this->dbgui_slider_scale[0], 0.1f, 1.0f);
 		ImGui::SliderFloat3("Position", this->translate.data().data(), -this->dbgui_slider_scale[0], this->dbgui_slider_scale[0]);
-		ImGui::SliderFloat4("Quaternion", this->rotate.data().data(), 0.01f, 0.2f);
+		ImGui::SameLine();
+		ImGui::InputFloat("Position Limits", &this->dbgui_slider_scale[0], 0.1f, 1.0f);
+		if(ImGui::SliderFloat4("Quaternion", this->rotate.data().data(), -3.14159f, 3.14159f))
+		{
+			this->rotate.normalise();
+		}
+		ImGui::SliderFloat3("Scale", this->scale.data().data(), -this->dbgui_slider_scale[1], this->dbgui_slider_scale[1]);
+		ImGui::SameLine();
 		ImGui::InputFloat("Scale Limits", &this->dbgui_slider_scale[1], 0.1f, 1.0f);
-		ImGui::SliderFloat3("Scale", this->scale.data().data(), 0.0f, this->dbgui_slider_scale[1]);
 	}
 }

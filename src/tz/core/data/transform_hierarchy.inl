@@ -54,6 +54,36 @@ namespace tz
 	}
 
 	template<typename T>
+	std::optional<unsigned int> transform_hierarchy<T>::find_node(const T& value) const
+	{
+		auto iter = std::find_if(this->nodes.begin(), this->nodes.end(),
+		[value](const auto& node)
+		{
+			return node.data == value;
+		});
+		if(iter == this->nodes.end())
+		{
+			return std::nullopt;
+		}
+		return std::distance(this->nodes.begin(), iter);
+	}
+
+	template<typename T>
+	std::optional<unsigned int> transform_hierarchy<T>::find_node_if(tz::function<bool, const T&> auto predicate) const
+	{
+		auto iter = std::find_if(this->nodes.begin(), this->nodes.end(),
+		[predicate](const auto& node)
+		{
+			return predicate(node.data);
+		});
+		if(iter == this->nodes.end())
+		{
+			return std::nullopt;
+		}
+		return std::distance(this->nodes.begin(), iter);
+	}
+
+	template<typename T>
 	unsigned int transform_hierarchy<T>::add_node(tz::trs local_transform, T data, std::optional<unsigned int> parent)
 	{
 		auto id = this->nodes.size();
@@ -63,6 +93,13 @@ namespace tz
 			this->nodes[parent.value()].children.push_back(id);
 		}
 		return id;
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::remove_node(unsigned int node_id)
+	{
+		tz::assert(node_id < this->nodes.size(), "Invalid node_id %zu (node count: %zu)", node_id, this->nodes.size());
+		this->nodes.erase(this->nodes.begin() + node_id);
 	}
 
 	template<typename T>
@@ -211,6 +248,7 @@ namespace tz
 			{
 				node.data.dbgui();
 			}
+			node.local_transform.dbgui();
 			tz::mat4 local = node.local_transform.matrix();
 			tz::mat4 global = this->get_global_transform(node_id).matrix();
 			if(local != tz::mat4::identity())

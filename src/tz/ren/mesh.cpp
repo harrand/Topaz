@@ -112,9 +112,18 @@ namespace tz::ren
 		// now need to fill the object data
 		this->render_pass.get_object_datas()[hanval] =
 		{
-			.global_transform = init.trs.matrix(),
 			.bound_textures = init.bound_textures
 		};
+		if(init.parent != tz::nullhand)
+		{
+			std::optional<unsigned int> parent_node_id = this->object_tree.find_node(static_cast<std::size_t>(static_cast<tz::hanval>(init.parent)));
+			tz::assert(parent_node_id.has_value(), "add_object provided parent that was invalid.");
+			this->object_tree.add_node(init.trs, hanval, parent_node_id);
+		}
+		else
+		{
+			this->object_tree.add_node(init.trs, hanval);
+		}
 
 		// finally, increment the draw count.
 		this->compute_pass.set_draw_count(this->compute_pass.get_draw_count() + 1);
@@ -685,6 +694,10 @@ namespace tz::ren
 		{
 			if(ImGui::BeginTabItem("Overview"))
 			{
+				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
+				this->object_tree.dbgui();
+				ImGui::Separator();
+
 				std::size_t vertex_count = 0;
 				std::size_t index_count = 0;
 				for(const mesh_locator& loc : this->render_pass.meshes)
