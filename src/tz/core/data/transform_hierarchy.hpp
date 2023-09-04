@@ -157,10 +157,17 @@ namespace tz
 		 **/
 		void iterate_nodes(tz::action<unsigned int> auto callback) const;
 
+		bool node_cache_miss(unsigned int node_id) const;
+		void cache_write(unsigned int node_id, tz::trs global) const;
+		void clear_cache_for(unsigned int node_id) const;
+		void clear_cache() const;
+
 		void dbgui();
 	private:
 		bool dbgui_node(unsigned int node_id);
 		std::vector<transform_node<T>> nodes = {};
+		mutable std::vector<std::size_t> node_local_transform_hashes = {};
+		mutable std::vector<tz::trs> node_global_transform_cache = {};
 	};
 }
 

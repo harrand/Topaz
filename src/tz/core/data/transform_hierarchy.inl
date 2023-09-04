@@ -99,6 +99,8 @@ namespace tz
 		{
 			this->nodes[parent.value()].children.push_back(id);
 		}
+		this->node_local_transform_hashes.push_back(std::numeric_limits<std::size_t>::max());
+		this->node_global_transform_cache.push_back({});
 		return id;
 	}
 
@@ -217,7 +219,18 @@ namespace tz
 	template<typename T>
 	tz::trs transform_hierarchy<T>::get_global_transform(unsigned int id) const
 	{
+		if(!this->node_cache_miss(id))
+		{
+			// cache is correct, just return that.
+			return this->node_global_transform_cache[id];
+		}
+		//tz::report("transform hierarchy cache miss at %zu", id);
 		const auto& n = this->get_node(id);
+		// cache is incorrect. we should also dirty all children as our local has changed.
+		for(unsigned int child : n.children)
+		{
+			clear_cache_for(child);
+		}	
 		tz::trs global = n.local_transform;
 		std::optional<unsigned int> p = n.parent;
 		while(p.has_value())
@@ -226,6 +239,7 @@ namespace tz
 			global = get_global_transform(p.value()).combined(global);
 			p = pn.parent;
 		}
+		this->cache_write(id, global);
 		return global;
 	}
 
@@ -269,6 +283,40 @@ namespace tz
 		{
 			callback(root_node);
 			this->iterate_descendants(root_node, callback);
+		}
+	}
+
+	template<typename T>
+	bool transform_hierarchy<T>::node_cache_miss(unsigned int node_id) const
+	{
+		std::size_t hash = std::hash<tz::trs>{}(this->get_node(node_id).local_transform);
+		tz::assert(node_id < this->node_local_transform_hashes.size());
+		if(hash == this->node_local_transform_hashes[node_id])
+		{
+			return false;
+		}
+		this->node_local_transform_hashes[node_id] = hash;
+		return true;
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::cache_write(unsigned int node_id, tz::trs global) const
+	{
+		this->node_global_transform_cache[node_id] = global;
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::clear_cache_for(unsigned int node_id) const
+	{
+		this->node_local_transform_hashes[node_id] = std::numeric_limits<std::size_t>::max();
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::clear_cache() const
+	{
+		for(auto& hash : this->node_local_transform_hashes)
+		{
+			hash = std::numeric_limits<std::size_t>::max();
 		}
 	}
 
