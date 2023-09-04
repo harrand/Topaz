@@ -253,6 +253,8 @@ add_library(topaz STATIC
 	# tz::ren
 	src/tz/ren/anim.cpp
 	src/tz/ren/anim.hpp
+	src/tz/ren/animation.cpp
+	src/tz/ren/animation.hpp
 	src/tz/ren/mesh.cpp
 	src/tz/ren/mesh.hpp
 	)

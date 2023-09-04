@@ -5,6 +5,7 @@ elseif(${TOPAZ_OGL})
 endif()
 
 add_subdirectory(tz_mesh_demo)
+add_subdirectory(tz_animation_demo)
 
 add_demo(
 	TARGET tz_terrain_demo
