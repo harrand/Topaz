@@ -44,6 +44,7 @@ namespace tz
 
 	void trs::dbgui()
 	{
+		#if TZ_DEBUG
 		ImGui::SliderFloat3("Position", this->translate.data().data(), -this->dbgui_slider_scale[0], this->dbgui_slider_scale[0]);
 		ImGui::SameLine();
 		ImGui::InputFloat("Position Limits", &this->dbgui_slider_scale[0], 0.1f, 1.0f);
@@ -54,5 +55,6 @@ namespace tz
 		ImGui::SliderFloat3("Scale", this->scale.data().data(), -this->dbgui_slider_scale[1], this->dbgui_slider_scale[1]);
 		ImGui::SameLine();
 		ImGui::InputFloat("Scale Limits", &this->dbgui_slider_scale[1], 0.1f, 1.0f);
+		#endif // TZ_DEBUG
 	}
 }
