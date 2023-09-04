@@ -26,4 +26,10 @@ namespace tz
 	};
 };
 
+namespace std
+{
+	template<>
+	struct hash<tz::quat> : public hash<tz::vec4>{};
+}
+
 #endif // TOPAZ_CORE_DATA_QUAT_HPP

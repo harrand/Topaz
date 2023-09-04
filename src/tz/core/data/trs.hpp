@@ -23,4 +23,20 @@ namespace tz
 	};
 }
 
+namespace std
+{
+	template<>
+	struct hash<tz::trs>
+	{
+		std::size_t operator()(const tz::trs& t) const
+		{
+			std::size_t ret = 0;
+			ret ^= std::hash<tz::vec3>{}(t.translate);
+			ret ^= std::hash<tz::quat>{}(t.rotate);
+			ret ^= std::hash<tz::vec3>{}(t.scale);
+			return ret;
+		}
+	};
+}
+
 #endif // TOPAZ_CORE_DATA_TRS_HPP
