@@ -152,6 +152,15 @@ namespace tz::ren
 		return this->compute_pass.get_draw_count();
 	}
 
+	void mesh_renderer::update()
+	{
+		this->object_tree.iterate_nodes([this](unsigned int node_id)
+		{
+			const mesh_renderer::node_type& node = this->object_tree.get_node(node_id);
+			this->render_pass.get_object_datas()[node.data].global_transform = this->object_tree.get_global_transform(node_id).matrix();
+		});
+	}
+
 	void mesh_renderer::clear()
 	{
 		// does not change capacities of any buffers.

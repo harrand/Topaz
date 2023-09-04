@@ -99,6 +99,7 @@ namespace tz::ren
 
 		std::size_t mesh_count() const;
 		std::size_t draw_count() const;
+		void update();
 		void clear();
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
@@ -146,7 +147,9 @@ namespace tz::ren
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 		void dbgui_impl();
 
-		tz::transform_hierarchy<std::uint32_t> object_hierarchy = {};
+		using node_type = tz::transform_node<std::uint32_t>;
+
+		tz::transform_hierarchy<std::uint32_t> object_tree = {};
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 	};
