@@ -224,7 +224,7 @@ namespace tz
 			// cache is correct, just return that.
 			return this->node_global_transform_cache[id];
 		}
-		//tz::report("transform hierarchy cache miss at %zu", id);
+		tz::report("transform hierarchy cache miss at %zu", id);
 		const auto& n = this->get_node(id);
 		// cache is incorrect. we should also dirty all children as our local has changed.
 		for(unsigned int child : n.children)

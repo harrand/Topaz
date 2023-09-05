@@ -100,15 +100,15 @@ namespace tz::ren
 
 		std::size_t mesh_count() const;
 		std::size_t draw_count() const;
-		void update();
+		virtual void update();
+		virtual void dbgui();
 		void clear();
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
-		object_handle add_object(object_init_data init);
+		virtual object_handle add_object(object_init_data init);
 		void remove_object(object_handle oh);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		void append_to_render_graph();
-		void dbgui();
 	private:
 		struct compute_pass_t
 		{
@@ -144,14 +144,17 @@ namespace tz::ren
 			std::size_t texture_cursor = 0;
 		};
 
+		using node_type = tz::transform_node<std::uint32_t>;
+
 		std::optional<std::uint32_t> try_find_index_section(std::size_t index_count) const;
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
-		void dbgui_impl();
-
-		using node_type = tz::transform_node<std::uint32_t>;
+	protected:
+		void dbgui_tab_overview();
+		void dbgui_tab_render();
 
 		tz::transform_hierarchy<std::uint32_t> object_tree = {};
+	private:
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
 	};

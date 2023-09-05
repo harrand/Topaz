@@ -39,7 +39,7 @@ int main()
 			{
 				if(dbgui_data.mesh_renderer_enabled)
 				{
-					if(ImGui::Begin("Mesh Renderer", &dbgui_data.mesh_renderer_enabled))
+					if(ImGui::Begin("Animation Renderer", &dbgui_data.mesh_renderer_enabled))
 					{
 						ar.dbgui();
 						ImGui::End();

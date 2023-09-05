@@ -2,6 +2,41 @@
 
 namespace tz::ren
 {
+	void animation_renderer::dbgui()
+	{
+		if(ImGui::BeginTabBar("#1234"))
+		{
+			mesh_renderer::dbgui_tab_overview();
+			mesh_renderer::dbgui_tab_render();
+			this->dbgui_tab_animation();
+			ImGui::EndTabBar();
+		}
+	}
+
+	void animation_renderer::update()
+	{
+		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
+		{
+			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
+			tz::assert(maybe_tree_id.has_value());
+			auto& tree_node = mesh_renderer::object_tree.get_node(maybe_tree_id.value());
+			const auto& extra = this->object_extras[i];
+			tree_node.local_transform = extra.base_transform.combined(extra.animation_trs_offset);
+		}
+		mesh_renderer::update();
+	}
+
+	animation_renderer::object_handle animation_renderer::add_object(object_init_data init)
+	{
+		auto handle = mesh_renderer::add_object(init);
+		tz::assert(static_cast<std::size_t>(static_cast<tz::hanval>(handle)) == this->object_extras.size());
+		this->object_extras.push_back
+		({
+			.base_transform = init.trs
+		});
+		return handle;
+	}
+
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
 		// maintain offsets so we can support multiple gltfs.
@@ -45,7 +80,7 @@ namespace tz::ren
 		if(parent_node_id.has_value())
 		{
 			// how do we figure out which object? we store it.
-			this_object = mesh_renderer::add_object
+			this_object = this->add_object
 			({
 				.trs = node.transform,
 				.mesh = {},
@@ -56,7 +91,7 @@ namespace tz::ren
 		else
 		{
 			// just add the object as a root node.
-			this_object = mesh_renderer::add_object
+			this_object = this->add_object
 			({
 				.trs = node.transform,
 				.mesh = {},
@@ -71,6 +106,17 @@ namespace tz::ren
 		for(std::size_t child_idx : node.children)
 		{
 			this->expand_current_gltf_node(gltf, child_idx, node_id);
+		}
+	}
+
+	void animation_renderer::dbgui_tab_animation()
+	{
+		if(ImGui::BeginTabItem("Animation"))
+		{
+			ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "ANIMATION DATA");
+			ImGui::Spacing();
+			ImGui::Text("Coming Soon!");
+			ImGui::EndTabItem();
 		}
 	}
 }

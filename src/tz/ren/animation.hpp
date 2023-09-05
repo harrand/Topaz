@@ -21,7 +21,10 @@ namespace tz::ren
 
 		using mesh_renderer::append_to_render_graph;
 		using mesh_renderer::update;
-		using mesh_renderer::dbgui;
+
+		virtual void dbgui() override;
+		virtual void update() override;
+		virtual object_handle add_object(object_init_data init) override;
 
 		asset_package add_gltf(tz::io::gltf gltf);
 	private:
@@ -35,8 +38,18 @@ namespace tz::ren
 			// stores each asset that was brought in by this gltf.
 			asset_package assets = {};
 		};
+
+		struct object_extra_info
+		{
+			tz::trs base_transform = {};
+			tz::trs animation_trs_offset = {};
+		};
+		
 		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt);
+		void dbgui_tab_animation();
+
 		std::vector<gltf_info> gltfs = {};
+		std::vector<object_extra_info> object_extras = {};
 	};
 }
 

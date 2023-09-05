@@ -182,6 +182,16 @@ namespace tz::ren
 		});
 	}
 
+	void mesh_renderer::dbgui()
+	{
+		if(ImGui::BeginTabBar("#123"))
+		{
+			this->dbgui_tab_overview();
+			this->dbgui_tab_render();
+			ImGui::EndTabBar();
+		}
+	}
+
 	void mesh_renderer::clear()
 	{
 		// does not change capacities of any buffers.
@@ -206,11 +216,6 @@ namespace tz::ren
 		tz::gl::get_device().render_graph().timeline.push_back(hanval_rh);
 		// render pass depends on compute pass.
 		tz::gl::get_device().render_graph().add_dependencies(this->render_pass.handle, this->compute_pass.handle);
-	}
-
-	void mesh_renderer::dbgui()
-	{
-		this->dbgui_impl();
 	}
 
 	mesh_renderer::compute_pass_t::compute_pass_t()
@@ -691,80 +696,70 @@ namespace tz::ren
 
 	// dbgui
 
-	void mesh_renderer::dbgui_impl()
+	void mesh_renderer::dbgui_tab_overview()
 	{
-		// before trying to re-understand this, read the explanation of
-		// how the renderer works at the top of this file. seriously.
-
-		// possible implementation (feel free to do something else)
-		// probably worth making a few tab bars.
-		// unused | impl details
-		// impl details ->
-		// compute pass | render pass
-		// and then for each pass, expose dynamic resources, typical stuff etc...
-		if(ImGui::BeginTabBar("#123"))
+		if(ImGui::BeginTabItem("Overview"))
 		{
-			if(ImGui::BeginTabItem("Overview"))
-			{
-				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
-				this->object_tree.dbgui();
-				ImGui::Separator();
+			ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "OBJECT DATA");
+			this->object_tree.dbgui();
+			ImGui::Separator();
 
-				std::size_t vertex_count = 0;
-				std::size_t index_count = 0;
-				for(const mesh_locator& loc : this->render_pass.meshes)
-				{
-					vertex_count += loc.vertex_count;
-					index_count += loc.index_count;
-				}
-				ImGui::Text("Draw Count:     %zu", this->draw_count());
-				ImGui::Text("Meshes Stored:  %zu", this->mesh_count());
-				ImGui::Text("Total Indices:  %zu", index_count);
-				ImGui::Text("Total Vertices: %zu", vertex_count);
-				if(ImGui::Button("Add empty mesh"))
-				{
-					this->add_mesh({});
-				}
-				if(this->render_pass.meshes.size())
-				{
-					if(ImGui::Button("Add first-mesh drawable"))
-					{
-						this->add_object({.mesh = tz::nullhand});
-					}
-					imgui_helper_tooltip("Press this to add a drawable with all the defaults, using the first mesh.");
-				}
-				if(ImGui::Button("Remove all drawables"))
-				{
-					this->clear_draws();
-				}
-				imgui_helper_tooltip("Press this to clear all drawable objects. This means nothing is drawn, but all the mesh data is untouched.");
-				if(ImGui::Button("Remove All"))
-				{
-					this->clear();
-				}
-				imgui_helper_tooltip("Press this to clear everything, removing all objects and all mesh data.");
-				ImGui::EndTabItem();
-
-			}
-			if(ImGui::BeginTabItem("Render"))
+			std::size_t vertex_count = 0;
+			std::size_t index_count = 0;
+			for(const mesh_locator& loc : this->render_pass.meshes)
 			{
-				if(ImGui::BeginTabBar("Render or Compute"))
-				{
-					if(ImGui::BeginTabItem("Compute Pass"))
-					{
-						this->compute_pass.dbgui();
-						ImGui::EndTabItem();
-					}
-					if(ImGui::BeginTabItem("Render Pass"))
-					{
-						this->render_pass.dbgui();
-						ImGui::EndTabItem();
-					}
-					ImGui::EndTabBar();
-				}
-				ImGui::EndTabItem();
+				vertex_count += loc.vertex_count;
+				index_count += loc.index_count;
 			}
-			ImGui::EndTabBar();
+			ImGui::Text("Draw Count:     %zu", this->draw_count());
+			ImGui::Text("Meshes Stored:  %zu", this->mesh_count());
+			ImGui::Text("Total Indices:  %zu", index_count);
+			ImGui::Text("Total Vertices: %zu", vertex_count);
+			if(ImGui::Button("Add empty mesh"))
+			{
+				this->add_mesh({});
+			}
+			if(this->render_pass.meshes.size())
+			{
+				if(ImGui::Button("Add first-mesh drawable"))
+				{
+					this->add_object({.mesh = tz::nullhand});
+				}
+				imgui_helper_tooltip("Press this to add a drawable with all the defaults, using the first mesh.");
+			}
+			if(ImGui::Button("Remove all drawables"))
+			{
+				this->clear_draws();
+			}
+			imgui_helper_tooltip("Press this to clear all drawable objects. This means nothing is drawn, but all the mesh data is untouched.");
+			if(ImGui::Button("Remove All"))
+			{
+				this->clear();
+			}
+			imgui_helper_tooltip("Press this to clear everything, removing all objects and all mesh data.");
+			ImGui::EndTabItem();
+		}
+	}
+
+	void mesh_renderer::dbgui_tab_render()
+	{
+		if(ImGui::BeginTabItem("Render"))
+		{
+			if(ImGui::BeginTabBar("Render or Compute"))
+			{
+				if(ImGui::BeginTabItem("Compute Pass"))
+				{
+					this->compute_pass.dbgui();
+					ImGui::EndTabItem();
+				}
+				if(ImGui::BeginTabItem("Render Pass"))
+				{
+					this->render_pass.dbgui();
+					ImGui::EndTabItem();
+				}
+				ImGui::EndTabBar();
+			}
+			ImGui::EndTabItem();
 		}
 	}
 }
