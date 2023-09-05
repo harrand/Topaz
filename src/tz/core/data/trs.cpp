@@ -21,41 +21,90 @@ namespace tz
 
 	trs trs::from_matrix(tz::mat4 mat)
 	{
+		// decompose matrix -> trs using:https://github.com/KhronosGroup/glTF-Validator/issues/33 
+		//If M[3] != 0.0 || M[7] != 0.0 || M[11] != 0.0 || M[15] != 1.0,
+		// matrix is indecomposable, exit.
+
+		/*
+		0 4 8  12
+		1 5 9  13
+		2 6 10 14
+		3 7 11 15
+		*/
+		if(mat(3, 0) != 0.0f || mat(3, 1) != 0.0f || mat(3, 2) != 0.0f || mat(3, 3) != 1.0f)
+		{
+			#if TZ_DEBUG
+			mat.debug_print();
+			#endif // TZ_DEBUG
+			tz::report("Warning: Matrix is not decomposable. Behaviour is unspecified.");
+		}
+
 		trs ret;
-		// firstly get scale.
-		tz::vec3 m0 = tz::vec4{mat[0]}.swizzle<0, 1, 2>();
-		tz::vec3 m1 = tz::vec4{mat[1]}.swizzle<0, 1, 2>();
-		tz::vec3 m2 = tz::vec4{mat[2]}.swizzle<0, 1, 2>();
-		ret.scale = {m0.length(), m1.length(), m2.length()};
-		m0.normalise();
-		m1.normalise();
-		m2.normalise();
-		tz::mat4 rotmat;
-		auto [m0x, m0y, m0z] = m0;
-		rotmat[0][0] = m0x;
-		rotmat[0][1] = m0y;
-		rotmat[0][2] = m0z;
-		rotmat[0][3] = 0.0f;
-
-		auto [m1x, m1y, m1z] = m0;
-		rotmat[1][0] = m1x;
-		rotmat[1][1] = m1y;
-		rotmat[1][2] = m1z;
-		rotmat[1][3] = 0.0f;
-
-		auto [m2x, m2y, m2z] = m0;
-		rotmat[2][0] = m2x;
-		rotmat[2][1] = m2y;
-		rotmat[2][2] = m2z;
-		rotmat[2][3] = 0.0f;
-
-		float w = std::sqrt(1.0f - rotmat[0][0] + rotmat[1][1] + rotmat[2][2]) / 2.0f;
-		ret.rotate[3] = w;
-		ret.rotate[0] = (rotmat[2][1] - rotmat[1][2]) / (w * 4.0f);
-		ret.rotate[1] = (rotmat[0][2] - rotmat[2][0]) / (w * 4.0f);
-		ret.rotate[2] = (rotmat[1][0] - rotmat[0][1]) / (w * 4.0f);
-
+		// tz::assert(mat.determinant() != 0.0f, "matrix is not decomposable because its determinant is 0.0f");
 		ret.translate = tz::vec4{mat[3]}.swizzle<0, 1, 2>();
+		ret.scale[0] = std::sqrt(mat(0, 0) * mat(0, 0) + mat(1, 0) * mat(1, 0) + mat(2, 0) * mat(2, 0));
+		ret.scale[1] = std::sqrt(mat(0, 1) * mat(0, 1) + mat(1, 1) * mat(1, 1) + mat(2, 1) * mat(2, 1));
+		ret.scale[2] = std::sqrt(mat(0, 2) * mat(0, 2) + mat(1, 2) * mat(1, 2) + mat(2, 2) * mat(2, 2));
+
+		// if(mat.determinant() < 0.0f)
+		// {
+		// ret.scale[0] *= -1.0f;
+		//	}
+
+		float invsx = 1.0f / ret.scale[0];
+		float invsy = 1.0f / ret.scale[1];
+		float invsz = 1.0f / ret.scale[2];
+		tz::mat3 r;
+		r(0, 0) = mat(0, 0) * invsx;
+		r(1, 0) = mat(1, 0) * invsx;
+		r(2, 0) = mat(2, 0) * invsx;
+
+		r(0, 1) = mat(0, 1) * invsy;
+		r(1, 1) = mat(1, 1) * invsy;
+		r(2, 1) = mat(2, 1) * invsy;
+
+		r(0, 2) = mat(0, 2) * invsz;
+		r(1, 2) = mat(1, 2) * invsz;
+		r(2, 2) = mat(2, 2) * invsz;
+
+		// rotation = rotation from rotation matrix r.
+		// mat3 -> quat conversion takes place here.
+		const float trace = mat(0, 0) + mat(1, 1) + mat(2, 2);
+		if(trace > 0.0f)
+		{
+			const float s = 0.5f / std::sqrt(trace + 1.0f);
+			ret.rotate[3] = 0.25f / s;
+			ret.rotate[0] = (mat(2, 1) - mat(1, 2)) * s;
+			ret.rotate[1] = (mat(0, 2) - mat(2, 0)) * s;
+			ret.rotate[2] = (mat(1, 0) - mat(0, 1)) * s;
+		}
+		else
+		{
+			if(mat(0, 0) > mat(1, 1) && mat(0, 0) > mat(2, 2))
+			{
+				const float s = 2.0f * std::sqrt(1.0f + mat(0, 0) - mat(1, 1) - mat(2, 2));
+				ret.rotate[3] = (mat(2, 1) - mat(1, 2)) / s;
+				ret.rotate[0] = 0.25f * s;
+				ret.rotate[1] = (mat(0, 1) + mat(1, 0)) / s;
+				ret.rotate[2] = (mat(0, 2) + mat(2, 0)) / s;
+			}
+			else if(mat(1, 1) > mat(2, 2))
+			{
+				const float s = 2.0f * std::sqrt(1.0f + mat(1, 1) - mat(0, 0) - mat(2, 2));
+				ret.rotate[3] = (mat(0, 2) - mat(2, 0)) / s;
+				ret.rotate[0] = (mat(0, 1) + mat(1, 0)) / s;
+				ret.rotate[1] = 0.25f * s;
+				ret.rotate[2] = (mat(1, 2) + mat(2, 1)) / s;
+			}
+			else
+			{
+				const float s = 2.0f * std::sqrt(1.0f + mat(2, 2) - mat(0, 0) - mat(1, 1));
+				ret.rotate[3] = (mat(1, 0) - mat(0, 1)) / s;
+				ret.rotate[0] = (mat(0, 2) + mat(2, 0)) / s;
+				ret.rotate[1] = (mat(1, 2) + mat(2, 1)) / s;
+				ret.rotate[2] = 0.25f * s;
+			}
+		}
 		return ret;
 	}
 
