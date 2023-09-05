@@ -4,7 +4,6 @@ namespace tz::ren
 {
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
-		auto sz = this->gltfs.size();
 		// maintain offsets so we can support multiple gltfs.
 		// add the new gltf.
 		this->gltfs.push_back
