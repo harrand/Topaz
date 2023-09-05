@@ -321,11 +321,11 @@ namespace tz
 	}
 
 	template<typename T>
-	void transform_hierarchy<T>::dbgui()
+	void transform_hierarchy<T>::dbgui(bool display_gizmo)
 	{
 		for(unsigned int root : this->get_root_node_ids())
 		{
-			if(!this->dbgui_node(root))
+			if(!this->dbgui_node(root, display_gizmo))
 			{
 				break;
 			}
@@ -333,7 +333,7 @@ namespace tz
 	}
 
 	template<typename T>
-	bool transform_hierarchy<T>::dbgui_node(unsigned int node_id)
+	bool transform_hierarchy<T>::dbgui_node(unsigned int node_id, bool display_gizmo)
 	{
 		const transform_node<T>& node = this->get_node(node_id);
 		std::string node_name;
@@ -341,7 +341,7 @@ namespace tz
 		{
 			std::ostringstream oss;
 			oss << node.data;
-			node_name = "Node " + oss.str();
+			node_name = "Node \"" + oss.str() + "\"";
 		}
 		else
 		{
@@ -354,23 +354,22 @@ namespace tz
 			{
 				node.data.dbgui();
 			}
-			if constexpr(is_printable<T>)
+			if(display_gizmo)
 			{
-
-			}
-			node.local_transform.dbgui();
-			tz::mat4 local = node.local_transform.matrix();
-			tz::mat4 global = this->get_global_transform(node_id).matrix();
-			if(local != tz::mat4::identity())
-			{
-				ImGui::Text("Local Transform");
-				tz::dbgui_model(local);
-				ImGui::Text("Global Transform");
-				tz::dbgui_model(global);
+				node.local_transform.dbgui();
+				tz::mat4 local = node.local_transform.matrix();
+				tz::mat4 global = this->get_global_transform(node_id).matrix();
+				if(local != tz::mat4::identity())
+				{
+					ImGui::Text("Local Transform");
+					tz::dbgui_model(local);
+					ImGui::Text("Global Transform");
+					tz::dbgui_model(global);
+				}
 			}
 			for(unsigned int child_idx : node.children)
 			{
-				if(!this->dbgui_node(child_idx))
+				if(!this->dbgui_node(child_idx, display_gizmo))
 				{
 					break;
 				}

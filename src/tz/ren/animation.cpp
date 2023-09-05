@@ -268,7 +268,9 @@ namespace tz::ren
 		{
 			ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "ANIMATION DATA");
 			ImGui::Spacing();
-			ImGui::Text("Coming Soon!");
+			static bool display_trs = false;
+			ImGui::Checkbox("Display Node TRS", &display_trs);
+			mesh_renderer::object_tree.dbgui(display_trs);
 
 			static int object_id = 0;
 
