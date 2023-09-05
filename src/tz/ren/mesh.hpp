@@ -9,7 +9,7 @@
 
 namespace tz::ren
 {
-	template<unsigned int max_tex_count = 8>
+	template<unsigned int max_tex_count = 8, unsigned int max_joint4_count = 1>
 	struct vertex
 	{
 		tz::vec3 position = tz::vec3::zero();
@@ -19,14 +19,16 @@ namespace tz::ren
 		float pad0;
 		tz::vec3 tangent;
 		float pad1;
+		std::array<tz::vec4ui32, max_joint4_count> joint_indices = {};
+		std::array<tz::vec4, max_joint4_count> joint_weights = {};
 	};
 
 	using index = std::uint32_t;
 
-	template<unsigned int max_tex_count = 8>
+	template<unsigned int max_tex_count = 8, unsigned int max_joint4_count = 1>
 	struct mesh
 	{
-		std::vector<vertex<max_tex_count>> vertices = {};
+		std::vector<vertex<max_tex_count, max_joint4_count>> vertices = {};
 		std::vector<index> indices = {};
 	};
 
@@ -64,6 +66,7 @@ namespace tz::ren
 	};
 
 	constexpr unsigned int mesh_renderer_max_tex_count = 8;
+	constexpr unsigned int mesh_renderer_max_weight_count = 4;
 
 	// represents the data of an object (drawable).
 	struct object_data
@@ -84,8 +87,8 @@ namespace tz::ren
 		struct object_tag_t{};
 	public:
 		mesh_renderer(unsigned int total_textures = 128);
-		using vertex_t = vertex<mesh_renderer_max_tex_count>;
-		using mesh_t = mesh<mesh_renderer_max_tex_count>;
+		using vertex_t = vertex<mesh_renderer_max_tex_count, mesh_renderer_max_weight_count / 4>;
+		using mesh_t = mesh<mesh_renderer_max_tex_count, mesh_renderer_max_weight_count / 4>;
 		using mesh_handle = tz::handle<mesh_t>;
 		using object_handle = tz::handle<object_tag_t>;
 		using texture_handle = detail::texture_handle;

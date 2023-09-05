@@ -37,6 +37,11 @@ namespace tz::ren
 			std::map<std::size_t, object_handle> node_object_map = {};
 			// stores each asset that was brought in by this gltf.
 			asset_package assets = {};
+			struct metadata_t
+			{
+				std::vector<std::size_t> mesh_submesh_indices = {};
+				std::vector<std::optional<tz::io::gltf_material>> submesh_materials = {};
+			} metadata = {};
 		};
 
 		struct object_extra_info
@@ -44,8 +49,10 @@ namespace tz::ren
 			tz::trs base_transform = {};
 			tz::trs animation_trs_offset = {};
 		};
-		
+
 		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt);
+		std::vector<mesh_handle> node_handle_meshes(gltf_info& gltf_info);
+		std::vector<texture_handle> node_handle_materials(gltf_info& gltf_info);
 		void dbgui_tab_animation();
 
 		std::vector<gltf_info> gltfs = {};
