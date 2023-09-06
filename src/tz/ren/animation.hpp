@@ -23,7 +23,7 @@ namespace tz::ren
 		using mesh_renderer::update;
 
 		virtual void dbgui() override;
-		virtual void update() override;
+		void update(float delta);
 		virtual object_handle add_object(object_init_data init) override;
 
 		asset_package add_gltf(tz::io::gltf gltf);
@@ -43,6 +43,15 @@ namespace tz::ren
 				std::vector<std::optional<tz::io::gltf_material>> submesh_materials = {};
 				std::map<std::size_t, std::size_t> joint_node_map = {};
 			} metadata = {};
+
+			struct animation_playback_t
+			{
+				float time = 0.0f;
+				float time_warp = 1.0f;
+			} playback;
+
+			using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
+			std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(keyframe_iterator begin, keyframe_iterator end) const;
 		};
 
 		struct object_extra_info
@@ -51,12 +60,15 @@ namespace tz::ren
 			tz::trs animation_trs_offset = {};
 			std::string name = "Unnamed Object";
 			std::size_t submesh_count = 0;
+			bool is_animated = false;
 		};
 
+		virtual void update() override;
 		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt);
 		void node_handle_skins(gltf_info& gltf_info);
 		void write_inverse_bind_matrices(gltf_info& gltf_info);
 		void resource_write_joint_indices(gltf_info& gltf_info);
+		void animation_advance(float delta);
 		std::vector<mesh_handle> node_handle_meshes(gltf_info& gltf_info);
 		std::vector<texture_handle> node_handle_materials(gltf_info& gltf_info);
 		void dbgui_tab_animation();

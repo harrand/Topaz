@@ -23,17 +23,10 @@ namespace tz::ren
 		}
 	}
 
-	void animation_renderer::update()
+	void animation_renderer::update(float delta)
 	{
-		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
-		{
-			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
-			tz::assert(maybe_tree_id.has_value());
-			auto& tree_node = mesh_renderer::object_tree.get_node(maybe_tree_id.value());
-			const auto& extra = this->object_extras[i];
-			tree_node.local_transform = extra.base_transform.combined(extra.animation_trs_offset);
-		}
-		mesh_renderer::update();
+		this->animation_advance(delta);
+		animation_renderer::update();
 	}
 
 	animation_renderer::object_handle animation_renderer::add_object(object_init_data init)
@@ -90,6 +83,26 @@ namespace tz::ren
 		this->resource_write_joint_indices(this_gltf);
 
 		return this_gltf.assets;
+	}
+
+	void animation_renderer::update()
+	{
+		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
+		{
+			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
+			tz::assert(maybe_tree_id.has_value());
+			auto& tree_node = mesh_renderer::object_tree.get_node(maybe_tree_id.value());
+			const auto& extra = this->object_extras[i];
+			if(extra.is_animated)
+			{
+				tree_node.local_transform = extra.animation_trs_offset;
+			}
+			else
+			{
+				tree_node.local_transform = extra.base_transform;
+			}
+		}
+		mesh_renderer::update();
 	}
 
 	void animation_renderer::expand_current_gltf_node(gltf_info& gltf, std::size_t node_id, std::optional<std::size_t> parent_node_id)
@@ -239,6 +252,83 @@ namespace tz::ren
 			});
 		}
 		mesh_renderer::render_pass_edit(builder);
+	}
+
+	void animation_renderer::animation_advance(float delta)
+	{
+		for(auto& gltf : this->gltfs)
+		{
+			if(gltf.data.get_animations().size())
+			{
+				gltf.playback.time += (delta * gltf.playback.time_warp);
+				// only do first animation.
+				const auto& anim = gltf.data.get_animations().front();
+				// loop animations.
+				if(gltf.playback.time > anim.max_time)
+				{
+					if(gltf.playback.time_warp >= 0.0f)
+					{
+						gltf.playback.time = 0.0f;
+					}
+					else
+					{
+						gltf.playback.time = anim.max_time;
+					}
+				}
+
+				// update nodes.
+				for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
+				{
+					object_handle objh = gltf.node_object_map[nid];
+					auto& extra = this->object_extras[static_cast<std::size_t>(static_cast<tz::hanval>(objh))];
+					extra.is_animated = true;
+					
+					// actual animation stuff now.
+					const auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[nid];
+					auto [pos_before_id, pos_after_id] = gltf.interpolate_animation_keyframes(kf_positions.begin(), kf_positions.end());
+					auto [rot_before_id, rot_after_id] = gltf.interpolate_animation_keyframes(kf_rotations.begin(), kf_rotations.end());
+					auto [scale_before_id, scale_after_id] = gltf.interpolate_animation_keyframes(kf_scales.begin(), kf_scales.end());
+					if(kf_positions.size() > 1)
+					{
+						auto before = kf_positions.begin();
+						auto after = before;
+						std::advance(before, pos_before_id);
+						std::advance(after, pos_after_id);
+						tz::assert(gltf.playback.time >= before->time_point);
+						float pos_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+						tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
+						tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
+						extra.animation_trs_offset.translate = beforet + ((aftert - beforet) * pos_interp);
+					}
+
+					if(kf_rotations.size() > 1)
+					{
+						auto before = kf_rotations.begin();
+						auto after = before;
+						std::advance(before, rot_before_id);
+						std::advance(after, rot_after_id);
+						tz::assert(gltf.playback.time >= before->time_point);
+						float rot_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+						tz::quat beforer = before->transform;
+						tz::quat afterr = after->transform;
+						extra.animation_trs_offset.rotate = beforer.slerp(afterr, rot_interp);
+					}
+
+					if(kf_scales.size() > 1)
+					{
+						auto before = kf_scales.begin();
+						auto after = before;
+						std::advance(before, scale_before_id);
+						std::advance(after, scale_after_id);
+						tz::assert(gltf.playback.time >= before->time_point);
+						float scale_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+						tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
+						tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
+						extra.animation_trs_offset.scale = befores + ((afters - befores) * scale_interp);
+					}
+				}
+			}
+		}	
 	}
 
 	std::vector<animation_renderer::mesh_handle> animation_renderer::node_handle_meshes(gltf_info& gltf_info)
@@ -399,5 +489,25 @@ namespace tz::ren
 			}
 			ImGui::EndTabItem();
 		}
+	}
+
+	std::pair<std::size_t, std::size_t> animation_renderer::gltf_info::interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back) const
+	{
+		keyframe_iterator iter = front;
+		while(iter != back && iter->time_point <= this->playback.time)
+		{
+			iter++;
+		}
+		std::size_t idx = std::distance(front, iter);
+		if(idx == 0)
+		{
+			return {0u, 1u};
+		}
+		auto dist = std::distance(front, back);
+		if(std::cmp_greater_equal(idx, dist))
+		{
+			return {dist - 2, dist - 1};
+		}
+		return {idx - 1, idx};
 	}
 }

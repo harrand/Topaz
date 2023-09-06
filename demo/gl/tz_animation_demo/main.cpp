@@ -50,7 +50,7 @@ int main()
 			tz::begin_frame();
 			// draw
 			tz::gl::get_device().render();
-			ar.update();
+			ar.update((tz::system_time() - update_timer).seconds<float>());
 			update_timer = tz::system_time();
 			// advance dbgui
 			tz::dbgui::run([&ar]()
