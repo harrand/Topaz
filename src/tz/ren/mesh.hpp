@@ -73,6 +73,8 @@ namespace tz::ren
 	{
 		// represents the transform of the drawable, in world space.
 		tz::mat4 global_transform = tz::mat4::identity();
+		// extra matrix space. unused in mesh_renderer.
+		tz::mat4 extra = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 	};
@@ -128,7 +130,7 @@ namespace tz::ren
 		};
 		struct render_pass_t
 		{
-			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures = 128);
+			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, std::string_view vertex_spirv, std::string_view fragment_spirv, unsigned int total_textures = 128);
 			void dbgui();
 			std::span<const object_data> get_object_datas() const;
 			std::span<object_data> get_object_datas();
@@ -153,6 +155,7 @@ namespace tz::ren
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 	protected:
+		mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv);
 		void dbgui_tab_overview();
 		void dbgui_tab_render();
 

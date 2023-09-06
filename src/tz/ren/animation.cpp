@@ -1,8 +1,17 @@
 #include "tz/ren/animation.hpp"
 #include "tz/core/job/job.hpp"
+#include "tz/gl/imported_shaders.hpp"
+
+#include ImportedShaderHeader(animation, vertex)
+#include ImportedShaderHeader(animation, fragment)
 
 namespace tz::ren
 {
+	animation_renderer::animation_renderer(unsigned int total_textures):
+	mesh_renderer(total_textures, ImportedShaderSource(animation, vertex), ImportedShaderSource(animation, fragment))
+	{
+	}
+
 	void animation_renderer::dbgui()
 	{
 		if(ImGui::BeginTabBar("#1234"))

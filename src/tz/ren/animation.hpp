@@ -17,7 +17,7 @@ namespace tz::ren
 			std::vector<object_handle> objects = {};
 		};
 
-		animation_renderer() = default;
+		animation_renderer(unsigned int total_textures = 128);
 
 		using mesh_renderer::append_to_render_graph;
 		using mesh_renderer::update;

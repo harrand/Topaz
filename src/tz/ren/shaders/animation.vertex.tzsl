@@ -22,7 +22,7 @@ struct texture_locator
 struct object_t
 {
 	mat4 global_transform;
-	mat4 _;
+	mat4 inverse_bind_matrix;
 	texture_locator[MAX_TEX_COUNT] textures;
 };
 

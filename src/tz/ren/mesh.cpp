@@ -82,8 +82,7 @@ namespace tz::ren
 	};
 
 	mesh_renderer::mesh_renderer(unsigned int total_textures):
-	compute_pass(),
-	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, total_textures)
+	mesh_renderer(total_textures, ImportedShaderSource(mesh, vertex), ImportedShaderSource(mesh, fragment))
 	{}
 
 	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
@@ -343,13 +342,13 @@ namespace tz::ren
 		}
 	}
 
-	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, unsigned int total_textures)
+	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, std::string_view vertex_spirv, std::string_view fragment_spirv, unsigned int total_textures)
 	{
 		// we have a draw buffer which we write into upon render.
 		tz::gl::renderer_info rinfo;
 		// todo: shaders
-		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(mesh, vertex));
-		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(mesh, fragment));
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, vertex_spirv);
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, fragment_spirv);
 		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
 		// index buffer (initially contains a single index. empty buffers should be a thing aaaa)
 		this->index_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
@@ -692,6 +691,13 @@ namespace tz::ren
 			.index_count = static_cast<std::uint32_t>(index_src.size()),
 			.max_index_value = vertex_offset
 		};
+	}
+
+	mesh_renderer::mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv):
+	compute_pass(),
+	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, vertex_spirv, fragment_spirv, total_textures)
+	{
+
 	}
 
 	// dbgui
