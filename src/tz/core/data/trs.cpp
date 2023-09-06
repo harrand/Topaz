@@ -40,16 +40,19 @@ namespace tz
 		}
 
 		trs ret;
-		// tz::assert(mat.determinant() != 0.0f, "matrix is not decomposable because its determinant is 0.0f");
+		if(tz::determinant(mat) == 0.0f)
+		{
+			tz::report("Warning: Matrix is not decomposable because determinant == 0");
+		}
 		ret.translate = tz::vec4{mat[3]}.swizzle<0, 1, 2>();
 		ret.scale[0] = std::sqrt(mat(0, 0) * mat(0, 0) + mat(1, 0) * mat(1, 0) + mat(2, 0) * mat(2, 0));
 		ret.scale[1] = std::sqrt(mat(0, 1) * mat(0, 1) + mat(1, 1) * mat(1, 1) + mat(2, 1) * mat(2, 1));
 		ret.scale[2] = std::sqrt(mat(0, 2) * mat(0, 2) + mat(1, 2) * mat(1, 2) + mat(2, 2) * mat(2, 2));
 
-		// if(mat.determinant() < 0.0f)
-		// {
-		// ret.scale[0] *= -1.0f;
-		//	}
+		if(tz::determinant(mat) < 0.0f)
+		{
+			ret.scale[0] = -ret.scale[0];
+		}
 
 		float invsx = 1.0f / ret.scale[0];
 		float invsy = 1.0f / ret.scale[1];

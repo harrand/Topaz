@@ -211,6 +211,9 @@ namespace tz
 	/// A 2x2 row-major matrix of floats.
 	using mat2 = matrix<float, 2, 2>;
 
+	template<tz::number T = float>
+	T determinant(const matrix<T, 4, 4>& mat);
+
 	/**
 	 * @}
 	 */

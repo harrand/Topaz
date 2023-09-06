@@ -433,4 +433,28 @@ namespace tz
 	{
 		return this->mat[column][row];
 	}
+
+	template<tz::number T>
+	T determinant(const matrix<T, 4, 4>& m)
+	{
+
+		// Calculate 2x2 determinants
+		T det2_01 = m[0][0] * m[1][1] - m[0][1] * m[1][0];
+		T det2_02 = m[0][0] * m[1][2] - m[0][2] * m[1][0];
+		T det2_03 = m[0][0] * m[1][3] - m[0][3] * m[1][0];
+		T det2_12 = m[0][1] * m[1][2] - m[0][2] * m[1][1];
+		T det2_13 = m[0][1] * m[1][3] - m[0][3] * m[1][1];
+		T det2_23 = m[0][2] * m[1][3] - m[0][3] * m[1][2];
+
+		// Calculate 3x3 determinants
+		T det3_201 = m[2][0] * det2_01 - m[2][1] * det2_02 + m[2][2] * det2_12;
+		T det3_202 = m[2][0] * det2_01 - m[2][1] * det2_03 + m[2][3] * det2_13;
+		T det3_203 = m[2][0] * det2_02 - m[2][2] * det2_03 + m[2][3] * det2_23;
+		T det3_301 = m[3][0] * det2_01 - m[3][1] * det2_02 + m[3][2] * det2_12;
+		T det3_302 = m[3][0] * det2_01 - m[3][1] * det2_03 + m[3][3] * det2_13;
+		T det3_303 = m[3][0] * det2_02 - m[3][2] * det2_03 + m[3][3] * det2_23;
+
+		// Calculate the final determinant
+		return m[0][0] * det3_303 - m[0][1] * det3_302 + m[0][2] * det3_301 - m[0][3] * det3_203;
+	}
 }
