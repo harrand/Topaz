@@ -7,7 +7,7 @@ namespace tz
 	struct trs
 	{
 		tz::vec3 translate = tz::vec3::zero();
-		tz::quat rotate = tz::quat::zero();
+		tz::quat rotate = {0.0f, 0.0f, 0.0f, 1.0f};
 		tz::vec3 scale = tz::vec3::filled(1.0f);
 		#if TZ_DEBUG
 		tz::vec2 dbgui_slider_scale = tz::vec2::filled(1.0f);
