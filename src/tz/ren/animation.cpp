@@ -309,8 +309,8 @@ namespace tz::ren
 						std::advance(after, rot_after_id);
 						tz::assert(gltf.playback.time >= before->time_point);
 						float rot_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
-						tz::quat beforer = before->transform;
-						tz::quat afterr = after->transform;
+						tz::quat beforer = before->transform.normalised();
+						tz::quat afterr = after->transform.normalised();
 						extra.animation_trs_offset.rotate = beforer.slerp(afterr, rot_interp);
 					}
 
