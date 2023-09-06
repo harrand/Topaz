@@ -288,14 +288,14 @@ namespace tz::ren
 
 					// similar with weights.
 					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_weight_count / 4), tz::io::gltf_max_joint_attribs);
-					// note: we must deform the joint indices here.
-					// joint_indices[i] represents a joint index, which means the index into a gltf skin's array of joints.
-					// first we convert that joint id into a node id, and then convert that node id into an object id.
-					// that's what we want to write here.
-					// this means that the shader has it easy - it treats the joint index as an object to retrieve!
+					// note: the joint indices are in terms of the gltf skin's list of joints.
+					// this is troublesome because the shader deals with objects and object-ids, but has no idea about the gltf data.
+					// so we just write them as-is for now. we will eventually go on to invoke `resource_write_joint_indices` which
+					// will perform resource writes to correct this data. we can't do it now as we dont have the joint->node and node->object maps
+					// ready yet.
 					for(std::size_t i = 0; i < weight_count; i++)
 					{
-						ret.joint_indices[i] = vtx.jointn[i]; // + tz::vec4us::filled(this->get_gltf_node_offset());
+						ret.joint_indices[i] = vtx.jointn[i];
 						ret.joint_weights[i] = vtx.weightn[i];
 					}
 					// ignore colours. could theoretically incorporate that into tints, but will be very difficult to translate to texture locator tints properly.
