@@ -107,10 +107,13 @@ namespace tz::ren
 				.bound_textures = {},
 			});
 		}
+		auto& this_extra = this->object_extras.back();
 		// new object belongs to this asset package.
 		gltf.assets.objects.push_back(this_object);
 		// node id also maps to this object.
 		gltf.node_object_map[node_id] = this_object;
+		// set the name to whatever the gltf node had.
+		this_extra.name = node.name;
 
 		// TODO: one object can only render one mesh at a time.
 		// a mesh corresponds to a single gltf submesh, but a gltf node can correspond to a gltf mesh i.e multiple submeshes
@@ -124,6 +127,7 @@ namespace tz::ren
 			// make a new object for each submesh, their parents should be this_object
 			std::size_t submesh_count = gltf.data.get_meshes()[node.mesh].submeshes.size();
 			std::size_t submesh_offset = gltf.metadata.mesh_submesh_indices[node.mesh];
+			this_extra.submesh_count = submesh_count;
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
@@ -142,6 +146,9 @@ namespace tz::ren
 					.bound_textures = {bound_textures},
 					.parent = this_object
 				});
+				this->object_extras.back().name = "Submesh " + std::to_string(i - submesh_offset) + std::string{" - "} + this_extra.name;
+				// Reminder: Sanity check. this means that `gltf_node_id == object_id if we are first gltf` is no longer true.
+				gltf.assets.objects.push_back(child);
 			}
 		}
 
@@ -287,7 +294,7 @@ namespace tz::ren
 				object_extra_info& extra = this->object_extras[object_id];
 				if(ImGui::BeginChild(objname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
 				{
-					ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, objname.c_str());
+					ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, extra.name.c_str());
 					if(ImGui::TreeNode("Base Transform"))
 					{
 						extra.base_transform.dbgui();
@@ -298,6 +305,7 @@ namespace tz::ren
 						extra.animation_trs_offset.dbgui();
 						ImGui::TreePop();
 					}
+					ImGui::Text("Child Submesh Count: %zu", extra.submesh_count);
 				}
 				ImGui::EndChild();
 			}

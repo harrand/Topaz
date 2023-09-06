@@ -48,6 +48,8 @@ namespace tz::ren
 		{
 			tz::trs base_transform = {};
 			tz::trs animation_trs_offset = {};
+			std::string name = "Unnamed Object";
+			std::size_t submesh_count = 0;
 		};
 
 		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt);
