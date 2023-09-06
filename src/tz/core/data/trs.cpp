@@ -31,91 +31,42 @@ namespace tz
 		2 6 10 14
 		3 7 11 15
 		*/
-		if(mat(3, 0) != 0.0f || mat(3, 1) != 0.0f || mat(3, 2) != 0.0f || mat(3, 3) != 1.0f)
-		{
-			#if TZ_DEBUG
-			mat.debug_print();
-			#endif // TZ_DEBUG
-			tz::report("Warning: Matrix is not decomposable. Behaviour is unspecified.");
-		}
-
 		trs ret;
-		if(tz::determinant(mat) == 0.0f)
-		{
-			tz::report("Warning: Matrix is not decomposable because determinant == 0");
-		}
 		ret.translate = tz::vec4{mat[3]}.swizzle<0, 1, 2>();
 		ret.scale[0] = std::sqrt(mat(0, 0) * mat(0, 0) + mat(1, 0) * mat(1, 0) + mat(2, 0) * mat(2, 0));
 		ret.scale[1] = std::sqrt(mat(0, 1) * mat(0, 1) + mat(1, 1) * mat(1, 1) + mat(2, 1) * mat(2, 1));
 		ret.scale[2] = std::sqrt(mat(0, 2) * mat(0, 2) + mat(1, 2) * mat(1, 2) + mat(2, 2) * mat(2, 2));
 
-		if(tz::determinant(mat) < 0.0f)
+		float isx = 1.0f / ret.scale[0];
+		float isy = 1.0f / ret.scale[1];
+		float isz = 1.0f / ret.scale[2];
+
+		// remove scaling from matrix
+		mat(0, 0) *= isx; mat(1, 0) *= isx; mat(1, 0) *= isx;
+		mat(0, 1) *= isy; mat(1, 1) *= isy; mat(2, 1) *= isy;
+		mat(0, 2) *= isz; mat(1, 2) *= isz; mat(2, 2) *= isz;
+
+		// Construct the quaternion. This algo is copied from here:
+		// https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm.
+		ret.rotate[3] = std::max(0.0f, 1.0f + mat(0, 0) + mat(1, 1) + mat(2, 2));
+		ret.rotate[0] = std::max(0.0f, 1.0f + mat(0, 0) - mat(1, 1) - mat(2, 2));
+		ret.rotate[1] = std::max(0.0f, 1.0f - mat(0, 0) + mat(1, 1) - mat(2, 2));
+		ret.rotate[2] = std::max(0.0f, 1.0f - mat(0, 0) - mat(1, 1) - mat(2, 2));
+		for(std::size_t i = 0; i < 4; i++)
 		{
-			ret.scale[0] = -ret.scale[0];
+			ret.rotate[i] = std::sqrt(ret.rotate[i] * 0.5f);
 		}
-
-		float invsx = 1.0f / ret.scale[0];
-		float invsy = 1.0f / ret.scale[1];
-		float invsz = 1.0f / ret.scale[2];
-		tz::mat3 r;
-		r(0, 0) = mat(0, 0) * invsx;
-		r(1, 0) = mat(1, 0) * invsx;
-		r(2, 0) = mat(2, 0) * invsx;
-
-		r(0, 1) = mat(0, 1) * invsy;
-		r(1, 1) = mat(1, 1) * invsy;
-		r(2, 1) = mat(2, 1) * invsy;
-
-		r(0, 2) = mat(0, 2) * invsz;
-		r(1, 2) = mat(1, 2) * invsz;
-		r(2, 2) = mat(2, 2) * invsz;
-
-		// rotation = rotation from rotation matrix r.
-		// mat3 -> quat conversion takes place here.
-		const float trace = mat(0, 0) + mat(1, 1) + mat(2, 2);
-		if(trace > 0.0f)
-		{
-			const float s = 0.5f / std::sqrt(trace + 1.0f);
-			ret.rotate[3] = 0.25f / s;
-			ret.rotate[0] = (mat(2, 1) - mat(1, 2)) * s;
-			ret.rotate[1] = (mat(0, 2) - mat(2, 0)) * s;
-			ret.rotate[2] = (mat(1, 0) - mat(0, 1)) * s;
-		}
-		else
-		{
-			if(mat(0, 0) > mat(1, 1) && mat(0, 0) > mat(2, 2))
-			{
-				const float s = 2.0f * std::sqrt(1.0f + mat(0, 0) - mat(1, 1) - mat(2, 2));
-				ret.rotate[3] = (mat(2, 1) - mat(1, 2)) / s;
-				ret.rotate[0] = 0.25f * s;
-				ret.rotate[1] = (mat(0, 1) + mat(1, 0)) / s;
-				ret.rotate[2] = (mat(0, 2) + mat(2, 0)) / s;
-			}
-			else if(mat(1, 1) > mat(2, 2))
-			{
-				const float s = 2.0f * std::sqrt(1.0f + mat(1, 1) - mat(0, 0) - mat(2, 2));
-				ret.rotate[3] = (mat(0, 2) - mat(2, 0)) / s;
-				ret.rotate[0] = (mat(0, 1) + mat(1, 0)) / s;
-				ret.rotate[1] = 0.25f * s;
-				ret.rotate[2] = (mat(1, 2) + mat(2, 1)) / s;
-			}
-			else
-			{
-				const float s = 2.0f * std::sqrt(1.0f + mat(2, 2) - mat(0, 0) - mat(1, 1));
-				ret.rotate[3] = (mat(1, 0) - mat(0, 1)) / s;
-				ret.rotate[0] = (mat(0, 2) + mat(2, 0)) / s;
-				ret.rotate[1] = (mat(1, 2) + mat(2, 1)) / s;
-				ret.rotate[2] = 0.25f * s;
-			}
-		}
+		ret.rotate[0] = std::copysignf(ret.rotate[0], mat(1, 2) - mat(2, 1));
+		ret.rotate[1] = std::copysignf(ret.rotate[1], mat(2, 0) - mat(0, 2));
+		ret.rotate[2] = std::copysignf(ret.rotate[2], mat(0, 1) - mat(1, 0));
 		return ret;
 	}
 
 	trs& trs::combine(const trs& t)
 	{
 		TZ_PROFZONE("TRS - Combine", 0xFF0000AA);
-		this->translate += t.translate;
-		//this->translate = t.translate + t.scale * (t.rotate.rotate(this->translate));
+		//this->translate += t.translate;
+		this->translate = t.translate + t.scale * (t.rotate.rotate(this->translate));
 		// are we sure we don't just add these aswell?
 		this->rotate.combine(t.rotate);
 		this->rotate.normalise();

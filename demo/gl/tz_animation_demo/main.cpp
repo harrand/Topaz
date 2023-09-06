@@ -19,6 +19,24 @@ int main()
 		.name = "tz_animation_demo"
 	});
 	{
+		// wanna sanity check ur TRS bro?
+		//tz::trs trsa{.translate = {0.5f, 150.0f, 0.3f}, .rotate = {0.0f, 0.0f, 0.0f, 1.0f}, .scale = {1.0f, 1.0f, 1.0f}};
+		//tz::mat4 mata = trsa.matrix();
+		//tz::trs trsb{.translate = {-0.5f, 0.0f, 0.0f}, .rotate = tz::quat{0.5f, 0.0f, 0.0f, 0.5f}.normalised(), .scale = {0.5f, 0.5f, 0.5f}};
+		//tz::mat4 matb = trsb.matrix();
+
+		//tz::vec4 poshom{0.5f, -10.0f, 0.0f, 1.0f};
+		//tz::mat4 matprod = mata * matb;
+		//tz::trs trsprod = trsb.combined(trsa);
+		//tz::mat4 trsprodmat = trsprod.matrix();
+		//for(std::size_t i = 0; i < 4; i++)
+		//{
+			//for(std::size_t j = 0; j < 4; j++)
+			//{
+				//tz::assert(trsprodmat(i, j) - matprod(i, j) < 0.1f);
+			//}
+		//}
+
 		dbgui_init();
 
 		tz::ren::animation_renderer ar;

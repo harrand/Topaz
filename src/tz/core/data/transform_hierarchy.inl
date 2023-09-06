@@ -233,11 +233,9 @@ namespace tz
 		}	
 		tz::trs global = n.local_transform;
 		std::optional<unsigned int> p = n.parent;
-		while(p.has_value())
+		if(p.has_value())
 		{
-			const auto& pn = this->get_node(p.value());
-			global = get_global_transform(p.value()).combined(global);
-			p = pn.parent;
+			global.combine(get_global_transform(p.value()));
 		}
 		this->cache_write(id, global);
 		return global;

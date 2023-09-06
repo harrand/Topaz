@@ -10,15 +10,15 @@ namespace tz
 	{
 		TZ_PROFZONE("Quaternion - Generate Matrix", 0xFF0000AA);
 		tz::mat4 rot = tz::mat4::identity();
-		rot(0, 0) = 1.0f - (2 * this->operator[](1) * this->operator[](1)) - (2 * this->operator[](2) * this->operator[](2));
-		rot(1, 0) = (2 * this->operator[](0) * this->operator[](1)) + (2 * this->operator[](2) * this->operator[](3));
+		rot(0, 0) = 1.0f - 2.0f * (this->operator[](1) * this->operator[](1)) - (2 * this->operator[](2) * this->operator[](2));
+		rot(1, 0) = (this->operator[](0) * this->operator[](1)) + (2 * this->operator[](2) * this->operator[](3));
 		rot(2, 0) = (2 * this->operator[](0) * this->operator[](2)) - (2 * this->operator[](1) * this->operator[](3));
 		rot(0, 1) = (2 * this->operator[](0) * this->operator[](1)) - (2 * this->operator[](2) * this->operator[](3));
-		rot(1, 1) = 1.0f - (2 * this->operator[](0) * this->operator[](0)) - (2 * this->operator[](2) * this->operator[](2));
+		rot(1, 1) = 1.0f - 2.0f * (this->operator[](0) * this->operator[](0)) - (2 * this->operator[](2) * this->operator[](2));
 		rot(2, 1) = (2 * this->operator[](1) * this->operator[](2)) + (2 * this->operator[](0) * this->operator[](3));
 		rot(0, 2) = (2 * this->operator[](0) * this->operator[](2)) + (2 * this->operator[](1) * this->operator[](3));
 		rot(1, 2) = (2 * this->operator[](1) * this->operator[](2)) - (2 * this->operator[](0) * this->operator[](3));
-		rot(2, 2) = 1.0f - (2 * this->operator[](0) * this->operator[](0)) - (2 * this->operator[](1) * this->operator[](1));
+		rot(2, 2) = 1.0f - 2.0f * (this->operator[](0) * this->operator[](0)) - (2 * this->operator[](1) * this->operator[](1));
 
 		return rot;
 	}
@@ -111,10 +111,10 @@ namespace tz
 		quat& lhs = *this;
 		quat result = quat::zero();
 
-		result[0] = rhs[3] * lhs[0] + rhs[0] * lhs[3] + rhs[1] * lhs[2] - rhs[2] * lhs[1];
-		result[1] = rhs[3] * lhs[1] + rhs[1] * lhs[3] + rhs[2] * lhs[0] - rhs[0] * lhs[2];
-		result[2] = rhs[3] * lhs[2] + rhs[2] * lhs[3] + rhs[0] * lhs[1] - rhs[1] * lhs[0];
-		result[3] = rhs[3] * lhs[3] - rhs[0] * lhs[0] - rhs[1] * lhs[1] - rhs[2] * lhs[2];
+		result[3] = lhs[3] * rhs[3] - lhs[0] * rhs[0] - lhs[1] * rhs[1] - lhs[2] * rhs[2];
+		result[0] = lhs[3] * rhs[0] + lhs[0] * rhs[3] + lhs[1] * rhs[2] - lhs[2] * rhs[1];
+		result[1] = lhs[3] * rhs[1] - lhs[0] * rhs[2] + lhs[1] * rhs[3] + lhs[2] * rhs[0];
+		result[2] = lhs[3] * rhs[2] + lhs[0] * rhs[1] - lhs[1] * rhs[0] + lhs[2] * rhs[3];
 		std::swap(result, lhs);
 		return *this;
 	}
