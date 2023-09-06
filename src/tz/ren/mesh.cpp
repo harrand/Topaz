@@ -700,6 +700,36 @@ namespace tz::ren
 
 	}
 
+	const mesh_locator& mesh_renderer::get_mesh_locator(mesh_handle mesh) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(mesh));
+		tz::assert(hanval < this->render_pass.meshes.size());
+		return this->render_pass.meshes[hanval];
+	}
+
+	std::span<const mesh_renderer::vertex_t> mesh_renderer::read_vertices(const mesh_locator& mloc) const
+	{
+		auto vertices = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.vertex_buffer)->data_as<const vertex_t>();
+		return vertices.subspan(mloc.vertex_offset, mloc.vertex_count);
+	}
+
+	tz::gl::resource_handle mesh_renderer::render_pass_get_vertex_buffer_handle() const
+	{
+		return this->render_pass.vertex_buffer;
+	}
+
+	object_data& mesh_renderer::get_object_data(object_handle h)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(this->render_pass.get_object_datas().size() > hanval);
+		return this->render_pass.get_object_datas()[hanval];
+	}
+
+	void mesh_renderer::render_pass_edit(const tz::gl::RendererEditBuilder& builder)
+	{
+		tz::gl::get_device().get_renderer(this->render_pass.handle).edit(builder.build());
+	}
+
 	// dbgui
 
 	void mesh_renderer::dbgui_tab_overview()

@@ -41,6 +41,7 @@ namespace tz::ren
 			{
 				std::vector<std::size_t> mesh_submesh_indices = {};
 				std::vector<std::optional<tz::io::gltf_material>> submesh_materials = {};
+				std::map<std::size_t, std::size_t> joint_node_map = {};
 			} metadata = {};
 		};
 
@@ -53,6 +54,9 @@ namespace tz::ren
 		};
 
 		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt);
+		void node_handle_skins(gltf_info& gltf_info);
+		void write_inverse_bind_matrices(gltf_info& gltf_info);
+		void resource_write_joint_indices(gltf_info& gltf_info);
 		std::vector<mesh_handle> node_handle_meshes(gltf_info& gltf_info);
 		std::vector<texture_handle> node_handle_materials(gltf_info& gltf_info);
 		void dbgui_tab_animation();

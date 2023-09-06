@@ -58,6 +58,8 @@ namespace tz::ren
 		});
 		auto& this_gltf = this->gltfs.back();
 
+		// skins
+		this->node_handle_skins(this_gltf);
 		// meshes
 		auto meshes = this->node_handle_meshes(this_gltf);
 		for(mesh_handle mesh : meshes)
@@ -83,6 +85,9 @@ namespace tz::ren
 
 			this->expand_current_gltf_node(this_gltf, node_id);
 		}
+
+		this->write_inverse_bind_matrices(this_gltf);
+		this->resource_write_joint_indices(this_gltf);
 
 		return this_gltf.assets;
 	}
@@ -167,6 +172,75 @@ namespace tz::ren
 		}
 	}
 
+	void animation_renderer::node_handle_skins(gltf_info& gltf_info)
+	{
+		for(tz::io::gltf_skin skin : gltf_info.data.get_skins())
+		{
+			for(std::size_t i = 0; i < skin.joints.size(); i++)
+			{
+				std::uint32_t node_id = skin.joints[i];
+				gltf_info.metadata.joint_node_map[i] = node_id;
+			}
+		}
+	}
+
+	void animation_renderer::write_inverse_bind_matrices(gltf_info& gltf_info)
+	{
+		for(tz::io::gltf_skin skin : gltf_info.data.get_skins())
+		{
+			for(std::size_t i = 0; i < skin.joints.size(); i++)
+			{
+				std::uint32_t node_id = skin.joints[i];
+				object_handle handle = gltf_info.node_object_map[node_id];
+				object_data& obj = mesh_renderer::get_object_data(handle);
+				// extra = inverse bind matrix
+				obj.extra = skin.inverse_bind_matrices[i];
+			}
+		}
+	}
+
+	void animation_renderer::resource_write_joint_indices(gltf_info& gltf_info)
+	{
+		std::deque<std::vector<vertex_t>> amended_vertex_storage;
+		// we wrote some joint indices for each vertex earlier.
+		// however, we need to amend them.
+		tz::gl::RendererEditBuilder builder;
+		for(std::size_t i = 0; i < mesh_renderer::mesh_count(); i++)
+		{
+			const auto& mloc = mesh_renderer::get_mesh_locator(static_cast<tz::hanval>(i));
+			// read the joint indices from resource data.		
+			std::span<const vertex_t> initial_vertices = mesh_renderer::read_vertices(mloc);
+			// copy into a new buffer.
+			auto& amended_vertices = amended_vertex_storage.emplace_back(initial_vertices.size());
+			std::copy(initial_vertices.begin(), initial_vertices.end(), amended_vertices.begin());
+			// make the joint index changes.
+			for(vertex_t& vtx : amended_vertices)
+			{
+				for(tz::vec4ui32& joint_index_cluster : vtx.joint_indices)
+				{
+					for(std::size_t i = 0; i < 4; i++)
+					{
+						// get joint index
+						std::uint32_t joint_index = joint_index_cluster[i];
+						// convert directly to object id.
+						std::size_t gltf_node_id = gltf_info.metadata.joint_node_map.at(joint_index);
+						object_handle handle = gltf_info.node_object_map.at(gltf_node_id);
+						joint_index_cluster[i] = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+					}
+				}
+			}
+			std::span<const vertex_t> amended_span = amended_vertices;
+			// queue a resource write with the changes.
+			builder.write
+			({
+				.resource = mesh_renderer::render_pass_get_vertex_buffer_handle(),
+				.data = std::as_bytes(amended_span),
+				.offset = sizeof(vertex_t) * mloc.vertex_offset,
+			});
+		}
+		mesh_renderer::render_pass_edit(builder);
+	}
+
 	std::vector<animation_renderer::mesh_handle> animation_renderer::node_handle_meshes(gltf_info& gltf_info)
 	{
 		const tz::io::gltf& gltf = gltf_info.data;
@@ -214,6 +288,11 @@ namespace tz::ren
 
 					// similar with weights.
 					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_weight_count / 4), tz::io::gltf_max_joint_attribs);
+					// note: we must deform the joint indices here.
+					// joint_indices[i] represents a joint index, which means the index into a gltf skin's array of joints.
+					// first we convert that joint id into a node id, and then convert that node id into an object id.
+					// that's what we want to write here.
+					// this means that the shader has it easy - it treats the joint index as an object to retrieve!
 					for(std::size_t i = 0; i < weight_count; i++)
 					{
 						ret.joint_indices[i] = vtx.jointn[i]; // + tz::vec4us::filled(this->get_gltf_node_offset());

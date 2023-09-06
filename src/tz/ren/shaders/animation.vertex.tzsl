@@ -9,8 +9,8 @@ struct vertex_t
 	vec4 texcoord4[MAX_TEX_COUNT];
 	vec3 normal;
 	vec3 tangent;
-	uvec4 joint_indices;
-	vec4 joint_weights;
+	uvec4 joint_indices[WEIGHT4_COUNT];
+	vec4 joint_weights[WEIGHT4_COUNT];
 };
 
 struct texture_locator
@@ -46,11 +46,23 @@ output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
 output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
 
+mat4 get_joint_matrix(uint object_id)
+{
+	object_t o = objects.data[object_id];
+	return o.global_transform * o.inverse_bind_matrix;
+}
+
 void main()
 {
 	vertex_t vtx = vertices.data[in::vertex_id];
 	object_t obj = objects.data[in::draw_id + in::base_instance];	
-	out::position = camera.projection * camera.view * obj.global_transform * vec4(vtx.position, 1.0f);
+
+	mat4 skin_mat =
+		vtx.joint_weights[0].x * get_joint_matrix(vtx.joint_indices[0].x) +
+		vtx.joint_weights[0].y * get_joint_matrix(vtx.joint_indices[0].y) +
+		vtx.joint_weights[0].z * get_joint_matrix(vtx.joint_indices[0].z) +
+		vtx.joint_weights[0].w * get_joint_matrix(vtx.joint_indices[0].w);
+	out::position = camera.projection * camera.view * skin_mat * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)

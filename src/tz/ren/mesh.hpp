@@ -156,6 +156,12 @@ namespace tz::ren
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 	protected:
 		mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv);
+		const mesh_locator& get_mesh_locator(mesh_handle mesh) const;
+		std::span<const vertex_t> read_vertices(const mesh_locator& mloc) const;
+		tz::gl::resource_handle render_pass_get_vertex_buffer_handle() const;
+		object_data& get_object_data(object_handle h);
+
+		void render_pass_edit(const tz::gl::RendererEditBuilder& builder);
 		void dbgui_tab_overview();
 		void dbgui_tab_render();
 
