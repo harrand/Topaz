@@ -114,9 +114,8 @@ namespace tz
 	trs& trs::combine(const trs& t)
 	{
 		TZ_PROFZONE("TRS - Combine", 0xFF0000AA);
-		tz::vec3 rotated = t.rotate.rotate(this->translate);
-		tz::vec3 scaled = t.scale * rotated;
-		this->translate = t.translate + scaled;
+		this->translate += t.translate;
+		//this->translate = t.translate + t.scale * (t.rotate.rotate(this->translate));
 		// are we sure we don't just add these aswell?
 		this->rotate.combine(t.rotate);
 		this->rotate.normalise();
