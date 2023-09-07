@@ -99,6 +99,7 @@ namespace tz::io
 	struct gltf_accessor
 	{
 		std::size_t buffer_view_id;
+		std::size_t byte_offset = 0;
 		gltf_accessor_component_type component_type;
 		std::size_t element_count;
 		gltf_accessor_type type;

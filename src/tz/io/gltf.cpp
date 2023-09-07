@@ -949,6 +949,12 @@ namespace tz::io
 		{
 			for(auto accessor : node)
 			{
+				tz::assert(accessor["sparse"].is_null());
+				int byte_offset = 0;
+				if(!accessor["byteOffset"].is_null())
+				{
+					byte_offset = accessor["byteOffset"];
+				}
 				std::string type = accessor["type"];
 				gltf_accessor_type t = {};
 				if(type == "SCALAR")
@@ -1029,6 +1035,7 @@ namespace tz::io
 				this->accessors.push_back
 				({
 					.buffer_view_id = accessor["bufferView"],
+					.byte_offset = static_cast<std::size_t>(byte_offset),
 		 			.component_type = comp_type,
 		 			.element_count = accessor["count"],
 		 			.type = t,
@@ -1225,6 +1232,7 @@ namespace tz::io
 				tz::assert(accessor.type == gltf_accessor_type::mat4);
 				tz::assert(accessor.buffer_view_id != detail::badzu);
 				std::span<const std::byte> matrix_data = this->view_buffer(this->views[accessor.buffer_view_id]);
+				matrix_data = matrix_data.subspan(accessor.byte_offset);
 				std::span<const tz::mat4> matrices{reinterpret_cast<const tz::mat4*>(matrix_data.data()), accessor.element_count};
 				tz::assert(matrices.size() == accessor.element_count);
 				std::copy(matrices.begin(), matrices.end(), skin.inverse_bind_matrices.begin());
@@ -1269,7 +1277,9 @@ namespace tz::io
 
 				// once we validated everythings in the correct format, let's extract out the data.
 				auto time_bytes = this->view_buffer(this->views[input_accessor.buffer_view_id]);
+				time_bytes = time_bytes.subspan(input_accessor.byte_offset);
 				auto transform_bytes = this->view_buffer(this->views[output_accessor.buffer_view_id]);
+				transform_bytes = transform_bytes.subspan(output_accessor.byte_offset);
 
 				const std::size_t keyframe_count = input_accessor.element_count;
 				tz::assert(keyframe_count == output_accessor.element_count);
@@ -1281,10 +1291,6 @@ namespace tz::io
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
 						tz::vec4 data = transform_vec4s[i];
-						for(std::size_t j = 0; j < 4; j++)
-						{
-							data[j] = std::clamp(data[j], output_accessor.min(0, j), output_accessor.max(0, j));
-						}
 						kf_rotations.insert({.time_point = time_floats[i], .transform = data});
 					}
 				}
@@ -1294,10 +1300,6 @@ namespace tz::io
 					for(std::size_t i = 0; i < keyframe_count; i++)
 					{
 						tz::vec3 data = transform_vec3s[i];
-						for(std::size_t j = 0; j < 3; j++)
-						{
-							data[j] = std::clamp(data[j], output_accessor.min(0, j), output_accessor.max(0, j));
-						}
 						switch(target.path)
 						{
 							case gltf_animation_channel_target_path::translation:
