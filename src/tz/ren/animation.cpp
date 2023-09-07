@@ -25,8 +25,8 @@ namespace tz::ren
 
 	void animation_renderer::update(float delta)
 	{
-		this->animation_advance(delta);
 		animation_renderer::update();
+		this->animation_advance(delta);
 	}
 
 	animation_renderer::object_handle animation_renderer::add_object(object_init_data init)
