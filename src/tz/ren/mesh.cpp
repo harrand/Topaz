@@ -63,7 +63,7 @@ namespace tz::ren
 	*/
 
 	// only support a certain number of meshes being drawn at a time. todo: dynamic resize?
-	constexpr std::size_t max_drawn_meshes = 256;
+	constexpr std::size_t max_drawn_meshes = 1024;
 
 	// a draw list contains all the meshes that need to be drawn in the right order.
 	// the compute pass will take this list and populate the draw-indirect buffer,

@@ -41,7 +41,6 @@ int main()
 
 		tz::ren::animation_renderer ar;
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/sponza.glb"));
-		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/sponza.glb"));
 		ar.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();

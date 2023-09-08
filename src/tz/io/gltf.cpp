@@ -259,10 +259,12 @@ namespace tz::io
 		// POS
 		gltf_buffer_view pos_view = this->views[pos.buffer_view_id];
 		std::span<const std::byte> pos_data = this->get_binary_data(pos_view.offset, pos_view.length);
+		pos_data = pos_data.subspan(pos.byte_offset);
 
 		// NORMAL
 		gltf_buffer_view nrm_view = this->views[nrm.buffer_view_id];
 		std::span<const std::byte> nrm_data = this->get_binary_data(nrm_view.offset, nrm_view.length);
+		nrm_data = nrm_data.subspan(nrm.byte_offset);
 
 		// TEXCOORN
 		std::array<std::span<const std::byte>, gltf_max_texcoord_attribs> texc_datas;
@@ -272,6 +274,7 @@ namespace tz::io
 			{
 				gltf_buffer_view texc_view = this->views[texcs[i]->buffer_view_id];
 				texc_datas[i] = this->get_binary_data(texc_view.offset, texc_view.length);
+				texc_datas[i] = texc_datas[i].subspan(texcs[i]->byte_offset);
 			}
 		}
 
@@ -283,6 +286,7 @@ namespace tz::io
 			{
 				gltf_buffer_view color_view = this->views[colors[i]->buffer_view_id];
 				color_datas[i] = this->get_binary_data(color_view.offset, color_view.length);
+				color_datas[i] = color_datas[i].subspan(colors[i]->byte_offset);
 			}
 		}
 
@@ -294,6 +298,7 @@ namespace tz::io
 			{
 				gltf_buffer_view joint_view = this->views[joints[i]->buffer_view_id];
 				joint_datas[i] = this->get_binary_data(joint_view.offset, joint_view.length);
+				joint_datas[i] = joint_datas[i].subspan(joints[i]->byte_offset);
 			}
 		}
 
@@ -305,6 +310,7 @@ namespace tz::io
 			{
 				gltf_buffer_view weight_view = this->views[weights[i]->buffer_view_id];
 				weight_datas[i] = this->get_binary_data(weight_view.offset, weight_view.length);
+				weight_datas[i] = weight_datas[i].subspan(weights[i]->byte_offset);
 			}
 		}
 
@@ -357,6 +363,7 @@ namespace tz::io
 		gltf_buffer_view indices_view = this->views[indices.buffer_view_id];
 
 		std::span<const std::byte> indices_data = this->get_binary_data(indices_view.offset, indices_view.length);
+		indices_data = indices_data.subspan(indices.byte_offset);
 		ret.indices.resize(index_count);
 		std::vector<unsigned short> indices_intermediate;
 		indices_intermediate.resize(index_count);
