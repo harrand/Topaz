@@ -78,13 +78,15 @@ namespace tz::ren
 
 		// objects
 		// expand nodes recursively.
-		auto gltf_nodes = gltf.get_active_nodes();
+		auto gltf_nodes = gltf.get_root_nodes();
+		auto all_nodes = gltf.get_nodes();
 		for(tz::io::gltf_node node : gltf_nodes)
 		{
 			// we deal with node indices, so yeah... we gotta recalculate them (boo!)
-			auto iter = std::find(gltf_nodes.begin(), gltf_nodes.end(), node);
-			tz::assert(iter != gltf_nodes.end());
-			std::size_t node_id = std::distance(gltf_nodes.begin(), iter);
+			auto iter = std::find(all_nodes.begin(), all_nodes.end(), node);
+			tz::assert(iter != all_nodes.end());
+			std::size_t node_id = std::distance(all_nodes.begin(), iter);
+			tz::assert(node.id == node_id);
 
 			this->expand_current_gltf_node(this_gltf, node_id, std::nullopt, parent);
 		}
@@ -102,7 +104,7 @@ namespace tz::ren
 			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
 			tz::assert(maybe_tree_id.has_value());
 			auto& tree_node = mesh_renderer::object_tree.get_node(maybe_tree_id.value());
-			const auto& extra = this->object_extras[i];
+			auto& extra = this->object_extras[i];
 			if(extra.is_animated)
 			{
 				tree_node.local_transform = extra.animation_trs_offset;
@@ -111,6 +113,7 @@ namespace tz::ren
 			{
 				tree_node.local_transform = extra.base_transform;
 			}
+			extra.animation_trs_offset = extra.base_transform;
 		}
 		mesh_renderer::update();
 	}
@@ -209,7 +212,7 @@ namespace tz::ren
 			for(std::size_t i = 0; i < skin.joints.size(); i++)
 			{
 				std::uint32_t node_id = skin.joints[i];
-				object_handle handle = gltf_info.node_object_map[node_id];
+				object_handle handle = gltf_info.node_object_map.at(node_id);
 				object_data& obj = mesh_renderer::get_object_data(handle);
 				// extra = inverse bind matrix
 				obj.extra = skin.inverse_bind_matrices[i];
@@ -313,7 +316,7 @@ namespace tz::ren
 						auto after = before;
 						std::advance(before, pos_before_id);
 						std::advance(after, pos_after_id);
-						tz::assert(gltf.playback.time >= before->time_point);
+						//tz::assert(gltf.playback.time >= before->time_point);
 						float pos_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 						tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
 						tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
@@ -326,7 +329,7 @@ namespace tz::ren
 						auto after = before;
 						std::advance(before, rot_before_id);
 						std::advance(after, rot_after_id);
-						tz::assert(gltf.playback.time >= before->time_point);
+						//tz::assert(gltf.playback.time >= before->time_point);
 						float rot_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 						tz::quat beforer = before->transform.normalised();
 						tz::quat afterr = after->transform.normalised();
@@ -339,7 +342,7 @@ namespace tz::ren
 						auto after = before;
 						std::advance(before, scale_before_id);
 						std::advance(after, scale_after_id);
-						tz::assert(gltf.playback.time >= before->time_point);
+						//tz::assert(gltf.playback.time >= before->time_point);
 						float scale_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
 						tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
 						tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
@@ -490,12 +493,14 @@ namespace tz::ren
 					if(ImGui::RadioButton("No Animation", !anim.playback.playing_animation_id.has_value()))
 					{
 						anim.playback.playing_animation_id = std::nullopt;
+						anim.playback.time = 0.0f;
 					}
 					for(std::size_t i = 0; i < anim.data.get_animations().size(); i++)
 					{
 						if(ImGui::RadioButton(anim.data.get_animations()[i].name.c_str(), &anim_cursor, i))
 						{
 							anim.playback.playing_animation_id = anim_cursor;
+							anim.playback.time = 0.0f;
 						}
 					}
 					if(anim.playback.playing_animation_id.has_value())

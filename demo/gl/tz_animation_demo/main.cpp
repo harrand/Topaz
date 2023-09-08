@@ -40,6 +40,7 @@ int main()
 		dbgui_init();
 
 		tz::ren::animation_renderer ar;
+		/*
 		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/sponza.glb"));
 		tz::ren::animation_renderer::object_handle right_hand = pkg.objects[108];
 		auto sword_parent = ar.add_object
@@ -48,6 +49,8 @@ int main()
 			.parent = right_hand
 		});
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
+		*/
+		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"));
 		ar.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();

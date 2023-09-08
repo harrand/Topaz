@@ -129,6 +129,30 @@ namespace tz::io
 	{
 		return this->nodes;
 	}
+
+	std::vector<gltf_node> gltf::get_root_nodes() const
+	{
+		std::vector<gltf_node> ret = {};
+		for(std::size_t i = 0; i < this->nodes.size(); i++)
+		{
+			bool is_root_node = true;
+			for(const auto& node : this->get_nodes())
+			{
+				auto iter = std::find(node.children.begin(), node.children.end(), i);
+				if(iter != node.children.end())
+				{
+					// `i` is someone's child. isn't a root node.
+					is_root_node = false;
+					break;
+				}
+			}
+			if(is_root_node)
+			{
+				ret.push_back(this->nodes[i]);
+			}
+		}
+		return ret;
+	}
 	
 	std::vector<gltf_node> gltf::get_active_nodes() const
 	{
@@ -228,7 +252,9 @@ namespace tz::io
 			if(jointids[i] != detail::badzu)
 			{
 				joints[i] = this->accessors[jointids[i]];
-				tz::assert(joints[i]->component_type == gltf_accessor_component_type::ushort, "Joint attribute was expected to be unsigned shorts.");
+				//tz::assert(joints[i]->component_type == gltf_accessor_component_type::ushort, "Joint attribute was expected to be unsigned shorts.");
+				// topaz uses unsigned shorts natively, but will convert under-the-hood if the gltf does not use unsigned shorts.
+				// note: gltf only supports unsigned bytes aswell as shorts.
 				tz::assert(joints[i]->type == gltf_accessor_type::vec4, "Joints expected to be vec4.");
 				tz::assert(joints[i]->element_count == vertex_count, "Number of joints did not match number of positions.");
 			}
@@ -318,6 +344,7 @@ namespace tz::io
 		constexpr std::size_t vec4_stride = sizeof(float) * 4;
 		constexpr std::size_t vec3_stride = sizeof(float) * 3;
 		constexpr std::size_t vec2_stride = sizeof(float) * 2;
+		#define EVIL_TRANSFORM(in_span, out_container, type_to, type_from, count) do{auto* casted_ptr = reinterpret_cast<const type_from*>(in_span.data()); std::span<const type_from> typedata{casted_ptr, count}; std::transform(typedata.begin(), typedata.end(), out_container.begin(), [](const type_from& d)->type_to{return static_cast<type_to>(d);});}while(false)
 		for(std::size_t i = 0; i < vertex_count; i++)
 		{
 			gltf_vertex_data& vtx = ret.vertices.emplace_back();
@@ -341,9 +368,37 @@ namespace tz::io
 
 			for(std::size_t j = 0; j < gltf_max_joint_attribs; j++)
 			{
+				std::vector<tz::vec4us> converted_joints;
 				if(joints[j].has_value())
 				{
-					std::memcpy(vtx.jointn[j].data().data(), joint_datas[j].data() + (vec4us_stride * i), sizeof(unsigned short) * 4);
+					converted_joints.resize(joints[j]->element_count);
+					switch(joints[j]->component_type)
+					{
+						case gltf_accessor_component_type::ubyte:
+						{
+							using vec4ub = std::array<std::byte, 4>;
+							auto initial_joints = std::span<const vec4ub>{reinterpret_cast<const vec4ub*>(joint_datas[j].data()), joints[j]->element_count};
+							std::transform(initial_joints.begin(), initial_joints.end(), converted_joints.begin(),
+							[](vec4ub vec)
+							{
+								return tz::vec4us
+								{
+									static_cast<unsigned short>(vec[0]),
+									static_cast<unsigned short>(vec[1]),
+									static_cast<unsigned short>(vec[2]),
+									static_cast<unsigned short>(vec[3])
+								};
+							});
+						}
+						break;
+						case gltf_accessor_component_type::ushort:
+							std::memcpy(converted_joints.data(), joint_datas[j].data(), converted_joints.size() * sizeof(tz::vec4us));
+						break;
+						default:
+
+						break;
+					}
+					std::memcpy(vtx.jointn[j].data().data(), converted_joints.data() + i, sizeof(unsigned short) * 4);
 				}
 			}
 
@@ -369,7 +424,7 @@ namespace tz::io
 		indices_intermediate.resize(index_count);
 
 		std::memcpy(indices_intermediate.data(), indices_data.data(), sizeof(unsigned short) * index_count);
-		#define EVIL_DO_TRANSFORM_BASED_ON(type) do{auto* idxptr = reinterpret_cast<const type*>(indices_data.data()); std::span<const type> typedata{idxptr, index_count}; std::transform(typedata.begin(), typedata.end(), ret.indices.begin(), [](const type& d)->std::uint32_t{return static_cast<std::uint32_t>(d);});}while(false)
+		#define EVIL_DO_TRANSFORM_BASED_ON(type) EVIL_TRANSFORM(indices_data, ret.indices, std::uint32_t, type, index_count)
 		//EVIL_DO_TRANSFORM_BASED_ON(unsigned short);
 		switch(indices.component_type)
 		{
@@ -586,9 +641,11 @@ namespace tz::io
 		tz::assert(nodes.is_array() || nodes.is_null());
 		if(nodes.is_array())
 		{
+			std::size_t i = 0;
 			for(auto jnode : nodes)
 			{
 				auto& node = this->nodes.emplace_back();
+				node.id = i++;
 				tz::assert(jnode["camera"].is_null(), "Node camera is not supported.");
 				tz::assert(jnode["children"].is_array() || jnode["children"].is_null());
 				if(jnode["children"].is_array())
