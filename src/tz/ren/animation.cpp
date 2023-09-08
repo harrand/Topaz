@@ -223,9 +223,10 @@ namespace tz::ren
 		// we wrote some joint indices for each vertex earlier.
 		// however, we need to amend them.
 		tz::gl::RendererEditBuilder builder;
-		for(std::size_t i = 0; i < mesh_renderer::mesh_count(); i++)
+		// we only write to the meshes that belong to this gltf!
+		for(mesh_handle m : gltf_info.assets.meshes)
 		{
-			const auto& mloc = mesh_renderer::get_mesh_locator(static_cast<tz::hanval>(i));
+			const auto& mloc = mesh_renderer::get_mesh_locator(m);
 			// read the joint indices from resource data.		
 			std::span<const vertex_t> initial_vertices = mesh_renderer::read_vertices(mloc);
 			// copy into a new buffer.
@@ -283,6 +284,10 @@ namespace tz::ren
 					{
 						gltf.playback.time = anim.max_time;
 					}
+				}
+				if(gltf.playback.time < 0.0f)
+				{
+					gltf.playback.time = anim.max_time;
 				}
 
 				// update nodes.
@@ -494,6 +499,7 @@ namespace tz::ren
 						ImGui::Text("%s", current_anim.name.c_str());
 						const float time_max = current_anim.max_time;
 						ImGui::Text("%.2f/%.2f", anim.playback.time, time_max);
+						ImGui::SliderFloat("Time Warp", &anim.playback.time_warp, -5.0f, 5.0f);
 						ImGui::ProgressBar(anim.playback.time / time_max);
 					}
 				}
