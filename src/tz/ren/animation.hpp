@@ -9,6 +9,9 @@ namespace tz::ren
 	{
 	public:
 		using gltf_handle = tz::handle<tz::io::gltf>;
+		using mesh_handle = mesh_renderer::mesh_handle;
+		using texture_handle = mesh_renderer::texture_handle;
+		using object_handle = mesh_renderer::object_handle;
 		struct asset_package
 		{
 			gltf_handle gltf = tz::nullhand;
@@ -27,6 +30,7 @@ namespace tz::ren
 		virtual object_handle add_object(object_init_data init) override;
 
 		asset_package add_gltf(tz::io::gltf gltf);
+		asset_package add_gltf(tz::io::gltf gltf, object_handle parent);
 	private:
 		struct gltf_info
 		{
@@ -65,7 +69,7 @@ namespace tz::ren
 		};
 
 		virtual void update() override;
-		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt);
+		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt, object_handle parent_override = tz::nullhand);
 		void node_handle_skins(gltf_info& gltf_info);
 		void write_inverse_bind_matrices(gltf_info& gltf_info);
 		void resource_write_joint_indices(gltf_info& gltf_info);

@@ -40,7 +40,14 @@ int main()
 		dbgui_init();
 
 		tz::ren::animation_renderer ar;
-		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/sponza.glb"));
+		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/sponza.glb"));
+		tz::ren::animation_renderer::object_handle right_hand = pkg.objects[108];
+		auto sword_parent = ar.add_object
+		({
+			.trs = {{0.074f, 0.011f, 0.536f}, {0.734f, 0.0f, 0.0f, 0.679f}, {0.298f, 0.372f, 0.347f}},
+			.parent = right_hand
+		});
+		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		ar.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();

@@ -47,6 +47,11 @@ namespace tz::ren
 
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
+		return this->add_gltf(gltf, tz::nullhand);
+	}
+
+	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent)
+	{
 		// maintain offsets so we can support multiple gltfs.
 		// add the new gltf.
 		this->gltfs.push_back
@@ -81,7 +86,7 @@ namespace tz::ren
 			tz::assert(iter != gltf_nodes.end());
 			std::size_t node_id = std::distance(gltf_nodes.begin(), iter);
 
-			this->expand_current_gltf_node(this_gltf, node_id);
+			this->expand_current_gltf_node(this_gltf, node_id, std::nullopt, parent);
 		}
 
 		this->write_inverse_bind_matrices(this_gltf);
@@ -110,7 +115,7 @@ namespace tz::ren
 		mesh_renderer::update();
 	}
 
-	void animation_renderer::expand_current_gltf_node(gltf_info& gltf, std::size_t node_id, std::optional<std::size_t> parent_node_id)
+	void animation_renderer::expand_current_gltf_node(gltf_info& gltf, std::size_t node_id, std::optional<std::size_t> parent_node_id, object_handle parent_override)
 	{
 		const tz::io::gltf_node& node = gltf.data.get_nodes()[node_id];
 		object_handle this_object = tz::nullhand;
@@ -118,27 +123,21 @@ namespace tz::ren
 		{
 			// todo: skin processing.
 		}
-		if(parent_node_id.has_value())
+		object_handle parent = parent_override;
+		if(parent == tz::nullhand)
 		{
-			// how do we figure out which object? we store it.
-			this_object = this->add_object
-			({
-				.trs = node.transform,
-				.mesh = {},
-				.bound_textures = {},
-				.parent = gltf.node_object_map.at(parent_node_id.value())
-			});
+			if(parent_node_id.has_value())
+			{
+				parent = gltf.node_object_map.at(parent_node_id.value());
+			}
 		}
-		else
-		{
-			// just add the object as a root node.
-			this_object = this->add_object
-			({
-				.trs = node.transform,
-				.mesh = {},
-				.bound_textures = {},
-			});
-		}
+		this_object = this->add_object
+		({
+			.trs = node.transform,
+			.mesh = {},
+			.bound_textures = {},
+			.parent = parent
+		});
 		auto& this_extra = this->object_extras.back();
 		// new object belongs to this asset package.
 		gltf.assets.objects.push_back(this_object);
