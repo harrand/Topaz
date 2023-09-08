@@ -1,4 +1,5 @@
 #include "tz/ren/animation.hpp"
+#include "imgui.h"
 #include "tz/core/job/job.hpp"
 #include "tz/gl/imported_shaders.hpp"
 
@@ -26,6 +27,10 @@ namespace tz::ren
 	void animation_renderer::update(float delta)
 	{
 		animation_renderer::update();
+		for(std::size_t i = 0; i < draw_count(); i++)
+		{
+			this->object_extras[i].is_animated = false;
+		}
 		this->animation_advance(delta);
 	}
 
@@ -262,7 +267,11 @@ namespace tz::ren
 			{
 				gltf.playback.time += (delta * gltf.playback.time_warp);
 				// only do first animation.
-				const auto& anim = gltf.data.get_animations().front();
+				if(!gltf.playback.playing_animation_id.has_value())
+				{
+					continue;
+				}
+				const auto& anim = gltf.data.get_animations()[gltf.playback.playing_animation_id.value()];
 				// loop animations.
 				if(gltf.playback.time > anim.max_time)
 				{
@@ -457,9 +466,41 @@ namespace tz::ren
 			ImGui::Checkbox("Display Node TRS", &display_trs);
 			mesh_renderer::object_tree.dbgui(display_trs);
 
+			static int animation_id = 0;
+			constexpr float slider_height = 160.0f;
+			if(this->gltfs.size() && ImGui::CollapsingHeader("Animation Playback", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				ImGui::VSliderInt("##animid", ImVec2{18.0f, slider_height}, &animation_id, 0, this->gltfs.size() - 1);
+				auto& anim = this->gltfs[animation_id];
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
+				if(ImGui::BeginChild("#who_asked", ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
+				{
+					int anim_cursor = anim.playback.playing_animation_id.value_or(-1);
+					if(ImGui::RadioButton("No Animation", !anim.playback.playing_animation_id.has_value()))
+					{
+						anim.playback.playing_animation_id = std::nullopt;
+					}
+					for(std::size_t i = 0; i < anim.data.get_animations().size(); i++)
+					{
+						if(ImGui::RadioButton(anim.data.get_animations()[i].name.c_str(), &anim_cursor, i))
+						{
+							anim.playback.playing_animation_id = anim_cursor;
+						}
+					}
+					if(anim.playback.playing_animation_id.has_value())
+					{
+						const auto& current_anim = anim.data.get_animations()[anim.playback.playing_animation_id.value()];
+						ImGui::Text("%s", current_anim.name.c_str());
+						const float time_max = current_anim.max_time;
+						ImGui::Text("%.2f/%.2f", anim.playback.time, time_max);
+						ImGui::ProgressBar(anim.playback.time / time_max);
+					}
+				}
+				ImGui::EndChild();
+			}
 			static int object_id = 0;
-
-			if(mesh_renderer::draw_count() > 0)
+			if(mesh_renderer::draw_count() > 0 && ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				constexpr float slider_height = 160.0f;
 				ImGui::VSliderInt("##objectid", ImVec2{18.0f, slider_height}, &object_id, 0, mesh_renderer::draw_count() - 1);

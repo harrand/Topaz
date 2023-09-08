@@ -46,6 +46,7 @@ namespace tz::ren
 
 			struct animation_playback_t
 			{
+				std::optional<std::size_t> playing_animation_id = std::nullopt;
 				float time = 0.0f;
 				float time_warp = 1.0f;
 			} playback;
