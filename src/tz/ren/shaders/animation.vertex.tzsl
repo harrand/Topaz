@@ -62,6 +62,11 @@ void main()
 		vtx.joint_weights[0].y * get_joint_matrix(vtx.joint_indices[0].y) +
 		vtx.joint_weights[0].z * get_joint_matrix(vtx.joint_indices[0].z) +
 		vtx.joint_weights[0].w * get_joint_matrix(vtx.joint_indices[0].w);
+	if(vtx.joint_weights[0] == vec4(0.0))
+	{
+		// it's probably not a skinned mesh.
+		skin_mat = obj.global_transform;
+	}
 	out::position = camera.projection * camera.view * skin_mat * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;

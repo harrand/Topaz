@@ -43,6 +43,7 @@ namespace tz::ren
 			asset_package assets = {};
 			struct metadata_t
 			{
+				bool has_skins = false;
 				std::vector<std::size_t> mesh_submesh_indices = {};
 				std::vector<std::optional<tz::io::gltf_material>> submesh_materials = {};
 				std::map<std::size_t, std::size_t> joint_node_map = {};

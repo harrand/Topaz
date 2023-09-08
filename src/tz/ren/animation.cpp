@@ -131,6 +131,7 @@ namespace tz::ren
 				parent = gltf.node_object_map.at(parent_node_id.value());
 			}
 		}
+		std::size_t this_extra_id = this->object_extras.size();
 		this_object = this->add_object
 		({
 			.trs = node.transform,
@@ -138,13 +139,12 @@ namespace tz::ren
 			.bound_textures = {},
 			.parent = parent
 		});
-		auto& this_extra = this->object_extras.back();
 		// new object belongs to this asset package.
 		gltf.assets.objects.push_back(this_object);
 		// node id also maps to this object.
 		gltf.node_object_map[node_id] = this_object;
 		// set the name to whatever the gltf node had.
-		this_extra.name = node.name;
+		this->object_extras[this_extra_id].name = node.name;
 
 		// TODO: one object can only render one mesh at a time.
 		// a mesh corresponds to a single gltf submesh, but a gltf node can correspond to a gltf mesh i.e multiple submeshes
@@ -158,7 +158,7 @@ namespace tz::ren
 			// make a new object for each submesh, their parents should be this_object
 			std::size_t submesh_count = gltf.data.get_meshes()[node.mesh].submeshes.size();
 			std::size_t submesh_offset = gltf.metadata.mesh_submesh_indices[node.mesh];
-			this_extra.submesh_count = submesh_count;
+			this->object_extras[this_extra_id].submesh_count = submesh_count;
 			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
 			{
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
@@ -177,7 +177,7 @@ namespace tz::ren
 					.bound_textures = {bound_textures},
 					.parent = this_object
 				});
-				this->object_extras.back().name = "Submesh " + std::to_string(i - submesh_offset) + std::string{" - "} + this_extra.name;
+				this->object_extras.back().name = "Submesh " + std::to_string(i - submesh_offset) + std::string{" - "} + this->object_extras[this_extra_id].name;
 				// Reminder: Sanity check. this means that `gltf_node_id == object_id if we are first gltf` is no longer true.
 				gltf.assets.objects.push_back(child);
 			}
@@ -191,6 +191,7 @@ namespace tz::ren
 
 	void animation_renderer::node_handle_skins(gltf_info& gltf_info)
 	{
+		gltf_info.metadata.has_skins = !gltf_info.data.get_skins().empty();
 		for(tz::io::gltf_skin skin : gltf_info.data.get_skins())
 		{
 			for(std::size_t i = 0; i < skin.joints.size(); i++)
@@ -231,6 +232,11 @@ namespace tz::ren
 			// copy into a new buffer.
 			auto& amended_vertices = amended_vertex_storage.emplace_back(initial_vertices.size());
 			std::copy(initial_vertices.begin(), initial_vertices.end(), amended_vertices.begin());
+			if(!gltf_info.metadata.has_skins)
+			{
+				// there aren't any joints! skip!
+				continue;
+			}
 			// make the joint index changes.
 			for(vertex_t& vtx : amended_vertices)
 			{
