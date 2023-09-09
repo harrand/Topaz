@@ -72,7 +72,7 @@ namespace tz::ren
 				std::queue<queued_anim> queued_animations = {};
 				float time = 0.0f;
 				float time_warp = 1.0f;
-			} playback;
+			} playback = {};
 
 			using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
 			std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(keyframe_iterator begin, keyframe_iterator end) const;
