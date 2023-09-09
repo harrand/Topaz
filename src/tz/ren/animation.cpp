@@ -360,28 +360,31 @@ namespace tz::ren
 				}
 				const auto& anim = gltf.data.get_animations()[gltf.playback.playing_animation_id.value()];
 				// loop animations.
-				if(gltf.playback.time > anim.max_time && gltf.playback.loop)
+				if(gltf.playback.time > anim.max_time)
 				{
-					if(gltf.playback.time_warp >= 0.0f)
+					if(gltf.playback.loop)
 					{
-						gltf.playback.time = 0.0f;
+						if(gltf.playback.time_warp >= 0.0f)
+						{
+							gltf.playback.time = 0.0f;
+						}
+						else
+						{
+							gltf.playback.time = anim.max_time;
+						}
 					}
 					else
 					{
-						gltf.playback.time = anim.max_time;
-					}
-				}
-				else
-				{
-					// time has run out. is another one queued?
-					if(gltf.playback.queued_animations.size())
-					{
-						// set that as a the new playback and then exit.
-						std::size_t anim_id = gltf.playback.queued_animations.front().id;
-						gltf.playback.loop = gltf.playback.queued_animations.front().loop;
-						gltf.playback.queued_animations.pop();
-						gltf.playback.playing_animation_id = anim_id;
-						gltf.playback.time = 0.0f;
+						// time has run out. is another one queued?
+						if(gltf.playback.queued_animations.size())
+						{
+							// set that as a the new playback and then exit.
+							std::size_t anim_id = gltf.playback.queued_animations.front().id;
+							gltf.playback.loop = gltf.playback.queued_animations.front().loop;
+							gltf.playback.queued_animations.pop();
+							gltf.playback.playing_animation_id = anim_id;
+							gltf.playback.time = 0.0f;
+						}
 					}
 				}
 				if(gltf.playback.time < 0.0f)
