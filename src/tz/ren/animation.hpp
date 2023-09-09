@@ -21,6 +21,19 @@ namespace tz::ren
 			std::vector<object_handle> objects = {};
 		};
 
+		enum class override_flag
+		{
+			mesh,
+			texture
+		};
+		using override_flags = tz::enum_field<override_flag>;
+
+		struct override_package
+		{
+			asset_package pkg = asset_package{};
+			override_flags overrides = {};
+		};
+
 		animation_renderer(unsigned int total_textures = 128);
 
 		using mesh_renderer::append_to_render_graph;
@@ -31,7 +44,9 @@ namespace tz::ren
 		virtual object_handle add_object(object_init_data init) override;
 
 		asset_package add_gltf(tz::io::gltf gltf);
+		asset_package add_gltf(tz::io::gltf gltf, override_package override);
 		asset_package add_gltf(tz::io::gltf gltf, object_handle parent);
+		asset_package add_gltf(tz::io::gltf gltf, object_handle parent, override_package override);
 
 		std::size_t get_animation_count(const asset_package& pkg) const;
 		std::optional<std::size_t> get_playing_animation(const asset_package& pkg) const;

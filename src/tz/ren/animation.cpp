@@ -47,10 +47,20 @@ namespace tz::ren
 
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
-		return this->add_gltf(gltf, tz::nullhand);
+		return this->add_gltf(gltf, override_package{});
+	}
+
+	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, override_package override)
+	{
+		return this->add_gltf(gltf, tz::nullhand, override);
 	}
 
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent)
+	{
+		return this->add_gltf(gltf, parent, override_package{});
+	}
+
+	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent, override_package override)
 	{
 		// maintain offsets so we can support multiple gltfs.
 		// add the new gltf.
@@ -65,13 +75,29 @@ namespace tz::ren
 		// skins
 		this->node_handle_skins(this_gltf);
 		// meshes
-		auto meshes = this->node_handle_meshes(this_gltf);
+		std::vector<mesh_handle> meshes;
+		if(override.overrides.contains(override_flag::mesh))
+		{
+			meshes = override.pkg.meshes;
+		}
+		else
+		{
+			meshes = this->node_handle_meshes(this_gltf);
+		}
 		for(mesh_handle mesh : meshes)
 		{
 			this_gltf.assets.meshes.push_back(mesh);
 		}
 		// textures
-		auto materials = this->node_handle_materials(this_gltf);
+		std::vector<texture_handle> materials;
+		if(override.overrides.contains(override_flag::texture))
+		{
+			materials = override.pkg.textures;
+		}
+		else
+		{
+			materials = this->node_handle_materials(this_gltf);
+		}
 		for(texture_handle texture : materials)
 		{
 			this_gltf.assets.textures.push_back(texture);
