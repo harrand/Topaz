@@ -60,7 +60,7 @@ namespace tz::ren
 			.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count()),
 		});
 		auto& this_gltf = this->gltfs.back();
-		this_gltf.assets.gltf_handle = static_cast<tz::hanval>(this->gltfs.size() - 1);
+		this_gltf.assets.gltfh = static_cast<tz::hanval>(this->gltfs.size() - 1);
 
 		// skins
 		this->node_handle_skins(this_gltf);
@@ -100,28 +100,28 @@ namespace tz::ren
 
 	std::size_t animation_renderer::get_animation_count(const asset_package& pkg) const
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].data.get_animations().size();
 	}
 
 	std::optional<std::size_t> animation_renderer::get_playing_animation(const asset_package& pkg) const
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].playback.playing_animation_id;
 	}
 
 	std::string_view animation_renderer::get_animation_name(const asset_package& pkg, std::size_t animation_id) const
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].data.get_animations()[animation_id].name;
 	}
 
 	void animation_renderer::play_animation(const asset_package& pkg, std::size_t animation_id, bool loop)
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		this->gltfs[hanval].playback.playing_animation_id = animation_id;
 		this->gltfs[hanval].playback.time = 0.0f;
@@ -130,14 +130,14 @@ namespace tz::ren
 
 	void animation_renderer::queue_animation(const asset_package& pkg, std::size_t animation_id, bool loop)
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		this->gltfs[hanval].playback.queued_animations.push({.id = animation_id, .loop = loop});
 	}
 
 	void animation_renderer::skip_animation(const asset_package& pkg)
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		auto& playback = this->gltfs[hanval].playback;
 		if(playback.queued_animations.size())
@@ -155,7 +155,7 @@ namespace tz::ren
 
 	void animation_renderer::halt_animation(const asset_package& pkg)
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		this->gltfs[hanval].playback.playing_animation_id = std::nullopt;
 		this->gltfs[hanval].playback.time = 0.0f;
@@ -163,14 +163,14 @@ namespace tz::ren
 
 	float animation_renderer::get_animation_speed(const asset_package& pkg) const
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].playback.time_warp;
 	}
 
 	void animation_renderer::set_animation_speed(const asset_package& pkg, float speed)
 	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
 		tz::assert(this->gltfs.size() > hanval);
 		this->gltfs[hanval].playback.time_warp = speed;
 	}

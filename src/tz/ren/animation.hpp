@@ -15,7 +15,7 @@ namespace tz::ren
 		using object_handle = mesh_renderer::object_handle;
 		struct asset_package
 		{
-			gltf_handle gltf_handle = tz::nullhand;
+			gltf_handle gltfh = tz::nullhand;
 			std::vector<mesh_handle> meshes = {};
 			std::vector<texture_handle> textures = {};
 			std::vector<object_handle> objects = {};
