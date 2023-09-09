@@ -14,7 +14,7 @@ namespace tz::ren
 		using object_handle = mesh_renderer::object_handle;
 		struct asset_package
 		{
-			gltf_handle gltf = tz::nullhand;
+			gltf_handle gltf_handle = tz::nullhand;
 			std::vector<mesh_handle> meshes = {};
 			std::vector<texture_handle> textures = {};
 			std::vector<object_handle> objects = {};
@@ -31,6 +31,14 @@ namespace tz::ren
 
 		asset_package add_gltf(tz::io::gltf gltf);
 		asset_package add_gltf(tz::io::gltf gltf, object_handle parent);
+
+		std::size_t gltf_get_animation_count(const asset_package& pkg) const;
+		std::optional<std::size_t> gltf_get_playing_animation(const asset_package& pkg) const;
+		std::string_view gltf_get_animation_name(const asset_package& pkg, std::size_t animation_id) const;
+		void gltf_play_animation(const asset_package& pkg, std::size_t animation_id);
+		void halt_animation(const asset_package& pkg);
+		float gltf_get_animation_speed(const asset_package& pkg) const;
+		void gltf_set_animation_speed(const asset_package& pkg, float speed);
 	private:
 		struct gltf_info
 		{

@@ -60,6 +60,7 @@ namespace tz::ren
 			.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count()),
 		});
 		auto& this_gltf = this->gltfs.back();
+		this_gltf.assets.gltf_handle = static_cast<tz::hanval>(this->gltfs.size() - 1);
 
 		// skins
 		this->node_handle_skins(this_gltf);
@@ -95,6 +96,57 @@ namespace tz::ren
 		this->resource_write_joint_indices(this_gltf);
 
 		return this_gltf.assets;
+	}
+
+	std::size_t animation_renderer::gltf_get_animation_count(const asset_package& pkg) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		return this->gltfs[hanval].data.get_animations().size();
+	}
+
+	std::optional<std::size_t> animation_renderer::gltf_get_playing_animation(const asset_package& pkg) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		return this->gltfs[hanval].playback.playing_animation_id;
+	}
+
+	std::string_view animation_renderer::gltf_get_animation_name(const asset_package& pkg, std::size_t animation_id) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		return this->gltfs[hanval].data.get_animations()[animation_id].name;
+	}
+
+	void animation_renderer::gltf_play_animation(const asset_package& pkg, std::size_t animation_id)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		this->gltfs[hanval].playback.playing_animation_id = animation_id;
+		this->gltfs[hanval].playback.time = 0.0f;
+	}
+
+	void animation_renderer::halt_animation(const asset_package& pkg)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		this->gltfs[hanval].playback.playing_animation_id = std::nullopt;
+		this->gltfs[hanval].playback.time = 0.0f;
+	}
+
+	float animation_renderer::gltf_get_animation_speed(const asset_package& pkg) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		return this->gltfs[hanval].playback.time_warp;
+	}
+
+	void animation_renderer::gltf_set_animation_speed(const asset_package& pkg, float speed)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		this->gltfs[hanval].playback.time_warp = speed;
 	}
 
 	void animation_renderer::update()
