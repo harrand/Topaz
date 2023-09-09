@@ -50,7 +50,13 @@ int main()
 		});
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		*/
-		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"));
+		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"));
+		auto sword_parent = ar.add_object
+		({
+			.trs = {{36.702f, 24.468f, -6.842f}, {0.554f, 0.818f, -0.154f, -0.0f}, {25.0f, 25.0f, 25.0f}},
+			.parent = pkg.objects[38]
+		});
+		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		ar.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();
