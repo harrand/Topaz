@@ -2,6 +2,7 @@
 #define TZ_REN_ANIMATION_HPP
 #include "tz/ren/mesh.hpp"
 #include "tz/io/gltf.hpp"
+#include <queue>
 
 namespace tz::ren
 {
@@ -32,13 +33,15 @@ namespace tz::ren
 		asset_package add_gltf(tz::io::gltf gltf);
 		asset_package add_gltf(tz::io::gltf gltf, object_handle parent);
 
-		std::size_t gltf_get_animation_count(const asset_package& pkg) const;
-		std::optional<std::size_t> gltf_get_playing_animation(const asset_package& pkg) const;
-		std::string_view gltf_get_animation_name(const asset_package& pkg, std::size_t animation_id) const;
-		void gltf_play_animation(const asset_package& pkg, std::size_t animation_id);
+		std::size_t get_animation_count(const asset_package& pkg) const;
+		std::optional<std::size_t> get_playing_animation(const asset_package& pkg) const;
+		std::string_view get_animation_name(const asset_package& pkg, std::size_t animation_id) const;
+		void play_animation(const asset_package& pkg, std::size_t animation_id, bool loop = false);
+		void queue_animation(const asset_package& pkg, std::size_t animation_id, bool loop = false);
+		void skip_animation(const asset_package& pkg);
 		void halt_animation(const asset_package& pkg);
-		float gltf_get_animation_speed(const asset_package& pkg) const;
-		void gltf_set_animation_speed(const asset_package& pkg, float speed);
+		float get_animation_speed(const asset_package& pkg) const;
+		void set_animation_speed(const asset_package& pkg, float speed);
 	private:
 		struct gltf_info
 		{
@@ -59,7 +62,14 @@ namespace tz::ren
 
 			struct animation_playback_t
 			{
+				struct queued_anim
+				{
+					std::size_t id;
+					bool loop = false;
+				};
 				std::optional<std::size_t> playing_animation_id = std::nullopt;
+				bool loop = false;
+				std::queue<queued_anim> queued_animations = {};
 				float time = 0.0f;
 				float time_warp = 1.0f;
 			} playback;

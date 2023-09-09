@@ -98,33 +98,59 @@ namespace tz::ren
 		return this_gltf.assets;
 	}
 
-	std::size_t animation_renderer::gltf_get_animation_count(const asset_package& pkg) const
+	std::size_t animation_renderer::get_animation_count(const asset_package& pkg) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].data.get_animations().size();
 	}
 
-	std::optional<std::size_t> animation_renderer::gltf_get_playing_animation(const asset_package& pkg) const
+	std::optional<std::size_t> animation_renderer::get_playing_animation(const asset_package& pkg) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].playback.playing_animation_id;
 	}
 
-	std::string_view animation_renderer::gltf_get_animation_name(const asset_package& pkg, std::size_t animation_id) const
+	std::string_view animation_renderer::get_animation_name(const asset_package& pkg, std::size_t animation_id) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].data.get_animations()[animation_id].name;
 	}
 
-	void animation_renderer::gltf_play_animation(const asset_package& pkg, std::size_t animation_id)
+	void animation_renderer::play_animation(const asset_package& pkg, std::size_t animation_id, bool loop)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
 		tz::assert(this->gltfs.size() > hanval);
 		this->gltfs[hanval].playback.playing_animation_id = animation_id;
 		this->gltfs[hanval].playback.time = 0.0f;
+		this->gltfs[hanval].playback.loop = loop;
+	}
+
+	void animation_renderer::queue_animation(const asset_package& pkg, std::size_t animation_id, bool loop)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		this->gltfs[hanval].playback.queued_animations.push({.id = animation_id, .loop = loop});
+	}
+
+	void animation_renderer::skip_animation(const asset_package& pkg)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
+		tz::assert(this->gltfs.size() > hanval);
+		auto& playback = this->gltfs[hanval].playback;
+		if(playback.queued_animations.size())
+		{
+			playback.playing_animation_id = playback.queued_animations.front().id;
+			playback.loop = playback.queued_animations.front().loop;
+			playback.time = 0.0f;
+			playback.queued_animations.pop();
+		}
+		else
+		{
+			playback.playing_animation_id = std::nullopt;
+		}
 	}
 
 	void animation_renderer::halt_animation(const asset_package& pkg)
@@ -135,14 +161,14 @@ namespace tz::ren
 		this->gltfs[hanval].playback.time = 0.0f;
 	}
 
-	float animation_renderer::gltf_get_animation_speed(const asset_package& pkg) const
+	float animation_renderer::get_animation_speed(const asset_package& pkg) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
 		tz::assert(this->gltfs.size() > hanval);
 		return this->gltfs[hanval].playback.time_warp;
 	}
 
-	void animation_renderer::gltf_set_animation_speed(const asset_package& pkg, float speed)
+	void animation_renderer::set_animation_speed(const asset_package& pkg, float speed)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltf_handle));
 		tz::assert(this->gltfs.size() > hanval);
@@ -334,7 +360,7 @@ namespace tz::ren
 				}
 				const auto& anim = gltf.data.get_animations()[gltf.playback.playing_animation_id.value()];
 				// loop animations.
-				if(gltf.playback.time > anim.max_time)
+				if(gltf.playback.time > anim.max_time && gltf.playback.loop)
 				{
 					if(gltf.playback.time_warp >= 0.0f)
 					{
@@ -343,6 +369,19 @@ namespace tz::ren
 					else
 					{
 						gltf.playback.time = anim.max_time;
+					}
+				}
+				else
+				{
+					// time has run out. is another one queued?
+					if(gltf.playback.queued_animations.size())
+					{
+						// set that as a the new playback and then exit.
+						std::size_t anim_id = gltf.playback.queued_animations.front().id;
+						gltf.playback.loop = gltf.playback.queued_animations.front().loop;
+						gltf.playback.queued_animations.pop();
+						gltf.playback.playing_animation_id = anim_id;
+						gltf.playback.time = 0.0f;
 					}
 				}
 				if(gltf.playback.time < 0.0f)
