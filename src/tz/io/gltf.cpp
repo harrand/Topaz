@@ -340,7 +340,6 @@ namespace tz::io
 			}
 		}
 
-		constexpr std::size_t vec4us_stride = sizeof(unsigned short) * 4;
 		constexpr std::size_t vec4_stride = sizeof(float) * 4;
 		constexpr std::size_t vec3_stride = sizeof(float) * 3;
 		constexpr std::size_t vec2_stride = sizeof(float) * 2;
