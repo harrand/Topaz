@@ -79,6 +79,7 @@ namespace tz::ren
 		if(override.overrides.contains(override_flag::mesh))
 		{
 			meshes = override.pkg.meshes;
+			this->shallow_patch_meshes(this_gltf, override.pkg.meshes);
 		}
 		else
 		{
@@ -119,7 +120,10 @@ namespace tz::ren
 		}
 
 		this->write_inverse_bind_matrices(this_gltf);
-		this->resource_write_joint_indices(this_gltf);
+		if(!override.overrides.contains(override_flag::mesh))
+		{
+			this->resource_write_joint_indices(this_gltf);
+		}
 
 		return this_gltf.assets;
 	}
@@ -471,6 +475,29 @@ namespace tz::ren
 				}
 			}
 		}	
+	}
+
+	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info, std::span<mesh_handle> existing_meshes)
+	{
+		const tz::io::gltf& gltf = gltf_info.data;
+		std::size_t gltf_submesh_total = 0;
+		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
+		{
+			TZ_PROFZONE("Anim Renderer - Shallow Patch GLTF Mesh", 0xFF44DD44);
+			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
+			gltf_info.metadata.mesh_submesh_indices.push_back(gltf_submesh_total);	
+			for(std::size_t j = 0; j < submesh_count; j++)
+			{
+				// pretend `existing_meshes[j]` is where we just loaded this mesh into.
+				std::size_t material_id = gltf.get_meshes()[i].submeshes[j].material_id;
+				auto& maybe_material = gltf_info.metadata.submesh_materials.emplace_back();
+				if(material_id != static_cast<std::size_t>(-1))
+				{
+					maybe_material = gltf.get_materials()[material_id];
+				}
+			}
+			gltf_submesh_total += submesh_count;
+		}
 	}
 
 	std::vector<animation_renderer::mesh_handle> animation_renderer::node_handle_meshes(gltf_info& gltf_info)
