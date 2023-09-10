@@ -345,7 +345,6 @@ namespace tz::ren
 
 	tz::vec2ui32 animation_renderer::write_skin_object_data(gltf_info& gltf_info)
 	{
-		auto id = static_cast<std::size_t>(static_cast<tz::hanval>(gltf_info.assets.gltfh));
 		constexpr std::size_t joint_buffer_id = 0;
 		tz::gl::resource_handle joint_bufferh = mesh_renderer::get_extra_buffer_handle(joint_buffer_id);
 		tz::gl::RendererEditBuilder edit;
