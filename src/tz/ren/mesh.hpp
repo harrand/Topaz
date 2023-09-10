@@ -102,6 +102,13 @@ namespace tz::ren
 			std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 			object_handle parent = tz::nullhand;
 		};
+		struct object_out_data
+		{
+			tz::trs local_transform;
+			tz::trs global_transform;
+			object_handle parent;
+			std::vector<object_handle> children;
+		};
 
 		std::size_t mesh_count() const;
 		std::size_t draw_count() const;
@@ -111,6 +118,8 @@ namespace tz::ren
 		void clear_draws();
 		mesh_handle add_mesh(mesh_t m);
 		virtual object_handle add_object(object_init_data init);
+		object_out_data get_object(object_handle h) const;
+
 		void remove_object(object_handle oh);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		void append_to_render_graph();

@@ -29,6 +29,8 @@ namespace tz::ren
 		virtual void dbgui() override;
 		void update(float delta);
 		virtual object_handle add_object(object_init_data init) override;
+		std::string_view get_object_name(object_handle h) const;
+		std::vector<object_handle> find_objects_by_name(const char* name) const;
 
 		asset_package add_gltf(tz::io::gltf gltf);
 		asset_package add_gltf(tz::io::gltf gltf, object_handle parent);

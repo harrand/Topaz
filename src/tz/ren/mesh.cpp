@@ -130,6 +130,34 @@ namespace tz::ren
 		return static_cast<tz::hanval>(hanval);
 	}
 
+	mesh_renderer::object_out_data mesh_renderer::get_object(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto maybe_node = this->object_tree.find_node(hanval);
+		tz::assert(maybe_node.has_value());
+		const auto& node = this->object_tree.get_node(maybe_node.value());
+		object_handle parenth = tz::nullhand;
+		std::vector<object_handle> children = {};
+		if(node.parent.has_value())
+		{
+			std::size_t parent_object_hanval = this->object_tree.get_node(node.parent.value()).data;
+			parenth = static_cast<tz::hanval>(parent_object_hanval);
+		}
+		for(unsigned int child_node_id : node.children)
+		{
+			std::size_t child_object_hanval = this->object_tree.get_node(child_node_id).data;
+			children.push_back(static_cast<tz::hanval>(child_object_hanval));
+		}
+		
+		return
+		{
+			.local_transform = node.local_transform,
+			.global_transform = this->object_tree.get_global_transform(maybe_node.value()),
+			.parent	= parenth,
+			.children = children
+		};
+	}
+
 	void mesh_renderer::remove_object(object_handle oh)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));

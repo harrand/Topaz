@@ -45,6 +45,26 @@ namespace tz::ren
 		return handle;
 	}
 
+	std::string_view animation_renderer::get_object_name(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->object_extras.size());
+		return this->object_extras[hanval].name;
+	}
+
+	std::vector<animation_renderer::object_handle> animation_renderer::find_objects_by_name(const char* name) const
+	{
+		std::vector<object_handle> ret = {};
+		for(std::size_t i = 0; i < this->object_extras.size(); i++)
+		{
+			if(this->object_extras[i].name == name)
+			{
+				ret.push_back(static_cast<tz::hanval>(i));
+			}
+		}
+		return ret;
+	}
+
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
 		return this->add_gltf(gltf, tz::nullhand);
@@ -584,6 +604,7 @@ namespace tz::ren
 				if(ImGui::BeginChild("#who_asked", ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
 				{
 					int anim_cursor = anim.playback.playing_animation_id.value_or(-1);
+					ImGui::Checkbox("Loop", &anim.playback.loop);
 					if(ImGui::RadioButton("No Animation", !anim.playback.playing_animation_id.has_value()))
 					{
 						anim.playback.playing_animation_id = std::nullopt;

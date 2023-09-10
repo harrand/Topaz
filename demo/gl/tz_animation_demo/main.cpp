@@ -60,6 +60,9 @@ int main()
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/ashbringer.glb"), sword_parent);
 		ar.append_to_render_graph();
 
+		auto empties = ar.find_objects_by_name("Unnamed Object");
+		tz::report("%zu empties", empties.size());
+
 		tz::duration update_timer = tz::system_time();
 		while(!tz::window().is_close_requested())
 		{
