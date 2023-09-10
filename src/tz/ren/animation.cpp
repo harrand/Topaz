@@ -99,7 +99,7 @@ namespace tz::ren
 		if(opkg.overrides.contains(override_flag::mesh))
 		{
 			meshes = opkg.pkg.meshes;
-			this->shallow_patch_meshes(this_gltf, opkg.pkg.meshes);
+			this->shallow_patch_meshes(this_gltf);
 		}
 		else
 		{
@@ -545,7 +545,7 @@ namespace tz::ren
 		}	
 	}
 
-	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info, std::span<mesh_handle> existing_meshes)
+	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info)
 	{
 		const tz::io::gltf& gltf = gltf_info.data;
 		std::size_t gltf_submesh_total = 0;
