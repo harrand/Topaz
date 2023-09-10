@@ -67,10 +67,20 @@ namespace tz::ren
 
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
-		return this->add_gltf(gltf, tz::nullhand);
+		return this->add_gltf(gltf, override_package{});
+	}
+
+	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, override_package opkg)
+	{
+		return this->add_gltf(gltf, tz::nullhand, opkg);
 	}
 
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent)
+	{
+		return this->add_gltf(gltf, parent, override_package{});
+	}
+
+	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent, override_package opkg)
 	{
 		// maintain offsets so we can support multiple gltfs.
 		// add the new gltf.
@@ -85,13 +95,30 @@ namespace tz::ren
 		// skins
 		this->node_handle_skins(this_gltf);
 		// meshes
-		auto meshes = this->node_handle_meshes(this_gltf);
+		std::vector<mesh_handle> meshes;
+		if(opkg.overrides.contains(override_flag::mesh))
+		{
+			meshes = opkg.pkg.meshes;
+			this->shallow_patch_meshes(this_gltf, opkg.pkg.meshes);
+		}
+		else
+		{
+			meshes = this->node_handle_meshes(this_gltf);
+		}
 		for(mesh_handle mesh : meshes)
 		{
 			this_gltf.assets.meshes.push_back(mesh);
 		}
 		// textures
-		auto materials = this->node_handle_materials(this_gltf);
+		std::vector<texture_handle> materials;
+		if(opkg.overrides.contains(override_flag::texture))
+		{
+			materials = opkg.pkg.textures;
+		}
+		else
+		{
+			materials = this->node_handle_materials(this_gltf);
+		}
 		for(texture_handle texture : materials)
 		{
 			this_gltf.assets.textures.push_back(texture);
@@ -517,6 +544,29 @@ namespace tz::ren
 				}
 			}
 		}	
+	}
+
+	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info, std::span<mesh_handle> existing_meshes)
+	{
+		const tz::io::gltf& gltf = gltf_info.data;
+		std::size_t gltf_submesh_total = 0;
+		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
+		{
+			TZ_PROFZONE("Anim Renderer - Shallow Patch GLTF Mesh", 0xFF44DD44);
+			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
+			gltf_info.metadata.mesh_submesh_indices.push_back(gltf_submesh_total);	
+			for(std::size_t j = 0; j < submesh_count; j++)
+			{
+				// pretend `existing_meshes[j]` is where we just loaded this mesh into.
+				std::size_t material_id = gltf.get_meshes()[i].submeshes[j].material_id;
+				auto& maybe_material = gltf_info.metadata.submesh_materials.emplace_back();
+				if(material_id != static_cast<std::size_t>(-1))
+				{
+					maybe_material = gltf.get_materials()[material_id];
+				}
+			}
+			gltf_submesh_total += submesh_count;
+		}
 	}
 
 	std::vector<animation_renderer::mesh_handle> animation_renderer::node_handle_meshes(gltf_info& gltf_info)

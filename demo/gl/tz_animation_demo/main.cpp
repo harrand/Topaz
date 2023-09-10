@@ -51,6 +51,12 @@ int main()
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		*/
 		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"));
+		tz::ren::animation_renderer::override_package opkg
+		{
+			.pkg = pkg,
+			.overrides = {tz::ren::animation_renderer::override_flag::mesh, tz::ren::animation_renderer::override_flag::texture},
+		};
+		auto pkg2 = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"), opkg);
 		auto sword_parent = ar.add_object
 		({
 			.trs = {{36.702f, 24.468f, -6.842f}, {0.554f, 0.818f, -0.154f, -0.0f}, {25.0f, 25.0f, 25.0f}},
