@@ -113,7 +113,20 @@ namespace tz::ren
 		}
 
 		this->write_inverse_bind_matrices(this_gltf);
-		this->resource_write_joint_indices(this_gltf);
+
+		std::optional<tz::vec2ui32> maybe_joint_span = std::nullopt;
+		if(this_gltf.data.get_skins().size())
+		{
+			maybe_joint_span = this->write_skin_object_data(this_gltf);
+		}
+		//this->resource_write_joint_indices(this_gltf);
+		if(maybe_joint_span.has_value())
+		{
+			for(object_handle oh : this_gltf.assets.objects)
+			{
+				mesh_renderer::get_object_data(oh).extra_indices = maybe_joint_span.value().with_more(0u).with_more(0u);
+			}
+		}
 
 		return this_gltf.assets;
 	}
@@ -301,6 +314,45 @@ namespace tz::ren
 				gltf_info.metadata.joint_node_map[i] = node_id;
 			}
 		}
+	}
+
+	tz::vec2ui32 animation_renderer::write_skin_object_data(gltf_info& gltf_info)
+	{
+		auto id = static_cast<std::size_t>(static_cast<tz::hanval>(gltf_info.assets.gltfh));
+		constexpr std::size_t joint_buffer_id = 0;
+		tz::gl::resource_handle joint_bufferh = mesh_renderer::get_extra_buffer_handle(joint_buffer_id);
+		tz::gl::RendererEditBuilder edit;
+		tz::assert(gltf_info.data.get_skins().size(), "dont call write_skin_object_data on a gltf without skins!");
+		const auto& joints = gltf_info.data.get_skins().front().joints;
+		// if id == 0, then we havent written into the buffer yet, so its pseudo-empty. that means we resize to what we want and completely rewrite its contents.
+		// whats the current size?
+		auto sz = mesh_renderer::render_pass_get_resource(joint_bufferh).data().size_bytes();	
+		sz = std::max(sz, sizeof(std::uint32_t));
+		std::size_t new_data_size = sizeof(std::uint32_t) * joints.size();
+		std::vector<std::uint32_t> new_data;
+		new_data.resize(joints.size());
+		for(std::size_t i = 0; i < joints.size(); i++)
+		{
+			const std::size_t joint_index = i;
+			const std::size_t node_id = gltf_info.metadata.joint_node_map.at(joint_index);
+			object_handle objecth = gltf_info.node_object_map.at(node_id);
+			auto object_id = static_cast<std::size_t>(static_cast<tz::hanval>(objecth));
+			new_data[i] = object_id;
+		}
+		std::span<const std::uint32_t> new_data_view{new_data};
+		edit.buffer_resize
+		({
+			.buffer_handle = joint_bufferh,
+			.size = sz + new_data_size	
+		});
+		edit.write
+		({
+			.resource = joint_bufferh,
+			.data = std::as_bytes(new_data_view),
+			.offset = sz
+		});
+		mesh_renderer::render_pass_edit(edit);
+		return static_cast<tz::vec2ui32>(tz::vector<std::size_t, 2>{sz / sizeof(std::uint32_t), joints.size()});
 	}
 
 	void animation_renderer::write_inverse_bind_matrices(gltf_info& gltf_info)

@@ -92,6 +92,7 @@ namespace tz::ren
 		virtual void update() override;
 		void expand_current_gltf_node(gltf_info& info, std::size_t node_id, std::optional<std::size_t> parent_node_id = std::nullopt, object_handle parent_override = tz::nullhand);
 		void node_handle_skins(gltf_info& gltf_info);
+		tz::vec2ui32 write_skin_object_data(gltf_info& gltf_info);
 		void write_inverse_bind_matrices(gltf_info& gltf_info);
 		void resource_write_joint_indices(gltf_info& gltf_info);
 		void animation_advance(float delta);

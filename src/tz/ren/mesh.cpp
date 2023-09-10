@@ -410,6 +410,12 @@ namespace tz::ren
 		));
 		// draw indirect buffer (resource reference -> compute pass)
 		this->draw_indirect_buffer_ref = rinfo.ref_resource(compute_pass, compute_draw_indirect_buffer);
+
+		for(std::size_t i = 0; i < this->extra_buffer_count; i++)
+		{
+			this->extra_buffers[i] = rinfo.add_resource(tz::gl::buffer_resource::from_one(std::byte{255}));
+		}
+
 		// textures
 		this->textures.resize(total_textures);
 		for(std::size_t i = 0; i < total_textures; i++)
@@ -751,6 +757,21 @@ namespace tz::ren
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
 		tz::assert(this->render_pass.get_object_datas().size() > hanval);
 		return this->render_pass.get_object_datas()[hanval];
+	}
+
+	std::size_t mesh_renderer::get_extra_buffer_count() const
+	{
+		return render_pass_t::extra_buffer_count;
+	}
+
+	tz::gl::resource_handle mesh_renderer::get_extra_buffer_handle(std::size_t extra_buf_id) const
+	{
+		return this->render_pass.extra_buffers[extra_buf_id];
+	}
+
+	const tz::gl::iresource& mesh_renderer::render_pass_get_resource(tz::gl::resource_handle rh) const
+	{
+		return *tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(rh);
 	}
 
 	void mesh_renderer::render_pass_edit(const tz::gl::RendererEditBuilder& builder)

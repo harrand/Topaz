@@ -77,6 +77,7 @@ namespace tz::ren
 		tz::mat4 extra = tz::mat4::identity();
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
+		tz::vec4ui32 extra_indices = tz::vec4ui32::zero();
 	};
 
 	/**
@@ -149,6 +150,8 @@ namespace tz::ren
 			tz::gl::resource_handle object_buffer = tz::nullhand;
 			tz::gl::resource_handle camera_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_buffer_ref = tz::nullhand;
+			static constexpr std::size_t extra_buffer_count = 1u;
+			std::array<tz::gl::resource_handle, extra_buffer_count> extra_buffers = {tz::nullhand};
 			std::vector<tz::gl::resource_handle> textures = {};
 			tz::gl::renderer_handle handle = tz::nullhand;
 
@@ -169,7 +172,10 @@ namespace tz::ren
 		std::span<const vertex_t> read_vertices(const mesh_locator& mloc) const;
 		tz::gl::resource_handle render_pass_get_vertex_buffer_handle() const;
 		object_data& get_object_data(object_handle h);
+		std::size_t get_extra_buffer_count() const;
+		tz::gl::resource_handle get_extra_buffer_handle(std::size_t extra_buf_id) const;
 
+		const tz::gl::iresource& render_pass_get_resource(tz::gl::resource_handle rh) const;
 		void render_pass_edit(const tz::gl::RendererEditBuilder& builder);
 		void dbgui_tab_overview();
 		void dbgui_tab_render();

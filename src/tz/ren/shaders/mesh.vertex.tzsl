@@ -24,6 +24,7 @@ struct object_t
 	mat4 global_transform;
 	mat4 _;
 	texture_locator[MAX_TEX_COUNT] textures;
+	uvec4 _2;
 };
 
 resource(id = 0) const buffer vertex_buffer
