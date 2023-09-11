@@ -13,6 +13,7 @@ namespace tz::ren
 		using mesh_handle = mesh_renderer::mesh_handle;
 		using texture_handle = mesh_renderer::texture_handle;
 		using object_handle = mesh_renderer::object_handle;
+		using object_out_data = mesh_renderer::object_out_data;
 		struct asset_package
 		{
 			gltf_handle gltfh = tz::nullhand;
@@ -38,6 +39,9 @@ namespace tz::ren
 
 		using mesh_renderer::append_to_render_graph;
 		using mesh_renderer::update;
+		using mesh_renderer::get_camera_transform;
+		using mesh_renderer::set_camera_transform;
+		using mesh_renderer::get_object;
 
 		virtual void dbgui() override;
 		void update(float delta);

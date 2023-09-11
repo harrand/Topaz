@@ -124,6 +124,9 @@ namespace tz::ren
 		void remove_object(object_handle oh);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		void append_to_render_graph();
+
+		tz::trs get_camera_transform() const;
+		void set_camera_transform(tz::trs camera_transform);
 	private:
 		struct compute_pass_t
 		{

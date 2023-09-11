@@ -245,6 +245,18 @@ namespace tz::ren
 		tz::gl::get_device().render_graph().add_dependencies(this->render_pass.handle, this->compute_pass.handle);
 	}
 
+	tz::trs mesh_renderer::get_camera_transform() const
+	{
+		const camera_data& camd = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.camera_buffer)->data_as<const camera_data>().front();
+		return tz::trs::from_matrix(camd.view.inverse());
+	}
+
+	void mesh_renderer::set_camera_transform(tz::trs camera_transform)
+	{
+		camera_data& camd = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.camera_buffer)->data_as<camera_data>().front();
+		camd.view = camera_transform.matrix().inverse();
+	}
+
 	mesh_renderer::compute_pass_t::compute_pass_t()
 	{
 		tz::gl::renderer_info cinfo;
