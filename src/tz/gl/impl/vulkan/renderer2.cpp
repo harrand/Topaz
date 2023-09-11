@@ -22,6 +22,7 @@ namespace tz::gl
 	AssetStorageCommon<iresource>(rinfo.get_resources())
 	{
 		this->patch_resource_references(rinfo);
+		this->debug_name_resources(rinfo.debug_get_name());
 		this->setup_dynamic_resource_spans();
 		this->populate_image_resource_views();
 		this->populate_image_resource_samplers();
@@ -96,6 +97,37 @@ namespace tz::gl
 		tz::assert(resid < this->components.size());
 		this->components[resid] = resref.component;
 		// note: if descriptors have already been written, the descriptor associated with this resource is now out-of-date and needs to be rewritten.
+	}
+
+	void renderer_resource_manager::debug_name_resources(std::string renderer_debug_name)
+	{
+		std::size_t buffer_count = 0;
+		std::size_t image_count = 0;
+		for(std::size_t i = 0; i < this->resource_count(); i++)
+		{
+			tz::gl::resource_handle rh = static_cast<tz::hanval>(i);
+			icomponent* comp = this->get_component(rh);
+			tz::assert(comp != nullptr);
+			iresource* res = comp->get_resource();
+			tz::assert(res != nullptr);
+			switch(res->get_type())
+			{
+				case tz::gl::resource_type::buffer:
+				{
+					auto& buf = static_cast<tz::gl::buffer_component_vulkan*>(comp)->vk_get_buffer();
+					buf.debug_set_name(renderer_debug_name + ":B" + std::to_string(buffer_count));
+					buffer_count++;
+				}
+				break;
+				case tz::gl::resource_type::image:
+				{
+					auto& img = static_cast<tz::gl::image_component_vulkan*>(comp)->vk_get_image();
+					img.debug_set_name(renderer_debug_name + ":I" + std::to_string(image_count));
+					image_count++;
+				}
+				break;
+			}
+		}
 	}
 
 	void renderer_resource_manager::patch_resource_references(const tz::gl::renderer_info& rinfo)

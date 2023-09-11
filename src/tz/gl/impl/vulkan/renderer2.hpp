@@ -56,6 +56,7 @@ namespace tz::gl
 		void reseat_resource(tz::gl::renderer_edit::resource_reference resref);
 	private:
 		void patch_resource_references(const tz::gl::renderer_info& rinfo);
+		void debug_name_resources(std::string renderer_debug_name);
 		void setup_dynamic_resource_spans();
 		void populate_image_resource_views();
 		void populate_image_resource_samplers();
