@@ -6,6 +6,17 @@ namespace tz
 	quat::quat(const tz::vec4& vec):
 	vec4(vec){}
 
+	quat quat::from_axis_angle(tz::vec3 axis, float angle)
+	{
+		return quat
+		{
+			axis[0] * std::sin(angle / 2.0f),
+			axis[1] * std::sin(angle / 2.0f),
+			axis[2] * std::sin(angle / 2.0f),
+			std::cos(angle / 2.0f)	
+		}.normalised();
+	}
+
 	tz::mat4 quat::matrix() const
 	{
 		TZ_PROFZONE("Quaternion - Generate Matrix", 0xFF0000AA);

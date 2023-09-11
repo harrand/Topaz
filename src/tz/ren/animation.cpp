@@ -65,6 +65,18 @@ namespace tz::ren
 		return ret;
 	}
 
+	tz::trs animation_renderer::get_object_base_transform(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		return this->object_extras[hanval].base_transform;
+	}
+
+	void animation_renderer::set_object_base_transform(object_handle h, tz::trs local_transform)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		this->object_extras[hanval].base_transform = local_transform;	
+	}
+
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
 		return this->add_gltf(gltf, override_package{});

@@ -10,6 +10,7 @@ namespace tz
 	public:
 		using tz::vec4::vec4;
 		quat(const tz::vec4& vec);
+		static quat from_axis_angle(tz::vec3 axis, float angle);
 		tz::mat4 matrix() const;
 		void combine(const quat& rhs);
 		quat combined(const quat& rhs) const;

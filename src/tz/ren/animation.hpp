@@ -48,6 +48,8 @@ namespace tz::ren
 		virtual object_handle add_object(object_init_data init) override;
 		std::string_view get_object_name(object_handle h) const;
 		std::vector<object_handle> find_objects_by_name(const char* name) const;
+		tz::trs get_object_base_transform(object_handle h) const;
+		void set_object_base_transform(object_handle h, tz::trs local_transform);
 
 		asset_package add_gltf(tz::io::gltf gltf);
 		asset_package add_gltf(tz::io::gltf gltf, override_package opkg);
