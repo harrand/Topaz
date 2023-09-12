@@ -77,6 +77,31 @@ namespace tz::ren
 		this->object_extras[hanval].base_transform = local_transform;	
 	}
 
+	tz::trs animation_renderer::get_object_global_transform(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto maybe_node = mesh_renderer::object_tree.find_node(hanval);
+		tz::assert(maybe_node.has_value());
+		return mesh_renderer::object_tree.get_global_transform(maybe_node.value());
+	}
+
+	tz::trs animation_renderer::global_to_local_transform(object_handle h, tz::trs global) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto maybe_node = mesh_renderer::object_tree.find_node(hanval);
+		tz::assert(maybe_node.has_value());
+		const auto& node = mesh_renderer::object_tree.get_node(maybe_node.value());
+		// if parent has value, combine with inverse of parent global.
+		if(node.parent.has_value())
+		{
+			tz::trs parent_global = mesh_renderer::object_tree.get_global_transform(node.parent.value());
+			parent_global.inverse();
+			global.combine(parent_global);
+		}
+		// if not, global is unchanged which we just return. no parent means local = global
+		return global;
+	}
+
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
 	{
 		return this->add_gltf(gltf, override_package{});

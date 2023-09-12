@@ -34,6 +34,22 @@ namespace tz
 		return rot;
 	}
 
+	quat& quat::inverse()
+	{
+		float norm_sq = this->length() * this->length();
+		(*this)[0] = -(*this)[0] * norm_sq;
+		(*this)[1] = -(*this)[1] * norm_sq;
+		(*this)[2] = -(*this)[2] * norm_sq;
+		(*this)[3] = (*this)[3] * norm_sq;
+		return *this;
+	}
+
+	quat quat::inversed() const
+	{
+		quat cpy = *this;
+		return cpy.inverse();
+	}
+
 	void quat::combine(const quat& rhs)
 	{
 		TZ_PROFZONE("Quaternion - Combine", 0xFF0000AA);

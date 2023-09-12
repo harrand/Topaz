@@ -62,6 +62,17 @@ namespace tz
 		return ret;
 	}
 
+	trs& trs::inverse()
+	{
+		this->translate *= -1.0f;
+		this->rotate.inverse();
+		for(std::size_t i = 0; i < 3; i++)
+		{
+			this->scale[i] = 1.0f / this->scale[i];
+		}
+		return *this;
+	}
+
 	trs& trs::combine(const trs& t)
 	{
 		TZ_PROFZONE("TRS - Combine", 0xFF0000AA);

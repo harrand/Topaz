@@ -16,6 +16,8 @@ namespace tz
 		trs lerp(const trs& rhs, float factor) const;
 		tz::mat4 matrix() const;
 		static trs from_matrix(tz::mat4 mat);
+		trs& inverse();
+		trs inversed() const;
 		trs& combine(const trs& rhs);
 		trs combined(const trs& rhs) const;
 		void dbgui();

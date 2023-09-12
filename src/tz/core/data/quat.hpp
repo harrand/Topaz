@@ -12,6 +12,8 @@ namespace tz
 		quat(const tz::vec4& vec);
 		static quat from_axis_angle(tz::vec3 axis, float angle);
 		tz::mat4 matrix() const;
+		quat& inverse();
+		quat inversed() const;
 		void combine(const quat& rhs);
 		quat combined(const quat& rhs) const;
 		tz::vec3 rotate(tz::vec3 position) const;

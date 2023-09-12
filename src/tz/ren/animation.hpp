@@ -50,6 +50,8 @@ namespace tz::ren
 		std::vector<object_handle> find_objects_by_name(const char* name) const;
 		tz::trs get_object_base_transform(object_handle h) const;
 		void set_object_base_transform(object_handle h, tz::trs local_transform);
+		tz::trs get_object_global_transform(object_handle h) const;
+		tz::trs global_to_local_transform(object_handle h, tz::trs global) const;
 
 		asset_package add_gltf(tz::io::gltf gltf);
 		asset_package add_gltf(tz::io::gltf gltf, override_package opkg);
