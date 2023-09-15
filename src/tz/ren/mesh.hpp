@@ -89,7 +89,7 @@ namespace tz::ren
 	{
 		struct object_tag_t{};
 	public:
-		mesh_renderer(unsigned int total_textures = 128);
+		mesh_renderer(unsigned int total_textures = 128, tz::gl::renderer_options options = {});
 		using vertex_t = vertex<mesh_renderer_max_tex_count, mesh_renderer_max_weight_count / 4>;
 		using mesh_t = mesh<mesh_renderer_max_tex_count, mesh_renderer_max_weight_count / 4>;
 		using mesh_handle = tz::handle<mesh_t>;
@@ -143,7 +143,7 @@ namespace tz::ren
 		};
 		struct render_pass_t
 		{
-			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, std::string_view vertex_spirv, std::string_view fragment_spirv, unsigned int total_textures = 128);
+			render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, std::string_view vertex_spirv, std::string_view fragment_spirv, unsigned int total_textures = 128, tz::gl::renderer_options options = {});
 			void dbgui();
 			std::span<const object_data> get_object_datas() const;
 			std::span<object_data> get_object_datas();
@@ -170,7 +170,7 @@ namespace tz::ren
 		std::optional<std::uint32_t> try_find_vertex_section(std::size_t vertex_count) const;
 		mesh_locator add_mesh_impl(const mesh_renderer::mesh_t& m);
 	protected:
-		mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv);
+		mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv, tz::gl::renderer_options options);
 		const mesh_locator& get_mesh_locator(mesh_handle mesh) const;
 		std::span<const vertex_t> read_vertices(const mesh_locator& mloc) const;
 		tz::gl::resource_handle render_pass_get_vertex_buffer_handle() const;

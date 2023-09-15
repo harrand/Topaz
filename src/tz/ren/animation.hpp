@@ -35,7 +35,7 @@ namespace tz::ren
 			override_flags overrides = {};
 		};
 
-		animation_renderer(unsigned int total_textures = 128);
+		animation_renderer(unsigned int total_textures = 128, tz::gl::renderer_options options = {});
 
 		using mesh_renderer::append_to_render_graph;
 		using mesh_renderer::update;

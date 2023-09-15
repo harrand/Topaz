@@ -8,8 +8,8 @@
 
 namespace tz::ren
 {
-	animation_renderer::animation_renderer(unsigned int total_textures):
-	mesh_renderer(total_textures, ImportedShaderSource(animation, vertex), ImportedShaderSource(animation, fragment))
+	animation_renderer::animation_renderer(unsigned int total_textures, tz::gl::renderer_options options):
+	mesh_renderer(total_textures, ImportedShaderSource(animation, vertex), ImportedShaderSource(animation, fragment), options)
 	{
 	}
 

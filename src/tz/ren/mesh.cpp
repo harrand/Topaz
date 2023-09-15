@@ -81,8 +81,8 @@ namespace tz::ren
 		tz::mat4 projection = tz::perspective(3.14159f * 0.5f, 1920.0f/1080.0f, 0.1f, 1000.0f);
 	};
 
-	mesh_renderer::mesh_renderer(unsigned int total_textures):
-	mesh_renderer(total_textures, ImportedShaderSource(mesh, vertex), ImportedShaderSource(mesh, fragment))
+	mesh_renderer::mesh_renderer(unsigned int total_textures, tz::gl::renderer_options options):
+	mesh_renderer(total_textures, ImportedShaderSource(mesh, vertex), ImportedShaderSource(mesh, fragment), options)
 	{}
 
 	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
@@ -382,14 +382,15 @@ namespace tz::ren
 		}
 	}
 
-	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, std::string_view vertex_spirv, std::string_view fragment_spirv, unsigned int total_textures)
+	mesh_renderer::render_pass_t::render_pass_t(tz::gl::renderer_handle compute_pass, tz::gl::resource_handle compute_draw_indirect_buffer, std::string_view vertex_spirv, std::string_view fragment_spirv, unsigned int total_textures, tz::gl::renderer_options options)
 	{
 		// we have a draw buffer which we write into upon render.
 		tz::gl::renderer_info rinfo;
 		// todo: shaders
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, vertex_spirv);
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, fragment_spirv);
-		rinfo.set_options({tz::gl::renderer_option::draw_indirect_count});
+		options |= tz::gl::renderer_options{tz::gl::renderer_option::draw_indirect_count};
+		rinfo.set_options(options);
 		// index buffer (initially contains a single index. empty buffers should be a thing aaaa)
 		this->index_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one
 		(
@@ -739,9 +740,9 @@ namespace tz::ren
 		};
 	}
 
-	mesh_renderer::mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv):
+	mesh_renderer::mesh_renderer(unsigned int total_textures, std::string_view vertex_spirv, std::string_view fragment_spirv, tz::gl::renderer_options options):
 	compute_pass(),
-	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, vertex_spirv, fragment_spirv, total_textures)
+	render_pass(this->compute_pass.handle, this->compute_pass.draw_indirect_buffer, vertex_spirv, fragment_spirv, total_textures, options)
 	{
 
 	}
