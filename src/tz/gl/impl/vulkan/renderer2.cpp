@@ -936,6 +936,7 @@ namespace tz::gl
 		resource_staging_buffers.reserve(renderer_resource_manager::resource_count());
 		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
 		{
+			TZ_PROFZONE("Initialise Static Resource", 0xFFAAAA00);
 			const icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
 			tz::assert(cmp != nullptr);
 			const iresource* res = cmp->get_resource();
@@ -949,6 +950,8 @@ namespace tz::gl
 			{
 				// create staging buffers and copy over spans.
 				case tz::gl::resource_type::buffer:
+				{
+					TZ_PROFZONE("Staging Buffer - Buffer", 0xFFAAAA00);
 					resource_staging_buffers.push_back
 					({{
 						.device = &tz::gl::get_device().vk_get_logical_device(),
@@ -956,9 +959,11 @@ namespace tz::gl
 		  				.usage = {vk2::BufferUsage::TransferSource},
 		  				.residency = vk2::MemoryResidency::CPU
 					}});
+				}
 				break;
 				case tz::gl::resource_type::image:
 				{
+					TZ_PROFZONE("Staging Buffer - Image", 0xFFAAAA00);
 					auto* img = static_cast<const image_component_vulkan*>(cmp);
 					tz::assert(img != nullptr);
 					resource_staging_buffers.push_back
@@ -979,6 +984,7 @@ namespace tz::gl
 			tz::assert(new_buf.size() == res->data().size_bytes());
 			// write resource data
 			{
+				TZ_PROFZONE("Resource Span Map/Write/Unmap", 0xFFAAAA00);
 				void* mapped_ptr = new_buf.map();
 				std::memcpy(mapped_ptr, res->data().data(), res->data().size_bytes());
 				new_buf.unmap();
