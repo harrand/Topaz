@@ -57,6 +57,7 @@ namespace tz::ren
 		asset_package add_gltf(tz::io::gltf gltf, override_package opkg);
 		asset_package add_gltf(tz::io::gltf gltf, object_handle parent);
 		asset_package add_gltf(tz::io::gltf gltf, object_handle parent, override_package opkg);
+		void remove_objects(asset_package pkg, transform_hierarchy::remove_strategy strategy);
 
 		std::size_t get_animation_count(const asset_package& pkg) const;
 		std::optional<std::size_t> get_playing_animation(const asset_package& pkg) const;
@@ -126,6 +127,7 @@ namespace tz::ren
 
 		std::vector<gltf_info> gltfs = {};
 		std::vector<object_extra_info> object_extras = {};
+		std::vector<gltf_handle> gltf_free_list = {};
 	};
 }
 

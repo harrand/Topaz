@@ -171,10 +171,22 @@ namespace tz::ren
 		this->free_list.push_back(oh);
 		// set to front mesh (which needs to be a null locator);
 		this->compute_pass.get_draw_list_meshes()[hanval] = {};
+
+		// we rely on the object tree keeping children alive until its their turn to die
 		auto maybe_node = this->object_tree.find_node(hanval);
 		if(maybe_node.has_value())
 		{
-			this->object_tree.remove_node(maybe_node.value(), strategy);
+			// for that reason, keep the children intact and recurse manually. hence use of impl_do_nothing
+			if(strategy == transform_hierarchy::remove_strategy::remove_children)
+			{
+				auto this_node = this->object_tree.get_node(maybe_node.value());	
+				this->object_tree.remove_node(maybe_node.value(), transform_hierarchy::remove_strategy::impl_do_nothing);
+				for(unsigned int childid : this_node.children)
+				{
+					auto child = this->object_tree.get_node(childid);
+					this->remove_object(static_cast<tz::hanval>(child.data), strategy);
+				}
+			}
 		}
 	}
 

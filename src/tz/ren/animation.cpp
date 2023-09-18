@@ -121,30 +121,42 @@ namespace tz::ren
 	{
 		// maintain offsets so we can support multiple gltfs.
 		// add the new gltf.
-		this->gltfs.push_back
-		({
-			.data = gltf,
-			.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count()),
-		});
-		auto& this_gltf = this->gltfs.back();
-		this_gltf.assets.gltfh = static_cast<tz::hanval>(this->gltfs.size() - 1);
+		gltf_info* this_gltf = nullptr;
+		if(this->gltf_free_list.size())
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(this->gltf_free_list.front()));
+			tz::report("Re-use GLTF spot %zu", hanval);
+			this->gltf_free_list.erase(this->gltf_free_list.begin());
+			this_gltf = &this->gltfs[hanval];
+			this_gltf->assets.gltfh = static_cast<tz::hanval>(hanval);
+		}
+		else
+		{
+			this->gltfs.push_back
+			({
+				.data = gltf,
+				.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count()),
+			});
+			this_gltf = &this->gltfs.back();
+			this_gltf->assets.gltfh = static_cast<tz::hanval>(this->gltfs.size() - 1);
+		}
 
 		// skins
-		this->node_handle_skins(this_gltf);
+		this->node_handle_skins(*this_gltf);
 		// meshes
 		std::vector<mesh_handle> meshes;
 		if(opkg.overrides.contains(override_flag::mesh))
 		{
 			meshes = opkg.pkg.meshes;
-			this->shallow_patch_meshes(this_gltf);
+			this->shallow_patch_meshes(*this_gltf);
 		}
 		else
 		{
-			meshes = this->node_handle_meshes(this_gltf);
+			meshes = this->node_handle_meshes(*this_gltf);
 		}
 		for(mesh_handle mesh : meshes)
 		{
-			this_gltf.assets.meshes.push_back(mesh);
+			this_gltf->assets.meshes.push_back(mesh);
 		}
 		// textures
 		std::vector<texture_handle> materials;
@@ -154,11 +166,11 @@ namespace tz::ren
 		}
 		else
 		{
-			materials = this->node_handle_materials(this_gltf);
+			materials = this->node_handle_materials(*this_gltf);
 		}
 		for(texture_handle texture : materials)
 		{
-			this_gltf.assets.textures.push_back(texture);
+			this_gltf->assets.textures.push_back(texture);
 		}
 
 		// objects
@@ -173,26 +185,52 @@ namespace tz::ren
 			std::size_t node_id = std::distance(all_nodes.begin(), iter);
 			tz::assert(node.id == node_id);
 
-			this->expand_current_gltf_node(this_gltf, node_id, std::nullopt, parent);
+			this->expand_current_gltf_node(*this_gltf, node_id, std::nullopt, parent);
 		}
 
-		this->write_inverse_bind_matrices(this_gltf);
+		this->write_inverse_bind_matrices(*this_gltf);
 
 		std::optional<tz::vec2ui32> maybe_joint_span = std::nullopt;
-		if(this_gltf.data.get_skins().size())
+		if(this_gltf->data.get_skins().size())
 		{
-			maybe_joint_span = this->write_skin_object_data(this_gltf);
+			maybe_joint_span = this->write_skin_object_data(*this_gltf);
 		}
 		//this->resource_write_joint_indices(this_gltf);
 		if(maybe_joint_span.has_value())
 		{
-			for(object_handle oh : this_gltf.assets.objects)
+			for(object_handle oh : this_gltf->assets.objects)
 			{
 				mesh_renderer::get_object_data(oh).extra_indices = maybe_joint_span.value().with_more(0u).with_more(0u);
 			}
 		}
 
-		return this_gltf.assets;
+		return this_gltf->assets;
+	}
+
+	void animation_renderer::remove_objects(asset_package pkg, transform_hierarchy::remove_strategy strategy)
+	{
+		// its safe to do this! even if override packages are used to share meshes/textures,
+		// each new gltf still has their own copy of everything.
+		// if gltfh is nullhand, it could mean many things:
+		// - double remove of pkg. not good
+		// - someones cleared/didnt think about gltfh and just wants to delete objects. that's fine.
+
+		// we cant just outright delete these because previous pkgs have been sent out with fixed gltfhs.
+		// if we delete a gltfh, it invalidates all other gltfhs. a free-list works fine here though.
+		if(pkg.gltfh != tz::nullhand)
+		{
+			auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
+			// note that we can no longer tell the difference between a used, empty gltf, and a deleted, no-longer-used gltf
+			this->gltfs[gltf_hanval] = {};
+			// thats what the free-list is for. recycle this spot for someone else.
+			this->gltf_free_list.push_back(pkg.gltfh);
+		}
+
+		for(object_handle oh : pkg.objects)
+		{
+			mesh_renderer::remove_object(oh, strategy);
+			this->object_extras[static_cast<std::size_t>(static_cast<tz::hanval>(oh))] = {};
+		}
 	}
 
 	std::size_t animation_renderer::get_animation_count(const asset_package& pkg) const
@@ -277,7 +315,11 @@ namespace tz::ren
 		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
 		{
 			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
-			tz::assert(maybe_tree_id.has_value());
+			if(!maybe_tree_id.has_value())
+			{
+				// node will be nullopt if an object was removed (and is thus an empty). we just skip those.
+				continue;
+			}
 			auto& tree_node = mesh_renderer::object_tree.get_node(maybe_tree_id.value());
 			auto& extra = this->object_extras[i];
 			if(extra.is_animated)
@@ -767,6 +809,10 @@ namespace tz::ren
 					}
 				}
 				ImGui::EndChild();
+				if(ImGui::Button("Delete"))
+				{
+					this->remove_objects(anim.assets, transform_hierarchy::remove_strategy::remove_children);
+				}
 			}
 			static int object_id = 0;
 			if(mesh_renderer::draw_count() > 0 && ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen))

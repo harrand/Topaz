@@ -93,20 +93,33 @@ namespace tz
 	template<typename T>
 	unsigned int transform_hierarchy<T>::add_node(tz::trs local_transform, T data, std::optional<unsigned int> parent)
 	{
-		auto id = this->nodes.size();
-		this->nodes.push_back({.data = data, .local_transform = local_transform, .parent = parent});
+		std::size_t id;
+		if(this->node_free_list.size())
+		{
+			id = this->node_free_list.front();
+			tz::report("Use recycled node id %zu", id);
+			this->node_free_list.erase(this->node_free_list.begin());
+			this->nodes[id] = {.data = data, .local_transform = local_transform, .parent = parent};
+		}
+		else
+		{
+			id = this->nodes.size();
+			this->nodes.push_back({.data = data, .local_transform = local_transform, .parent = parent});
+			this->node_local_transform_hashes.push_back(std::numeric_limits<std::size_t>::max());
+			this->node_global_transform_cache.push_back({});
+		}
 		if(parent.has_value())
 		{
 			this->nodes[parent.value()].children.push_back(id);
 		}
-		this->node_local_transform_hashes.push_back(std::numeric_limits<std::size_t>::max());
-		this->node_global_transform_cache.push_back({});
 		return id;
 	}
 
 	template<typename T>
 	void transform_hierarchy<T>::remove_node(unsigned int node_id, remove_strategy strategy)
 	{
+		tz::assert(std::find(this->node_free_list.begin(), this->node_free_list.end(), node_id) == this->node_free_list.end(), "Double remove detected on node %u", node_id);
+		tz::report("Remove node %u", node_id);
 		tz::assert(node_id < this->nodes.size(), "Invalid node_id %zu (node count: %zu)", node_id, this->nodes.size());
 		// what if the node had a parent?
 		const auto& node = this->get_node(node_id);
@@ -133,10 +146,13 @@ namespace tz
 				}
 			break;
 			case remove_strategy::remove_children:
-				for(unsigned int child_node_idx : node.children)
+			{
+				// node.children will change each iteration, so work on a copy.
+				while(node.children.size())
 				{
-					this->remove_node(child_node_idx, strategy);
+					this->remove_node(node.children.front(), strategy);
 				}
+			}
 			break;
 			case remove_strategy::detach_children:
 				for(unsigned int child_node_idx : node.children)
@@ -144,8 +160,12 @@ namespace tz
 					this->nodes[child_node_idx].parent = std::nullopt;
 				}
 			break;
+			case remove_strategy::impl_do_nothing:
+			break;
 		}
-		this->nodes.erase(this->nodes.begin() + node_id);
+		this->nodes[node_id] = {};
+		this->node_free_list.push_back(node_id);
+		//this->nodes.erase(this->nodes.begin() + node_id);
 	}
 
 	template<typename T>
@@ -334,6 +354,11 @@ namespace tz
 	bool transform_hierarchy<T>::dbgui_node(unsigned int node_id, bool display_gizmo)
 	{
 		const transform_node<T>& node = this->get_node(node_id);
+		if(std::find(this->node_free_list.begin(), this->node_free_list.end(), node_id) != this->node_free_list.end())
+		{
+			// its on the free-list. this is a deleted node. skip
+			return true;
+		}
 		std::string node_name;
 		if constexpr(is_printable<T>)
 		{

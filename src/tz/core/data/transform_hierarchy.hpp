@@ -43,6 +43,8 @@ namespace tz
 			remove_children,
 			/// When the node is removed, any children are detached, becoming root nodes - even if the original node had a parent.
 			detach_children,
+			/// When the node is removed, the children are completely untouched, meaning they continue to refer to a dead parent. You almost never want this.
+			impl_do_nothing,
 		};
 		/// Create a new, empty hierarchy.
 		transform_hierarchy() = default;
@@ -166,6 +168,7 @@ namespace tz
 	private:
 		bool dbgui_node(unsigned int node_id, bool display_gizmo);
 		std::vector<transform_node<T>> nodes = {};
+		std::vector<std::size_t> node_free_list = {};
 		mutable std::vector<std::size_t> node_local_transform_hashes = {};
 		mutable std::vector<tz::trs> node_global_transform_cache = {};
 	};
