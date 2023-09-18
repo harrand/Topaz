@@ -37,11 +37,14 @@ namespace tz::ren
 	animation_renderer::object_handle animation_renderer::add_object(object_init_data init)
 	{
 		auto handle = mesh_renderer::add_object(init);
-		tz::assert(static_cast<std::size_t>(static_cast<tz::hanval>(handle)) == this->object_extras.size());
-		this->object_extras.push_back
-		({
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->object_extras.push_back({});
+		this->object_extras[hanval] =
+		{
 			.base_transform = init.trs
-		});
+		};
+		tz::assert(this->object_extras.size() == mesh_renderer::draw_count(), "Object extra and draw count mismatch (%zu and %zu)", this->object_extras.size(), mesh_renderer::draw_count());
+		//tz::assert(static_cast<std::size_t>(static_cast<tz::hanval>(handle)) == this->object_extras.size());
 		return handle;
 	}
 
@@ -128,6 +131,11 @@ namespace tz::ren
 			tz::report("Re-use GLTF spot %zu", hanval);
 			this->gltf_free_list.erase(this->gltf_free_list.begin());
 			this_gltf = &this->gltfs[hanval];
+			*this_gltf = 
+			{
+				.data = gltf,
+				.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count() - this->gltf_free_list.size())
+			};
 			this_gltf->assets.gltfh = static_cast<tz::hanval>(hanval);
 		}
 		else
@@ -351,7 +359,6 @@ namespace tz::ren
 				parent = gltf.node_object_map.at(parent_node_id.value());
 			}
 		}
-		std::size_t this_extra_id = this->object_extras.size();
 		this_object = this->add_object
 		({
 			.trs = node.transform,
@@ -359,6 +366,7 @@ namespace tz::ren
 			.bound_textures = {},
 			.parent = parent
 		});
+		std::size_t this_extra_id = static_cast<std::size_t>(static_cast<tz::hanval>(this_object));
 		// new object belongs to this asset package.
 		gltf.assets.objects.push_back(this_object);
 		// node id also maps to this object.
@@ -818,6 +826,14 @@ namespace tz::ren
 			if(mesh_renderer::draw_count() > 0 && ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				constexpr float slider_height = 160.0f;
+				if(ImGui::Button("+") && std::cmp_less(object_id, mesh_renderer::draw_count() - 2))
+				{
+					object_id++;
+				}
+				if(ImGui::Button("-") && object_id >= 1)
+				{
+					object_id--;
+				}
 				ImGui::VSliderInt("##objectid", ImVec2{18.0f, slider_height}, &object_id, 0, mesh_renderer::draw_count() - 1);
 				std::string objname = "Object " + std::to_string(object_id);
 
