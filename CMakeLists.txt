@@ -251,8 +251,6 @@ add_library(topaz STATIC
 	src/tz/lua/state.hpp
 
 	# tz::ren
-	src/tz/ren/anim.cpp
-	src/tz/ren/anim.hpp
 	src/tz/ren/animation.cpp
 	src/tz/ren/animation.hpp
 	src/tz/ren/mesh.cpp
@@ -323,9 +321,6 @@ add_shader(
 		src/tz/dbgui/empty.vertex.tzsl
 		src/tz/dbgui/empty.fragment.tzsl
 
-		src/tz/ren/shaders/anim.compute.tzsl
-		src/tz/ren/shaders/anim.vertex.tzsl
-		src/tz/ren/shaders/anim.fragment.tzsl
 		src/tz/ren/shaders/animation.vertex.tzsl
 		src/tz/ren/shaders/animation.fragment.tzsl
 		src/tz/ren/shaders/mesh.compute.tzsl
