@@ -96,6 +96,7 @@ namespace tz::ren
 		using mesh_handle = tz::handle<mesh_t>;
 		using object_handle = tz::handle<object_tag_t>;
 		using texture_handle = detail::texture_handle;
+		using transform_hierarchy = tz::transform_hierarchy<std::uint32_t>;
 
 		struct object_init_data
 		{
@@ -122,7 +123,7 @@ namespace tz::ren
 		virtual object_handle add_object(object_init_data init);
 		object_out_data get_object(object_handle h) const;
 
-		void remove_object(object_handle oh);
+		void remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		virtual void append_to_render_graph() override;
 
@@ -184,10 +185,11 @@ namespace tz::ren
 		void dbgui_tab_overview();
 		void dbgui_tab_render();
 
-		tz::transform_hierarchy<std::uint32_t> object_tree = {};
+		transform_hierarchy object_tree = {};
 	private:
 		compute_pass_t compute_pass = {};
 		render_pass_t render_pass;
+		std::vector<object_handle> free_list = {};
 	};
 }
 

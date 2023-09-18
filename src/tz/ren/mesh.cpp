@@ -96,6 +96,13 @@ namespace tz::ren
 	mesh_renderer::object_handle mesh_renderer::add_object(object_init_data init)
 	{
 		std::size_t hanval = this->draw_count();
+		const bool recycled = this->free_list.size();
+		if(recycled)
+		{
+			hanval = static_cast<std::size_t>(static_cast<tz::hanval>(this->free_list.front()));
+			tz::report("Recycled %zu from free-list", hanval);
+			this->free_list.erase(this->free_list.begin());
+		}
 		// draw list at this position is now equal to the associated mesh_locator.
 		tz::assert(hanval < this->compute_pass.get_draw_list_meshes().size(), "ran out of objects! can only have %zu", this->compute_pass.get_draw_list_meshes().size());
 		if(init.mesh == tz::nullhand)
@@ -158,15 +165,16 @@ namespace tz::ren
 		};
 	}
 
-	void mesh_renderer::remove_object(object_handle oh)
+	void mesh_renderer::remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+		this->free_list.push_back(oh);
 		// set to front mesh (which needs to be a null locator);
 		this->compute_pass.get_draw_list_meshes()[hanval] = {};
 		auto maybe_node = this->object_tree.find_node(hanval);
 		if(maybe_node.has_value())
 		{
-			this->object_tree.remove_node(maybe_node.value(), tz::transform_hierarchy<std::uint32_t>::remove_strategy::patch_children_to_parent);
+			this->object_tree.remove_node(maybe_node.value(), strategy);
 		}
 	}
 
@@ -232,6 +240,7 @@ namespace tz::ren
 	void mesh_renderer::clear_draws()
 	{
 		this->compute_pass.set_draw_count(0);
+		this->free_list.clear();
 	}
 
 	void mesh_renderer::append_to_render_graph()
