@@ -8,7 +8,7 @@ namespace tz::gl
 	/**
 	 * @ingroup tz_cpp
 	 * @defgroup tz_gl2 Graphics Library
-	 * Hardware-accelerated 3D graphics library.
+	 * Low-level 3D graphics library.
 	 *
 	 * Rendering 3D graphics in Topaz is achieved by doing the following:
 	 * - Populate a @ref tz::gl::renderer_info describing how to render what you want.

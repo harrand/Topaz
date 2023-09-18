@@ -253,8 +253,10 @@ add_library(topaz STATIC
 	# tz::ren
 	src/tz/ren/animation.cpp
 	src/tz/ren/animation.hpp
+	src/tz/ren/api.hpp
 	src/tz/ren/mesh.cpp
 	src/tz/ren/mesh.hpp
+	src/tz/ren/tz_ren.hpp
 	)
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")

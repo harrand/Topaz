@@ -1,5 +1,6 @@
 #ifndef TOPAZ_REN_MESH_HPP
 #define TOPAZ_REN_MESH_HPP
+#include "tz/ren/api.hpp"
 #include "tz/gl/renderer.hpp"
 #include "tz/core/data/vector.hpp"
 #include "tz/core/matrix.hpp"
@@ -85,7 +86,7 @@ namespace tz::ren
 	* todo: document
 	* a two-pass (compute gpu command generation => render) mesh renderer. pbr?
 	*/
-	class mesh_renderer
+	class mesh_renderer : public ihigh_level_renderer
 	{
 		struct object_tag_t{};
 	public:
@@ -123,7 +124,7 @@ namespace tz::ren
 
 		void remove_object(object_handle oh);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
-		void append_to_render_graph();
+		virtual void append_to_render_graph() override;
 
 		tz::trs get_camera_transform() const;
 		void set_camera_transform(tz::trs camera_transform);
