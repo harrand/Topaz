@@ -384,10 +384,11 @@ namespace tz::ren
 				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 				if(gltf.metadata.submesh_materials[i].has_value())
 				{
+					const auto& mat = gltf.metadata.submesh_materials[i].value();
 					bound_textures[0] = texture_locator
 					{
-						.colour_tint = tz::vec3::filled(1.0f),
-						.texture = gltf.assets.textures[gltf.metadata.submesh_materials[i]->color_texture_id]
+						.colour_tint = mat.color_factor.swizzle<0, 1, 2>(),
+						.texture = gltf.assets.textures[mat.color_texture_id]
 					};
 				}
 				object_handle child = this->add_object

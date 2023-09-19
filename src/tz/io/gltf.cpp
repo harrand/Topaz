@@ -460,6 +460,7 @@ namespace tz::io
 			({
 				.texcoord_id = material.color_texcoord_id,
 				.image_id = material.color_texture_id,
+				.factor = material.color_factor,
 				.type = gltf_submesh_texture_type::color
 			});
 			// normal (optional)
@@ -491,6 +492,7 @@ namespace tz::io
 				({
 					.texcoord_id = material.emissive_texcoord_id,
 					.image_id = material.emissive_texture_id,
+					.factor = material.emissive_factor.with_more(1.0f),
 		 			.type = gltf_submesh_texture_type::emissive
 				});
 			}
@@ -898,6 +900,14 @@ namespace tz::io
 					tz::assert(!emissive.is_object(), "Detected GLTF material with no pbrmr base colour texture, but an emissive map applied. In Topaz, emissive maps require a base colour texture.");
 					continue;
 				}
+				tz::vec4 colour_factor = tz::vec4::filled(1.0f);
+				if(!pbr["baseColorFactor"].is_null())
+				{
+					for(std::size_t i = 0; i < 4; i++)
+					{
+						colour_factor[i] = pbr["baseColorFactor"][i];
+					}
+				}
 				tz::assert(!pbr["baseColorTexture"]["index"].is_null(), "Missing pbrMetallicRoughness.baseColorTexture.index on material. GLB is in an invalid format, or Topaz needs a patch to support this GLB.");
 				std::size_t imgid = pbr["baseColorTexture"]["index"];
 				std::size_t img_texcoord_id = 0;
@@ -956,6 +966,7 @@ namespace tz::io
 					.name = name,
 		 			.color_texture_id = imgid,
 		 			.color_texcoord_id = img_texcoord_id,
+					.color_factor = colour_factor,
 		 			.normal_texture_id = normid,
 		 			.normal_texcoord_id = norm_coord_id,
 		 			.normal_scale = norm_scale,

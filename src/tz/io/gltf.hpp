@@ -241,6 +241,7 @@ namespace tz::io
 		std::string name = "Null Material";
 		std::size_t color_texture_id = detail::badzu;
 		std::size_t color_texcoord_id = detail::badzu;
+		tz::vec4 color_factor = tz::vec4::filled(1.0f);
 		std::size_t normal_texture_id = detail::badzu;
 		std::size_t normal_texcoord_id = detail::badzu;
 		float normal_scale = 1.0f;
@@ -249,6 +250,7 @@ namespace tz::io
 		float occlusion_strength = 1.0f;
 		std::size_t emissive_texture_id = detail::badzu;
 		std::size_t emissive_texcoord_id = detail::badzu;
+		tz::vec3 emissive_factor = tz::vec3::filled(1.0f);
 	};
 
 	struct gltf_vertex_data
@@ -274,6 +276,7 @@ namespace tz::io
 	{
 		std::size_t texcoord_id;
 		std::size_t image_id;
+		tz::vec4 factor = tz::vec4::filled(1.0f);
 		float extra_data = 1.0f; // normal scale / occlusion strength.
 		gltf_submesh_texture_type type;
 	};
