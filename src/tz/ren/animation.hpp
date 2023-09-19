@@ -12,6 +12,7 @@ namespace tz::ren
 		using gltf_handle = tz::handle<tz::io::gltf>;
 		using mesh_handle = mesh_renderer::mesh_handle;
 		using texture_handle = mesh_renderer::texture_handle;
+		using transform_hierarchy = mesh_renderer::transform_hierarchy;
 		using object_handle = mesh_renderer::object_handle;
 		using object_out_data = mesh_renderer::object_out_data;
 		struct asset_package

@@ -168,7 +168,10 @@ namespace tz::ren
 	void mesh_renderer::remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
-		this->free_list.push_back(oh);
+		if(std::find(this->free_list.begin(), this->free_list.end(), oh) == this->free_list.end())
+		{
+			this->free_list.push_back(oh);
+		}
 		// set to front mesh (which needs to be a null locator);
 		this->compute_pass.get_draw_list_meshes()[hanval] = {};
 
