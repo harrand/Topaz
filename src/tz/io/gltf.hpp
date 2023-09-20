@@ -242,6 +242,10 @@ namespace tz::io
 		std::size_t color_texture_id = detail::badzu;
 		std::size_t color_texcoord_id = detail::badzu;
 		tz::vec4 color_factor = tz::vec4::filled(1.0f);
+		std::size_t metallic_roughness_texture_id = detail::badzu;
+		std::size_t metallic_roughness_texcoord_id = detail::badzu;
+		float metallic_factor = 1.0f;
+		float roughness_factor = 1.0f;
 		std::size_t normal_texture_id = detail::badzu;
 		std::size_t normal_texcoord_id = detail::badzu;
 		float normal_scale = 1.0f;

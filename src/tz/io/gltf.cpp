@@ -900,6 +900,27 @@ namespace tz::io
 					tz::assert(!emissive.is_object(), "Detected GLTF material with no pbrmr base colour texture, but an emissive map applied. In Topaz, emissive maps require a base colour texture.");
 					continue;
 				}
+				std::size_t metallic_roughness_id = detail::badzu;
+				std::size_t metallic_roughness_texcoord_id = 0;
+				float metallic_factor = 1.0f;
+				float roughness_factor = 1.0f;
+				if(pbr["metallicRoughnessTexture"].is_object())
+				{
+					tz::assert(!pbr["metallicRoughnessTexture"]["index"].is_null(), "Missing pbrMetallicRoughness.metallicRoughnessTexture.index on material. GLB is in an invalid format.");
+					metallic_roughness_id = pbr["metallicRoughnessTexture"]["index"];
+					if(!pbr["metallicRoughnessTexture"]["texCoord"].is_null())
+					{
+						metallic_roughness_texcoord_id = pbr["metallicRoughnessTexture"]["texCoord"];
+					}
+				}
+				if(!pbr["metallicFactor"].is_null())
+				{
+					metallic_factor = pbr["metallicFactor"];
+				}
+				if(!pbr["roughnessFactor"].is_null())
+				{
+					roughness_factor = pbr["roughnessFactor"];
+				}
 				tz::vec4 colour_factor = tz::vec4::filled(1.0f);
 				if(!pbr["baseColorFactor"].is_null())
 				{
@@ -967,6 +988,10 @@ namespace tz::io
 		 			.color_texture_id = imgid,
 		 			.color_texcoord_id = img_texcoord_id,
 					.color_factor = colour_factor,
+					.metallic_roughness_texture_id = metallic_roughness_id,
+					.metallic_roughness_texcoord_id = metallic_roughness_texcoord_id,
+					.metallic_factor = metallic_factor,
+					.roughness_factor = roughness_factor,
 		 			.normal_texture_id = normid,
 		 			.normal_texcoord_id = norm_coord_id,
 		 			.normal_scale = norm_scale,
