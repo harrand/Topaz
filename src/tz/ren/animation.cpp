@@ -398,6 +398,17 @@ namespace tz::ren
 						.colour_tint = mat.color_factor.swizzle<0, 1, 2>(),
 						.texture = gltf.assets.textures[mat.color_texture_id]
 					};
+					if(mat.metallic_roughness_texture_id != static_cast<std::size_t>(-1))
+					{
+						// we have metallic roughness. that takes spot 1
+						// gltf spec: "Its green channel contains roughness values and its blue channel contains metalness values"
+						// for that reason, colour_tint is {1.0f, roughness factor, metallic factor}
+						bound_textures[1] = texture_locator
+						{
+							.colour_tint = tz::vec3{0.0f, mat.roughness_factor, mat.metallic_factor},
+							.texture = gltf.assets.textures[mat.metallic_roughness_texture_id]
+						};
+					}
 				}
 				object_handle child = this->add_object
 				({

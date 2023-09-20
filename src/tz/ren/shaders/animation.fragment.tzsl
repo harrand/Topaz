@@ -17,19 +17,46 @@ resource(id = 4) const texture res::textures[];
 void main()
 {
 	out::colour = vec4(vec3(0.0f), 1.0f);
-	bool any_texture_applied = false;
-	for(uint i = 0; i < MAX_TEX_COUNT; i++)
+	//bool any_texture_applied = false;
+
+	// TODO: use correct texcoords. we have the data, it should be stored in texture-locator maybe? for now we always use texcoord 0 which is wrong.
+	// we have MAX_TEX_COUNT slots.
+	// some of these are dedicated for a fixed purpose.
+	// namely: 0 is base colour, 1 is metallic roughness, ...
+
+	texture_locator base_colour = in::textures[0];
+	if(base_colour.texture_id == BADU)
 	{
-		if(in::textures[i].texture_id == BADU)
-		{
-			continue;
-		}
-		texture_locator tex = in::textures[i];
-		out::colour.xyz += texture(res::textures[tex.texture_id], in::texcoord[i]).xyz * tex.colour_tint;
-		any_texture_applied = true;
-	}
-	if(!any_texture_applied)
-	{
+		// use solid red.
 		out::colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	}
+	else
+	{
+		// note: base colour is guaranteed to be sRGB. we need to tonemap here ideally, but we don't right now.
+		out::colour.xyz = texture(res::textures[base_colour.texture_id], in::texcoord[0]).xyz * base_colour.colour_tint;
+	}
+	texture_locator metallic_roughness = in::textures[1];
+	if(metallic_roughness.texture_id != BADU)
+	{
+		// green contains roughness values, blue contains metalness values.
+		vec3 mrsample = texture(res::textures[metallic_roughness.texture_id], in::texcoord[0]).xyz * metallic_roughness.colour_tint;
+		float roughness = mrsample.g;
+		float metallicness = mrsample.b;
+		// TODO: pbr magic!
+	}
+
+	//for(uint i = 0; i < MAX_TEX_COUNT; i++)
+	//{
+	//	if(in::textures[i].texture_id == BADU)
+	//	{
+	//		continue;
+	//	}
+	//	texture_locator tex = in::textures[i];
+	//	out::colour.xyz += texture(res::textures[tex.texture_id], in::texcoord[i]).xyz * tex.colour_tint;
+	//	any_texture_applied = true;
+	//}
+	//if(!any_texture_applied)
+	//{
+	//	out::colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	//}
 }
