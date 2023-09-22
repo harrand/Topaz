@@ -68,6 +68,8 @@ add_library(topaz STATIC
 	src/tz/core/debug.cpp
 	src/tz/core/debug.hpp
 	src/tz/core/debug.inl
+	src/tz/core/endian.cpp
+	src/tz/core/endian.hpp
 	src/tz/core/engine_info.cpp
 	src/tz/core/engine_info.hpp
 	src/tz/core/engine_info.inl
