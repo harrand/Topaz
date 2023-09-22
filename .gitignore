@@ -8,6 +8,7 @@ tracy_server/
 
 # Big binaries
 *.glb
+*.ttf
 
 # I don't want the idea directory in my repo at all
 .idea
