@@ -242,6 +242,9 @@ add_library(topaz STATIC
 	# image
 	src/tz/io/image.cpp
 	src/tz/io/image.hpp
+	# ttf
+	src/tz/io/ttf.cpp
+	src/tz/io/ttf.hpp
 
 	# tz::lua
 	src/tz/lua/api.cpp
