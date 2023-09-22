@@ -3,6 +3,7 @@
 #include "tz/core/profile.hpp"
 #include <fstream>
 #include <cstdio>
+#include <cstring>
 
 namespace tz::io
 {
