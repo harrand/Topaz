@@ -30,8 +30,9 @@ namespace tz::io
 		static ttf from_file(const char* path);
 		ttf(std::string_view ttf_data);
 	private:
-		void parse_header(std::string_view& str);
-		void parse_table_info(std::string_view str);
+		std::string_view parse_header(std::string_view str);
+		void parse_table_info(std::string_view str, std::string_view full_data);
+		std::uint32_t calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const;
 		ttf_header header = {};
 		std::vector<ttf_table> tables = {};
 	};
