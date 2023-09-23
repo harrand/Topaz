@@ -46,6 +46,26 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_maxp_table
+	{
+		std::int32_t version_fixed_point = 0;
+		std::uint16_t num_glyphs = 0u;
+		std::uint16_t max_points = 0u;
+		std::uint16_t max_contours = 0u;
+		std::uint16_t max_composite_points = 0u;
+		std::uint16_t max_composite_contours = 0u;
+		std::uint16_t max_zones = 0u;
+		std::uint16_t max_twilight_points = 0u;
+		std::uint16_t max_storage = 0u;
+		std::uint16_t max_function_defs = 0u;
+		std::uint16_t max_instruction_defs = 0u;
+		std::uint16_t max_stack_elements = 0u;
+		std::uint16_t max_size_of_instructions = 0u;
+		std::uint16_t max_component_elements = 0u;
+		std::uint16_t max_component_depth = 0u;
+		bool canary = false;
+	};
+
 	class ttf
 	{
 	public:
@@ -58,10 +78,12 @@ namespace tz::io
 		void parse_table_info(std::string_view str, std::string_view full_data);
 		std::uint32_t calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const;
 		void parse_head_table(std::string_view data, ttf_table table_descriptor);
+		void parse_maxp_table(std::string_view data, ttf_table table_descriptor);
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
 		ttf_head_table head = {};
+		ttf_maxp_table maxp = {};
 	};
 }
 

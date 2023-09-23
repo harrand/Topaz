@@ -70,7 +70,8 @@ namespace tz::io
 			tbl.length = ttf_read_value<std::uint32_t>(ptr);
 
 			tz::assert(std::string{tbl.tag} != "DEAD", "Detected no change to table tag - malformed TTF.");
-			if(std::string{tbl.tag} == "head")
+			std::string tagstr{tbl.tag};
+			if(tagstr == "head")
 			{
 				this->parse_head_table(full_data, tbl);
 			}
@@ -80,6 +81,10 @@ namespace tz::io
 				tz::assert(calc == tbl.checksum);
 
 				// parse other table types...
+				if(tagstr == "maxp")
+				{
+					this->parse_maxp_table(full_data, tbl);
+				}
 			}
 		}
 	}
@@ -130,5 +135,36 @@ namespace tz::io
 
 		// set canary to true, meaning we did indeed set the head table.
 		this->head.canary = true;
+	}
+
+	void ttf::parse_maxp_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		tz::assert(!this->maxp.canary, "When parsing maxp table, noticed canary already switched to true. Double maxp table discovery? Most likely malformed TTF.");
+
+		const char* ptr = data.data();
+
+		//this->head.major_version = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.version_fixed_point = ttf_read_value<std::int32_t>(ptr);
+		this->maxp.version_fixed_point /= (1 << 16);
+		this->maxp.num_glyphs = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_points = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_contours = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_composite_points = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_composite_contours = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_zones = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_twilight_points = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_storage = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_function_defs = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_instruction_defs = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_stack_elements = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_size_of_instructions = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_component_elements = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.max_component_depth = ttf_read_value<std::uint16_t>(ptr);
+		this->maxp.canary = true;
 	}
 }
