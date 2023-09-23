@@ -9,9 +9,11 @@
 namespace tz::io
 {
 	template<std::integral T>
-	T ttf_read_value(const char* data)
+	T ttf_read_value(const char*& data)
 	{
-		return tz::big_endian(*reinterpret_cast<const T*>(data));
+		T ret = tz::big_endian(*reinterpret_cast<const T*>(data));
+		data += sizeof(T);
+		return ret;
 	}
 
 	ttf ttf::from_memory(std::string_view sv)
@@ -42,16 +44,11 @@ namespace tz::io
 	std::string_view ttf::parse_header(std::string_view str)
 	{
 		const char* ptr = str.data();
-		this->header.scalar_type = tz::big_endian(*reinterpret_cast<const std::uint32_t*>(ptr));	
-		ptr += sizeof(std::uint32_t);
-		this->header.num_tables = tz::big_endian(*reinterpret_cast<const std::uint16_t*>(ptr));	
-		ptr += sizeof(std::uint16_t);
-		this->header.search_range = tz::big_endian(*reinterpret_cast<const std::uint16_t*>(ptr));
-		ptr += sizeof(std::uint16_t);
-		this->header.entry_selector = tz::big_endian(*reinterpret_cast<const std::uint16_t*>(ptr));
-		ptr += sizeof(std::uint16_t);
-		this->header.range_shift = tz::big_endian(*reinterpret_cast<const std::uint16_t*>(ptr));
-		ptr += sizeof(std::uint16_t);
+		this->header.scalar_type = ttf_read_value<std::uint32_t>(ptr);
+		this->header.num_tables = ttf_read_value<std::uint16_t>(ptr);
+		this->header.search_range = ttf_read_value<std::uint16_t>(ptr);
+		this->header.entry_selector = ttf_read_value<std::uint16_t>(ptr);
+		this->header.range_shift = ttf_read_value<std::uint16_t>(ptr);
 
 		auto byte_diff = std::distance(str.data(), ptr);
 		tz::assert(std::cmp_greater(str.size(), byte_diff));
@@ -68,13 +65,11 @@ namespace tz::io
 			ttf_table& tbl = this->tables.emplace_back();
 			std::memcpy(tbl.tag, ptr, 4);
 			ptr += 4;	
-			tbl.checksum = tz::big_endian(*reinterpret_cast<const std::uint32_t*>(ptr));
-			ptr += sizeof(std::uint32_t);
-			tbl.offset = tz::big_endian(*reinterpret_cast<const std::uint32_t*>(ptr));
-			ptr += sizeof(std::uint32_t);
-			tbl.length = tz::big_endian(*reinterpret_cast<const std::uint32_t*>(ptr));
-			ptr += sizeof(std::uint32_t);
+			tbl.checksum = ttf_read_value<std::uint32_t>(ptr);
+			tbl.offset = ttf_read_value<std::uint32_t>(ptr);
+			tbl.length = ttf_read_value<std::uint32_t>(ptr);
 
+			tz::assert(std::string{tbl.tag} != "DEAD", "Detected no change to table tag - malformed TTF.");
 			if(std::string{tbl.tag} == "head")
 			{
 				this->parse_head_table(full_data, tbl);
@@ -111,57 +106,27 @@ namespace tz::io
 		const char* ptr = data.data();
 
 		this->head.major_version = ttf_read_value<std::uint16_t>(ptr);
-		ptr += sizeof(this->head.major_version);
 
 		this->head.minor_version = ttf_read_value<std::uint16_t>(ptr);
-		ptr += sizeof(this->head.minor_version);
 
 		this->head.font_revision_fixed_point = ttf_read_value<std::int32_t>(ptr);
 		// fixed-point conversion: divide by (1 >> 16)
 		this->head.font_revision_fixed_point /= (1 << 16);
-		ptr += sizeof(this->head.font_revision_fixed_point);
-
 		this->head.checksum_adjustment = ttf_read_value<std::uint32_t>(ptr);
-		ptr += sizeof(this->head.checksum_adjustment);
-
 		this->head.magic = ttf_read_value<std::uint32_t>(ptr);
-		ptr += sizeof(this->head.magic);
-
 		this->head.flags = ttf_read_value<std::uint16_t>(ptr);
-		ptr += sizeof(this->head.flags);
-
 		this->head.units_per_em = ttf_read_value<std::uint16_t>(ptr);
-		ptr += sizeof(this->head.units_per_em);
-
 		// ignore created and modified date for now. aids.
 		ptr += sizeof(std::uint64_t) * 2;
-
 		this->head.xmin = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.xmin);
-
 		this->head.ymin = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.ymin);
-
 		this->head.xmax = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.xmax);
-
 		this->head.ymax = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.ymax);
-
 		this->head.mac_style = ttf_read_value<std::uint16_t>(ptr);
-		ptr += sizeof(this->head.mac_style);
-
 		this->head.lowest_rec_ppem = ttf_read_value<std::uint16_t>(ptr);
-		ptr += sizeof(this->head.lowest_rec_ppem);
-
 		this->head.font_direction_hint = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.font_direction_hint);
-
 		this->head.index_to_loc_format = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.index_to_loc_format);
-
 		this->head.glyph_data_format = ttf_read_value<std::int16_t>(ptr);
-		ptr += sizeof(this->head.glyph_data_format);
 
 		// set canary to true, meaning we did indeed set the head table.
 		this->head.canary = true;
