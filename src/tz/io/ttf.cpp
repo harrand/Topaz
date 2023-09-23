@@ -8,6 +8,12 @@
 
 namespace tz::io
 {
+	template<std::integral T>
+	T ttf_read_value(const char* data)
+	{
+		return tz::big_endian(*reinterpret_cast<const T*>(data));
+	}
+
 	ttf ttf::from_memory(std::string_view sv)
 	{
 		TZ_PROFZONE("ttf - from memory", 0xFFFF2222);
@@ -28,6 +34,9 @@ namespace tz::io
 		std::string_view ttf_minus_header = this->parse_header(ttf_data);
 		this->parse_header(ttf_data);
 		this->parse_table_info(ttf_minus_header, ttf_data);
+		// by the time we've parsed tables, we expect all the tables to be sorted.
+		// let's do a sanity check ensuring that the canary of the head table has been set to true.
+		tz::assert(this->head.canary, "TTF Head Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 	}
 
 	std::string_view ttf::parse_header(std::string_view str)
@@ -66,10 +75,16 @@ namespace tz::io
 			tbl.length = tz::big_endian(*reinterpret_cast<const std::uint32_t*>(ptr));
 			ptr += sizeof(std::uint32_t);
 
-			if(tbl.tag[0] != 'h' || tbl.tag[1] != 'e' || tbl.tag[2] != 'a' || tbl.tag[3] != 'd')
+			if(std::string{tbl.tag} == "head")
+			{
+				this->parse_head_table(full_data, tbl);
+			}
+			else
 			{
 				std::uint32_t calc = calculate_table_checksum(full_data, tbl.offset, tbl.length);
 				tz::assert(calc == tbl.checksum);
+
+				// parse other table types...
 			}
 		}
 	}
@@ -82,5 +97,73 @@ namespace tz::io
 			sum += tz::big_endian(*reinterpret_cast<const std::uint32_t*>(data.data() + offset + i));
 		}
 		return sum;
+	}
+
+	void ttf::parse_head_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		tz::assert(!this->head.canary, "When parsing head table, noticed canary already switched to true. Double head table discovery? Most likely malformed TTF.");
+
+		const char* ptr = data.data();
+
+		this->head.major_version = ttf_read_value<std::uint16_t>(ptr);
+		ptr += sizeof(this->head.major_version);
+
+		this->head.minor_version = ttf_read_value<std::uint16_t>(ptr);
+		ptr += sizeof(this->head.minor_version);
+
+		this->head.font_revision_fixed_point = ttf_read_value<std::int32_t>(ptr);
+		// fixed-point conversion: divide by (1 >> 16)
+		this->head.font_revision_fixed_point /= (1 << 16);
+		ptr += sizeof(this->head.font_revision_fixed_point);
+
+		this->head.checksum_adjustment = ttf_read_value<std::uint32_t>(ptr);
+		ptr += sizeof(this->head.checksum_adjustment);
+
+		this->head.magic = ttf_read_value<std::uint32_t>(ptr);
+		ptr += sizeof(this->head.magic);
+
+		this->head.flags = ttf_read_value<std::uint16_t>(ptr);
+		ptr += sizeof(this->head.flags);
+
+		this->head.units_per_em = ttf_read_value<std::uint16_t>(ptr);
+		ptr += sizeof(this->head.units_per_em);
+
+		// ignore created and modified date for now. aids.
+		ptr += sizeof(std::uint64_t) * 2;
+
+		this->head.xmin = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.xmin);
+
+		this->head.ymin = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.ymin);
+
+		this->head.xmax = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.xmax);
+
+		this->head.ymax = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.ymax);
+
+		this->head.mac_style = ttf_read_value<std::uint16_t>(ptr);
+		ptr += sizeof(this->head.mac_style);
+
+		this->head.lowest_rec_ppem = ttf_read_value<std::uint16_t>(ptr);
+		ptr += sizeof(this->head.lowest_rec_ppem);
+
+		this->head.font_direction_hint = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.font_direction_hint);
+
+		this->head.index_to_loc_format = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.index_to_loc_format);
+
+		this->head.glyph_data_format = ttf_read_value<std::int16_t>(ptr);
+		ptr += sizeof(this->head.glyph_data_format);
+
+		// set canary to true, meaning we did indeed set the head table.
+		this->head.canary = true;
 	}
 }
