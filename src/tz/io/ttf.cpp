@@ -45,6 +45,7 @@ namespace tz::io
 		tz::assert(this->hmtx.canary, "TTF hmtx Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->loca.canary, "TTF loca Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->glyf.canary, "TTF glyf Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+		tz::assert(this->cmap.canary, "TTF cmap Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 	}
 
 	std::string_view ttf::parse_header(std::string_view str)
@@ -107,6 +108,7 @@ namespace tz::io
 		this->parse_hmtx_table(data, this->find_table_by_tag("hmtx"));
 		this->parse_loca_table(data, this->find_table_by_tag("loca"));
 		this->parse_glyf_table(data, this->find_table_by_tag("glyf"));
+		this->parse_cmap_table(data, this->find_table_by_tag("cmap"));
 	}
 
 	std::uint32_t ttf::calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const
@@ -329,5 +331,32 @@ namespace tz::io
 			}
 		}
 		this->glyf.canary = true;
+	}
+
+	void ttf::parse_cmap_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		//tz::assert(this->head.canary, "Cannot parse cmap table until head table is parsed.");
+		tz::assert(!this->cmap.canary, "When parsing cmap table, noticed canary already switched to true. Double hhea table discovery? Most likely malformed TTF.");
+		const char* ptr = data.data();
+
+		this->cmap.version = ttf_read_value<std::uint16_t>(ptr);
+		this->cmap.num_tables = ttf_read_value<std::uint16_t>(ptr);
+		this->cmap.encoding_records.reserve(this->cmap.num_tables);
+		for(std::size_t i = 0; i < this->cmap.num_tables; i++)
+		{
+			this->cmap.encoding_records.push_back
+			({
+				.platform_id = ttf_read_value<std::uint16_t>(ptr),
+				.encoding_id = ttf_read_value<std::uint16_t>(ptr),
+				.offset = ttf_read_value<std::uint32_t>(ptr)
+			});
+		}
+		tz::assert(this->cmap.version == 0u, "TTF - Only cmap version 0 is supported. This font has cmap version %u", static_cast<unsigned int>(this->cmap.version));
+		this->cmap.canary = true;
 	}
 }

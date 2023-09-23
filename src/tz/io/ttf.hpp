@@ -120,6 +120,21 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_cmap_encoding_record
+	{
+		std::uint16_t platform_id = 0u;
+		std::uint16_t encoding_id = 0u;
+		std::uint32_t offset = 0u;
+	};
+
+	struct ttf_cmap_table
+	{
+		std::uint16_t version = 0u;
+		std::uint16_t num_tables = 0u;
+		std::vector<ttf_cmap_encoding_record> encoding_records = {};
+		bool canary = false;
+	};
+
 	class ttf
 	{
 	public:
@@ -139,6 +154,7 @@ namespace tz::io
 		void parse_hmtx_table(std::string_view data, ttf_table table_descriptor);
 		void parse_loca_table(std::string_view data, ttf_table table_descriptor);
 		void parse_glyf_table(std::string_view data, ttf_table table_descriptor);
+		void parse_cmap_table(std::string_view data, ttf_table table_descriptor);
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
@@ -148,6 +164,7 @@ namespace tz::io
 		ttf_hmtx_table hmtx = {};
 		ttf_loca_table loca = {};
 		ttf_glyf_table glyf = {};
+		ttf_cmap_table cmap = {};
 	};
 }
 
