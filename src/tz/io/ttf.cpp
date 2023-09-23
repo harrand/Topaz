@@ -236,7 +236,7 @@ namespace tz::io
 		}
 
 		tz::assert(this->maxp.num_glyphs >= this->hhea.num_of_long_hor_metrics, "Not enough glyphs. Malformed TTF or logic error? Max glyphs = %u, Num long hor metrics = %u", static_cast<unsigned int>(this->maxp.num_glyphs), static_cast<unsigned int>(this->hhea.num_of_long_hor_metrics));
-		for(std::size_t i = 0; i < this->maxp.num_glyphs - this->hhea.num_of_long_hor_metrics; i++)
+		for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs - this->hhea.num_of_long_hor_metrics); i++)
 		{
 			this->hmtx.left_side_bearings.push_back(ttf_read_value<std::int16_t>(ptr));
 		}
