@@ -39,6 +39,8 @@ namespace tz::io
 		// by the time we've parsed tables, we expect all the tables to be sorted.
 		// let's do a sanity check ensuring that the canary of the head table has been set to true.
 		tz::assert(this->head.canary, "TTF Head Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+		tz::assert(this->maxp.canary, "TTF maxp Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+		tz::assert(this->hhea.canary, "TTF hhea Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 	}
 
 	std::string_view ttf::parse_header(std::string_view str)
@@ -84,6 +86,10 @@ namespace tz::io
 				if(tagstr == "maxp")
 				{
 					this->parse_maxp_table(full_data, tbl);
+				}
+				else if (tagstr == "hhea")
+				{
+					this->parse_hhea_table(full_data, tbl);
 				}
 			}
 		}
@@ -166,5 +172,36 @@ namespace tz::io
 		this->maxp.max_component_elements = ttf_read_value<std::uint16_t>(ptr);
 		this->maxp.max_component_depth = ttf_read_value<std::uint16_t>(ptr);
 		this->maxp.canary = true;
+	}
+
+	void ttf::parse_hhea_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		tz::assert(!this->hhea.canary, "When parsing hhea table, noticed canary already switched to true. Double hhea table discovery? Most likely malformed TTF.");
+
+		const char* ptr = data.data();
+		this->hhea.version_fixed_point = ttf_read_value<std::int32_t>(ptr);
+		this->hhea.version_fixed_point /= (1 << 16);
+		this->hhea.ascent = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.descent = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.line_gap = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.advance_width_max = ttf_read_value<std::uint16_t>(ptr);
+		this->hhea.min_left_side_bearing = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.min_right_side_bearing = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.x_max_extent = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.caret_slope_rise = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.caret_slope_run = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.caret_offset = ttf_read_value<std::int16_t>(ptr);
+
+		// skip 4 reserved places.
+		ptr += sizeof(std::int16_t) * 4;
+
+		this->hhea.metric_data_format = ttf_read_value<std::int16_t>(ptr);
+		this->hhea.num_of_long_hor_metrics = ttf_read_value<std::uint16_t>(ptr);
+		this->hhea.canary = true;
 	}
 }

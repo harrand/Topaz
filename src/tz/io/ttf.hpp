@@ -66,6 +66,25 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_hhea_table
+	{
+		std::int32_t version_fixed_point = 0;
+		std::int16_t ascent = 0;
+		std::int16_t descent = 0;
+		std::int16_t line_gap = 0;
+		std::uint16_t advance_width_max = 0u;
+		std::int16_t min_left_side_bearing = 0;
+		std::int16_t min_right_side_bearing = 0;
+		std::int16_t x_max_extent = 0;
+		std::int16_t caret_slope_rise = 0;
+		std::int16_t caret_slope_run = 0;
+		std::int16_t caret_offset = 0;
+
+		std::int16_t metric_data_format = 0;
+		std::uint16_t num_of_long_hor_metrics = 0u;
+		bool canary = false;
+	};
+
 	class ttf
 	{
 	public:
@@ -79,11 +98,13 @@ namespace tz::io
 		std::uint32_t calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const;
 		void parse_head_table(std::string_view data, ttf_table table_descriptor);
 		void parse_maxp_table(std::string_view data, ttf_table table_descriptor);
+		void parse_hhea_table(std::string_view data, ttf_table table_descriptor);
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
 		ttf_head_table head = {};
 		ttf_maxp_table maxp = {};
+		ttf_hhea_table hhea = {};
 	};
 }
 
