@@ -2,6 +2,7 @@
 #define TOPAZ_IO_TTF_HPP
 #include <string_view>
 #include <vector>
+#include <limits>
 
 namespace tz::io
 {
