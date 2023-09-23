@@ -85,6 +85,19 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_hmtx_table
+	{
+		struct hmetrics_t
+		{
+			std::uint16_t advance_width = 0u;
+			std::int16_t left_side_bearing = 0;
+		};
+
+		std::vector<hmetrics_t> hmetrics = {};
+		std::vector<std::int16_t> left_side_bearings = {};
+		bool canary = false;
+	};
+
 	class ttf
 	{
 	public:
@@ -95,16 +108,20 @@ namespace tz::io
 	private:
 		std::string_view parse_header(std::string_view str);
 		void parse_table_info(std::string_view str, std::string_view full_data);
+		ttf_table find_table_by_tag(const char* tag) const;
+		void parse_tables(std::string_view data);
 		std::uint32_t calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const;
 		void parse_head_table(std::string_view data, ttf_table table_descriptor);
 		void parse_maxp_table(std::string_view data, ttf_table table_descriptor);
 		void parse_hhea_table(std::string_view data, ttf_table table_descriptor);
+		void parse_hmtx_table(std::string_view data, ttf_table table_descriptor);
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
 		ttf_head_table head = {};
 		ttf_maxp_table maxp = {};
 		ttf_hhea_table hhea = {};
+		ttf_hmtx_table hmtx = {};
 	};
 }
 

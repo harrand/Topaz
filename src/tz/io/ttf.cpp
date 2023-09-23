@@ -36,6 +36,7 @@ namespace tz::io
 		std::string_view ttf_minus_header = this->parse_header(ttf_data);
 		this->parse_header(ttf_data);
 		this->parse_table_info(ttf_minus_header, ttf_data);
+		this->parse_tables(ttf_data);
 		// by the time we've parsed tables, we expect all the tables to be sorted.
 		// let's do a sanity check ensuring that the canary of the head table has been set to true.
 		tz::assert(this->head.canary, "TTF Head Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
@@ -73,26 +74,34 @@ namespace tz::io
 
 			tz::assert(std::string{tbl.tag} != "DEAD", "Detected no change to table tag - malformed TTF.");
 			std::string tagstr{tbl.tag};
-			if(tagstr == "head")
-			{
-				this->parse_head_table(full_data, tbl);
-			}
-			else
+			if(tagstr != "head")
 			{
 				std::uint32_t calc = calculate_table_checksum(full_data, tbl.offset, tbl.length);
 				tz::assert(calc == tbl.checksum);
-
-				// parse other table types...
-				if(tagstr == "maxp")
-				{
-					this->parse_maxp_table(full_data, tbl);
-				}
-				else if (tagstr == "hhea")
-				{
-					this->parse_hhea_table(full_data, tbl);
-				}
 			}
 		}
+	}
+
+	ttf_table ttf::find_table_by_tag(const char* tag) const
+	{
+		for(const ttf_table& t : this->tables)
+		{
+			std::string tagstr{t.tag};
+			if(tagstr == tag)
+			{
+				return t;
+			}
+		}
+		tz::error("Could not find table with tag %s", tag);
+		return {};
+	}
+
+	void ttf::parse_tables(std::string_view data)
+	{
+		this->parse_head_table(data, this->find_table_by_tag("head"));
+		this->parse_maxp_table(data, this->find_table_by_tag("maxp"));
+		this->parse_hhea_table(data, this->find_table_by_tag("hhea"));
+		this->parse_hmtx_table(data, this->find_table_by_tag("hmtx"));
 	}
 
 	std::uint32_t ttf::calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const
@@ -203,5 +212,34 @@ namespace tz::io
 		this->hhea.metric_data_format = ttf_read_value<std::int16_t>(ptr);
 		this->hhea.num_of_long_hor_metrics = ttf_read_value<std::uint16_t>(ptr);
 		this->hhea.canary = true;
+	}
+
+	void ttf::parse_hmtx_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		tz::assert(this->hhea.canary, "Cannot parse hmtx table until hhea table is parsed.");
+		tz::assert(this->maxp.canary, "Cannot parse hmtx table until maxp table is parsed.");
+		tz::assert(!this->hmtx.canary, "When parsing hmtx table, noticed canary already switched to true. Double hhea table discovery? Most likely malformed TTF.");
+
+		const char* ptr = data.data();
+		for(std::size_t i = 0; i < this->hhea.num_of_long_hor_metrics; i++)
+		{
+			this->hmtx.hmetrics.push_back
+			({
+				.advance_width = ttf_read_value<std::uint16_t>(ptr),
+				.left_side_bearing = ttf_read_value<std::int16_t>(ptr)
+			});
+		}
+
+		tz::assert(this->maxp.num_glyphs >= this->hhea.num_of_long_hor_metrics, "Not enough glyphs. Malformed TTF or logic error? Max glyphs = %u, Num long hor metrics = %u", static_cast<unsigned int>(this->maxp.num_glyphs), static_cast<unsigned int>(this->hhea.num_of_long_hor_metrics));
+		for(std::size_t i = 0; i < this->maxp.num_glyphs - this->hhea.num_of_long_hor_metrics; i++)
+		{
+			this->hmtx.left_side_bearings.push_back(ttf_read_value<std::int16_t>(ptr));
+		}
+		this->hmtx.canary = true;
 	}
 }
