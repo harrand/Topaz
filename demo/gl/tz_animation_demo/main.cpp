@@ -6,6 +6,9 @@
 #include "tz/core/matrix_transform.hpp"
 
 #include "tz/ren/animation.hpp"
+
+//tmp
+#include "tz/io/ttf.hpp"
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -19,6 +22,7 @@ int main()
 		.name = "tz_animation_demo"
 	});
 	{
+		tz::io::ttf font = tz::io::ttf::from_file("../../demo/gl/tz_animation_demo/res/simplestory.ttf");
 		// wanna sanity check ur TRS bro?
 		//tz::trs trsa{.translate = {0.5f, 150.0f, 0.3f}, .rotate = {0.0f, 0.0f, 0.0f, 1.0f}, .scale = {1.0f, 1.0f, 1.0f}};
 		//tz::mat4 mata = trsa.matrix();

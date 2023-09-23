@@ -31,7 +31,7 @@ namespace tz::io
 	}
 
 	std::uint32_t big_endian(std::uint32_t value) {
-		if(tz::get_local_machine_endianness() == tz::endian::big)
+		if(tz::is_big_endian())
 		{
 			return value;
 		}
@@ -43,7 +43,7 @@ namespace tz::io
 
 	std::uint16_t big_endian(std::uint16_t value)
 	{
-		if(tz::get_local_machine_endianness() == tz::endian::big)
+		if(tz::is_big_endian())
 		{
 			return value;
 		}

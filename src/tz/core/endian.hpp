@@ -10,6 +10,8 @@ namespace tz
 	};
 
 	endian get_local_machine_endianness();
+	bool is_big_endian();
+	bool is_little_endian();
 }
 
 #endif // TOPAZ_CORE_ENDIAN_HPP

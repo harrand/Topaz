@@ -22,4 +22,14 @@ namespace tz
 			break;
 		}
 	}
+
+	bool is_big_endian()
+	{
+		return get_local_machine_endianness() == endian::big;
+	}
+
+	bool is_little_endian()
+	{
+		return get_local_machine_endianness() == endian::little;
+	}
 }
