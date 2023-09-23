@@ -44,6 +44,7 @@ namespace tz::io
 		tz::assert(this->hhea.canary, "TTF hhea Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->hmtx.canary, "TTF hmtx Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->loca.canary, "TTF loca Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+		tz::assert(this->glyf.canary, "TTF glyf Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 	}
 
 	std::string_view ttf::parse_header(std::string_view str)
@@ -105,6 +106,7 @@ namespace tz::io
 		this->parse_hhea_table(data, this->find_table_by_tag("hhea"));
 		this->parse_hmtx_table(data, this->find_table_by_tag("hmtx"));
 		this->parse_loca_table(data, this->find_table_by_tag("loca"));
+		this->parse_glyf_table(data, this->find_table_by_tag("glyf"));
 	}
 
 	std::uint32_t ttf::calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const
@@ -275,5 +277,57 @@ namespace tz::io
 			}
 		}
 		this->loca.canary = true;
+	}
+
+	void ttf::parse_glyf_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		tz::assert(this->head.canary, "Cannot parse glyf table until head table is parsed.");
+		tz::assert(this->loca.canary, "Cannot parse glyf table until loca table is parsed.");
+		tz::assert(!this->glyf.canary, "When parsing glyf table, noticed canary already switched to true. Double hhea table discovery? Most likely malformed TTF.");
+		const char* ptr = data.data();
+		const char* ptrcpy = ptr;
+
+		if(this->head.index_to_loc_format == 0)
+		{
+			// locations16
+			constexpr int multiplier = 2;
+			for(std::uint16_t loc16 : this->loca.locations16)
+			{
+				auto loca_offset = loc16 * multiplier;
+				ptr = ptrcpy + loca_offset;
+				this->glyf.glyfs.push_back
+				({
+					.number_of_contours = ttf_read_value<std::int16_t>(ptr),
+					.xmin = ttf_read_value<std::int16_t>(ptr),
+					.ymin = ttf_read_value<std::int16_t>(ptr),
+					.xmax = ttf_read_value<std::int16_t>(ptr),
+					.ymax = ttf_read_value<std::int16_t>(ptr)
+				});
+			}
+		}
+		else
+		{
+			// locations32
+			constexpr int multiplier = 1;
+			for(std::uint32_t loc32 : this->loca.locations32)
+			{
+				auto loca_offset = loc32 * multiplier;
+				ptr = ptrcpy + loca_offset;
+				this->glyf.glyfs.push_back
+				({
+					.number_of_contours = ttf_read_value<std::int16_t>(ptr),
+					.xmin = ttf_read_value<std::int16_t>(ptr),
+					.ymin = ttf_read_value<std::int16_t>(ptr),
+					.xmax = ttf_read_value<std::int16_t>(ptr),
+					.ymax = ttf_read_value<std::int16_t>(ptr)
+				});
+			}
+		}
+		this->glyf.canary = true;
 	}
 }

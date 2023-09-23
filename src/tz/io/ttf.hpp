@@ -105,6 +105,21 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_glyf_elem
+	{
+		std::int16_t number_of_contours = 0;
+		std::int16_t xmin = 0;
+		std::int16_t ymin = 0;
+		std::int16_t xmax = 0;
+		std::int16_t ymax = 0;
+	};
+
+	struct ttf_glyf_table
+	{
+		std::vector<ttf_glyf_elem> glyfs = {};
+		bool canary = false;
+	};
+
 	class ttf
 	{
 	public:
@@ -123,6 +138,7 @@ namespace tz::io
 		void parse_hhea_table(std::string_view data, ttf_table table_descriptor);
 		void parse_hmtx_table(std::string_view data, ttf_table table_descriptor);
 		void parse_loca_table(std::string_view data, ttf_table table_descriptor);
+		void parse_glyf_table(std::string_view data, ttf_table table_descriptor);
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
@@ -131,6 +147,7 @@ namespace tz::io
 		ttf_hhea_table hhea = {};
 		ttf_hmtx_table hmtx = {};
 		ttf_loca_table loca = {};
+		ttf_glyf_table glyf = {};
 	};
 }
 
