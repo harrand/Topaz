@@ -42,6 +42,8 @@ namespace tz::io
 		tz::assert(this->head.canary, "TTF Head Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->maxp.canary, "TTF maxp Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->hhea.canary, "TTF hhea Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+		tz::assert(this->hmtx.canary, "TTF hmtx Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+		tz::assert(this->loca.canary, "TTF loca Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 	}
 
 	std::string_view ttf::parse_header(std::string_view str)
@@ -102,6 +104,7 @@ namespace tz::io
 		this->parse_maxp_table(data, this->find_table_by_tag("maxp"));
 		this->parse_hhea_table(data, this->find_table_by_tag("hhea"));
 		this->parse_hmtx_table(data, this->find_table_by_tag("hmtx"));
+		this->parse_loca_table(data, this->find_table_by_tag("loca"));
 	}
 
 	std::uint32_t ttf::calculate_table_checksum(std::string_view data, std::uint32_t offset, std::uint32_t length) const
@@ -241,5 +244,36 @@ namespace tz::io
 			this->hmtx.left_side_bearings.push_back(ttf_read_value<std::int16_t>(ptr));
 		}
 		this->hmtx.canary = true;
+	}
+
+	void ttf::parse_loca_table(std::string_view data, ttf_table table_descriptor)
+	{
+		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
+		data.remove_prefix(table_descriptor.offset);
+		data.remove_suffix(data.size() - table_descriptor.length);
+		tz::assert(data.size() == (table_descriptor.length));
+
+		tz::assert(this->head.canary, "Cannot parse loca table until head table is parsed.");
+		tz::assert(this->maxp.canary, "Cannot parse loca table until maxp table is parsed.");
+		tz::assert(!this->loca.canary, "When parsing loca table, noticed canary already switched to true. Double hhea table discovery? Most likely malformed TTF.");
+		const char* ptr = data.data();
+
+		if(this->head.index_to_loc_format == 0)
+		{
+			// 16 bit
+			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs); i++)
+			{
+				this->loca.locations16.push_back(ttf_read_value<std::uint16_t>(ptr));
+			}
+		}
+		else
+		{
+			// 32 bit
+			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs); i++)
+			{
+				this->loca.locations32.push_back(ttf_read_value<std::uint32_t>(ptr));
+			}
+		}
+		this->loca.canary = true;
 	}
 }

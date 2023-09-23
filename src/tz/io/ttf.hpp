@@ -98,6 +98,13 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_loca_table
+	{
+		std::vector<std::uint16_t> locations16 = {};
+		std::vector<std::uint32_t> locations32 = {};
+		bool canary = false;
+	};
+
 	class ttf
 	{
 	public:
@@ -115,6 +122,7 @@ namespace tz::io
 		void parse_maxp_table(std::string_view data, ttf_table table_descriptor);
 		void parse_hhea_table(std::string_view data, ttf_table table_descriptor);
 		void parse_hmtx_table(std::string_view data, ttf_table table_descriptor);
+		void parse_loca_table(std::string_view data, ttf_table table_descriptor);
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
@@ -122,6 +130,7 @@ namespace tz::io
 		ttf_maxp_table maxp = {};
 		ttf_hhea_table hhea = {};
 		ttf_hmtx_table hmtx = {};
+		ttf_loca_table loca = {};
 	};
 }
 
