@@ -439,7 +439,6 @@ namespace tz::io
 
 			for(std::uint16_t c = start_code; c < end_code; c++)
 			{
-				std::uint16_t glyph_index = 0u;
 				if(id_range_offset != 0)
 				{
 					const auto start_code_offset = (c - start_code) * 2;
