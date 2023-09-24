@@ -47,6 +47,8 @@ namespace tz::io
 		tz::assert(this->loca.canary, "TTF loca Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->glyf.canary, "TTF glyf Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
 		tz::assert(this->cmap.canary, "TTF cmap Table canary value was never set to true, this means that a head table was not located. Most likely the TTF is malformed or corrupted.");
+
+		this->populate_glyph_map();
 	}
 
 	std::string_view ttf::parse_header(std::string_view str)
@@ -465,5 +467,27 @@ namespace tz::io
 		}
 
 		this->cmap.canary = true;
+	}
+
+	void ttf::populate_glyph_map()
+	{
+		for(std::size_t i = 0; i < sizeof(ttf_alphabet) - 2; i++)	
+		{
+			char c = ttf_alphabet[i];
+			auto index = this->cmap.glyph_index_map[c | 0] | 0;
+			auto glyfd = this->glyf.glyfs[index];
+			auto hmtxd = this->hmtx.hmetrics[index];
+
+			this->glyphs[c] = ttf_glyph
+			{
+				.spacing = 
+				{
+					.position = static_cast<tz::vec2i>(tz::vector<std::int16_t, 2>{glyfd.xmin, glyfd.ymin}),
+					.dimensions = static_cast<tz::vec2ui>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}),
+					.left_side_bearing = static_cast<int>(hmtxd.left_side_bearing),
+					.right_side_bearing = static_cast<int>(hmtxd.advance_width - hmtxd.left_side_bearing - (glyfd.xmax - glyfd.xmin))
+				}
+			};
+		}
 	}
 }

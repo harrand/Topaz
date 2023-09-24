@@ -1,5 +1,6 @@
 #ifndef TOPAZ_IO_TTF_HPP
 #define TOPAZ_IO_TTF_HPP
+#include "tz/core/data/vector.hpp"
 #include <string_view>
 #include <vector>
 #include <limits>
@@ -137,6 +138,26 @@ namespace tz::io
 		bool canary = false;
 	};
 
+	struct ttf_glyph_spacing_info
+	{
+		tz::vec2i position = tz::vec2ui::zero();
+		tz::vec2ui dimensions = tz::vec2ui::zero();
+		int left_side_bearing = 0u;
+		int right_side_bearing = 0u;
+	};
+
+	struct ttf_glyph
+	{
+		ttf_glyph_spacing_info spacing = {};
+	};
+	
+	constexpr char ttf_alphabet[] = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+	struct ttf_glyph_map : public std::unordered_map<char, ttf_glyph>
+	{
+		ttf_glyph_map() = default;
+	};
+
 	class ttf
 	{
 	public:
@@ -157,6 +178,7 @@ namespace tz::io
 		void parse_loca_table(std::string_view data, ttf_table table_descriptor);
 		void parse_glyf_table(std::string_view data, ttf_table table_descriptor);
 		void parse_cmap_table(std::string_view data, ttf_table table_descriptor);
+		void populate_glyph_map();
 		ttf_header header = {};
 
 		std::vector<ttf_table> tables = {};
@@ -167,6 +189,8 @@ namespace tz::io
 		ttf_loca_table loca = {};
 		ttf_glyf_table glyf = {};
 		ttf_cmap_table cmap = {};
+
+		ttf_glyph_map glyphs = {};
 	};
 }
 
