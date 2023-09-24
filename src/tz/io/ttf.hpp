@@ -3,6 +3,7 @@
 #include <string_view>
 #include <vector>
 #include <limits>
+#include <unordered_map>
 
 namespace tz::io
 {
@@ -132,6 +133,7 @@ namespace tz::io
 		std::uint16_t version = 0u;
 		std::uint16_t num_tables = 0u;
 		std::vector<ttf_cmap_encoding_record> encoding_records = {};
+		std::unordered_map<std::uint16_t, std::int16_t> glyph_index_map = {};
 		bool canary = false;
 	};
 

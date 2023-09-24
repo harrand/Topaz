@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cstring>
+#include <optional>
 
 namespace tz::io
 {
@@ -333,6 +334,54 @@ namespace tz::io
 		this->glyf.canary = true;
 	}
 
+	struct format4
+	{
+		format4() = default;
+		format4(const char* ptr):
+		ptr_cpy(ptr),
+		length(ttf_read_value<std::uint16_t>(ptr)),
+		language(ttf_read_value<std::uint16_t>(ptr)),
+		seg_count_x2(ttf_read_value<std::uint16_t>(ptr)),
+		search_range(ttf_read_value<std::uint16_t>(ptr)),
+		entry_selector(ttf_read_value<std::uint16_t>(ptr)),
+		range_shift(ttf_read_value<std::uint16_t>(ptr))
+		{
+			std::uint16_t seg_count = this->seg_count_x2 >> 1;
+			for(std::size_t i = 0; i < seg_count; i++)
+			{
+				this->end_code.push_back(ttf_read_value<std::uint16_t>(ptr));
+			}
+			ptr += sizeof(std::uint16_t); // pad
+			for(std::size_t i = 0; i < seg_count; i++)
+			{
+				this->start_code.push_back(ttf_read_value<std::uint16_t>(ptr));
+			}
+			for(std::size_t i = 0; i < seg_count; i++)
+			{
+				this->id_delta.push_back(ttf_read_value<std::int16_t>(ptr));
+			}
+			this->id_range_offsets_start = std::distance(this->ptr_cpy, ptr);
+			for(std::size_t i = 0; i < seg_count; i++)
+			{
+				this->id_range_offset.push_back(ttf_read_value<std::uint16_t>(ptr));
+			}
+
+		}
+		int format = 4;
+		const char* ptr_cpy = nullptr;
+		std::uint16_t length = 0u;
+		std::uint16_t language = 0u;
+		std::uint16_t seg_count_x2 = 0u;
+		std::uint16_t search_range = 0u;
+		std::uint16_t entry_selector = 0u;
+		std::uint16_t range_shift;
+		std::vector<std::uint16_t> end_code = {};
+		std::vector<std::uint16_t> start_code = {};
+		std::vector<std::int16_t> id_delta = {};
+		std::vector<std::uint16_t> id_range_offset = {};
+		std::ptrdiff_t id_range_offsets_start = 0;
+	};
+
 	void ttf::parse_cmap_table(std::string_view data, ttf_table table_descriptor)
 	{
 		tz::assert(data.size() > table_descriptor.offset + table_descriptor.length);
@@ -357,6 +406,65 @@ namespace tz::io
 			});
 		}
 		tz::assert(this->cmap.version == 0u, "TTF - Only cmap version 0 is supported. This font has cmap version %u", static_cast<unsigned int>(this->cmap.version));
+
+		// find platform and encoding that we like.
+		std::optional<std::uint32_t> selected_offset = std::nullopt;
+		for(const auto& encoding : this->cmap.encoding_records)
+		{
+			const bool is_windows_platform = (encoding.platform_id == 3 &&
+				(encoding.encoding_id == 0 || encoding.encoding_id == 1 || encoding.encoding_id == 10));
+			const bool is_unicode_platform = (encoding.platform_id == 0) &&
+				(encoding.encoding_id == 0 || encoding.encoding_id == 1 || encoding.encoding_id == 2 || encoding.encoding_id == 3 || encoding.encoding_id == 4);
+			if(is_windows_platform || is_unicode_platform)
+			{
+				selected_offset = encoding.offset;
+				break;
+			}
+		}
+
+		tz::assert(selected_offset.has_value(), "Ttf font did not contain a platform/encoding that Topaz supports. Please try another.");
+		std::uint16_t format = ttf_read_value<std::uint16_t>(ptr);
+		tz::assert(format == 4, "Unsupported format %u, requires format 4", static_cast<unsigned int>(format));
+
+		// now parse glyph index map. this gonna be hard. use format 4.
+		format4 fmt{ptr};
+		for(std::size_t i = 0; i < fmt.seg_count_x2 >> 1; i++)
+		{
+			std::int16_t glyph_index = 0;
+			auto end_code = fmt.end_code[i];
+			auto start_code = fmt.start_code[i];
+			tz::assert(start_code <= end_code);
+			auto id_delta = fmt.id_delta[i];
+			auto id_range_offset = fmt.id_range_offset[i];
+
+			for(std::uint16_t c = start_code; c < end_code; c++)
+			{
+				std::uint16_t glyph_index = 0u;
+				if(id_range_offset != 0)
+				{
+					const auto start_code_offset = (c - start_code) * 2;
+					const auto current_range_offset = i * 2;
+					auto glyph_index_offset = 
+						fmt.id_range_offsets_start
+						+ current_range_offset
+						+ id_range_offset
+						+ start_code_offset;
+
+					// read 
+					glyph_index = *reinterpret_cast<const std::uint16_t*>(data.data() + glyph_index_offset);
+					if(glyph_index != 0)
+					{
+						glyph_index = (glyph_index + id_delta) & 0xffff;
+					}
+				}
+				else
+				{
+					glyph_index = (c + id_delta) & 0xffff;
+				}
+				this->cmap.glyph_index_map[c] = glyph_index;
+			}
+		}
+
 		this->cmap.canary = true;
 	}
 }
