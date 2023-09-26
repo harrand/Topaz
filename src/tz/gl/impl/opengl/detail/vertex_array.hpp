@@ -5,6 +5,28 @@
 
 namespace tz::gl::ogl2
 {
+	enum class primitive_topology : GLenum
+	{
+		triangles = GL_TRIANGLES,
+		points = GL_POINTS,
+		triangle_strips = GL_TRIANGLE_STRIP
+	};
+
+	constexpr std::size_t primitive_vertex_count(primitive_topology t)
+	{
+		switch(t)
+		{
+			case primitive_topology::triangles:
+			[[fallthrough]];
+			case primitive_topology::triangle_strips:
+				return 3;
+			break;
+			case primitive_topology::points:
+				return 1;
+			break;
+		}
+	}
+
 	class buffer;
 	/**
 	 * @ingroup tz_gl_ogl2
@@ -28,20 +50,20 @@ namespace tz::gl::ogl2
 		 */
 		void bind();
 		/**
-		 * Emit a single draw call, drawing a set number of triangles. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
-		 * @param triangle_count number of triangles to draw.
+		 * Emit a single draw call, drawing a set number of primitives. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
+		 * @param primitive_count number of primitives to draw, i.e points, triangles etc... Does *not* represent vertex count.
 		 */
-		void draw(unsigned int triangle_count, bool tessellation = false);
+		void draw(unsigned int primitive_count, primitive_topology topology = primitive_topology::triangles, bool tessellation = false);
 		/**
-		 * Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
-		 * @param triangle_count number of triangles to draw.
+		 * Emit a single draw call, drawing a set number of primitives, assuming an index buffer has already been bound. Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources.
+		 * @param primitive_count number of primitives to draw, i.e points, triangles etc... Does *not* represent vertex count.
 		 */
-		void draw_indexed(unsigned int triangle_count, const buffer& index_buffer, bool tessellation = false);
+		void draw_indexed(unsigned int primitive_count, const buffer& index_buffer, primitive_topology topology = primitive_topology::triangles, bool tessellation = false);
 
-		void draw_indirect(unsigned int draw_count, const buffer& draw_indirect_buffer, bool tessellation = false);
-		void draw_indirect_count(unsigned int max_draw_count, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
-		void draw_indexed_indirect(unsigned int draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, bool tessellation = false);
-		void draw_indexed_indirect_count(unsigned int max_draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, bool tessellation = false);
+		void draw_indirect(unsigned int draw_count, const buffer& draw_indirect_buffer, primitive_topology topology = primitive_topology::triangles, bool tessellation = false);
+		void draw_indirect_count(unsigned int max_draw_count, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, primitive_topology topology = primitive_topology::triangles, bool tessellation = false);
+		void draw_indexed_indirect(unsigned int draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, primitive_topology topology = primitive_topology::triangles, bool tessellation = false);
+		void draw_indexed_indirect_count(unsigned int max_draw_count, const buffer& index_buffer, const buffer& draw_indirect_buffer, std::uintptr_t draw_commands_offset, primitive_topology topology = primitive_topology::triangles, bool tessellation = false);
 		/**
 		 * Retrieve the Null vertex_array. Binding the null vertex array is equivalent to unbinding a vertex array. It is invalid to attempt to perform draws or computes using the null vertex array.
 		 */
