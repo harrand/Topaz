@@ -31,6 +31,15 @@ namespace tz::io
 		std::string buffer(std::istreambuf_iterator<char>(file), {});
 		return ttf::from_memory(buffer);
 	}
+	
+	tz::io::image ttf::rasterise_msdf(char c) const
+	{
+		tz::io::image ret;	
+
+			
+
+		return ret;
+	}
 
 	ttf::ttf(std::string_view ttf_data)
 	{
@@ -297,6 +306,104 @@ namespace tz::io
 		const char* ptr = data.data();
 		const char* ptrcpy = ptr;
 
+		auto read_glyph = [this](const char* ptr)
+		{
+			auto& g = this->glyf.glyfs.emplace_back();
+			g.number_of_contours = ttf_read_value<std::int16_t>(ptr);
+			tz::assert(g.number_of_contours > 0, "Only support simple glyphs. Number of contours: %d", (int)g.number_of_contours);
+			g.xmin = ttf_read_value<std::int16_t>(ptr);
+			g.ymin = ttf_read_value<std::int16_t>(ptr);
+			g.xmax = ttf_read_value<std::int16_t>(ptr);
+			g.ymax = ttf_read_value<std::int16_t>(ptr);
+
+			for(int i = 0; i < g.number_of_contours; i++)
+			{
+				g.end_pts_of_contours.push_back(ttf_read_value<std::uint16_t>(ptr));
+			}
+			g.instructions.resize(ttf_read_value<std::uint16_t>(ptr));
+			std::memcpy(g.instructions.data(), ptr, g.instructions.size());
+			std::advance(ptr, g.instructions.size());
+
+			int last_index = g.end_pts_of_contours.back();
+			g.flags.resize(last_index + 1);
+			for(int i = 0; i < (last_index + 1); i++)
+			{
+				g.flags[i] = static_cast<std::byte>(*ptr);
+				ptr++;
+				if(static_cast<uint8_t>(g.flags[i]) & 0x00001000) // repeat bit
+				{
+					std::uint8_t repeat_count = *ptr;	
+					while(repeat_count-- > 0)
+					{
+						i++;
+						g.flags[i] = g.flags[i - 1];
+					}
+					ptr++;
+				}
+			}
+
+			g.x_coords.resize((last_index + 1));
+			std::int16_t prev_coord = 0;
+			std::int16_t cur_coord = 0;
+			for(int i = 0; i < (last_index + 1); i++)
+			{
+				auto flagbyte = static_cast<uint8_t>(g.flags[i]);
+				bool x_short = 1 == ((flagbyte >> 1) & 1);
+				bool x_short_pos = 1 == ((flagbyte >> 4) & 1);
+				int flag_combined = x_short << 1 | x_short_pos;
+				switch(flag_combined)
+				{
+					case 0:
+						cur_coord = ttf_read_value<std::int16_t>(ptr);
+					break;
+					case 1:
+						cur_coord = 0;
+					break;
+					case 2:
+						cur_coord = -ttf_read_value<std::int8_t>(ptr);
+					break;
+					case 3:
+						cur_coord = ttf_read_value<std::int8_t>(ptr);
+					break;
+					default:
+						tz::error("Unrecognised flags. Expected flag_combined to be 0, 1, 2, or 3, but it is %d", flag_combined);
+					break;
+				}
+				g.x_coords[i] = cur_coord + prev_coord;
+				prev_coord = g.x_coords[i];
+			}
+			g.y_coords.resize((last_index + 1));
+			cur_coord = 0;
+			prev_coord = 0;
+			for(int i = 0; i < (last_index + 1); i++)
+			{
+				auto flagbyte = static_cast<uint8_t>(g.flags[i]);
+				bool y_short = 1 == ((flagbyte >> 2) & 1);
+				bool y_short_pos = 1 == ((flagbyte >> 5) & 1);
+				int flag_combined = y_short << 1 | y_short_pos;
+				switch(flag_combined)
+				{
+					case 0:
+						cur_coord = ttf_read_value<std::int16_t>(ptr);
+					break;
+					case 1:
+						cur_coord = 0;
+					break;
+					case 2:
+						cur_coord = -ttf_read_value<std::int8_t>(ptr);
+					break;
+					case 3:
+						cur_coord = ttf_read_value<std::int8_t>(ptr);
+					break;
+					default:
+						tz::error("Unrecognised flags. Expected flag_combined to be 0, 1, 2, or 3, but it is %d", flag_combined);
+					break;
+				}
+				g.y_coords[i] = cur_coord + prev_coord;
+				prev_coord = g.y_coords[i];
+			}
+		};
+
 		if(this->head.index_to_loc_format == 0)
 		{
 			// locations16
@@ -304,15 +411,7 @@ namespace tz::io
 			for(std::uint16_t loc16 : this->loca.locations16)
 			{
 				auto loca_offset = loc16 * multiplier;
-				ptr = ptrcpy + loca_offset;
-				this->glyf.glyfs.push_back
-				({
-					.number_of_contours = ttf_read_value<std::int16_t>(ptr),
-					.xmin = ttf_read_value<std::int16_t>(ptr),
-					.ymin = ttf_read_value<std::int16_t>(ptr),
-					.xmax = ttf_read_value<std::int16_t>(ptr),
-					.ymax = ttf_read_value<std::int16_t>(ptr)
-				});
+				read_glyph(ptrcpy + loca_offset);
 			}
 		}
 		else
@@ -323,14 +422,7 @@ namespace tz::io
 			{
 				auto loca_offset = loc32 * multiplier;
 				ptr = ptrcpy + loca_offset;
-				this->glyf.glyfs.push_back
-				({
-					.number_of_contours = ttf_read_value<std::int16_t>(ptr),
-					.xmin = ttf_read_value<std::int16_t>(ptr),
-					.ymin = ttf_read_value<std::int16_t>(ptr),
-					.xmax = ttf_read_value<std::int16_t>(ptr),
-					.ymax = ttf_read_value<std::int16_t>(ptr)
-				});
+				read_glyph(ptrcpy + loca_offset);
 			}
 		}
 		this->glyf.canary = true;

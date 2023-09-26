@@ -1,5 +1,6 @@
 #ifndef TOPAZ_IO_TTF_HPP
 #define TOPAZ_IO_TTF_HPP
+#include "tz/io/image.hpp"
 #include "tz/core/data/vector.hpp"
 #include <string_view>
 #include <vector>
@@ -114,6 +115,12 @@ namespace tz::io
 		std::int16_t ymin = 0;
 		std::int16_t xmax = 0;
 		std::int16_t ymax = 0;
+
+		std::vector<std::byte> instructions = {};
+		std::vector<std::byte> flags = {};
+		std::vector<unsigned int> x_coords = {};
+		std::vector<unsigned int> y_coords = {};
+		std::vector<std::uint16_t> end_pts_of_contours = {};
 	};
 
 	struct ttf_glyf_table
@@ -164,6 +171,8 @@ namespace tz::io
 		ttf() = default;
 		static ttf from_memory(std::string_view sv);
 		static ttf from_file(const char* path);
+
+		tz::io::image rasterise_msdf(char c) const;
 		ttf(std::string_view ttf_data);
 	private:
 		std::string_view parse_header(std::string_view str);
