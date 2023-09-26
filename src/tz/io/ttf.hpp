@@ -118,8 +118,8 @@ namespace tz::io
 
 		std::vector<std::byte> instructions = {};
 		std::vector<std::byte> flags = {};
-		std::vector<unsigned int> x_coords = {};
-		std::vector<unsigned int> y_coords = {};
+		std::vector<int> x_coords = {};
+		std::vector<int> y_coords = {};
 		std::vector<std::uint16_t> end_pts_of_contours = {};
 	};
 
@@ -153,9 +153,20 @@ namespace tz::io
 		int right_side_bearing = 0u;
 	};
 
+	struct ttf_glyph_contour
+	{
+		std::vector<std::pair<tz::vec2, tz::vec2>> edges = {};
+	};
+
+	struct ttf_glyph_shape_info
+	{
+		std::vector<ttf_glyph_contour> contours = {};
+	};
+
 	struct ttf_glyph
 	{
 		ttf_glyph_spacing_info spacing = {};
+		ttf_glyph_shape_info shape = {};
 	};
 	
 	constexpr char ttf_alphabet[] = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";

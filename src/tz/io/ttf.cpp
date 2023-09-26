@@ -1,7 +1,13 @@
 #include "tz/io/ttf.hpp"
+#include "core/Contour.h"
+#include "core/EdgeHolder.h"
+#include "core/edge-coloring.h"
+#include "core/edge-segments.h"
 #include "tz/core/debug.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/core/endian.hpp"
+#include "tz/core/data/grid_view.hpp"
+#include "msdfgen.h"
 #include <fstream>
 #include <cstdio>
 #include <cstring>
@@ -36,7 +42,51 @@ namespace tz::io
 	{
 		tz::io::image ret;	
 
-			
+		auto msdfvec = [](tz::vec2 vec)->msdfgen::Point2
+		{
+			return {static_cast<double>(vec[0]), static_cast<double>(vec[1])};
+		};
+
+		// populate msdf shape
+		msdfgen::Shape shape;
+
+		tz::assert(this->glyphs.find(c) != this->glyphs.end(), "TTF Did not contain glyph \'%c\'", c);
+		const auto& glyph = this->glyphs.at(c);
+		for(const auto& contour : glyph.shape.contours)
+		{
+			msdfgen::Contour msdfcont;
+			for(const auto[beg, end] : contour.edges)
+			{
+				msdfcont.addEdge(msdfgen::EdgeHolder{msdfvec(beg), msdfvec(end)});
+			}
+			shape.addContour(msdfcont);
+		}
+//		for(std::size_t i = 1; i < glyph.shape.contours.size(); i++)
+//		{
+//			const auto& prev = glyph.shape.contours[i-1];
+//			const auto& cur = glyph.shape.contours[i];
+//			cont.addEdge(msdfgen::EdgeHolder{msdfvec(prev.coord), msdfvec(cur.coord)});
+//		}
+
+		// generate bitmap
+		msdfgen::edgeColoringSimple(shape, 3.0f);
+		msdfgen::Bitmap<float, 3> msdf(128u, 128u);
+		msdfgen::generateMSDF(msdf, shape, 128.0f, 1.0f, msdfgen::Vector2(100.0f, -100.0f));
+		ret.width = msdf.width();
+		ret.height = msdf.height();
+		ret.data.resize(1 * 4u * ret.width * ret.height, std::byte{0});
+		tz::grid_view<std::byte, 4> imgdata{ret.data, tz::vec2ui{ret.width, ret.height}};
+		for(std::size_t x = 0; x < ret.width; x++)
+		{
+			for(std::size_t y = 0; y < ret.height; y++)
+			{
+				for(std::size_t i = 0; i < 3; i++)
+				{
+					imgdata(x, y)[i] = static_cast<std::byte>(msdf(x, y)[i] * 255);
+					imgdata(x, y)[3] = std::byte{255};
+				}
+			}
+		}
 
 		return ret;
 	}
@@ -570,6 +620,24 @@ namespace tz::io
 			auto glyfd = this->glyf.glyfs[index];
 			auto hmtxd = this->hmtx.hmetrics[index];
 
+			ttf_glyph_shape_info shape;
+			tz::assert(glyfd.x_coords.size() == glyfd.y_coords.size());
+			std::size_t contour_cursor = 0;
+			shape.contours.resize(glyfd.number_of_contours);
+			for(std::size_t i = 1; i < glyfd.x_coords.size(); i++)
+			{
+				auto beg = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i - 1], glyfd.y_coords[i - 1]});
+				beg /= this->head.units_per_em;
+				auto end = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]});
+				end /= this->head.units_per_em;
+				shape.contours[contour_cursor].edges.push_back({beg, end});
+				if(i == glyfd.end_pts_of_contours[contour_cursor])
+				{
+					// contour ends here.
+					contour_cursor++;
+				}
+			}
+
 			this->glyphs[c] = ttf_glyph
 			{
 				.spacing = 
@@ -578,7 +646,8 @@ namespace tz::io
 					.dimensions = static_cast<tz::vec2ui>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}),
 					.left_side_bearing = static_cast<int>(hmtxd.left_side_bearing),
 					.right_side_bearing = static_cast<int>(hmtxd.advance_width - hmtxd.left_side_bearing - (glyfd.xmax - glyfd.xmin))
-				}
+				},
+				.shape = shape
 			};
 		}
 	}

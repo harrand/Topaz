@@ -28,3 +28,6 @@
 [submodule "lib/lua"]
 	path = lib/lua
 	url = https://github.com/lua/lua
+[submodule "lib/msdfgen"]
+	path = lib/msdfgen
+	url = https://github.com/Chlumsky/msdfgen

@@ -8,6 +8,9 @@ add_subdirectory(json)
 add_subdirectory(debugbreak)
 add_subdirectory(tracy)
 
+set(MSDFGEN_CORE_ONLY ON)
+add_subdirectory(msdfgen)
+
 add_library(imgui STATIC
 	imgui/imgui.cpp
 	imgui/imgui_demo.cpp

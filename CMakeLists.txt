@@ -316,7 +316,7 @@ add_subdirectory(lib)
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(topaz PUBLIC debugbreak imgui imgui_memory_editor glad textc_lib concurrentqueue nlohmann_json stb_image)
-target_link_libraries(topaz PRIVATE Threads::Threads tz_lua)
+target_link_libraries(topaz PRIVATE Threads::Threads tz_lua msdfgen-core)
 
 add_subdirectory(tools)
 include(cmake/shader_compiler.cmake)
