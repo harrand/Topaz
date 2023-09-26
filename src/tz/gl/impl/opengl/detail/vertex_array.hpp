@@ -25,6 +25,8 @@ namespace tz::gl::ogl2
 				return 1;
 			break;
 		}
+		tz::error("Unrecognised ogl2::primitive_topology.");
+		return {};
 	}
 
 	class buffer;
