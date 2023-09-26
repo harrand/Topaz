@@ -78,6 +78,13 @@ namespace tz::gl::vk2
 		tz::basic_list<Attribute> attributes = {};
 	};
 
+	enum class PrimitiveTopology
+	{
+		Triangles = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+		Points = VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
+		TriangleStrips = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
+	};
+
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
 	 * Specifies the region of the output that will be rendered to.

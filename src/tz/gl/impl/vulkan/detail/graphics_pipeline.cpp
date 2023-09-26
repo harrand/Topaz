@@ -126,7 +126,7 @@ namespace tz::gl::vk2
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO, 
 			.pNext = nullptr,
 			.flags = 0,
-			.topology = has_tessellation ? VK_PRIMITIVE_TOPOLOGY_PATCH_LIST : VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+			.topology = has_tessellation ? VK_PRIMITIVE_TOPOLOGY_PATCH_LIST : static_cast<VkPrimitiveTopology>(info.topology),
 			.primitiveRestartEnable = VK_FALSE
 		};
 

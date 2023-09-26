@@ -52,6 +52,7 @@ namespace tz::gl::vk2
 		bool valid_device() const;
 
 		ShaderPipelineData shaders;
+		PrimitiveTopology topology = PrimitiveTopology::Triangles;
 		PipelineState state;
 		const PipelineLayout* pipeline_layout;
 		const RenderPass* render_pass;
