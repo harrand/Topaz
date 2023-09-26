@@ -50,6 +50,20 @@ namespace tz::gl
 		_internal,
 		Count
 	};
+
+	/**
+	 * @ingroup tz_gl2_renderer
+	 * Specifies which primitives shall be drawn by a renderer. Defauts to `triangles`.
+	 */
+	enum class graphics_topology
+	{
+		/// Triangles. Each set of 3 vertices constitutes a triangle. 3n length.
+		triangles,
+		/// Points. Each vertex constitutes a single point. 1n length.
+		points,
+		/// Triangle Strips. Each group of 3 adjacent vertices constitutes a triangle. n-2 length.
+		triangle_strips,
+	};
 	namespace detail
 	{
 		constexpr std::array<const char*, static_cast<int>(tz::gl::renderer_option::Count)> renderer_option_strings =
@@ -82,6 +96,7 @@ namespace tz::gl
 			std::size_t tri_count = 0;
 			/// whether wireframe mode is enabled or not.
 			bool wireframe_mode = false;
+			graphics_topology topology = graphics_topology::triangles;
 			bool operator==(const Graphics& rhs) const = default;
 		};
 		struct Compute

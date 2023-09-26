@@ -1,3 +1,5 @@
+#include "tz/gl/api/renderer.hpp"
+#include "tz/gl/impl/vulkan/detail/fixed_function.hpp"
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/renderer2.hpp"
 #include "tz/core/profile.hpp"
@@ -658,10 +660,27 @@ namespace tz::gl
 				{
 					return static_cast<VkFormat>(colour_view.get_image().get_format());
 				});
+				vk2::PrimitiveTopology topology;
+				switch(state.graphics.topology)
+				{
+					case tz::gl::graphics_topology::triangles:
+						topology = vk2::PrimitiveTopology::Triangles;
+					break;
+					case tz::gl::graphics_topology::points:
+						topology = vk2::PrimitiveTopology::Points;
+					break;
+					case tz::gl::graphics_topology::triangle_strips:
+						topology = vk2::PrimitiveTopology::TriangleStrips;
+					break;
+					default:
+						tz::error("Unrecognised `tz::gl::graphics_topology`.");
+					break;
+				}
 
 				this->pipeline.data =
 				{vk2::GraphicsPipelineInfo{
 					.shaders = this->shader.native_data(),
+					.topology = topology,
 					.state =
 					{
 						.viewport = vk2::create_basic_viewport(static_cast<tz::vec2>(renderer_output_manager::get_render_target_dimensions())),
@@ -1117,13 +1136,30 @@ namespace tz::gl
 
 				auto* index_buffer = static_cast<tz::gl::buffer_component_vulkan*>(renderer_resource_manager::get_component(state.graphics.index_buffer));
 				auto* indirect_buffer = static_cast<tz::gl::buffer_component_vulkan*>(renderer_resource_manager::get_component(state.graphics.draw_buffer));
+
+				vk2::PrimitiveTopology topology;
+				switch(state.graphics.topology)
+				{
+					case tz::gl::graphics_topology::triangles:
+						topology = vk2::PrimitiveTopology::Triangles;
+					break;
+					case tz::gl::graphics_topology::points:
+						topology = vk2::PrimitiveTopology::Points;
+					break;
+					case tz::gl::graphics_topology::triangle_strips:
+						topology = vk2::PrimitiveTopology::TriangleStrips;
+					break;
+					default:
+						tz::error("Unrecognised `tz::gl::graphics_topology`.");
+					break;
+				}
 				if(index_buffer == nullptr)
 				{
 					if(indirect_buffer == nullptr)
 					{
 						record.draw
 						({
-							.vertex_count = static_cast<std::uint32_t>(3 * state.graphics.tri_count),
+							.vertex_count = static_cast<std::uint32_t>(vk2::primitive_topology_vertex_count(topology) * state.graphics.tri_count),
 							.instance_count = 1,
 							.first_vertex = 0,
 							.first_instance = 0
@@ -1159,7 +1195,7 @@ namespace tz::gl
 					{
 						record.draw_indexed
 						({
-							.index_count = static_cast<std::uint32_t>(3 * state.graphics.tri_count)
+							.index_count = static_cast<std::uint32_t>(vk2::primitive_topology_vertex_count(topology) * state.graphics.tri_count)
 						});
 					}
 					else

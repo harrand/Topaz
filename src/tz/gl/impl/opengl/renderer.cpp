@@ -591,6 +591,22 @@ namespace tz::gl
 		}
 		else
 		{
+			ogl2::primitive_topology topology;
+			switch(this->state.graphics.topology)
+			{
+				case tz::gl::graphics_topology::triangles:
+					topology = ogl2::primitive_topology::triangles;
+				break;
+				case tz::gl::graphics_topology::points:
+					topology = ogl2::primitive_topology::points;
+				break;
+				case tz::gl::graphics_topology::triangle_strips:
+					topology = ogl2::primitive_topology::triangle_strips;
+				break;
+				default:
+					tz::error("Unrecognised `tz::gl::graphics_topology`.");
+				break;
+			}
 			const bool window_output = this->output.get_output() == nullptr || this->output.get_output()->get_target() == tz::gl::output_target::window;
 			this->resources.write_dynamic_images();
 			{
@@ -636,16 +652,16 @@ namespace tz::gl
 					const ogl2::buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
 					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
 					{
-						this->vao.draw_indexed_indirect_count(dbuf.size() / sizeof(ogl2::draw_indexed_indirect_command), ibuf, dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), ogl2::primitive_topology::triangles, this->shader.has_tessellation());
+						this->vao.draw_indexed_indirect_count(dbuf.size() / sizeof(ogl2::draw_indexed_indirect_command), ibuf, dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), topology, this->shader.has_tessellation());
 					}
 					else
 					{
-						this->vao.draw_indexed_indirect(dbuf.size() / sizeof(ogl2::draw_indexed_indirect_command), ibuf, dbuf, ogl2::primitive_topology::triangles, this->shader.has_tessellation());
+						this->vao.draw_indexed_indirect(dbuf.size() / sizeof(ogl2::draw_indexed_indirect_command), ibuf, dbuf, topology, this->shader.has_tessellation());
 					}
 				}
 				else
 				{
-					this->vao.draw_indexed(this->state.graphics.tri_count, ibuf, ogl2::primitive_topology::triangles, this->shader.has_tessellation());
+					this->vao.draw_indexed(this->state.graphics.tri_count, ibuf, topology, this->shader.has_tessellation());
 				}
 			}
 			else
@@ -656,16 +672,16 @@ namespace tz::gl
 					const ogl2::buffer& dbuf = static_cast<buffer_component_ogl*>(dcomp)->ogl_get_buffer();
 					if(this->options.contains(tz::gl::renderer_option::draw_indirect_count))
 					{
-						this->vao.draw_indirect_count(dbuf.size() / sizeof(ogl2::draw_indirect_command), dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), ogl2::primitive_topology::triangles, this->shader.has_tessellation());
+						this->vao.draw_indirect_count(dbuf.size() / sizeof(ogl2::draw_indirect_command), dbuf, static_cast<std::uintptr_t>(sizeof(std::uint32_t)), topology, this->shader.has_tessellation());
 					}
 					else
 					{
-						this->vao.draw_indirect(dbuf.size() / sizeof(ogl2::draw_indirect_command), dbuf, ogl2::primitive_topology::triangles, this->shader.has_tessellation());
+						this->vao.draw_indirect(dbuf.size() / sizeof(ogl2::draw_indirect_command), dbuf, topology, this->shader.has_tessellation());
 					}
 				}
 				else
 				{
-					this->vao.draw(this->state.graphics.tri_count, ogl2::primitive_topology::triangles, this->shader.has_tessellation());
+					this->vao.draw(this->state.graphics.tri_count, topology, this->shader.has_tessellation());
 				}
 			}
 			if(!this->options.contains(tz::gl::renderer_option::no_present) && window_output)

@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP
+#if TZ_VULKAN
 #include "tz/core/data/basic_list.hpp"
 #include "tz/core/data/enum_field.hpp"
 #include "tz/core/data/vector.hpp"
@@ -84,6 +85,8 @@ namespace tz::gl::vk2
 		Points = VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
 		TriangleStrips = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
 	};
+
+	std::uint32_t primitive_topology_vertex_count(PrimitiveTopology t);
 
 	/**
 	 * @ingroup tz_gl_vk_graphics_pipeline_fixed
@@ -248,4 +251,5 @@ namespace tz::gl::vk2
 	};
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_FIXED_FUNCTION_HPP

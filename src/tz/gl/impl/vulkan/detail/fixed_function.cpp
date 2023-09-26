@@ -3,6 +3,24 @@
 
 namespace tz::gl::vk2
 {
+	std::uint32_t primitive_topology_vertex_count(PrimitiveTopology t)
+	{
+		switch(t)
+		{
+			case PrimitiveTopology::Triangles:
+				return 3;
+			break;
+			case PrimitiveTopology::Points:
+				return 1;
+			break;
+			case PrimitiveTopology::TriangleStrips:
+				return 3;
+			break;
+		}
+		tz::error("Unrecognised `vk2::PrimitiveTopology`");
+		return {};
+	}
+
 	ViewportState::NativeType ViewportState::native() const
 	{
 		return
