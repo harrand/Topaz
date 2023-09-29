@@ -55,7 +55,7 @@ namespace tz::io
 		for(const auto& contour : glyph.shape.contours)
 		{
 			msdfgen::Contour msdfcont;
-			for(const auto[beg, end] : contour.edges)
+			for(const auto& [beg, end] : contour.edges)
 			{
 				msdfcont.addEdge(msdfgen::EdgeHolder{msdfvec(beg), msdfvec(end)});
 			}
