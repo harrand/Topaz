@@ -3,6 +3,9 @@
 #include <sstream>
 #include <filesystem>
 
+// Module Lua API init
+#include "tz/gl/tz_gl.hpp"
+
 extern "C"
 {
 #include "lauxlib.h"
@@ -83,5 +86,7 @@ namespace tz::lua
 		s.assign_uint("tz.version.minor", ver.minor);
 		s.assign_uint("tz.version.patch", ver.patch);
 		s.assign_string("tz.version.string", ver.to_string());
+
+		tz::gl::lua_initialise(s);
 	}
 }

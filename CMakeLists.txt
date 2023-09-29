@@ -149,6 +149,7 @@ add_library(topaz STATIC
 	src/tz/gl/resource.cpp
 	src/tz/gl/resource.hpp
 	src/tz/gl/resource.inl
+	src/tz/gl/tz_gl.cpp
 	src/tz/gl/tz_gl.hpp
 	# tz::gl (Common Impl)
 	src/tz/gl/impl/common/renderer.cpp

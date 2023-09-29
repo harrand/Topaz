@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL2_DEVICE_HPP
 #define TOPAZ_GL2_DEVICE_HPP
+#include "tz/lua/api.hpp"
 
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/device2.hpp"
@@ -22,6 +23,8 @@ namespace tz::gl
 	 */
 	device& get_device();
 	void destroy_device();
+
+	void lua_initialise_device(tz::lua::state& state);
 }
 
 #endif // TOPAZ_GL2_DEVICE_HPP

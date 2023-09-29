@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL2_TZ_GL_HPP
 #define TOPAZ_GL2_TZ_GL_HPP
 #include "tz/core/data/version.hpp"
+#include "tz/lua/api.hpp"
 #include <array>
 
 namespace tz::gl
@@ -69,6 +70,8 @@ namespace tz::gl
 
 	void initialise();
 	void terminate();
+
+	void lua_initialise(tz::lua::state& state);
 }
 
 #endif // TOPAZ_GL2_TZ_GL_HPP
