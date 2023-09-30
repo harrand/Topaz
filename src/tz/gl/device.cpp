@@ -1,4 +1,5 @@
 #include "tz/gl/device.hpp"
+#include "tz/gl/renderer.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/lua/api.hpp"
 #include <memory>
@@ -35,8 +36,35 @@ namespace tz::gl
 
 	// LUA API
 
-	LUA_NAMESPACE_BEGIN(impl_tz_gl_device)
+	struct lua_renderer_interface
+	{
+		tz::gl::renderer& get()
+		{
+			return tz::gl::get_device().get_renderer(this->rh);
+		}
+		
+		int resource_count(tz::lua::state& state)
+		{
+			state.stack_push_uint(this->get().resource_count());
+			return 1;
+		}	
 
+		int debug_get_name(tz::lua::state& state)
+		{
+			state.stack_push_string(this->get().debug_get_name());
+			return 1;
+		}
+		tz::gl::renderer_handle rh = tz::nullhand;
+	};
+
+	LUA_CLASS_BEGIN(impl_tz_gl_renderer)
+		LUA_CLASS_METHODS_BEGIN
+			LUA_METHOD(lua_renderer_interface, resource_count)
+			LUA_METHOD(lua_renderer_interface, debug_get_name)
+		LUA_CLASS_METHODS_END
+	LUA_CLASS_END
+
+	LUA_NAMESPACE_BEGIN(impl_tz_gl_device)
 		LUA_NAMESPACE_FUNC_BEGIN(renderer_count)
 			state.stack_push_uint(tz::gl::get_device().renderer_count());
 			return 1;
@@ -44,8 +72,8 @@ namespace tz::gl
 
 		LUA_NAMESPACE_FUNC_BEGIN(get_renderer)
 			std::size_t rid = state.stack_get_uint(1);	
-			auto& ren = tz::gl::get_device().get_renderer(static_cast<tz::hanval>(rid));
-			state.stack_push_ref(ren);
+			state.stack_push_userdata<lua_renderer_interface>({static_cast<tz::gl::renderer_handle>(static_cast<tz::hanval>(rid))});
+			state.attach_to_top_userdata("impl_tz_gl_renderer", LUA_CLASS_NAME(impl_tz_gl_renderer)::registers);
 			return 1;
 		LUA_NAMESPACE_FUNC_END
 
@@ -62,6 +90,10 @@ namespace tz::gl
 
 	void lua_initialise_device(tz::lua::state& state)
 	{
+		// LUA_CLASS_REGISTER_ONE basically
+		state.new_type("impl_tz_gl_renderer", LUA_CLASS_NAME(impl_tz_gl_renderer)::registers);
+
+		// LUA_NAMESPACE_REGISTER_ONE basically
 		state.open_lib("tz_gl_impl_device", LUA_NAMESPACE_NAME(impl_tz_gl_device)::registers);
 		state.execute("tz.gl.get_device = function() return tz_gl_impl_device end");
 	}
