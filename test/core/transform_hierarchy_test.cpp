@@ -29,6 +29,7 @@ void parent_moves_child()
 	t.get_node(child).local_transform.translate[0] += 1.0f;
 	tz::assert(t.get_global_transform(child).translate == tz::vec3{2.0f, 0.0f, 0.0f});
 	t.get_node(parent).local_transform.translate[0]+= 5.0f;
+	t.clear_cache();
 	tz::assert(t.get_global_transform(child).translate == tz::vec3{7.0f, 0.0f, 0.0f});
 }
 
