@@ -8,9 +8,22 @@
 #include <functional>
 #include <optional>
 #include <thread>
+#include <span>
 
 namespace tz::lua
 {
+	class state;
+	namespace impl
+	{
+		using fn_t = int(*)(state&);
+		struct lua_register
+		{
+			const char* namestr;
+			fn_t fnptr; // signature: int(void*)
+		};
+		using lua_registers = std::span<const lua_register>;
+	}
+
 	/**
 	* @ingroup tz_lua_cpp
 	* Represents a lua state. To retrieve the main lua state, see @ref tz::lua::get_state()
@@ -106,6 +119,7 @@ namespace tz::lua
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;
+		void open_lib(const char* name, impl::lua_registers registers);
 		void* operator()() const;
 	private:
 		tz::memblk lua_userdata_stack_push(std::size_t byte_count) const;
@@ -123,6 +137,7 @@ namespace tz::lua
 
 	using state_applicator = std::function<void(state&)>;
 	void for_all_states(state_applicator fn);
+
 }
 
 #endif // TZ_LUA_STATE_HPP
