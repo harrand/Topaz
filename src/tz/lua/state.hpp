@@ -118,6 +118,7 @@ namespace tz::lua
 		std::string collect_stack() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;
+		void attach_to_top_table(impl::lua_registers registers);
 		void open_lib(const char* name, impl::lua_registers registers);
 		void* operator()() const;
 	private:

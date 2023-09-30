@@ -378,9 +378,8 @@ namespace tz::lua
 		return this->owner;
 	}
 
-	void state::open_lib(const char* name, impl::lua_registers registers)
+	void state::attach_to_top_table(impl::lua_registers registers)
 	{
-		tz::assert(registers.size());
 		auto* s = static_cast<lua_State*>(this->lstate);
 		std::vector<luaL_Reg> regs;
 		regs.resize(registers.size());
@@ -389,9 +388,16 @@ namespace tz::lua
 			regs[i] = luaL_Reg{.name = registers[i].namestr, .func = reinterpret_cast<lua_CFunction>(registers[i].fnptr)};
 		}
 		regs.push_back({.name = nullptr, .func = nullptr});
+		luaL_setfuncs(s, regs.data(), 0);
+	}
+
+	void state::open_lib(const char* name, impl::lua_registers registers)
+	{
+		tz::assert(registers.size());
+		auto* s = static_cast<lua_State*>(this->lstate);
 		luaL_checkversion(s);
 		lua_newtable(s);
-		luaL_setfuncs(s, regs.data(), 0);
+		this->attach_to_top_table(registers);
 		lua_setglobal(s, name);
 	}
 
