@@ -11,8 +11,8 @@ LUA_END
 
 LUA_NAMESPACE_BEGIN(my_poggers_lib)
 	LUA_NAMESPACE_FUNC_BEGIN(yee)
-		volatile int x = 5;
-		return 0;
+		state.stack_push_uint(42u);
+		return 1;
 	LUA_NAMESPACE_FUNC_END
 LUA_NAMESPACE_END
 
@@ -33,7 +33,7 @@ void basic_function_tests()
 void basic_namespace_tests()
 {
 	auto& state = tz::lua::get_state();
-	state.execute("my_poggers_lib.yee()");
+	state.execute("answer = my_poggers_lib.yee(); tz.assert(answer == 42)");
 }
 
 void basic_class_tests()

@@ -12,10 +12,9 @@
 
 namespace tz::lua
 {
-	class state;
 	namespace impl
 	{
-		using fn_t = int(*)(state&);
+		using fn_t = int(*)(void*);
 		struct lua_register
 		{
 			const char* namestr;

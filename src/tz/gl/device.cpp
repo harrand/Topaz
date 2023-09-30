@@ -1,5 +1,6 @@
 #include "tz/gl/device.hpp"
 #include "tz/core/profile.hpp"
+#include "tz/lua/api.hpp"
 #include <memory>
 
 namespace tz::gl
@@ -55,6 +56,12 @@ namespace tz::gl
 		tz::gl::get_device().frame_wait();
 		return 0;
 	LUA_END
+
+	LUA_NAMESPACE_BEGIN(impl_tz_gl_device)
+		LUA_NAMESPACE_FUNC_BEGIN(renderer_count)
+			return 1;
+		LUA_NAMESPACE_FUNC_END
+	LUA_NAMESPACE_END
 
 	void lua_initialise_device(tz::lua::state& state)
 	{
