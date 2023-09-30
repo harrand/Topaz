@@ -378,6 +378,14 @@ namespace tz::lua
 		return this->owner;
 	}
 
+	void state::attach_to_top_userdata(const char* classname, impl::lua_registers registers)
+	{
+		// whatever is on top of the stack, set it a new metatable with the functions.
+		auto* s = static_cast<lua_State*>(this->lstate);
+		luaL_getmetatable(s, classname);
+		lua_setmetatable(s, -2);
+	}
+
 	void state::attach_to_top_table(impl::lua_registers registers)
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
@@ -389,6 +397,18 @@ namespace tz::lua
 		}
 		regs.push_back({.name = nullptr, .func = nullptr});
 		luaL_setfuncs(s, regs.data(), 0);
+	}
+
+	void state::new_type(const char* type_name, impl::lua_registers registers)
+	{
+		tz::assert(registers.size());
+		auto* s = static_cast<lua_State*>(this->lstate);
+		luaL_checkversion(s);
+		luaL_newmetatable(s, type_name);
+		lua_pushstring(s, "__index");
+		lua_pushvalue(s, -2);
+		lua_settable(s, -3);
+		this->attach_to_top_table(registers);
 	}
 
 	void state::open_lib(const char* name, impl::lua_registers registers)

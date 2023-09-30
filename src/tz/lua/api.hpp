@@ -22,6 +22,16 @@
 
 #define LUA_NAMESPACE_REGISTER_ALL(name) tz::lua::for_all_states([](tz::lua::state& s){s.open_lib(#name, tz::lua::impl::lua_registers{luans_##name::registers});});
 
+#define LUA_CLASS_BEGIN(name) struct luat_##name {
+#define LUA_CLASS_METHODS_BEGIN static constexpr tz::lua::impl::lua_register registers[] = {
+#define LUA_METHOD(classname, methodname) {.namestr = #methodname, .fnptr = [](void* s)->int{tz::lua::state state{s}; auto& lua_this = state.stack_get_userdata<classname>(1); \
+ return lua_this.methodname(state);\
+}},
+#define LUA_CLASS_METHODS_END };
+#define LUA_CLASS_END };
+#define LUA_CLASS_NAME(name) luat_##name
+#define LUA_CLASS_REGISTER_ALL(name) tz::lua::for_all_states([](tz::lua::state& s){s.new_type(#name, tz::lua::impl::lua_registers{luat_##name::registers});});
+
 namespace tz::lua
 {
 	void api_initialise(state& s);
