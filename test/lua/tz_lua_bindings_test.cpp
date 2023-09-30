@@ -11,7 +11,11 @@ LUA_END
 
 LUA_NAMESPACE_BEGIN(my_poggers_lib)
 	LUA_NAMESPACE_FUNC_BEGIN(yee)
-		state.stack_push_uint(42u);
+		const auto[par1, par2, par3] = tz::lua::parse_args<bool, std::string, unsigned int>(state);
+		tz::assert(!par1);
+		tz::assert(par2 == "hunter2");
+		tz::assert(par3 == 42);
+		state.stack_push_uint(123);
 		return 1;
 	LUA_NAMESPACE_FUNC_END
 LUA_NAMESPACE_END
@@ -33,7 +37,7 @@ void basic_function_tests()
 void basic_namespace_tests()
 {
 	auto& state = tz::lua::get_state();
-	state.execute("answer = my_poggers_lib.yee(); tz.assert(answer == 42)");
+	state.execute("answer = my_poggers_lib.yee(false, \"hunter2\", 42); tz.assert(answer == 123)");
 }
 
 void basic_class_tests()

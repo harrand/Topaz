@@ -2,6 +2,7 @@
 #define TZ_LUA_API_HPP
 #include "tz/lua/state.hpp"
 #include "tz/core/debug.hpp"
+#include "tz/core/algorithms/static.hpp"
 
 // `s` == underlying lua_State*. `state` == tz::lua::state
 // free functions:
@@ -24,6 +25,45 @@
 namespace tz::lua
 {
 	void api_initialise(state& s);
+	template<typename... Ts>
+	std::tuple<Ts...> parse_args(state& s)
+	{
+		std::tuple<Ts...> ret;
+		tz::static_for<0, sizeof...(Ts)>([&ret, &s]([[maybe_unused]] auto i) constexpr
+		{
+			using T = std::decay_t<decltype(std::get<i.value>(std::declval<std::tuple<Ts...>>()))>;	
+			auto& v = std::get<i.value>(ret);
+			if constexpr(std::is_same_v<T, bool>)
+			{
+				v = s.stack_get_bool(i.value + 1);
+			}
+			else if constexpr(std::is_same_v<T, float>)
+			{
+				v = s.stack_get_float(i.value + 1);
+			}
+			else if constexpr(std::is_same_v<T, double>)
+			{
+				v = s.stack_get_double(i.value + 1);
+			}
+			else if constexpr(std::is_same_v<T, std::int64_t> || std::is_same_v<T, int>)
+			{
+				v = s.stack_get_int(i.value + 1);
+			}
+			else if constexpr(std::is_same_v<T, std::uint64_t> || std::is_same_v<T, unsigned int>)
+			{
+				v = s.stack_get_uint(i.value + 1);
+			}
+			else if constexpr(std::is_same_v<T, std::string>)
+			{
+				v = s.stack_get_string(i.value + 1);
+			}
+			else
+			{
+				static_assert(!std::is_void_v<T>, "Unrecognised lua argument type. Is it a supported type?");
+			}
+		});
+		return ret;
+	}
 }
 
 // example: define in a TU
