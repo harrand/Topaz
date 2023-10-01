@@ -9,6 +9,7 @@
 #include "tz/wsi/impl/windows/wsi_windows.hpp"
 #include "tz/wsi/impl/linux/wsi_linux.hpp"
 #include <algorithm>
+#include <cctype>
 
 namespace tz::wsi
 {
