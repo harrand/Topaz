@@ -6,6 +6,7 @@
 // Module Lua API init
 #include "tz/core/tz_core.hpp"
 #include "tz/gl/tz_gl.hpp"
+#include "tz/ren/tz_ren.hpp"
 #include "tz/wsi/wsi.hpp"
 
 extern "C"
@@ -91,6 +92,7 @@ namespace tz::lua
 
 		tz::core::lua_initialise(s);
 		tz::gl::lua_initialise(s);
+		tz::ren::lua_initialise(s);
 		tz::wsi::lua_initialise(s);
 	}
 }

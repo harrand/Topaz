@@ -1,5 +1,6 @@
 #ifndef TOPAZ_REN_TZ_REN_HPP
 #define TOPAZ_REN_TZ_REN_HPP
+#include "tz/lua/api.hpp"
 
 namespace tz::ren
 {
@@ -10,6 +11,8 @@ namespace tz::ren
 	 *
 	 * The rendering library is mostly comprised of high-level renderer classes.
 	 */
+
+	 void lua_initialise(tz::lua::state& state);
 }
 
 #endif // TOPAZ_REN_TZ_REN_HPP

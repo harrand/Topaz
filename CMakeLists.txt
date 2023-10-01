@@ -262,6 +262,7 @@ add_library(topaz STATIC
 	src/tz/ren/api.hpp
 	src/tz/ren/mesh.cpp
 	src/tz/ren/mesh.hpp
+	src/tz/ren/tz_ren.cpp
 	src/tz/ren/tz_ren.hpp
 	)
 
@@ -343,6 +344,7 @@ add_text(
 	TEXT_FILES
 		src/tz/core/tz_core.lua
 		src/tz/gl/tz_gl.lua
+		src/tz/ren/tz_ren.lua
 		src/tz/wsi/tz_wsi.lua
 )
 
