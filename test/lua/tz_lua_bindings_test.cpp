@@ -45,8 +45,7 @@ LUA_CLASS_END
 
 LUA_BEGIN(make_foo)
 	auto[initial_value] = tz::lua::parse_args<int>(state);
-	state.stack_push_userdata<foo>(foo{initial_value});
-	state.attach_to_top_userdata("foo", LUA_CLASS_NAME(foo)::registers);
+	LUA_CLASS_PUSH(state, foo, {initial_value});
 	return 1;
 LUA_END
 

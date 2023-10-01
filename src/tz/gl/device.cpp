@@ -36,7 +36,7 @@ namespace tz::gl
 
 	// LUA API
 
-	struct lua_renderer_interface
+	struct impl_tz_gl_renderer
 	{
 		tz::gl::renderer& get()
 		{
@@ -59,8 +59,8 @@ namespace tz::gl
 
 	LUA_CLASS_BEGIN(impl_tz_gl_renderer)
 		LUA_CLASS_METHODS_BEGIN
-			LUA_METHOD(lua_renderer_interface, resource_count)
-			LUA_METHOD(lua_renderer_interface, debug_get_name)
+			LUA_METHOD(impl_tz_gl_renderer, resource_count)
+			LUA_METHOD(impl_tz_gl_renderer, debug_get_name)
 		LUA_CLASS_METHODS_END
 	LUA_CLASS_END
 
@@ -72,8 +72,7 @@ namespace tz::gl
 
 		LUA_NAMESPACE_FUNC_BEGIN(get_renderer)
 			std::size_t rid = state.stack_get_uint(1);	
-			state.stack_push_userdata<lua_renderer_interface>({static_cast<tz::gl::renderer_handle>(static_cast<tz::hanval>(rid))});
-			state.attach_to_top_userdata("impl_tz_gl_renderer", LUA_CLASS_NAME(impl_tz_gl_renderer)::registers);
+			LUA_CLASS_PUSH(state, impl_tz_gl_renderer, {static_cast<tz::gl::renderer_handle>(static_cast<tz::hanval>(rid))});
 			return 1;
 		LUA_NAMESPACE_FUNC_END
 
