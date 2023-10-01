@@ -758,7 +758,11 @@ namespace tz::dbgui
 	{
 		global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
 		bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf.c_str(), false);
-		if (!success)
+		{
+			std::string print_cmd = "print(" + global_platform_data->lua_console_buf + ")";
+			success |= tz::lua::get_state().execute(print_cmd.c_str(), false);
+		}
+		if(!success)
 		{
 			global_platform_data->lua_console_history += "\nLua Error: \"" + tz::lua::get_state().get_last_error() + "\"\n";
 		}
@@ -821,6 +825,11 @@ namespace tz::dbgui
 					}
 					ImGui::SetKeyboardFocusHere(-1); // Set focus back to the input text field
 				}
+			}
+			ImGui::SameLine();
+			if(ImGui::Button("Clear"))
+			{
+				global_platform_data->lua_console_history.clear();
 			}
 			ImGui::End();
 		}
