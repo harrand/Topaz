@@ -248,6 +248,8 @@ add_library(topaz STATIC
 	# ttf
 	src/tz/io/ttf.cpp
 	src/tz/io/ttf.hpp
+	src/tz/io/tz_io.cpp
+	src/tz/io/tz_io.hpp
 
 	# tz::lua
 	src/tz/lua/api.cpp
@@ -344,6 +346,7 @@ add_text(
 	TEXT_FILES
 		src/tz/core/tz_core.lua
 		src/tz/gl/tz_gl.lua
+		src/tz/io/tz_io.lua
 		src/tz/ren/tz_ren.lua
 		src/tz/wsi/tz_wsi.lua
 )
