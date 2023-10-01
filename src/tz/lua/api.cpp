@@ -5,6 +5,7 @@
 
 // Module Lua API init
 #include "tz/gl/tz_gl.hpp"
+#include "tz/wsi/wsi.hpp"
 
 extern "C"
 {
@@ -88,5 +89,6 @@ namespace tz::lua
 		s.assign_string("tz.version.string", ver.to_string());
 
 		tz::gl::lua_initialise(s);
+		tz::wsi::lua_initialise(s);
 	}
 }

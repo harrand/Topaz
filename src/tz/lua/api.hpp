@@ -40,6 +40,7 @@
 // note that the equvalent of `this` is available through `lua_this`
 #define LUA_METHOD(classname, methodname) {.namestr = #methodname, .fnptr = [](void* s)->int{tz::lua::state state{s}; auto& lua_this = state.stack_get_userdata<classname>(1); \
  return lua_this.methodname(state);\
+  \
 }},
 // end the list of method declarations. you can only have one list per class.
 #define LUA_CLASS_METHODS_END };
@@ -89,9 +90,13 @@ namespace tz::lua
 			{
 				v = s.stack_get_string(i.value + 1);
 			}
+			else if constexpr(std::is_same_v<T, tz::lua::nil>)
+			{
+				// do nothing! its whatever
+			}
 			else
 			{
-				static_assert(!std::is_void_v<T>, "Unrecognised lua argument type. Is it a supported type?");
+				static_assert(std::is_void_v<T>, "Unrecognised lua argument type. Is it a supported type?");
 			}
 		});
 		return ret;

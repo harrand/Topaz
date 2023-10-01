@@ -12,6 +12,7 @@
 
 namespace tz::lua
 {
+	struct nil{};
 	namespace impl
 	{
 		using fn_t = int(*)(void*);

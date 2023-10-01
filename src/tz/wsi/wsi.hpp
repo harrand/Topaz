@@ -1,12 +1,15 @@
 #ifndef TZ_WSI_TGE_HPP
 #define TZ_WSI_TGE_HPP
 #include "tz/core/data/handle.hpp"
+#include "tz/lua/api.hpp"
 
 namespace tz::wsi
 {
 	void initialise();
 	void terminate();
 	void update();
+
+	void lua_initialise(tz::lua::state& state);
 
 	/**
 	 * @ingroup tz_cpp
