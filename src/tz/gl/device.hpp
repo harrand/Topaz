@@ -23,8 +23,6 @@ namespace tz::gl
 	 */
 	device& get_device();
 	void destroy_device();
-
-	void lua_initialise_device(tz::lua::state& state);
 }
 
 #endif // TOPAZ_GL2_DEVICE_HPP
