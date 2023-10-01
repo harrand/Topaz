@@ -336,6 +336,15 @@ add_shader(
 		src/tz/ren/shaders/mesh.fragment.tzsl
 	)
 
+add_text(
+	TARGET topaz
+	INPUT_DIR ${PROJECT_SOURCE_DIR}
+	OUTPUT_DIR ${PROJECT_BINARY_DIR}
+	TEXT_FILES
+		src/tz/core/tz_core.lua
+		src/tz/gl/tz_gl.lua
+)
+
 add_subdirectory(demo)
 include(cmake/test.cmake)
 enable_testing()

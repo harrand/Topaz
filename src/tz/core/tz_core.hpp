@@ -1,5 +1,6 @@
 #ifndef TZ_HPP
 #define TZ_HPP
+#include "tz/lua/api.hpp"
 
 namespace tz::core
 {
@@ -23,6 +24,7 @@ namespace tz::core
 	 */
 	void initialise();
 	void terminate();
+	void lua_initialise(tz::lua::state& state);
 
 	namespace detail
 	{
