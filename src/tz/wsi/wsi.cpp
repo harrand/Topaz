@@ -87,7 +87,7 @@ namespace tz::wsi
 			{
 				key k = static_cast<key>(i);
 				std::string kname = tz::wsi::get_key_name(k);
-				std::transform(kname.begin(), kname.end(), kname.begin(), std::tolower);
+				std::transform(kname.begin(), kname.end(), kname.begin(), [](char c){return std::tolower(c);});
 				kname.erase(std::remove(kname.begin(), kname.end(), '\0'), kname.end());
 				if(kname == keystr)
 				{
