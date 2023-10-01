@@ -301,6 +301,8 @@ namespace tz::io
 		// note: you should pass in the file contents of a .glb.
 		static gltf from_memory(std::string_view sv);
 		static gltf from_file(const char* path);
+		std::size_t vertex_count() const;
+		std::size_t index_count() const;
 		std::span<const std::byte> view_buffer(gltf_buffer_view view) const;
 		std::span<const gltf_mesh> get_meshes() const;
 		std::span<const gltf_buffer> get_buffers() const;

@@ -89,6 +89,35 @@ namespace tz::io
 		return gltf::from_memory(buffer);
 	}
 
+	std::size_t gltf::vertex_count() const
+	{
+		std::size_t ret = 0;
+		for(std::size_t i = 0; i < this->get_meshes().size(); i++)
+		{
+			for(std::size_t j = 0; j < this->get_meshes()[i].submeshes.size(); j++)
+			{
+				const auto& submesh = this->get_meshes()[i].submeshes[j];
+				std::size_t posid = submesh.accessors[(int)gltf_attribute::position];
+				ret += this->accessors[posid].element_count;
+			}
+		}
+		return ret;
+	}
+
+	std::size_t gltf::index_count() const
+	{
+		std::size_t ret = 0;
+		for(std::size_t i = 0; i < this->get_meshes().size(); i++)
+		{
+			for(std::size_t j = 0; j < this->get_meshes()[i].submeshes.size(); j++)
+			{
+				const auto& submesh = this->get_meshes()[i].submeshes[j];
+				ret += this->accessors[submesh.indices_accessor].element_count;
+			}
+		}
+		return ret;
+	}
+
 	std::span<const std::byte> gltf::view_buffer(gltf_buffer_view view) const
 	{
 		tz::assert(view.buffer_id == 0, "only one buffer is supported, otherwise it implies external bin data files, which topaz doesn't support.");

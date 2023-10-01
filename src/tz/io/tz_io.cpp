@@ -12,29 +12,13 @@ namespace tz::io
 		gltf data;
 		int vertex_count(tz::lua::state& state)
 		{
-			unsigned int ret = 0;
-			for(std::size_t i = 0; i < this->data.get_meshes().size(); i++)
-			{
-				for(std::size_t j = 0; j < this->data.get_meshes()[i].submeshes.size(); j++)
-				{
-					ret += this->data.get_submesh_vertex_data(i, j).vertices.size();
-				}
-			}
-			state.stack_push_uint(ret);
+			state.stack_push_uint(this->data.vertex_count());
 			return 1;
 		}
 
 		int index_count(tz::lua::state& state)
 		{
-			unsigned int ret = 0;
-			for(std::size_t i = 0; i < this->data.get_meshes().size(); i++)
-			{
-				for(std::size_t j = 0; j < this->data.get_meshes()[i].submeshes.size(); j++)
-				{
-					ret += this->data.get_submesh_vertex_data(i, j).indices.size();
-				}
-			}
-			state.stack_push_uint(ret);
+			state.stack_push_uint(this->data.index_count());
 			return 1;
 		}
 	};
