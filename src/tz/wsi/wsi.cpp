@@ -81,7 +81,7 @@ namespace tz::wsi
 		{
 			tz::assert(this->wnd != nullptr);
 			auto [_, keystr] = tz::lua::parse_args<tz::lua::nil, std::string>(state);
-			std::transform(keystr.begin(), keystr.end(), keystr.begin(), std::tolower);
+			std::transform(keystr.begin(), keystr.end(), keystr.begin(), [](char c){return std::tolower(c);});
 			bool ret = false;
 			for(std::size_t i = 0; i < (std::size_t)tz::wsi::key::_count; i++)
 			{
