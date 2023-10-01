@@ -343,6 +343,7 @@ add_text(
 	TEXT_FILES
 		src/tz/core/tz_core.lua
 		src/tz/gl/tz_gl.lua
+		src/tz/wsi/tz_wsi.lua
 )
 
 add_subdirectory(demo)

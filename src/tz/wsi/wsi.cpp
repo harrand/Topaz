@@ -2,6 +2,9 @@
 #include "tz/lua/api.hpp"
 #include "tz/tz.hpp"
 
+#include "tz/core/imported_text.hpp"
+#include ImportedTextHeader(tz_wsi, lua)
+
 #include "tz/wsi/window.hpp"
 #include "tz/wsi/keyboard.hpp"
 #include "tz/wsi/mouse.hpp"
@@ -124,6 +127,10 @@ namespace tz::wsi
 	{
 		state.new_type("impl_tz_wsi_window", LUA_CLASS_NAME(impl_tz_wsi_window)::registers);
 		state.open_lib("impl_tz_wsi", LUA_NAMESPACE_NAME(impl_tz_wsi)::registers);
-		state.execute("tz.window = function() return impl_tz_wsi.window() end");
+		state.execute("tz.wsi = impl_tz_wsi");
+		state.execute("tz.window = function() return tz.wsi.window() end");
+
+		std::string tz_wsi_lua_api{ImportedTextData(tz_wsi, lua)};
+		state.execute(tz_wsi_lua_api.data());
 	}
 }
