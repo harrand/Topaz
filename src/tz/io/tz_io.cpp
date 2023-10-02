@@ -31,7 +31,7 @@ namespace tz::io
 	LUA_CLASS_END
 
 	LUA_NAMESPACE_BEGIN(impl_tz_io)
-		LUA_NAMESPACE_FUNC_BEGIN(gltf_load)
+		LUA_NAMESPACE_FUNC_BEGIN(load_gltf)
 			auto [filename] = tz::lua::parse_args<std::string>(state);
 			LUA_CLASS_PUSH(state, impl_tz_io_gltf, {.data = gltf::from_file(filename.c_str())});
 			return 1;
