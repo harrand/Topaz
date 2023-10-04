@@ -133,6 +133,23 @@ namespace tz::ren
 
 		tz::trs get_camera_transform() const;
 		void set_camera_transform(tz::trs camera_transform);
+
+		struct camera_perspective_t
+		{
+			float aspect_ratio = 1.0f;
+			float fov = 1.5701f;
+			float near_clip = 0.1f;
+			float far_clip = 100.0f;
+		};
+		struct camera_orthographic_t
+		{
+			float left, right;
+			float top, bottom;
+			float near_plane, far_plane;	
+		};
+
+		void camera_perspective(camera_perspective_t persp);
+		void camera_orthographic(camera_orthographic_t ortho);
 	private:
 		struct compute_pass_t
 		{

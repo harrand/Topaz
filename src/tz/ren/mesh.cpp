@@ -10,6 +10,7 @@
 #include "tz/core/matrix_transform.hpp"
 #include "tz/core/job/job.hpp"
 #include "tz/core/profile.hpp"
+#include "tz/wsi/monitor.hpp"
 #include <filesystem>
 
 #include ImportedShaderHeader(mesh, compute)
@@ -286,6 +287,18 @@ namespace tz::ren
 	{
 		camera_data& camd = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.camera_buffer)->data_as<camera_data>().front();
 		camd.view = camera_transform.matrix().inverse();
+	}
+
+	void mesh_renderer::camera_perspective(camera_perspective_t persp)
+	{
+		camera_data& camd = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.camera_buffer)->data_as<camera_data>().front();
+		camd.projection = tz::perspective(persp.fov, persp.aspect_ratio, persp.near_clip, persp.far_clip);
+	}
+
+	void mesh_renderer::camera_orthographic(camera_orthographic_t ortho)
+	{
+		camera_data& camd = tz::gl::get_device().get_renderer(this->render_pass.handle).get_resource(this->render_pass.camera_buffer)->data_as<camera_data>().front();
+		camd.projection = tz::orthographic(ortho.left, ortho.right, ortho.top, ortho.bottom, ortho.near_plane, ortho.far_plane);
 	}
 
 	mesh_renderer::compute_pass_t::compute_pass_t()
@@ -580,20 +593,6 @@ namespace tz::ren
 		ImGui::Text("View Matrix");
 		tz::dbgui_view(cam.view);
 
-		ImGui::Text("Projection Matrix");
-		for (int row = 0; row < 4; row++)
-		{
-			for (int col = 0; col < 4; col++)
-			{
-				std::string label = "##p" + std::to_string(row) + std::to_string(col);
-				constexpr float matrix_cell_width = 35.0f;
-				ImGui::SetNextItemWidth(matrix_cell_width);
-				ImGui::InputFloat(label.c_str(), &cam.projection(row, col));
-				ImGui::SameLine();
-			}
-			ImGui::NewLine();
-		}
-
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "TEXTURES");
 		std::size_t texture_count = this->texture_cursor;
@@ -884,6 +883,31 @@ namespace tz::ren
 				if(ImGui::BeginTabItem("Render Pass"))
 				{
 					this->render_pass.dbgui();
+
+					ImGui::Text("Projection Matrix");
+					static int projection_type = 0;
+					ImGui::RadioButton("Perspective", &projection_type, 0);
+					ImGui::RadioButton("Orthographic", &projection_type, 1);
+					static camera_perspective_t persp;
+					auto mondims = static_cast<tz::vec2>(tz::wsi::get_monitors().front().dimensions);
+					persp.aspect_ratio = mondims[0] / mondims[1];
+					static camera_orthographic_t ortho;
+					switch(projection_type)
+					{
+						case 0: // perspective
+							ImGui::SliderFloat("Fov", &persp.fov, -3.14159f, 3.14159f);
+							this->camera_perspective(persp);
+						break;
+						case 1: // orthographic
+							ImGui::SliderFloat("Left Plane", &ortho.left, -100.0f, 100.0f);
+							ImGui::SliderFloat("Right Plane", &ortho.right, -100.0f, 100.0f);
+							ImGui::SliderFloat("Top Plane", &ortho.top, -100.0f, 100.0f);
+							ImGui::SliderFloat("Bottom Plane", &ortho.bottom, -100.0f, 100.0f);
+							ImGui::SliderFloat("Near Plane", &ortho.near_plane, -100.0f, 100.0f);
+							ImGui::SliderFloat("Far Plane", &ortho.far_plane, -100.0f, 100.0f);
+							this->camera_orthographic(ortho);
+						break;
+					}
 					ImGui::EndTabItem();
 				}
 				ImGui::EndTabBar();

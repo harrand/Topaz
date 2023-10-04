@@ -50,7 +50,7 @@ int main()
 		});
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		*/
-		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_animated_untextured.glb"));
+		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_animated_textured.glb"));
 		for(auto o : pkg.objects)
 		{
 			ar.object_set_colour(o, tz::vec3{0.949f, 0.753f, 0.612f});
