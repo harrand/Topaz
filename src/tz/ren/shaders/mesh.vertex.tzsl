@@ -23,6 +23,7 @@ struct object_t
 {
 	mat4 global_transform;
 	mat4 _;
+	vec3 colour_tint;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uvec4 _2;
 };
@@ -45,7 +46,8 @@ resource(id = 2) const buffer camera_buffer
 
 output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
-output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
+output(id = 10) vec3 out::colour;
+output(id = 11) texture_locator out::textures[MAX_TEX_COUNT];
 
 void main()
 {
@@ -54,6 +56,7 @@ void main()
 	out::position = camera.projection * camera.view * obj.global_transform * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;
+	out::colour = obj.colour_tint;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
 	{
 		out::texcoord[i] = vtx.texcoord4[i].xy;

@@ -11,7 +11,8 @@ struct texture_locator
 output(id = 0) vec4 out::colour;
 input(id = 0) vec2 in::texcoord[MAX_TEX_COUNT];
 input(id = 9) vec3 in::normal;
-input(id = 10, flat) texture_locator in::textures[MAX_TEX_COUNT];
+input(id = 10) vec3 in::colour;
+input(id = 11, flat) texture_locator in::textures[MAX_TEX_COUNT];
 resource(id = 4) const texture res::textures[];
 
 void main()
@@ -28,7 +29,7 @@ void main()
 	if(base_colour.texture_id == BADU)
 	{
 		// use solid red.
-		out::colour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		out::colour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	else
 	{
@@ -44,6 +45,7 @@ void main()
 		float metallicness = mrsample.b;
 		// TODO: pbr magic!
 	}
+	out::colour.xyz *= in::colour;
 
 	// old way: textures are all colour.
 	//for(uint i = 0; i < MAX_TEX_COUNT; i++)

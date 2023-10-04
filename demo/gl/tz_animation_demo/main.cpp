@@ -50,20 +50,16 @@ int main()
 		});
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		*/
-		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"));
+		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_animated_untextured.glb"));
+		for(auto o : pkg.objects)
+		{
+			ar.object_set_colour(o, tz::vec3{0.949f, 0.753f, 0.612f});
+		}
 		tz::ren::animation_renderer::override_package opkg
 		{
 			.pkg = pkg,
 			.overrides = {tz::ren::animation_renderer::override_flag::mesh, tz::ren::animation_renderer::override_flag::texture},
 		};
-		auto pkg2 = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_male.glb"), opkg);
-		auto sword_parent = ar.add_object
-		({
-			.trs = {{36.702f, 24.468f, -6.842f}, {0.554f, 0.818f, -0.154f, -0.0f}, {25.0f, 25.0f, 25.0f}},
-			.parent = pkg.objects[38]
-		});
-		//ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
-		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/ashbringer.glb"), sword_parent);
 		ar.append_to_render_graph();
 
 		auto empties = ar.find_objects_by_name("Unnamed Object");

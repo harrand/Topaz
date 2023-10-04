@@ -118,6 +118,7 @@ namespace tz::ren
 		// now need to fill the object data
 		this->render_pass.get_object_datas()[hanval] =
 		{
+			.colour_tint = init.colour,
 			.bound_textures = init.bound_textures
 		};
 		if(init.parent != tz::nullhand)
@@ -163,6 +164,12 @@ namespace tz::ren
 			.parent	= parenth,
 			.children = children
 		};
+	}
+
+	void mesh_renderer::object_set_colour(object_handle h, tz::vec3 colour)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		this->render_pass.get_object_datas()[hanval].colour_tint = colour;
 	}
 
 	void mesh_renderer::remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy)

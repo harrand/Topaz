@@ -23,6 +23,7 @@ struct object_t
 {
 	mat4 global_transform;
 	mat4 inverse_bind_matrix;
+	vec3 colour_tint;
 	texture_locator[MAX_TEX_COUNT] textures;
 	uvec2 joint_span;
 	uvec2 unused;
@@ -51,7 +52,8 @@ resource(id = 3) const buffer joint_object_id_buffer
 
 output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
 output(id = 9) vec3 out::normal;
-output(id = 10) texture_locator out::textures[MAX_TEX_COUNT];
+output(id = 10) vec3 out::colour;
+output(id = 11) texture_locator out::textures[MAX_TEX_COUNT];
 
 mat4 obj_get_joint_matrix(uint object_id)
 {
@@ -85,6 +87,7 @@ void main()
 	out::position = camera.projection * camera.view * skin_mat * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;
+	out::colour = obj.colour_tint;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
 	{
 		out::texcoord[i] = vtx.texcoord4[i].xy;

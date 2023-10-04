@@ -43,6 +43,7 @@ namespace tz::ren
 		using mesh_renderer::get_camera_transform;
 		using mesh_renderer::set_camera_transform;
 		using mesh_renderer::get_object;
+		using mesh_renderer::object_set_colour;
 
 		virtual void dbgui() override;
 		void update(float delta);

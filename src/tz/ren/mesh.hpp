@@ -76,6 +76,8 @@ namespace tz::ren
 		tz::mat4 global_transform = tz::mat4::identity();
 		// extra matrix space. unused in mesh_renderer.
 		tz::mat4 extra = tz::mat4::identity();
+		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
+		float pad0;
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		tz::vec4ui32 extra_indices = tz::vec4ui32::zero();
@@ -102,6 +104,7 @@ namespace tz::ren
 		{
 			tz::trs trs = {};
 			mesh_handle mesh = tz::nullhand;
+			tz::vec3 colour = tz::vec3::filled(1.0f);
 			std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 			object_handle parent = tz::nullhand;
 		};
@@ -122,6 +125,7 @@ namespace tz::ren
 		mesh_handle add_mesh(mesh_t m);
 		virtual object_handle add_object(object_init_data init);
 		object_out_data get_object(object_handle h) const;
+		void object_set_colour(object_handle h, tz::vec3 colour);
 
 		void remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
