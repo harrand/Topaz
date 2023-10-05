@@ -71,6 +71,7 @@ namespace tz::ren
 
 		std::size_t get_animation_count(const asset_package& pkg) const;
 		std::optional<std::size_t> get_playing_animation(const asset_package& pkg) const;
+		float get_playing_animation_progress(const asset_package& pkg) const;
 		std::string_view get_animation_name(const asset_package& pkg, std::size_t animation_id) const;
 		void play_animation(const asset_package& pkg, std::size_t animation_id, bool loop = false);
 		void queue_animation(const asset_package& pkg, std::size_t animation_id, bool loop = false);

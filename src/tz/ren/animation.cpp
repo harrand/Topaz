@@ -255,6 +255,19 @@ namespace tz::ren
 		return this->gltfs[hanval].playback.playing_animation_id;
 	}
 
+	float animation_renderer::get_playing_animation_progress(const asset_package& pkg) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
+		tz::assert(this->gltfs.size() > hanval);
+		auto& playback = this->gltfs[hanval].playback;
+		if(!playback.playing_animation_id.has_value())
+		{
+			return 0.0f;
+		}
+		const auto& anim = this->gltfs[hanval].data.get_animations()[playback.playing_animation_id.value()];
+		return playback.time / anim.max_time;
+	}
+
 	std::string_view animation_renderer::get_animation_name(const asset_package& pkg, std::size_t animation_id) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
