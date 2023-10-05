@@ -2,6 +2,7 @@
 #define TOPAZ_REN_MESH_HPP
 #include "tz/ren/api.hpp"
 #include "tz/gl/renderer.hpp"
+#include "tz/io/image.hpp"
 #include "tz/core/data/vector.hpp"
 #include "tz/core/matrix.hpp"
 #include "tz/core/data/transform_hierarchy.hpp"
@@ -64,6 +65,8 @@ namespace tz::ren
 		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 		// id within the overarching texture resource array to be sampled.
 		detail::texture_handle texture = tz::nullhand;
+
+		bool operator==(const texture_locator& rhs) const = default;
 	};
 
 	constexpr unsigned int mesh_renderer_max_tex_count = 8;
@@ -125,9 +128,15 @@ namespace tz::ren
 		mesh_handle add_mesh(mesh_t m);
 		virtual object_handle add_object(object_init_data init);
 		object_out_data get_object(object_handle h) const;
+		tz::vec3 object_get_colour(object_handle h) const;
 		void object_set_colour(object_handle h, tz::vec3 colour);
+		texture_locator object_get_texture(object_handle h, std::size_t bound_texture_id) const;
+		void object_set_texture(object_handle h, std::size_t bound_texture_id, texture_locator texture);
+		mesh_handle object_get_mesh(object_handle h) const;
+		void object_set_mesh(object_handle h, mesh_handle mesh);
 
 		void remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy);
+		texture_handle add_texture(tz::io::image img);
 		texture_handle add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data);
 		virtual void append_to_render_graph() override;
 

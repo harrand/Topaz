@@ -1,9 +1,12 @@
 #include "tz/io/image.hpp"
 #include "tz/core/profile.hpp"
+#include "tz/core/debug.hpp"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <fstream>
 #include <cstring>
 #include <span>
+#undef assert
 
 namespace tz::io
 {
@@ -22,5 +25,13 @@ namespace tz::io
 
 		stbi_image_free(imgdata);
 		return ret;
+	}
+
+	image image::load_from_file(std::string_view path)
+	{
+		std::ifstream file(path.data(), std::ios::binary);
+		tz::assert(file.good(), "Could not load image from file because the path was wrong, or something else went wrong.");
+		std::string buffer(std::istreambuf_iterator<char>(file), {});
+		return image::load_from_memory(buffer);
 	}
 }

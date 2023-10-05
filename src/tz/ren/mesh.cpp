@@ -167,10 +167,47 @@ namespace tz::ren
 		};
 	}
 
+	tz::vec3 mesh_renderer::object_get_colour(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		return this->render_pass.get_object_datas()[hanval].colour_tint;
+	}
+
 	void mesh_renderer::object_set_colour(object_handle h, tz::vec3 colour)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
 		this->render_pass.get_object_datas()[hanval].colour_tint = colour;
+	}
+
+	texture_locator mesh_renderer::object_get_texture(object_handle h, std::size_t bound_texture_id) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(bound_texture_id < mesh_renderer_max_tex_count);
+		return this->render_pass.get_object_datas()[hanval].bound_textures[bound_texture_id];
+	}
+
+	void mesh_renderer::object_set_texture(object_handle h, std::size_t bound_texture_id, texture_locator texture)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(bound_texture_id < mesh_renderer_max_tex_count);
+		this->render_pass.get_object_datas()[hanval].bound_textures[bound_texture_id] = texture;
+	}
+
+	mesh_renderer::mesh_handle mesh_renderer::object_get_mesh(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto mloc = this->compute_pass.get_draw_list_meshes()[hanval];
+		auto iter = std::find(this->render_pass.meshes.begin(), this->render_pass.meshes.end(), mloc);
+		tz::assert(iter != this->render_pass.meshes.end(), "Mesh Locator of object %zu not found in list of meshes. Logic error.", hanval);
+		return static_cast<tz::hanval>(std::distance(this->render_pass.meshes.begin(), iter));
+	}
+
+	void mesh_renderer::object_set_mesh(object_handle h, mesh_handle mesh)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto meshhanval = static_cast<std::size_t>(static_cast<tz::hanval>(mesh));
+		mesh_locator mloc = this->render_pass.meshes[meshhanval];
+		this->compute_pass.get_draw_list_meshes()[hanval] = mloc;
 	}
 
 	void mesh_renderer::remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy)
@@ -199,6 +236,11 @@ namespace tz::ren
 				}
 			}
 		}
+	}
+
+	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::io::image img)
+	{
+		return this->add_texture(tz::vec2ui{img.width, img.height}, img.data);
 	}
 
 	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)

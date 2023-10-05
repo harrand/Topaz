@@ -14,6 +14,7 @@ namespace tz::io
 		std::vector<std::byte> data;
 
 		static image load_from_memory(std::string_view img_filedata);
+		static image load_from_file(std::string_view path);
 	};
 }
 
