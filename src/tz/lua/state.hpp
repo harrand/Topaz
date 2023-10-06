@@ -72,6 +72,7 @@ namespace tz::lua
 		}
 		bool assign_func(const char* varname, void* func_ptr) const;
 		bool assign_string(const char* varname, std::string str) const;
+		void assign_stack(const char* varname);
 		// retrieving variable values
 		std::optional<bool> get_bool(const char* varname) const;
 		std::optional<float> get_float(const char* varname) const;

@@ -112,6 +112,12 @@ namespace tz::lua
 		return this->execute(cmd.c_str(), false);
 	}
 
+	void state::assign_stack(const char* varname)
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_setglobal(s, varname);
+	}
+
 	std::vector<std::string> impl_string_split(const std::string& str, const std::string& delim)
 	{
 		std::vector<std::string> result;
