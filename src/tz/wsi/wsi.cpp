@@ -1,4 +1,5 @@
 #include "tz/wsi/wsi.hpp"
+#include "tz/dbgui/dbgui.hpp"
 #include "tz/lua/api.hpp"
 #include "tz/tz.hpp"
 
@@ -101,7 +102,31 @@ namespace tz::wsi
 					}
 				}
 			}
+			ret &= !tz::dbgui::claims_keyboard();
 			state.stack_push_bool(ret);
+			return 1;
+		}
+
+		int is_mouse_down(tz::lua::state& state)
+		{
+			tz::assert(this->wnd != nullptr);
+			auto [_, button_str] = tz::lua::parse_args<tz::lua::nil, std::string>(state);
+			std::transform(button_str.begin(), button_str.end(), button_str.begin(), [](char c){return std::tolower(c);});
+			bool down = false;
+			if(button_str == "left")
+			{
+				down = tz::wsi::is_mouse_button_down(this->wnd->get_mouse_state(), tz::wsi::mouse_button::left);
+			}
+			else if(button_str == "right")
+			{
+				down = tz::wsi::is_mouse_button_down(this->wnd->get_mouse_state(), tz::wsi::mouse_button::right);
+			}
+			else if(button_str == "middle")
+			{
+				down = tz::wsi::is_mouse_button_down(this->wnd->get_mouse_state(), tz::wsi::mouse_button::middle);
+			}
+			down &= !tz::dbgui::claims_mouse();
+			state.stack_push_bool(down);
 			return 1;
 		}
 	};
@@ -113,6 +138,7 @@ namespace tz::wsi
 			LUA_METHOD(impl_tz_wsi_window, get_dimensions)
 			LUA_METHOD(impl_tz_wsi_window, set_dimensions)
 			LUA_METHOD(impl_tz_wsi_window, is_key_down)
+			LUA_METHOD(impl_tz_wsi_window, is_mouse_down)
 		LUA_CLASS_METHODS_END
 	LUA_CLASS_END
 
