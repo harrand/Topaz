@@ -284,7 +284,7 @@ elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	tz_configure_release(TARGET topaz)
 endif()
 
-if(${TZ_PROFILE} EQUAL 1)
+if(${TZ_PROFILE})
 	message(STATUS "Topaz - Profiling enabled in this build")
 	target_compile_definitions(topaz PUBLIC "-DTZ_PROFILE=1")
 	tz_configure_profile(TARGET topaz)

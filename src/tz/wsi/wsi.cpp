@@ -84,17 +84,19 @@ namespace tz::wsi
 
 		int get_key_name(tz::lua::state& state)
 		{
+			TZ_PROFZONE("lua.window() - is key down by id", 0xFFAAFF66);
 			auto [_, key_id] = tz::lua::parse_args<tz::lua::nil, unsigned int>(state);
 			auto k = static_cast<key>(key_id);
 			std::string keystr = tz::wsi::get_key_name(k);
 			std::transform(keystr.begin(), keystr.end(), keystr.begin(), [](char c){return std::tolower(c);});
+			keystr.erase(std::remove(keystr.begin(), keystr.end(), '\0'), keystr.end());
 			state.stack_push_string(keystr);
 			return 1;
 		}
 
 		int is_key_down(tz::lua::state& state)
 		{
-			TZ_PROFZONE("lua.window()- is key down", 0xFFAAFF66);
+			TZ_PROFZONE("lua.window() - is key down", 0xFFAAFF66);
 			tz::assert(this->wnd != nullptr);
 			auto [_, keystr] = tz::lua::parse_args<tz::lua::nil, std::string>(state);
 			std::transform(keystr.begin(), keystr.end(), keystr.begin(), [](char c){return std::tolower(c);});

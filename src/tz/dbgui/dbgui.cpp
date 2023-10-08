@@ -157,7 +157,11 @@ namespace tz::dbgui
 
 	void add_to_lua_log(std::string msg)
 	{
-		global_platform_data->lua_console_history += "\n" + msg;
+		#if TZ_DEBUG
+			global_platform_data->lua_console_history += "\n" + msg;
+		#else
+			(void)msg;
+		#endif
 	}
 
 	game_menu_callback_type& game_menu()

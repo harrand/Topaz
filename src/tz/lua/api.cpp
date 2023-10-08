@@ -57,6 +57,7 @@ namespace tz::lua
 				msg = state.stack_get_string(-1);
 				lua_pop(st, 1);
 			}
+			msg.erase(std::remove(msg.begin(), msg.end(), '\0'), msg.end());
 			tz::dbgui::add_to_lua_log(msg);
 		}
 		tz::dbgui::add_to_lua_log("\n");
