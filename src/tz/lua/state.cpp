@@ -10,12 +10,19 @@
 #include <map>
 #include <mutex>
 
+
 extern "C"
 {
 #include "lauxlib.h"
 #include "lua.h"
 #include "lualib.h"
 }
+
+// tracy has first class lua support \o/
+#if TZ_PROFILE
+#include "tracy/TracyLua.hpp"
+#endif
+#undef assert
 
 namespace tz::lua
 {
@@ -456,6 +463,22 @@ namespace tz::lua
 			lua_State* l = luaL_newstate();
 			luaL_openlibs(l);
 			defstate = state{static_cast<void*>(l)};
+			#if TZ_PROFILE
+				tracy::LuaRegister(l);
+			#else
+				// registe no-op versions
+				defstate.execute(R"(
+					tracy =
+					{
+						ZoneBegin = function()
+						end,
+						ZoneEnd = function()
+						end,
+						ZoneBeginN = function()
+						end
+					}
+				)");
+			#endif
 
 			api_initialise(defstate);
 		}

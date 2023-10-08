@@ -1,5 +1,6 @@
 #include "tz/wsi/wsi.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/lua/api.hpp"
 #include "tz/tz.hpp"
 
@@ -81,8 +82,19 @@ namespace tz::wsi
 			return 0;
 		}
 
+		int get_key_name(tz::lua::state& state)
+		{
+			auto [_, key_id] = tz::lua::parse_args<tz::lua::nil, unsigned int>(state);
+			auto k = static_cast<key>(key_id);
+			std::string keystr = tz::wsi::get_key_name(k);
+			std::transform(keystr.begin(), keystr.end(), keystr.begin(), [](char c){return std::tolower(c);});
+			state.stack_push_string(keystr);
+			return 1;
+		}
+
 		int is_key_down(tz::lua::state& state)
 		{
+			TZ_PROFZONE("lua.window()- is key down", 0xFFAAFF66);
 			tz::assert(this->wnd != nullptr);
 			auto [_, keystr] = tz::lua::parse_args<tz::lua::nil, std::string>(state);
 			std::transform(keystr.begin(), keystr.end(), keystr.begin(), [](char c){return std::tolower(c);});
@@ -107,8 +119,18 @@ namespace tz::wsi
 			return 1;
 		}
 
+		int is_key_id_down(tz::lua::state& state)
+		{
+			auto [_, keyid] = tz::lua::parse_args<tz::lua::nil, unsigned int>(state);
+			auto k = static_cast<key>(keyid);
+			bool ret = !tz::dbgui::claims_keyboard() && tz::wsi::is_key_down(this->wnd->get_keyboard_state(), k);
+			state.stack_push_bool(ret);
+			return 1;
+		}
+
 		int is_mouse_down(tz::lua::state& state)
 		{
+			TZ_PROFZONE("lua.window()- is mouse down", 0xFFAAFF66);
 			tz::assert(this->wnd != nullptr);
 			auto [_, button_str] = tz::lua::parse_args<tz::lua::nil, std::string>(state);
 			std::transform(button_str.begin(), button_str.end(), button_str.begin(), [](char c){return std::tolower(c);});
@@ -137,7 +159,9 @@ namespace tz::wsi
 			LUA_METHOD(impl_tz_wsi_window, set_title)
 			LUA_METHOD(impl_tz_wsi_window, get_dimensions)
 			LUA_METHOD(impl_tz_wsi_window, set_dimensions)
+			LUA_METHOD(impl_tz_wsi_window, get_key_name)
 			LUA_METHOD(impl_tz_wsi_window, is_key_down)
+			LUA_METHOD(impl_tz_wsi_window, is_key_id_down)
 			LUA_METHOD(impl_tz_wsi_window, is_mouse_down)
 		LUA_CLASS_METHODS_END
 	LUA_CLASS_END
@@ -154,6 +178,7 @@ namespace tz::wsi
 		state.new_type("impl_tz_wsi_window", LUA_CLASS_NAME(impl_tz_wsi_window)::registers);
 		state.open_lib("impl_tz_wsi", LUA_NAMESPACE_NAME(impl_tz_wsi)::registers);
 		state.execute("tz.wsi = impl_tz_wsi");
+		state.assign_uint("tz.wsi_key_count", (int)tz::wsi::key::_count);
 		state.execute("tz.window = function() return tz.wsi.window() end");
 
 		std::string tz_wsi_lua_api{ImportedTextData(tz_wsi, lua)};

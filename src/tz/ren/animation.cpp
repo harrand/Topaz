@@ -1,6 +1,7 @@
 #include "tz/ren/animation.hpp"
 #include "imgui.h"
 #include "tz/core/job/job.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/gl/imported_shaders.hpp"
 
 #include ImportedShaderHeader(animation, vertex)
@@ -26,6 +27,7 @@ namespace tz::ren
 
 	void animation_renderer::update(float delta)
 	{
+		TZ_PROFZONE("animation renderer - update with delta", 0xFF0000AA);
 		animation_renderer::update();
 		for(std::size_t i = 0; i < draw_count(); i++)
 		{
@@ -36,6 +38,7 @@ namespace tz::ren
 
 	animation_renderer::object_handle animation_renderer::add_object(object_init_data init)
 	{
+		TZ_PROFZONE("animation renderer - add object", 0xFF0000AA);
 		auto handle = mesh_renderer::add_object(init);
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
 		this->object_extras.push_back({});
@@ -57,6 +60,7 @@ namespace tz::ren
 
 	std::vector<animation_renderer::object_handle> animation_renderer::find_objects_by_name(const char* name) const
 	{
+		TZ_PROFZONE("animation renderer - find objects by name", 0xFF0000AA);
 		std::vector<object_handle> ret = {};
 		for(std::size_t i = 0; i < this->object_extras.size(); i++)
 		{
@@ -90,6 +94,7 @@ namespace tz::ren
 
 	tz::trs animation_renderer::global_to_local_transform(object_handle h, tz::trs global) const
 	{
+		TZ_PROFZONE("animation renderer - global to local transform", 0xFF0000AA);
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
 		auto maybe_node = mesh_renderer::object_tree.find_node(hanval);
 		tz::assert(maybe_node.has_value());
@@ -122,6 +127,7 @@ namespace tz::ren
 
 	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent, override_package opkg)
 	{
+		TZ_PROFZONE("animation renderer - add gltf", 0xFF0000AA);
 		// maintain offsets so we can support multiple gltfs.
 		// add the new gltf.
 		gltf_info* this_gltf = nullptr;
@@ -217,6 +223,7 @@ namespace tz::ren
 
 	void animation_renderer::remove_objects(asset_package pkg, transform_hierarchy::remove_strategy strategy)
 	{
+		TZ_PROFZONE("animation renderer - remove objects", 0xFF0000AA);
 		// its safe to do this! even if override packages are used to share meshes/textures,
 		// each new gltf still has their own copy of everything.
 		// if gltfh is nullhand, it could mean many things:
@@ -333,8 +340,10 @@ namespace tz::ren
 
 	void animation_renderer::update()
 	{
+		TZ_PROFZONE("animation renderer - update", 0xFF0000AA);
 		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
 		{
+			TZ_PROFZONE("animation renderer - object update", 0xFF0000AA);
 			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
 			if(!maybe_tree_id.has_value())
 			{
@@ -358,6 +367,7 @@ namespace tz::ren
 
 	void animation_renderer::expand_current_gltf_node(gltf_info& gltf, std::size_t node_id, std::optional<std::size_t> parent_node_id, object_handle parent_override)
 	{
+		TZ_PROFZONE("animation renderer - expand gltf node", 0xFF0000AA);
 		const tz::io::gltf_node& node = gltf.data.get_nodes()[node_id];
 		object_handle this_object = tz::nullhand;
 		if(node.skin != static_cast<std::size_t>(-1))
@@ -457,6 +467,7 @@ namespace tz::ren
 
 	tz::vec2ui32 animation_renderer::write_skin_object_data(gltf_info& gltf_info)
 	{
+		TZ_PROFZONE("animation renderer - write skin object data", 0xFF0000AA);
 		constexpr std::size_t joint_buffer_id = 0;
 		tz::gl::resource_handle joint_bufferh = mesh_renderer::get_extra_buffer_handle(joint_buffer_id);
 		tz::gl::RendererEditBuilder edit;
@@ -495,6 +506,7 @@ namespace tz::ren
 
 	void animation_renderer::write_inverse_bind_matrices(gltf_info& gltf_info)
 	{
+		TZ_PROFZONE("animation renderer - write inverse bind matrices", 0xFF0000AA);
 		for(tz::io::gltf_skin skin : gltf_info.data.get_skins())
 		{
 			for(std::size_t i = 0; i < skin.joints.size(); i++)
@@ -510,6 +522,7 @@ namespace tz::ren
 
 	void animation_renderer::resource_write_joint_indices(gltf_info& gltf_info)
 	{
+		TZ_PROFZONE("animation renderer - resource write joint indices", 0xFF0000AA);
 		std::deque<std::vector<vertex_t>> amended_vertex_storage;
 		// we wrote some joint indices for each vertex earlier.
 		// however, we need to amend them.
@@ -558,8 +571,10 @@ namespace tz::ren
 
 	void animation_renderer::animation_advance(float delta)
 	{
+		TZ_PROFZONE("animation renderer - animation advance", 0xFF0000AA);
 		for(auto& gltf : this->gltfs)
 		{
+			TZ_PROFZONE("animation advance - gltf iterate", 0xFF0000AA);
 			if(gltf.data.get_animations().size())
 			{
 				gltf.playback.time += (delta * gltf.playback.time_warp);
@@ -605,6 +620,7 @@ namespace tz::ren
 				// update nodes.
 				for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
 				{
+					TZ_PROFZONE("animation advance - update nodes", 0xFF0000AA);
 					object_handle objh = gltf.node_object_map[nid];
 					auto& extra = this->object_extras[static_cast<std::size_t>(static_cast<tz::hanval>(objh))];
 					extra.is_animated = true;
@@ -659,6 +675,7 @@ namespace tz::ren
 
 	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info)
 	{
+		TZ_PROFZONE("animation advance - shallow patch meshes", 0xFF0000AA);
 		const tz::io::gltf& gltf = gltf_info.data;
 		std::size_t gltf_submesh_total = 0;
 		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
@@ -890,6 +907,7 @@ namespace tz::ren
 
 	std::pair<std::size_t, std::size_t> animation_renderer::gltf_info::interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back) const
 	{
+		TZ_PROFZONE("animation renderer - interpolate keyframes", 0xFF0000AA);
 		keyframe_iterator iter = front;
 		while(iter != back && iter->time_point <= this->playback.time)
 		{

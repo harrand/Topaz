@@ -88,6 +88,7 @@ namespace tz::ren
 
 	mesh_renderer::mesh_handle mesh_renderer::add_mesh(mesh_renderer::mesh_t m)
 	{
+		TZ_PROFZONE("mesh_renderer - add mesh", 0xFF0000AA);
 		std::size_t hanval = this->render_pass.meshes.size();
 		mesh_locator locator = this->add_mesh_impl(m);
 		this->render_pass.meshes.push_back(locator);
@@ -96,6 +97,7 @@ namespace tz::ren
 
 	mesh_renderer::object_handle mesh_renderer::add_object(object_init_data init)
 	{
+		TZ_PROFZONE("mesh_renderer - add object", 0xFF0000AA);
 		std::size_t hanval = this->draw_count();
 		const bool recycled = this->free_list.size();
 		if(recycled)
@@ -141,6 +143,7 @@ namespace tz::ren
 
 	mesh_renderer::object_out_data mesh_renderer::get_object(object_handle h) const
 	{
+		TZ_PROFZONE("mesh_renderer - get object", 0xFF0000AA);
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
 		auto maybe_node = this->object_tree.find_node(hanval);
 		tz::assert(maybe_node.has_value());
@@ -212,6 +215,7 @@ namespace tz::ren
 
 	void mesh_renderer::remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy)
 	{
+		TZ_PROFZONE("mesh_renderer - remove object", 0xFF0000AA);
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
 		if(std::find(this->free_list.begin(), this->free_list.end(), oh) == this->free_list.end())
 		{
@@ -245,6 +249,7 @@ namespace tz::ren
 
 	mesh_renderer::texture_handle mesh_renderer::add_texture(tz::vec2ui dimensions, std::span<const std::byte> image_data)
 	{
+		TZ_PROFZONE("mesh_renderer - add texture", 0xFF0000AA);
 		#if TZ_DEBUG
 			std::size_t sz = tz::gl::pixel_size_bytes(tz::gl::image_format::RGBA32) * dimensions[0] * dimensions[1];
 			tz::assert(image_data.size_bytes() == sz, "Unexpected image data length. Expected %zuB, but was %zuB", sz, image_data.size_bytes());
@@ -275,8 +280,10 @@ namespace tz::ren
 
 	void mesh_renderer::update()
 	{
+		TZ_PROFZONE("mesh_renderer - update", 0xFF0000AA);
 		this->object_tree.iterate_nodes([this](unsigned int node_id)
 		{
+			TZ_PROFZONE("mesh_renderer - note iterate", 0xFF0000AA);
 			const mesh_renderer::node_type& node = this->object_tree.get_node(node_id);
 			this->render_pass.get_object_datas()[node.data].global_transform = this->object_tree.get_global_transform(node_id).matrix();
 		});
@@ -675,6 +682,7 @@ namespace tz::ren
 
 	std::optional<std::uint32_t> mesh_renderer::try_find_index_section(std::size_t index_count) const
 	{
+		TZ_PROFZONE("mesh_renderer - index search", 0xFF0000AA);
 		// Sort mesh locators by vertex offset
         std::vector<mesh_locator> sorted_meshes = this->render_pass.meshes;
         std::sort(sorted_meshes.begin(), sorted_meshes.end(),
@@ -709,6 +717,7 @@ namespace tz::ren
 
 	std::optional<std::uint32_t> mesh_renderer::try_find_vertex_section(std::size_t vertex_count) const
 	{
+		TZ_PROFZONE("mesh_renderer - vertex search", 0xFF0000AA);
 		// Sort mesh locators by vertex offset
         std::vector<mesh_locator> sorted_meshes = this->render_pass.meshes;
         std::sort(sorted_meshes.begin(), sorted_meshes.end(),
@@ -743,6 +752,7 @@ namespace tz::ren
 
 	mesh_locator mesh_renderer::add_mesh_impl(const mesh_renderer::mesh_t& m)
 	{
+		TZ_PROFZONE("mesh_renderer - add mesh impl", 0xFF0000AA);
 		auto& ren = tz::gl::get_device().get_renderer(this->render_pass.handle);
 		tz::gl::RendererEditBuilder edit;
 
