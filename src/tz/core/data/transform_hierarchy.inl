@@ -33,36 +33,60 @@ namespace tz
 	template<typename T>
 	std::vector<unsigned int> transform_hierarchy<T>::get_root_node_ids() const
 	{
+		TZ_PROFZONE("transform_hierarchy - get root node ids", 0xFF0000AA);
 		std::vector<unsigned int> ret;
 		// for each element, check if any element has that as a child.
 		// if nobody does, its a root node.
+
+		// linear approach: iterate through each node and collate a list of all children ever. iterate through again and filter out any that appear in the list of children.
+		std::set<unsigned int> all_children;
 		for(std::size_t i = 0; i < this->size(); i++)
 		{
-			bool found_child = false;
-			for(std::size_t j = 0; j < this->size(); j++)
+			const auto& node = this->nodes[i];
+			for(auto child : node.children)
 			{
-				if(i == j) continue;
-				const auto& jnode = this->nodes[j];
-				auto iter = std::find(jnode.children.begin(), jnode.children.end(), i);
-				if(iter != jnode.children.end())
-				{
-					// i is a child of j
-					// skip this one, its not a root node.
-					found_child = true;
-					break;
-				}
+				all_children.insert(child);
 			}
-			if(!found_child)
+		}
+
+		for(std::size_t i = 0; i < this->size(); i++)
+		{
+			if(!all_children.contains(i))
 			{
 				ret.push_back(i);
 			}
 		}
+
+		// quadratic approach is: for each element a, for each element b, is a any of bs children? if never then a is root node
+		//for(std::size_t i = 0; i < this->size(); i++)
+		//{
+		//	bool found_child = false;
+		//	for(std::size_t j = 0; j < this->size(); j++)
+		//	{
+		//		if(i == j) continue;
+		//		TZ_PROFZONE("get root node ids - quadratic iterate", 0xFF0000AA);
+		//		const auto& jnode = this->nodes[j];
+		//		auto iter = std::find(jnode.children.begin(), jnode.children.end(), i);
+		//		if(iter != jnode.children.end())
+		//		{
+		//			// i is a child of j
+		//			// skip this one, its not a root node.
+		//			found_child = true;
+		//			break;
+		//		}
+		//	}
+		//	if(!found_child)
+		//	{
+		//		ret.push_back(i);
+		//	}
+		//}
 		return ret;
 	}
 
 	template<typename T>
 	std::optional<unsigned int> transform_hierarchy<T>::find_node(const T& value) const
 	{
+		TZ_PROFZONE("transform_hierarchy - find node", 0xFF0000AA);
 		auto iter = std::find_if(this->nodes.begin(), this->nodes.end(),
 		[value](const auto& node)
 		{
@@ -78,6 +102,7 @@ namespace tz
 	template<typename T>
 	std::optional<unsigned int> transform_hierarchy<T>::find_node_if(tz::function<bool, const T&> auto predicate) const
 	{
+		TZ_PROFZONE("transform_hierarchy - find node if", 0xFF0000AA);
 		auto iter = std::find_if(this->nodes.begin(), this->nodes.end(),
 		[predicate](const auto& node)
 		{
@@ -93,6 +118,7 @@ namespace tz
 	template<typename T>
 	unsigned int transform_hierarchy<T>::add_node(tz::trs local_transform, T data, std::optional<unsigned int> parent)
 	{
+		TZ_PROFZONE("transform_hierarchy - add node", 0xFF0000AA);
 		std::size_t id;
 		if(this->node_free_list.size())
 		{
@@ -118,6 +144,7 @@ namespace tz
 	template<typename T>
 	void transform_hierarchy<T>::remove_node(unsigned int node_id, remove_strategy strategy)
 	{
+		TZ_PROFZONE("transform_hierarchy - remove node", 0xFF0000AA);
 		tz::assert(std::find(this->node_free_list.begin(), this->node_free_list.end(), node_id) == this->node_free_list.end(), "Double remove detected on node %u", node_id);
 		tz::report("Remove node %u", node_id);
 		tz::assert(node_id < this->nodes.size(), "Invalid node_id %zu (node count: %zu)", node_id, this->nodes.size());
@@ -207,6 +234,7 @@ namespace tz
 	template<typename T>
 	void expand_children(const transform_hierarchy<T>& src, transform_hierarchy<T>& hier, unsigned int src_id, unsigned int node_id)
 	{
+		TZ_PROFZONE("transform_hierarchy - expand children", 0xFF0000AA);
 		const auto& src_node = src.get_node(src_id);
 		const auto& node = hier.get_node(node_id);
 		for(std::size_t i = 0; i < src_node.children.size(); i++)
@@ -232,6 +260,7 @@ namespace tz
 	template<typename T>
 	const transform_node<T>& transform_hierarchy<T>::get_node(unsigned int id) const
 	{
+		TZ_PROFZONE("transform_hierarchy - get node", 0xFF0000AA);
 		tz::assert(id < this->nodes.size(), "Invalid node id %u", id);
 		return this->nodes[id];
 	}
@@ -239,6 +268,7 @@ namespace tz
 	template<typename T>
 	tz::trs transform_hierarchy<T>::get_global_transform(unsigned int id) const
 	{
+		TZ_PROFZONE("transform_hierarchy - get global transform", 0xFF0000AA);
 		if(!this->node_cache_miss(id))
 		{
 			// cache is correct, just return that.
@@ -264,6 +294,7 @@ namespace tz
 	template<typename T>
 	void transform_hierarchy<T>::iterate_children(unsigned int id, tz::action<unsigned int> auto callback) const
 	{
+		TZ_PROFZONE("transform_hierarchy - iterate children", 0xFF0000AA);
 		const auto& node = this->get_node(id);
 		for(unsigned int child : node.children)
 		{
@@ -274,6 +305,7 @@ namespace tz
 	template<typename T>
 	void transform_hierarchy<T>::iterate_descendants(unsigned int id, tz::action<unsigned int> auto callback) const
 	{
+		TZ_PROFZONE("transform_hierarchy - iterate descendants", 0xFF0000AA);
 		const auto& node = this->get_node(id);
 		for(unsigned int child : node.children)
 		{
@@ -285,6 +317,7 @@ namespace tz
 	template<typename T>
 	void transform_hierarchy<T>::iterate_ancestors(unsigned int id, tz::action<unsigned int> auto callback) const
 	{
+		TZ_PROFZONE("transform_hierarchy - iterate ancestors", 0xFF0000AA);
 		auto maybe_parent = this->get_node(id).parent;
 		if(maybe_parent.has_value())
 		{
@@ -296,10 +329,15 @@ namespace tz
 	template<typename T>
 	void transform_hierarchy<T>::iterate_nodes(tz::action<unsigned int> auto callback) const
 	{
+		TZ_PROFZONE("transform_hierarchy - iterate nodes", 0xFF0000AA);
 		auto root_node_ids = this->get_root_node_ids();
 		for(unsigned int root_node : root_node_ids)
 		{
-			callback(root_node);
+			{
+				TZ_PROFZONE("iterate nodes - invoke callback", 0xFF0000AA);
+				callback(root_node);
+			}
+			TZ_PROFZONE("iterate nodes - iterate descendants", 0xFF0000AA);
 			this->iterate_descendants(root_node, callback);
 		}
 	}

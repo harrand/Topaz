@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <string>
 
+#include "tz/core/profile.hpp"
+
 namespace tz
 {
 	template<typename... Args>
@@ -33,9 +35,9 @@ namespace tz
 	void assert([[maybe_unused]] bool condition, [[maybe_unused]] detail::format_string fmt, [[maybe_unused]] Args&&... args)
 	{
 		#if TZ_DEBUG
-			if(!condition)
+		TZ_PROFZONE("tz::assert overhead", 0xFFAAAA22);
+			if(!condition) [[unlikely]]
 			{
-
 				error_internal("[Assert Failure]: ", fmt.str, fmt.loc, std::forward<Args>(args)...);
 			}
 		#endif
@@ -45,6 +47,7 @@ namespace tz
 	void error([[maybe_unused]] detail::format_string fmt, [[maybe_unused]] Args&&... args)
 	{
 		#if TZ_DEBUG
+			TZ_PROFZONE("tz::error overhead", 0xFFAAAA22);
 			error_internal("[Error]: ", fmt.str, fmt.loc, std::forward<Args>(args)...);
 		#endif
 	}
@@ -53,6 +56,7 @@ namespace tz
 	void report([[maybe_unused]] detail::format_string fmt, [[maybe_unused]] Args&&... args)
 	{
 		#if TZ_DEBUG
+			TZ_PROFZONE("tz::report overhead", 0xFFAAAA22);
 			report_internal("[Report]: ", fmt.str, fmt.loc, std::forward<Args>(args)...);
 		#endif
 	}

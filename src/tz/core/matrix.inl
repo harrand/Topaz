@@ -13,30 +13,30 @@ namespace tz
 	template<tz::number T, std::size_t R, std::size_t C>
 	const typename matrix<T, R, C>::Row& matrix<T, R, C>::operator[](std::size_t row_idx) const
 	{
-		tz::assert(row_idx < R, "tz::matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
+		//tz::assert(row_idx < R, "tz::matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
 		return this->mat[row_idx];
 	}
 
 	template<tz::number T, std::size_t R, std::size_t C>
 	typename matrix<T, R, C>::Row& matrix<T, R, C>::operator[](std::size_t row_idx)
 	{
-		tz::assert(row_idx < R, "tz::matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
+		//tz::assert(row_idx < R, "tz::matrix<T, %zu, %zu>::operator[%zu]: Index out of range!", R, C, row_idx);
 		return this->mat[row_idx];
 	}
 
 	template<tz::number T, std::size_t R, std::size_t C>
 	const T& matrix<T, R, C>::operator()(std::size_t row, std::size_t column) const
 	{
-		tz::assert(row < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
-		tz::assert(column < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
+		//tz::assert(row < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
+		//tz::assert(column < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
 		return (*this)[column][row];
 	}
 
 	template<tz::number T, std::size_t R, std::size_t C>
 	T& matrix<T, R, C>::operator()(std::size_t row, std::size_t column)
 	{
-		tz::assert(row < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
-		tz::assert(column < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
+		//tz::assert(row < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Row index out of range!", R, C, row, column);
+		//tz::assert(column < R, "tz::matrix<T, %zu, %zu>::operator(%zu, %zu): Column index out of range!", R, C, row, column);
 		return (*this)[column][row];
 	}
 

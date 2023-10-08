@@ -12,14 +12,15 @@ namespace tz
 	template<tz::number T, std::size_t S>
 	const T& vector<T, S>::operator[](std::size_t idx) const
 	{
-		tz::assert(idx < S, "vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
+		// note: these asserts are disabled even on debug because this code path is so burning hot, that it can drastically slow down anything im trying to debug.
+		//tz::assert(idx < S, "vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
 		return this->vec[idx];
 	}
 
 	template<tz::number T, std::size_t S>
 	T& vector<T, S>::operator[](std::size_t idx)
 	{
-		tz::assert(idx < S, "vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
+		//tz::assert(idx < S, "vector<T, %zu>::operator[%zu]: Index out of range!", S, idx);
 		return this->vec[idx];
 	}
 
