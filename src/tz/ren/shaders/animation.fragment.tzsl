@@ -34,7 +34,15 @@ void main()
 	else
 	{
 		// note: base colour is guaranteed to be sRGB. we need to tonemap here ideally, but we don't right now.
-		out::colour.xyz = texture(res::textures[base_colour.texture_id], in::texcoord[0]).xyz * base_colour.colour_tint;
+		// note2: we discard fragments with alpha values lower than 0.1.
+		// this is not a documented feature, and should be disabled by default. TODO: less shit
+		vec4 col = texture(res::textures[base_colour.texture_id], in::texcoord[0]);
+		if(col.w < 0.1f)
+		{
+			discard;
+			return;
+		}
+		out::colour.xyz = col.xyz * base_colour.colour_tint;
 	}
 	texture_locator metallic_roughness = in::textures[1];
 	if(metallic_roughness.texture_id != BADU)
