@@ -21,6 +21,7 @@ namespace tz::ren
 			std::vector<mesh_handle> meshes = {};
 			std::vector<texture_handle> textures = {};
 			std::vector<object_handle> objects = {};
+			bool operator==(const asset_package& pkg) const = default;
 		};
 
 		enum class override_flag
