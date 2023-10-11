@@ -51,6 +51,8 @@ namespace tz::ren
 		using mesh_renderer::object_set_texture;
 		using mesh_renderer::object_get_mesh;
 		using mesh_renderer::object_set_mesh;
+		using mesh_renderer::object_set_visible;
+		using mesh_renderer::object_get_visible;
 		using mesh_renderer::camera_perspective;
 		using mesh_renderer::camera_orthographic;
 

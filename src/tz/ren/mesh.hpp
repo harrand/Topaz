@@ -134,6 +134,8 @@ namespace tz::ren
 		void object_set_texture(object_handle h, std::size_t bound_texture_id, texture_locator texture);
 		mesh_handle object_get_mesh(object_handle h) const;
 		void object_set_mesh(object_handle h, mesh_handle mesh);
+		bool object_get_visible(object_handle h) const;
+		void object_set_visible(object_handle h, bool visible);
 
 		void remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy);
 		texture_handle add_texture(tz::io::image img);
@@ -165,12 +167,15 @@ namespace tz::ren
 			compute_pass_t();
 			std::span<const mesh_locator> get_draw_list_meshes() const;
 			std::span<mesh_locator> get_draw_list_meshes();
+			std::span<const std::uint32_t> get_object_visibility() const;
+			std::span<std::uint32_t> get_object_visibility();
 			std::uint32_t get_draw_count() const;
 			void set_draw_count(std::uint32_t new_draw_count);
 			void dbgui();
 
 			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_list_buffer = tz::nullhand;
+			tz::gl::resource_handle visibility_buffer = tz::nullhand;
 			tz::gl::renderer_handle handle = tz::nullhand;
 		};
 		struct render_pass_t

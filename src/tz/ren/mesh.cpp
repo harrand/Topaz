@@ -213,6 +213,18 @@ namespace tz::ren
 		this->compute_pass.get_draw_list_meshes()[hanval] = mloc;
 	}
 
+	bool mesh_renderer::object_get_visible(object_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		return this->compute_pass.get_object_visibility()[hanval];
+	}
+
+	void mesh_renderer::object_set_visible(object_handle h, bool visible)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		this->compute_pass.get_object_visibility()[hanval] = visible;
+	}
+
 	void mesh_renderer::remove_object(object_handle oh, transform_hierarchy::remove_strategy strategy)
 	{
 		TZ_PROFZONE("mesh_renderer - remove object", 0xFF0000AA);
@@ -379,6 +391,14 @@ namespace tz::ren
 				.access = tz::gl::resource_access::dynamic_access
 			}
 		));
+		std::array<std::uint32_t, max_drawn_meshes> visibility_initial_data;
+		std::fill(visibility_initial_data.begin(), visibility_initial_data.end(), 1u);
+		this->visibility_buffer = cinfo.add_resource(tz::gl::buffer_resource::from_one(
+			visibility_initial_data,
+			{
+				.access = tz::gl::resource_access::dynamic_access
+			}
+		));
 		cinfo.debug_name("Mesh Renderer - Compute Pass");
 		this->handle = tz::gl::get_device().create_renderer(cinfo);
 	}
@@ -391,6 +411,16 @@ namespace tz::ren
 	std::span<mesh_locator> mesh_renderer::compute_pass_t::get_draw_list_meshes()
 	{
 		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->draw_list_buffer)->data_as<draw_list>().front().meshes;
+	}
+
+	std::span<const std::uint32_t> mesh_renderer::compute_pass_t::get_object_visibility() const
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->visibility_buffer)->data_as<const std::uint32_t>();
+	}
+
+	std::span<std::uint32_t> mesh_renderer::compute_pass_t::get_object_visibility()
+	{
+		return tz::gl::get_device().get_renderer(this->handle).get_resource(this->visibility_buffer)->data_as<std::uint32_t>();
 	}
 
 	std::uint32_t mesh_renderer::compute_pass_t::get_draw_count() const

@@ -25,6 +25,11 @@ resource(id = 1) const buffer draw_list_buffer
 	mesh_locator mesh_locs[];
 } draw_list;
 
+resource(id = 2) const buffer visibility_buffer
+{
+	bool visibility[];
+} object;
+
 void main()
 {
 	uint draw_count = draw_list.draw_count;
@@ -33,7 +38,7 @@ void main()
 	{
 		mesh_locator loc = draw_list.mesh_locs[i];
 		// discard empty draws.
-		if(loc.index_count == 0)
+		if(!object.visibility[i] || loc.index_count == 0)
 		{
 			skip_count++;
 			continue;
