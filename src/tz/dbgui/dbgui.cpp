@@ -23,6 +23,7 @@
 #endif
 
 #include <memory>
+#include <mutex>
 
 #include ImportedShaderHeader(dbgui, vertex)
 #include ImportedShaderHeader(dbgui, fragment)
@@ -46,6 +47,7 @@ namespace tz::dbgui
 		std::string lua_console_buf = "";
 		std::string lua_console_history = "=On Main Thread=\n";
 		std::optional<tz::worker_id_t> thread_context = std::nullopt;
+		std::mutex mutex;
 	};
 
 	struct TopazRenderData
@@ -158,6 +160,7 @@ namespace tz::dbgui
 	void add_to_lua_log(std::string msg)
 	{
 		#if TZ_DEBUG
+			std::unique_lock<std::mutex> lock{global_platform_data->mutex};
 			global_platform_data->lua_console_history += "\n" + msg;
 		#else
 			(void)msg;
