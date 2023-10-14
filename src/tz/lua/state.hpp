@@ -96,6 +96,7 @@ namespace tz::lua
 			return *reinterpret_cast<T*>(this->stack_get_ptr(idx, type_check));
 		}
 		// push a new value onto the stack
+		void stack_push_nil() const;
 		void stack_push_bool(bool b) const;
 		void stack_push_double(double d) const;
 		void stack_push_float(float f) const;

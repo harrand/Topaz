@@ -308,6 +308,12 @@ namespace tz::lua
 		}
 	}
 
+	void state::stack_push_nil() const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		lua_pushnil(s);
+	}
+
 	void state::stack_push_bool(bool b) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
