@@ -1,6 +1,7 @@
 #ifndef TZ_REN_ANIMATION_HPP
 #define TZ_REN_ANIMATION_HPP
 #include "tz/ren/mesh.hpp"
+#include "tz/core/job/api/job.hpp"
 #include "tz/io/gltf.hpp"
 #include <queue>
 
@@ -138,10 +139,12 @@ namespace tz::ren
 		std::vector<mesh_handle> node_handle_meshes(gltf_info& gltf_info);
 		std::vector<texture_handle> node_handle_materials(gltf_info& gltf_info);
 		void dbgui_tab_animation();
+		void wait_for_jobs();
 
 		std::vector<gltf_info> gltfs = {};
 		std::vector<object_extra_info> object_extras = {};
 		std::vector<gltf_handle> gltf_free_list = {};
+		std::vector<tz::job_handle> advance_jobs;
 	};
 }
 

@@ -341,6 +341,7 @@ namespace tz::ren
 	void animation_renderer::update()
 	{
 		TZ_PROFZONE("animation renderer - update", 0xFF0000AA);
+		this->wait_for_jobs();
 		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
 		{
 			TZ_PROFZONE("animation renderer - object update", 0xFF0000AA);
@@ -571,8 +572,7 @@ namespace tz::ren
 
 	void animation_renderer::animation_advance(float delta)
 	{
-		TZ_PROFZONE("animation renderer - animation advance", 0xFF0000AA);
-		for(auto& gltf : this->gltfs)
+		auto single_animation_advance = [this, delta](gltf_info& gltf)
 		{
 			TZ_PROFZONE("animation advance - gltf iterate", 0xFF0000AA);
 			if(gltf.data.get_animations().size())
@@ -581,7 +581,7 @@ namespace tz::ren
 				// only do first animation.
 				if(!gltf.playback.playing_animation_id.has_value())
 				{
-					continue;
+					return;
 				}
 				const auto& anim = gltf.data.get_animations()[gltf.playback.playing_animation_id.value()];
 				// loop animations.
@@ -670,7 +670,35 @@ namespace tz::ren
 					}
 				}
 			}
-		}	
+		};
+		TZ_PROFZONE("animation renderer - animation advance", 0xFF0000AA);
+		// multithreaded magic!	
+		// if there's somehow still jobs going on, wait for them to be done.
+		this->wait_for_jobs();
+		std::size_t job_count = std::thread::hardware_concurrency();
+		this->advance_jobs.resize(job_count);
+		std::size_t gltfs_per_job = this->gltfs.size() / job_count;
+		std::size_t remainder_gltfs = this->gltfs.size() % job_count;
+		std::vector<tz::job_handle> jobs(job_count);
+		for(std::size_t i = 0; i < job_count; i++)
+		{
+			this->advance_jobs[i] = tz::job_system().execute([single_animation_advance, this, offset = i * gltfs_per_job, gltf_count = gltfs_per_job]
+			{
+				for(std::size_t j = 0; j < gltf_count; j++)
+				{
+					auto& gltf = this->gltfs[offset + j];
+					single_animation_advance(gltf);
+				}
+			});
+		}
+		{
+			TZ_PROFZONE("animation advance - remainder gltfs", 0xFF0000AA);
+			for(std::size_t i = (this->gltfs.size() - remainder_gltfs); i < this->gltfs.size(); i++)
+			{
+				auto& gltf = this->gltfs[i];
+				single_animation_advance(gltf);
+			}
+		}
 	}
 
 	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info)
@@ -904,6 +932,16 @@ namespace tz::ren
 			ImGui::EndTabItem();
 		}
 	}
+
+	void animation_renderer::wait_for_jobs()
+	{
+		for(tz::job_handle jh : this->advance_jobs)
+		{
+			tz::job_system().block(jh);
+		}
+		this->advance_jobs.clear();
+	}
+
 
 	std::pair<std::size_t, std::size_t> animation_renderer::gltf_info::interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back) const
 	{
