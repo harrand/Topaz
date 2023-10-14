@@ -9,8 +9,8 @@
 
 namespace tz::ren
 {
-	animation_renderer::animation_renderer(unsigned int total_textures, tz::gl::renderer_options options):
-	mesh_renderer(total_textures, ImportedShaderSource(animation, vertex), ImportedShaderSource(animation, fragment), options)
+	animation_renderer::animation_renderer(unsigned int total_textures, tz::gl::renderer_options options, std::string_view fragment_src, tz::gl::ioutput* output):
+	mesh_renderer(total_textures, ImportedShaderSource(animation, vertex), fragment_src.size() ? fragment_src : ImportedShaderSource(animation, fragment), options, output)
 	{
 	}
 

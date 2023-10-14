@@ -38,7 +38,7 @@ namespace tz::ren
 			override_flags overrides = {};
 		};
 
-		animation_renderer(unsigned int total_textures = 128, tz::gl::renderer_options options = {});
+		animation_renderer(unsigned int total_textures = 128, tz::gl::renderer_options options = {}, std::string_view fragment_src = {}, tz::gl::ioutput* output = nullptr);
 
 		using mesh_renderer::append_to_render_graph;
 		using mesh_renderer::update;
@@ -56,6 +56,7 @@ namespace tz::ren
 		using mesh_renderer::object_get_visible;
 		using mesh_renderer::camera_perspective;
 		using mesh_renderer::camera_orthographic;
+		using mesh_renderer::get_render_pass;
 
 		virtual void dbgui() override;
 		void update(float delta);
