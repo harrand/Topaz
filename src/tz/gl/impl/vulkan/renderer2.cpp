@@ -17,6 +17,7 @@ namespace tz::gl
 		bool recreate_pipeline = false;
 		bool rerecord_work_commands = false;
 		bool rewrite_static_resources = false;
+		bool repopulate_render_targets = false;
 	};
 
 //--------------------------------------------------------------------------------------------------
@@ -1614,9 +1615,17 @@ namespace tz::gl
 					{
 						side_effects.rewrite_buffer_descriptors = true;
 					}
+					if(arg.images)
+					{
+						side_effects.rewrite_image_descriptors = true;
+					}
 					if(arg.rewrite_statics)
 					{
 						side_effects.rewrite_static_resources = true;
+					}
+					if(arg.render_targets)
+					{
+						side_effects.repopulate_render_targets = true;
 					}
 				},
 				// UNKNOWN
@@ -1636,6 +1645,10 @@ namespace tz::gl
 		if(side_effects.rewrite_buffer_descriptors || side_effects.rewrite_image_descriptors)
 		{
 			renderer_descriptor_manager::write_descriptors(this->state);
+		}
+		if(side_effects.repopulate_render_targets)
+		{
+			renderer_output_manager::populate_render_targets(this->options);
 		}
 		if(side_effects.recreate_pipeline)
 		{
@@ -1680,7 +1693,9 @@ namespace tz::gl
 			tz::wsi::wait_for_event();
 			return false;
 		}
-		if(renderer_output_manager::targets_window() && (this->window_cache_dims != tz::window().get_dimensions()))
+		// if we dont target the window (i.e render into a specific image), then we don't need to know about resizes, right?
+		// WRONG! the image we render into will have resource_flag::render_target, meaning its just been resized.
+		if(this->window_cache_dims != tz::window().get_dimensions())
 		{
 			this->do_resize();
 			this->window_cache_dims = tz::window().get_dimensions();

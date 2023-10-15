@@ -298,7 +298,9 @@ namespace tz::gl
 		{
 			bool work_commands = true;
 			bool buffers = true;
+			bool images = true;
 			bool rewrite_statics = true;
+			bool render_targets = true;
 		};
 
 		using variant = std::variant<buffer_resize, image_resize, resource_write, resource_reference, compute_config, render_config, scissor, mark_dirty>;
