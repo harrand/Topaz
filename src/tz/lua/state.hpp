@@ -79,6 +79,7 @@ namespace tz::lua
 		std::optional<double> get_double(const char* varname) const;
 		std::optional<std::int64_t> get_int(const char* varname) const;
 		std::optional<std::uint64_t> get_uint(const char* varname) const;
+		std::optional<std::string> get_string(const char* varname) const;
 		// stack operations
 		std::size_t stack_size() const;
 		void stack_pop(std::size_t count = 1);

@@ -216,6 +216,19 @@ namespace tz::lua
 		return std::nullopt;
 	}
 
+	std::optional<std::string> state::get_string(const char* varname) const
+	{
+		std::optional<std::string> ret = std::nullopt;
+		int stack_usage = 0;
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(impl_lua_get_var(varname, s, stack_usage) == LUA_TSTRING)
+		{
+			ret = std::string{lua_tostring(s, -1)};
+		}
+		lua_pop(s, stack_usage);
+		return ret;
+	}
+
 	std::size_t state::stack_size() const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
