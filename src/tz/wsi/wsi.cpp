@@ -153,6 +153,17 @@ namespace tz::wsi
 			state.stack_push_bool(down);
 			return 1;
 		}
+
+		int get_mouse_position(tz::lua::state& state)
+		{
+			TZ_PROFZONE("lua.window() - get mouse position", 0xFFAAFF66);
+			tz::assert(this->wnd != nullptr);
+			auto pos = this->wnd->get_mouse_state().mouse_position;
+			pos[1] = wnd->get_dimensions()[1] - pos[1];
+			state.stack_push_uint(pos[0]);
+			state.stack_push_uint(pos[1]);
+			return 2;
+		}
 	};
 
 	LUA_CLASS_BEGIN(impl_tz_wsi_window)
@@ -165,6 +176,7 @@ namespace tz::wsi
 			LUA_METHOD(impl_tz_wsi_window, is_key_down)
 			LUA_METHOD(impl_tz_wsi_window, is_key_id_down)
 			LUA_METHOD(impl_tz_wsi_window, is_mouse_down)
+			LUA_METHOD(impl_tz_wsi_window, get_mouse_position)
 		LUA_CLASS_METHODS_END
 	LUA_CLASS_END
 
