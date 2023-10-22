@@ -111,6 +111,46 @@ namespace tz::ren
 			std::vector<tz::gl::resource_handle> images = {};
 			std::size_t texture_cursor = 0;
 		};
+
+		// this is a component of a mesh_renderer. deals with a compute pre-pass to generate draw commands.
+		// this has its own compute pass stored internally. you're gonna want to include this as a member in the mesh renderer and then use its API accordingly.
+		// theres alot of methods with overlapping interests.
+		// generally, when you wanna add N new objects:
+		// just use add_new_draws(N), and
+		// then for i=0,N,++ set_mesh_at(object_id, whichever_mesh_locator_you_want)
+		// please make sure the mesh_locator maps to something the vertex_wrangler gives you... otherwise shit is bound to get corrupted.
+		class compute_pass
+		{
+		public:
+			compute_pass();
+			tz::gl::renderer_handle get_compute_pass() const;
+			// get the number of draws (including empty free-listed draws).
+			std::size_t get_draw_count() const;
+			// get the maximum number of draws without resizing.
+			std::size_t get_draw_capacity() const;
+			// change the draw capacity to something new.
+			// this is always very slow. 2 renderer edits.
+			void set_draw_capacity(std::size_t new_capacity);
+			// set the mesh of an existing draw to something else. does not affect draw count. draw_id needs to be less than draw count.
+			void set_mesh_at(std::size_t draw_id, mesh_locator loc);
+			// add N new draws. increments the draw count N times. if draw capacity is too small, increase it by N or double its capacity, whichever is bigger.
+			// mesh at the new draw will be an empty mesh locator. you're free to change it to something else.
+			// returns the draw-id of the first new draw.
+			// worst case - very slow. needs to do a renderer edit.
+			// best case - very fast. just writes into a dynamic buffer resource.
+			std::size_t add_new_draws(std::size_t number_of_new_draws);
+		private:
+			// sets the draw count to something new.
+			// `new_draw_count` must be less than the current draw capacity, or this will assert.
+			// also, the mesh locators of the new draws will be an indeterminate value. you should probably make sure they're empty yourself.
+			// if you dont want to deal with this, use `add_new_draws` instead.
+			void set_draw_count(std::size_t new_draw_count);
+
+			static constexpr std::size_t initial_max_draw_count = 1024u;
+			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
+			tz::gl::resource_handle mesh_locator_buffer = tz::nullhand;
+			tz::gl::renderer_handle compute = tz::nullhand;
+		};
 	}
 
 	class mesh_renderer2
