@@ -1,6 +1,7 @@
 #ifndef TZ_REN_MESH_RENDERER2_HPP
 #define TZ_REN_MESH_RENDERER2_HPP
 #include "tz/core/data/transform_hierarchy.hpp"
+#include "tz/io/image.hpp"
 
 namespace tz::ren
 {
@@ -90,6 +91,25 @@ namespace tz::ren
 			std::deque<tz::hanval> mesh_handle_free_list = {};
 			std::size_t added_vertex_count = 0;
 			std::size_t added_index_count = 0;
+		};
+
+		// this is a component of a mesh_renderer. deals with textures only.
+		// provide a renderer_info to provide a set of empty image slots to your renderer.
+		// once you create the renderer from that info, you can then start assigning them to images.
+		class texture_manager
+		{
+		public:
+			texture_manager(tz::gl::renderer_info& rinfo, std::size_t texture_capacity, tz::gl::resource_flags image_flags = {tz::gl::resource_flag::image_wrap_repeat});
+			using texture_handle = tz::handle<tz::io::image>;
+
+			texture_handle add_texture(tz::gl::renderer_handle rh, const tz::io::image& img);
+			void assign_texture(tz::gl::renderer_handle rh, texture_handle h, const tz::io::image& img);
+		private:
+			texture_handle add_texture_impl(tz::gl::renderer_handle rh, tz::vec2ui dimensions, std::span<const std::byte> imgdata);
+			void assign_texture_impl(tz::gl::renderer_handle rh, texture_handle th, tz::vec2ui dimensions, std::span<const std::byte> imgdata);
+
+			std::vector<tz::gl::resource_handle> images = {};
+			std::size_t texture_cursor = 0;
 		};
 	}
 

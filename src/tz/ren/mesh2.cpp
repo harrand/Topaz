@@ -6,6 +6,8 @@
 namespace tz::ren
 {
 //--------------------------------------------------------------------------------------------------
+// vertex_wrangler
+//--------------------------------------------------------------------------------------------------
 	namespace impl
 	{
 		vertex_wrangler::vertex_wrangler(tz::gl::renderer_info& rinfo)
@@ -34,7 +36,10 @@ namespace tz::ren
 					}
 				)
 			);
+			rinfo.state().graphics.index_buffer = this->index_buffer;
 		}
+
+//--------------------------------------------------------------------------------------------------
 
 		const tz::gl::iresource& vertex_wrangler::get_vertex_buffer(tz::gl::renderer_handle rh) const
 		{
@@ -44,6 +49,8 @@ namespace tz::ren
 			return *resptr;
 		}
 
+//--------------------------------------------------------------------------------------------------
+
 		tz::gl::iresource& vertex_wrangler::get_vertex_buffer(tz::gl::renderer_handle rh)
 		{
 			tz::assert(rh != tz::nullhand);
@@ -51,6 +58,8 @@ namespace tz::ren
 			tz::assert(resptr != nullptr);
 			return *resptr;
 		}
+
+//--------------------------------------------------------------------------------------------------
 
 		const tz::gl::iresource& vertex_wrangler::get_index_buffer(tz::gl::renderer_handle rh) const
 		{
@@ -60,6 +69,8 @@ namespace tz::ren
 			return *resptr;
 		}
 
+//--------------------------------------------------------------------------------------------------
+
 		tz::gl::iresource& vertex_wrangler::get_index_buffer(tz::gl::renderer_handle rh)
 		{
 			tz::assert(rh != tz::nullhand);
@@ -68,15 +79,21 @@ namespace tz::ren
 			return *resptr;
 		}
 
+//--------------------------------------------------------------------------------------------------
+
 		std::size_t vertex_wrangler::get_vertex_capacity(tz::gl::renderer_handle rh) const
 		{
 			return tz::gl::get_device().get_renderer(rh).get_resource(this->vertex_buffer)->data_as<const mesh_vertex>().size();
 		}
 
+//--------------------------------------------------------------------------------------------------
+
 		std::size_t vertex_wrangler::get_index_capacity(tz::gl::renderer_handle rh) const
 		{
 			return tz::gl::get_device().get_renderer(rh).get_resource(this->index_buffer)->data_as<const mesh_index>().size();
 		}
+
+//--------------------------------------------------------------------------------------------------
 
 		vertex_wrangler::mesh_handle vertex_wrangler::add_mesh(tz::gl::renderer_handle rh, mesh m)
 		{
@@ -99,6 +116,8 @@ namespace tz::ren
 			return static_cast<tz::hanval>(hanval);
 		}
 
+//--------------------------------------------------------------------------------------------------
+
 		void vertex_wrangler::remove_mesh(mesh_handle mh)
 		{
 			TZ_PROFZONE("vertex_wrangler - remove mesh", 0xFF02F3B5);
@@ -107,6 +126,8 @@ namespace tz::ren
 			this->mesh_locators[hanval] = {};
 			this->mesh_handle_free_list.push_back(static_cast<tz::hanval>(mh));
 		}
+
+//--------------------------------------------------------------------------------------------------
 
 		std::optional<std::uint32_t> vertex_wrangler::try_find_vertex_region(tz::gl::renderer_handle rh, std::size_t vertex_count) const
 		{
@@ -139,6 +160,8 @@ namespace tz::ren
 			return std::nullopt;
 		}
 
+//--------------------------------------------------------------------------------------------------
+
 		std::optional<std::uint32_t> vertex_wrangler::try_find_index_region(tz::gl::renderer_handle rh, std::size_t index_count) const
 		{
 			TZ_PROFZONE("vertex_wrangler - try find index region", 0xFF02F3B5);
@@ -169,6 +192,8 @@ namespace tz::ren
 			// no gap large enough and no space at the end. return nullopt - you're gonna need to resize.
 			return std::nullopt;
 		}
+
+//--------------------------------------------------------------------------------------------------
 
 		mesh_locator vertex_wrangler::add_mesh_impl(tz::gl::renderer_handle rh, const mesh& m)
 		{
@@ -249,5 +274,99 @@ namespace tz::ren
 				.max_index_value = vertex_offset
 			};
 		}
+
+//--------------------------------------------------------------------------------------------------
+// texture_manager
+//--------------------------------------------------------------------------------------------------
+
+		texture_manager::texture_manager(tz::gl::renderer_info& rinfo, std::size_t texture_capacity, tz::gl::resource_flags image_flags)
+		{
+			this->images.reserve(texture_capacity);
+			for(std::size_t i = 0; i < texture_capacity; i++)
+			{
+				this->images.push_back(rinfo.add_resource
+				(
+					tz::gl::image_resource::from_uninitialised
+					({
+						.format = tz::gl::image_format::RGBA32,
+						.dimensions = {1u, 1u},
+						.flags = image_flags
+					})
+				));
+			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		texture_manager::texture_handle texture_manager::add_texture(tz::gl::renderer_handle rh, const tz::io::image& img)
+		{
+			return this->add_texture_impl(rh, tz::vec2ui{img.width, img.height}, img.data);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void texture_manager::assign_texture(tz::gl::renderer_handle rh, texture_handle h, const tz::io::image& img)
+		{
+			this->assign_texture_impl(rh, h, tz::vec2ui{img.width, img.height}, img.data);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		texture_manager::texture_handle texture_manager::add_texture_impl(tz::gl::renderer_handle rh, tz::vec2ui dimensions, std::span<const std::byte> imgdata)
+		{
+			TZ_PROFZONE("texture_manager - add texture", 0xFFEEC2EA);
+			#if TZ_DEBUG
+				std::size_t sz = tz::gl::pixel_size_bytes(tz::gl::image_format::RGBA32) * dimensions[0] * dimensions[1];
+				tz::assert(imgdata.size_bytes() == sz, "Unexpected image data length. Expected %zuB, but was %zuB", sz, imgdata.size_bytes());
+			#endif
+			tz::assert(this->texture_cursor < this->images.size(), "Ran out of textures. Limit: %zu", this->images.size());
+			tz::gl::resource_handle imgh = this->images[this->texture_cursor];
+			tz::gl::get_device().get_renderer(rh).edit
+			({
+				tz::gl::RendererEditBuilder{}
+				.image_resize
+				({
+					.image_handle = imgh,
+					.dimensions = dimensions,
+				})
+				.write
+				({
+					.resource = imgh,
+					.data = imgdata
+				})
+				.build()
+			});
+
+			return static_cast<tz::hanval>(this->texture_cursor++);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void texture_manager::assign_texture_impl(tz::gl::renderer_handle rh, texture_handle th, tz::vec2ui dimensions, std::span<const std::byte> imgdata)
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(th));
+			tz::gl::resource_handle imgh = this->images[hanval];
+
+			tz::gl::get_device().get_renderer(rh).edit
+			({
+				tz::gl::RendererEditBuilder{}
+				.image_resize
+				({
+					.image_handle = imgh,
+					.dimensions = dimensions,
+				})
+				.write
+				({
+					.resource = imgh,
+					.data = imgdata
+				})
+				.build()
+			});
+		}
+
+//--------------------------------------------------------------------------------------------------
+//
+//--------------------------------------------------------------------------------------------------
+
 	}	
 }
