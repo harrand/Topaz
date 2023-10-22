@@ -88,8 +88,6 @@ namespace tz::ren
 		struct gltf_info
 		{
 			tz::io::gltf data;
-			// represents the number of objects that exist before the first object corresponding to this gltf.
-			unsigned int object_offset;
 			// maps each node id of this gltf to an object handle within the scene.
 			std::map<std::size_t, object_handle> node_object_map = {};
 			// stores each asset that was brought in by this gltf.

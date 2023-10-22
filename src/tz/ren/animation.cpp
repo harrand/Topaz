@@ -140,7 +140,6 @@ namespace tz::ren
 			*this_gltf = 
 			{
 				.data = gltf,
-				.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count() - this->gltf_free_list.size())
 			};
 			this_gltf->assets.gltfh = static_cast<tz::hanval>(hanval);
 		}
@@ -149,7 +148,6 @@ namespace tz::ren
 			this->gltfs.push_back
 			({
 				.data = gltf,
-				.object_offset = static_cast<unsigned int>(mesh_renderer::draw_count()),
 			});
 			this_gltf = &this->gltfs.back();
 			this_gltf->assets.gltfh = static_cast<tz::hanval>(this->gltfs.size() - 1);
