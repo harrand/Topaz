@@ -412,7 +412,22 @@ namespace tz::ren
 					}
 				)
 			);
-			cinfo.debug_name("Mesh Renderer - Compute Pass");
+
+			// create a visibility buffer. this is a bool per draw.
+			// if the user wants to make a specific draw invisible, they can set this to false.
+			std::array<std::uint32_t, compute_pass::initial_max_draw_count> initial_visibilities;
+			std::fill(initial_visibilities.begin(), initial_visibilities.end(), true);
+			this->draw_visibility_buffer = cinfo.add_resource
+			(
+				tz::gl::buffer_resource::from_one
+				(
+					initial_visibilities,
+					{
+						.access = tz::gl::resource_access::dynamic_access
+					}
+				)
+			);
+			cinfo.debug_name("Mesh Renderer 2.0 - Compute Pass");
 
 			this->compute = tz::gl::get_device().create_renderer(cinfo);
 		}
@@ -464,17 +479,21 @@ namespace tz::ren
 			}
 			const std::size_t old_draw_indirect_buffer_size = sizeof(std::uint32_t) + (old_capacity * sizeof(tz::gl::draw_indexed_indirect_command));
 			const std::size_t old_mesh_locator_buffer_size = sizeof(std::uint32_t) + (old_capacity * sizeof(mesh_locator));
+			const std::size_t old_visibility_buffer_size = sizeof(std::uint32_t) * old_capacity;
 			// debug sanity check first.
 			#if TZ_DEBUG
 				auto& ren = tz::gl::get_device().get_renderer(this->compute);
 				const std::size_t old_draw_indirect_buffer_actual_size = ren.get_resource(this->draw_indirect_buffer)->data().size_bytes();
 				const std::size_t old_mesh_locator_buffer_actual_size = ren.get_resource(this->mesh_locator_buffer)->data().size_bytes();
+				const std::size_t old_visibility_buffer_actual_size = ren.get_resource(this->draw_visibility_buffer)->data().size_bytes();
 				tz::assert(old_draw_indirect_buffer_size == old_draw_indirect_buffer_actual_size, "Debug sanity check failed. Old capacity of draw indirect buffer was expected to be %zu, but it is %zu. Is there some unexpected padding? Serious logic error.", old_draw_indirect_buffer_size, old_draw_indirect_buffer_actual_size);
 				tz::assert(old_mesh_locator_buffer_size == old_mesh_locator_buffer_actual_size, "Debug sanity check failed. Old capacity of mesh locator buffer was expected to be %zu, but it is %zu. Is there some unexpected padding? Serious logic error.", old_mesh_locator_buffer_size, old_mesh_locator_buffer_actual_size);
+				tz::assert(old_visibility_buffer_size == old_visibility_buffer_actual_size, "Debug sanity check failed. Old capacity of draw visibility buffer was expected to be %zu, but it is %zu. Is there some unexpected padding? Serious logic error.", old_visibility_buffer_size, old_visibility_buffer_actual_size);
 			#endif
 
 			const std::size_t new_draw_indirect_buffer_size = sizeof(std::uint32_t) + (new_capacity * sizeof(tz::gl::draw_indexed_indirect_command));
 			const std::size_t new_mesh_locator_buffer_size = sizeof(std::uint32_t) + (new_capacity * sizeof(mesh_locator));
+			const std::size_t new_visibility_buffer_size = sizeof(std::uint32_t) * new_capacity;
 
 			tz::gl::get_device().get_renderer(this->compute).edit
 			(
@@ -488,6 +507,11 @@ namespace tz::ren
 				({
 					.buffer_handle = this->mesh_locator_buffer,
 					.size = new_mesh_locator_buffer_size
+				})
+				.buffer_resize
+				({
+					.buffer_handle = this->draw_visibility_buffer,
+					.size = new_visibility_buffer_size
 				})
 				.build()
 			);
@@ -508,6 +532,15 @@ namespace tz::ren
 			tz::assert(draw_id < this->get_draw_count(), "Attempted to set mesh at draw-id %zu, but the draw-count was only %zu. You can only set mesh at a previously-assigned draw-id (e.g via add_object)");
 			tz::assert(draw_id < this->get_draw_capacity(), "Attempted to set mesh at draw-id %zu, but the draw-capacity is %zu. You're probably mis-using the API", draw_id, this->get_draw_capacity());
 			loc_array[draw_id] = loc;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void compute_pass::set_visibility_at(std::size_t draw_id, bool visible)
+		{
+			TZ_PROFZONE("compute_pass - set visibility at", 0xFF97B354);
+			std::span<std::uint32_t> visibility_buffer_data = tz::gl::get_device().get_renderer(this->compute).get_resource(this->draw_visibility_buffer)->data_as<std::uint32_t>();
+			tz::assert(draw_id < this->get_draw_count(), "Attempted to set visibility at draw-id %zu, but the draw-count was only %zu. You're probably mis-using the API.", draw_id, this->get_draw_count());
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -533,6 +566,7 @@ namespace tz::ren
 			for(std::size_t i = 0; i < number_of_new_draws; i++)
 			{
 				this->set_mesh_at(count + i, mesh_locator{});
+				this->set_visibility_at(count + i, true);
 			}
 			return count;
 		}
@@ -634,6 +668,7 @@ namespace tz::ren
 //--------------------------------------------------------------------------------------------------
 // render_pass
 //--------------------------------------------------------------------------------------------------
+
 		render_pass::render_pass(render_pass::info i)
 		{
 			TZ_PROFZONE("render_pass - create", 0xFFF1F474);
@@ -663,6 +698,10 @@ namespace tz::ren
 
 			// TODO: replace with proper camera buffer.
 			rinfo.add_resource(tz::gl::buffer_resource::from_one(255u));
+			// note: vertex shader in its current state assumes an extra buffer as it uses the old implementation.
+			// use a dummy buffer for now.
+			// TODO: remove
+			rinfo.add_resource(tz::gl::buffer_resource::from_one(255u));
 
 			// vertex wrangler already set our index buffer, but we need to set the draw indirect buffer ourselves.
 			// first retrieve it from compute pass
@@ -670,7 +709,7 @@ namespace tz::ren
 			rinfo.state().graphics.draw_buffer = this->draw_indirect_ref;
 			// then set it up.
 			this->tex = texture_manager(rinfo, i.texture_capacity);
-			rinfo.debug_name("Mesh Renderer - Render Pass");
+			rinfo.debug_name("Mesh Renderer 2.0 - Render Pass");
 
 			this->render = tz::gl::get_device().create_renderer(rinfo);
 		}
@@ -679,6 +718,7 @@ namespace tz::ren
 
 		render_pass::object_handle render_pass::add_object(object_create_info create)
 		{
+			TZ_PROFZONE("render_pass - add object", 0xFFF1F474);
 			// add a new draw to the indirect buffer and the mesh locator buffer.
 			std::size_t old_count = this->compute.get_draw_count();
 			std::size_t old_capacity = this->compute.get_draw_capacity();
@@ -705,16 +745,21 @@ namespace tz::ren
 				our_mesh = this->vtx.get_mesh(create.mesh);
 			}
 
-			// todo: write what we need into the object data.
 			data.colour_tint = create.colour_tint;
 			tz::assert(create.bound_textures.size() <= object_data::max_bound_textures, "add_object attempted with %zu bound textures. i'm afraid the implementation only supports %zu", create.bound_textures.size(), object_data::max_bound_textures);
+			for(std::size_t i = 0; i < object_data::max_bound_textures; i++)
+			{
+				data.bound_textures[i] = create.bound_textures[i];
+			}
+			// todo: calculate global transform asap? if we wait till next frame, the user could feasibly notice this new object at the origin for the remainder of this frame.
 			// tell the compute pass about the mesh we want.
 			this->compute.set_mesh_at(our_object_id, our_mesh);
+			this->compute.set_visibility_at(our_object_id, create.is_visible);
 
 			// finally, add this object as a node into our transform hierarchy.
 			if(create.parent != tz::nullhand)
 			{
-				std::optional<unsigned int> parent_node_id = this->tree.find_node(static_cast<std::size_t>(static_cast<tz::hanval>(init.parent)));
+				std::optional<unsigned int> parent_node_id = this->tree.find_node(static_cast<std::size_t>(static_cast<tz::hanval>(create.parent)));
 				tz::assert(parent_node_id.has_value(), "add_object provided parent that was invalid.");
 				this->tree.add_node(create.local_transform, our_object_id, parent_node_id);
 			}
@@ -726,4 +771,15 @@ namespace tz::ren
 			return static_cast<tz::hanval>(our_object_id);
 		}
 	}	
+
+//--------------------------------------------------------------------------------------------------
+// render_pass
+//--------------------------------------------------------------------------------------------------
+
+	mesh_renderer2::mesh_renderer2(mesh_renderer2::info info):
+	pass(info)
+	{
+
+	}
+
 }

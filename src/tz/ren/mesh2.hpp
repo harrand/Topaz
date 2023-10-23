@@ -131,6 +131,7 @@ namespace tz::ren
 			void set_draw_capacity(std::size_t new_capacity);
 			// set the mesh of an existing draw to something else. does not affect draw count. draw_id needs to be less than draw count.
 			void set_mesh_at(std::size_t draw_id, mesh_locator loc);
+			void set_visibility_at(std::size_t draw_id, bool visible);
 			// add N new draws. increments the draw count N times. if draw capacity is too small, increase it by N or double its capacity, whichever is bigger.
 			// mesh at the new draw will be an empty mesh locator. you're free to change it to something else.
 			// returns the draw-id of the first new draw.
@@ -149,6 +150,7 @@ namespace tz::ren
 
 			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
 			tz::gl::resource_handle mesh_locator_buffer = tz::nullhand;
+			tz::gl::resource_handle draw_visibility_buffer = tz::nullhand;
 			tz::gl::renderer_handle compute = tz::nullhand;
 		};
 
@@ -227,6 +229,7 @@ namespace tz::ren
 			{
 				tz::trs local_transform = {};
 				mesh_handle mesh = tz::nullhand;
+				bool is_visible = true;
 				object_handle parent = tz::nullhand;	
 				std::vector<texture_locator> bound_textures = {};
 				tz::vec3 colour_tint = tz::vec3::filled(1.0f);
@@ -248,7 +251,10 @@ namespace tz::ren
 	class mesh_renderer2
 	{
 	public:
+		using info = impl::render_pass::info;
+		mesh_renderer2(info i = {});
 	private:
+		impl::render_pass pass;
 	};
 }
 
