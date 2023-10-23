@@ -6,6 +6,7 @@
 #include "tz/core/matrix_transform.hpp"
 
 #include "tz/ren/mesh.hpp"
+#include "tz/ren/mesh2.hpp"
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -21,8 +22,8 @@ int main()
 	{
 		dbgui_init();
 
-		tz::ren::mesh_renderer mr;
-		tz::ren::mesh_renderer::mesh_t m;
+		tz::ren::mesh_renderer2 mr;
+		tz::ren::mesh_renderer2::mesh m;
 		m.indices = {0u, 1u, 2u};
 		m.vertices = 
 		{
@@ -31,28 +32,33 @@ int main()
 			{.position = {-0.5f, 0.5f, 0.0f}}
 		};
 		auto mesh = mr.add_mesh(m);
-		auto tex = mr.add_texture({2u, 2u},
-		{{
-			std::byte{0xff},
-			std::byte{0x00},
-			std::byte{0xff},
-			std::byte{0xff},
+		auto tex = mr.add_texture
+		({
+			.width = 2u,
+			.height = 2u,
+			.data =
+			{{
+				std::byte{0xff},
+				std::byte{0x00},
+				std::byte{0xff},
+				std::byte{0xff},
 
-			std::byte{0x00},
-			std::byte{0x00},
-			std::byte{0x00},
-			std::byte{0xff},
+				std::byte{0x00},
+				std::byte{0x00},
+				std::byte{0x00},
+				std::byte{0xff},
 
-			std::byte{0x00},
-			std::byte{0x00},
-			std::byte{0x00},
-			std::byte{0xff},
+				std::byte{0x00},
+				std::byte{0x00},
+				std::byte{0x00},
+				std::byte{0xff},
 
-			std::byte{0xff},
-			std::byte{0x00},
-			std::byte{0xff},
-			std::byte{0xff}
-		}});
+				std::byte{0xff},
+				std::byte{0x00},
+				std::byte{0xff},
+				std::byte{0xff}
+			}}
+		});
 		auto obj = mr.add_object
 		({
 			.mesh = mesh,
@@ -60,7 +66,7 @@ int main()
 		});
 		mr.add_object
 		({
-			.trs = {.translate = {0.0f, 0.0f, 0.0f}},
+			.local_transform = {.translate = {0.0f, 0.0f, 0.0f}},
 			.mesh = mesh,
 			.parent = obj
 		});
@@ -73,7 +79,7 @@ int main()
 			tz::begin_frame();
 			// draw
 			tz::gl::get_device().render();
-			mr.update();
+			//mr.update();
 			update_timer = tz::system_time();
 			// advance dbgui
 			tz::dbgui::run([&mr]()
@@ -82,7 +88,7 @@ int main()
 				{
 					if(ImGui::Begin("Mesh Renderer", &dbgui_data.mesh_renderer_enabled))
 					{
-						mr.dbgui();
+						//mr.dbgui();
 						ImGui::End();
 					}
 				}

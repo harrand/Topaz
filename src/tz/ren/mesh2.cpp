@@ -189,7 +189,8 @@ namespace tz::ren
 
 			// check if there's enough space at the end of the buffer.
 			std::uint32_t last_mesh_end = sorted_meshes.empty() ? 0 : sorted_meshes.back().index_offset + sorted_meshes.back().index_count;
-			if(this->get_vertex_capacity(rh) - last_mesh_end >= index_count)
+			const std::size_t idx_cap = this->get_index_capacity(rh);
+			if(idx_cap - last_mesh_end >= index_count)
 			{
 				return last_mesh_end;
 			}
@@ -459,7 +460,7 @@ namespace tz::ren
 			// the length of that array is our draw capacity.
 			meshloc_buffer_data = meshloc_buffer_data.subspan(sizeof(std::uint32_t));
 			tz::assert(meshloc_buffer_data.size_bytes() % sizeof(mesh_locator) == 0, "Mesh Locator buffer resource, post-count should have remaining size divisible by sizeof(mesh_locator) (%zu), but its size is %zu. Internal logic error.", sizeof(mesh_locator), meshloc_buffer_data.size_bytes());
-			return meshloc_buffer_data.size_bytes() / sizeof(std::uint32_t);
+			return meshloc_buffer_data.size_bytes() / sizeof(mesh_locator);
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -731,7 +732,9 @@ namespace tz::ren
 			this->obj = object_storage(rinfo);
 
 			// TODO: replace with proper camera buffer.
-			rinfo.add_resource(tz::gl::buffer_resource::from_one(255u));
+			std::array<tz::mat4, 2> camera_initial_data;
+			std::fill(camera_initial_data.begin(), camera_initial_data.end(), tz::mat4::identity());
+			rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data));
 			// note: vertex shader in its current state assumes an extra buffer as it uses the old implementation.
 			// use a dummy buffer for now.
 			// TODO: remove
@@ -746,6 +749,34 @@ namespace tz::ren
 			rinfo.debug_name("Mesh Renderer 2.0 - Render Pass");
 
 			this->render = tz::gl::get_device().create_renderer(rinfo);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::append_to_render_graph()
+		{
+			auto hanval_ch = static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->compute.get_compute_pass()));
+			auto hanval_rh = static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->render));
+
+			// compute pass happens first, then the render pass.
+			tz::gl::get_device().render_graph().timeline.push_back(hanval_ch);
+			tz::gl::get_device().render_graph().timeline.push_back(hanval_rh);
+			// render pass depends on compute pass.
+			tz::gl::get_device().render_graph().add_dependencies(this->render, this->compute.get_compute_pass());
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		render_pass::mesh_handle render_pass::add_mesh(mesh m)
+		{
+			return this->vtx.add_mesh(this->render, m);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		render_pass::texture_handle render_pass::add_texture(const tz::io::image& img)
+		{
+			return this->tex.add_texture(this->render, img);
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -781,7 +812,8 @@ namespace tz::ren
 
 			data.colour_tint = create.colour_tint;
 			tz::assert(create.bound_textures.size() <= object_data::max_bound_textures, "add_object attempted with %zu bound textures. i'm afraid the implementation only supports %zu", create.bound_textures.size(), object_data::max_bound_textures);
-			for(std::size_t i = 0; i < object_data::max_bound_textures; i++)
+			const std::size_t bound_tex_count = std::min(create.bound_textures.size(), object_data::max_bound_textures);
+			for(std::size_t i = 0; i < bound_tex_count; i++)
 			{
 				data.bound_textures[i] = create.bound_textures[i];
 			}
@@ -855,7 +887,7 @@ namespace tz::ren
 //--------------------------------------------------------------------------------------------------
 
 	mesh_renderer2::mesh_renderer2(mesh_renderer2::info info):
-	pass(info)
+	render_pass(info)
 	{
 
 	}

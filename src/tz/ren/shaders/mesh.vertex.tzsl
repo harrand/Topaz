@@ -6,7 +6,7 @@ shader(type = vertex);
 struct vertex_t
 {
 	vec3 position;
-	vec4 texcoord4[MAX_TEX_COUNT];
+	vec4 texcoord4;
 	vec3 normal;
 	vec3 tangent;
 	uvec4 joint_indices;
@@ -44,10 +44,10 @@ resource(id = 2) const buffer camera_buffer
 	mat4 projection;
 } camera;
 
-output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
-output(id = 9) vec3 out::normal;
-output(id = 10) vec3 out::colour;
-output(id = 11) texture_locator out::textures[MAX_TEX_COUNT];
+output(id = 0) vec2 out::texcoord;
+output(id = 1) vec3 out::normal;
+output(id = 2) vec3 out::colour;
+output(id = 3) texture_locator out::textures[MAX_TEX_COUNT];
 
 void main()
 {
@@ -55,11 +55,11 @@ void main()
 	object_t obj = objects.data[in::draw_id + in::base_instance];	
 	out::position = camera.projection * camera.view * obj.global_transform * vec4(vtx.position, 1.0f);
 
+	out::texcoord = vtx.texcoord4.xy;
 	out::normal = vtx.normal;
 	out::colour = obj.colour_tint;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
 	{
-		out::texcoord[i] = vtx.texcoord4[i].xy;
 		out::textures[i] = obj.textures[i];
 	}
 }

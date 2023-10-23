@@ -14,6 +14,10 @@ namespace tz::ren
 			float pad0;
 			tz::vec2 texcoord;
 			float pad1[2];
+			tz::vec3 normal;
+			float pad2;
+			tz::vec3 tangent;
+			float pad3;
 			tz::vec4ui32 joint_indices;
 			tz::vec4 joint_weights;
 		};
@@ -170,11 +174,13 @@ namespace tz::ren
 
 		struct object_data
 		{
-			constexpr static std::size_t max_bound_textures = 4u;
+			constexpr static std::size_t max_bound_textures = 8u;
 			tz::mat4 global_transform = tz::mat4::identity();
+			tz::mat4 unused;
 			tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 			float pad0;
 			std::array<texture_locator, max_bound_textures> bound_textures = {};
+			tz::vec4ui32 unused2;
 		};
 
 		// objects represent a single renderable thing.
@@ -218,6 +224,7 @@ namespace tz::ren
 		{
 		public:
 			using mesh_handle = vertex_wrangler::mesh_handle;
+			using texture_handle = texture_manager::texture_handle;
 			using object_handle = object_storage::object_handle;
 			struct info
 			{
@@ -238,6 +245,10 @@ namespace tz::ren
 			};
 			render_pass(info i);
 
+			void append_to_render_graph();
+			mesh_handle add_mesh(mesh m);
+			texture_handle add_texture(const tz::io::image& img);
+
 			object_handle add_object(object_create_info create);
 			const object_data& get_object(object_handle oh) const;
 			object_data& get_object(object_handle oh);
@@ -253,13 +264,12 @@ namespace tz::ren
 		};
 	}
 
-	class mesh_renderer2
+	class mesh_renderer2 : public impl::render_pass
 	{
 	public:
 		using info = impl::render_pass::info;
+		using mesh = impl::mesh;
 		mesh_renderer2(info i = {});
-	private:
-		impl::render_pass pass;
 	};
 }
 
