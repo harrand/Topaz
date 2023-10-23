@@ -137,7 +137,8 @@ namespace tz::ren
 			// returns the draw-id of the first new draw.
 			// worst case - very slow. needs to do a renderer edit.
 			// best case - very fast. just writes into a dynamic buffer resource.
-			std::size_t add_new_draws(std::size_t number_of_new_draws);
+			std::vector<std::size_t> add_new_draws(std::size_t number_of_new_draws);
+			void remove_draw(std::size_t draw_id);
 
 			tz::gl::resource_handle get_draw_indirect_buffer() const;
 			static constexpr std::size_t initial_max_draw_count = 1024u;
@@ -152,6 +153,7 @@ namespace tz::ren
 			tz::gl::resource_handle mesh_locator_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_visibility_buffer = tz::nullhand;
 			tz::gl::renderer_handle compute = tz::nullhand;
+			std::deque<std::size_t> draw_id_free_list = {};
 		};
 
 		// represents one of the textures bound to an object (drawable)
@@ -239,6 +241,7 @@ namespace tz::ren
 			object_handle add_object(object_create_info create);
 			const object_data& get_object(object_handle oh) const;
 			object_data& get_object(object_handle oh);
+			void remove_object(object_handle oh);
 		private:
 			compute_pass compute;
 			tz::gl::renderer_handle render = tz::nullhand;

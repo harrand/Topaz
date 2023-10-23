@@ -545,11 +545,27 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-		std::size_t compute_pass::add_new_draws(std::size_t number_of_new_draws)
+		std::vector<std::size_t> compute_pass::add_new_draws(std::size_t number_of_new_draws)
 		{
 			TZ_PROFZONE("compute_pass - add new draws", 0xFF97B354);
+			std::vector<std::size_t> ret = {};
+			ret.reserve(number_of_new_draws);
 			const std::size_t cap = this->get_draw_capacity();
 			const std::size_t count = this->get_draw_count();
+
+			// if free list is not empty, use as many slots as we can.
+			const std::size_t free_list_reuse_count = std::min(number_of_new_draws, this->draw_id_free_list.size());
+			const std::size_t new_draws_needed = number_of_new_draws - free_list_reuse_count;
+			for(std::size_t i = 0; i < free_list_reuse_count; i++)
+			{
+				const std::size_t reused_draw_id = this->draw_id_free_list[i];
+				number_of_new_draws--;
+				ret.push_back(reused_draw_id);
+			}
+			this->draw_id_free_list.erase(this->draw_id_free_list.begin(), this->draw_id_free_list.begin() + free_list_reuse_count);
+
+			// number_of_new_draws has been reduced by the free-list re-use, and ret may already be partially filled.
+			// its possible we still don't have enough capacity though:
 			if(count + number_of_new_draws >= cap)
 			{
 				// we're gonna run out of draws
@@ -565,11 +581,29 @@ namespace tz::ren
 			// write empty mesh locators in the new spots. i *think* they should all be empty locators, but best to guarantee!
 			for(std::size_t i = 0; i < number_of_new_draws; i++)
 			{
-				this->set_mesh_at(count + i, mesh_locator{});
-				this->set_visibility_at(count + i, true);
+				ret.push_back(count + i);
 			}
-			return count;
+
+			// finally, for each new draw, do some basic empty initialisation.
+			for(std::size_t draw_id : ret)
+			{
+				this->set_mesh_at(draw_id, mesh_locator{});
+				this->set_visibility_at(draw_id, true);
+			}
+			return ret;
 		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void compute_pass::remove_draw(std::size_t draw_id)
+		{
+			this->set_mesh_at(draw_id, mesh_locator{});
+			// disabling visibility is pretty unnecessary, as empty mesh locators are skipped over anyway.
+			//this->set_visibility_at(draw_id, false);
+			tz::assert(std::find(this->draw_id_free_list.begin(), this->draw_id_free_list.end(), draw_id) == this->draw_id_free_list.end(), "Attempted to remove draw-id %zu, but it was already in the free-list. Double remove?", draw_id);
+			this->draw_id_free_list.push_back(draw_id);
+		}
+
 //--------------------------------------------------------------------------------------------------
 
 		tz::gl::resource_handle compute_pass::get_draw_indirect_buffer() const
@@ -726,7 +760,7 @@ namespace tz::ren
 			// it will also increase the capacity if it needs to.
 			// note for free-list. will definitely need to add logic for that in compute pass.
 			// shouldn't need to do anything else here? just use the id we gave you and assume its valid.
-			std::size_t our_object_id = this->compute.add_new_draws(1);
+			std::size_t our_object_id = this->compute.add_new_draws(1).front();
 			if(old_count + 1 > old_capacity)
 			{
 				// we're over capacity.
@@ -789,7 +823,33 @@ namespace tz::ren
 			return this->obj.get_object_internals(this->render)[hanval];
 		}
 
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::remove_object(render_pass::object_handle oh)
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			this->compute.remove_draw(hanval);
+			this->get_object(oh) = object_data{};
+
+			auto maybe_node = this->tree.find_node(hanval);
+			if(maybe_node.has_value())
+			{
+				auto this_node = this->tree.get_node(maybe_node.value());
+				// remove this node from the hierarchy
+				this->tree.remove_node(maybe_node.value(), transform_hierarchy<std::uint32_t>::remove_strategy::impl_do_nothing);
+				// kill remove all its child objects too.
+				for(unsigned int child_id : this_node.children)
+				{
+					auto child = this->tree.get_node(child_id);
+					this->remove_object(static_cast<tz::hanval>(child.data));
+				}
+			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 	}	
+
 //--------------------------------------------------------------------------------------------------
 // render_pass
 //--------------------------------------------------------------------------------------------------
