@@ -67,6 +67,10 @@ namespace tz::ren
 			std::size_t get_vertex_capacity(tz::gl::renderer_handle rh) const;
 			// get how many indices the index buffer can fit in theory.
 			std::size_t get_index_capacity(tz::gl::renderer_handle rh) const;
+			// calculate how many vertices are actively being used by added meshes.
+			std::size_t get_vertex_count() const;
+			// calculate how many indices are actively being used by added meshes.
+			std::size_t get_index_count() const;
 
 			// add a mesh. its vertices and indices are added into the buffers, increasing capacity if needed.
 			// returns a handle signifying the mesh.

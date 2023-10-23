@@ -101,6 +101,30 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		std::size_t vertex_wrangler::get_vertex_count() const
+		{
+			std::size_t vtx_count = 0;
+			for(const mesh_locator& loc : this->mesh_locators)
+			{
+				vtx_count += loc.vertex_count;
+			}
+			return vtx_count;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::size_t vertex_wrangler::get_index_count() const
+		{
+			std::size_t idx_count = 0;
+			for(const mesh_locator& loc : this->mesh_locators)
+			{
+				idx_count += loc.index_count;
+			}
+			return idx_count;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		vertex_wrangler::mesh_handle vertex_wrangler::add_mesh(tz::gl::renderer_handle rh, mesh m)
 		{
 			TZ_PROFZONE("vertex_wrangler - add mesh", 0xFF02F3B5);
