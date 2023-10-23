@@ -317,6 +317,20 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		std::size_t texture_manager::get_texture_count() const
+		{
+			return this->texture_cursor;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::size_t texture_manager::get_texture_capacity() const
+		{
+			return this->images.size();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		texture_manager::texture_handle texture_manager::add_texture_impl(tz::gl::renderer_handle rh, tz::vec2ui dimensions, std::span<const std::byte> imgdata)
 		{
 			TZ_PROFZONE("texture_manager - add texture", 0xFFEEC2EA);
@@ -896,7 +910,7 @@ namespace tz::ren
 	}	
 
 //--------------------------------------------------------------------------------------------------
-// render_pass
+// mesh_renderer2
 //--------------------------------------------------------------------------------------------------
 
 	mesh_renderer2::mesh_renderer2(mesh_renderer2::info info):

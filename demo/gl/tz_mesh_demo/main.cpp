@@ -88,7 +88,7 @@ int main()
 				{
 					if(ImGui::Begin("Mesh Renderer", &dbgui_data.mesh_renderer_enabled))
 					{
-						//mr.dbgui();
+						mr.dbgui();
 						ImGui::End();
 					}
 				}

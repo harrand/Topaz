@@ -77,6 +77,7 @@ namespace tz::ren
 			// removes a mesh, freeing up its indices/vertex to be used by someone else.
 			// this is always very fast - no data is actually erased, just bookkeeping.
 			void remove_mesh(mesh_handle m);
+			void dbgui(tz::gl::renderer_handle rh);
 		private:
 			// return element-offset into vertex buffer that could fit the required vertices, or nullopt if there isn't enough space.
 			std::optional<std::uint32_t> try_find_vertex_region(tz::gl::renderer_handle rh, std::size_t vertex_count) const;
@@ -92,6 +93,7 @@ namespace tz::ren
 			std::deque<tz::hanval> mesh_handle_free_list = {};
 			std::size_t added_vertex_count = 0;
 			std::size_t added_index_count = 0;
+			int dbgui_mesh_cursor = 0;
 		};
 
 		// this is a component of a mesh_renderer. deals with textures only.
@@ -106,6 +108,9 @@ namespace tz::ren
 
 			texture_handle add_texture(tz::gl::renderer_handle rh, const tz::io::image& img);
 			void assign_texture(tz::gl::renderer_handle rh, texture_handle h, const tz::io::image& img);
+			void dbgui(tz::gl::renderer_handle rh);
+			std::size_t get_texture_count() const;
+			std::size_t get_texture_capacity() const;
 		private:
 			texture_handle add_texture_impl(tz::gl::renderer_handle rh, tz::vec2ui dimensions, std::span<const std::byte> imgdata);
 			void assign_texture_impl(tz::gl::renderer_handle rh, texture_handle th, tz::vec2ui dimensions, std::span<const std::byte> imgdata);
@@ -247,6 +252,9 @@ namespace tz::ren
 
 			void append_to_render_graph();
 			void update();
+			void dbgui_mesh();
+			void dbgui_texture();
+			void dbgui_objects();
 
 			mesh_handle add_mesh(mesh m);
 			texture_handle add_texture(const tz::io::image& img);
@@ -272,6 +280,7 @@ namespace tz::ren
 		using info = impl::render_pass::info;
 		using mesh = impl::mesh;
 		mesh_renderer2(info i = {});
+		void dbgui();
 	};
 }
 
