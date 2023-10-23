@@ -50,6 +50,7 @@ namespace tz::ren
 		class vertex_wrangler
 		{
 		public:
+			vertex_wrangler() = default;
 			vertex_wrangler(tz::gl::renderer_info& rinfo);
 			using mesh_handle = tz::handle<mesh_locator>;
 
@@ -99,6 +100,7 @@ namespace tz::ren
 		class texture_manager
 		{
 		public:
+			texture_manager() = default;
 			texture_manager(tz::gl::renderer_info& rinfo, std::size_t texture_capacity, tz::gl::resource_flags image_flags = {tz::gl::resource_flag::image_wrap_repeat});
 			using texture_handle = tz::handle<tz::io::image>;
 
@@ -139,6 +141,9 @@ namespace tz::ren
 			// worst case - very slow. needs to do a renderer edit.
 			// best case - very fast. just writes into a dynamic buffer resource.
 			std::size_t add_new_draws(std::size_t number_of_new_draws);
+
+			tz::gl::resource_handle get_draw_indirect_buffer() const;
+			static constexpr std::size_t initial_max_draw_count = 1024u;
 		private:
 			// sets the draw count to something new.
 			// `new_draw_count` must be less than the current draw capacity, or this will assert.
@@ -146,10 +151,86 @@ namespace tz::ren
 			// if you dont want to deal with this, use `add_new_draws` instead.
 			void set_draw_count(std::size_t new_draw_count);
 
-			static constexpr std::size_t initial_max_draw_count = 1024u;
 			tz::gl::resource_handle draw_indirect_buffer = tz::nullhand;
 			tz::gl::resource_handle mesh_locator_buffer = tz::nullhand;
 			tz::gl::renderer_handle compute = tz::nullhand;
+		};
+
+		// represents one of the textures bound to an object (drawable)
+		struct texture_locator
+		{
+			bool is_null() const{return this->texture == tz::nullhand;}
+			// colour multiplier on the sampled texel
+			tz::vec3 colour_tint = tz::vec3::filled(1.0f);
+			// id within the overarching texture resource array to be sampled.
+			texture_manager::texture_handle texture = tz::nullhand;
+
+			bool operator==(const texture_locator& rhs) const = default;
+		};
+
+		struct object_data
+		{
+			constexpr static std::size_t max_bound_textures = 4u;
+			tz::mat4 global_transform = tz::mat4::identity();
+			tz::vec3 colour_tint = tz::vec3::filled(1.0f);
+			float pad0;
+			std::array<texture_locator, max_bound_textures> bound_textures = {};
+		};
+
+		// objects represent a single renderable thing.
+		// they are comprised of:
+		// a transform (as part of a full transform hierarchy)
+		//	- this is a part of the object tree.
+		//	- the global transform of the object based on the hierarchy is computed every frame. cpu-side.
+		// a fixed-size array of texture locators. essentially an object can use multiple textures. useful for normal-maps etc...
+		//	- this also contains a tint.
+		//	- texture locators are part of the object data.
+		// an optional mesh!
+		//	- the mesh of object X corresponds to the mesh_locator at index X of the mesh_locator_buffer of the compute_pass.
+		//	- an empty (default) mesh_locator means that the object exists in the hierarchy, but isn't meant to be rendered (e.g bones in a skeletal animation)
+
+		// this is a component of a mesh_renderer.
+		// deals with object storage and how they are rendered.
+		class object_tree
+		{
+		public:
+			object_tree() = default;
+			object_tree(tz::gl::renderer_info& rinfo);
+			// note: get_object_capacity should always be equal to compute_pass::get_draw_capacity.
+			// this is because every object must have a corresponding mesh locator associated with it.
+			std::size_t get_object_capacity(tz::gl::renderer_handle rh) const;
+			// change the object capacity
+			// do this whenever you set_draw_count on the compute pass - these need to be synchronised.
+			// note: any new objects resulting from an increase of capacity will be implicitly defaulted.
+			void set_object_capacity(tz::gl::renderer_handle rh, std::size_t new_capacity);
+			// you can read/write to object data at any time (note: not thread safe).
+			std::span<const object_data> get_object_internals(tz::gl::renderer_handle rh) const;
+			std::span<object_data> get_object_internals(tz::gl::renderer_handle rh);
+		private:
+			tz::transform_hierarchy<std::uint32_t> tree = {};
+			tz::gl::resource_handle object_buffer = tz::nullhand;
+		};
+
+		// this is a component of a mesh_renderer. deals with the main tz::gl::renderer.
+		// this should make it easier to maintain and configure.
+		class render_pass
+		{
+		public:
+			struct info
+			{
+				std::string_view custom_vertex_spirv = {};
+				std::string_view custom_fragment_spirv = {};
+				tz::gl::renderer_options custom_options = {};
+				std::size_t texture_capacity = 1024u;
+			};
+			render_pass(info i);
+		private:
+			compute_pass compute;
+			tz::gl::renderer_handle render = tz::nullhand;
+			tz::gl::resource_handle draw_indirect_ref = tz::nullhand;
+			vertex_wrangler vtx = {};
+			texture_manager tex = {};
+			object_tree tree = {};
 		};
 	}
 

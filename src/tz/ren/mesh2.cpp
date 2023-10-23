@@ -5,6 +5,8 @@
 #include "tz/core/profile.hpp"
 
 #include "tz/gl/imported_shaders.hpp"
+#include ImportedShaderHeader(mesh, vertex)
+#include ImportedShaderHeader(mesh, fragment)
 #include ImportedShaderHeader(mesh, compute)
 
 namespace tz::ren
@@ -536,6 +538,12 @@ namespace tz::ren
 			}
 			return count;
 		}
+//--------------------------------------------------------------------------------------------------
+
+		tz::gl::resource_handle compute_pass::get_draw_indirect_buffer() const
+		{
+			return this->draw_indirect_buffer;
+		}
 
 //--------------------------------------------------------------------------------------------------
 
@@ -553,6 +561,120 @@ namespace tz::ren
 			ren.get_resource(this->draw_indirect_buffer)->data_as<std::uint32_t>().front() = new_draw_count;
 			ren.get_resource(this->mesh_locator_buffer)->data_as<std::uint32_t>().front() = new_draw_count;
 		}
-	}	
 
+//--------------------------------------------------------------------------------------------------
+// object_tree
+//--------------------------------------------------------------------------------------------------
+
+		object_tree::object_tree(tz::gl::renderer_info& rinfo)
+		{
+			TZ_PROFZONE("object_tree - create", 0xFFAB567B);
+			std::array<object_data, compute_pass::initial_max_draw_count> initial_object_data = {};
+			this->object_buffer = rinfo.add_resource
+			(
+				tz::gl::buffer_resource::from_one
+				(
+					initial_object_data,
+					{
+						.access = tz::gl::resource_access::dynamic_access
+					}
+				)
+			);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::size_t object_tree::get_object_capacity(tz::gl::renderer_handle rh) const
+		{
+			return tz::gl::get_device().get_renderer(rh).get_resource(this->object_buffer)->data_as<const object_data>().size();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void object_tree::set_object_capacity(tz::gl::renderer_handle rh, std::size_t new_capacity)
+		{
+			TZ_PROFZONE("object_tree - set object capacity", 0xFFAB567B);
+			const std::size_t old_capacity = this->get_object_capacity(rh);
+			// early out if we dont need to do anything.
+			if(old_capacity == new_capacity)
+			{
+				return;
+			}
+
+			tz::gl::RendererEditBuilder builder;
+			builder.buffer_resize
+			({
+				.buffer_handle = this->object_buffer,
+				.size = new_capacity * sizeof(object_data)
+			});
+			tz::gl::get_device().get_renderer(rh).edit(builder.build());
+			tz::assert(this->get_object_capacity(rh) == new_capacity);
+			if(new_capacity > old_capacity)
+			{
+				// explicitly assign any new objects to a default empty object_data.
+				for(std::size_t i = old_capacity; i < new_capacity; i++)
+				{
+					this->get_object_internals(rh)[i] = object_data{};	
+				}
+			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::span<const object_data> object_tree::get_object_internals(tz::gl::renderer_handle rh) const
+		{
+			return tz::gl::get_device().get_renderer(rh).get_resource(this->object_buffer)->data_as<const object_data>();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::span<object_data> object_tree::get_object_internals(tz::gl::renderer_handle rh)
+		{
+			return tz::gl::get_device().get_renderer(rh).get_resource(this->object_buffer)->data_as<object_data>();
+		}
+
+//--------------------------------------------------------------------------------------------------
+// render_pass
+//--------------------------------------------------------------------------------------------------
+		render_pass::render_pass(render_pass::info i)
+		{
+			TZ_PROFZONE("render_pass - create", 0xFFF1F474);
+			tz::gl::renderer_info rinfo;
+			if(i.custom_vertex_spirv.empty())
+			{
+				i.custom_vertex_spirv = ImportedShaderSource(mesh, vertex);
+			}
+			if(i.custom_fragment_spirv.empty())
+			{
+				i.custom_fragment_spirv = ImportedShaderSource(mesh, fragment);
+			}
+			rinfo.shader().set_shader(tz::gl::shader_stage::vertex, i.custom_vertex_spirv);
+			rinfo.shader().set_shader(tz::gl::shader_stage::fragment, i.custom_fragment_spirv);
+			rinfo.set_options(i.custom_options | tz::gl::renderer_option::draw_indirect_count);
+
+			// order is:
+			// vertex buffer
+			// index buffer
+			// object buffer
+			// camera buffer (NYI)
+			// draw indirect buffer ref
+			// textures
+
+			this->vtx = vertex_wrangler(rinfo);
+			this->tree = object_tree(rinfo);
+
+			// TODO: replace with proper camera buffer.
+			rinfo.add_resource(tz::gl::buffer_resource::from_one(255u));
+
+			// vertex wrangler already set our index buffer, but we need to set the draw indirect buffer ourselves.
+			// first retrieve it from compute pass
+			this->draw_indirect_ref = rinfo.ref_resource(this->compute.get_compute_pass(), this->compute.get_draw_indirect_buffer());
+			rinfo.state().graphics.draw_buffer = this->draw_indirect_ref;
+			// then set it up.
+			this->tex = texture_manager(rinfo, i.texture_capacity);
+			rinfo.debug_name("Mesh Renderer - Render Pass");
+
+			this->render = tz::gl::get_device().create_renderer(rinfo);
+		}
+	}	
 }
