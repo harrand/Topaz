@@ -237,6 +237,8 @@ namespace tz::ren
 			render_pass(info i);
 
 			object_handle add_object(object_create_info create);
+			const object_data& get_object(object_handle oh) const;
+			object_data& get_object(object_handle oh);
 		private:
 			compute_pass compute;
 			tz::gl::renderer_handle render = tz::nullhand;

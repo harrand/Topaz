@@ -770,8 +770,26 @@ namespace tz::ren
 
 			return static_cast<tz::hanval>(our_object_id);
 		}
-	}	
 
+//--------------------------------------------------------------------------------------------------
+
+		const object_data& render_pass::get_object(object_handle oh) const
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			tz::assert(hanval < this->compute.get_draw_count());
+			return this->obj.get_object_internals(this->render)[hanval];
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		object_data& render_pass::get_object(object_handle oh)
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			tz::assert(hanval < this->compute.get_draw_count());
+			return this->obj.get_object_internals(this->render)[hanval];
+		}
+
+	}	
 //--------------------------------------------------------------------------------------------------
 // render_pass
 //--------------------------------------------------------------------------------------------------
