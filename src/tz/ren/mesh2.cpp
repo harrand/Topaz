@@ -767,6 +767,19 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		void render_pass::update()
+		{
+			TZ_PROFZONE("render_pass - update", 0xFFD1D454);
+			this->tree.iterate_nodes([this](unsigned int node_id)
+			{
+				TZ_PROFZONE("mesh_renderer - note iterate", 0xFF0000AA);
+				const auto& node = this->tree.get_node(node_id);
+				this->obj.get_object_internals(this->render)[node.data].global_transform = this->tree.get_global_transform(node_id).matrix();
+			});
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		render_pass::mesh_handle render_pass::add_mesh(mesh m)
 		{
 			return this->vtx.add_mesh(this->render, m);

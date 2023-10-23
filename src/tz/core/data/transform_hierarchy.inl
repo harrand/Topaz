@@ -1,6 +1,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
+#include <set>
 #include <type_traits>
 #include <sstream>
 

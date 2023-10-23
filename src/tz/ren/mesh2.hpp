@@ -246,6 +246,8 @@ namespace tz::ren
 			render_pass(info i);
 
 			void append_to_render_graph();
+			void update();
+
 			mesh_handle add_mesh(mesh m);
 			texture_handle add_texture(const tz::io::image& img);
 

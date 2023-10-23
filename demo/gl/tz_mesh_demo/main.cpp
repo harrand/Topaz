@@ -66,7 +66,7 @@ int main()
 		});
 		mr.add_object
 		({
-			.local_transform = {.translate = {0.0f, 0.0f, 0.0f}},
+			.local_transform = {.translate = {0.2f, 0.2f, 0.0f}},
 			.mesh = mesh,
 			.parent = obj
 		});
@@ -79,7 +79,7 @@ int main()
 			tz::begin_frame();
 			// draw
 			tz::gl::get_device().render();
-			//mr.update();
+			mr.update();
 			update_timer = tz::system_time();
 			// advance dbgui
 			tz::dbgui::run([&mr]()
