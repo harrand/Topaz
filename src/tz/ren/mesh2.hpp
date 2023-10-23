@@ -54,15 +54,6 @@ namespace tz::ren
 			vertex_wrangler(tz::gl::renderer_info& rinfo);
 			using mesh_handle = tz::handle<mesh_locator>;
 
-			// get the vertex buffer resource
-			const tz::gl::iresource& get_vertex_buffer(tz::gl::renderer_handle rh) const;
-			// get the vertex buffer resource
-			tz::gl::iresource& get_vertex_buffer(tz::gl::renderer_handle rh);
-			// get the index buffer resource
-			const tz::gl::iresource& get_index_buffer(tz::gl::renderer_handle rh) const;
-			// get the index buffer resource
-			tz::gl::iresource& get_index_buffer(tz::gl::renderer_handle rh);
-
 			// get how many vertices the vertex buffer can fit in theory.
 			std::size_t get_vertex_capacity(tz::gl::renderer_handle rh) const;
 			// get how many indices the index buffer can fit in theory.
@@ -78,6 +69,7 @@ namespace tz::ren
 			// best case - this is somewhat slow. it must perform a resource write renderer edit.
 			// you should *not* do this very often.
 			mesh_handle add_mesh(tz::gl::renderer_handle rh, mesh m);
+			const mesh_locator& get_mesh(mesh_handle h) const;
 			// removes a mesh, freeing up its indices/vertex to be used by someone else.
 			// this is always very fast - no data is actually erased, just bookkeeping.
 			void remove_mesh(mesh_handle m);
@@ -195,11 +187,13 @@ namespace tz::ren
 
 		// this is a component of a mesh_renderer.
 		// deals with object storage and how they are rendered.
-		class object_tree
+		class object_storage
 		{
 		public:
-			object_tree() = default;
-			object_tree(tz::gl::renderer_info& rinfo);
+			object_storage() = default;
+			object_storage(tz::gl::renderer_info& rinfo);
+
+			using object_handle = tz::handle<object_data>;
 			// note: get_object_capacity should always be equal to compute_pass::get_draw_capacity.
 			// this is because every object must have a corresponding mesh locator associated with it.
 			std::size_t get_object_capacity(tz::gl::renderer_handle rh) const;
@@ -211,7 +205,6 @@ namespace tz::ren
 			std::span<const object_data> get_object_internals(tz::gl::renderer_handle rh) const;
 			std::span<object_data> get_object_internals(tz::gl::renderer_handle rh);
 		private:
-			tz::transform_hierarchy<std::uint32_t> tree = {};
 			tz::gl::resource_handle object_buffer = tz::nullhand;
 		};
 
@@ -220,6 +213,8 @@ namespace tz::ren
 		class render_pass
 		{
 		public:
+			using mesh_handle = vertex_wrangler::mesh_handle;
+			using object_handle = object_storage::object_handle;
 			struct info
 			{
 				std::string_view custom_vertex_spirv = {};
@@ -227,14 +222,26 @@ namespace tz::ren
 				tz::gl::renderer_options custom_options = {};
 				std::size_t texture_capacity = 1024u;
 			};
+
+			struct object_create_info
+			{
+				tz::trs local_transform = {};
+				mesh_handle mesh = tz::nullhand;
+				object_handle parent = tz::nullhand;	
+				std::vector<texture_locator> bound_textures = {};
+				tz::vec3 colour_tint = tz::vec3::filled(1.0f);
+			};
 			render_pass(info i);
+
+			object_handle add_object(object_create_info create);
 		private:
 			compute_pass compute;
 			tz::gl::renderer_handle render = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_ref = tz::nullhand;
 			vertex_wrangler vtx = {};
 			texture_manager tex = {};
-			object_tree tree = {};
+			object_storage obj = {};
+			tz::transform_hierarchy<std::uint32_t> tree = {};
 		};
 	}
 

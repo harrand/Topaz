@@ -18,12 +18,16 @@ namespace tz::ren
 	{
 		vertex_wrangler::vertex_wrangler(tz::gl::renderer_info& rinfo)
 		{
+			// create buffer resources with initial size.
+			// resizing is omega slow, but we dont want to eat tons of vram for tiny scenes.
+			// hopefully the initial vertex capacity is a sane compromise!
+			// (also buffer resources do not support zero size, so we gotta have something even with no vertex/index data!)
 			std::vector<mesh_vertex> initial_vertices = {};
 			initial_vertices.resize(vertex_wrangler::initial_vertex_capacity);
 			std::vector<mesh_index> initial_indices = {};
 			initial_indices.resize(vertex_wrangler::initial_vertex_capacity);
 
-			// create vertex and index buffer based on initial capacities.
+			// create vertex buffer.
 			this->vertex_buffer = rinfo.add_resource
 			(
 				tz::gl::buffer_resource::from_many
@@ -32,6 +36,7 @@ namespace tz::ren
 				)
 			);
 
+			// create index buffer.
 			this->index_buffer = rinfo.add_resource
 			(
 				tz::gl::buffer_resource::from_many
@@ -43,46 +48,6 @@ namespace tz::ren
 				)
 			);
 			rinfo.state().graphics.index_buffer = this->index_buffer;
-		}
-
-//--------------------------------------------------------------------------------------------------
-
-		const tz::gl::iresource& vertex_wrangler::get_vertex_buffer(tz::gl::renderer_handle rh) const
-		{
-			tz::assert(rh != tz::nullhand);
-			auto resptr = tz::gl::get_device().get_renderer(rh).get_resource(this->vertex_buffer);
-			tz::assert(resptr != nullptr);
-			return *resptr;
-		}
-
-//--------------------------------------------------------------------------------------------------
-
-		tz::gl::iresource& vertex_wrangler::get_vertex_buffer(tz::gl::renderer_handle rh)
-		{
-			tz::assert(rh != tz::nullhand);
-			auto resptr = tz::gl::get_device().get_renderer(rh).get_resource(this->vertex_buffer);
-			tz::assert(resptr != nullptr);
-			return *resptr;
-		}
-
-//--------------------------------------------------------------------------------------------------
-
-		const tz::gl::iresource& vertex_wrangler::get_index_buffer(tz::gl::renderer_handle rh) const
-		{
-			tz::assert(rh != tz::nullhand);
-			auto resptr = tz::gl::get_device().get_renderer(rh).get_resource(this->index_buffer);
-			tz::assert(resptr != nullptr);
-			return *resptr;
-		}
-
-//--------------------------------------------------------------------------------------------------
-
-		tz::gl::iresource& vertex_wrangler::get_index_buffer(tz::gl::renderer_handle rh)
-		{
-			tz::assert(rh != tz::nullhand);
-			auto resptr = tz::gl::get_device().get_renderer(rh).get_resource(this->index_buffer);
-			tz::assert(resptr != nullptr);
-			return *resptr;
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -144,6 +109,15 @@ namespace tz::ren
 				this->mesh_locators.push_back(loc);
 			}
 			return static_cast<tz::hanval>(hanval);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		const mesh_locator& vertex_wrangler::get_mesh(mesh_handle h) const
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+			tz::assert(hanval < this->mesh_locators.size(), "Invalid mesh handle %zu", hanval);
+			return this->mesh_locators[hanval];
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -587,12 +561,12 @@ namespace tz::ren
 		}
 
 //--------------------------------------------------------------------------------------------------
-// object_tree
+// object_storage
 //--------------------------------------------------------------------------------------------------
 
-		object_tree::object_tree(tz::gl::renderer_info& rinfo)
+		object_storage::object_storage(tz::gl::renderer_info& rinfo)
 		{
-			TZ_PROFZONE("object_tree - create", 0xFFAB567B);
+			TZ_PROFZONE("object_storage - create", 0xFFAB567B);
 			std::array<object_data, compute_pass::initial_max_draw_count> initial_object_data = {};
 			this->object_buffer = rinfo.add_resource
 			(
@@ -608,16 +582,16 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-		std::size_t object_tree::get_object_capacity(tz::gl::renderer_handle rh) const
+		std::size_t object_storage::get_object_capacity(tz::gl::renderer_handle rh) const
 		{
 			return tz::gl::get_device().get_renderer(rh).get_resource(this->object_buffer)->data_as<const object_data>().size();
 		}
 
 //--------------------------------------------------------------------------------------------------
 
-		void object_tree::set_object_capacity(tz::gl::renderer_handle rh, std::size_t new_capacity)
+		void object_storage::set_object_capacity(tz::gl::renderer_handle rh, std::size_t new_capacity)
 		{
-			TZ_PROFZONE("object_tree - set object capacity", 0xFFAB567B);
+			TZ_PROFZONE("object_storage - set object capacity", 0xFFAB567B);
 			const std::size_t old_capacity = this->get_object_capacity(rh);
 			// early out if we dont need to do anything.
 			if(old_capacity == new_capacity)
@@ -645,14 +619,14 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-		std::span<const object_data> object_tree::get_object_internals(tz::gl::renderer_handle rh) const
+		std::span<const object_data> object_storage::get_object_internals(tz::gl::renderer_handle rh) const
 		{
 			return tz::gl::get_device().get_renderer(rh).get_resource(this->object_buffer)->data_as<const object_data>();
 		}
 
 //--------------------------------------------------------------------------------------------------
 
-		std::span<object_data> object_tree::get_object_internals(tz::gl::renderer_handle rh)
+		std::span<object_data> object_storage::get_object_internals(tz::gl::renderer_handle rh)
 		{
 			return tz::gl::get_device().get_renderer(rh).get_resource(this->object_buffer)->data_as<object_data>();
 		}
@@ -685,7 +659,7 @@ namespace tz::ren
 			// textures
 
 			this->vtx = vertex_wrangler(rinfo);
-			this->tree = object_tree(rinfo);
+			this->obj = object_storage(rinfo);
 
 			// TODO: replace with proper camera buffer.
 			rinfo.add_resource(tz::gl::buffer_resource::from_one(255u));
@@ -699,6 +673,57 @@ namespace tz::ren
 			rinfo.debug_name("Mesh Renderer - Render Pass");
 
 			this->render = tz::gl::get_device().create_renderer(rinfo);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		render_pass::object_handle render_pass::add_object(object_create_info create)
+		{
+			// add a new draw to the indirect buffer and the mesh locator buffer.
+			std::size_t old_count = this->compute.get_draw_count();
+			std::size_t old_capacity = this->compute.get_draw_capacity();
+			// remember: add new draws will increase the compute's draw count automatically.
+			// it will also increase the capacity if it needs to.
+			// note for free-list. will definitely need to add logic for that in compute pass.
+			// shouldn't need to do anything else here? just use the id we gave you and assume its valid.
+			std::size_t our_object_id = this->compute.add_new_draws(1);
+			if(old_count + 1 > old_capacity)
+			{
+				// we're over capacity.
+				// add_new_draws would've increased the capacity in some way.
+				// we will need to set the object buffer's capacity to match this.
+				std::size_t new_capacity = this->compute.get_draw_capacity();
+				tz::assert(old_capacity != new_capacity);
+				this->obj.set_object_capacity(this->render, new_capacity);
+			}
+
+			// we can now assume our object/mesh locator is ready to go, but is just empty and defaulted.
+			object_data& data = this->obj.get_object_internals(this->render)[old_count];
+			mesh_locator our_mesh = {};
+			if(create.mesh != tz::nullhand)
+			{
+				our_mesh = this->vtx.get_mesh(create.mesh);
+			}
+
+			// todo: write what we need into the object data.
+			data.colour_tint = create.colour_tint;
+			tz::assert(create.bound_textures.size() <= object_data::max_bound_textures, "add_object attempted with %zu bound textures. i'm afraid the implementation only supports %zu", create.bound_textures.size(), object_data::max_bound_textures);
+			// tell the compute pass about the mesh we want.
+			this->compute.set_mesh_at(our_object_id, our_mesh);
+
+			// finally, add this object as a node into our transform hierarchy.
+			if(create.parent != tz::nullhand)
+			{
+				std::optional<unsigned int> parent_node_id = this->tree.find_node(static_cast<std::size_t>(static_cast<tz::hanval>(init.parent)));
+				tz::assert(parent_node_id.has_value(), "add_object provided parent that was invalid.");
+				this->tree.add_node(create.local_transform, our_object_id, parent_node_id);
+			}
+			else
+			{
+				this->tree.add_node(create.local_transform, our_object_id);
+			}
+
+			return static_cast<tz::hanval>(our_object_id);
 		}
 	}	
 }
