@@ -18,6 +18,7 @@ namespace tz::ren
 	{
 		vertex_wrangler::vertex_wrangler(tz::gl::renderer_info& rinfo)
 		{
+			TZ_PROFZONE("vertex_wrangler - create", 0xFF02F3B5);
 			// create buffer resources with initial size.
 			// resizing is omega slow, but we dont want to eat tons of vram for tiny scenes.
 			// hopefully the initial vertex capacity is a sane compromise!
@@ -559,7 +560,7 @@ namespace tz::ren
 
 		mesh_locator compute_pass::get_mesh_at(std::size_t draw_id) const
 		{
-			TZ_PROFZONE("compute_pass - set mesh at", 0xFF97B354);
+			TZ_PROFZONE("compute_pass - get mesh at", 0xFF97B354);
 			std::span<const std::byte> meshloc_buffer_data = tz::gl::get_device().get_renderer(this->compute).get_resource(this->mesh_locator_buffer)->data();
 			// move sizeof(uint32_t) bytes forward in the meshloc buffer.
 			// remember, meshloc buffer consists of the count and then an array of mesh locators.
@@ -593,6 +594,7 @@ namespace tz::ren
 
 		bool compute_pass::get_visibility_at(std::size_t draw_id) const
 		{
+			TZ_PROFZONE("compute_pass - get visibility at", 0xFF97B354);
 			std::span<const std::uint32_t> visibility_buffer_data = tz::gl::get_device().get_renderer(this->compute).get_resource(this->draw_visibility_buffer)->data_as<const std::uint32_t>();
 			tz::assert(draw_id < this->get_draw_count(), "Attempted to set visibility at draw-id %zu, but the draw-count was only %zu. You're probably mis-using the API.", draw_id, this->get_draw_count());
 			return visibility_buffer_data[draw_id];
@@ -662,6 +664,7 @@ namespace tz::ren
 
 		void compute_pass::remove_draw(std::size_t draw_id)
 		{
+			TZ_PROFZONE("compute_pass - remove draw", 0xFF97B354);
 			this->set_mesh_at(draw_id, mesh_locator{});
 			// disabling visibility is pretty unnecessary, as empty mesh locators are skipped over anyway.
 			//this->set_visibility_at(draw_id, false);
@@ -867,6 +870,7 @@ namespace tz::ren
 
 		render_pass::mesh_handle render_pass::add_mesh(mesh m)
 		{
+			TZ_PROFZONE("render_pass - add mesh", 0xFFF1F474);
 			return this->vtx.add_mesh(this->render, m);
 		}
 
@@ -881,6 +885,7 @@ namespace tz::ren
 
 		void render_pass::remove_mesh(mesh_handle m)
 		{
+			TZ_PROFZONE("render_pass - remove mesh", 0xFFF1F474);
 			// note: vertex_wrangler removing the mesh simply empties its mesh locator and makes the vertex/index regions available again.
 			// however, the draw list contains its own set of mesh_locators which are meant to be kept in-sync with the vertex_wrangler's list of locators.
 			// therefore we must null out both.
@@ -901,6 +906,7 @@ namespace tz::ren
 
 		render_pass::texture_handle render_pass::add_texture(const tz::io::image& img)
 		{
+			TZ_PROFZONE("render_pass - add texture", 0xFFF1F474);
 			return this->tex.add_texture(this->render, img);
 		}
 
@@ -995,6 +1001,7 @@ namespace tz::ren
 
 		void render_pass::remove_object(render_pass::object_handle oh)
 		{
+			TZ_PROFZONE("render_pass - remove object", 0xFFF1F474);
 			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
 			this->compute.remove_draw(hanval);
 			this->get_object(oh) = object_data{};
