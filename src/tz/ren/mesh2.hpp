@@ -74,6 +74,7 @@ namespace tz::ren
 			// you should *not* do this very often.
 			mesh_handle add_mesh(tz::gl::renderer_handle rh, mesh m);
 			const mesh_locator& get_mesh(mesh_handle h) const;
+			mesh_handle try_find_mesh_handle(const mesh_locator& loc) const;
 			// removes a mesh, freeing up its indices/vertex to be used by someone else.
 			// this is always very fast - no data is actually erased, just bookkeeping.
 			void remove_mesh(mesh_handle m);
@@ -139,7 +140,9 @@ namespace tz::ren
 			// this is always very slow. 2 renderer edits.
 			void set_draw_capacity(std::size_t new_capacity);
 			// set the mesh of an existing draw to something else. does not affect draw count. draw_id needs to be less than draw count.
+			mesh_locator get_mesh_at(std::size_t draw_id) const;
 			void set_mesh_at(std::size_t draw_id, mesh_locator loc);
+			bool get_visibility_at(std::size_t draw_id) const;
 			void set_visibility_at(std::size_t draw_id, bool visible);
 			// add N new draws. increments the draw count N times. if draw capacity is too small, increase it by N or double its capacity, whichever is bigger.
 			// mesh at the new draw will be an empty mesh locator. you're free to change it to something else.
@@ -150,6 +153,7 @@ namespace tz::ren
 			void remove_draw(std::size_t draw_id);
 
 			tz::gl::resource_handle get_draw_indirect_buffer() const;
+			std::size_t get_draw_free_list_count() const;
 			static constexpr std::size_t initial_max_draw_count = 1024u;
 		private:
 			// sets the draw count to something new.
@@ -271,6 +275,7 @@ namespace tz::ren
 			texture_manager tex = {};
 			object_storage obj = {};
 			tz::transform_hierarchy<std::uint32_t> tree = {};
+			int dbgui_object_cursor = 0;
 		};
 	}
 

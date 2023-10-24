@@ -122,6 +122,18 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		vertex_wrangler::mesh_handle vertex_wrangler::try_find_mesh_handle(const mesh_locator& loc) const
+		{
+			auto iter = std::find(this->mesh_locators.begin(), this->mesh_locators.end(), loc);
+			if(iter == this->mesh_locators.end() || loc == mesh_locator{})
+			{
+				return tz::nullhand;
+			}
+			return static_cast<tz::hanval>(std::distance(this->mesh_locators.begin(), iter));
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		void vertex_wrangler::remove_mesh(mesh_handle mh)
 		{
 			TZ_PROFZONE("vertex_wrangler - remove mesh", 0xFF02F3B5);
@@ -534,6 +546,23 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		mesh_locator compute_pass::get_mesh_at(std::size_t draw_id) const
+		{
+			TZ_PROFZONE("compute_pass - set mesh at", 0xFF97B354);
+			std::span<const std::byte> meshloc_buffer_data = tz::gl::get_device().get_renderer(this->compute).get_resource(this->mesh_locator_buffer)->data();
+			// move sizeof(uint32_t) bytes forward in the meshloc buffer.
+			// remember, meshloc buffer consists of the count and then an array of mesh locators.
+			// the length of that array is our draw capacity.
+			meshloc_buffer_data = meshloc_buffer_data.subspan(sizeof(std::uint32_t));
+			tz::assert(meshloc_buffer_data.size_bytes() % sizeof(mesh_locator) == 0, "Mesh Locator buffer resource, post-count should have remaining size divisible by sizeof(mesh_locator) (%zu), but its size is %zu. Internal logic error.", sizeof(mesh_locator), meshloc_buffer_data.size_bytes());
+			auto* loc_array = reinterpret_cast<const mesh_locator*>(meshloc_buffer_data.data());
+			tz::assert(draw_id < this->get_draw_count(), "Attempted to set mesh at draw-id %zu, but the draw-count was only %zu. You can only set mesh at a previously-assigned draw-id (e.g via add_object)");
+			tz::assert(draw_id < this->get_draw_capacity(), "Attempted to set mesh at draw-id %zu, but the draw-capacity is %zu. You're probably mis-using the API", draw_id, this->get_draw_capacity());
+			return loc_array[draw_id];
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		void compute_pass::set_mesh_at(std::size_t draw_id, mesh_locator loc)
 		{
 			TZ_PROFZONE("compute_pass - set mesh at", 0xFF97B354);
@@ -551,11 +580,21 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		bool compute_pass::get_visibility_at(std::size_t draw_id) const
+		{
+			std::span<const std::uint32_t> visibility_buffer_data = tz::gl::get_device().get_renderer(this->compute).get_resource(this->draw_visibility_buffer)->data_as<const std::uint32_t>();
+			tz::assert(draw_id < this->get_draw_count(), "Attempted to set visibility at draw-id %zu, but the draw-count was only %zu. You're probably mis-using the API.", draw_id, this->get_draw_count());
+			return visibility_buffer_data[draw_id];
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		void compute_pass::set_visibility_at(std::size_t draw_id, bool visible)
 		{
 			TZ_PROFZONE("compute_pass - set visibility at", 0xFF97B354);
 			std::span<std::uint32_t> visibility_buffer_data = tz::gl::get_device().get_renderer(this->compute).get_resource(this->draw_visibility_buffer)->data_as<std::uint32_t>();
 			tz::assert(draw_id < this->get_draw_count(), "Attempted to set visibility at draw-id %zu, but the draw-count was only %zu. You're probably mis-using the API.", draw_id, this->get_draw_count());
+			visibility_buffer_data[draw_id] = visible;
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -624,6 +663,13 @@ namespace tz::ren
 		tz::gl::resource_handle compute_pass::get_draw_indirect_buffer() const
 		{
 			return this->draw_indirect_buffer;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::size_t compute_pass::get_draw_free_list_count() const
+		{
+			return this->draw_id_free_list.size();
 		}
 
 //--------------------------------------------------------------------------------------------------
