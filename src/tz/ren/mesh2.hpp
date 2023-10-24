@@ -75,6 +75,7 @@ namespace tz::ren
 			mesh_handle add_mesh(tz::gl::renderer_handle rh, mesh m);
 			const mesh_locator& get_mesh(mesh_handle h) const;
 			mesh_handle try_find_mesh_handle(const mesh_locator& loc) const;
+			std::size_t get_mesh_count(bool include_free_list = false) const;
 			// removes a mesh, freeing up its indices/vertex to be used by someone else.
 			// this is always very fast - no data is actually erased, just bookkeeping.
 			void remove_mesh(mesh_handle m);
@@ -154,6 +155,7 @@ namespace tz::ren
 
 			tz::gl::resource_handle get_draw_indirect_buffer() const;
 			std::size_t get_draw_free_list_count() const;
+			bool is_in_free_list(std::size_t draw_id) const;
 			static constexpr std::size_t initial_max_draw_count = 1024u;
 		private:
 			// sets the draw count to something new.
@@ -260,13 +262,20 @@ namespace tz::ren
 			void dbgui_texture();
 			void dbgui_objects();
 
+			std::size_t get_mesh_count(bool include_free_list = false) const;
 			mesh_handle add_mesh(mesh m);
+			const mesh_locator& get_mesh(mesh_handle m) const;
+			void remove_mesh(mesh_handle m);
+
 			texture_handle add_texture(const tz::io::image& img);
 
+			std::size_t get_object_count(bool include_free_list = false) const;
 			object_handle add_object(object_create_info create);
 			const object_data& get_object(object_handle oh) const;
 			object_data& get_object(object_handle oh);
 			void remove_object(object_handle oh);
+		protected:
+			bool object_is_in_free_list(object_handle oh) const;
 		private:
 			compute_pass compute;
 			tz::gl::renderer_handle render = tz::nullhand;
@@ -284,8 +293,10 @@ namespace tz::ren
 	public:
 		using info = impl::render_pass::info;
 		using mesh = impl::mesh;
+		using mesh_locator = impl::mesh_locator;
 		mesh_renderer2(info i = {});
-		void dbgui();
+		void dbgui(bool include_operations = true);
+		void dbgui_operations();
 	};
 }
 

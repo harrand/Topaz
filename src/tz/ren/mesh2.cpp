@@ -134,6 +134,17 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		std::size_t vertex_wrangler::get_mesh_count(bool include_free_list) const
+		{
+			if(!include_free_list)
+			{
+				return this->mesh_locators.size() - this->mesh_handle_free_list.size();
+			}
+			return this->mesh_locators.size();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		void vertex_wrangler::remove_mesh(mesh_handle mh)
 		{
 			TZ_PROFZONE("vertex_wrangler - remove mesh", 0xFF02F3B5);
@@ -674,6 +685,13 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		bool compute_pass::is_in_free_list(std::size_t draw_id) const
+		{
+			return std::find(this->draw_id_free_list.begin(), this->draw_id_free_list.end(), draw_id) != this->draw_id_free_list.end();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		void compute_pass::set_draw_count(std::size_t new_draw_count)
 		{
 			TZ_PROFZONE("compute_pass - set draw count", 0xFF97B354);
@@ -840,6 +858,13 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		std::size_t render_pass::get_mesh_count(bool include_free_list) const
+		{
+			return this->vtx.get_mesh_count(include_free_list);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		render_pass::mesh_handle render_pass::add_mesh(mesh m)
 		{
 			return this->vtx.add_mesh(this->render, m);
@@ -847,9 +872,47 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		const mesh_locator& render_pass::get_mesh(mesh_handle m) const
+		{
+			return this->vtx.get_mesh(m);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::remove_mesh(mesh_handle m)
+		{
+			// note: vertex_wrangler removing the mesh simply empties its mesh locator and makes the vertex/index regions available again.
+			// however, the draw list contains its own set of mesh_locators which are meant to be kept in-sync with the vertex_wrangler's list of locators.
+			// therefore we must null out both.
+			// first we go through all objects. if they use this mesh handle, set them to use an empty mesh locator (as the mesh at this handle is about to become an empty locator)
+			for(std::size_t i = 0; i < this->compute.get_draw_count(); i++)
+			{
+				const auto& loc = this->compute.get_mesh_at(i);	
+				if(this->vtx.try_find_mesh_handle(loc) == m)
+				{
+					this->compute.set_mesh_at(i, {});
+				}
+			}
+			// secondly, tell the vertex_wrangler to remove the mesh. that sets its copy to the empty locator, *and* makes its vertex/index data available for a new mesh.
+			this->vtx.remove_mesh(m);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		render_pass::texture_handle render_pass::add_texture(const tz::io::image& img)
 		{
 			return this->tex.add_texture(this->render, img);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::size_t render_pass::get_object_count(bool include_free_list) const
+		{
+			if(!include_free_list)
+			{
+				return this->compute.get_draw_count() - this->compute.get_draw_free_list_count();
+			}
+			return this->compute.get_draw_count();
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -949,6 +1012,13 @@ namespace tz::ren
 					this->remove_object(static_cast<tz::hanval>(child.data));
 				}
 			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		bool render_pass::object_is_in_free_list(object_handle oh) const
+		{
+			return this->compute.is_in_free_list(static_cast<std::size_t>(static_cast<tz::hanval>(oh)));
 		}
 
 //--------------------------------------------------------------------------------------------------
