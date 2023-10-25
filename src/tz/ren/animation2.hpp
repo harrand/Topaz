@@ -39,6 +39,14 @@ namespace tz::ren
 		// remove a gltf.
 		// please note: any animated objects that use this gltf will also be removed, meaning those animated_object_handles become invalidated.
 		void remove_gltf(gltf_handle handle);
+
+		struct animated_objects_create_info
+		{
+			gltf_handle gltf = tz::nullhand;
+			object_handle parent = tz::nullhand;
+			tz::trs local_transform = {};
+		};
+		animated_objects_handle add_animated_objects(animated_objects_create_info info);
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;
@@ -101,6 +109,7 @@ namespace tz::ren
 		void gltf_load_meshes(gltf_data& gltf);
 		// populate all the topaz textures (and some metadata) contained within the gltf.
 		void gltf_load_textures(gltf_data& gltf);
+		void animated_object_expand_gltf_node(animated_object_data& animated_objects, tz::io::gltf_node node, std::optional<std::size_t> parent_node_id);
 
 		// list of all added gltfs
 		std::vector<gltf_data> gltfs = {};

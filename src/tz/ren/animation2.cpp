@@ -1,5 +1,6 @@
 #include "tz/ren/animation2.hpp"
 #include "tz/core/job/job.hpp"
+#include <winuser.h>
 
 namespace tz::ren
 {
@@ -67,6 +68,54 @@ namespace tz::ren
 		// todo: remove all animated objects that use this gltf. if the gltf goes, gonna crash if animated objects are trying to use it.
 		this->gltfs[hanval] = gltf_data{};
 		this->gltf_free_list.push_back(handle);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer2::animated_objects_handle animation_renderer2::add_animated_objects(animated_objects_create_info info)
+	{
+		TZ_PROFZONE("add_gltf - add animated objects", 0xFFE54550);
+		animated_object_data data
+		{
+			.gltf = info.gltf
+		};
+		// todo: populate following fields of animated_object_data:
+		// - A: node_object_map (and a way to get it into the shader)
+		// - B: objects
+		
+		// Section A
+
+		// Section B
+		// so firstly we create an empty parent object, which everyone will be a child of.
+		// then we'll iterate through the gltf nodes and spawn all our subobjects.
+		data.objects.push_back(mesh_renderer2::add_object
+		({
+			.local_transform = info.local_transform,
+			.parent = info.parent
+		}));
+		auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(info.gltf));
+		const auto& gltf = this->gltfs[gltf_hanval];
+		
+		auto root_nodes = gltf.data.get_root_nodes();
+		for(tz::io::gltf_node node : root_nodes)
+		{
+			// figure out what the hell our node id is...
+			this->animated_object_expand_gltf_node(data, node, std::nullopt);
+		}
+
+		// finally, find a slot for our animated objects, put it there and return the handle.
+		auto hanval = this->animated_objects.size();
+		if(this->animated_objects_free_list.size())
+		{
+			hanval = static_cast<std::size_t>(static_cast<tz::hanval>(this->animated_objects_free_list.front()));
+			this->animated_objects_free_list.pop_front();
+			this->animated_objects[hanval] = data;
+		}
+		else
+		{
+			this->animated_objects.push_back(data);
+		}
+		return static_cast<tz::hanval>(hanval);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -209,4 +258,95 @@ namespace tz::ren
 	}
 
 //--------------------------------------------------------------------------------------------------
+	
+	void animation_renderer2::animated_object_expand_gltf_node(animated_object_data& animated_objects, tz::io::gltf_node node, std::optional<std::size_t> parent_node_id)
+	{
+		TZ_PROFZONE("add animated objects - expand gltf node", 0xFFE54550);
+		tz::assert(animated_objects.objects.size() >= 1, "Expanding node expected a root node to already exist, but the object list is empty. Logic error.");
+		object_handle root_node = animated_objects.objects.front();
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(animated_objects.gltf))];
+
+		object_handle this_parent = tz::nullhand;
+		// figure out what our parent is first.
+		if(parent_node_id.has_value())
+		{
+			// our parent is another gltf node that was added earlier.
+			// in which case we know what its object id is.
+			this_parent = animated_objects.node_object_map.at(parent_node_id.value());
+		}
+		else
+		{
+			// then our parent is just the root node.
+			this_parent = root_node;
+		}
+
+		// this gltf node maps to an object.
+		object_handle this_object = mesh_renderer2::add_object
+		({
+			.local_transform = node.transform,
+			.mesh = tz::nullhand,
+			.parent = this_parent,
+			.bound_textures = {},
+		});
+		// add me as a subobject to the animated objects.
+		animated_objects.objects.push_back(this_object);
+		// map me to this node id.
+		animated_objects.node_object_map[node.id] = this_object;
+		// todo: label us with a name?
+
+		if(node.mesh != static_cast<std::size_t>(-1))
+		{
+			// this node has a mesh attached.
+			// the mesh may have multiple submeshes.
+			// for each submesh, create a new child object, set that mesh to the submesh and make sure we're its parent.
+			// remember, this is only a workaround for not supporting multiple submeshes per object - the child object should have the exact same transforms etc...
+			const std::size_t submesh_count = gltf.data.get_meshes()[node.mesh].submeshes.size();
+			// this is where the metadata comes in handy!
+			const std::size_t submesh_offset = gltf.metadata.mesh_submesh_indices[node.mesh];
+			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
+			{
+				std::vector<impl::texture_locator> bound_textures = {};
+				if(gltf.metadata.submesh_materials[i].has_value())
+				{
+					const tz::io::gltf_material& mat = gltf.metadata.submesh_materials[i].value();
+					tz::assert(gltf.textures.size() > mat.color_texture_id, "GLTF node material specifies texture id %zu, which does not seem to exist within the gltf", mat.color_texture_id);
+					tz::assert(mat.color_texcoord_id == 0, "animation_renderer2 only supports one texcoord for all properties of a material. Albedo property wants a texcoord of id %zu", mat.color_texcoord_id);
+					tz::assert(bound_textures.size() == 0);
+					// this is texture binding 0. albedo.
+					bound_textures.push_back(impl::texture_locator
+					{
+						.colour_tint = mat.color_factor.swizzle<0, 1, 2>(),
+						.texture = gltf.textures[mat.color_texture_id]
+					});
+					// is there a metallic roughness texture?
+					if(mat.metallic_roughness_texture_id != static_cast<std::size_t>(-1))
+					{
+						// yes.
+						// this is texture binding 1. metallic roughness.
+						tz::assert(mat.metallic_roughness_texcoord_id == 0, "animation_renderer2 only supports one texcoord for all properties of a material. Metallic roughness property wants a texcoord of id %zu", mat.metallic_roughness_texcoord_id);
+						tz::assert(bound_textures.size() == 1);
+						bound_textures.push_back(impl::texture_locator
+						{
+							.colour_tint = tz::vec3{0.0f, mat.roughness_factor, mat.metallic_factor},
+							.texture = gltf.textures[mat.metallic_roughness_texture_id]
+						});
+					}
+				}
+				object_handle child = mesh_renderer2::add_object
+				({
+					.local_transform = {},
+					.mesh = gltf.meshes[i],
+					.parent = this_object,
+					.bound_textures = bound_textures,
+				});
+				// todo: give this sub-subobject a name too if you want?
+				animated_objects.objects.push_back(child);
+			}
+		}
+
+		for(std::size_t child_idx : node.children)
+		{
+			this->animated_object_expand_gltf_node(animated_objects, gltf.data.get_nodes()[child_idx], node.id);
+		}
+	}
 }
