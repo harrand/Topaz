@@ -38,6 +38,7 @@ namespace tz::ren
 			.meshes = {},
 			.textures = {}
 		};
+		this->gltf_load_skins(data);
 		this->gltf_load_meshes(data);
 		this->gltf_load_textures(data);
 		// then we create the gltf data, put it in a free slot, and return the handle.
@@ -81,6 +82,22 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);
 
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::gltf_load_skins(gltf_data& gltf)
+	{
+		TZ_PROFZONE("add_gltf - load skins", 0xFFE54550);
+		gltf.metadata.has_skins = !gltf.data.get_skins().empty();
+		for(tz::io::gltf_skin skin : gltf.data.get_skins())
+		{
+			for(std::size_t i = 0; i < skin.joints.size(); i++)
+			{
+				std::uint32_t node_id = skin.joints[i];
+				gltf.metadata.joint_node_map[i] = node_id;
+			}
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------

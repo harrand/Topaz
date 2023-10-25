@@ -96,6 +96,7 @@ namespace tz::ren
 			std::vector<texture_handle> textures = {};
 		};
 
+		void gltf_load_skins(gltf_data& gltf);
 		// populate all the topaz meshes (and some metadata) contained within the gltf.
 		void gltf_load_meshes(gltf_data& gltf);
 		// populate all the topaz textures (and some metadata) contained within the gltf.
