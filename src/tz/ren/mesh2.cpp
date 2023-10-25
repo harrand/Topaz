@@ -1063,6 +1063,20 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		tz::gl::renderer_handle render_pass::get_compute_pass() const
+		{
+			return this->compute.get_compute_pass();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		tz::gl::renderer_handle render_pass::get_render_pass() const
+		{
+			return this->render;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		bool render_pass::object_is_in_free_list(object_handle oh) const
 		{
 			return this->compute.is_in_free_list(static_cast<std::size_t>(static_cast<tz::hanval>(oh)));

@@ -29,6 +29,7 @@ namespace tz::ren
 			std::string_view custom_fragment_spirv = {};
 			tz::gl::renderer_options custom_options = {};
 			std::size_t texture_capacity = 1024u;
+			std::vector<tz::gl::buffer_resource> extra_buffers = {};
 		};
 		animation_renderer2(info i);
 		// update positions of all objects and animations.
@@ -52,6 +53,8 @@ namespace tz::ren
 		bool gltf_is_in_free_list(gltf_handle handle) const;
 		// advance all animated objects. invoked once per update. may run on multiple threads.
 		void animation_advance(float delta);
+		tz::gl::resource_handle get_joint_buffer_handle() const;
+		std::size_t get_joint_buffer_size() const;
 
 		// represents a single animated object.
 		struct animated_object_data
@@ -59,6 +62,13 @@ namespace tz::ren
 			// gltf nodes map to objects almost 1:many.
 			// nearly always its a direct 1:1 mapping, but if the node has a mesh comprised of multiple submeshes, then it maps to a single object with children with each submesh.
 			std::map<std::size_t, object_handle> node_object_map = {};
+			// each animated object owns a part of the joint buffer.
+			// the next 2 variables comprise this owned region.
+			// at `joint_buffer_offset` bytes into the joint buffer, an array of object-ids can be found (of size joint_count)
+			// the i'th value of this array represents the object-id corresponding to the i'th joint for this particular animated object.
+			std::size_t joint_buffer_offset = 0;
+			// if joint_count is zero, then this object is not really animated (this must match the joint count of the corresponding gltf skin).
+			std::size_t joint_count = 0;
 			// which gltf is this animated object associated with?
 			gltf_handle gltf = tz::nullhand;
 			// list of all subobjects comprising this animated object.
@@ -103,7 +113,10 @@ namespace tz::ren
 			// the gltf_materials contain more information about these texture ids.
 			std::vector<texture_handle> textures = {};
 		};
-
+		// in our constructor we could have extra buffers specified.
+		// however, as an animation renderer, we also have our own extra buffers we need to add before the other extras.
+		// this method combines them.
+		static std::vector<tz::gl::buffer_resource> evaluate_extra_buffers(const info& i);
 		void gltf_load_skins(gltf_data& gltf);
 		// populate all the topaz meshes (and some metadata) contained within the gltf.
 		void gltf_load_meshes(gltf_data& gltf);

@@ -1,6 +1,9 @@
 #include "tz/ren/animation2.hpp"
 #include "tz/core/job/job.hpp"
-#include <winuser.h>
+
+#include "tz/gl/imported_shaders.hpp"
+#include ImportedShaderHeader(animation, vertex)
+#include ImportedShaderHeader(animation, fragment)
 
 namespace tz::ren
 {
@@ -9,10 +12,11 @@ namespace tz::ren
 	animation_renderer2::animation_renderer2(info i):
 	mesh_renderer2
 	({
-		.custom_vertex_spirv = i.custom_vertex_spirv,
-		.custom_fragment_spirv = i.custom_fragment_spirv,
+		.custom_vertex_spirv = i.custom_vertex_spirv.empty() ? ImportedShaderSource(animation, vertex) : i.custom_vertex_spirv,
+		.custom_fragment_spirv = i.custom_fragment_spirv.empty() ? ImportedShaderSource(animation, fragment) : i.custom_fragment_spirv,
 		.custom_options = i.custom_options,
-		.texture_capacity = i.texture_capacity
+		.texture_capacity = i.texture_capacity,
+		.extra_buffers = this->evaluate_extra_buffers(i)
 	})
 	{
 
@@ -103,6 +107,10 @@ namespace tz::ren
 			this->animated_object_expand_gltf_node(data, node, std::nullopt);
 		}
 
+		// Section C
+		// we need to know whether the gltf we're against has skins or not.
+		// if it does, we're going to need to write into the joint buffer (extra buffer 0).
+
 		// finally, find a slot for our animated objects, put it there and return the handle.
 		auto hanval = this->animated_objects.size();
 		if(this->animated_objects_free_list.size())
@@ -131,6 +139,41 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);
 
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::gl::resource_handle animation_renderer2::get_joint_buffer_handle() const
+	{
+		tz::assert(mesh_renderer2::get_extra_buffer_count() >= 1);
+		return mesh_renderer2::get_extra_buffer(0);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	/*static*/ std::vector<tz::gl::buffer_resource> animation_renderer2::evaluate_extra_buffers(const info& i)
+	{
+		std::vector<tz::gl::buffer_resource> ret = i.extra_buffers;
+		// create our joint buffer.
+		// what is the joint buffer?
+		// so each gltf has a set of nodes. it may also have a skin.
+		// a skin consists of a set of joints, which are node-ids.
+		// the joint-id represents the index into this array of joints.
+		// we want to have this exact list within the joint buffer for each animated object.
+		// however, instead of the joint-id mapping to a node-id, it instead maps directly onto an object-id
+		// this means that the shader can simply use its joint-id to index (with an offset) into this buffer to instantly get the object the joint represents.
+		// at initialisation of course we have no gltfs and thus no joints.
+		// we could start with a tiny buffer and just re-size whenever we add new objects, but that would be shit perf.
+		// instead, we start with an initial capacity, and whenever a new animated object is added, find a region and write into it (saving the offset)
+		// if we run out of space to do that *then* we can resize.
+		constexpr std::size_t initial_joints_capacity = 1024;
+		std::array<std::uint32_t, initial_joints_capacity> initial_joints_data;
+		std::fill(initial_joints_data.begin(), initial_joints_data.end(), 0u);
+		tz::gl::buffer_resource joint_buffer = tz::gl::buffer_resource::from_one(initial_joints_data);
+
+		// joint_buffer will be extra buffer 0.
+		ret.insert(ret.begin(), joint_buffer);
+		return ret;
 	}
 
 //--------------------------------------------------------------------------------------------------

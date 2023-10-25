@@ -279,6 +279,9 @@ namespace tz::ren
 
 			tz::gl::resource_handle get_extra_buffer(std::size_t extra_buffer_id) const;
 			std::size_t get_extra_buffer_count() const;
+
+			tz::gl::renderer_handle get_compute_pass() const;
+			tz::gl::renderer_handle get_render_pass() const;
 		protected:
 			bool object_is_in_free_list(object_handle oh) const;
 		private:
