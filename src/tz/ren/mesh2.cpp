@@ -807,6 +807,7 @@ namespace tz::ren
 			// object buffer
 			// camera buffer (NYI)
 			// draw indirect buffer ref
+			// <extra buffers>
 			// textures
 
 			this->vtx = vertex_wrangler(rinfo);
@@ -816,16 +817,33 @@ namespace tz::ren
 			std::array<tz::mat4, 2> camera_initial_data;
 			std::fill(camera_initial_data.begin(), camera_initial_data.end(), tz::mat4::identity());
 			rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data));
-			// note: vertex shader in its current state assumes an extra buffer as it uses the old implementation.
-			// use a dummy buffer for now.
-			// TODO: remove
-			rinfo.add_resource(tz::gl::buffer_resource::from_one(255u));
 
 			// vertex wrangler already set our index buffer, but we need to set the draw indirect buffer ourselves.
 			// first retrieve it from compute pass
 			this->draw_indirect_ref = rinfo.ref_resource(this->compute.get_compute_pass(), this->compute.get_draw_indirect_buffer());
-			rinfo.state().graphics.draw_buffer = this->draw_indirect_ref;
 			// then set it up.
+			rinfo.state().graphics.draw_buffer = this->draw_indirect_ref;
+
+			// after that, add all the extra buffers the user requested.
+			// we're not gonna do anything with these, just expose them to the user to deal with.
+			if(i.extra_buffers.size())
+			{
+				for(std::size_t id = 0; id < i.extra_buffers.size(); id++)
+				{
+					tz::gl::resource_handle resh = rinfo.add_resource(i.extra_buffers[id]);
+					auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(resh));
+					if(id == 0)
+					{
+						this->extra_buf_hanval_first = hanval;
+					}
+					if(id == (i.extra_buffers.size() - 1))
+					{
+						this->extra_buf_hanval_last = hanval;
+					}
+				}
+			}
+
+			// finally, add textures.
 			this->tex = texture_manager(rinfo, i.texture_capacity);
 			rinfo.debug_name("Mesh Renderer 2.0 - Render Pass");
 
@@ -1019,6 +1037,28 @@ namespace tz::ren
 					this->remove_object(static_cast<tz::hanval>(child.data));
 				}
 			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		tz::gl::resource_handle render_pass::get_extra_buffer(std::size_t extra_buffer_id) const
+		{
+			tz::assert(this->extra_buf_hanval_first.has_value(), "Attempted to retrieve extra buffer %zu, but there were no extra buffers specified.", extra_buffer_id);
+			tz::assert(extra_buffer_id < this->get_extra_buffer_count(), "Attempted to retrieve extra buffer %zu, but there were only %zu extra buffers specified", extra_buffer_id, this->get_extra_buffer_count());
+			return static_cast<tz::hanval>(this->extra_buf_hanval_first.value() + extra_buffer_id);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		std::size_t render_pass::get_extra_buffer_count() const
+		{
+			if(this->extra_buf_hanval_first.has_value() && this->extra_buf_hanval_last.has_value())
+			{
+				// remember, if they're the same value then theres one buffer.
+				// if either are nullopt, then there's none.
+				return 1u + this->extra_buf_hanval_last.value() - this->extra_buf_hanval_first.value();
+			}
+			return 0u;
 		}
 
 //--------------------------------------------------------------------------------------------------

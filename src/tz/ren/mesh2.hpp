@@ -1,6 +1,7 @@
 #ifndef TZ_REN_MESH_RENDERER2_HPP
 #define TZ_REN_MESH_RENDERER2_HPP
 #include "tz/core/data/transform_hierarchy.hpp"
+#include "tz/gl/resource.hpp"
 #include "tz/io/image.hpp"
 
 namespace tz::ren
@@ -243,6 +244,7 @@ namespace tz::ren
 				std::string_view custom_fragment_spirv = {};
 				tz::gl::renderer_options custom_options = {};
 				std::size_t texture_capacity = 1024u;
+				std::vector<tz::gl::buffer_resource> extra_buffers = {};
 			};
 
 			struct object_create_info
@@ -274,6 +276,9 @@ namespace tz::ren
 			const object_data& get_object(object_handle oh) const;
 			object_data& get_object(object_handle oh);
 			void remove_object(object_handle oh);
+
+			tz::gl::resource_handle get_extra_buffer(std::size_t extra_buffer_id) const;
+			std::size_t get_extra_buffer_count() const;
 		protected:
 			bool object_is_in_free_list(object_handle oh) const;
 		private:
@@ -284,6 +289,8 @@ namespace tz::ren
 			texture_manager tex = {};
 			object_storage obj = {};
 			tz::transform_hierarchy<std::uint32_t> tree = {};
+			std::optional<std::size_t> extra_buf_hanval_first = std::nullopt;
+			std::optional<std::size_t> extra_buf_hanval_last = std::nullopt;
 			int dbgui_object_cursor = 0;
 		};
 	}
