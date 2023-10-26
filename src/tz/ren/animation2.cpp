@@ -513,6 +513,18 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	std::size_t animation_renderer2::get_joint_count() const
+	{
+		std::size_t joints = 0;
+		for(const auto& animobj : this->animated_objects)
+		{
+			joints += animobj.joint_count;
+		}
+		return joints;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	std::size_t animation_renderer2::get_joint_capacity() const
 	{
 		return tz::gl::get_device().get_renderer(mesh_renderer2::get_render_pass()).get_resource(this->get_joint_buffer_handle())->data_as<const std::uint32_t>().size();

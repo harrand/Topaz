@@ -129,6 +129,7 @@ namespace tz::ren
 		void animated_object_write_inverse_bind_matrices(animated_object_data& animated_objects);
 		tz::vec2ui32 animated_object_write_joints(animated_object_data& animated_objects);
 		std::optional<std::size_t> try_find_joint_region(std::size_t joint_count) const;
+		std::size_t get_joint_count() const;
 		std::size_t get_joint_capacity() const;
 		void set_joint_capacity(std::size_t new_joint_capacity);
 		void dbgui_animations();
