@@ -141,6 +141,13 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	bool animation_renderer2::animated_objects_are_in_free_list(animated_objects_handle handle) const
+	{
+		return std::find(this->animated_objects_free_list.begin(), this->animated_objects_free_list.end(), handle) != this->animated_objects_free_list.end();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	void animation_renderer2::animation_advance(float delta)
 	{
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);

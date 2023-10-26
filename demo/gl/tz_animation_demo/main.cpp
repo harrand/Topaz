@@ -81,7 +81,11 @@ int main()
 				{
 					if(ImGui::Begin("Animation Renderer", &dbgui_data.mesh_renderer_enabled))
 					{
-						//ar.dbgui();
+						if(ImGui::BeginTabBar("#12345678"))
+						{
+							ar.dbgui();
+							ImGui::EndTabBar();
+						}
 						ImGui::End();
 					}
 				}

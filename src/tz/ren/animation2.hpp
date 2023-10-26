@@ -35,6 +35,7 @@ namespace tz::ren
 		animation_renderer2();
 		// update positions of all objects and animations.
 		void update(float delta);
+		void dbgui();
 		// add a new gltf. try not to add duplicates - share gltfs as much as possible.
 		// this is an expensive operation, especially if the gltf is complicated - you probably want to add these ahead-of-time.
 		gltf_handle add_gltf(tz::io::gltf gltf);
@@ -53,6 +54,7 @@ namespace tz::ren
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;
+		bool animated_objects_are_in_free_list(animated_objects_handle handle) const;
 		// advance all animated objects. invoked once per update. may run on multiple threads.
 		void animation_advance(float delta);
 		tz::gl::resource_handle get_joint_buffer_handle() const;
@@ -129,6 +131,7 @@ namespace tz::ren
 		std::optional<std::size_t> try_find_joint_region(std::size_t joint_count) const;
 		std::size_t get_joint_capacity() const;
 		void set_joint_capacity(std::size_t new_joint_capacity);
+		void dbgui_animations();
 
 		// list of all added gltfs
 		std::vector<gltf_data> gltfs = {};
@@ -138,6 +141,7 @@ namespace tz::ren
 		std::vector<animated_object_data> animated_objects = {};
 		// free-list for animated objects, to re-use animated_objects_handle.
 		std::deque<animated_objects_handle> animated_objects_free_list = {};
+		int dbgui_animated_objects_cursor = 0;
 	};
 }
 
