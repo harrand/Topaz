@@ -74,7 +74,19 @@ namespace tz::ren
 		TZ_PROFZONE("animation_renderer2 - remove gltf", 0xFFE54550);
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
 		tz::assert(!this->gltf_is_in_free_list(handle), "Double-free on gltf %zu - was already in free-list", hanval);
-		// todo: remove all animated objects that use this gltf. if the gltf goes, gonna crash if animated objects are trying to use it.
+		// remove all animated objects that use this gltf. if the gltf goes, gonna crash if animated objects are trying to use it.
+		for(std::size_t i = 0; i < this->animated_objects.size(); i++)
+		{
+			if(this->animated_objects[i].gltf == handle)
+			{
+				this->remove_animated_objects(static_cast<tz::hanval>(i));
+			}
+		}
+		const auto& gltf = this->gltfs[hanval];
+		for(mesh_handle mesh : gltf.meshes)
+		{
+			mesh_renderer2::remove_mesh(mesh);
+		}
 		this->gltfs[hanval] = gltf_data{};
 		this->gltf_free_list.push_back(handle);
 	}
@@ -130,6 +142,25 @@ namespace tz::ren
 			this->animated_objects.push_back(data);
 		}
 		return static_cast<tz::hanval>(hanval);
+	}
+
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::remove_animated_objects(animated_objects_handle handle)
+	{
+		TZ_PROFZONE("animation_renderer2 - remove animated objects", 0xFFE54550);
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		tz::assert(!this->animated_objects_are_in_free_list(handle), "Double free on animated objects handle %zu. Was already in free-list", hanval);
+
+		auto& aobj = this->animated_objects[hanval];
+		for(object_handle oh : aobj.objects)
+		{
+			mesh_renderer2::remove_object(oh);
+		}
+
+		this->animated_objects_free_list.push_back(handle);
+		this->animated_objects[hanval] = {};
 	}
 
 //--------------------------------------------------------------------------------------------------

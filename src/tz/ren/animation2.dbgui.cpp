@@ -90,11 +90,27 @@ namespace tz::ren
 					#if TZ_DEBUG
 						tz::report("GLTF handle %zu loaded from path \"%s\"", static_cast<std::size_t>(static_cast<tz::hanval>(handle)), load_path.c_str());
 					#else
-						void(handle);
+						(void)handle;
 					#endif
 					
 				}
 				ImGui::TreePop();
+			}
+			for(std::size_t i = 0; i < this->gltfs.size(); i++)
+			{
+				gltf_handle hanval = static_cast<tz::hanval>(i);
+				ImGui::Text("GLTF %zu", i);
+				ImGui::SameLine();
+				std::string button_label = "Remove##" + std::to_string(i);
+				if(!this->gltf_is_in_free_list(hanval) && ImGui::Button(button_label.c_str()))
+				{
+					this->remove_gltf(hanval);
+				}
+				else if(this->gltf_is_in_free_list(hanval))
+				{
+					ImGui::Text("(Free-list)");
+				}
+
 			}
 			ImGui::TreePop();
 		}
@@ -118,6 +134,21 @@ namespace tz::ren
 					#endif
 				}
 				ImGui::TreePop();
+			}
+			for(std::size_t i = 0; i < this->animated_objects.size(); i++)
+			{
+				auto hanval = static_cast<tz::hanval>(i);
+				ImGui::Text("Animated Objects %zu", i);
+				ImGui::SameLine();
+				std::string button_label = "Remove##" + std::to_string(i);
+				if(!this->animated_objects_are_in_free_list(hanval) && ImGui::Button(button_label.c_str()))
+				{
+					this->remove_animated_objects(hanval);
+				}
+				else if(this->animated_objects_are_in_free_list(hanval))
+				{
+					ImGui::Text("(Free-list)");
+				}
 			}
 			ImGui::TreePop();
 		}

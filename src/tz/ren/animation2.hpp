@@ -51,6 +51,7 @@ namespace tz::ren
 			tz::trs local_transform = {};
 		};
 		animated_objects_handle add_animated_objects(animated_objects_create_info info);
+		void remove_animated_objects(animated_objects_handle handle);
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;

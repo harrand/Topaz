@@ -672,7 +672,10 @@ namespace tz::ren
 			this->set_mesh_at(draw_id, mesh_locator{});
 			// disabling visibility is pretty unnecessary, as empty mesh locators are skipped over anyway.
 			//this->set_visibility_at(draw_id, false);
-			tz::assert(std::find(this->draw_id_free_list.begin(), this->draw_id_free_list.end(), draw_id) == this->draw_id_free_list.end(), "Attempted to remove draw-id %zu, but it was already in the free-list. Double remove?", draw_id);
+			if(std::find(this->draw_id_free_list.begin(), this->draw_id_free_list.end(), draw_id) != this->draw_id_free_list.end())
+			{
+				return;
+			}
 			this->draw_id_free_list.push_back(draw_id);
 		}
 
