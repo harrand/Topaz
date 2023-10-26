@@ -25,6 +25,10 @@ namespace tz::ren
 			if(this->mesh_locators.size())
 			{
 				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "Mesh %d", this->dbgui_mesh_cursor);
+				if(ImGui::Button("+") && this->dbgui_mesh_cursor < static_cast<int>(this->mesh_locators.size() - 1))
+				{
+					this->dbgui_mesh_cursor++;
+				}
 				ImGui::VSliderInt("##mesh_id", ImVec2{18.0f, slider_height}, &this->dbgui_mesh_cursor, 0, this->mesh_locators.size() - 1);
 				const auto& loc = this->mesh_locators[this->dbgui_mesh_cursor];
 				ImGui::SameLine();
@@ -44,6 +48,10 @@ namespace tz::ren
 					}
 				}
 				ImGui::EndChild();
+				if(ImGui::Button("-") && this->dbgui_mesh_cursor > 0)
+				{
+					this->dbgui_mesh_cursor--;
+				}
 			}
 		}
 
@@ -77,6 +85,10 @@ namespace tz::ren
 			if(this->get_object_count(true))
 			{
 				ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "Object %d", this->dbgui_object_cursor);
+				if(ImGui::Button("+") && this->dbgui_object_cursor < static_cast<int>(this->get_object_count(true) - 1))
+				{
+					this->dbgui_object_cursor++;
+				}
 				ImGui::VSliderInt("##object_id", ImVec2{18.0f, slider_height}, &this->dbgui_object_cursor, 0, this->get_object_count(true) - 1);
 				auto& obj = this->obj.get_object_internals(this->render)[this->dbgui_object_cursor];
 				ImGui::SameLine();
@@ -132,6 +144,10 @@ namespace tz::ren
 					}
 				}
 				ImGui::EndChild();
+				if(ImGui::Button("-") && this->dbgui_object_cursor > 0)
+				{
+					this->dbgui_object_cursor--;
+				}
 			}
 		}
 	}

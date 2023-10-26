@@ -34,6 +34,10 @@ namespace tz::ren
 		if(this->animated_objects.size())
 		{
 			ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "Animated Object %d", this->dbgui_animated_objects_cursor);
+			if(ImGui::Button("+") && this->dbgui_animated_objects_cursor < static_cast<int>(this->animated_objects.size() - 1))
+			{
+				this->dbgui_animated_objects_cursor++;
+			}
 			ImGui::VSliderInt("##anim_id", ImVec2{18.0f, slider_height}, &this->dbgui_animated_objects_cursor, 0, this->animated_objects.size() - 1);	
 			const auto& anim_objects = this->animated_objects[this->dbgui_animated_objects_cursor];
 			animated_objects_handle aoh = static_cast<tz::hanval>(this->dbgui_animated_objects_cursor);
@@ -70,6 +74,11 @@ namespace tz::ren
 				}
 			}
 			ImGui::EndChild();
+
+			if(ImGui::Button("-") && this->dbgui_animated_objects_cursor > 0)
+			{
+				this->dbgui_animated_objects_cursor--;
+			}
 		}
 	}
 
