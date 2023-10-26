@@ -6,11 +6,11 @@ shader(type = vertex);
 struct vertex_t
 {
 	vec3 position;
-	vec4 texcoord4[MAX_TEX_COUNT];
+	vec4 texcoord4;
 	vec3 normal;
 	vec3 tangent;
-	uvec4 joint_indices[WEIGHT4_COUNT];
-	vec4 joint_weights[WEIGHT4_COUNT];
+	uvec4 joint_indices;
+	vec4 joint_weights;
 };
 
 struct texture_locator
@@ -50,10 +50,10 @@ resource(id = 3) const buffer joint_object_id_buffer
 	uint object[];
 } joint_to;
 
-output(id = 0) vec2 out::texcoord[MAX_TEX_COUNT];
-output(id = 9) vec3 out::normal;
-output(id = 10) vec3 out::colour;
-output(id = 11) texture_locator out::textures[MAX_TEX_COUNT];
+output(id = 0) vec2 out::texcoord;
+output(id = 1) vec3 out::normal;
+output(id = 2) vec3 out::colour;
+output(id = 3) texture_locator out::textures[MAX_TEX_COUNT];
 
 mat4 obj_get_joint_matrix(uint object_id)
 {
@@ -75,11 +75,11 @@ void main()
 	object_t obj = objects.data[in::draw_id + in::base_instance];	
 
 	mat4 skin_mat =
-		vtx.joint_weights[0].x * get_joint_matrix(obj, vtx.joint_indices[0].x) +
-		vtx.joint_weights[0].y * get_joint_matrix(obj, vtx.joint_indices[0].y) +
-		vtx.joint_weights[0].z * get_joint_matrix(obj, vtx.joint_indices[0].z) +
-		vtx.joint_weights[0].w * get_joint_matrix(obj, vtx.joint_indices[0].w);
-	if(vtx.joint_weights[0] == vec4(0.0))
+		vtx.joint_weights.x * get_joint_matrix(obj, vtx.joint_indices.x) +
+		vtx.joint_weights.y * get_joint_matrix(obj, vtx.joint_indices.y) +
+		vtx.joint_weights.z * get_joint_matrix(obj, vtx.joint_indices.z) +
+		vtx.joint_weights.w * get_joint_matrix(obj, vtx.joint_indices.w);
+	if(vtx.joint_weights == vec4(0.0))
 	{
 		// it's probably not a skinned mesh.
 		skin_mat = obj.global_transform;
@@ -87,10 +87,10 @@ void main()
 	out::position = camera.projection * camera.view * skin_mat * vec4(vtx.position, 1.0f);
 
 	out::normal = vtx.normal;
+	out::texcoord = vtx.texcoord4.xy;
 	out::colour = obj.colour_tint;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
 	{
-		out::texcoord[i] = vtx.texcoord4[i].xy;
 		out::textures[i] = obj.textures[i];
 	}
 }

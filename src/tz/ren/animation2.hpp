@@ -32,6 +32,7 @@ namespace tz::ren
 			std::vector<tz::gl::buffer_resource> extra_buffers = {};
 		};
 		animation_renderer2(info i);
+		animation_renderer2();
 		// update positions of all objects and animations.
 		void update(float delta);
 		// add a new gltf. try not to add duplicates - share gltfs as much as possible.
@@ -40,6 +41,7 @@ namespace tz::ren
 		// remove a gltf.
 		// please note: any animated objects that use this gltf will also be removed, meaning those animated_object_handles become invalidated.
 		void remove_gltf(gltf_handle handle);
+		using mesh_renderer2::append_to_render_graph;
 
 		struct animated_objects_create_info
 		{
@@ -54,7 +56,6 @@ namespace tz::ren
 		// advance all animated objects. invoked once per update. may run on multiple threads.
 		void animation_advance(float delta);
 		tz::gl::resource_handle get_joint_buffer_handle() const;
-		std::size_t get_joint_buffer_size() const;
 
 		// represents a single animated object.
 		struct animated_object_data
@@ -64,7 +65,7 @@ namespace tz::ren
 			std::map<std::size_t, object_handle> node_object_map = {};
 			// each animated object owns a part of the joint buffer.
 			// the next 2 variables comprise this owned region.
-			// at `joint_buffer_offset` bytes into the joint buffer, an array of object-ids can be found (of size joint_count)
+			// at `joint_buffer_offset` indices into the joint buffer, an array of object-ids can be found (of size joint_count)
 			// the i'th value of this array represents the object-id corresponding to the i'th joint for this particular animated object.
 			std::size_t joint_buffer_offset = 0;
 			// if joint_count is zero, then this object is not really animated (this must match the joint count of the corresponding gltf skin).
@@ -123,6 +124,11 @@ namespace tz::ren
 		// populate all the topaz textures (and some metadata) contained within the gltf.
 		void gltf_load_textures(gltf_data& gltf);
 		void animated_object_expand_gltf_node(animated_object_data& animated_objects, tz::io::gltf_node node, std::optional<std::size_t> parent_node_id);
+		void animated_object_write_inverse_bind_matrices(animated_object_data& animated_objects);
+		tz::vec2ui32 animated_object_write_joints(animated_object_data& animated_objects);
+		std::optional<std::size_t> try_find_joint_region(std::size_t joint_count) const;
+		std::size_t get_joint_capacity() const;
+		void set_joint_capacity(std::size_t new_joint_capacity);
 
 		// list of all added gltfs
 		std::vector<gltf_data> gltfs = {};

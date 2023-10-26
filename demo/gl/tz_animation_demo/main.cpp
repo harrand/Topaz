@@ -5,7 +5,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/matrix_transform.hpp"
 
-#include "tz/ren/animation.hpp"
+#include "tz/ren/animation2.hpp"
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -39,7 +39,6 @@ int main()
 
 		dbgui_init();
 
-		tz::ren::animation_renderer ar;
 		/*
 		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/sponza.glb"));
 		tz::ren::animation_renderer::object_handle right_hand = pkg.objects[108];
@@ -50,20 +49,21 @@ int main()
 		});
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		*/
-		auto pkg = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_animated_textured.glb"));
-		for(auto o : pkg.objects)
-		{
-			ar.object_set_colour(o, tz::vec3{0.949f, 0.753f, 0.612f});
-		}
-		tz::ren::animation_renderer::override_package opkg
-		{
-			.pkg = pkg,
-			.overrides = {tz::ren::animation_renderer::override_flag::mesh, tz::ren::animation_renderer::override_flag::texture},
-		};
+
+		tz::ren::animation_renderer2 ar;
 		ar.append_to_render_graph();
 
-		auto empties = ar.find_objects_by_name("Unnamed Object");
-		tz::report("%zu empties", empties.size());
+		auto gltfh = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_animated_textured.glb"));
+		auto animation_objecth = ar.add_animated_objects
+		({
+			.gltf = gltfh,
+			.local_transform = {.translate = {-10.0f, 0.0f, -25.0f}}
+		});
+		auto animation_objecth2 = ar.add_animated_objects
+		({
+			.gltf = gltfh,
+			.local_transform = {.translate = {10.0f, 0.0f, -25.0f}}
+		});
 
 		tz::duration update_timer = tz::system_time();
 		while(!tz::window().is_close_requested())
@@ -81,7 +81,7 @@ int main()
 				{
 					if(ImGui::Begin("Animation Renderer", &dbgui_data.mesh_renderer_enabled))
 					{
-						ar.dbgui();
+						//ar.dbgui();
 						ImGui::End();
 					}
 				}

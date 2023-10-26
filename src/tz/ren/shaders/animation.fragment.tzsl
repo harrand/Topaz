@@ -9,10 +9,10 @@ struct texture_locator
 };
 
 output(id = 0) vec4 out::colour;
-input(id = 0) vec2 in::texcoord[MAX_TEX_COUNT];
-input(id = 9) vec3 in::normal;
-input(id = 10) vec3 in::colour;
-input(id = 11, flat) texture_locator in::textures[MAX_TEX_COUNT];
+input(id = 0) vec2 in::texcoord;
+input(id = 1) vec3 in::normal;
+input(id = 2) vec3 in::colour;
+input(id = 3, flat) texture_locator in::textures[MAX_TEX_COUNT];
 resource(id = 4) const texture res::textures[];
 
 void main()
@@ -36,7 +36,7 @@ void main()
 		// note: base colour is guaranteed to be sRGB. we need to tonemap here ideally, but we don't right now.
 		// note2: we discard fragments with alpha values lower than 0.1.
 		// this is not a documented feature, and should be disabled by default. TODO: less shit
-		vec4 col = texture(res::textures[base_colour.texture_id], in::texcoord[0]);
+		vec4 col = texture(res::textures[base_colour.texture_id], in::texcoord);
 		if(col.w < 0.1f)
 		{
 			discard;
@@ -48,7 +48,7 @@ void main()
 	if(metallic_roughness.texture_id != BADU)
 	{
 		// green contains roughness values, blue contains metalness values.
-		vec3 mrsample = texture(res::textures[metallic_roughness.texture_id], in::texcoord[0]).xyz * metallic_roughness.colour_tint;
+		vec3 mrsample = texture(res::textures[metallic_roughness.texture_id], in::texcoord).xyz * metallic_roughness.colour_tint;
 		float roughness = mrsample.g;
 		float metallicness = mrsample.b;
 		// TODO: pbr magic!
@@ -62,7 +62,7 @@ void main()
 	//		continue;
 	//	}
 	//	texture_locator tex = in::textures[i];
-	//	out::colour.xyz += texture(res::textures[tex.texture_id], in::texcoord[i]).xyz * tex.colour_tint;
+	//	out::colour.xyz += texture(res::textures[tex.texture_id], in::texcoord).xyz * tex.colour_tint;
 	//	any_texture_applied = true;
 	//}
 	//if(!any_texture_applied)

@@ -24,6 +24,11 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	animation_renderer2::animation_renderer2():
+	animation_renderer2(animation_renderer2::info{}){}
+
+//--------------------------------------------------------------------------------------------------
+
 	void animation_renderer2::update(float delta)
 	{
 		TZ_PROFZONE("animation_renderer2 - update", 0xFFC52530);
@@ -83,13 +88,6 @@ namespace tz::ren
 		{
 			.gltf = info.gltf
 		};
-		// todo: populate following fields of animated_object_data:
-		// - A: node_object_map (and a way to get it into the shader)
-		// - B: objects
-		
-		// Section A
-
-		// Section B
 		// so firstly we create an empty parent object, which everyone will be a child of.
 		// then we'll iterate through the gltf nodes and spawn all our subobjects.
 		data.objects.push_back(mesh_renderer2::add_object
@@ -107,9 +105,17 @@ namespace tz::ren
 			this->animated_object_expand_gltf_node(data, node, std::nullopt);
 		}
 
-		// Section C
 		// we need to know whether the gltf we're against has skins or not.
 		// if it does, we're going to need to write into the joint buffer (extra buffer 0).
+		this->animated_object_write_inverse_bind_matrices(data);
+		if(gltf.metadata.has_skins)
+		{
+			tz::vec2ui32 joint_buffer_offset_and_count = this->animated_object_write_joints(data);
+			for(object_handle oh : data.objects)
+			{
+				mesh_renderer2::get_object(oh).unused2 = joint_buffer_offset_and_count.with_more(0).with_more(0);
+			}
+		}
 
 		// finally, find a slot for our animated objects, put it there and return the handle.
 		auto hanval = this->animated_objects.size();
@@ -391,5 +397,131 @@ namespace tz::ren
 		{
 			this->animated_object_expand_gltf_node(animated_objects, gltf.data.get_nodes()[child_idx], node.id);
 		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::animated_object_write_inverse_bind_matrices(animated_object_data& animated_objects)
+	{
+		TZ_PROFZONE("add_animated_object - write inverse bind matrices", 0xFFE54550);
+		auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(animated_objects.gltf));
+		const auto& gltf = this->gltfs[gltf_hanval];
+		if(!gltf.metadata.has_skins)
+		{
+			return;
+		}
+		tz::assert(gltf.data.get_skins().size() == 1, "Only support one skin.");
+		tz::io::gltf_skin skin = gltf.data.get_skins().front();
+		for(std::size_t i = 0; i < skin.joints.size(); i++)
+		{
+			std::uint32_t node_id = skin.joints[i];
+			object_handle handle = animated_objects.node_object_map.at(node_id);
+			mesh_renderer2::get_object(handle).unused = skin.inverse_bind_matrices[i];
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::vec2ui32 animation_renderer2::animated_object_write_joints(animated_object_data& animated_objects)
+	{
+		TZ_PROFZONE("add_animated_object - write joints", 0xFFE54550);
+		auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(animated_objects.gltf));
+		const auto& gltf = this->gltfs[gltf_hanval];
+		if(gltf.metadata.has_skins)
+		{
+			tz::assert(gltf.data.get_skins().size() == 1, "Only support one skin.");
+			tz::io::gltf_skin skin = gltf.data.get_skins().front();
+
+			animated_objects.joint_count = skin.joints.size();
+			// let's find a region we can use.
+			auto maybe_joint_offset = this->try_find_joint_region(animated_objects.joint_count);
+			if(!maybe_joint_offset.has_value())
+			{
+				// remember we want this region to be contiguous - if we cant find a region, we need to increase by alot.
+				std::size_t joint_capacity = this->get_joint_capacity();
+				joint_capacity = std::max(joint_capacity * 2, joint_capacity + animated_objects.joint_count);
+				this->set_joint_capacity(joint_capacity);
+			}
+			// write the joint data as object indices:
+			std::vector<std::uint32_t> joint_object_indices;
+			joint_object_indices.resize(skin.joints.size());
+			std::transform(skin.joints.begin(), skin.joints.end(), joint_object_indices.begin(),
+			[](std::size_t i)->std::uint32_t{return i;});
+			for(auto& idx : joint_object_indices)
+			{
+				// convert from node id to object id!
+				object_handle obj = animated_objects.node_object_map.at(idx);
+				idx = static_cast<std::size_t>(static_cast<tz::hanval>(obj));
+			}
+			// finally do the renderer edit to write into the joint buffer.
+			std::span<const std::uint32_t> span = joint_object_indices;
+			tz::gl::RendererEditBuilder builder;
+			builder.write
+			({
+				.resource = this->get_joint_buffer_handle(),
+				.data = std::as_bytes(span),
+				.offset = maybe_joint_offset.value() * sizeof(std::uint32_t)
+			});
+			TZ_PROFZONE("write joints - joint buffer resource write", 0xFFE54550);
+			tz::gl::get_device().get_renderer(mesh_renderer2::get_render_pass()).edit(builder.build());
+			return static_cast<tz::vec2ui32>(tz::vector<std::size_t, 2>{maybe_joint_offset.value(), animated_objects.joint_count});
+		}
+		return {0u, 0u};
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::optional<std::size_t> animation_renderer2::try_find_joint_region(std::size_t joint_count) const
+	{
+		auto sorted_objects = this->animated_objects;
+		std::sort(sorted_objects.begin(), sorted_objects.end(),
+			[](const auto& a, const auto& b)
+			{
+				return a.joint_buffer_offset < b.joint_buffer_offset;
+			});
+        // Iterate through sorted animated objects to find gaps in joint regions.
+		std::uint32_t current_offset = 0;
+		for(const auto& object : sorted_objects)
+		{
+			std::uint32_t gap_size = object.joint_buffer_offset - current_offset;
+			if(gap_size >= joint_count)
+			{
+                // Found a gap large enough
+				return current_offset;
+			}
+			current_offset = object.joint_buffer_offset + object.joint_count;
+		}
+
+        // Check for space at the end of the buffer
+		std::uint32_t last_object_end = sorted_objects.empty() ? 0 : (sorted_objects.back().joint_buffer_offset + sorted_objects.back().joint_count);
+		std::size_t total_joint_count = this->get_joint_capacity();
+		if(total_joint_count - last_object_end >= joint_count)
+		{
+			return last_object_end;
+		}
+        // No suitable gap found
+		return std::nullopt;
+	}
+
+
+//--------------------------------------------------------------------------------------------------
+
+	std::size_t animation_renderer2::get_joint_capacity() const
+	{
+		return tz::gl::get_device().get_renderer(mesh_renderer2::get_render_pass()).get_resource(this->get_joint_buffer_handle())->data_as<const std::uint32_t>().size();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::set_joint_capacity(std::size_t new_joint_capacity)
+	{
+		tz::gl::RendererEditBuilder builder;
+		builder.buffer_resize
+		({
+			.buffer_handle = this->get_joint_buffer_handle(),
+			.size = new_joint_capacity * sizeof(std::uint32_t)
+		});
+		tz::gl::get_device().get_renderer(mesh_renderer2::get_render_pass()).edit(builder.build());
+		tz::assert(this->get_joint_capacity() == new_joint_capacity);
 	}
 }
