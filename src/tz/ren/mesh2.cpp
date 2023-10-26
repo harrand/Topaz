@@ -235,27 +235,31 @@ namespace tz::ren
 			// Section A: ensure that we have enough space.
 
 			// if we don't have enough index space, add some more.
-			// todo: double capacity instead of only adding what we need?
 			auto maybe_index_section = this->try_find_index_region(rh, index_count);
 			if(!maybe_index_section.has_value())
 			{
+				// either add the exact number of indices required or double the current capacity - whichever is greater.
+				std::size_t new_size = (this->get_index_capacity(rh) + index_count) * sizeof(mesh_index);
+				new_size = std::max(new_size, this->get_index_capacity(rh) * 2 * sizeof(mesh_index));
 				builder.buffer_resize
 				({
 					.buffer_handle = this->index_buffer,
-					.size = (this->get_index_capacity(rh) + index_count) * sizeof(mesh_index)
+					.size = new_size
 				});
 				edit_required = true;
 			}
 
 			// if we don't have enough vertex space, add some more.
-			// todo: double capacity instead of only adding what we need?
 			auto maybe_vertex_section = this->try_find_vertex_region(rh, vertex_count);
 			if(!maybe_vertex_section.has_value())
 			{
+				// either add the exact number of vertices required or double the current capacity - whichever is greater.
+				std::size_t new_size = (this->get_vertex_capacity(rh) + vertex_count) * sizeof(mesh_vertex);
+				new_size = std::max(new_size, this->get_vertex_capacity(rh) * 2 * sizeof(mesh_vertex));
 				builder.buffer_resize
 				({
 					.buffer_handle = this->vertex_buffer,
-					.size = (this->get_vertex_capacity(rh) + vertex_count) * sizeof(mesh_vertex)
+					.size = new_size
 				});
 				edit_required = true;
 			}
