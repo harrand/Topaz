@@ -17,10 +17,10 @@ namespace tz::ren
 		if(ImGui::BeginTabItem("Operations"))
 		{
 			mesh_renderer2::dbgui_operations();
+			this->dbgui_animation_operations();
 			ImGui::EndTabItem();
 		}
 	}
-
 
 //--------------------------------------------------------------------------------------------------
 
@@ -70,6 +70,56 @@ namespace tz::ren
 				}
 			}
 			ImGui::EndChild();
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::dbgui_animation_operations()
+	{
+		if(ImGui::TreeNode("GLTF Operations"))
+		{
+			if(ImGui::TreeNode("Load from File"))
+			{
+				static std::string load_path;
+				ImGui::InputText("Path", &load_path);
+				if(ImGui::Button("Add"))
+				{
+					auto gltf = tz::io::gltf::from_file(load_path.c_str());
+					gltf_handle handle = this->add_gltf(gltf);
+					#if TZ_DEBUG
+						tz::report("GLTF handle %zu loaded from path \"%s\"", static_cast<std::size_t>(static_cast<tz::hanval>(handle)), load_path.c_str());
+					#else
+						void(handle);
+					#endif
+					
+				}
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
+		}
+		if(ImGui::TreeNode("Animated Objects Operations"))
+		{
+			if(this->gltfs.size() && ImGui::TreeNode("Clone from GLTF"))
+			{
+				static int gltf_id = 0;
+				ImGui::SliderInt("GLTF id", &gltf_id, 0, this->gltfs.size() - 1);
+				const auto& gltf = this->gltfs[gltf_id];
+				if(ImGui::Button("Clone"))
+				{
+					auto handle = this->add_animated_objects
+					({
+						.gltf = static_cast<tz::hanval>(gltf_id),
+					});
+					#if TZ_DEBUG
+						tz::report("Animated Objects handle %zu loaded from GLTF %d", static_cast<std::size_t>(static_cast<tz::hanval>(handle)), gltf_id);
+					#else
+						(void)handle;
+					#endif
+				}
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
 		}
 	}
 }

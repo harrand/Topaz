@@ -133,6 +133,7 @@ namespace tz::ren
 		std::size_t get_joint_capacity() const;
 		void set_joint_capacity(std::size_t new_joint_capacity);
 		void dbgui_animations();
+		void dbgui_animation_operations();
 
 		// list of all added gltfs
 		std::vector<gltf_data> gltfs = {};

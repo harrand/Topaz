@@ -448,7 +448,10 @@ namespace tz::ren
 				std::size_t joint_capacity = this->get_joint_capacity();
 				joint_capacity = std::max(joint_capacity * 2, joint_capacity + animated_objects.joint_count);
 				this->set_joint_capacity(joint_capacity);
+				maybe_joint_offset = this->try_find_joint_region(animated_objects.joint_count);
+				tz::assert(maybe_joint_offset.has_value());
 			}
+			animated_objects.joint_buffer_offset = maybe_joint_offset.value();
 			// write the joint data as object indices:
 			std::vector<std::uint32_t> joint_object_indices;
 			joint_object_indices.resize(skin.joints.size());
@@ -496,7 +499,7 @@ namespace tz::ren
                 // Found a gap large enough
 				return current_offset;
 			}
-			current_offset = object.joint_buffer_offset + object.joint_count;
+			current_offset += object.joint_buffer_offset + object.joint_count;
 		}
 
         // Check for space at the end of the buffer
