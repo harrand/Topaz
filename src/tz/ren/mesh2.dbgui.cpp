@@ -41,7 +41,6 @@ namespace tz::ren
 						ImGui::Text("Vertex Count: %u", loc.vertex_count);
 						ImGui::Text("Index Offset: %u", loc.index_offset);
 						ImGui::Text("Index Count: %u", loc.index_count);
-						ImGui::Text("Max Index Value: %u", loc.max_index_value);
 					}
 				}
 				ImGui::EndChild();
@@ -116,7 +115,6 @@ namespace tz::ren
 								ImGui::Text("Vertex Count: %u", loc.vertex_count);
 								ImGui::Text("Index Offset: %u", loc.index_offset);
 								ImGui::Text("Index Count: %u", loc.index_count);
-								ImGui::Text("Max Index Value: %u", loc.max_index_value);
 								ImGui::TreePop();
 							}
 						}

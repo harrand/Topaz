@@ -44,8 +44,6 @@ namespace tz::ren
 			std::uint32_t index_offset = 0;	
 			// how many indices does this mesh have?
 			std::uint32_t index_count = 0;
-			// X, where all indices of this mesh are between 0 and X.
-			std::uint32_t max_index_value = 0;
 			bool operator==(const mesh_locator& rhs) const = default;
 		};
 

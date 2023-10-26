@@ -151,6 +151,7 @@ namespace tz::ren
 			TZ_PROFZONE("vertex_wrangler - remove mesh", 0xFF02F3B5);
 			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(mh));
 			// just add the handle to the free-list and empty out the corresponding locator.
+			this->added_vertex_count -= this->mesh_locators[hanval].vertex_count;
 			this->mesh_locators[hanval] = {};
 			this->mesh_handle_free_list.push_back(static_cast<tz::hanval>(mh));
 		}
@@ -299,14 +300,15 @@ namespace tz::ren
 
 			std::uint32_t vertex_offset = this->added_vertex_count;
 			this->added_vertex_count += vertex_count;
+			
+			tz::report("Added mesh at index offset %zu and vertex offset %zu", index_src.size(), vertex_src.size());
 
 			return // mesh_locator
 			{
 				.vertex_offset = maybe_vertex_section.value(),
 				.vertex_count = static_cast<std::uint32_t>(vertex_src.size()),
 				.index_offset = maybe_index_section.value(),
-				.index_count = static_cast<std::uint32_t>(index_src.size()),
-				.max_index_value = vertex_offset
+				.index_count = static_cast<std::uint32_t>(index_src.size())
 			};
 		}
 
@@ -973,7 +975,7 @@ namespace tz::ren
 			}
 
 			// we can now assume our object/mesh locator is ready to go, but is just empty and defaulted.
-			object_data& data = this->obj.get_object_internals(this->render)[old_count];
+			object_data& data = this->obj.get_object_internals(this->render)[our_object_id];
 			mesh_locator our_mesh = {};
 			if(create.mesh != tz::nullhand)
 			{

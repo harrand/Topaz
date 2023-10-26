@@ -16,7 +16,6 @@ struct mesh_locator
 	uint vertex_count;
 	uint index_offset;
 	uint index_count;
-	uint max_index_value;
 };
 
 resource(id = 1) const buffer draw_list_buffer
@@ -47,7 +46,7 @@ void main()
 		draw_buffer.commands[i - skip_count].index_count = loc.index_count;
 		draw_buffer.commands[i - skip_count].instance_count = 1;
 		draw_buffer.commands[i - skip_count].first_index = loc.index_offset;
-		draw_buffer.commands[i - skip_count].vertex_offset = int(loc.max_index_value);
+		draw_buffer.commands[i - skip_count].vertex_offset = int(loc.vertex_offset);
 		draw_buffer.commands[i - skip_count].first_instance = skip_count;
 	}
 	draw_buffer.count = draw_count - skip_count;
