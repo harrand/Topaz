@@ -164,12 +164,13 @@ namespace tz::ren
 			std::vector<mesh_locator> sorted_meshes = this->mesh_locators;
 			std::sort(sorted_meshes.begin(), sorted_meshes.end(),
 					[](const mesh_locator& a, const mesh_locator& b) {
-						return a.vertex_offset < b.vertex_offset;
+						return a.vertex_offset + a.vertex_count < b.vertex_offset + b.vertex_count;
 					});
 			// iterate through sorted mesh locators to find gaps.
 			std::uint32_t current_offset = 0;
 			for(const mesh_locator& loc : sorted_meshes)
 			{
+				tz::assert(loc.vertex_offset >= current_offset);
 				std::uint32_t gap_size = loc.vertex_offset - current_offset;
 				if(gap_size >= vertex_count)
 				{
@@ -197,12 +198,13 @@ namespace tz::ren
 			std::vector<mesh_locator> sorted_meshes = this->mesh_locators;
 			std::sort(sorted_meshes.begin(), sorted_meshes.end(),
 					[](const mesh_locator& a, const mesh_locator& b) {
-						return a.index_offset < b.index_offset;
+						return a.index_offset + a.index_count < b.index_offset + b.index_count;
 					});
 			// iterate through sorted mesh locators to find gaps.
 			std::uint32_t current_offset = 0;
 			for(const mesh_locator& loc : sorted_meshes)
 			{
+				tz::assert(loc.index_offset >= current_offset);
 				std::uint32_t gap_size = loc.index_offset - current_offset;
 				if(gap_size >= index_count)
 				{
