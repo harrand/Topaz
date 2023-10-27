@@ -65,6 +65,9 @@ namespace tz::ren
 		void remove_animated_objects(animated_objects_handle handle);
 
 		// API get for gltf
+		std::size_t gltf_get_animation_count(gltf_handle h) const;
+		std::string_view gltf_get_animation_name(gltf_handle h, std::size_t anim_id) const;
+		float gltf_get_animation_length(gltf_handle h, std::size_t anim_id) const;
 
 		// API get for animated_objects
 

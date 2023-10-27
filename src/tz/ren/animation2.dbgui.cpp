@@ -39,7 +39,7 @@ namespace tz::ren
 				this->dbgui_animated_objects_cursor++;
 			}
 			ImGui::VSliderInt("##anim_id", ImVec2{18.0f, slider_height}, &this->dbgui_animated_objects_cursor, 0, this->animated_objects.size() - 1);	
-			const auto& anim_objects = this->animated_objects[this->dbgui_animated_objects_cursor];
+			auto& anim_objects = this->animated_objects[this->dbgui_animated_objects_cursor];
 			animated_objects_handle aoh = static_cast<tz::hanval>(this->dbgui_animated_objects_cursor);
 			ImGui::SameLine();
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
@@ -71,6 +71,17 @@ namespace tz::ren
 						}
 						ImGui::TreePop();
 					}	
+
+					ImGui::Spacing();
+					if(anim_objects.playback.size())
+					{
+						auto& currently_playing = anim_objects.playback.front();
+						std::string_view animation_name = this->gltf_get_animation_name(static_cast<tz::hanval>(gltf_id), currently_playing.animation_id);
+						ImGui::Text("%zu (%s)", currently_playing.animation_id, animation_name.data());
+						ImGui::ProgressBar(anim_objects.playback_time / this->gltf_get_animation_length(static_cast<tz::hanval>(gltf_id), currently_playing.animation_id));
+						ImGui::Checkbox("Loop", &currently_playing.loop);
+						ImGui::SliderFloat("Time Warp", &currently_playing.time_warp, -5.0f, 5.0f);
+					}
 				}
 			}
 			ImGui::EndChild();

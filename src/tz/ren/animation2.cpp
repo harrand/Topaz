@@ -167,6 +167,38 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	std::size_t animation_renderer2::gltf_get_animation_count(gltf_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const auto& gltf = this->gltfs[hanval];
+		return gltf.data.get_animations().size();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::string_view animation_renderer2::gltf_get_animation_name(gltf_handle h, std::size_t anim_id) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const auto& gltf = this->gltfs[hanval];
+		tz::assert(anim_id < this->gltf_get_animation_count(h));
+		return gltf.data.get_animations()[anim_id].name;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	float animation_renderer2::gltf_get_animation_length(gltf_handle h, std::size_t anim_id) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const auto& gltf = this->gltfs[hanval];
+		tz::assert(anim_id < this->gltf_get_animation_count(h));
+		return gltf.data.get_animations()[anim_id].max_time;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	std::span<const animation_renderer2::object_handle> animation_renderer2::animated_object_get_subobjects(animated_objects_handle handle) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
