@@ -185,9 +185,29 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);
 		// for now, just do them all.
-		for(std::size_t i = 0; i < this->animated_objects.size(); i++)
+		this->wait_for_animation_jobs();
+
+		std::size_t job_count = std::thread::hardware_concurrency();
+		this->animation_advance_jobs.resize(job_count);
+		std::size_t objects_per_job = this->animated_objects.size() / job_count;
+		std::size_t remainder_objects = this->animated_objects.size() % job_count;
+		std::vector<tz::job_handle> jobs(job_count);
+		for(std::size_t i = 0; i < job_count; i++)
 		{
-			this->single_animation_advance(delta, static_cast<tz::hanval>(i));
+			this->animation_advance_jobs[i] = tz::job_system().execute([this, delta, offset = i * objects_per_job, object_count = objects_per_job]
+			{
+				for(std::size_t j = 0; j < object_count; j++)
+				{
+					this->single_animation_advance(delta, static_cast<tz::hanval>(offset + j));
+				}
+			});
+		}
+		{
+			TZ_PROFZONE("animation advance - remainder gltfs", 0xFF0000AA);
+			for(std::size_t i = (this->animated_objects.size() - remainder_objects); i < this->animated_objects.size(); i++)
+			{
+				this->single_animation_advance(delta, static_cast<tz::hanval>(i));
+			}
 		}
 	}
 
@@ -706,5 +726,16 @@ namespace tz::ren
 		});
 		tz::gl::get_device().get_renderer(mesh_renderer2::get_render_pass()).edit(builder.build());
 		tz::assert(this->get_joint_capacity() == new_joint_capacity);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::wait_for_animation_jobs()
+	{
+		for(tz::job_handle jh : this->animation_advance_jobs)
+		{
+			tz::job_system().block(jh);
+		}
+		this->animation_advance_jobs.clear();
 	}
 }
