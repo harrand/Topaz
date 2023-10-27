@@ -64,6 +64,16 @@ int main()
 			.gltf = gltfh,
 			.local_transform = {.translate = {10.0f, 0.0f, -25.0f}}
 		});
+		ar.animated_object_queue_animation(animation_objecth,
+		{
+			.animation_id = 3,
+			.loop = true
+		});
+		ar.animated_object_queue_animation(animation_objecth2,
+		{
+			.animation_id = 12,
+			.loop = true
+		});
 
 		tz::duration update_timer = tz::system_time();
 		while(!tz::window().is_close_requested())

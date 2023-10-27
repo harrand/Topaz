@@ -167,6 +167,60 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	std::span<const animation_renderer2::object_handle> animation_renderer2::animated_object_get_subobjects(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].objects;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer2::gltf_handle animation_renderer2::animated_object_get_gltf(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].gltf;
+	}
+
+	float animation_renderer2::animated_object_get_playback_time(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback_time;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::animated_object_set_playback_time(animated_objects_handle handle, float time)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->animated_objects[hanval].playback_time = time;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::span<const animation_renderer2::playback_data> animation_renderer2::animated_object_get_playing_animations(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::span<animation_renderer2::playback_data> animation_renderer2::animated_object_get_playing_animations(animated_objects_handle handle)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::animated_object_queue_animation(animated_objects_handle handle, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback.push_back(anim);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	bool animation_renderer2::gltf_is_in_free_list(gltf_handle handle) const
 	{
 		return std::find(this->gltf_free_list.begin(), this->gltf_free_list.end(), handle) != this->gltf_free_list.end();
@@ -246,7 +300,7 @@ namespace tz::ren
 		{
 			return;
 		}
-		const animated_object_data::animation& playing_anim = animobj.playback.front();
+		const playback_data& playing_anim = animobj.playback.front();
 		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(animobj.gltf))];
 		if(gltf.data.get_animations().empty())
 		{

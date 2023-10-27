@@ -45,6 +45,16 @@ namespace tz::ren
 		void remove_gltf(gltf_handle handle);
 		using mesh_renderer2::append_to_render_graph;
 
+		struct playback_data
+		{
+			// which animation is currently playing?
+			std::size_t animation_id = 0;
+			// will this animation loop until cancelled?
+			bool loop = false;
+			// how fast does this animation play? 1.0 means normal speed.
+			float time_warp = 1.0f;
+		};
+
 		struct animated_objects_create_info
 		{
 			gltf_handle gltf = tz::nullhand;
@@ -53,6 +63,18 @@ namespace tz::ren
 		};
 		animated_objects_handle add_animated_objects(animated_objects_create_info info);
 		void remove_animated_objects(animated_objects_handle handle);
+
+		// API get for gltf
+
+		// API get for animated_objects
+
+		std::span<const object_handle> animated_object_get_subobjects(animated_objects_handle handle) const;
+		gltf_handle animated_object_get_gltf(animated_objects_handle handle) const;
+		float animated_object_get_playback_time(animated_objects_handle handle) const;
+		void animated_object_set_playback_time(animated_objects_handle handle, float time);
+		std::span<const playback_data> animated_object_get_playing_animations(animated_objects_handle handle) const;
+		std::span<playback_data> animated_object_get_playing_animations(animated_objects_handle handle);
+		void animated_object_queue_animation(animated_objects_handle handle, playback_data anim);
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;
@@ -80,16 +102,7 @@ namespace tz::ren
 			// list of all subobjects comprising this animated object.
 			std::vector<object_handle> objects = {};
 			// list of all animations queued up to run.
-			struct animation
-			{
-				// which animation is currently playing?
-				std::size_t animation_id = 0;
-				// will this animation loop until cancelled?
-				bool loop = false;
-				// how fast does this animation play? 1.0 means normal speed.
-				float time_warp = 1.0f;
-			};
-			std::vector<animation> playback = {};
+			std::vector<playback_data> playback = {};
 			// how many seconds have elapsed since the currently-playing animation began?
 			float playback_time = 0.0f;
 		};
