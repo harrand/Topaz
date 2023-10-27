@@ -275,6 +275,9 @@ namespace tz::ren
 			object_data& get_object(object_handle oh);
 			void remove_object(object_handle oh);
 
+			const tz::transform_hierarchy<std::uint32_t>& get_hierarchy() const;
+			tz::transform_hierarchy<std::uint32_t>& get_hierarchy();
+
 			tz::gl::resource_handle get_extra_buffer(std::size_t extra_buffer_id) const;
 			std::size_t get_extra_buffer_count() const;
 

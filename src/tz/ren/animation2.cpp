@@ -2,6 +2,7 @@
 #include "tz/core/job/job.hpp"
 
 #include "tz/gl/imported_shaders.hpp"
+#include "tz/io/gltf.hpp"
 #include ImportedShaderHeader(animation, vertex)
 #include ImportedShaderHeader(animation, fragment)
 
@@ -32,6 +33,7 @@ namespace tz::ren
 	void animation_renderer2::update(float delta)
 	{
 		TZ_PROFZONE("animation_renderer2 - update", 0xFFC52530);
+		this->animation_advance(delta);
 		mesh_renderer2::update();
 	}
 
@@ -182,7 +184,135 @@ namespace tz::ren
 	void animation_renderer2::animation_advance(float delta)
 	{
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);
+		// for now, just do them all.
+		for(std::size_t i = 0; i < this->animated_objects.size(); i++)
+		{
+			this->single_animation_advance(delta, static_cast<tz::hanval>(i));
+		}
+	}
 
+//--------------------------------------------------------------------------------------------------
+
+	// implementation detail for single_animation_advance
+	using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
+	std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back, float time)
+	{
+		keyframe_iterator iter = front;
+		while(iter != back && iter->time_point <= time)
+		{
+			iter++;
+		}
+		std::size_t idx = std::distance(front, iter);
+		if(idx == 0)
+		{
+			return {0u, 1u};
+		}
+		auto dist = std::distance(front, back);
+		if(std::cmp_greater_equal(idx, dist))
+		{
+			return {dist - 2, dist - 1};
+		}
+		return {idx - 1, idx};
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::single_animation_advance(float delta, animated_objects_handle h)
+	{
+		TZ_PROFZONE("animation advance - single advance", 0xFFE54550);
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto& animobj = this->animated_objects[hanval];
+		if(this->animated_objects_are_in_free_list(h) || animobj.playback.empty())
+		{
+			return;
+		}
+		const animated_object_data::animation& playing_anim = animobj.playback.front();
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(animobj.gltf))];
+		if(gltf.data.get_animations().empty())
+		{
+			return;
+		}
+		const tz::io::gltf_animation& anim = gltf.data.get_animations()[playing_anim.animation_id];
+
+		// advance time
+		animobj.playback_time += playing_anim.time_warp * delta;
+		// what do we do if we're at the end of the anim?
+		if(animobj.playback_time > anim.max_time)
+		{
+			// if we need to loop, then go back.
+			if(playing_anim.loop)
+			{
+				animobj.playback_time = 0.0f;
+			}
+			else
+			{
+				// not looping, need to move to the next animation!
+				animobj.playback_time = 0.0f;
+				animobj.playback.erase(animobj.playback.begin());
+			}
+		}
+		const float t = animobj.playback_time;
+
+		for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
+		{
+			TZ_PROFZONE("single advance - update objects", 0xFFE54550);
+			// get the object.
+			object_handle oh = animobj.node_object_map.at(nid);
+			auto& obj = mesh_renderer2::get_object(oh);
+
+			// get the corresponding hierarchy node for our object.
+			auto maybe_node_id = mesh_renderer2::get_hierarchy().find_node(static_cast<std::size_t>(static_cast<tz::hanval>(oh)));
+			tz::assert(maybe_node_id.has_value());
+			auto& hier_node = mesh_renderer2::get_hierarchy().get_node(maybe_node_id.value());
+
+
+			const auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[nid];
+			auto [pos_before_id, pos_after_id] = interpolate_animation_keyframes(kf_positions.begin(), kf_positions.end(), t);
+			auto [rot_before_id, rot_after_id] = interpolate_animation_keyframes(kf_rotations.begin(), kf_rotations.end(), t);
+			auto [scale_before_id, scale_after_id] = interpolate_animation_keyframes(kf_scales.begin(), kf_scales.end(), t);
+			if(kf_positions.size() > 1)
+			{
+				TZ_PROFZONE("update objects - position", 0xFFE54550);
+				auto before = kf_positions.begin();
+				auto after = before;
+				std::advance(before, pos_before_id);
+				std::advance(after, pos_after_id);
+				//tz::assert(gltf.playback.time >= before->time_point);
+				float pos_interp = std::clamp((t - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+				tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
+				tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
+
+				hier_node.local_transform.translate = beforet + ((aftert - beforet) * pos_interp);
+			}
+
+			if(kf_rotations.size() > 1)
+			{
+				TZ_PROFZONE("update objects - rotation", 0xFFE54550);
+				auto before = kf_rotations.begin();
+				auto after = before;
+				std::advance(before, rot_before_id);
+				std::advance(after, rot_after_id);
+				//tz::assert(gltf.playback.time >= before->time_point);
+				float rot_interp = std::clamp((t - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+				tz::quat beforer = before->transform.normalised();
+				tz::quat afterr = after->transform.normalised();
+				hier_node.local_transform.rotate = beforer.slerp(afterr, rot_interp);
+			}
+
+			if(kf_scales.size() > 1)
+			{
+				TZ_PROFZONE("update objects - scale", 0xFFE54550);
+				auto before = kf_scales.begin();
+				auto after = before;
+				std::advance(before, scale_before_id);
+				std::advance(after, scale_after_id);
+				//tz::assert(gltf.playback.time >= before->time_point);
+				float scale_interp = std::clamp((t - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+				tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
+				tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
+				hier_node.local_transform.scale = befores + ((afters - befores) * scale_interp);
+			}
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -530,7 +660,7 @@ namespace tz::ren
                 // Found a gap large enough
 				return current_offset;
 			}
-			current_offset += object.joint_buffer_offset + object.joint_count;
+			current_offset = object.joint_buffer_offset + object.joint_count;
 		}
 
         // Check for space at the end of the buffer

@@ -766,6 +766,10 @@ namespace tz::ren
 				.buffer_handle = this->object_buffer,
 				.size = new_capacity * sizeof(object_data)
 			});
+			// Note: If we're setting object capacity, we assume that mesh locator buffer (draw list) has already been resized.
+			// We use that as a resource reference, so we need to mark all buffers as dirty here, or it will not rerecord
+			// rendering commands and try to use the dead old buffer.
+			builder.mark_dirty({.buffers = true});
 			tz::gl::get_device().get_renderer(rh).edit(builder.build());
 			tz::assert(this->get_object_capacity(rh) == new_capacity);
 			if(new_capacity > old_capacity)
@@ -826,7 +830,7 @@ namespace tz::ren
 
 			// TODO: replace with proper camera buffer.
 			std::array<tz::mat4, 2> camera_initial_data;
-			camera_initial_data[0] = tz::view(tz::vec3::zero(), tz::vec3::zero());
+			camera_initial_data[0] = tz::view({0.0f, 0.0f, 25.0f}, tz::vec3::zero());
 			camera_initial_data[1] = tz::perspective(1.5708f, static_cast<float>(tz::window().get_dimensions()[0]) / tz::window().get_dimensions()[1], 0.1f, 1000.0f);
 			rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data));
 
@@ -964,7 +968,7 @@ namespace tz::ren
 			// note for free-list. will definitely need to add logic for that in compute pass.
 			// shouldn't need to do anything else here? just use the id we gave you and assume its valid.
 			std::size_t our_object_id = this->compute.add_new_draws(1).front();
-			if(old_count + 1 > old_capacity)
+			if(old_count + 1 >= old_capacity)
 			{
 				// we're over capacity.
 				// add_new_draws would've increased the capacity in some way.
@@ -1049,6 +1053,20 @@ namespace tz::ren
 					this->remove_object(static_cast<tz::hanval>(child.data));
 				}
 			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		const tz::transform_hierarchy<std::uint32_t>& render_pass::get_hierarchy() const
+		{
+			return this->tree;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		tz::transform_hierarchy<std::uint32_t>& render_pass::get_hierarchy()
+		{
+			return this->tree;
 		}
 
 //--------------------------------------------------------------------------------------------------

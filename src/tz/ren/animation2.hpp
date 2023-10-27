@@ -2,6 +2,7 @@
 #define TZ_REN_ANIMATION_RENDERER2_HPP
 #include "tz/ren/mesh2.hpp"
 #include "tz/io/gltf.hpp"
+#include "tz/core/job/job.hpp"
 
 namespace tz::ren
 {
@@ -58,6 +59,7 @@ namespace tz::ren
 		bool animated_objects_are_in_free_list(animated_objects_handle handle) const;
 		// advance all animated objects. invoked once per update. may run on multiple threads.
 		void animation_advance(float delta);
+		void single_animation_advance(float delta, animated_objects_handle h);
 		tz::gl::resource_handle get_joint_buffer_handle() const;
 
 		// represents a single animated object.
@@ -144,6 +146,7 @@ namespace tz::ren
 		std::vector<animated_object_data> animated_objects = {};
 		// free-list for animated objects, to re-use animated_objects_handle.
 		std::deque<animated_objects_handle> animated_objects_free_list = {};
+		std::vector<tz::job_handle> animation_advance_jobs = {};
 		int dbgui_animated_objects_cursor = 0;
 	};
 }
