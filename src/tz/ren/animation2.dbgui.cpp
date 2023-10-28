@@ -102,6 +102,10 @@ namespace tz::ren
 						ImGui::ProgressBar(anim_objects.playback_time / this->gltf_get_animation_length(static_cast<tz::hanval>(gltf_id), currently_playing.animation_id));
 						ImGui::Checkbox("Loop##1", &currently_playing.loop);
 						ImGui::SliderFloat("Time Warp##1", &currently_playing.time_warp, -5.0f, 5.0f);
+						if(ImGui::Button("Skip"))
+						{
+							this->animated_object_skip_animation(aoh);
+						}
 					}
 				}
 			}

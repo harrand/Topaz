@@ -261,6 +261,18 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	void animation_renderer2::animated_object_skip_animation(animated_objects_handle handle)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& container = this->animated_objects[hanval].playback;
+		if(container.size())
+		{
+			container.erase(container.begin());
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	bool animation_renderer2::gltf_is_in_free_list(gltf_handle handle) const
 	{
 		return std::find(this->gltf_free_list.begin(), this->gltf_free_list.end(), handle) != this->gltf_free_list.end();

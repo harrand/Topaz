@@ -79,6 +79,7 @@ namespace tz::ren
 		std::span<playback_data> animated_object_get_playing_animations(animated_objects_handle handle);
 		void animated_object_play_animation(animated_objects_handle handle, playback_data anim);
 		void animated_object_queue_animation(animated_objects_handle handle, playback_data anim);
+		void animated_object_skip_animation(animated_objects_handle handle);
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;
