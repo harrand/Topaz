@@ -804,6 +804,10 @@ namespace tz::ren
 		{
 			TZ_PROFZONE("render_pass - create", 0xFFF1F474);
 			tz::gl::renderer_info rinfo;
+			if(i.output != nullptr)
+			{
+				rinfo.set_output(*i.output);
+			}
 			if(i.custom_vertex_spirv.empty())
 			{
 				i.custom_vertex_spirv = ImportedShaderSource(mesh, vertex);

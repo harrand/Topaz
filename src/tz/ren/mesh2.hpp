@@ -236,57 +236,182 @@ namespace tz::ren
 			using mesh_handle = vertex_wrangler::mesh_handle;
 			using texture_handle = texture_manager::texture_handle;
 			using object_handle = object_storage::object_handle;
+			/// Creation details for a mesh renderer's render-pass.
 			struct info
 			{
+				/// String representing SPIRV for the vertex shader. If empty, a default vertex shader is used.
 				std::string_view custom_vertex_spirv = {};
+				/// String representing SPIRV for the fragment shader. If empty, a default fragment shader is used - displays the textured objects with no lighting effects.
 				std::string_view custom_fragment_spirv = {};
+				/// If you want more fine-grained control over the created graphics renderer pass (such as if you want to add a post-process effect), you can add extra options here.
 				tz::gl::renderer_options custom_options = {};
+				/// Maximum number of textures. Note that this capacity cannot be expanded - make sure you never exceed this limit.
 				std::size_t texture_capacity = 1024u;
+				/// A list of extra buffer resources. These buffers will be resident to both the vertex and fragment shader. Resource ID of the first extra buffer will be `3` ascending.
 				std::vector<tz::gl::buffer_resource> extra_buffers = {};
+				/// Optional output. Use this if you want to render into a specific render target. If this is nullptr, it will render directly into the window instead.
+				tz::gl::ioutput* output = nullptr;
 			};
 
 			struct object_create_info
 			{
+				/// Transform of the object, before parent transformations.
 				tz::trs local_transform = {};
+				/// Which mesh will be used? If nullhand, then this object is not rendered but still exists in the transform hierarchy.
 				mesh_handle mesh = tz::nullhand;
+				/// Set whether the object is initially visible or not.
 				bool is_visible = true;
+				/// Does this object have a parent? Nullhand if not. Global transform will be computed with respect to this parent object.
 				object_handle parent = tz::nullhand;	
+				/// List of all bound textures. Note that you can specify as many as you like, but any locators beyond `object_data::max_bound_textures` will be ignored.
 				std::vector<texture_locator> bound_textures = {};
+				/// Colour tint of this object. Does not affect children.
 				tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 			};
 			render_pass(info i);
 
+			/// Add the underlying renderers to the end of the render graph. They will not be reliant on any other renderers.
 			void append_to_render_graph();
+			/// Update the transform hierarchy.
 			void update();
 			void dbgui_mesh();
 			void dbgui_texture();
 			void dbgui_objects();
 
+			/**
+			 * Retrieve the number of meshes that have been added so far.
+			 * @param include_free_list Whether this number should include meshes that have been removed and are still in the free-list (false by default).
+			 * @return Number of meshes stored within the mesh renderer.
+			 */
 			std::size_t get_mesh_count(bool include_free_list = false) const;
+			/**
+			 * Add a new mesh, returning the corresponding handle.
+			 * @param m Mesh data comprising the mesh.
+			 * @return A mesh handle corresponding to the newly-added mesh. You can then create an object using this mesh to draw it.
+			 * @note This performs 2 resource writes in the best case (slow), but if capacities are exhausted and need to be resized, the worst case is an additional 2 buffer resizes (very, very slow). For this reason, you should pre-add all meshes you expect to use often, if memory allows.
+			 */
 			mesh_handle add_mesh(mesh m);
+			/**
+			 * Retrieve the mesh locator corresponding to an existing mesh.
+			 * The mesh locator contains information about how much data comprises the mesh, and where in the vertex/index buffer the data resides.
+			 * @param m Mesh handle to retrieve information about.
+			 * @return Mesh locator corresponding to mesh_handle `m`.
+			 */
 			const mesh_locator& get_mesh(mesh_handle m) const;
+			/**
+			 * Remove a mesh from the renderer.
+			 *
+			 * Any objects that are currently using this mesh handle will continue to exist, but instead use an empty mesh locator, meaning it is no longer drawn.
+			 * You can either remove these objects, set them to use a new mesh, or leave them in the hierarchy as they are.
+			 *
+			 * @param m Mesh handle to remove.
+			 */
 			void remove_mesh(mesh_handle m);
 
+			/**
+			 * Add a new texture to the renderer.
+			 * @param img Image to add, must be in RGBA32 format.
+			 * @return Handle corresponding to the newly added image.
+			 * @note This performs a image-resize + resource write, which is always very slow.
+			 */
 			texture_handle add_texture(const tz::io::image& img);
 
+			/**
+			 * Retrieve the number of objects that have been added so far.
+			 * @param include_free_list Whether this number should include objects that have been removed and are still in the free-list (false by default).
+			 * @return Number of objects stored within the mesh renderer.
+			 */
 			std::size_t get_object_count(bool include_free_list = false) const;
+			/**
+			 * Add a new object.
+			 * @param create Information about the object (e.g the mesh it uses, which textures it uses, what is its transform).
+			 * @return Handle corresponding to the newly-added object.
+			 */
 			object_handle add_object(object_create_info create);
+			/**
+			 * Retrieve the internal shader data for an object.
+			 * @param oh Handle corresponding to the object to retrieve information about.
+			 * @return Reference to the shader data. You can assume any changes you make are resident in the next device draw.
+			 */
 			const object_data& get_object(object_handle oh) const;
+			/**
+			 * Retrieve the internal shader data for an object.
+			 * @param oh Handle corresponding to the object to retrieve information about.
+			 * @return Reference to the shader data. You can assume any changes you make are resident in the next device draw.
+			 */
 			object_data& get_object(object_handle oh);
+			/**
+			 * Remove an object.
+			 * @param oh Handle corresponding to the object you want removed.
+			 * @note Any child objects are also removed. Meshes/textures are not removed, even if this was the last object using them.
+			 */
 			void remove_object(object_handle oh);
 
+			/**
+			 * Get the local transform of a given object.
+			 * @param oh Handle corresponding to the desired object.
+			 * @return Transform, represented as a translation, rotation and scale.
+			 * @pre There must be a valid object corresponding to the handle. If the object has been removed, or a object never existed with this handle, the behaviour is undefined.
+			 */
 			tz::trs object_get_local_transform(object_handle oh) const;
+			/**
+			 * Set the local transform of a given object.
+			 * @param oh Handle corresponding to the desired object.
+			 * @param trs TRS representing the new local transform of the object.
+			 * @pre There must be a valid object corresponding to the handle. If the object has been removed, or a object never existed with this handle, the behaviour is undefined.
+			 */
 			void object_set_local_transform(object_handle oh, tz::trs trs);
+			/**
+			 * Get the global transform of a given object. Think of this as the world-space transform.
+			 * @param oh Handle corresponding to the desired object.
+			 * @return Transform, represented as a translation, rotation and scale.
+			 * @pre There must be a valid object corresponding to the handle. If the object has been removed, or a object never existed with this handle, the behaviour is undefined.
+			 */
 			tz::trs object_get_global_transform(object_handle oh) const;
+			/**
+			 * Set the global transform of a given object.
+			 * @param oh Handle corresponding to the desired object.
+			 * @param trs TRS representing the new global transform of the object.
+			 * @pre There must be a valid object corresponding to the handle. If the object has been removed, or a object never existed with this handle, the behaviour is undefined.
+			 * @note It is much faster to set the local transform than it is to set the global transform with this method. Prefer @ref object_set_local_transform unless you must work in world-space.
+			 */
 			void object_set_global_transform(object_handle oh, tz::trs trs);
 
+			/**
+			 * Retrieve the underlying transform hierarchy.
+			 * 
+			 * Implementation details are as follows:
+			 * - The hierarchy represents the objects as nodes in a tree. Each node contains a local transform, and a data payload.
+			 * - The data payload corresponds to the integral value of the object's corresponding object-handle (i.e `static_cast<std::size_t>(static_cast<tz::hanval>(my_object_handle))`).
+			 * - If an object is removed, its corresponding node is deleted.
+			 */
 			const tz::transform_hierarchy<std::uint32_t>& get_hierarchy() const;
+			/**
+			 * Retrieve the underlying transform hierarchy.
+			 * 
+			 * Implementation details are as follows:
+			 * - The hierarchy represents the objects as nodes in a tree. Each node contains a local transform, and a data payload.
+			 * - The data payload corresponds to the integral value of the object's corresponding object-handle (i.e `static_cast<std::size_t>(static_cast<tz::hanval>(my_object_handle))`).
+			 * - If an object is removed, its corresponding node is deleted.
+			 */
 			tz::transform_hierarchy<std::uint32_t>& get_hierarchy();
 
+			/**
+			 * Retrieve the resource handle corresponding to an extra buffer that was passed in @ref info during creation of the mesh renderer.
+			 * @param extra_buffer_id Id of the extra buffer to retrieve. Note, this id associates the buffer with the expression `info::extra_buffers[id]` at the point of mesh renderer creation.
+			 * @return Handle corresponding to the `extra_buffer_id`'th index of the extra buffers provided at mesh renderer creation time.
+			 * @pre `extra_buffer_id < get_extra_buffer_count()`, or the behaviour is undefined.
+			 */
 			tz::gl::resource_handle get_extra_buffer(std::size_t extra_buffer_id) const;
+			/**
+			 * Retrieve the number of extra buffers that were specified when the mesh renderer was created.
+			 * @return Number of extra buffers.
+			 */
 			std::size_t get_extra_buffer_count() const;
 
+			/// Retrieve the renderer handle associated with the compute pre-pass. This pass populates the indirect draw list.
 			tz::gl::renderer_handle get_compute_pass() const;
+			/// Retrieve the renderer handle associated with the mesh renderer's main render pass.
 			tz::gl::renderer_handle get_render_pass() const;
 		protected:
 			bool object_is_in_free_list(object_handle oh) const;
@@ -304,12 +429,19 @@ namespace tz::ren
 		};
 	}
 
+	/**
+	* @ingroup tz_ren
+	* A lightweight 3D mesh renderer. If you'd like to render animated models, you're looking for @ref animation_renderer2.
+	*/
 	class mesh_renderer2 : public impl::render_pass
 	{
 	public:
 		using info = impl::render_pass::info;
 		using mesh = impl::mesh;
 		using mesh_locator = impl::mesh_locator;
+		/**
+		 * Create a new mesh renderer.
+		 **/
 		mesh_renderer2(info i = {});
 		void dbgui(bool include_operations = true);
 		void dbgui_operations();
