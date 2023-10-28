@@ -273,6 +273,38 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	tz::trs animation_renderer2::animated_object_get_local_transform(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return mesh_renderer2::object_get_local_transform(this->animated_objects[hanval].objects.front());
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::animated_object_set_local_transform(animated_objects_handle handle, tz::trs trs)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		mesh_renderer2::object_set_local_transform(this->animated_objects[hanval].objects.front(), trs);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::trs animation_renderer2::animated_object_get_global_transform(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return mesh_renderer2::object_get_global_transform(this->animated_objects[hanval].objects.front());
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::animated_object_set_global_transform(animated_objects_handle handle, tz::trs trs)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		mesh_renderer2::object_set_global_transform(this->animated_objects[hanval].objects.front(), trs);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	bool animation_renderer2::gltf_is_in_free_list(gltf_handle handle) const
 	{
 		return std::find(this->gltf_free_list.begin(), this->gltf_free_list.end(), handle) != this->gltf_free_list.end();

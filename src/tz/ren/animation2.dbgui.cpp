@@ -51,6 +51,10 @@ namespace tz::ren
 				}
 				else
 				{
+					if(anim_objects.objects.size() && ImGui::CollapsingHeader("Transform"))
+					{
+						mesh_renderer2::get_hierarchy().dbgui_node(static_cast<std::size_t>(static_cast<tz::hanval>(anim_objects.objects.front())), true);	
+					}
 					std::size_t gltf_id = static_cast<std::size_t>(static_cast<tz::hanval>(anim_objects.gltf));
 					ImGui::Text("Associated with: GLTF %zu", gltf_id);
 					const auto& gltf = this->gltfs[gltf_id];

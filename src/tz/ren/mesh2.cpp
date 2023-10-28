@@ -1057,6 +1057,60 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		tz::trs render_pass::object_get_local_transform(object_handle oh) const
+		{
+			TZ_PROFZONE("render_pass - object get local transform", 0xFFF1F474);
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			auto maybe_node = this->tree.find_node(hanval);
+			tz::assert(maybe_node.has_value());
+			return this->tree.get_node(maybe_node.value()).local_transform;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::object_set_local_transform(object_handle oh, tz::trs trs)
+		{
+
+			TZ_PROFZONE("render_pass - object set local transform", 0xFFF1F474);
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			auto maybe_node = this->tree.find_node(hanval);
+			tz::assert(maybe_node.has_value());
+			this->tree.get_node(maybe_node.value()).local_transform = trs;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		tz::trs render_pass::object_get_global_transform(object_handle oh) const
+		{
+			TZ_PROFZONE("render_pass - object get global transform", 0xFFF1F474);
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			auto maybe_node = this->tree.find_node(hanval);
+			tz::assert(maybe_node.has_value());
+			return this->tree.get_global_transform(maybe_node.value());
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::object_set_global_transform(object_handle oh, tz::trs trs)
+		{
+			TZ_PROFZONE("render_pass - object set global transform", 0xFFF1F474);
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			auto maybe_node = this->tree.find_node(hanval);
+			tz::assert(maybe_node.has_value());
+			const auto& node = this->tree.get_node(maybe_node.value());
+			// convert global transform into local transform
+			if(node.parent.has_value())
+			{
+				tz::trs parent_global = this->tree.get_global_transform(node.parent.value());
+				parent_global.inverse();
+				trs.combine(parent_global);
+			}
+			// then set the local transform.
+			this->object_set_local_transform(oh, trs);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		const tz::transform_hierarchy<std::uint32_t>& render_pass::get_hierarchy() const
 		{
 			return this->tree;

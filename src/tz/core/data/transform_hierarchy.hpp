@@ -165,8 +165,8 @@ namespace tz
 		void clear_cache() const;
 
 		void dbgui(bool display_gizmo = true);
-	private:
 		bool dbgui_node(unsigned int node_id, bool display_gizmo);
+	private:
 		std::vector<transform_node<T>> nodes = {};
 		std::vector<std::size_t> node_free_list = {};
 		mutable std::vector<std::size_t> node_local_transform_hashes = {};

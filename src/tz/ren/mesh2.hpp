@@ -275,6 +275,11 @@ namespace tz::ren
 			object_data& get_object(object_handle oh);
 			void remove_object(object_handle oh);
 
+			tz::trs object_get_local_transform(object_handle oh) const;
+			void object_set_local_transform(object_handle oh, tz::trs trs);
+			tz::trs object_get_global_transform(object_handle oh) const;
+			void object_set_global_transform(object_handle oh, tz::trs trs);
+
 			const tz::transform_hierarchy<std::uint32_t>& get_hierarchy() const;
 			tz::transform_hierarchy<std::uint32_t>& get_hierarchy();
 

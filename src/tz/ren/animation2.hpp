@@ -80,6 +80,11 @@ namespace tz::ren
 		void animated_object_play_animation(animated_objects_handle handle, playback_data anim);
 		void animated_object_queue_animation(animated_objects_handle handle, playback_data anim);
 		void animated_object_skip_animation(animated_objects_handle handle);
+
+		tz::trs animated_object_get_local_transform(animated_objects_handle handle) const;
+		void animated_object_set_local_transform(animated_objects_handle handle, tz::trs trs);
+		tz::trs animated_object_get_global_transform(animated_objects_handle handle) const;
+		void animated_object_set_global_transform(animated_objects_handle handle, tz::trs trs);
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;
