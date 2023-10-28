@@ -245,10 +245,18 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	void animation_renderer2::animated_object_play_animation(animated_objects_handle handle, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->animated_objects[hanval].playback.insert(this->animated_objects[hanval].playback.begin(), anim);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	void animation_renderer2::animated_object_queue_animation(animated_objects_handle handle, playback_data anim)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
-		return this->animated_objects[hanval].playback.push_back(anim);
+		this->animated_objects[hanval].playback.push_back(anim);
 	}
 
 //--------------------------------------------------------------------------------------------------

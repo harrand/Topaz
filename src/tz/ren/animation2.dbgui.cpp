@@ -73,7 +73,7 @@ namespace tz::ren
 					}	
 
 					ImGui::Spacing();
-					if(anim_objects.playback.size())
+					if(anim_objects.playback.size() && ImGui::CollapsingHeader("Playing Animations", ImGuiTreeNodeFlags_DefaultOpen))
 					{
 						auto& currently_playing = anim_objects.playback.front();
 						std::string_view animation_name = this->gltf_get_animation_name(static_cast<tz::hanval>(gltf_id), currently_playing.animation_id);
@@ -81,6 +81,26 @@ namespace tz::ren
 						ImGui::ProgressBar(anim_objects.playback_time / this->gltf_get_animation_length(static_cast<tz::hanval>(gltf_id), currently_playing.animation_id));
 						ImGui::Checkbox("Loop", &currently_playing.loop);
 						ImGui::SliderFloat("Time Warp", &currently_playing.time_warp, -5.0f, 5.0f);
+					}
+
+					if(gltf.data.get_animations().size())
+					{
+						// choose an animation to play/queue
+						ImGui::Separator();
+						ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "Play/Queue Animation");
+						static playback_data new_anim;	
+						ImGui::Checkbox("Loop", &new_anim.loop);
+						ImGui::SliderFloat("Time Warp", &new_anim.time_warp, -5.0f, 5.0f);
+						ImGui::SliderInt("Animation", reinterpret_cast<int*>(&new_anim.animation_id), 0, gltf.data.get_animations().size() - 1, "%zu");
+						ImGui::Text("%s", this->gltf_get_animation_name(static_cast<tz::hanval>(gltf_id), new_anim.animation_id).data());
+						if(ImGui::Button("Play"))
+						{
+							this->animated_object_play_animation(aoh, new_anim);
+						}
+						if(ImGui::Button("Queue"))
+						{
+							this->animated_object_queue_animation(aoh, new_anim);
+						}
 					}
 				}
 			}

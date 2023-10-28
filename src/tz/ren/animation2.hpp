@@ -77,6 +77,7 @@ namespace tz::ren
 		void animated_object_set_playback_time(animated_objects_handle handle, float time);
 		std::span<const playback_data> animated_object_get_playing_animations(animated_objects_handle handle) const;
 		std::span<playback_data> animated_object_get_playing_animations(animated_objects_handle handle);
+		void animated_object_play_animation(animated_objects_handle handle, playback_data anim);
 		void animated_object_queue_animation(animated_objects_handle handle, playback_data anim);
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
