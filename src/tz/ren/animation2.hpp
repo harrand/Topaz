@@ -6,15 +6,19 @@
 
 namespace tz::ren
 {
-	// an extension of mesh_renderer2.
-	// this supports loading all the meshes and textures at once from a gltf.
-	// once you load a gltf, you get a gltf_handle.
-	// you can use a gltf_handle to create a set of objects corresponding to the gltf nodes.
-	// this set of objects is called an animated object. once you create one, you get a animated_objects_handle.
-	// animated_objects_handles represent a single animated object, but that may be comprised of many static subobjects (mesh_renderer2 objects) in a hierarchy.
-	// some of these subobjects have meshes attached which are ultimately drawn, but many of them wont.
-	// you can spawn multiple animated objects from the same gltf. they will share the same meshes and textures, but their objects will be unique.
-	// this means you can have separate copies of the same animated model undergoing different points of the animations at once.
+	/**
+	 * @ingroup tz_ren
+	 * A superset of @ref mesh_renderer2
+	 * an extension of mesh_renderer2.
+	 * this supports loading all the meshes and textures at once from a gltf.
+	 * once you load a gltf, you get a gltf_handle.
+	 * you can use a gltf_handle to create a set of objects corresponding to the gltf nodes.
+	 * this set of objects is called an animated object. once you create one, you get a animated_objects_handle.
+	 * animated_objects_handles represent a single animated object, but that may be comprised of many static subobjects (mesh_renderer2 objects) in a hierarchy.
+	 * some of these subobjects have meshes attached which are ultimately drawn, but many of them wont.
+	 * you can spawn multiple animated objects from the same gltf. they will share the same meshes and textures, but their objects will be unique.
+	 * this means you can have separate copies of the same animated model undergoing different points of the animations at once.
+	 */
 	class animation_renderer2 : private mesh_renderer2
 	{
 	public:
@@ -26,11 +30,18 @@ namespace tz::ren
 		using animated_objects_handle = tz::handle<object_handle>;
 		struct info
 		{
+			/// String representing SPIRV for the vertex shader. If empty, a default vertex shader is used.
 			std::string_view custom_vertex_spirv = {};
+			/// String representing SPIRV for the fragment shader. If empty, a default fragment shader is used - displays the textured objects with no lighting effects.
 			std::string_view custom_fragment_spirv = {};
+			/// If you want more fine-grained control over the created graphics renderer pass (such as if you want to add a post-process effect), you can add extra options here.
 			tz::gl::renderer_options custom_options = {};
+			/// Maximum number of textures. Note that this capacity cannot be expanded - make sure you never exceed this limit.
 			std::size_t texture_capacity = 1024u;
+			/// A list of extra buffer resources. These buffers will be resident to both the vertex and fragment shader. Resource ID of the first extra buffer will be `3` ascending.
 			std::vector<tz::gl::buffer_resource> extra_buffers = {};
+			/// Optional output. Use this if you want to render into a specific render target. If this is nullptr, it will render directly into the window instead.
+			tz::gl::ioutput* output = nullptr;
 		};
 		animation_renderer2(info i);
 		animation_renderer2();

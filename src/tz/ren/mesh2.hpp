@@ -432,6 +432,26 @@ namespace tz::ren
 	/**
 	* @ingroup tz_ren
 	* A lightweight 3D mesh renderer. If you'd like to render animated models, you're looking for @ref animation_renderer2.
+	*
+	* Mesh Renderers are comprised of three major components:
+	* <Mesh>
+	* - Represents a triangulated set of indices and vertices. These are necessary to give shape to drawn geometry.
+	* - First you must fill in the data of a `mesh_renderer2::mesh`, and then add it using `mesh_renderer2::add_mesh`. Keep ahold of the returned `mesh_handle`.
+	* 
+	* <Texture>
+	* - Represents an image that is sampled when drawing a mesh.
+	* - First you must fill the data of a `tz::io::image`, in the format `tz::gl::image_format::RGBA32`, and then add it using `mesh_renderer2::add_texture`. Keep ahold of the returned `texture_handle`.
+	*
+	* <Object>
+	* - Represents a "thing" that is drawn in the 3D world.
+	* - Objects can have zero or more child objects. That is - objects are expressed as a graph, you can have as many root nodes as you like, and each object can have as many children as you like.
+	* - At its core, objects are comprised of:
+	* 	- A local transform (its position, rotation and scale with respect to its parent)
+	* 	- (Optional) A mesh (when you draw the object, what geometry should be drawn as its location?).
+	*		- If you don't want the object to be drawn, and just to exist as a node within the hierarchy, you can set the mesh to null.
+	*	- A list of bound textures. These textures will be sampled from when drawing the object's associated mesh.
+	*		- The list should have a size less-than-or-equal to the value `tz::ren::impl::object_data::max_bound_textures`. Any excess texture locators will be ignored.
+	* - To add a new object to the 3D world, invoke `mesh_renderer2::add_object`. Keep ahold of the returned `object_handle`.
 	*/
 	class mesh_renderer2 : public impl::render_pass
 	{

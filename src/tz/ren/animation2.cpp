@@ -17,7 +17,8 @@ namespace tz::ren
 		.custom_fragment_spirv = i.custom_fragment_spirv.empty() ? ImportedShaderSource(animation, fragment) : i.custom_fragment_spirv,
 		.custom_options = i.custom_options,
 		.texture_capacity = i.texture_capacity,
-		.extra_buffers = this->evaluate_extra_buffers(i)
+		.extra_buffers = this->evaluate_extra_buffers(i),
+		.output = i.output
 	})
 	{
 
