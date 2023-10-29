@@ -17,6 +17,7 @@ namespace tz::gl
 		bool recreate_pipeline = false;
 		bool rerecord_work_commands = false;
 		bool rewrite_static_resources = false;
+		std::vector<tz::gl::resource_handle> static_resources_to_rewrite = {};
 		bool repopulate_render_targets = false;
 	};
 
@@ -899,6 +900,7 @@ namespace tz::gl
 		// firstly record the commands requested.
 		{
 			vk2::CommandBufferRecording rec = buf.record();
+			TZ_PROFZONE("do scratch work - record commands", 0xFFAAAA00);
 			record_commands(rec);
 		}
 		// then, execute them.
@@ -945,7 +947,7 @@ namespace tz::gl
 		}
 	}
 
-	void renderer_command_processor::scratch_initialise_static_resources()
+	void renderer_command_processor::scratch_initialise_static_resources(std::span<const tz::gl::resource_handle> static_resources_to_initialise)
 	{
 		TZ_PROFZONE("renderer_command_processor - scratch initialise static resources", 0xFFAAAA00);
 		// we need to create a staging buffer for each static_fixed buffer and image resource we have.
@@ -961,7 +963,17 @@ namespace tz::gl
 			tz::assert(cmp != nullptr);
 			const iresource* res = cmp->get_resource();
 			tz::assert(res != nullptr);
-			if(res->get_access() != tz::gl::resource_access::static_access)
+			const bool is_in_span = std::find_if(static_resources_to_initialise.begin(), static_resources_to_initialise.end(),
+			[i](tz::gl::resource_handle rh)
+			{
+				return static_cast<tz::gl::resource_handle>(static_cast<tz::hanval>(i)) == rh;
+			}) != static_resources_to_initialise.end();
+
+			// push null if:
+			// not a static resource
+			// OR
+			// we have a specific set of static resources to initialise, but this is not one of them.
+			if((static_resources_to_initialise.size() && !is_in_span) || res->get_access() != tz::gl::resource_access::static_access)
 			{
 				resource_staging_buffers.push_back(vk2::Buffer::null());
 				continue;
@@ -1354,12 +1366,13 @@ namespace tz::gl
 			for(std::size_t i = 0; i < resource_staging_buffers.size(); i++)
 			{
 				vk2::Buffer& staging_buffer = resource_staging_buffers[i];
-				tz::gl::icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
-				const tz::gl::iresource* res = cmp->get_resource();
 				if(staging_buffer.is_null())
 				{
 					continue;
 				}
+				TZ_PROFZONE("static resource transfers - single staging buffer transfer", 0xFFAAAA00);
+				tz::gl::icomponent* cmp = renderer_resource_manager::get_component(static_cast<tz::hanval>(i));
+				const tz::gl::iresource* res = cmp->get_resource();
 				tz::assert(res->get_access() == tz::gl::resource_access::static_access, "while initialising static resources, detected non-static-fixed resource at handle %zu that somehow ended up with a non-null staging buffer. logic error. please submit a bug report.", i);
 				switch(res->get_type())
 				{
@@ -1495,6 +1508,7 @@ namespace tz::gl
 						if(bufcomp->get_resource()->get_access() == tz::gl::resource_access::static_access)
 						{
 							side_effects.rewrite_static_resources = true;
+							side_effects.static_resources_to_rewrite.push_back(arg.buffer_handle);
 						}
 						if(arg.buffer_handle == this->state.graphics.index_buffer || arg.buffer_handle == this->state.graphics.draw_buffer)
 						{
@@ -1517,6 +1531,7 @@ namespace tz::gl
 						if(imgcomp->get_resource()->get_access() == tz::gl::resource_access::static_access)
 						{
 							side_effects.rewrite_static_resources = true;
+							side_effects.static_resources_to_rewrite.push_back(arg.image_handle);
 						}
 						side_effects.rewrite_image_descriptors = true;
 					}
@@ -1661,7 +1676,15 @@ namespace tz::gl
 		}
 		if(side_effects.rewrite_static_resources)
 		{
-			renderer_command_processor::scratch_initialise_static_resources();
+			// if we have a specific list of resources to initialise, only do those.
+			if(side_effects.static_resources_to_rewrite.size())
+			{
+				renderer_command_processor::scratch_initialise_static_resources(side_effects.static_resources_to_rewrite);
+			}
+			else
+			{
+				renderer_command_processor::scratch_initialise_static_resources();
+			}
 		}
 	}
 

@@ -175,7 +175,9 @@ namespace tz::gl
 		void do_frame();
 		void set_work_commands(std::function<void(vk2::CommandBufferRecording&, unsigned int)> work_record_commands);
 		void record_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
-		void scratch_initialise_static_resources();
+		// only initialise the static resources specified
+		// unless parameter is empty span - in which case initialise *all* static resources.
+		void scratch_initialise_static_resources(std::span<const tz::gl::resource_handle> static_resources_to_initialise = {});
 		void queue_resource_write(tz::gl::renderer_edit::resource_write rwrite);
 		void submit_resource_writes();
 		void reset_resource_write_buffers();
