@@ -828,7 +828,7 @@ namespace tz::ren
 		std::sort(sorted_objects.begin(), sorted_objects.end(),
 			[](const auto& a, const auto& b)
 			{
-				return a.joint_buffer_offset < b.joint_buffer_offset;
+				return (a.joint_buffer_offset + a.joint_count) < (b.joint_buffer_offset + b.joint_count);
 			});
         // Iterate through sorted animated objects to find gaps in joint regions.
 		std::uint32_t current_offset = 0;
