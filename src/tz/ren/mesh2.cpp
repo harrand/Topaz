@@ -824,7 +824,7 @@ namespace tz::ren
 			// vertex buffer
 			// index buffer
 			// object buffer
-			// camera buffer (NYI)
+			// camera buffer
 			// draw indirect buffer ref
 			// <extra buffers>
 			// textures
@@ -836,8 +836,7 @@ namespace tz::ren
 			std::array<tz::mat4, 2> camera_initial_data;
 			camera_initial_data[0] = tz::view({0.0f, 0.0f, 25.0f}, tz::vec3::zero());
 			camera_initial_data[1] = tz::perspective(1.5708f, static_cast<float>(tz::window().get_dimensions()[0]) / tz::window().get_dimensions()[1], 0.1f, 1000.0f);
-			rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data));
-
+			this->camera_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data));
 			// vertex wrangler already set our index buffer, but we need to set the draw indirect buffer ourselves.
 			// first retrieve it from compute pass
 			this->draw_indirect_ref = rinfo.ref_resource(this->compute.get_compute_pass(), this->compute.get_draw_indirect_buffer());
@@ -1115,6 +1114,36 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		texture_locator render_pass::object_get_texture(object_handle oh, std::size_t bound_texture_id) const
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			return obj.get_object_internals(this->render)[hanval].bound_textures[bound_texture_id];
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::object_set_texture(object_handle oh, std::size_t bound_texture_id, texture_locator tloc)
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			obj.get_object_internals(this->render)[hanval].bound_textures[bound_texture_id] = tloc;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		bool render_pass::object_get_visible(object_handle oh) const
+		{
+			return this->compute.get_visibility_at(static_cast<std::size_t>(static_cast<tz::hanval>(oh)));
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::object_set_visible(object_handle oh, bool visible)
+		{
+			this->compute.set_visibility_at(static_cast<std::size_t>(static_cast<tz::hanval>(oh)), visible);
+		}
+
+//--------------------------------------------------------------------------------------------------
+
 		const tz::transform_hierarchy<std::uint32_t>& render_pass::get_hierarchy() const
 		{
 			return this->tree;
@@ -1147,6 +1176,36 @@ namespace tz::ren
 				return 1u + this->extra_buf_hanval_last.value() - this->extra_buf_hanval_first.value();
 			}
 			return 0u;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		tz::trs render_pass::get_camera_transform() const
+		{
+			return tz::trs::from_matrix(tz::gl::get_device().get_renderer(this->render).get_resource(this->camera_buffer)->data_as<tz::mat4>().front()).inverse();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::set_camera_transform(tz::trs camera_transform)
+		{
+			tz::gl::get_device().get_renderer(this->render).get_resource(this->camera_buffer)->data_as<tz::mat4>().front() = camera_transform.matrix().inverse();
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::camera_perspective(camera_perspective_t persp)
+		{
+			tz::mat4 proj = tz::perspective(persp.fov, persp.aspect_ratio, persp.near_clip, persp.far_clip);
+			tz::gl::get_device().get_renderer(this->render).get_resource(this->camera_buffer)->data_as<tz::mat4>().back() = proj;
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+		void render_pass::camera_orthographic(camera_orthographic_t ortho)
+		{
+			tz::mat4 proj = tz::orthographic(ortho.left, ortho.right, ortho.top, ortho.bottom, ortho.near_plane, ortho.far_plane);
+			tz::gl::get_device().get_renderer(this->render).get_resource(this->camera_buffer)->data_as<tz::mat4>().back() = proj;
 		}
 
 //--------------------------------------------------------------------------------------------------

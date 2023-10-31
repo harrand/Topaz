@@ -236,6 +236,7 @@ namespace tz::ren
 			using mesh_handle = vertex_wrangler::mesh_handle;
 			using texture_handle = texture_manager::texture_handle;
 			using object_handle = object_storage::object_handle;
+			using texture_locator = impl::texture_locator;
 			/// Creation details for a mesh renderer's render-pass.
 			struct info
 			{
@@ -377,6 +378,11 @@ namespace tz::ren
 			 */
 			void object_set_global_transform(object_handle oh, tz::trs trs);
 
+			texture_locator object_get_texture(object_handle oh, std::size_t bound_texture_id) const;
+			void object_set_texture(object_handle oh, std::size_t bound_texture_id, texture_locator tloc);
+			bool object_get_visible(object_handle oh) const;
+			void object_set_visible(object_handle oh, bool visible);
+
 			/**
 			 * Retrieve the underlying transform hierarchy.
 			 * 
@@ -409,6 +415,26 @@ namespace tz::ren
 			 */
 			std::size_t get_extra_buffer_count() const;
 
+			tz::trs get_camera_transform() const;
+			void set_camera_transform(tz::trs camera_transform);
+
+			struct camera_perspective_t
+			{
+				float aspect_ratio = 1.0f;
+				float fov = 1.5701f;
+				float near_clip = 0.1f;
+				float far_clip = 100.0f;
+			};
+			struct camera_orthographic_t
+			{
+				float left, right;
+				float top, bottom;
+				float near_plane, far_plane;	
+			};
+
+			void camera_perspective(camera_perspective_t persp);
+			void camera_orthographic(camera_orthographic_t ortho);
+
 			/// Retrieve the renderer handle associated with the compute pre-pass. This pass populates the indirect draw list.
 			tz::gl::renderer_handle get_compute_pass() const;
 			/// Retrieve the renderer handle associated with the mesh renderer's main render pass.
@@ -418,6 +444,7 @@ namespace tz::ren
 		private:
 			compute_pass compute;
 			tz::gl::renderer_handle render = tz::nullhand;
+			tz::gl::resource_handle camera_buffer = tz::nullhand;
 			tz::gl::resource_handle draw_indirect_ref = tz::nullhand;
 			vertex_wrangler vtx = {};
 			texture_manager tex = {};

@@ -24,6 +24,8 @@ namespace tz::ren
 	public:
 		// represents a single object (this are the subobjects that comprises animated_objects)
 		using mesh_renderer2::object_handle;
+		using mesh_renderer2::texture_handle;
+		using mesh_renderer2::texture_locator;
 		// represents a single gltf.
 		using gltf_handle = tz::handle<tz::io::gltf>;
 		// represents a single instance of an animated model, based off a gltf.
@@ -96,6 +98,24 @@ namespace tz::ren
 		void animated_object_set_local_transform(animated_objects_handle handle, tz::trs trs);
 		tz::trs animated_object_get_global_transform(animated_objects_handle handle) const;
 		void animated_object_set_global_transform(animated_objects_handle handle, tz::trs trs);
+
+		using mesh_renderer2::add_texture;
+		using mesh_renderer2::add_object;
+		using mesh_renderer2::remove_object;
+		using mesh_renderer2::get_object;
+		using mesh_renderer2::object_get_local_transform;
+		using mesh_renderer2::object_set_local_transform;
+		using mesh_renderer2::object_get_global_transform;
+		using mesh_renderer2::object_set_global_transform;
+		using mesh_renderer2::get_compute_pass;
+		using mesh_renderer2::get_render_pass;
+		using mesh_renderer2::object_get_texture;
+		using mesh_renderer2::object_set_texture;
+		using mesh_renderer2::object_get_visible;
+		using mesh_renderer2::object_set_visible;
+		using mesh_renderer2::get_camera_transform;
+		using mesh_renderer2::camera_perspective;
+		using mesh_renderer2::camera_orthographic;
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;
