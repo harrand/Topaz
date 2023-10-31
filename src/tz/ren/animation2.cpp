@@ -34,8 +34,16 @@ namespace tz::ren
 	void animation_renderer2::update(float delta)
 	{
 		TZ_PROFZONE("animation_renderer2 - update", 0xFFC52530);
-		this->animation_advance(delta);
+		this->block();
 		mesh_renderer2::update();
+		this->animation_advance(delta);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer2::block()
+	{
+		this->wait_for_animation_jobs();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -238,6 +246,14 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	void animation_renderer2::animated_object_skip_all_animations(animated_objects_handle handle)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->animated_objects[hanval].playback.clear();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	std::span<animation_renderer2::playback_data> animation_renderer2::animated_object_get_playing_animations(animated_objects_handle handle)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
@@ -249,7 +265,9 @@ namespace tz::ren
 	void animation_renderer2::animated_object_play_animation(animated_objects_handle handle, playback_data anim)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
-		this->animated_objects[hanval].playback.insert(this->animated_objects[hanval].playback.begin(), anim);
+		auto& playback = this->animated_objects[hanval];
+		playback.playback = {anim};
+		this->animated_objects[hanval].playback_time = 0.0f;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -323,23 +341,25 @@ namespace tz::ren
 	void animation_renderer2::animation_advance(float delta)
 	{
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);
-		// for now, just do them all.
-		this->wait_for_animation_jobs();
 
 		std::size_t job_count = std::thread::hardware_concurrency();
 		this->animation_advance_jobs.resize(job_count);
 		std::size_t objects_per_job = this->animated_objects.size() / job_count;
 		std::size_t remainder_objects = this->animated_objects.size() % job_count;
+		tz::assert((objects_per_job * job_count) + remainder_objects == this->animated_objects.size());
 		std::vector<tz::job_handle> jobs(job_count);
-		for(std::size_t i = 0; i < job_count; i++)
+		if(objects_per_job > 0)
 		{
-			this->animation_advance_jobs[i] = tz::job_system().execute([this, delta, offset = i * objects_per_job, object_count = objects_per_job]
+			for(std::size_t i = 0; i < job_count; i++)
 			{
-				for(std::size_t j = 0; j < object_count; j++)
+				this->animation_advance_jobs[i] = tz::job_system().execute([this, delta, offset = i * objects_per_job, object_count = objects_per_job]
 				{
-					this->single_animation_advance(delta, static_cast<tz::hanval>(offset + j));
-				}
-			});
+					for(std::size_t j = 0; j < object_count; j++)
+					{
+						this->single_animation_advance(delta, static_cast<tz::hanval>(offset + j));
+					}
+				});
+			}
 		}
 		{
 			TZ_PROFZONE("animation advance - remainder gltfs", 0xFF0000AA);
@@ -396,7 +416,7 @@ namespace tz::ren
 		// advance time
 		animobj.playback_time += playing_anim.time_warp * delta;
 		// what do we do if we're at the end of the anim?
-		if(animobj.playback_time > anim.max_time)
+		if(animobj.playback_time >= anim.max_time)
 		{
 			// if we need to loop, then go back.
 			if(playing_anim.loop)
@@ -408,6 +428,7 @@ namespace tz::ren
 				// not looping, need to move to the next animation!
 				animobj.playback_time = 0.0f;
 				animobj.playback.erase(animobj.playback.begin());
+				return;
 			}
 		}
 		const float t = animobj.playback_time;

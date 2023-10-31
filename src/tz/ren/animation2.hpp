@@ -49,6 +49,8 @@ namespace tz::ren
 		animation_renderer2();
 		// update positions of all objects and animations.
 		void update(float delta);
+		// blocks the current thread until all remaining animation advance async work has completed.
+		void block();
 		void dbgui();
 		// add a new gltf. try not to add duplicates - share gltfs as much as possible.
 		// this is an expensive operation, especially if the gltf is complicated - you probably want to add these ahead-of-time.
@@ -90,6 +92,7 @@ namespace tz::ren
 		void animated_object_set_playback_time(animated_objects_handle handle, float time);
 		std::span<const playback_data> animated_object_get_playing_animations(animated_objects_handle handle) const;
 		std::span<playback_data> animated_object_get_playing_animations(animated_objects_handle handle);
+		void animated_object_skip_all_animations(animated_objects_handle handle);
 		void animated_object_play_animation(animated_objects_handle handle, playback_data anim);
 		void animated_object_queue_animation(animated_objects_handle handle, playback_data anim);
 		void animated_object_skip_animation(animated_objects_handle handle);
