@@ -48,6 +48,8 @@ add_library(topaz STATIC
 	src/tz/core/job/job.cpp
 	src/tz/core/job/job.hpp
 	src/tz/core/job/api/job.hpp
+	src/tz/core/job/impl/concurrentqueue_blocking/job.cpp
+	src/tz/core/job/impl/concurrentqueue_blocking/job.hpp
 	src/tz/core/job/impl/threadpool_lfq/job.cpp
 	src/tz/core/job/impl/threadpool_lfq/job.hpp
 	src/tz/core/memory/allocators/adapter.hpp

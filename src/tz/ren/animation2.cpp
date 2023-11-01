@@ -343,13 +343,12 @@ namespace tz::ren
 		TZ_PROFZONE("animation_renderer2 - animation advance", 0xFFE54550);
 
 		std::size_t job_count = std::thread::hardware_concurrency();
-		this->animation_advance_jobs.resize(job_count);
 		std::size_t objects_per_job = this->animated_objects.size() / job_count;
 		std::size_t remainder_objects = this->animated_objects.size() % job_count;
 		tz::assert((objects_per_job * job_count) + remainder_objects == this->animated_objects.size());
-		std::vector<tz::job_handle> jobs(job_count);
 		if(objects_per_job > 0)
 		{
+			this->animation_advance_jobs.resize(job_count);
 			for(std::size_t i = 0; i < job_count; i++)
 			{
 				this->animation_advance_jobs[i] = tz::job_system().execute([this, delta, offset = i * objects_per_job, object_count = objects_per_job]

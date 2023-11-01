@@ -6,8 +6,8 @@
 #include <array>
 #include <algorithm>
 
-#define TESTFUNC_BEGIN(n) void n(){tz::assert(!tz::job_system().any_work_remaining());
-#define TESTFUNC_END ;tz::job_system().block_all(); tz::assert(!tz::job_system().any_work_remaining());}
+#define TESTFUNC_BEGIN(n) void n(){tz::assert(!tz::job_system().any_work_remaining(), "Old jobs still running when entering new test function");
+#define TESTFUNC_END ;tz::job_system().block_all(); tz::assert(!tz::job_system().any_work_remaining(), "Jobs still running after blocking at the end of test function");}
 
 TESTFUNC_BEGIN(basic_job)
 	TZ_PROFZONE("basic job", 0xFF00AA00);
