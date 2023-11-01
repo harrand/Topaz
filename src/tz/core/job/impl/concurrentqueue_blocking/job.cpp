@@ -230,8 +230,10 @@ namespace tz::impl
 
 				TZ_PROFZONE("job worker - mark job completed", 0xFFAA0000);
 				// put it in the done list.
-				std::unique_lock<std::mutex> lock(this->done_job_list_mutex);
-				this->done_job_ids.push_back(worker.currently_running_job_id);
+				{
+					std::unique_lock<std::mutex> lock(this->done_job_list_mutex);
+					this->done_job_ids.push_back(worker.currently_running_job_id);
+				}
 				// wakey wakey on people waiting on a job to be done.
 				//std::osyncstream(std::cout) << "[" << worker.local_tid << "] - finished job " << job.job_id << "\n";
 				this->wake_me_on_a_job_done.notify_all();
