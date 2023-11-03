@@ -12,7 +12,7 @@ namespace tz::impl
 	job_system_blockingcurrentqueue::job_system_blockingcurrentqueue()
 	{
 		TZ_PROFZONE("job_system - initialise", 0xFFAA0000);
-		this->done_job_ids.reserve(1024);
+		this->running_job_ids.reserve(128);
 		for(std::size_t i = 0; i < std::thread::hardware_concurrency(); i++)
 		{
 			auto& worker = this->thread_pool.emplace_back();
@@ -52,6 +52,10 @@ namespace tz::impl
 		};
 		this->lifetime_jobs_created.store(this->lifetime_jobs_created.load() + 1);
 		this->jobs_created_this_frame.store(this->jobs_created_this_frame.load() + 1);
+		{
+			std::unique_lock<std::mutex> lock(this->done_job_list_mutex);
+			this->running_job_ids.push_back(jinfo.job_id);
+		}
 		if(einfo.maybe_worker_affinity.has_value())
 		{
 			// add to list of affine jobs instead.
@@ -95,8 +99,8 @@ namespace tz::impl
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(j.handle));
 		// lock the done job list mutex.
 		std::unique_lock<std::mutex> lock(this->done_job_list_mutex);
-		// it's done if the job id is on that list.
-		return std::find(this->done_job_ids.begin(), this->done_job_ids.end(), hanval) != this->done_job_ids.end();
+		// if it's not in the list of running jobs, then someone has done it.
+		return std::find(this->running_job_ids.begin(), this->running_job_ids.end(), hanval) == this->running_job_ids.end();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -112,7 +116,7 @@ namespace tz::impl
 		std::unique_lock<std::mutex> lock(this->done_job_list_mutex);
 		for(std::size_t i = 0; i < this->lifetime_jobs_created.load(); i++)
 		{
-			all_complete &= std::find(this->done_job_ids.begin(), this->done_job_ids.end(), i) != this->done_job_ids.end();
+			all_complete &= std::find(this->running_job_ids.begin(), this->running_job_ids.end(), i) == this->running_job_ids.end();
 		}
 		// worker_t stores the currently running job id.
 		// so we could just check if all of them have no running job.
@@ -232,7 +236,9 @@ namespace tz::impl
 				// put it in the done list.
 				{
 					std::unique_lock<std::mutex> lock(this->done_job_list_mutex);
-					this->done_job_ids.push_back(worker.currently_running_job_id);
+					// erase-remove idiom to remove this job id from list of running jobs.
+					tz::assert(std::find(this->running_job_ids.begin(), this->running_job_ids.end(), job.job_id) != this->running_job_ids.end(), "Job that worker just completed was not in the list of running jobs!? Logic error.");
+					this->running_job_ids.erase(std::remove(this->running_job_ids.begin(), this->running_job_ids.end(), job.job_id));
 				}
 				// wakey wakey on people waiting on a job to be done.
 				//std::osyncstream(std::cout) << "[" << worker.local_tid << "] - finished job " << job.job_id << "\n";

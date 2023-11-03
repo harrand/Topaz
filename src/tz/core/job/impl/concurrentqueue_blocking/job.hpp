@@ -49,7 +49,7 @@ namespace tz::impl
 		std::deque<worker_t> thread_pool;
 		moodycamel::BlockingConcurrentQueue<job_info_t> global_job_queue;
 		mutable std::mutex done_job_list_mutex;
-		std::vector<std::size_t> done_job_ids = {};
+		std::vector<std::size_t> running_job_ids = {};
 		mutable std::mutex wake_me_on_a_job_done_mutex;
 		mutable std::condition_variable wake_me_on_a_job_done;
 		std::atomic<std::uint64_t> lifetime_jobs_created = 0u;
