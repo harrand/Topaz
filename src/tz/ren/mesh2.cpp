@@ -836,7 +836,10 @@ namespace tz::ren
 			std::array<tz::mat4, 2> camera_initial_data;
 			camera_initial_data[0] = tz::view({0.0f, 0.0f, 25.0f}, tz::vec3::zero());
 			camera_initial_data[1] = tz::perspective(1.5708f, static_cast<float>(tz::window().get_dimensions()[0]) / tz::window().get_dimensions()[1], 0.1f, 1000.0f);
-			this->camera_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data));
+			this->camera_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(camera_initial_data,
+			{
+				.access = tz::gl::resource_access::dynamic_access
+			}));
 			// vertex wrangler already set our index buffer, but we need to set the draw indirect buffer ourselves.
 			// first retrieve it from compute pass
 			this->draw_indirect_ref = rinfo.ref_resource(this->compute.get_compute_pass(), this->compute.get_draw_indirect_buffer());
