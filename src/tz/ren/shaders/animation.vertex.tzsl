@@ -26,8 +26,7 @@ struct object_t
 	mat4 inverse_bind_matrix;
 	vec3 colour_tint;
 	texture_locator[MAX_TEX_COUNT] textures;
-	uvec2 joint_span;
-	uvec2 unused;
+	uvec4 joint_span;
 };
 
 resource(id = 0) const buffer vertex_buffer
@@ -54,7 +53,8 @@ resource(id = 3) const buffer joint_object_id_buffer
 output(id = 0) vec2 out::texcoord;
 output(id = 1) vec3 out::normal;
 output(id = 2) vec3 out::colour;
-output(id = 3) texture_locator out::textures[MAX_TEX_COUNT];
+output(id = 3) uvec2 out::joint_suffix;
+output(id = 4) texture_locator out::textures[MAX_TEX_COUNT];
 
 mat4 obj_get_joint_matrix(uint object_id)
 {
@@ -64,8 +64,7 @@ mat4 obj_get_joint_matrix(uint object_id)
 
 mat4 get_joint_matrix(object_t o, uint joint_id)
 {
-	uvec2 joint_span = o.joint_span;
-	uint joint_array_offset = joint_span.x;
+	uint joint_array_offset = o.joint_span.x;
 	uint object_id = joint_to.object[joint_array_offset + joint_id];
 	return obj_get_joint_matrix(object_id);
 }
@@ -90,6 +89,7 @@ void main()
 	out::normal = vtx.normal;
 	out::texcoord = vtx.texcoord4.xy;
 	out::colour = obj.colour_tint;
+	out::joint_suffix = obj.joint_span.zw;
 	for(uint i = 0; i < MAX_TEX_COUNT; i++)
 	{
 		out::textures[i] = obj.textures[i];

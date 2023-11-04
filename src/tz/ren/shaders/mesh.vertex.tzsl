@@ -48,7 +48,8 @@ resource(id = 2) const buffer camera_buffer
 output(id = 0) vec2 out::texcoord;
 output(id = 1) vec3 out::normal;
 output(id = 2) vec3 out::colour;
-output(id = 3) texture_locator out::textures[MAX_TEX_COUNT];
+output(id = 3) uvec2 out::impl_unused;
+output(id = 4) texture_locator out::textures[MAX_TEX_COUNT];
 
 void main()
 {
