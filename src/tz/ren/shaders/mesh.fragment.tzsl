@@ -6,6 +6,7 @@ struct texture_locator
 {
 	vec3 colour_tint;
 	uint texture_id;
+	float texture_scale;
 };
 
 output(id = 0) vec4 out::colour;

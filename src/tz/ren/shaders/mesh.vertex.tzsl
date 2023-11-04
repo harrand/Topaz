@@ -17,6 +17,7 @@ struct texture_locator
 {
 	vec3 colour_tint;
 	uint texture_id;
+	float texture_scale;
 };
 
 struct object_t

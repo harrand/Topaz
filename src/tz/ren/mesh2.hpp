@@ -178,6 +178,8 @@ namespace tz::ren
 			tz::vec3 colour_tint = tz::vec3::filled(1.0f);
 			// id within the overarching texture resource array to be sampled.
 			texture_manager::texture_handle texture = tz::nullhand;
+			float texture_scale = 1.0f;
+			float pad0[3];
 
 			bool operator==(const texture_locator& rhs) const = default;
 		};
