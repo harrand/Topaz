@@ -117,6 +117,7 @@ namespace tz::ren
 		using mesh_renderer2::object_get_visible;
 		using mesh_renderer2::object_set_visible;
 		using mesh_renderer2::get_camera_transform;
+		using mesh_renderer2::set_camera_transform;
 		using mesh_renderer2::camera_perspective;
 		using mesh_renderer2::camera_orthographic;
 	private:
