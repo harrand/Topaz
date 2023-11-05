@@ -55,6 +55,7 @@ namespace tz::ren
 		gltf_data data
 		{
 			.data = gltf,
+			.metadata = {},
 			// this->gltf_load_XYZ(this) fills this for us, leave it empty for now.
 			.meshes = {},
 			.textures = {}
@@ -483,7 +484,6 @@ namespace tz::ren
 			TZ_PROFZONE("single advance - update objects", 0xFFE54550);
 			// get the object.
 			object_handle oh = animobj.node_object_map.at(nid);
-			auto& obj = mesh_renderer2::get_object(oh);
 
 			// get the corresponding hierarchy node for our object.
 			auto maybe_node_id = mesh_renderer2::get_hierarchy().find_node(static_cast<std::size_t>(static_cast<tz::hanval>(oh)));
