@@ -410,7 +410,7 @@ namespace tz::lua
 		return this->owner;
 	}
 
-	void state::attach_to_top_userdata(const char* classname, impl::lua_registers registers)
+	void state::attach_to_top_userdata(const char* classname, [[maybe_unused]] impl::lua_registers registers)
 	{
 		// whatever is on top of the stack, set it a new metatable with the functions.
 		auto* s = static_cast<lua_State*>(this->lstate);
