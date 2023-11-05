@@ -94,7 +94,9 @@ namespace tz::ren
 		std::span<playback_data> animated_object_get_playing_animations(animated_objects_handle handle);
 		void animated_object_skip_all_animations(animated_objects_handle handle);
 		void animated_object_play_animation(animated_objects_handle handle, playback_data anim);
+		bool animated_object_play_animation_by_name(animated_objects_handle handle, std::string_view name, playback_data anim);
 		void animated_object_queue_animation(animated_objects_handle handle, playback_data anim);
+		bool animated_object_queue_animation_by_name(animated_objects_handle handle, std::string_view name, playback_data anim);
 		void animated_object_skip_animation(animated_objects_handle handle);
 
 		tz::trs animated_object_get_local_transform(animated_objects_handle handle) const;
@@ -161,6 +163,7 @@ namespace tz::ren
 			// dont fuck with these.
 			struct metadata_t
 			{
+				std::unordered_map<std::string, std::size_t> animation_name_to_id_map = {};
 				// does this gltf contain at least one skin (i.e skinned mesh)
 				bool has_skins = false;
 				// one entry per mesh. represents the cumulative number of submeshes processed while iterating through the gltf meshes.

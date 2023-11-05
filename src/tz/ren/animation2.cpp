@@ -62,6 +62,12 @@ namespace tz::ren
 		this->gltf_load_skins(data);
 		this->gltf_load_meshes(data);
 		this->gltf_load_textures(data);
+
+		for(std::size_t i = 0; i < gltf.get_animations().size(); i++)
+		{
+			std::string anim_name = gltf.get_animations()[i].name;
+			data.metadata.animation_name_to_id_map[anim_name] = i;
+		}
 		// then we create the gltf data, put it in a free slot, and return the handle.
 
 		std::size_t hanval = this->gltfs.size();
@@ -272,10 +278,50 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	bool animation_renderer2::animated_object_play_animation_by_name(animated_objects_handle handle, std::string_view name, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& aobj = this->animated_objects[hanval];
+		gltf_handle gltfh = aobj.gltf;
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(gltfh))];
+		auto iter = gltf.metadata.animation_name_to_id_map.find(std::string{name});
+		bool found = false;
+		if(iter != gltf.metadata.animation_name_to_id_map.end())
+		{
+			// its an actual real animation
+			anim.animation_id = iter->second;
+			found = true;
+			this->animated_object_play_animation(handle, anim);
+		}
+		return found;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	void animation_renderer2::animated_object_queue_animation(animated_objects_handle handle, playback_data anim)
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
 		this->animated_objects[hanval].playback.push_back(anim);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	bool animation_renderer2::animated_object_queue_animation_by_name(animated_objects_handle handle, std::string_view name, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& aobj = this->animated_objects[hanval];
+		gltf_handle gltfh = aobj.gltf;
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(gltfh))];
+		auto iter = gltf.metadata.animation_name_to_id_map.find(std::string{name});
+		bool found = false;
+		if(iter != gltf.metadata.animation_name_to_id_map.end())
+		{
+			// its an actual real animation
+			anim.animation_id = iter->second;
+			found = true;
+			this->animated_object_queue_animation(handle, anim);
+		}
+		return found;
 	}
 
 //--------------------------------------------------------------------------------------------------
