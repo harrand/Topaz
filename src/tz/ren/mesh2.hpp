@@ -3,6 +3,7 @@
 #include "tz/core/data/transform_hierarchy.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/io/image.hpp"
+#include <deque>
 
 namespace tz::ren
 {
