@@ -695,7 +695,7 @@ namespace tz::gl
 						.colour_blend =
 						{
 							.attachment_states = blending_options,
-							.logical_operator = VK_LOGIC_OP_COPY
+							.logical_operator = std::nullopt
 						},
 						.dynamic =
 						{
@@ -729,7 +729,7 @@ namespace tz::gl
 		this->pipeline_config =
 		{
 			.depth_testing = !rinfo.get_options().contains(tz::gl::renderer_option::no_depth_testing),
-			.alpha_blending = !rinfo.get_options().contains(tz::gl::renderer_option::alpha_blending),
+			.alpha_blending = rinfo.get_options().contains(tz::gl::renderer_option::alpha_blending),
 			.type = rinfo.shader().has_shader(tz::gl::shader_stage::compute) ? pipeline_type_t::compute : pipeline_type_t::graphics
 		};
 		tz::assert(this->pipeline_config.valid);
