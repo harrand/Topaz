@@ -772,7 +772,9 @@ namespace tz::ren
 						bound_textures.push_back(impl::texture_locator
 						{
 							.colour_tint = tz::vec3{0.0f, mat.roughness_factor, mat.metallic_factor},
-							.texture = gltf.textures[mat.metallic_roughness_texture_id]
+							.texture = gltf.textures[mat.metallic_roughness_texture_id],
+							.texture_scale = 1.0f,
+							.pad0 = {}
 						});
 					}
 				}
