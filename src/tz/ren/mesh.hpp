@@ -15,12 +15,12 @@ namespace tz::ren
 	struct vertex
 	{
 		tz::vec3 position = tz::vec3::zero();
-		float pad;
+		float pad = 0.0f;
 		std::array<tz::vec4, max_tex_count> texcoordn = {};
 		tz::vec3 normal;
-		float pad0;
+		float pad0 = 0.0f;
 		tz::vec3 tangent;
-		float pad1;
+		float pad1 = 0.0f;
 		std::array<tz::vec4ui32, max_joint4_count> joint_indices = {};
 		std::array<tz::vec4, max_joint4_count> joint_weights = {};
 	};
@@ -80,7 +80,7 @@ namespace tz::ren
 		// extra matrix space. unused in mesh_renderer.
 		tz::mat4 extra = tz::mat4::identity();
 		tz::vec3 colour_tint = tz::vec3::filled(1.0f);
-		float pad0;
+		float pad0 = 0.0f;
 		// array of bound textures. they all do not have to be used. no indication on whether they are colour, normal map, etc...
 		std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
 		tz::vec4ui32 extra_indices = tz::vec4ui32::zero();
