@@ -57,6 +57,7 @@ namespace tz::ren
 
 		void texture_manager::dbgui(tz::gl::renderer_handle rh)
 		{
+			(void)rh;
 			ImGui::Text("%zu/%zu textures (%.2f%%)", this->get_texture_count(), this->get_texture_capacity(), 100.0f * this->get_texture_count() / this->get_texture_capacity());
 		}
 
