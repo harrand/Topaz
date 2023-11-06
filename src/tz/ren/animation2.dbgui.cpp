@@ -169,7 +169,6 @@ namespace tz::ren
 			{
 				static int gltf_id = 0;
 				ImGui::SliderInt("GLTF id", &gltf_id, 0, this->gltfs.size() - 1);
-				const auto& gltf = this->gltfs[gltf_id];
 				if(ImGui::Button("Clone"))
 				{
 					auto handle = this->add_animated_objects
