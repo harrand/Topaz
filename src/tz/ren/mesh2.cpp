@@ -520,11 +520,11 @@ namespace tz::ren
 				// if we're shrinking, the draw-count better not be at capacity, or objects may accidentally be deleted.
 				tz::assert(this->get_draw_count() < new_capacity, "Attempted to shrink draw capacity from %zu to %zu, but the draw count is %zu - meaning that some objects would be corrupted. Remove the excess objects before shrinking the draw list!", old_capacity, new_capacity, this->get_draw_count());
 			}
-			const std::size_t old_draw_indirect_buffer_size = sizeof(std::uint32_t) + (old_capacity * sizeof(tz::gl::draw_indexed_indirect_command));
-			const std::size_t old_mesh_locator_buffer_size = sizeof(std::uint32_t) + (old_capacity * sizeof(mesh_locator));
-			const std::size_t old_visibility_buffer_size = sizeof(std::uint32_t) * old_capacity;
-			// debug sanity check first.
 			#if TZ_DEBUG
+				const std::size_t old_draw_indirect_buffer_size = sizeof(std::uint32_t) + (old_capacity * sizeof(tz::gl::draw_indexed_indirect_command));
+				const std::size_t old_mesh_locator_buffer_size = sizeof(std::uint32_t) + (old_capacity * sizeof(mesh_locator));
+				const std::size_t old_visibility_buffer_size = sizeof(std::uint32_t) * old_capacity;
+				// debug sanity check first.
 				auto& ren = tz::gl::get_device().get_renderer(this->compute);
 				const std::size_t old_draw_indirect_buffer_actual_size = ren.get_resource(this->draw_indirect_buffer)->data().size_bytes();
 				const std::size_t old_mesh_locator_buffer_actual_size = ren.get_resource(this->mesh_locator_buffer)->data().size_bytes();
