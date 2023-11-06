@@ -23,10 +23,11 @@ jobs:
       # workaround is to use this magic script to install clang-17.
       # it is bound to start failing soon.
       - name: Install newer Clang
-            run: |
-            wget https://apt.llvm.org/llvm.sh
-            chmod +x ./llvm.sh
-            sudo ./llvm.sh 17
+        run:  |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x ./llvm.sh
+          sudo ./llvm.sh 17
+
       - uses: actions/checkout@v2
         with:
           submodules: recursive
