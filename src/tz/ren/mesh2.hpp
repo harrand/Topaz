@@ -93,8 +93,6 @@ namespace tz::ren
 
 			std::vector<mesh_locator> mesh_locators = {};
 			std::deque<tz::hanval> mesh_handle_free_list = {};
-			std::size_t added_vertex_count = 0;
-			std::size_t added_index_count = 0;
 			int dbgui_mesh_cursor = 0;
 		};
 

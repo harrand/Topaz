@@ -151,7 +151,6 @@ namespace tz::ren
 			TZ_PROFZONE("vertex_wrangler - remove mesh", 0xFF02F3B5);
 			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(mh));
 			// just add the handle to the free-list and empty out the corresponding locator.
-			this->added_vertex_count -= this->mesh_locators[hanval].vertex_count;
 			this->mesh_locators[hanval] = {};
 			this->mesh_handle_free_list.push_back(static_cast<tz::hanval>(mh));
 		}
@@ -297,9 +296,6 @@ namespace tz::ren
 				.offset = maybe_vertex_section.value() * sizeof(mesh_vertex)
 			});
 			tz::gl::get_device().get_renderer(rh).edit(builder.build());
-
-			std::uint32_t vertex_offset = this->added_vertex_count;
-			this->added_vertex_count += vertex_count;
 			
 			tz::report("Added mesh at index offset %zu and vertex offset %zu", index_src.size(), vertex_src.size());
 
@@ -630,7 +626,6 @@ namespace tz::ren
 
 			// if free list is not empty, use as many slots as we can.
 			const std::size_t free_list_reuse_count = std::min(number_of_new_draws, this->draw_id_free_list.size());
-			const std::size_t new_draws_needed = number_of_new_draws - free_list_reuse_count;
 			for(std::size_t i = 0; i < free_list_reuse_count; i++)
 			{
 				const std::size_t reused_draw_id = this->draw_id_free_list[i];
