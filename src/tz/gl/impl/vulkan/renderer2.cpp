@@ -676,6 +676,7 @@ namespace tz::gl
 					break;
 					default:
 						tz::error("Unrecognised `tz::gl::graphics_topology`.");
+						topology = vk2::PrimitiveTopology::Triangles;
 					break;
 				}
 
@@ -1164,6 +1165,7 @@ namespace tz::gl
 					break;
 					default:
 						tz::error("Unrecognised `tz::gl::graphics_topology`.");
+						topology = vk2::PrimitiveTopology::Triangles;
 					break;
 				}
 				if(index_buffer == nullptr)
