@@ -605,6 +605,7 @@ namespace tz::gl
 				break;
 				default:
 					tz::error("Unrecognised `tz::gl::graphics_topology`.");
+					topology = ogl2::primitive_topology::triangles;
 				break;
 			}
 			const bool window_output = this->output.get_output() == nullptr || this->output.get_output()->get_target() == tz::gl::output_target::window;
