@@ -191,7 +191,7 @@ namespace tz::ren
 			tz::mat4 global_transform = tz::mat4::identity();
 			tz::mat4 unused;
 			tz::vec3 colour_tint = tz::vec3::filled(1.0f);
-			float pad0;
+			float pad0 = 0.0f;
 			std::array<texture_locator, max_bound_textures> bound_textures = {};
 			tz::vec4ui32 unused2;
 		};

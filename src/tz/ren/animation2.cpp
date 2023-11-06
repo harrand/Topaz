@@ -758,7 +758,9 @@ namespace tz::ren
 					bound_textures.push_back(impl::texture_locator
 					{
 						.colour_tint = mat.color_factor.swizzle<0, 1, 2>(),
-						.texture = gltf.textures[mat.color_texture_id]
+						.texture = gltf.textures[mat.color_texture_id],
+						.texture_scale = 1.0f,
+						.pad0 = {}
 					});
 					// is there a metallic roughness texture?
 					if(mat.metallic_roughness_texture_id != static_cast<std::size_t>(-1))
