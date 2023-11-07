@@ -422,6 +422,7 @@ namespace tz::ren
 	using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
 	std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back, float time)
 	{
+		TZ_PROFZONE("animation - interpolate keyframes", 0xFFE54550);
 		keyframe_iterator iter = front;
 		while(iter != back && iter->time_point <= time)
 		{

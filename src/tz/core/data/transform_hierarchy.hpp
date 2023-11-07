@@ -144,8 +144,9 @@ namespace tz
 		 * Invoke a callback for each descendent of the node corresponding to `id`. A descendent is a node that is either a child, grandchild etc... of the provided node.
 		 * @param id Index corresponding to the node whose descendants to iterate over.
 		 * @param callback Callback to be invoked with the current descendant's node index. Guaranteed to be invoked on the initial caller thread.
+		 * @param callback_thread_safe True if it's safe to call the callback from multiple threads, otherwise false. This will potentially launch jobs to help iterate, running much faster.
 		 **/
-		void iterate_descendants(unsigned int id, tz::action<unsigned int> auto callback) const;
+		void iterate_descendants(unsigned int id, tz::action<unsigned int> auto callback, bool callback_thread_safe = false) const;
 		// invoke callback for each ancestor (parent, their parent, etc...) of the node `id`
 		/**
 		 * Invoke a callback for each ancestor of the node corresponding to `id`. An ancestor is a node that is either a parent, grandparent etc... of the provided node.
@@ -156,8 +157,9 @@ namespace tz
 		/**
 		 * Invoke a callback for each node within the hierarchy, in-order. Depth-first traversal.
 		 * @param callback Callback to be invoked exactly once for each node in the hierarchy. Guaranteed to be invoked on the initial caller thread.
+		 * @param callback_thread_safe True if it's safe to call the callback from multiple threads, otherwise false. This will potentially launch jobs to help iterate, running much faster.
 		 **/
-		void iterate_nodes(tz::action<unsigned int> auto callback) const;
+		void iterate_nodes(tz::action<unsigned int> auto callback, bool callback_thread_safe = false) const;
 
 		bool node_cache_miss(unsigned int node_id) const;
 		void cache_write(unsigned int node_id, tz::trs global) const;

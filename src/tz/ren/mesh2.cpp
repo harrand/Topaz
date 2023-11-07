@@ -891,7 +891,7 @@ namespace tz::ren
 				TZ_PROFZONE("mesh_renderer - note iterate", 0xFF0000AA);
 				const auto& node = this->tree.get_node(node_id);
 				this->obj.get_object_internals(this->render)[node.data].global_transform = this->tree.get_global_transform(node_id).matrix();
-			});
+			}, true);
 		}
 
 //--------------------------------------------------------------------------------------------------

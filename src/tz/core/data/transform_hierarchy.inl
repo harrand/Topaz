@@ -1,6 +1,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
+#include "tz/core/job/job.hpp"
 #include <set>
 #include <type_traits>
 #include <sstream>
@@ -304,14 +305,49 @@ namespace tz
 	}
 
 	template<typename T>
-	void transform_hierarchy<T>::iterate_descendants(unsigned int id, tz::action<unsigned int> auto callback) const
+	void transform_hierarchy<T>::iterate_descendants(unsigned int id, tz::action<unsigned int> auto callback, bool callback_thread_safe) const
 	{
 		TZ_PROFZONE("transform_hierarchy - iterate descendants", 0xFF0000AA);
 		const auto& node = this->get_node(id);
-		for(unsigned int child : node.children)
+
+		if(callback_thread_safe && node.children.size() >= tz::job_system().worker_count())
 		{
-			callback(child);
-			this->iterate_descendants(child, callback);
+			// if we're allowed to spawn jobs to help, let's do it.
+			const std::size_t job_count = tz::job_system().worker_count();
+			std::size_t children_per_job = node.children.size() / job_count;
+			std::size_t remainder_children = node.children.size() % job_count;
+
+			std::vector<tz::job_handle> jobs;
+			jobs.resize(job_count);
+			for(std::size_t i = 0; i < job_count; i++)
+			{
+				jobs[i] = tz::job_system().execute([&node, &callback, this, offset = i * children_per_job, child_count = children_per_job]()
+				{
+					for(std::size_t j = 0; j < child_count; j++)
+					{
+						unsigned int child = node.children[j + offset];
+						callback(child); this->iterate_descendants(child, callback, true);
+					}
+				});
+			}
+			for(std::size_t i = node.children.size() - remainder_children; i < node.children.size(); i++)
+			{
+				unsigned int child = node.children[i];
+				callback(child);
+				this->iterate_descendants(child, callback, true);
+			}
+			for(tz::job_handle jh : jobs)
+			{
+				tz::job_system().block(jh);
+			}
+		}
+		else
+		{
+			for(unsigned int child : node.children)
+			{
+				callback(child);
+				this->iterate_descendants(child, callback, callback_thread_safe);
+			}
 		}
 	}
 
@@ -328,7 +364,7 @@ namespace tz
 	}
 
 	template<typename T>
-	void transform_hierarchy<T>::iterate_nodes(tz::action<unsigned int> auto callback) const
+	void transform_hierarchy<T>::iterate_nodes(tz::action<unsigned int> auto callback, bool callback_thread_safe) const
 	{
 		TZ_PROFZONE("transform_hierarchy - iterate nodes", 0xFF0000AA);
 		auto root_node_ids = this->get_root_node_ids();
@@ -339,7 +375,7 @@ namespace tz
 				callback(root_node);
 			}
 			TZ_PROFZONE("iterate nodes - iterate descendants", 0xFF0000AA);
-			this->iterate_descendants(root_node, callback);
+			this->iterate_descendants(root_node, callback, callback_thread_safe);
 		}
 	}
 
