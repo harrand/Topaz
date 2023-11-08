@@ -122,6 +122,8 @@ namespace tz::ren
 		using mesh_renderer2::set_camera_transform;
 		using mesh_renderer2::camera_perspective;
 		using mesh_renderer2::camera_orthographic;
+		using mesh_renderer2::get_extra_buffer;
+		using mesh_renderer2::get_extra_buffer_count;
 	private:
 		// query as to whether a gltf handle has been removed before and is still in the free list.
 		bool gltf_is_in_free_list(gltf_handle handle) const;

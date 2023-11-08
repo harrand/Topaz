@@ -10,11 +10,12 @@ struct texture_locator
 };
 
 output(id = 0) vec4 out::colour;
-input(id = 0) vec2 in::texcoord;
-input(id = 1) vec3 in::normal;
-input(id = 2) vec3 in::colour;
-input(id = 3, flat) uvec2 in::joint_suffix;
-input(id = 4, flat) texture_locator in::textures[MAX_TEX_COUNT];
+input(id = 0) vec3 out_position;
+input(id = 1) vec2 in::texcoord;
+input(id = 2) vec3 in::normal;
+input(id = 3) vec3 in::colour;
+input(id = 4, flat) uvec2 in::joint_suffix;
+input(id = 5, flat) texture_locator in::textures[MAX_TEX_COUNT];
 resource(id = 4) const texture res::textures[];
 
 void main()
