@@ -1,4 +1,4 @@
-#include "tz/ren/mesh2.hpp"
+#include "tz/ren/mesh.hpp"
 #include "imgui.h"
 
 
@@ -153,7 +153,7 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer2::dbgui(bool include_operations)
+	void mesh_renderer::dbgui(bool include_operations)
 	{
 		if(ImGui::BeginTabItem("Mesh Data"))
 		{
@@ -177,7 +177,7 @@ namespace tz::ren
 		}
 	}
 
-	void mesh_renderer2::dbgui_operations()
+	void mesh_renderer::dbgui_operations()
 	{
 		if(ImGui::TreeNode("Mesh Operations"))
 		{

@@ -1,951 +1,430 @@
 #include "tz/ren/animation.hpp"
-#include "imgui.h"
 #include "tz/core/job/job.hpp"
-#include "tz/core/profile.hpp"
-#include "tz/gl/imported_shaders.hpp"
 
+#include "tz/gl/imported_shaders.hpp"
+#include "tz/io/gltf.hpp"
 #include ImportedShaderHeader(animation, vertex)
 #include ImportedShaderHeader(animation, fragment)
 
 namespace tz::ren
 {
-	animation_renderer::animation_renderer(unsigned int total_textures, tz::gl::renderer_options options, std::string_view fragment_src, tz::gl::ioutput* output):
-	mesh_renderer(total_textures, ImportedShaderSource(animation, vertex), fragment_src.size() ? fragment_src : ImportedShaderSource(animation, fragment), options, output)
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer::animation_renderer(info i):
+	mesh_renderer
+	({
+		.custom_vertex_spirv = i.custom_vertex_spirv.empty() ? ImportedShaderSource(animation, vertex) : i.custom_vertex_spirv,
+		.custom_fragment_spirv = i.custom_fragment_spirv.empty() ? ImportedShaderSource(animation, fragment) : i.custom_fragment_spirv,
+		.custom_options = i.custom_options,
+		.texture_capacity = i.texture_capacity,
+		.extra_buffers = this->evaluate_extra_buffers(i),
+		.output = i.output
+	})
 	{
+
 	}
 
-	void animation_renderer::dbgui()
-	{
-		if(ImGui::BeginTabBar("#1234"))
-		{
-			mesh_renderer::dbgui_tab_overview();
-			mesh_renderer::dbgui_tab_render();
-			this->dbgui_tab_animation();
-			ImGui::EndTabBar();
-		}
-	}
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer::animation_renderer():
+	animation_renderer(animation_renderer::info{}){}
+
+//--------------------------------------------------------------------------------------------------
 
 	void animation_renderer::update(float delta)
 	{
-		TZ_PROFZONE("animation renderer - update with delta", 0xFF0000AA);
-		animation_renderer::update();
-		for(std::size_t i = 0; i < draw_count(); i++)
-		{
-			this->object_extras[i].is_animated = false;
-		}
+		TZ_PROFZONE("animation_renderer - update", 0xFFC52530);
+		this->block();
+		mesh_renderer::update();
 		this->animation_advance(delta);
 	}
 
-	animation_renderer::object_handle animation_renderer::add_object(object_init_data init)
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::block()
 	{
-		TZ_PROFZONE("animation renderer - add object", 0xFF0000AA);
-		auto handle = mesh_renderer::add_object(init);
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
-		this->object_extras.push_back({});
-		this->object_extras[hanval] =
+		this->wait_for_animation_jobs();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer::gltf_handle animation_renderer::add_gltf(tz::io::gltf gltf)
+	{
+		TZ_PROFZONE("animation_renderer - add gltf", 0xFFE54550);
+		// first we load the meshes and textures that the gltf comes with.
+		gltf_data data
 		{
-			.base_transform = init.trs
+			.data = gltf,
+			.metadata = {},
+			// this->gltf_load_XYZ(this) fills this for us, leave it empty for now.
+			.meshes = {},
+			.textures = {}
 		};
-		tz::assert(this->object_extras.size() == mesh_renderer::draw_count(), "Object extra and draw count mismatch (%zu and %zu)", this->object_extras.size(), mesh_renderer::draw_count());
-		//tz::assert(static_cast<std::size_t>(static_cast<tz::hanval>(handle)) == this->object_extras.size());
-		return handle;
-	}
+		this->gltf_load_skins(data);
+		this->gltf_load_meshes(data);
+		this->gltf_load_textures(data);
 
-	std::string_view animation_renderer::get_object_name(object_handle h) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
-		tz::assert(hanval < this->object_extras.size());
-		return this->object_extras[hanval].name;
-	}
-
-	std::vector<animation_renderer::object_handle> animation_renderer::find_objects_by_name(const char* name) const
-	{
-		TZ_PROFZONE("animation renderer - find objects by name", 0xFF0000AA);
-		std::vector<object_handle> ret = {};
-		for(std::size_t i = 0; i < this->object_extras.size(); i++)
+		for(std::size_t i = 0; i < gltf.get_animations().size(); i++)
 		{
-			if(this->object_extras[i].name == name)
-			{
-				ret.push_back(static_cast<tz::hanval>(i));
-			}
+			std::string anim_name = gltf.get_animations()[i].name;
+			data.metadata.animation_name_to_id_map[anim_name] = i;
 		}
-		return ret;
-	}
+		// then we create the gltf data, put it in a free slot, and return the handle.
 
-	tz::trs animation_renderer::get_object_base_transform(object_handle h) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
-		return this->object_extras[hanval].base_transform;
-	}
-
-	void animation_renderer::set_object_base_transform(object_handle h, tz::trs local_transform)
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
-		this->object_extras[hanval].base_transform = local_transform;	
-	}
-
-	tz::trs animation_renderer::get_object_global_transform(object_handle h) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
-		auto maybe_node = mesh_renderer::object_tree.find_node(hanval);
-		tz::assert(maybe_node.has_value());
-		return mesh_renderer::object_tree.get_global_transform(maybe_node.value());
-	}
-
-	tz::trs animation_renderer::global_to_local_transform(object_handle h, tz::trs global) const
-	{
-		TZ_PROFZONE("animation renderer - global to local transform", 0xFF0000AA);
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
-		auto maybe_node = mesh_renderer::object_tree.find_node(hanval);
-		tz::assert(maybe_node.has_value());
-		const auto& node = mesh_renderer::object_tree.get_node(maybe_node.value());
-		// if parent has value, combine with inverse of parent global.
-		if(node.parent.has_value())
-		{
-			tz::trs parent_global = mesh_renderer::object_tree.get_global_transform(node.parent.value());
-			parent_global.inverse();
-			global.combine(parent_global);
-		}
-		// if not, global is unchanged which we just return. no parent means local = global
-		return global;
-	}
-
-	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf)
-	{
-		return this->add_gltf(gltf, override_package{});
-	}
-
-	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, override_package opkg)
-	{
-		return this->add_gltf(gltf, tz::nullhand, opkg);
-	}
-
-	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent)
-	{
-		return this->add_gltf(gltf, parent, override_package{});
-	}
-
-	animation_renderer::asset_package animation_renderer::add_gltf(tz::io::gltf gltf, object_handle parent, override_package opkg)
-	{
-		TZ_PROFZONE("animation renderer - add gltf", 0xFF0000AA);
-		// maintain offsets so we can support multiple gltfs.
-		// add the new gltf.
-		gltf_info* this_gltf = nullptr;
+		std::size_t hanval = this->gltfs.size();
 		if(this->gltf_free_list.size())
 		{
-			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(this->gltf_free_list.front()));
-			tz::report("Re-use GLTF spot %zu", hanval);
-			this->gltf_free_list.erase(this->gltf_free_list.begin());
-			this_gltf = &this->gltfs[hanval];
-			*this_gltf = 
-			{
-				.data = gltf,
-			};
-			this_gltf->assets.gltfh = static_cast<tz::hanval>(hanval);
+			hanval = static_cast<std::size_t>(static_cast<tz::hanval>(this->gltf_free_list.front()));
+			this->gltf_free_list.pop_front();
+			this->gltfs[hanval] = data;
 		}
 		else
 		{
-			this->gltfs.push_back
-			({
-				.data = gltf,
-			});
-			this_gltf = &this->gltfs.back();
-			this_gltf->assets.gltfh = static_cast<tz::hanval>(this->gltfs.size() - 1);
+			this->gltfs.push_back(data);
 		}
+		return static_cast<tz::hanval>(hanval);
+	}
 
-		// skins
-		this->node_handle_skins(*this_gltf);
-		// meshes
-		std::vector<mesh_handle> meshes;
-		if(opkg.overrides.contains(override_flag::mesh))
-		{
-			meshes = opkg.pkg.meshes;
-			this->shallow_patch_meshes(*this_gltf);
-		}
-		else
-		{
-			meshes = this->node_handle_meshes(*this_gltf);
-		}
-		for(mesh_handle mesh : meshes)
-		{
-			this_gltf->assets.meshes.push_back(mesh);
-		}
-		// textures
-		std::vector<texture_handle> materials;
-		if(opkg.overrides.contains(override_flag::texture))
-		{
-			materials = opkg.pkg.textures;
-		}
-		else
-		{
-			materials = this->node_handle_materials(*this_gltf);
-		}
-		for(texture_handle texture : materials)
-		{
-			this_gltf->assets.textures.push_back(texture);
-		}
+//--------------------------------------------------------------------------------------------------
 
-		// objects
-		// expand nodes recursively.
-		auto gltf_nodes = gltf.get_root_nodes();
-		auto all_nodes = gltf.get_nodes();
-		for(tz::io::gltf_node node : gltf_nodes)
+	void animation_renderer::remove_gltf(gltf_handle handle)
+	{
+		TZ_PROFZONE("animation_renderer - remove gltf", 0xFFE54550);
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		tz::assert(!this->gltf_is_in_free_list(handle), "Double-free on gltf %zu - was already in free-list", hanval);
+		// remove all animated objects that use this gltf. if the gltf goes, gonna crash if animated objects are trying to use it.
+		for(std::size_t i = 0; i < this->animated_objects.size(); i++)
 		{
-			// we deal with node indices, so yeah... we gotta recalculate them (boo!)
-			auto iter = std::find(all_nodes.begin(), all_nodes.end(), node);
-			tz::assert(iter != all_nodes.end());
-			std::size_t node_id = std::distance(all_nodes.begin(), iter);
-			tz::assert(node.id == node_id);
-
-			this->expand_current_gltf_node(*this_gltf, node_id, std::nullopt, parent);
-		}
-
-		this->write_inverse_bind_matrices(*this_gltf);
-
-		std::optional<tz::vec2ui32> maybe_joint_span = std::nullopt;
-		if(this_gltf->data.get_skins().size())
-		{
-			maybe_joint_span = this->write_skin_object_data(*this_gltf);
-		}
-		//this->resource_write_joint_indices(this_gltf);
-		if(maybe_joint_span.has_value())
-		{
-			for(object_handle oh : this_gltf->assets.objects)
+			if(this->animated_objects[i].gltf == handle)
 			{
-				mesh_renderer::get_object_data(oh).extra_indices = maybe_joint_span.value().with_more(0u).with_more(0u);
+				this->remove_animated_objects(static_cast<tz::hanval>(i));
 			}
 		}
-
-		return this_gltf->assets;
-	}
-
-	void animation_renderer::remove_objects(asset_package pkg, transform_hierarchy::remove_strategy strategy)
-	{
-		TZ_PROFZONE("animation renderer - remove objects", 0xFF0000AA);
-		// its safe to do this! even if override packages are used to share meshes/textures,
-		// each new gltf still has their own copy of everything.
-		// if gltfh is nullhand, it could mean many things:
-		// - double remove of pkg. not good
-		// - someones cleared/didnt think about gltfh and just wants to delete objects. that's fine.
-
-		// we cant just outright delete these because previous pkgs have been sent out with fixed gltfhs.
-		// if we delete a gltfh, it invalidates all other gltfhs. a free-list works fine here though.
-		if(pkg.gltfh != tz::nullhand)
+		const auto& gltf = this->gltfs[hanval];
+		for(mesh_handle mesh : gltf.meshes)
 		{
-			auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-			// note that we can no longer tell the difference between a used, empty gltf, and a deleted, no-longer-used gltf
-			this->gltfs[gltf_hanval] = {};
-			// thats what the free-list is for. recycle this spot for someone else.
-			this->gltf_free_list.push_back(pkg.gltfh);
+			mesh_renderer::remove_mesh(mesh);
 		}
+		this->gltfs[hanval] = gltf_data{};
+		this->gltf_free_list.push_back(handle);
+	}
 
-		for(object_handle oh : pkg.objects)
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer::animated_objects_handle animation_renderer::add_animated_objects(animated_objects_create_info info)
+	{
+		TZ_PROFZONE("add_gltf - add animated objects", 0xFFE54550);
+		animated_object_data data
 		{
-			mesh_renderer::remove_object(oh, strategy);
-			this->object_extras[static_cast<std::size_t>(static_cast<tz::hanval>(oh))] = {};
-		}
-	}
-
-	std::size_t animation_renderer::get_animation_count(const asset_package& pkg) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		return this->gltfs[hanval].data.get_animations().size();
-	}
-
-	std::optional<std::size_t> animation_renderer::get_playing_animation(const asset_package& pkg) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		return this->gltfs[hanval].playback.playing_animation_id;
-	}
-
-	float animation_renderer::get_playing_animation_progress(const asset_package& pkg) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		auto& playback = this->gltfs[hanval].playback;
-		if(!playback.playing_animation_id.has_value())
-		{
-			return 0.0f;
-		}
-		const auto& anim = this->gltfs[hanval].data.get_animations()[playback.playing_animation_id.value()];
-		return playback.time / anim.max_time;
-	}
-
-	std::string_view animation_renderer::get_animation_name(const asset_package& pkg, std::size_t animation_id) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		return this->gltfs[hanval].data.get_animations()[animation_id].name;
-	}
-
-	void animation_renderer::play_animation(const asset_package& pkg, std::size_t animation_id, bool loop)
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		this->gltfs[hanval].playback.playing_animation_id = animation_id;
-		this->gltfs[hanval].playback.time = 0.0f;
-		this->gltfs[hanval].playback.loop = loop;
-	}
-
-	void animation_renderer::queue_animation(const asset_package& pkg, std::size_t animation_id, bool loop)
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		this->gltfs[hanval].playback.queued_animations.push({.id = animation_id, .loop = loop});
-	}
-
-	void animation_renderer::skip_animation(const asset_package& pkg)
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		auto& playback = this->gltfs[hanval].playback;
-		if(playback.queued_animations.size())
-		{
-			playback.playing_animation_id = playback.queued_animations.front().id;
-			playback.loop = playback.queued_animations.front().loop;
-			playback.time = 0.0f;
-			playback.queued_animations.pop();
-		}
-		else
-		{
-			playback.playing_animation_id = std::nullopt;
-		}
-	}
-
-	void animation_renderer::halt_animation(const asset_package& pkg)
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		this->gltfs[hanval].playback.playing_animation_id = std::nullopt;
-		this->gltfs[hanval].playback.time = 0.0f;
-	}
-
-	float animation_renderer::get_animation_speed(const asset_package& pkg) const
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		return this->gltfs[hanval].playback.time_warp;
-	}
-
-	void animation_renderer::set_animation_speed(const asset_package& pkg, float speed)
-	{
-		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(pkg.gltfh));
-		tz::assert(this->gltfs.size() > hanval);
-		this->gltfs[hanval].playback.time_warp = speed;
-	}
-
-	void animation_renderer::update()
-	{
-		TZ_PROFZONE("animation renderer - update", 0xFF0000AA);
-		this->wait_for_jobs();
-		for(std::size_t i = 0; i < mesh_renderer::draw_count(); i++)
-		{
-			TZ_PROFZONE("animation renderer - object update", 0xFF0000AA);
-			auto maybe_tree_id = mesh_renderer::object_tree.find_node(i);
-			if(!maybe_tree_id.has_value())
-			{
-				// node will be nullopt if an object was removed (and is thus an empty). we just skip those.
-				continue;
-			}
-			auto& tree_node = mesh_renderer::object_tree.get_node(maybe_tree_id.value());
-			auto& extra = this->object_extras[i];
-			if(extra.is_animated)
-			{
-				tree_node.local_transform = extra.animation_trs_offset;
-			}
-			else
-			{
-				tree_node.local_transform = extra.base_transform;
-			}
-			extra.animation_trs_offset = extra.base_transform;
-		}
-		mesh_renderer::update();
-	}
-
-	void animation_renderer::expand_current_gltf_node(gltf_info& gltf, std::size_t node_id, std::optional<std::size_t> parent_node_id, object_handle parent_override)
-	{
-		TZ_PROFZONE("animation renderer - expand gltf node", 0xFF0000AA);
-		const tz::io::gltf_node& node = gltf.data.get_nodes()[node_id];
-		object_handle this_object = tz::nullhand;
-		if(node.skin != static_cast<std::size_t>(-1))
-		{
-			// todo: skin processing.
-		}
-		object_handle parent = parent_override;
-		if(parent == tz::nullhand)
-		{
-			if(parent_node_id.has_value())
-			{
-				parent = gltf.node_object_map.at(parent_node_id.value());
-			}
-		}
-		this_object = this->add_object
+			.gltf = info.gltf
+		};
+		// so firstly we create an empty parent object, which everyone will be a child of.
+		// then we'll iterate through the gltf nodes and spawn all our subobjects.
+		data.objects.push_back(mesh_renderer::add_object
 		({
-			.trs = node.transform,
-			.mesh = {},
-			.bound_textures = {},
-			.parent = parent
-		});
-		std::size_t this_extra_id = static_cast<std::size_t>(static_cast<tz::hanval>(this_object));
-		// new object belongs to this asset package.
-		gltf.assets.objects.push_back(this_object);
-		// node id also maps to this object.
-		gltf.node_object_map[node_id] = this_object;
-		// set the name to whatever the gltf node had.
-		this->object_extras[this_extra_id].name = node.name;
-
-		// TODO: one object can only render one mesh at a time.
-		// a mesh corresponds to a single gltf submesh, but a gltf node can correspond to a gltf mesh i.e multiple submeshes
-		// in this case, we hit trouble because an object can only correspond to a single mesh, but we want it to correspond to multiple.
-		// what we do is simple:
-		// add the initial object with no mesh attached.
-		// for each submesh that needs to be attached, create a new zero-TRS child object of the original, and give each of them a submesh.
-		// remember that none of this is implemented yet. this is what you should do.
-		if(node.mesh != static_cast<std::size_t>(-1))
+			.local_transform = info.local_transform,
+			.parent = info.parent
+		}));
+		auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(info.gltf));
+		const auto& gltf = this->gltfs[gltf_hanval];
+		
+		auto root_nodes = gltf.data.get_root_nodes();
+		for(tz::io::gltf_node node : root_nodes)
 		{
-			// make a new object for each submesh, their parents should be this_object
-			std::size_t submesh_count = gltf.data.get_meshes()[node.mesh].submeshes.size();
-			std::size_t submesh_offset = gltf.metadata.mesh_submesh_indices[node.mesh];
-			this->object_extras[this_extra_id].submesh_count = submesh_count;
-			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
+			// figure out what the hell our node id is...
+			this->animated_object_expand_gltf_node(data, node, std::nullopt);
+		}
+
+		// we need to know whether the gltf we're against has skins or not.
+		// if it does, we're going to need to write into the joint buffer (extra buffer 0).
+		this->animated_object_write_inverse_bind_matrices(data);
+		if(gltf.metadata.has_skins)
+		{
+			tz::vec2ui32 joint_buffer_offset_and_count = this->animated_object_write_joints(data);
+			for(object_handle oh : data.objects)
 			{
-				std::array<texture_locator, mesh_renderer_max_tex_count> bound_textures = {};
-				if(gltf.metadata.submesh_materials[i].has_value())
-				{
-					const auto& mat = gltf.metadata.submesh_materials[i].value();
-					bound_textures[0] = texture_locator
-					{
-						.colour_tint = mat.color_factor.swizzle<0, 1, 2>(),
-						.texture = gltf.assets.textures[mat.color_texture_id]
-					};
-					if(mat.metallic_roughness_texture_id != static_cast<std::size_t>(-1))
-					{
-						// we have metallic roughness. that takes spot 1
-						// gltf spec: "Its green channel contains roughness values and its blue channel contains metalness values"
-						// for that reason, colour_tint is {1.0f, roughness factor, metallic factor}
-						bound_textures[1] = texture_locator
-						{
-							.colour_tint = tz::vec3{0.0f, mat.roughness_factor, mat.metallic_factor},
-							.texture = gltf.assets.textures[mat.metallic_roughness_texture_id]
-						};
-					}
-				}
-				object_handle child = this->add_object
-				({
-					.trs = {},
-					.mesh = gltf.assets.meshes[i],
-					.bound_textures = {bound_textures},
-					.parent = this_object
-				});
-				this->object_extras.back().name = "Submesh " + std::to_string(i - submesh_offset) + std::string{" - "} + this->object_extras[this_extra_id].name;
-				// Reminder: Sanity check. this means that `gltf_node_id == object_id if we are first gltf` is no longer true.
-				gltf.assets.objects.push_back(child);
+				mesh_renderer::get_object(oh).unused2 = joint_buffer_offset_and_count.with_more(0).with_more(0);
 			}
 		}
 
-		for(std::size_t child_idx : node.children)
+		// finally, find a slot for our animated objects, put it there and return the handle.
+		auto hanval = this->animated_objects.size();
+		if(this->animated_objects_free_list.size())
 		{
-			this->expand_current_gltf_node(gltf, child_idx, node_id);
+			hanval = static_cast<std::size_t>(static_cast<tz::hanval>(this->animated_objects_free_list.front()));
+			this->animated_objects_free_list.pop_front();
+			this->animated_objects[hanval] = data;
 		}
+		else
+		{
+			this->animated_objects.push_back(data);
+		}
+		return static_cast<tz::hanval>(hanval);
 	}
 
-	void animation_renderer::node_handle_skins(gltf_info& gltf_info)
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::remove_animated_objects(animated_objects_handle handle)
 	{
-		gltf_info.metadata.has_skins = !gltf_info.data.get_skins().empty();
-		for(tz::io::gltf_skin skin : gltf_info.data.get_skins())
+		TZ_PROFZONE("animation_renderer - remove animated objects", 0xFFE54550);
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		tz::assert(!this->animated_objects_are_in_free_list(handle), "Double free on animated objects handle %zu. Was already in free-list", hanval);
+
+		auto& aobj = this->animated_objects[hanval];
+		for(object_handle oh : aobj.objects)
 		{
-			for(std::size_t i = 0; i < skin.joints.size(); i++)
-			{
-				std::uint32_t node_id = skin.joints[i];
-				gltf_info.metadata.joint_node_map[i] = node_id;
-			}
+			mesh_renderer::remove_object(oh);
+		}
+
+		this->animated_objects_free_list.push_back(handle);
+		this->animated_objects[hanval] = {};
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::size_t animation_renderer::gltf_get_animation_count(gltf_handle h) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const auto& gltf = this->gltfs[hanval];
+		return gltf.data.get_animations().size();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::string_view animation_renderer::gltf_get_animation_name(gltf_handle h, std::size_t anim_id) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const auto& gltf = this->gltfs[hanval];
+		tz::assert(anim_id < this->gltf_get_animation_count(h));
+		return gltf.data.get_animations()[anim_id].name;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	float animation_renderer::gltf_get_animation_length(gltf_handle h, std::size_t anim_id) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const auto& gltf = this->gltfs[hanval];
+		tz::assert(anim_id < this->gltf_get_animation_count(h));
+		return gltf.data.get_animations()[anim_id].max_time;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::span<const animation_renderer::object_handle> animation_renderer::animated_object_get_subobjects(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].objects;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	animation_renderer::gltf_handle animation_renderer::animated_object_get_gltf(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].gltf;
+	}
+
+	float animation_renderer::animated_object_get_playback_time(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback_time;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_set_playback_time(animated_objects_handle handle, float time)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->animated_objects[hanval].playback_time = time;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::span<const animation_renderer::playback_data> animation_renderer::animated_object_get_playing_animations(animated_objects_handle handle) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_skip_all_animations(animated_objects_handle handle)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->animated_objects[hanval].playback.clear();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::span<animation_renderer::playback_data> animation_renderer::animated_object_get_playing_animations(animated_objects_handle handle)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return this->animated_objects[hanval].playback;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_play_animation(animated_objects_handle handle, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& playback = this->animated_objects[hanval];
+		playback.playback = {anim};
+		this->animated_objects[hanval].playback_time = 0.0f;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	bool animation_renderer::animated_object_play_animation_by_name(animated_objects_handle handle, std::string_view name, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& aobj = this->animated_objects[hanval];
+		gltf_handle gltfh = aobj.gltf;
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(gltfh))];
+		auto iter = gltf.metadata.animation_name_to_id_map.find(std::string{name});
+		bool found = false;
+		if(iter != gltf.metadata.animation_name_to_id_map.end())
+		{
+			// its an actual real animation
+			anim.animation_id = iter->second;
+			found = true;
+			this->animated_object_play_animation(handle, anim);
+		}
+		return found;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_queue_animation(animated_objects_handle handle, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		this->animated_objects[hanval].playback.push_back(anim);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	bool animation_renderer::animated_object_queue_animation_by_name(animated_objects_handle handle, std::string_view name, playback_data anim)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& aobj = this->animated_objects[hanval];
+		gltf_handle gltfh = aobj.gltf;
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(gltfh))];
+		auto iter = gltf.metadata.animation_name_to_id_map.find(std::string{name});
+		bool found = false;
+		if(iter != gltf.metadata.animation_name_to_id_map.end())
+		{
+			// its an actual real animation
+			anim.animation_id = iter->second;
+			found = true;
+			this->animated_object_queue_animation(handle, anim);
+		}
+		return found;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_skip_animation(animated_objects_handle handle)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		auto& container = this->animated_objects[hanval].playback;
+		if(container.size())
+		{
+			container.erase(container.begin());
 		}
 	}
 
-	tz::vec2ui32 animation_renderer::write_skin_object_data(gltf_info& gltf_info)
+//--------------------------------------------------------------------------------------------------
+
+	tz::trs animation_renderer::animated_object_get_local_transform(animated_objects_handle handle) const
 	{
-		TZ_PROFZONE("animation renderer - write skin object data", 0xFF0000AA);
-		constexpr std::size_t joint_buffer_id = 0;
-		tz::gl::resource_handle joint_bufferh = mesh_renderer::get_extra_buffer_handle(joint_buffer_id);
-		tz::gl::RendererEditBuilder edit;
-		tz::assert(gltf_info.data.get_skins().size(), "dont call write_skin_object_data on a gltf without skins!");
-		const auto& joints = gltf_info.data.get_skins().front().joints;
-		// if id == 0, then we havent written into the buffer yet, so its pseudo-empty. that means we resize to what we want and completely rewrite its contents.
-		// whats the current size?
-		auto sz = mesh_renderer::render_pass_get_resource(joint_bufferh).data().size_bytes();	
-		sz = std::max(sz, sizeof(std::uint32_t));
-		std::size_t new_data_size = sizeof(std::uint32_t) * joints.size();
-		std::vector<std::uint32_t> new_data;
-		new_data.resize(joints.size());
-		for(std::size_t i = 0; i < joints.size(); i++)
-		{
-			const std::size_t joint_index = i;
-			const std::size_t node_id = gltf_info.metadata.joint_node_map.at(joint_index);
-			object_handle objecth = gltf_info.node_object_map.at(node_id);
-			auto object_id = static_cast<std::size_t>(static_cast<tz::hanval>(objecth));
-			new_data[i] = object_id;
-		}
-		std::span<const std::uint32_t> new_data_view{new_data};
-		edit.buffer_resize
-		({
-			.buffer_handle = joint_bufferh,
-			.size = sz + new_data_size	
-		});
-		edit.write
-		({
-			.resource = joint_bufferh,
-			.data = std::as_bytes(new_data_view),
-			.offset = sz
-		});
-		mesh_renderer::render_pass_edit(edit);
-		return static_cast<tz::vec2ui32>(tz::vector<std::size_t, 2>{sz / sizeof(std::uint32_t), joints.size()});
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return mesh_renderer::object_get_local_transform(this->animated_objects[hanval].objects.front());
 	}
 
-	void animation_renderer::write_inverse_bind_matrices(gltf_info& gltf_info)
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_set_local_transform(animated_objects_handle handle, tz::trs trs)
 	{
-		TZ_PROFZONE("animation renderer - write inverse bind matrices", 0xFF0000AA);
-		for(tz::io::gltf_skin skin : gltf_info.data.get_skins())
-		{
-			for(std::size_t i = 0; i < skin.joints.size(); i++)
-			{
-				std::uint32_t node_id = skin.joints[i];
-				object_handle handle = gltf_info.node_object_map.at(node_id);
-				object_data& obj = mesh_renderer::get_object_data(handle);
-				// extra = inverse bind matrix
-				obj.extra = skin.inverse_bind_matrices[i];
-			}
-		}
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		mesh_renderer::object_set_local_transform(this->animated_objects[hanval].objects.front(), trs);
 	}
 
-	void animation_renderer::resource_write_joint_indices(gltf_info& gltf_info)
+//--------------------------------------------------------------------------------------------------
+
+	tz::trs animation_renderer::animated_object_get_global_transform(animated_objects_handle handle) const
 	{
-		TZ_PROFZONE("animation renderer - resource write joint indices", 0xFF0000AA);
-		std::deque<std::vector<vertex_t>> amended_vertex_storage;
-		// we wrote some joint indices for each vertex earlier.
-		// however, we need to amend them.
-		tz::gl::RendererEditBuilder builder;
-		// we only write to the meshes that belong to this gltf!
-		for(mesh_handle m : gltf_info.assets.meshes)
-		{
-			const auto& mloc = mesh_renderer::get_mesh_locator(m);
-			// read the joint indices from resource data.		
-			std::span<const vertex_t> initial_vertices = mesh_renderer::read_vertices(mloc);
-			// copy into a new buffer.
-			auto& amended_vertices = amended_vertex_storage.emplace_back(initial_vertices.size());
-			std::copy(initial_vertices.begin(), initial_vertices.end(), amended_vertices.begin());
-			if(!gltf_info.metadata.has_skins)
-			{
-				// there aren't any joints! skip!
-				continue;
-			}
-			// make the joint index changes.
-			for(vertex_t& vtx : amended_vertices)
-			{
-				for(tz::vec4ui32& joint_index_cluster : vtx.joint_indices)
-				{
-					for(std::size_t i = 0; i < 4; i++)
-					{
-						// get joint index
-						std::uint32_t joint_index = joint_index_cluster[i];
-						// convert directly to object id.
-						std::size_t gltf_node_id = gltf_info.metadata.joint_node_map.at(joint_index);
-						object_handle handle = gltf_info.node_object_map.at(gltf_node_id);
-						joint_index_cluster[i] = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
-					}
-				}
-			}
-			std::span<const vertex_t> amended_span = amended_vertices;
-			// queue a resource write with the changes.
-			builder.write
-			({
-				.resource = mesh_renderer::render_pass_get_vertex_buffer_handle(),
-				.data = std::as_bytes(amended_span),
-				.offset = sizeof(vertex_t) * mloc.vertex_offset,
-			});
-		}
-		mesh_renderer::render_pass_edit(builder);
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		return mesh_renderer::object_get_global_transform(this->animated_objects[hanval].objects.front());
 	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_set_global_transform(animated_objects_handle handle, tz::trs trs)
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
+		mesh_renderer::object_set_global_transform(this->animated_objects[hanval].objects.front(), trs);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	bool animation_renderer::gltf_is_in_free_list(gltf_handle handle) const
+	{
+		return std::find(this->gltf_free_list.begin(), this->gltf_free_list.end(), handle) != this->gltf_free_list.end();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	bool animation_renderer::animated_objects_are_in_free_list(animated_objects_handle handle) const
+	{
+		return std::find(this->animated_objects_free_list.begin(), this->animated_objects_free_list.end(), handle) != this->animated_objects_free_list.end();
+	}
+
+//--------------------------------------------------------------------------------------------------
 
 	void animation_renderer::animation_advance(float delta)
 	{
-		auto single_animation_advance = [this, delta](gltf_info& gltf)
-		{
-			TZ_PROFZONE("animation advance - gltf iterate", 0xFF0000AA);
-			if(gltf.data.get_animations().size())
-			{
-				gltf.playback.time += (delta * gltf.playback.time_warp);
-				// only do first animation.
-				if(!gltf.playback.playing_animation_id.has_value())
-				{
-					return;
-				}
-				const auto& anim = gltf.data.get_animations()[gltf.playback.playing_animation_id.value()];
-				// loop animations.
-				if(gltf.playback.time > anim.max_time)
-				{
-					if(gltf.playback.loop)
-					{
-						if(gltf.playback.time_warp >= 0.0f)
-						{
-							gltf.playback.time = 0.0f;
-						}
-						else
-						{
-							gltf.playback.time = anim.max_time;
-						}
-					}
-					else
-					{
-						// time has run out. is another one queued?
-						if(gltf.playback.queued_animations.size())
-						{
-							// set that as a the new playback and then exit.
-							std::size_t anim_id = gltf.playback.queued_animations.front().id;
-							gltf.playback.loop = gltf.playback.queued_animations.front().loop;
-							gltf.playback.queued_animations.pop();
-							gltf.playback.playing_animation_id = anim_id;
-							gltf.playback.time = 0.0f;
-						}
-					}
-				}
-				if(gltf.playback.time < 0.0f)
-				{
-					gltf.playback.time = anim.max_time;
-				}
+		TZ_PROFZONE("animation_renderer - animation advance", 0xFFE54550);
 
-				// update nodes.
-				for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
-				{
-					TZ_PROFZONE("animation advance - update nodes", 0xFF0000AA);
-					object_handle objh = gltf.node_object_map[nid];
-					auto& extra = this->object_extras[static_cast<std::size_t>(static_cast<tz::hanval>(objh))];
-					extra.is_animated = true;
-					
-					// actual animation stuff now.
-					const auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[nid];
-					auto [pos_before_id, pos_after_id] = gltf.interpolate_animation_keyframes(kf_positions.begin(), kf_positions.end());
-					auto [rot_before_id, rot_after_id] = gltf.interpolate_animation_keyframes(kf_rotations.begin(), kf_rotations.end());
-					auto [scale_before_id, scale_after_id] = gltf.interpolate_animation_keyframes(kf_scales.begin(), kf_scales.end());
-					if(kf_positions.size() > 1)
-					{
-						auto before = kf_positions.begin();
-						auto after = before;
-						std::advance(before, pos_before_id);
-						std::advance(after, pos_after_id);
-						//tz::assert(gltf.playback.time >= before->time_point);
-						float pos_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
-						tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
-						tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
-						extra.animation_trs_offset.translate = beforet + ((aftert - beforet) * pos_interp);
-					}
-
-					if(kf_rotations.size() > 1)
-					{
-						auto before = kf_rotations.begin();
-						auto after = before;
-						std::advance(before, rot_before_id);
-						std::advance(after, rot_after_id);
-						//tz::assert(gltf.playback.time >= before->time_point);
-						float rot_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
-						tz::quat beforer = before->transform.normalised();
-						tz::quat afterr = after->transform.normalised();
-						extra.animation_trs_offset.rotate = beforer.slerp(afterr, rot_interp);
-					}
-
-					if(kf_scales.size() > 1)
-					{
-						auto before = kf_scales.begin();
-						auto after = before;
-						std::advance(before, scale_before_id);
-						std::advance(after, scale_after_id);
-						//tz::assert(gltf.playback.time >= before->time_point);
-						float scale_interp = std::clamp((gltf.playback.time - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
-						tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
-						tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
-						extra.animation_trs_offset.scale = befores + ((afters - befores) * scale_interp);
-					}
-				}
-			}
-		};
-		TZ_PROFZONE("animation renderer - animation advance", 0xFF0000AA);
-		// multithreaded magic!	
-		// if there's somehow still jobs going on, wait for them to be done.
-		this->wait_for_jobs();
 		std::size_t job_count = std::thread::hardware_concurrency();
-		this->advance_jobs.resize(job_count);
-		std::size_t gltfs_per_job = this->gltfs.size() / job_count;
-		std::size_t remainder_gltfs = this->gltfs.size() % job_count;
-		std::vector<tz::job_handle> jobs(job_count);
-		for(std::size_t i = 0; i < job_count; i++)
+		std::size_t objects_per_job = this->animated_objects.size() / job_count;
+		std::size_t remainder_objects = this->animated_objects.size() % job_count;
+		tz::assert((objects_per_job * job_count) + remainder_objects == this->animated_objects.size());
+		if(objects_per_job > 0)
 		{
-			this->advance_jobs[i] = tz::job_system().execute([single_animation_advance, this, offset = i * gltfs_per_job, gltf_count = gltfs_per_job]
+			this->animation_advance_jobs.resize(job_count);
+			for(std::size_t i = 0; i < job_count; i++)
 			{
-				for(std::size_t j = 0; j < gltf_count; j++)
+				this->animation_advance_jobs[i] = tz::job_system().execute([this, delta, offset = i * objects_per_job, object_count = objects_per_job]
 				{
-					auto& gltf = this->gltfs[offset + j];
-					single_animation_advance(gltf);
-				}
-			});
+					for(std::size_t j = 0; j < object_count; j++)
+					{
+						this->single_animation_advance(delta, static_cast<tz::hanval>(offset + j));
+					}
+				});
+			}
 		}
 		{
 			TZ_PROFZONE("animation advance - remainder gltfs", 0xFF0000AA);
-			for(std::size_t i = (this->gltfs.size() - remainder_gltfs); i < this->gltfs.size(); i++)
+			for(std::size_t i = (this->animated_objects.size() - remainder_objects); i < this->animated_objects.size(); i++)
 			{
-				auto& gltf = this->gltfs[i];
-				single_animation_advance(gltf);
+				this->single_animation_advance(delta, static_cast<tz::hanval>(i));
 			}
 		}
 	}
 
-	void animation_renderer::shallow_patch_meshes(gltf_info& gltf_info)
+//--------------------------------------------------------------------------------------------------
+
+	// implementation detail for single_animation_advance
+	using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
+	std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back, float time)
 	{
-		TZ_PROFZONE("animation advance - shallow patch meshes", 0xFF0000AA);
-		const tz::io::gltf& gltf = gltf_info.data;
-		std::size_t gltf_submesh_total = 0;
-		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
-		{
-			TZ_PROFZONE("Anim Renderer - Shallow Patch GLTF Mesh", 0xFF44DD44);
-			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
-			gltf_info.metadata.mesh_submesh_indices.push_back(gltf_submesh_total);	
-			for(std::size_t j = 0; j < submesh_count; j++)
-			{
-				// pretend `existing_meshes[j]` is where we just loaded this mesh into.
-				std::size_t material_id = gltf.get_meshes()[i].submeshes[j].material_id;
-				auto& maybe_material = gltf_info.metadata.submesh_materials.emplace_back();
-				if(material_id != static_cast<std::size_t>(-1))
-				{
-					maybe_material = gltf.get_materials()[material_id];
-				}
-			}
-			gltf_submesh_total += submesh_count;
-		}
-	}
-
-	std::vector<animation_renderer::mesh_handle> animation_renderer::node_handle_meshes(gltf_info& gltf_info)
-	{
-		const tz::io::gltf& gltf = gltf_info.data;
-		std::vector<animation_renderer::mesh_handle> ret;
-		std::size_t gltf_submesh_total = 0;
-		for(std::size_t i = 0; i < gltf.get_meshes().size(); i++)
-		{
-			TZ_PROFZONE("Anim Renderer - Add GLTF Mesh", 0xFF44DD44);
-			std::size_t submesh_count = gltf.get_meshes()[i].submeshes.size();
-			gltf_info.metadata.mesh_submesh_indices.push_back(gltf_submesh_total);
-			gltf_submesh_total += submesh_count;
-			for(std::size_t j = 0; j < submesh_count; j++)
-			{
-				mesh_t submesh;
-
-				std::size_t material_id = gltf.get_meshes()[i].submeshes[j].material_id;
-				auto& maybe_material = gltf_info.metadata.submesh_materials.emplace_back();
-				if(material_id != static_cast<std::size_t>(-1))
-				{
-					// no material bound, so no textures bound.
-					maybe_material = gltf.get_materials()[material_id];
-				}
-				tz::io::gltf_submesh_data gltf_submesh = gltf.get_submesh_vertex_data(i, j);
-				// copy over indices.
-				submesh.indices.resize(gltf_submesh.indices.size());
-				std::transform(gltf_submesh.indices.begin(), gltf_submesh.indices.end(), submesh.indices.begin(),
-				[](std::uint32_t idx)-> index{return idx;});
-				// copy over vertices.
-				std::transform(gltf_submesh.vertices.begin(), gltf_submesh.vertices.end(), std::back_inserter(submesh.vertices),
-				[](tz::io::gltf_vertex_data vtx)-> vertex_t
-				{
-					vertex_t ret;
-
-					// these are easy.
-					ret.position = vtx.position;
-					ret.normal = vtx.normal;
-					ret.tangent = vtx.tangent;
-
-					// texcoord a little more troublesome!
-					constexpr std::size_t texcoord_count = std::min(static_cast<int>(mesh_renderer_max_tex_count), tz::io::gltf_max_texcoord_attribs);
-					for(std::size_t i = 0; i < texcoord_count; i++)
-					{
-						ret.texcoordn[i] = vtx.texcoordn[i].with_more(0.0f).with_more(0.0f);
-					}
-
-					// similar with weights.
-					constexpr std::size_t weight_count = std::min(static_cast<int>(mesh_renderer_max_weight_count / 4), tz::io::gltf_max_joint_attribs);
-					// note: the joint indices are in terms of the gltf skin's list of joints.
-					// this is troublesome because the shader deals with objects and object-ids, but has no idea about the gltf data.
-					// so we just write them as-is for now. we will eventually go on to invoke `resource_write_joint_indices` which
-					// will perform resource writes to correct this data. we can't do it now as we dont have the joint->node and node->object maps
-					// ready yet.
-					for(std::size_t i = 0; i < weight_count; i++)
-					{
-						ret.joint_indices[i] = vtx.jointn[i];
-						ret.joint_weights[i] = vtx.weightn[i];
-					}
-					// ignore colours. could theoretically incorporate that into tints, but will be very difficult to translate to texture locator tints properly.
-					return ret;
-				});
-				// add the mesh!
-				ret.push_back(mesh_renderer::add_mesh(submesh));
-			}
-		}
-		return ret;
-	}
-
-	std::vector<animation_renderer::texture_handle> animation_renderer::node_handle_materials(gltf_info& gltf_info)
-	{
-		std::vector<animation_renderer::texture_handle> ret;
-		const tz::io::gltf& gltf = gltf_info.data;
-		std::vector<tz::io::image> images;
-		images.resize(gltf.get_images().size());
-		if(gltf.get_images().size() > 8)
-		{
-			TZ_PROFZONE("Load Images - Jobs", 0xFF44DD44);
-			// we should split this into threads.
-			std::size_t job_count = std::thread::hardware_concurrency();
-			std::size_t imgs_per_job = gltf.get_images().size() / job_count; 
-			std::size_t remainder_imgs = gltf.get_images().size() % job_count;
-			std::vector<tz::job_handle> jobs(job_count);
-			for(std::size_t i = 0; i < job_count; i++)
-			{
-				jobs[i] = tz::job_system().execute([&images, &gltf, offset = i * imgs_per_job, img_count = imgs_per_job]()
-				{
-					for(std::size_t j = 0; j < img_count; j++)
-					{
-						images[offset + j] = gltf.get_image_data(offset + j);
-					}
-				});
-			}
-			for(std::size_t i = (gltf.get_images().size() - remainder_imgs); i < gltf.get_images().size(); i++)
-			{
-				images[i] = gltf.get_image_data(i);
-			}
-			for(tz::job_handle jh : jobs)
-			{
-				tz::job_system().block(jh);
-			}
-		}
-		else
-		{
-			TZ_PROFZONE("Load Images - Single Threaded", 0xFF44DD44);
-			// if there isn't many, just do it all now.
-			for(std::size_t i = 0; i < gltf.get_images().size(); i++)
-			{
-				images[i] = gltf.get_image_data(i);
-			}
-		}
-		for(const tz::io::image& img : images)
-		{
-			ret.push_back(mesh_renderer::add_texture(tz::vec2ui{img.width, img.height}, img.data));
-		}
-		return ret;
-	}
-
-	void animation_renderer::dbgui_tab_animation()
-	{
-		if(ImGui::BeginTabItem("Animation"))
-		{
-			ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, "ANIMATION DATA");
-			ImGui::Spacing();
-			static bool display_trs = false;
-			ImGui::Checkbox("Display Node TRS", &display_trs);
-			mesh_renderer::object_tree.dbgui(display_trs);
-
-			static int animation_id = 0;
-			constexpr float slider_height = 160.0f;
-			if(this->gltfs.size() && ImGui::CollapsingHeader("Animation Playback", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				ImGui::VSliderInt("##animid", ImVec2{18.0f, slider_height}, &animation_id, 0, this->gltfs.size() - 1);
-				auto& anim = this->gltfs[animation_id];
-				ImGui::SameLine();
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
-				if(ImGui::BeginChild("#who_asked", ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
-				{
-					int anim_cursor = anim.playback.playing_animation_id.value_or(-1);
-					ImGui::Checkbox("Loop", &anim.playback.loop);
-					if(ImGui::RadioButton("No Animation", !anim.playback.playing_animation_id.has_value()))
-					{
-						anim.playback.playing_animation_id = std::nullopt;
-						anim.playback.time = 0.0f;
-					}
-					for(std::size_t i = 0; i < anim.data.get_animations().size(); i++)
-					{
-						if(ImGui::RadioButton(anim.data.get_animations()[i].name.c_str(), &anim_cursor, i))
-						{
-							anim.playback.playing_animation_id = anim_cursor;
-							anim.playback.time = 0.0f;
-						}
-					}
-					if(anim.playback.playing_animation_id.has_value())
-					{
-						const auto& current_anim = anim.data.get_animations()[anim.playback.playing_animation_id.value()];
-						ImGui::Text("%s", current_anim.name.c_str());
-						const float time_max = current_anim.max_time;
-						ImGui::Text("%.2f/%.2f", anim.playback.time, time_max);
-						ImGui::SliderFloat("Time Warp", &anim.playback.time_warp, -5.0f, 5.0f);
-						ImGui::ProgressBar(anim.playback.time / time_max);
-					}
-				}
-				ImGui::EndChild();
-				if(ImGui::Button("Delete"))
-				{
-					this->remove_objects(anim.assets, transform_hierarchy::remove_strategy::remove_children);
-				}
-			}
-			static int object_id = 0;
-			if(mesh_renderer::draw_count() > 0 && ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen))
-			{
-				constexpr float slider_height = 160.0f;
-				if(ImGui::Button("+") && std::cmp_less(object_id, mesh_renderer::draw_count() - 2))
-				{
-					object_id++;
-				}
-				if(ImGui::Button("-") && object_id >= 1)
-				{
-					object_id--;
-				}
-				ImGui::VSliderInt("##objectid", ImVec2{18.0f, slider_height}, &object_id, 0, mesh_renderer::draw_count() - 1);
-				std::string objname = "Object " + std::to_string(object_id);
-
-				ImGui::SameLine();
-
-				// add slight horizontal spacing between slider and child.
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
-				object_extra_info& extra = this->object_extras[object_id];
-				if(ImGui::BeginChild(objname.c_str(), ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
-				{
-					ImGui::TextColored(ImVec4{1.0f, 0.3f, 0.3f, 1.0f}, extra.name.c_str());
-					if(ImGui::TreeNode("Base Transform"))
-					{
-						extra.base_transform.dbgui();
-						ImGui::TreePop();
-					}
-					if(ImGui::TreeNode("Animation Offset"))
-					{
-						extra.animation_trs_offset.dbgui();
-						ImGui::TreePop();
-					}
-					ImGui::Text("Child Submesh Count: %zu", extra.submesh_count);
-				}
-				ImGui::EndChild();
-			}
-			ImGui::EndTabItem();
-		}
-	}
-
-	void animation_renderer::wait_for_jobs()
-	{
-		for(tz::job_handle jh : this->advance_jobs)
-		{
-			tz::job_system().block(jh);
-		}
-		this->advance_jobs.clear();
-	}
-
-
-	std::pair<std::size_t, std::size_t> animation_renderer::gltf_info::interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back) const
-	{
-		TZ_PROFZONE("animation renderer - interpolate keyframes", 0xFF0000AA);
+		TZ_PROFZONE("animation - interpolate keyframes", 0xFFE54550);
 		keyframe_iterator iter = front;
-		while(iter != back && iter->time_point <= this->playback.time)
+		while(iter != back && iter->time_point <= time)
 		{
 			iter++;
 		}
@@ -960,5 +439,513 @@ namespace tz::ren
 			return {dist - 2, dist - 1};
 		}
 		return {idx - 1, idx};
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::single_animation_advance(float delta, animated_objects_handle h)
+	{
+		TZ_PROFZONE("animation advance - single advance", 0xFFE54550);
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		auto& animobj = this->animated_objects[hanval];
+		if(this->animated_objects_are_in_free_list(h) || animobj.playback.empty())
+		{
+			return;
+		}
+		const playback_data& playing_anim = animobj.playback.front();
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(animobj.gltf))];
+		if(gltf.data.get_animations().empty())
+		{
+			return;
+		}
+		const tz::io::gltf_animation& anim = gltf.data.get_animations()[playing_anim.animation_id];
+
+		// advance time
+		animobj.playback_time += playing_anim.time_warp * delta;
+		// what do we do if we're at the end of the anim?
+		if(animobj.playback_time >= anim.max_time)
+		{
+			// if we need to loop, then go back.
+			if(playing_anim.loop)
+			{
+				animobj.playback_time = 0.0f;
+			}
+			else
+			{
+				// not looping, need to move to the next animation!
+				animobj.playback_time = 0.0f;
+				animobj.playback.erase(animobj.playback.begin());
+				return;
+			}
+		}
+		const float t = animobj.playback_time;
+
+		for(std::size_t nid = 0; nid < anim.node_animation_data.size(); nid++)
+		{
+			TZ_PROFZONE("single advance - update objects", 0xFFE54550);
+			// get the object.
+			object_handle oh = animobj.node_object_map.at(nid);
+
+			// get the corresponding hierarchy node for our object.
+			auto maybe_node_id = mesh_renderer::get_hierarchy().find_node(static_cast<std::size_t>(static_cast<tz::hanval>(oh)));
+			tz::assert(maybe_node_id.has_value());
+			auto& hier_node = mesh_renderer::get_hierarchy().get_node(maybe_node_id.value());
+
+
+			const auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[nid];
+			auto [pos_before_id, pos_after_id] = interpolate_animation_keyframes(kf_positions.begin(), kf_positions.end(), t);
+			auto [rot_before_id, rot_after_id] = interpolate_animation_keyframes(kf_rotations.begin(), kf_rotations.end(), t);
+			auto [scale_before_id, scale_after_id] = interpolate_animation_keyframes(kf_scales.begin(), kf_scales.end(), t);
+			if(kf_positions.size() > 1)
+			{
+				TZ_PROFZONE("update objects - position", 0xFFE54550);
+				auto before = kf_positions.begin();
+				auto after = before;
+				std::advance(before, pos_before_id);
+				std::advance(after, pos_after_id);
+				//tz::assert(gltf.playback.time >= before->time_point);
+				float pos_interp = std::clamp((t - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+				tz::vec3 beforet = before->transform.swizzle<0, 1, 2>();
+				tz::vec3 aftert = after->transform.swizzle<0, 1, 2>();
+
+				hier_node.local_transform.translate = beforet + ((aftert - beforet) * pos_interp);
+			}
+
+			if(kf_rotations.size() > 1)
+			{
+				TZ_PROFZONE("update objects - rotation", 0xFFE54550);
+				auto before = kf_rotations.begin();
+				auto after = before;
+				std::advance(before, rot_before_id);
+				std::advance(after, rot_after_id);
+				//tz::assert(gltf.playback.time >= before->time_point);
+				float rot_interp = std::clamp((t - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+				tz::quat beforer = before->transform.normalised();
+				tz::quat afterr = after->transform.normalised();
+				hier_node.local_transform.rotate = beforer.slerp(afterr, rot_interp);
+			}
+
+			if(kf_scales.size() > 1)
+			{
+				TZ_PROFZONE("update objects - scale", 0xFFE54550);
+				auto before = kf_scales.begin();
+				auto after = before;
+				std::advance(before, scale_before_id);
+				std::advance(after, scale_after_id);
+				//tz::assert(gltf.playback.time >= before->time_point);
+				float scale_interp = std::clamp((t - before->time_point) / (after->time_point - before->time_point), 0.0f, 1.0f);
+				tz::vec3 befores = before->transform.swizzle<0, 1, 2>();
+				tz::vec3 afters = after->transform.swizzle<0, 1, 2>();
+				hier_node.local_transform.scale = befores + ((afters - befores) * scale_interp);
+			}
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::gl::resource_handle animation_renderer::get_joint_buffer_handle() const
+	{
+		tz::assert(mesh_renderer::get_extra_buffer_count() >= 1);
+		return mesh_renderer::get_extra_buffer(0);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	/*static*/ std::vector<tz::gl::buffer_resource> animation_renderer::evaluate_extra_buffers(const info& i)
+	{
+		std::vector<tz::gl::buffer_resource> ret = i.extra_buffers;
+		// create our joint buffer.
+		// what is the joint buffer?
+		// so each gltf has a set of nodes. it may also have a skin.
+		// a skin consists of a set of joints, which are node-ids.
+		// the joint-id represents the index into this array of joints.
+		// we want to have this exact list within the joint buffer for each animated object.
+		// however, instead of the joint-id mapping to a node-id, it instead maps directly onto an object-id
+		// this means that the shader can simply use its joint-id to index (with an offset) into this buffer to instantly get the object the joint represents.
+		// at initialisation of course we have no gltfs and thus no joints.
+		// we could start with a tiny buffer and just re-size whenever we add new objects, but that would be shit perf.
+		// instead, we start with an initial capacity, and whenever a new animated object is added, find a region and write into it (saving the offset)
+		// if we run out of space to do that *then* we can resize.
+		constexpr std::size_t initial_joints_capacity = 1024;
+		std::array<std::uint32_t, initial_joints_capacity> initial_joints_data;
+		std::fill(initial_joints_data.begin(), initial_joints_data.end(), 0u);
+		tz::gl::buffer_resource joint_buffer = tz::gl::buffer_resource::from_one(initial_joints_data);
+
+		// joint_buffer will be extra buffer 0.
+		ret.insert(ret.begin(), joint_buffer);
+		return ret;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::gltf_load_skins(gltf_data& gltf)
+	{
+		TZ_PROFZONE("add_gltf - load skins", 0xFFE54550);
+		gltf.metadata.has_skins = !gltf.data.get_skins().empty();
+		for(tz::io::gltf_skin skin : gltf.data.get_skins())
+		{
+			for(std::size_t i = 0; i < skin.joints.size(); i++)
+			{
+				std::uint32_t node_id = skin.joints[i];
+				gltf.metadata.joint_node_map[i] = node_id;
+			}
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::gltf_load_meshes(gltf_data& gltf)
+	{
+		TZ_PROFZONE("add_gltf - load meshes", 0xFFE54550);
+		tz::assert(gltf.meshes.empty(), "gltf_load_meshes(gltf_data) invoked on parameter that already has meshes. It should be empty! Logic error.");
+		std::size_t gltf_submesh_total = 0;
+		for(std::size_t i = 0; i < gltf.data.get_meshes().size(); i++)
+		{
+			TZ_PROFZONE("load - add gltf Mesh", 0xFFE54550);
+			std::size_t submesh_count = gltf.data.get_meshes()[i].submeshes.size();
+			gltf.metadata.mesh_submesh_indices.push_back(gltf_submesh_total);
+			gltf_submesh_total += submesh_count;
+			for(std::size_t j = 0; j < submesh_count; j++)
+			{
+				mesh_renderer::mesh submesh;
+
+				std::size_t material_id = gltf.data.get_meshes()[i].submeshes[j].material_id;
+				auto& maybe_material = gltf.metadata.submesh_materials.emplace_back();
+				if(material_id != static_cast<std::size_t>(-1))
+				{
+					// no material bound, so no textures bound.
+					maybe_material = gltf.data.get_materials()[material_id];
+				}
+				tz::io::gltf_submesh_data gltf_submesh = gltf.data.get_submesh_vertex_data(i, j);
+				// copy over indices.
+				submesh.indices.resize(gltf_submesh.indices.size());
+				std::transform(gltf_submesh.indices.begin(), gltf_submesh.indices.end(), submesh.indices.begin(),
+				[](std::uint32_t idx)-> impl::mesh_index{return idx;});
+				// copy over vertices.
+				std::transform(gltf_submesh.vertices.begin(), gltf_submesh.vertices.end(), std::back_inserter(submesh.vertices),
+				[](tz::io::gltf_vertex_data vtx)-> impl::mesh_vertex
+				{
+					impl::mesh_vertex ret;
+
+					// these are easy.
+					ret.position = vtx.position;
+					ret.normal = vtx.normal;
+					ret.tangent = vtx.tangent;
+
+					// remember we only support one texcoord
+					ret.texcoord = vtx.texcoordn.front();
+
+					// note: the joint indices are in terms of the gltf skin's list of joints.
+					// this is troublesome because the shader deals with objects and object-ids, but has no idea about the gltf data.
+					// so we just write them as-is for now. we will eventually go on to invoke `resource_write_joint_indices` which
+					// will perform resource writes to correct this data. we can't do it now as we dont have the joint->node and node->object maps
+					// ready yet.
+					ret.joint_indices = vtx.jointn.front();
+					ret.joint_weights = vtx.weightn.front();
+					// ignore colours. could theoretically incorporate that into tints, but will be very difficult to translate to texture locator tints properly.
+					return ret;
+				});
+				// add the mesh!
+				gltf.meshes.push_back(mesh_renderer::add_mesh(submesh));
+			}
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::gltf_load_textures(gltf_data& gltf)
+	{
+		TZ_PROFZONE("add_gltf - load textures", 0xFFE54550);
+		std::vector<tz::io::image> images;
+		images.resize(gltf.data.get_images().size());
+		if(gltf.data.get_images().size() > 8)
+		{
+			TZ_PROFZONE("load textures - execute jobs", 0xFF44DD44);
+			// we should split this into threads.
+			std::size_t job_count = std::thread::hardware_concurrency();
+			std::size_t imgs_per_job = gltf.data.get_images().size() / job_count; 
+			std::size_t remainder_imgs = gltf.data.get_images().size() % job_count;
+			std::vector<tz::job_handle> jobs(job_count);
+			for(std::size_t i = 0; i < job_count; i++)
+			{
+				jobs[i] = tz::job_system().execute([&images, &gltf, offset = i * imgs_per_job, img_count = imgs_per_job]()
+				{
+					for(std::size_t j = 0; j < img_count; j++)
+					{
+						images[offset + j] = gltf.data.get_image_data(offset + j);
+					}
+				});
+			}
+			for(std::size_t i = (gltf.data.get_images().size() - remainder_imgs); i < gltf.data.get_images().size(); i++)
+			{
+				images[i] = gltf.data.get_image_data(i);
+			}
+			for(tz::job_handle jh : jobs)
+			{
+				tz::job_system().block(jh);
+			}
+		}
+		else
+		{
+			TZ_PROFZONE("load textures - single-threaded brute force", 0xFF44DD44);
+			// if there isn't many, just do it all now.
+			for(std::size_t i = 0; i < gltf.data.get_images().size(); i++)
+			{
+				images[i] = gltf.data.get_image_data(i);
+			}
+		}
+		for(const tz::io::image& img : images)
+		{
+			gltf.textures.push_back(mesh_renderer::add_texture(img));
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+	
+	void animation_renderer::animated_object_expand_gltf_node(animated_object_data& animated_objects, tz::io::gltf_node node, std::optional<std::size_t> parent_node_id)
+	{
+		TZ_PROFZONE("add animated objects - expand gltf node", 0xFFE54550);
+		tz::assert(animated_objects.objects.size() >= 1, "Expanding node expected a root node to already exist, but the object list is empty. Logic error.");
+		object_handle root_node = animated_objects.objects.front();
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(animated_objects.gltf))];
+
+		object_handle this_parent = tz::nullhand;
+		// figure out what our parent is first.
+		if(parent_node_id.has_value())
+		{
+			// our parent is another gltf node that was added earlier.
+			// in which case we know what its object id is.
+			this_parent = animated_objects.node_object_map.at(parent_node_id.value());
+		}
+		else
+		{
+			// then our parent is just the root node.
+			this_parent = root_node;
+		}
+
+		// this gltf node maps to an object.
+		object_handle this_object = mesh_renderer::add_object
+		({
+			.local_transform = node.transform,
+			.mesh = tz::nullhand,
+			.parent = this_parent,
+			.bound_textures = {},
+		});
+		// add me as a subobject to the animated objects.
+		animated_objects.objects.push_back(this_object);
+		// map me to this node id.
+		animated_objects.node_object_map[node.id] = this_object;
+		// todo: label us with a name?
+
+		if(node.mesh != static_cast<std::size_t>(-1))
+		{
+			// this node has a mesh attached.
+			// the mesh may have multiple submeshes.
+			// for each submesh, create a new child object, set that mesh to the submesh and make sure we're its parent.
+			// remember, this is only a workaround for not supporting multiple submeshes per object - the child object should have the exact same transforms etc...
+			const std::size_t submesh_count = gltf.data.get_meshes()[node.mesh].submeshes.size();
+			// this is where the metadata comes in handy!
+			const std::size_t submesh_offset = gltf.metadata.mesh_submesh_indices[node.mesh];
+			for(std::size_t i = submesh_offset; i < (submesh_offset + submesh_count); i++)
+			{
+				std::vector<impl::texture_locator> bound_textures = {};
+				if(gltf.metadata.submesh_materials[i].has_value())
+				{
+					const tz::io::gltf_material& mat = gltf.metadata.submesh_materials[i].value();
+					tz::assert(gltf.textures.size() > mat.color_texture_id, "GLTF node material specifies texture id %zu, which does not seem to exist within the gltf", mat.color_texture_id);
+					tz::assert(mat.color_texcoord_id == 0, "animation_renderer only supports one texcoord for all properties of a material. Albedo property wants a texcoord of id %zu", mat.color_texcoord_id);
+					tz::assert(bound_textures.size() == 0);
+					// this is texture binding 0. albedo.
+					bound_textures.push_back(impl::texture_locator
+					{
+						.colour_tint = mat.color_factor.swizzle<0, 1, 2>(),
+						.texture = gltf.textures[mat.color_texture_id],
+						.texture_scale = 1.0f,
+						.pad0 = {}
+					});
+					// is there a metallic roughness texture?
+					if(mat.metallic_roughness_texture_id != static_cast<std::size_t>(-1))
+					{
+						// yes.
+						// this is texture binding 1. metallic roughness.
+						tz::assert(mat.metallic_roughness_texcoord_id == 0, "animation_renderer only supports one texcoord for all properties of a material. Metallic roughness property wants a texcoord of id %zu", mat.metallic_roughness_texcoord_id);
+						tz::assert(bound_textures.size() == 1);
+						bound_textures.push_back(impl::texture_locator
+						{
+							.colour_tint = tz::vec3{0.0f, mat.roughness_factor, mat.metallic_factor},
+							.texture = gltf.textures[mat.metallic_roughness_texture_id],
+							.texture_scale = 1.0f,
+							.pad0 = {}
+						});
+					}
+				}
+				object_handle child = mesh_renderer::add_object
+				({
+					.local_transform = {},
+					.mesh = gltf.meshes[i],
+					.parent = this_object,
+					.bound_textures = bound_textures,
+				});
+				// todo: give this sub-subobject a name too if you want?
+				animated_objects.objects.push_back(child);
+			}
+		}
+
+		for(std::size_t child_idx : node.children)
+		{
+			this->animated_object_expand_gltf_node(animated_objects, gltf.data.get_nodes()[child_idx], node.id);
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::animated_object_write_inverse_bind_matrices(animated_object_data& animated_objects)
+	{
+		TZ_PROFZONE("add_animated_object - write inverse bind matrices", 0xFFE54550);
+		auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(animated_objects.gltf));
+		const auto& gltf = this->gltfs[gltf_hanval];
+		if(!gltf.metadata.has_skins)
+		{
+			return;
+		}
+		tz::assert(gltf.data.get_skins().size() == 1, "Only support one skin.");
+		tz::io::gltf_skin skin = gltf.data.get_skins().front();
+		for(std::size_t i = 0; i < skin.joints.size(); i++)
+		{
+			std::uint32_t node_id = skin.joints[i];
+			object_handle handle = animated_objects.node_object_map.at(node_id);
+			mesh_renderer::get_object(handle).unused = skin.inverse_bind_matrices[i];
+		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::vec2ui32 animation_renderer::animated_object_write_joints(animated_object_data& animated_objects)
+	{
+		TZ_PROFZONE("add_animated_object - write joints", 0xFFE54550);
+		auto gltf_hanval = static_cast<std::size_t>(static_cast<tz::hanval>(animated_objects.gltf));
+		const auto& gltf = this->gltfs[gltf_hanval];
+		if(gltf.metadata.has_skins)
+		{
+			tz::assert(gltf.data.get_skins().size() == 1, "Only support one skin.");
+			tz::io::gltf_skin skin = gltf.data.get_skins().front();
+
+			animated_objects.joint_count = skin.joints.size();
+			// let's find a region we can use.
+			auto maybe_joint_offset = this->try_find_joint_region(animated_objects.joint_count);
+			if(!maybe_joint_offset.has_value())
+			{
+				// remember we want this region to be contiguous - if we cant find a region, we need to increase by alot.
+				std::size_t joint_capacity = this->get_joint_capacity();
+				joint_capacity = std::max(joint_capacity * 2, joint_capacity + animated_objects.joint_count);
+				this->set_joint_capacity(joint_capacity);
+				maybe_joint_offset = this->try_find_joint_region(animated_objects.joint_count);
+				tz::assert(maybe_joint_offset.has_value());
+			}
+			animated_objects.joint_buffer_offset = maybe_joint_offset.value();
+			// write the joint data as object indices:
+			std::vector<std::uint32_t> joint_object_indices;
+			joint_object_indices.resize(skin.joints.size());
+			std::transform(skin.joints.begin(), skin.joints.end(), joint_object_indices.begin(),
+			[](std::size_t i)->std::uint32_t{return i;});
+			for(auto& idx : joint_object_indices)
+			{
+				// convert from node id to object id!
+				object_handle obj = animated_objects.node_object_map.at(idx);
+				idx = static_cast<std::size_t>(static_cast<tz::hanval>(obj));
+			}
+			// finally do the renderer edit to write into the joint buffer.
+			std::span<const std::uint32_t> span = joint_object_indices;
+			tz::gl::RendererEditBuilder builder;
+			builder.write
+			({
+				.resource = this->get_joint_buffer_handle(),
+				.data = std::as_bytes(span),
+				.offset = maybe_joint_offset.value() * sizeof(std::uint32_t)
+			});
+			TZ_PROFZONE("write joints - joint buffer resource write", 0xFFE54550);
+			tz::gl::get_device().get_renderer(mesh_renderer::get_render_pass()).edit(builder.build());
+			return static_cast<tz::vec2ui32>(tz::vector<std::size_t, 2>{maybe_joint_offset.value(), animated_objects.joint_count});
+		}
+		return {0u, 0u};
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::optional<std::size_t> animation_renderer::try_find_joint_region(std::size_t joint_count) const
+	{
+		auto sorted_objects = this->animated_objects;
+		std::sort(sorted_objects.begin(), sorted_objects.end(),
+			[](const auto& a, const auto& b)
+			{
+				return (a.joint_buffer_offset + a.joint_count) < (b.joint_buffer_offset + b.joint_count);
+			});
+        // Iterate through sorted animated objects to find gaps in joint regions.
+		std::uint32_t current_offset = 0;
+		for(const auto& object : sorted_objects)
+		{
+			std::uint32_t gap_size = object.joint_buffer_offset - current_offset;
+			if(gap_size >= joint_count)
+			{
+                // Found a gap large enough
+				return current_offset;
+			}
+			current_offset = object.joint_buffer_offset + object.joint_count;
+		}
+
+        // Check for space at the end of the buffer
+		std::uint32_t last_object_end = sorted_objects.empty() ? 0 : (sorted_objects.back().joint_buffer_offset + sorted_objects.back().joint_count);
+		std::size_t total_joint_count = this->get_joint_capacity();
+		if(total_joint_count - last_object_end >= joint_count)
+		{
+			return last_object_end;
+		}
+        // No suitable gap found
+		return std::nullopt;
+	}
+
+
+//--------------------------------------------------------------------------------------------------
+
+	std::size_t animation_renderer::get_joint_count() const
+	{
+		std::size_t joints = 0;
+		for(const auto& animobj : this->animated_objects)
+		{
+			joints += animobj.joint_count;
+		}
+		return joints;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::size_t animation_renderer::get_joint_capacity() const
+	{
+		return tz::gl::get_device().get_renderer(mesh_renderer::get_render_pass()).get_resource(this->get_joint_buffer_handle())->data_as<const std::uint32_t>().size();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::set_joint_capacity(std::size_t new_joint_capacity)
+	{
+		tz::gl::RendererEditBuilder builder;
+		builder.buffer_resize
+		({
+			.buffer_handle = this->get_joint_buffer_handle(),
+			.size = new_joint_capacity * sizeof(std::uint32_t)
+		});
+		tz::gl::get_device().get_renderer(mesh_renderer::get_render_pass()).edit(builder.build());
+		tz::assert(this->get_joint_capacity() == new_joint_capacity);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void animation_renderer::wait_for_animation_jobs()
+	{
+		for(tz::job_handle jh : this->animation_advance_jobs)
+		{
+			tz::job_system().block(jh);
+		}
+		this->animation_advance_jobs.clear();
 	}
 }

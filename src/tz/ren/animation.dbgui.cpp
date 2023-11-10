@@ -1,4 +1,4 @@
-#include "tz/ren/animation2.hpp"
+#include "tz/ren/animation.hpp"
 
 namespace tz::ren
 {
@@ -6,9 +6,9 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void animation_renderer2::dbgui()
+	void animation_renderer::dbgui()
 	{
-		mesh_renderer2::dbgui(false);
+		mesh_renderer::dbgui(false);
 		if(ImGui::BeginTabItem("Animations"))
 		{
 			this->dbgui_animations();
@@ -16,7 +16,7 @@ namespace tz::ren
 		}
 		if(ImGui::BeginTabItem("Operations"))
 		{
-			mesh_renderer2::dbgui_operations();
+			mesh_renderer::dbgui_operations();
 			this->dbgui_animation_operations();
 			ImGui::EndTabItem();
 		}
@@ -24,7 +24,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void animation_renderer2::dbgui_animations()
+	void animation_renderer::dbgui_animations()
 	{
 		const float joint_count_kib = this->get_joint_count() * sizeof(std::uint32_t) / 1024.0f;
 		const float joint_capacity_kib = this->get_joint_capacity() * sizeof(std::uint32_t) / 1024.0f;
@@ -53,7 +53,7 @@ namespace tz::ren
 				{
 					if(anim_objects.objects.size() && ImGui::CollapsingHeader("Transform"))
 					{
-						mesh_renderer2::get_hierarchy().dbgui_node(static_cast<std::size_t>(static_cast<tz::hanval>(anim_objects.objects.front())), true);	
+						mesh_renderer::get_hierarchy().dbgui_node(static_cast<std::size_t>(static_cast<tz::hanval>(anim_objects.objects.front())), true);	
 					}
 					std::size_t gltf_id = static_cast<std::size_t>(static_cast<tz::hanval>(anim_objects.gltf));
 					ImGui::Text("Associated with: GLTF %zu", gltf_id);
@@ -124,7 +124,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void animation_renderer2::dbgui_animation_operations()
+	void animation_renderer::dbgui_animation_operations()
 	{
 		if(ImGui::TreeNode("GLTF Operations"))
 		{
