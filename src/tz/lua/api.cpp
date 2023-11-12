@@ -65,6 +65,31 @@ namespace tz::lua
 		return 0;
 	LUA_END
 
+	LUA_BEGIN(report)
+		auto st = reinterpret_cast<lua_State*>(s);
+		int nargs = state.stack_size();
+		std::string full_msg;
+		for(int i = 1; i <= nargs; i++)
+		{
+			std::string msg = state.stack_get_string(i, false);
+			if(msg.empty())
+			{
+				lua_getglobal(st, "tostring");
+				lua_pushvalue(st, i);
+				lua_pcall(st, 1, 1, 0);
+				msg = state.stack_get_string(-1);
+				lua_pop(st, 1);
+			}
+			msg.erase(std::remove(msg.begin(), msg.end(), '\0'), msg.end());
+			tz::dbgui::add_to_lua_log(msg);
+			full_msg += msg;
+		}
+		tz::report("Lua: %s", full_msg.data());
+		state.stack_pop(nargs);
+		return 0;
+
+	LUA_END
+
 	LUA_BEGIN(stack_dump)
 		tz::dbgui::add_to_lua_log(state.collect_stack());
 		return 0;
@@ -75,6 +100,7 @@ namespace tz::lua
 		s.assign_emptytable("tz");
 		s.assign_func("tz.assert", LUA_FN_NAME(assert));
 		s.assign_func("tz.error", LUA_FN_NAME(error));
+		s.assign_func("tz.report", LUA_FN_NAME(report));
 		LUA_REGISTER_ONE(print, s);
 		LUA_REGISTER_ONE(stack_dump, s);
 		s.assign_emptytable("tz.version");
