@@ -969,13 +969,12 @@ namespace tz::ren
 			// note for free-list. will definitely need to add logic for that in compute pass.
 			// shouldn't need to do anything else here? just use the id we gave you and assume its valid.
 			std::size_t our_object_id = this->compute.add_new_draws(1).front();
-			if(old_count + 1 >= old_capacity)
+			if(old_count + 1 >= old_capacity && old_capacity != this->compute.get_draw_capacity())
 			{
 				// we're over capacity.
 				// add_new_draws would've increased the capacity in some way.
 				// we will need to set the object buffer's capacity to match this.
 				std::size_t new_capacity = this->compute.get_draw_capacity();
-				tz::assert(old_capacity != new_capacity);
 				this->obj.set_object_capacity(this->render, new_capacity);
 			}
 
