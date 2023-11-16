@@ -618,7 +618,21 @@ namespace tz::io
 			char c = ttf_alphabet[i];
 			auto index = this->cmap.glyph_index_map[c | 0] | 0;
 			auto glyfd = this->glyf.glyfs[index];
-			auto hmtxd = this->hmtx.hmetrics[index];
+			// its possible index > hmetrics.length
+			// spec:The table uses a longHorMetric record to give the advance width and left side bearing of a glyph. Records are indexed by glyph ID. As an optimization, the number of records can be less than the number of glyphs, in which case the advance width value of the last record applies to all remaining glyph IDs 
+			// If numberOfHMetrics is less than the total number of glyphs, then the hMetrics array is followed by an array for the left side bearing values of the remaining glyphs.
+			std::size_t advance_width, left_side_bearing;
+			if(std::cmp_greater_equal(index, this->hmtx.hmetrics.size()))
+			{
+				advance_width = hmtx.hmetrics.back().advance_width;
+				left_side_bearing = hmtx.left_side_bearings[index - hmtx.hmetrics.size()];
+			}
+			else
+			{
+				auto hmtxd = this->hmtx.hmetrics[index];
+				advance_width = hmtxd.advance_width;
+				left_side_bearing = hmtxd.left_side_bearing;
+			}
 
 			ttf_glyph_shape_info shape;
 			tz::assert(glyfd.x_coords.size() == glyfd.y_coords.size());
@@ -644,8 +658,8 @@ namespace tz::io
 				{
 					.position = static_cast<tz::vec2i>(tz::vector<std::int16_t, 2>{glyfd.xmin, glyfd.ymin}),
 					.dimensions = static_cast<tz::vec2ui>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}),
-					.left_side_bearing = static_cast<int>(hmtxd.left_side_bearing),
-					.right_side_bearing = static_cast<int>(hmtxd.advance_width - hmtxd.left_side_bearing - (glyfd.xmax - glyfd.xmin))
+					.left_side_bearing = static_cast<int>(left_side_bearing),
+					.right_side_bearing = static_cast<int>(advance_width - left_side_bearing - (glyfd.xmax - glyfd.xmin))
 				},
 				.shape = shape
 			};
