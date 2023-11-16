@@ -381,7 +381,7 @@ namespace tz::io
 			{
 				g.flags[i] = static_cast<std::byte>(*ptr);
 				ptr++;
-				if(static_cast<uint8_t>(g.flags[i]) & 0x00001000) // repeat bit
+				if(1 == ((static_cast<uint8_t>(g.flags[i]) >> 3) & 1))
 				{
 					std::uint8_t repeat_count = *ptr;	
 					while(repeat_count-- > 0)
@@ -421,6 +421,8 @@ namespace tz::io
 					break;
 				}
 				g.x_coords[i] = cur_coord + prev_coord;
+				//tz::assert(this->head.xmin <= g.x_coords[i]);
+				//tz::assert(this->head.xmax >= g.x_coords[i]);
 				prev_coord = g.x_coords[i];
 			}
 			g.y_coords.resize((last_index + 1));
@@ -451,6 +453,8 @@ namespace tz::io
 					break;
 				}
 				g.y_coords[i] = cur_coord + prev_coord;
+				//tz::assert(this->head.ymin <= g.y_coords[i]);
+				//tz::assert(this->head.ymax >= g.y_coords[i]);
 				prev_coord = g.y_coords[i];
 			}
 		};
@@ -639,13 +643,18 @@ namespace tz::io
 			tz::assert(glyfd.x_coords.size() == glyfd.y_coords.size());
 			std::size_t contour_cursor = 0;
 			shape.contours.resize(glyfd.number_of_contours);
-			for(std::size_t i = 1; i < glyfd.x_coords.size(); i++)
+			std::optional<tz::vec2> cache = std::nullopt;
+			for(std::size_t i = 0; i < glyfd.x_coords.size(); i++)
 			{
-				auto beg = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i - 1], glyfd.y_coords[i - 1]});
-				beg /= this->head.units_per_em;
-				auto end = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]});
-				end /= this->head.units_per_em;
-				shape.contours[contour_cursor].edges.push_back({beg, end});
+				if(!cache.has_value())
+				{
+					cache = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]});
+				}
+				else
+				{
+					shape.contours[contour_cursor].edges.push_back({cache.value(), static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]})});
+					cache = std::nullopt;
+				}
 				if(i == glyfd.end_pts_of_contours[contour_cursor])
 				{
 					// contour ends here.

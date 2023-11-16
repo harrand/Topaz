@@ -30,7 +30,7 @@ int main()
 	{
 		dbgui_init();
 		tz::io::ttf ttf = tz::io::ttf::from_memory(ImportedTextData(ProggyClean, ttf));
-		tz::io::image img_c = ttf.rasterise_msdf('c', rast);
+		tz::io::image img_c = ttf.rasterise_msdf('A', rast);
 
 		tz::ren::mesh_renderer mr;
 		mr.append_to_render_graph();
