@@ -183,7 +183,16 @@ namespace tz::io
 		static ttf from_memory(std::string_view sv);
 		static ttf from_file(const char* path);
 
-		tz::io::image rasterise_msdf(char c) const;
+		struct rasterise_info
+		{
+			tz::vec2ui dimensions;
+			float angle_threshold;
+			float range;
+			float scale;
+			tz::vec2 translate;
+		};
+
+		tz::io::image rasterise_msdf(char c, rasterise_info i) const;
 		ttf(std::string_view ttf_data);
 	private:
 		std::string_view parse_header(std::string_view str);

@@ -38,7 +38,7 @@ namespace tz::io
 		return ttf::from_memory(buffer);
 	}
 	
-	tz::io::image ttf::rasterise_msdf(char c) const
+	tz::io::image ttf::rasterise_msdf(char c, rasterise_info i) const
 	{
 		tz::io::image ret;	
 
@@ -69,9 +69,10 @@ namespace tz::io
 //		}
 
 		// generate bitmap
-		msdfgen::edgeColoringSimple(shape, 3.0f);
-		msdfgen::Bitmap<float, 3> msdf(128u, 128u);
-		msdfgen::generateMSDF(msdf, shape, 128.0f, 1.0f, msdfgen::Vector2(100.0f, -100.0f));
+		//shape.normalize();
+		msdfgen::edgeColoringSimple(shape, i.angle_threshold);
+		msdfgen::Bitmap<float, 3> msdf(i.dimensions[0], i.dimensions[1]);
+		msdfgen::generateMSDF(msdf, shape, i.range, i.scale, msdfgen::Vector2(i.translate[0], i.translate[1]));
 		ret.width = msdf.width();
 		ret.height = msdf.height();
 		ret.data.resize(1 * 4u * ret.width * ret.height, std::byte{0});
