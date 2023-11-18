@@ -20,7 +20,7 @@ static tz::io::ttf::rasterise_info rast
 	.dimensions = {32u, 32u},
 	.angle_threshold = 3.0f,
 	.range = 0.1f,
-	.scale = 72.0f,
+	.scale = 64.0f,
 	.translate = tz::vec2::zero()
 };
 
