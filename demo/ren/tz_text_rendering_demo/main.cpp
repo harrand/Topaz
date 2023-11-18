@@ -19,9 +19,9 @@ static tz::io::ttf::rasterise_info rast
 {
 	.dimensions = {32u, 32u},
 	.angle_threshold = 3.0f,
-	.range = 2.0f,
-	.scale = 1.0f,
-	.translate = tz::vec2::zero()	
+	.range = 0.1f,
+	.scale = 72.0f,
+	.translate = tz::vec2::zero()
 };
 
 int main()

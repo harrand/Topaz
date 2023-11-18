@@ -70,7 +70,6 @@ namespace tz::io
 
 		// generate bitmap
 		shape.normalize();
-		i.scale *= i.dimensions.length();
 		msdfgen::edgeColoringSimple(shape, i.angle_threshold);
 		msdfgen::Bitmap<float, 3> msdf(i.dimensions[0], i.dimensions[1]);
 
@@ -86,9 +85,7 @@ namespace tz::io
 				for(std::size_t i = 0; i < 3; i++)
 				{
 					float val = msdf(x, y)[i];
-					tz::assert(val >= 0.0f);
-					tz::assert(val <= 1.0f);
-					imgdata(x, y)[i] = static_cast<std::byte>(val * 255);
+					imgdata(x, y)[i] = static_cast<std::byte>(255 - std::clamp(val * 256.0f, 0.0f, 255.0f));
 				}
 				imgdata(x, y)[3] = std::byte{255};
 			}
