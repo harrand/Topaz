@@ -20,7 +20,7 @@ static tz::io::ttf::rasterise_info rast
 	.dimensions = {32u, 32u},
 	.angle_threshold = 3.0f,
 	.range = 2.0f,
-	.scale = 2.0f,
+	.scale = 1.0f,
 	.translate = tz::vec2::zero()	
 };
 
@@ -68,9 +68,9 @@ int main()
 						bool changed = false;
 						changed |= ImGui::SliderInt2("Dimensions", reinterpret_cast<int*>(rast.dimensions.data().data()), 1u, 512u, "%u");
 						changed |= ImGui::SliderFloat("Angle Threshold", &rast.angle_threshold, 0.0f, 5.0f);
-						changed |= ImGui::SliderFloat("Range", &rast.range, 0.0f, 16.0f);
+						changed |= ImGui::SliderFloat("Range", &rast.range, 0.01f, 2.0f);
 						changed |= ImGui::SliderFloat("Scale", &rast.scale, 0.01f, 64.0f);
-						changed |= ImGui::SliderFloat2("Translate", rast.translate.data().data(), -16.0f, 16.0f);
+						changed |= ImGui::SliderFloat2("Translate", rast.translate.data().data(), -1.0f, 1.0f);
 
 						if(changed)
 						{

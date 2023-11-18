@@ -69,9 +69,11 @@ namespace tz::io
 //		}
 
 		// generate bitmap
-		//shape.normalize();
+		shape.normalize();
+		i.scale *= i.dimensions.length();
 		msdfgen::edgeColoringSimple(shape, i.angle_threshold);
 		msdfgen::Bitmap<float, 3> msdf(i.dimensions[0], i.dimensions[1]);
+
 		msdfgen::generateMSDF(msdf, shape, i.range, i.scale, msdfgen::Vector2(i.translate[0], i.translate[1]));
 		ret.width = msdf.width();
 		ret.height = msdf.height();
@@ -83,9 +85,12 @@ namespace tz::io
 			{
 				for(std::size_t i = 0; i < 3; i++)
 				{
-					imgdata(x, y)[i] = static_cast<std::byte>(msdf(x, y)[i] * 255);
-					imgdata(x, y)[3] = std::byte{255};
+					float val = msdf(x, y)[i];
+					tz::assert(val >= 0.0f);
+					tz::assert(val <= 1.0f);
+					imgdata(x, y)[i] = static_cast<std::byte>(val * 255);
 				}
+				imgdata(x, y)[3] = std::byte{255};
 			}
 		}
 
@@ -328,7 +333,7 @@ namespace tz::io
 		if(this->head.index_to_loc_format == 0)
 		{
 			// 16 bit
-			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs); i++)
+			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs + 1); i++)
 			{
 				this->loca.locations16.push_back(ttf_read_value<std::uint16_t>(ptr));
 			}
@@ -336,7 +341,7 @@ namespace tz::io
 		else
 		{
 			// 32 bit
-			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs); i++)
+			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs + 1); i++)
 			{
 				this->loca.locations32.push_back(ttf_read_value<std::uint32_t>(ptr));
 			}
@@ -361,7 +366,7 @@ namespace tz::io
 		{
 			auto& g = this->glyf.glyfs.emplace_back();
 			g.number_of_contours = ttf_read_value<std::int16_t>(ptr);
-			tz::assert(g.number_of_contours > 0, "Only support simple glyphs. Number of contours: %d", (int)g.number_of_contours);
+			tz::assert(g.number_of_contours >= 0, "Only support simple glyphs. Number of contours: %d", (int)g.number_of_contours);
 			g.xmin = ttf_read_value<std::int16_t>(ptr);
 			g.ymin = ttf_read_value<std::int16_t>(ptr);
 			g.xmax = ttf_read_value<std::int16_t>(ptr);
@@ -375,6 +380,10 @@ namespace tz::io
 			std::memcpy(g.instructions.data(), ptr, g.instructions.size());
 			std::advance(ptr, g.instructions.size());
 
+			if(g.number_of_contours == 0)
+			{
+				return;
+			}
 			int last_index = g.end_pts_of_contours.back();
 			g.flags.resize(last_index + 1);
 			for(int i = 0; i < (last_index + 1); i++)
@@ -410,10 +419,10 @@ namespace tz::io
 					case 1:
 						cur_coord = 0;
 					break;
-					case 2:
+					case 3:
 						cur_coord = -ttf_read_value<std::int8_t>(ptr);
 					break;
-					case 3:
+					case 2:
 						cur_coord = ttf_read_value<std::int8_t>(ptr);
 					break;
 					default:
@@ -421,8 +430,8 @@ namespace tz::io
 					break;
 				}
 				g.x_coords[i] = cur_coord + prev_coord;
-				//tz::assert(this->head.xmin <= g.x_coords[i]);
-				//tz::assert(this->head.xmax >= g.x_coords[i]);
+				tz::assert(g.xmin <= g.x_coords[i]);
+				tz::assert(g.xmax >= g.x_coords[i]);
 				prev_coord = g.x_coords[i];
 			}
 			g.y_coords.resize((last_index + 1));
@@ -442,10 +451,10 @@ namespace tz::io
 					case 1:
 						cur_coord = 0;
 					break;
-					case 2:
+					case 3:
 						cur_coord = -ttf_read_value<std::int8_t>(ptr);
 					break;
-					case 3:
+					case 2:
 						cur_coord = ttf_read_value<std::int8_t>(ptr);
 					break;
 					default:
@@ -453,8 +462,8 @@ namespace tz::io
 					break;
 				}
 				g.y_coords[i] = cur_coord + prev_coord;
-				//tz::assert(this->head.ymin <= g.y_coords[i]);
-				//tz::assert(this->head.ymax >= g.y_coords[i]);
+				tz::assert(g.ymin <= g.y_coords[i]);
+				tz::assert(g.ymax >= g.y_coords[i]);
 				prev_coord = g.y_coords[i];
 			}
 		};
@@ -466,7 +475,8 @@ namespace tz::io
 			for(std::uint16_t loc16 : this->loca.locations16)
 			{
 				auto loca_offset = loc16 * multiplier;
-				read_glyph(ptrcpy + loca_offset);
+				ptrcpy = ptr + loca_offset;
+				read_glyph(ptrcpy);
 			}
 		}
 		else
@@ -476,8 +486,8 @@ namespace tz::io
 			for(std::uint32_t loc32 : this->loca.locations32)
 			{
 				auto loca_offset = loc32 * multiplier;
-				ptr = ptrcpy + loca_offset;
-				read_glyph(ptrcpy + loca_offset);
+				ptrcpy = ptr + loca_offset;
+				read_glyph(ptrcpy);
 			}
 		}
 		this->glyf.canary = true;
@@ -652,13 +662,26 @@ namespace tz::io
 				}
 				else
 				{
-					shape.contours[contour_cursor].edges.push_back({cache.value(), static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]})});
+					shape.contours[contour_cursor].edges.push_back({
+						cache.value(),
+						static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]})
+					});
 					cache = std::nullopt;
 				}
 				if(i == glyfd.end_pts_of_contours[contour_cursor])
 				{
 					// contour ends here.
 					contour_cursor++;
+					cache = std::nullopt;
+				}
+			}
+
+			for(auto& contour : shape.contours)
+			{
+				for (auto& [a, b] : contour.edges)
+				{
+					a /= this->head.units_per_em;
+					b /= this->head.units_per_em;
 				}
 			}
 
