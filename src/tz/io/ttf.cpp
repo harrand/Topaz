@@ -38,7 +38,7 @@ namespace tz::io
 		return ttf::from_memory(buffer);
 	}
 	
-	tz::io::image ttf::rasterise_msdf(char c) const
+	tz::io::image ttf::rasterise_msdf(char c, rasterise_info i) const
 	{
 		tz::io::image ret;	
 
@@ -69,9 +69,11 @@ namespace tz::io
 //		}
 
 		// generate bitmap
-		msdfgen::edgeColoringSimple(shape, 3.0f);
-		msdfgen::Bitmap<float, 3> msdf(128u, 128u);
-		msdfgen::generateMSDF(msdf, shape, 128.0f, 1.0f, msdfgen::Vector2(100.0f, -100.0f));
+		shape.normalize();
+		msdfgen::edgeColoringSimple(shape, i.angle_threshold);
+		msdfgen::Bitmap<float, 3> msdf(i.dimensions[0], i.dimensions[1]);
+
+		msdfgen::generateMSDF(msdf, shape, i.range, i.scale, msdfgen::Vector2(i.translate[0], i.translate[1]));
 		ret.width = msdf.width();
 		ret.height = msdf.height();
 		ret.data.resize(1 * 4u * ret.width * ret.height, std::byte{0});
@@ -82,9 +84,10 @@ namespace tz::io
 			{
 				for(std::size_t i = 0; i < 3; i++)
 				{
-					imgdata(x, y)[i] = static_cast<std::byte>(msdf(x, y)[i] * 255);
-					imgdata(x, y)[3] = std::byte{255};
+					float val = msdf(x, y)[i];
+					imgdata(x, y)[i] = static_cast<std::byte>(255 - std::clamp(val * 256.0f, 0.0f, 255.0f));
 				}
+				imgdata(x, y)[3] = std::byte{255};
 			}
 		}
 
@@ -327,7 +330,7 @@ namespace tz::io
 		if(this->head.index_to_loc_format == 0)
 		{
 			// 16 bit
-			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs); i++)
+			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs + 1); i++)
 			{
 				this->loca.locations16.push_back(ttf_read_value<std::uint16_t>(ptr));
 			}
@@ -335,7 +338,7 @@ namespace tz::io
 		else
 		{
 			// 32 bit
-			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs); i++)
+			for(std::size_t i = 0; std::cmp_less(i, this->maxp.num_glyphs + 1); i++)
 			{
 				this->loca.locations32.push_back(ttf_read_value<std::uint32_t>(ptr));
 			}
@@ -360,7 +363,7 @@ namespace tz::io
 		{
 			auto& g = this->glyf.glyfs.emplace_back();
 			g.number_of_contours = ttf_read_value<std::int16_t>(ptr);
-			tz::assert(g.number_of_contours > 0, "Only support simple glyphs. Number of contours: %d", (int)g.number_of_contours);
+			tz::assert(g.number_of_contours >= 0, "Only support simple glyphs. Number of contours: %d", (int)g.number_of_contours);
 			g.xmin = ttf_read_value<std::int16_t>(ptr);
 			g.ymin = ttf_read_value<std::int16_t>(ptr);
 			g.xmax = ttf_read_value<std::int16_t>(ptr);
@@ -374,13 +377,17 @@ namespace tz::io
 			std::memcpy(g.instructions.data(), ptr, g.instructions.size());
 			std::advance(ptr, g.instructions.size());
 
+			if(g.number_of_contours == 0)
+			{
+				return;
+			}
 			int last_index = g.end_pts_of_contours.back();
 			g.flags.resize(last_index + 1);
 			for(int i = 0; i < (last_index + 1); i++)
 			{
 				g.flags[i] = static_cast<std::byte>(*ptr);
 				ptr++;
-				if(static_cast<uint8_t>(g.flags[i]) & 0x00001000) // repeat bit
+				if(1 == ((static_cast<uint8_t>(g.flags[i]) >> 3) & 1))
 				{
 					std::uint8_t repeat_count = *ptr;	
 					while(repeat_count-- > 0)
@@ -409,10 +416,10 @@ namespace tz::io
 					case 1:
 						cur_coord = 0;
 					break;
-					case 2:
+					case 3:
 						cur_coord = -ttf_read_value<std::int8_t>(ptr);
 					break;
-					case 3:
+					case 2:
 						cur_coord = ttf_read_value<std::int8_t>(ptr);
 					break;
 					default:
@@ -420,6 +427,8 @@ namespace tz::io
 					break;
 				}
 				g.x_coords[i] = cur_coord + prev_coord;
+				tz::assert(g.xmin <= g.x_coords[i]);
+				tz::assert(g.xmax >= g.x_coords[i]);
 				prev_coord = g.x_coords[i];
 			}
 			g.y_coords.resize((last_index + 1));
@@ -439,10 +448,10 @@ namespace tz::io
 					case 1:
 						cur_coord = 0;
 					break;
-					case 2:
+					case 3:
 						cur_coord = -ttf_read_value<std::int8_t>(ptr);
 					break;
-					case 3:
+					case 2:
 						cur_coord = ttf_read_value<std::int8_t>(ptr);
 					break;
 					default:
@@ -450,6 +459,8 @@ namespace tz::io
 					break;
 				}
 				g.y_coords[i] = cur_coord + prev_coord;
+				tz::assert(g.ymin <= g.y_coords[i]);
+				tz::assert(g.ymax >= g.y_coords[i]);
 				prev_coord = g.y_coords[i];
 			}
 		};
@@ -461,7 +472,8 @@ namespace tz::io
 			for(std::uint16_t loc16 : this->loca.locations16)
 			{
 				auto loca_offset = loc16 * multiplier;
-				read_glyph(ptrcpy + loca_offset);
+				ptrcpy = ptr + loca_offset;
+				read_glyph(ptrcpy);
 			}
 		}
 		else
@@ -471,8 +483,8 @@ namespace tz::io
 			for(std::uint32_t loc32 : this->loca.locations32)
 			{
 				auto loca_offset = loc32 * multiplier;
-				ptr = ptrcpy + loca_offset;
-				read_glyph(ptrcpy + loca_offset);
+				ptrcpy = ptr + loca_offset;
+				read_glyph(ptrcpy);
 			}
 		}
 		this->glyf.canary = true;
@@ -618,23 +630,55 @@ namespace tz::io
 			char c = ttf_alphabet[i];
 			auto index = this->cmap.glyph_index_map[c | 0] | 0;
 			auto glyfd = this->glyf.glyfs[index];
-			auto hmtxd = this->hmtx.hmetrics[index];
+			// its possible index > hmetrics.length
+			// spec:The table uses a longHorMetric record to give the advance width and left side bearing of a glyph. Records are indexed by glyph ID. As an optimization, the number of records can be less than the number of glyphs, in which case the advance width value of the last record applies to all remaining glyph IDs 
+			// If numberOfHMetrics is less than the total number of glyphs, then the hMetrics array is followed by an array for the left side bearing values of the remaining glyphs.
+			std::size_t advance_width, left_side_bearing;
+			if(std::cmp_greater_equal(index, this->hmtx.hmetrics.size()))
+			{
+				advance_width = hmtx.hmetrics.back().advance_width;
+				left_side_bearing = hmtx.left_side_bearings[index - hmtx.hmetrics.size()];
+			}
+			else
+			{
+				auto hmtxd = this->hmtx.hmetrics[index];
+				advance_width = hmtxd.advance_width;
+				left_side_bearing = hmtxd.left_side_bearing;
+			}
 
 			ttf_glyph_shape_info shape;
 			tz::assert(glyfd.x_coords.size() == glyfd.y_coords.size());
 			std::size_t contour_cursor = 0;
 			shape.contours.resize(glyfd.number_of_contours);
-			for(std::size_t i = 1; i < glyfd.x_coords.size(); i++)
+			std::optional<tz::vec2> cache = std::nullopt;
+			for(std::size_t i = 0; i < glyfd.x_coords.size(); i++)
 			{
-				auto beg = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i - 1], glyfd.y_coords[i - 1]});
-				beg /= this->head.units_per_em;
-				auto end = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]});
-				end /= this->head.units_per_em;
-				shape.contours[contour_cursor].edges.push_back({beg, end});
+				if(!cache.has_value())
+				{
+					cache = static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]});
+				}
+				else
+				{
+					shape.contours[contour_cursor].edges.push_back({
+						cache.value(),
+						static_cast<tz::vec2>(tz::vec2i{glyfd.x_coords[i], glyfd.y_coords[i]})
+					});
+					cache = std::nullopt;
+				}
 				if(i == glyfd.end_pts_of_contours[contour_cursor])
 				{
 					// contour ends here.
 					contour_cursor++;
+					cache = std::nullopt;
+				}
+			}
+
+			for(auto& contour : shape.contours)
+			{
+				for (auto& [a, b] : contour.edges)
+				{
+					a /= this->head.units_per_em;
+					b /= this->head.units_per_em;
 				}
 			}
 
@@ -644,8 +688,8 @@ namespace tz::io
 				{
 					.position = static_cast<tz::vec2i>(tz::vector<std::int16_t, 2>{glyfd.xmin, glyfd.ymin}),
 					.dimensions = static_cast<tz::vec2ui>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}),
-					.left_side_bearing = static_cast<int>(hmtxd.left_side_bearing),
-					.right_side_bearing = static_cast<int>(hmtxd.advance_width - hmtxd.left_side_bearing - (glyfd.xmax - glyfd.xmin))
+					.left_side_bearing = static_cast<int>(left_side_bearing),
+					.right_side_bearing = static_cast<int>(advance_width - left_side_bearing - (glyfd.xmax - glyfd.xmin))
 				},
 				.shape = shape
 			};

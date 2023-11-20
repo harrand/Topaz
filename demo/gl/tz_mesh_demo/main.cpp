@@ -6,7 +6,6 @@
 #include "tz/core/matrix_transform.hpp"
 
 #include "tz/ren/mesh.hpp"
-#include "tz/ren/mesh2.hpp"
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -22,8 +21,8 @@ int main()
 	{
 		dbgui_init();
 
-		tz::ren::mesh_renderer2 mr;
-		tz::ren::mesh_renderer2::mesh m;
+		tz::ren::mesh_renderer mr;
+		tz::ren::mesh_renderer::mesh m;
 		m.indices = {0u, 1u, 2u};
 		m.vertices = 
 		{

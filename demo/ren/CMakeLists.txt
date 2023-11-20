@@ -1,0 +1,1 @@
+add_subdirectory(tz_text_rendering_demo)
