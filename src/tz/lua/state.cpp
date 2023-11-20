@@ -494,7 +494,11 @@ namespace tz::lua
 						ZoneEnd = function()
 						end,
 						ZoneBeginN = function()
-						end
+						end,
+						ZoneName = function()
+						end,
+						ZoneText = function()
+						end,
 					}
 				)");
 			#endif

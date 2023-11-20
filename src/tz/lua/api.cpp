@@ -123,5 +123,39 @@ namespace tz::lua
 		tz::io::lua_initialise(s);
 		tz::ren::lua_initialise(s);
 		tz::wsi::lua_initialise(s);
+
+		s.execute(R"(
+			tz.profzone_obj = {}
+
+			function tz.profzone_obj:new(o)
+				o = o or {}
+				setmetatable(o, self)
+				self.__close = function()
+					tracy.ZoneEnd()
+				end
+				self.__index = self
+				tracy.ZoneBegin()
+				return o
+			end
+			
+			function tz.profzone_obj:set_text(txt)
+				tracy.ZoneText(txt)
+			end
+
+			function tz.profzone_obj:set_name(name)
+				tracy.ZoneName(name)
+			end
+
+			tz.create_profiling_object = function()
+				local obj = {}
+				setmetatable(obj, {
+					__close = function()
+						tracy.ZoneEnd()
+					end
+				})
+				tracy.ZoneBeginN("unnamed profzone")
+				return obj
+			end
+		)");
 	}
 }
