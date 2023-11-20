@@ -400,6 +400,12 @@ namespace tz::lua
 		return ret + "=== end ===";
 	}
 
+	std::string state::print_traceback() const
+	{
+		this->execute("global_traceback_data = debug.traceback()");
+		return this->get_string("global_traceback_data").value_or("no traceback data");
+	}
+
 	const std::string& state::get_last_error() const
 	{
 		return this->last_error;

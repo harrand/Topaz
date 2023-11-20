@@ -120,6 +120,7 @@ namespace tz::lua
 		}
 
 		std::string collect_stack() const;
+		std::string print_traceback() const;
 		const std::string& get_last_error() const;
 		std::thread::id get_owner_thread_id() const;
 		void attach_to_top_userdata(const char* classname, impl::lua_registers registers);

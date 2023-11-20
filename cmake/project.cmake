@@ -28,7 +28,7 @@ function(tz_configure_debug)
 	if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		target_compile_options(${TZ_CONFIGURE_DEBUG_TARGET} PUBLIC /Zi)
 	else()
-		target_compile_options(${TZ_CONFIGURE_DEBUG_TARGET} PUBLIC -g -Og)
+		target_compile_options(${TZ_CONFIGURE_DEBUG_TARGET} PUBLIC -g -O0)
 	endif()
 
 endfunction()
