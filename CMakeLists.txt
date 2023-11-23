@@ -27,6 +27,8 @@ add_library(topaz STATIC
 	# tz::core
 	src/tz/core/algorithms/static.hpp
 	src/tz/core/data/basic_list.hpp
+	src/tz/core/data/data_store.cpp
+	src/tz/core/data/data_store.hpp
 	src/tz/core/data/enum_field.hpp
 	src/tz/core/data/enum_field.inl
 	src/tz/core/data/grid_view.hpp
