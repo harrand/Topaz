@@ -74,7 +74,7 @@ namespace tz
 				},
 				[this](detail::ds_edit edit)
 				{
-					tz::assert(!this->contains_nolock(edit.key), "edit called on %s which does not exist in the datastore.", edit.key.data());
+					tz::assert(this->contains_nolock(edit.key), "edit called on %s which does not exist in the datastore.", edit.key.data());
 					this->store[edit.key] = edit.val;
 				},
 				[this](detail::ds_remove remove)
@@ -95,7 +95,7 @@ namespace tz
 		for(std::size_t i = 0; i < keyset.size(); i++)
 		{
 			TZ_PROFZONE("data_store - read one", 0xFF3377AA);
-			auto iter = this->store.find(std::string{keyset[i]});
+			auto iter = this->store.find(keyset[i]);
 			if(iter != this->store.end())
 			{
 				ret[i] = iter->second;	
@@ -173,6 +173,10 @@ namespace tz
 		std::visit(overloaded
 		{
 			[](auto arg){tz::error("Lua value type passed to data_store.edit is unknown or invalid. Please submit a bug report.");},
+			[this, key](bool b)
+			{
+				this->ds->edit({.key = key, .val = b});
+			},
 			[this, key](double d)
 			{
 				this->ds->edit({.key = key, .val = d});
@@ -182,6 +186,42 @@ namespace tz
 				this->ds->edit({.key = key, .val = str});
 			},
 		}, val);
+		return 0;
+	}
+
+	int tz_lua_data_store::edit_some(tz::lua::state& state)
+	{
+		std::size_t arg_count = state.stack_size() - 1;
+		data_store::string_list keys(arg_count / 2);
+		std::vector<lua::lua_generic> values(arg_count / 2);
+		for(std::size_t i = 0; (i + 1) < arg_count; i += 2)
+		{
+			keys[i / 2] = state.stack_get_string(i + 1 + 1);
+			values[i / 2] = state.stack_get_generic(i + 1 + 1 + 1);
+		}
+		data_store::deferred_operations ops;
+		for(std::size_t i = 0; i < arg_count / 2; i++)
+		{
+			data_store_value v;
+			std::visit(overloaded
+			{
+				[](auto arg){tz::error("Lua value type passed to data_store.edit is unknown or invalid. Please submit a bug report.");},
+				[&v, key = keys[i]](bool b)
+				{
+					v = b;
+				},
+				[&v, key = keys[i]](double d)
+				{
+					v = d;
+				},
+				[&v, key = keys[i]](std::string str)
+				{
+					v = str;
+				},
+			}, values[i]);
+			ops.push_back(detail::ds_edit({.key = keys[i], .val = v}));
+		}
+		this->ds->write_some(ops);
 		return 0;
 	}
 
@@ -214,6 +254,33 @@ namespace tz
 			[&state](std::string b){state.stack_push_string(b);},
 		}, val);
 		return 1;
+	}
+
+	int tz_lua_data_store::read_some(tz::lua::state& state)
+	{
+		std::size_t arg_count = state.stack_size() - 1;
+		data_store::string_list keys(arg_count);
+		tz::report("stack: \n%s", state.collect_stack().c_str());
+		for(std::size_t i = 0; i < arg_count; i++)
+		{
+			keys[i] = state.stack_get_string(i + 1 + 1);
+		}
+		data_store::bulk_read_result result = this->ds->read_some(keys);
+		tz::assert(result.size() == arg_count);
+		for(data_store_value val : result)
+		{
+			std::visit(overloaded
+			{
+				[](auto arg){tz::error("data_store_value did not match any visitor type in data_store.read. Please submit a bug report.");},
+				[&state](bool b){state.stack_push_bool(b);},
+				[&state](float b){state.stack_push_float(b);},
+				[&state](double b){state.stack_push_double(b);},
+				[&state](int b){state.stack_push_int(b);},
+				[&state](unsigned int b){state.stack_push_uint(b);},
+				[&state](std::string b){state.stack_push_string(b);},
+			}, val);
+		}
+		return result.size();
 	}
 
 	int tz_lua_data_store::contains(tz::lua::state& state)

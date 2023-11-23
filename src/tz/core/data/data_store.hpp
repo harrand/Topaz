@@ -71,7 +71,7 @@ namespace tz
 		using deferred_operation = std::variant<detail::ds_add, detail::ds_edit, detail::ds_remove>;
 		using deferred_operations = std::vector<deferred_operation>;
 		using bulk_read_result = std::vector<data_store_value>;
-		using string_list = std::vector<std::string_view>;
+		using string_list = std::vector<std::string>;
 		data_store() = default;
 		void clear();
 		void add(detail::ds_add add);
@@ -120,9 +120,11 @@ namespace tz
 		data_store* ds;
 		int add(tz::lua::state& state);
 		int edit(tz::lua::state& state);
+		int edit_some(tz::lua::state& state);
 		int remove(tz::lua::state& state);
 		int remove_all_of(tz::lua::state& state);
 		int read(tz::lua::state& state);
+		int read_some(tz::lua::state& state);
 		int contains(tz::lua::state& state);
 		int size(tz::lua::state& state);
 		int clear(tz::lua::state& state);
@@ -132,9 +134,11 @@ namespace tz
 		LUA_CLASS_METHODS_BEGIN
 			LUA_METHOD(tz_lua_data_store, add)
 			LUA_METHOD(tz_lua_data_store, edit)
+			LUA_METHOD(tz_lua_data_store, edit_some)
 			LUA_METHOD(tz_lua_data_store, remove)
 			LUA_METHOD(tz_lua_data_store, remove_all_of)
 			LUA_METHOD(tz_lua_data_store, read)
+			LUA_METHOD(tz_lua_data_store, read_some)
 			LUA_METHOD(tz_lua_data_store, contains)
 			LUA_METHOD(tz_lua_data_store, size)
 			LUA_METHOD(tz_lua_data_store, clear)
