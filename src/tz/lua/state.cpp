@@ -325,7 +325,11 @@ namespace tz::lua
 	{
 		lua_generic ret;
 		auto* s = static_cast<lua_State*>(this->lstate);
-		if(lua_isinteger(s, idx))
+		if(lua_isboolean(s, idx))
+		{
+			ret = this->stack_get_bool(idx);
+		}
+		else if(lua_isinteger(s, idx))
 		{
 			ret = this->stack_get_double(idx);
 		}

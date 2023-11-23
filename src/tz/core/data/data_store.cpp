@@ -131,6 +131,10 @@ namespace tz
 		std::visit(overloaded
 		{
 			[](auto arg){tz::error("Lua value type passed to data_store.add is unknown or invalid. Please submit a bug report.");},
+			[this, key](bool b)
+			{
+				this->ds->add({.key = key, .val = b});
+			},
 			[this, key](double d)
 			{
 				this->ds->add({.key = key, .val = d});
