@@ -77,6 +77,7 @@ namespace tz
 		void add(detail::ds_add add);
 		void edit(detail::ds_edit edit);
 		void remove(detail::ds_remove remove);
+		void remove_all_of(std::string_view prefix);
 		void write_some(deferred_operations operations);
 		bulk_read_result read_some(string_list keyset, bool dont_error_if_missing = false) const;
 
@@ -120,6 +121,7 @@ namespace tz
 		int add(tz::lua::state& state);
 		int edit(tz::lua::state& state);
 		int remove(tz::lua::state& state);
+		int remove_all_of(tz::lua::state& state);
 		int read(tz::lua::state& state);
 		int contains(tz::lua::state& state);
 		int size(tz::lua::state& state);
@@ -131,6 +133,7 @@ namespace tz
 			LUA_METHOD(tz_lua_data_store, add)
 			LUA_METHOD(tz_lua_data_store, edit)
 			LUA_METHOD(tz_lua_data_store, remove)
+			LUA_METHOD(tz_lua_data_store, remove_all_of)
 			LUA_METHOD(tz_lua_data_store, read)
 			LUA_METHOD(tz_lua_data_store, contains)
 			LUA_METHOD(tz_lua_data_store, size)

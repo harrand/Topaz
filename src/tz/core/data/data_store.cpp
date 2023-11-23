@@ -32,6 +32,24 @@ namespace tz
 		this->store.erase(remove.key);
 	}
 
+	void data_store::remove_all_of(std::string_view prefix)
+	{
+		TZ_PROFZONE("data_store - remove all of", 0xFF3377AA);
+		std::unique_lock<mutex> ulock(this->mtx);
+		for(auto iter = this->store.begin(); iter != this->store.end();)
+		{
+			if(iter->first.starts_with(prefix))
+			{
+				TZ_PROFZONE("remove all of - erase", 0xFF3377AA);
+				iter = this->store.erase(iter);
+			}
+			else
+			{
+				iter++;
+			}
+		}
+	}
+
 	// helper type for the visitor #4
 	template<class... Ts>
 	struct overloaded : Ts... { using Ts::operator()...; };
@@ -171,6 +189,13 @@ namespace tz
 	{
 		std::string key = state.stack_get_string(2);
 		this->ds->remove({.key = key});
+		return 0;
+	}
+
+	int tz_lua_data_store::remove_all_of(tz::lua::state& state)
+	{
+		std::string key = state.stack_get_string(2);
+		this->ds->remove_all_of(key);
 		return 0;
 	}
 
