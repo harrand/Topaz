@@ -4,6 +4,7 @@
 #include "tz/core/job/job.hpp"
 
 #include "tz/core/time.hpp"
+#include "tz/core/data/data_store.hpp"
 
 #include "tz/core/imported_text.hpp"
 #include ImportedTextHeader(tz_core, lua)
@@ -45,6 +46,8 @@ namespace tz::core
 	{
 		state.assign_func("impl_tz_system_time", LUA_FN_NAME(impl_tz_system_time));
 		state.execute("tz.time = impl_tz_system_time");
+
+		state.new_type("tz_lua_data_store", LUA_CLASS_NAME(tz_lua_data_store)::registers);
 
 		std::string tz_core_lua_api{ImportedTextData(tz_core, lua)};
 		state.execute(tz_core_lua_api.data());

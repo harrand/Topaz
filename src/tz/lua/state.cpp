@@ -321,6 +321,21 @@ namespace tz::lua
 		}
 	}
 
+	lua_generic state::stack_get_generic(std::size_t idx) const
+	{
+		lua_generic ret;
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(lua_isinteger(s, idx))
+		{
+			ret = this->stack_get_double(idx);
+		}
+		else if(lua_isstring(s, idx))
+		{
+			ret = this->stack_get_string(idx);
+		}
+		return ret;
+	}
+
 	void state::stack_push_nil() const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);

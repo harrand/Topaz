@@ -9,6 +9,7 @@
 #include <optional>
 #include <thread>
 #include <span>
+#include <variant>
 
 namespace tz::lua
 {
@@ -23,6 +24,8 @@ namespace tz::lua
 		};
 		using lua_registers = std::span<const lua_register>;
 	}
+
+	using lua_generic = std::variant<double, std::string, nil>;
 
 	/**
 	* @ingroup tz_lua_cpp
@@ -96,6 +99,7 @@ namespace tz::lua
 		{
 			return *reinterpret_cast<T*>(this->stack_get_ptr(idx, type_check));
 		}
+		lua_generic stack_get_generic(std::size_t idx) const;
 		// push a new value onto the stack
 		void stack_push_nil() const;
 		void stack_push_bool(bool b) const;

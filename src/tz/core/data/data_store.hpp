@@ -7,6 +7,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "tz/lua/api.hpp"
+
 namespace tz
 {
 	using data_store_value = std::variant<nullptr_t, bool, float, double, int, unsigned int, std::string>;
@@ -14,17 +16,17 @@ namespace tz
 	{
 		struct ds_add
 		{
-			std::string_view key;
+			std::string key;
 			data_store_value val = nullptr;
 		};
 		struct ds_edit
 		{
-			std::string_view key;
+			std::string key;
 			data_store_value val;
 		};
 		struct ds_remove
 		{
-			std::string_view key;
+			std::string key;
 		};
 	}
 
@@ -37,6 +39,31 @@ namespace tz
 		- int
 		- unsigned int
 		- std::string
+
+		why would you use this
+		======================
+
+		only reason: you have absolutely no choice but to take the hit of shared data between threads. use this to bring at least a semblance of sanity to your life
+
+		the most obvious example of this would be lua. each job system worker thread has their own lua state.
+		most likely you'll want to share some common data between these threads. that's pretty much a perfect use-case for this datastore.
+
+		tradeoffs
+		=========
+		
+		- all writes (add, edit, remove, clear) exclusively lock a mutex. all other threads that want to read/write wait for this to complete.
+		- all reads sharingly lock a mutex. threads can safely read concurrently, each sharingly locking the mutex. if a thread wants to write, it will wait.
+
+		tips
+		====
+
+		- avoid repeatedly calling add/edit/remove, instead bulk your mutating operations together in `write_some`. less write churn means less lock contention means better perf.
+		- avoid repeatedly calling read/read_raw, instead builk your reading operations together in `read_some`.
+
+		rejected features
+		=================
+
+		- non-deferred listeners i.e callbacks. don't do it! please no! oh god!
 	*/
 	class data_store
 	{
@@ -54,6 +81,7 @@ namespace tz
 		bulk_read_result read_some(string_list keyset, bool dont_error_if_missing = false) const;
 
 		bool contains(std::string_view key) const;
+		std::size_t size() const;
 		data_store_value read_raw(std::string_view key, bool dont_error_if_missing = false) const;
 
 		// read as T. error if value is not a T.
@@ -78,10 +106,38 @@ namespace tz
 			}, val);
 		}
 	private:
+		bool contains_nolock(std::string_view key) const;
+
 		using mutex = std::shared_mutex;
 		mutable mutex mtx;
-		std::unordered_map<std::string_view, data_store_value> store{1024u};
+		std::unordered_map<std::string, data_store_value> store{1024u};
 	};
+
+	// lua api
+	struct tz_lua_data_store
+	{
+		data_store* ds;
+		int add(tz::lua::state& state);
+		int edit(tz::lua::state& state);
+		int remove(tz::lua::state& state);
+		int read(tz::lua::state& state);
+		int contains(tz::lua::state& state);
+		int size(tz::lua::state& state);
+		int clear(tz::lua::state& state);
+	};
+
+	LUA_CLASS_BEGIN(tz_lua_data_store)
+		LUA_CLASS_METHODS_BEGIN
+			LUA_METHOD(tz_lua_data_store, add)
+			LUA_METHOD(tz_lua_data_store, edit)
+			LUA_METHOD(tz_lua_data_store, remove)
+			LUA_METHOD(tz_lua_data_store, read)
+			LUA_METHOD(tz_lua_data_store, contains)
+			LUA_METHOD(tz_lua_data_store, size)
+			LUA_METHOD(tz_lua_data_store, clear)
+		LUA_CLASS_METHODS_END
+	LUA_CLASS_END
+
 }
 
 #endif // TOPAZ_CORE_DATA_DATA_STORE_HPP
