@@ -20,7 +20,7 @@ namespace tz
 	{
 		TZ_PROFZONE("data_store - single edit", 0xFF3377AA);
 		std::unique_lock<mutex> ulock(this->mtx);
-		tz::assert(!this->contains_nolock(edit.key), "edit called on %s which does not exist in the datastore.", edit.key.data());
+		tz::assert(this->contains_nolock(edit.key), "edit called on %s which does not exist in the datastore.", edit.key.data());
 		this->store[edit.key] = edit.val;
 	}
 
@@ -104,6 +104,7 @@ namespace tz
 
 	data_store_value data_store::read_raw(std::string_view key, bool dont_error_if_missing) const
 	{
+		TZ_PROFZONE("data_store - read raw", 0xFF3377AA);
 		std::shared_lock<mutex> slock(this->mtx);
 		if(this->contains_nolock(key))
 		{
