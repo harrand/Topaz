@@ -258,7 +258,7 @@ namespace tz
 	int tz_lua_data_store::read(tz::lua::state& state)
 	{
 		std::string key = state.stack_get_string(2);
-		data_store_value val = this->ds->read_raw(key);
+		data_store_value val = this->ds->read_raw(key, true);
 		std::visit(overloaded
 		{
 			[&state](auto arg){state.stack_push_nil();},
