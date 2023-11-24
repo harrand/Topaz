@@ -25,7 +25,7 @@ namespace tz::lua
 		using lua_registers = std::span<const lua_register>;
 	}
 
-	using lua_generic = std::variant<bool, double, std::string, nil>;
+	using lua_generic = std::variant<bool, double, std::int64_t, std::string, nil>;
 
 	/**
 	* @ingroup tz_lua_cpp

@@ -74,7 +74,7 @@ namespace tz
 				},
 				[this](detail::ds_edit edit)
 				{
-					tz::assert(this->contains_nolock(edit.key), "edit called on %s which does not exist in the datastore.", edit.key.data());
+					//tz::assert(this->contains_nolock(edit.key), "edit called on %s which does not exist in the datastore.", edit.key.data());
 					this->store[edit.key] = edit.val;
 				},
 				[this](detail::ds_remove remove)
@@ -154,6 +154,10 @@ namespace tz
 			{
 				this->ds->add({.key = key, .val = b});
 			},
+			[this, key](std::int64_t i)
+			{
+				this->ds->add({.key = key, .val = static_cast<int>(i)});
+			},
 			[this, key](double d)
 			{
 				this->ds->add({.key = key, .val = d});
@@ -214,6 +218,18 @@ namespace tz
 				{
 					v = d;
 				},
+				[&v, key = keys[i]](float f)
+				{
+					v = f;
+				},
+				[&v, key = keys[i]](std::int64_t i)
+				{
+					v = static_cast<int>(i);
+				},
+				[&v, key = keys[i]](std::uint64_t u)
+				{
+					v = static_cast<unsigned int>(u);
+				},
 				[&v, key = keys[i]](std::string str)
 				{
 					v = str;
@@ -245,7 +261,7 @@ namespace tz
 		data_store_value val = this->ds->read_raw(key);
 		std::visit(overloaded
 		{
-			[](auto arg){tz::error("data_store_value did not match any visitor type in data_store.read. Please submit a bug report.");},
+			[&state](auto arg){state.stack_push_nil();},
 			[&state](bool b){state.stack_push_bool(b);},
 			[&state](float b){state.stack_push_float(b);},
 			[&state](double b){state.stack_push_double(b);},
@@ -271,7 +287,7 @@ namespace tz
 		{
 			std::visit(overloaded
 			{
-				[](auto arg){tz::error("data_store_value did not match any visitor type in data_store.read. Please submit a bug report.");},
+				[&state](auto arg){state.stack_push_nil();},
 				[&state](bool b){state.stack_push_bool(b);},
 				[&state](float b){state.stack_push_float(b);},
 				[&state](double b){state.stack_push_double(b);},

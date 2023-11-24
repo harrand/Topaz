@@ -331,6 +331,10 @@ namespace tz::lua
 		}
 		else if(lua_isinteger(s, idx))
 		{
+			ret = this->stack_get_int(idx);
+		}
+		else if(lua_isnumber(s, idx))
+		{
 			ret = this->stack_get_double(idx);
 		}
 		else if(lua_isstring(s, idx))
