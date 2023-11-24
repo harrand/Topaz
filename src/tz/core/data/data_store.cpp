@@ -276,7 +276,6 @@ namespace tz
 	{
 		std::size_t arg_count = state.stack_size() - 1;
 		data_store::string_list keys(arg_count);
-		tz::report("stack: \n%s", state.collect_stack().c_str());
 		for(std::size_t i = 0; i < arg_count; i++)
 		{
 			keys[i] = state.stack_get_string(i + 1 + 1);
