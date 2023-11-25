@@ -105,6 +105,7 @@ namespace tz::lua
 		LUA_REGISTER_ONE(stack_dump, s);
 		s.assign_emptytable("tz.version");
 		s.assign_emptytable("thread");
+		s.assign_string("fakenil", "NIL");
 
 		std::ostringstream sstr;
 		sstr << std::this_thread::get_id();
