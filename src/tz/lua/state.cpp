@@ -251,7 +251,8 @@ namespace tz::lua
 		else
 		{
 			std::string stackdata = this->collect_stack();
-			tz::error("Lua stack entry %zu requested as `bool`, type error. Stack:\n%s", idx, stackdata.c_str());
+			std::string traceback = this->print_traceback();
+			tz::error("Lua stack entry %zu requested as `bool`, type error. Stack:\n%s\nTraceback:\n%s", idx, stackdata.c_str(), traceback.c_str());
 			return false;
 		}
 	}
@@ -266,8 +267,9 @@ namespace tz::lua
 		else
 		{
 			std::string stackdata = this->collect_stack();
-			tz::error("Lua stack entry %zu requested as `double/float`, type error. Stack:\n%s", idx, stackdata.c_str());
-			return false;
+			std::string traceback = this->print_traceback();
+			tz::error("Lua stack entry %zu requested as `number`, type error. Stack:\n%s\nTraceback:\n%s", idx, stackdata.c_str(), traceback.c_str());
+			return 0.0f;
 		}
 	}
 
@@ -301,7 +303,8 @@ namespace tz::lua
 		else
 		{
 			std::string stackdata = this->collect_stack();
-			tz::error("Lua stack entry %zu requested as `string`, type error. Stack:\n%s", idx, stackdata.c_str());
+			std::string traceback = this->print_traceback();
+			tz::error("Lua stack entry %zu requested as `string`, type error. Stack:\n%s\nTraceback:\n%s", idx, stackdata.c_str(), traceback.c_str());
 			return "";
 		}
 	}
@@ -316,7 +319,8 @@ namespace tz::lua
 		else
 		{
 			std::string stackdata = this->collect_stack();
-			tz::error("Lua stack entry %zu requested as `ptr (light userdata)`, type error. Stack:\n%s", idx, stackdata.c_str());
+			std::string traceback = this->print_traceback();
+			tz::error("Lua stack entry %zu requested as `ptr`, type error. Stack:\n%s\nTraceback:\n%s", idx, stackdata.c_str(), traceback.c_str());
 			return nullptr;
 		}
 	}
