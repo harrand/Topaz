@@ -87,11 +87,20 @@ namespace tz::lua
 		tz::report("Lua: %s", full_msg.data());
 		state.stack_pop(nargs);
 		return 0;
+	LUA_END
 
+	LUA_BEGIN(breakpoint)
+		tz::debug_break();
+		return 0;
 	LUA_END
 
 	LUA_BEGIN(stack_dump)
 		tz::dbgui::add_to_lua_log(state.collect_stack());
+		return 0;
+	LUA_END
+
+	LUA_BEGIN(callstack_dump)
+		tz::dbgui::add_to_lua_log(state.print_traceback());
 		return 0;
 	LUA_END
 
@@ -101,6 +110,9 @@ namespace tz::lua
 		s.assign_func("tz.assert", LUA_FN_NAME(assert));
 		s.assign_func("tz.error", LUA_FN_NAME(error));
 		s.assign_func("tz.report", LUA_FN_NAME(report));
+		s.assign_func("tz.stack_dump", LUA_FN_NAME(stack_dump));
+		s.assign_func("tz.callstack_dump", LUA_FN_NAME(callstack_dump));
+		s.assign_func("tz.breakpoint", LUA_FN_NAME(breakpoint));
 		LUA_REGISTER_ONE(print, s);
 		LUA_REGISTER_ONE(stack_dump, s);
 		s.assign_emptytable("tz.version");
