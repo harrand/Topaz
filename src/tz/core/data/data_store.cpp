@@ -1,5 +1,6 @@
 #include "tz/core/data/data_store.hpp"
 #include "tz/core/profile.hpp"
+#include <mutex>
 
 namespace tz
 {
