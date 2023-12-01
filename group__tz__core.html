@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -69,22 +66,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
     </ul>
   </div>
 </div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__tz__core.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -111,6 +92,7 @@ $(document).ready(function(){initNavTree('group__tz__core.html',''); initResizab
 <a href="#groups">Modules</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Core Functionality<div class="ingroups"><a class="el" href="group__tz__cpp.html">C++ API Reference</a></div></div></div>
 </div><!--header-->
@@ -139,7 +121,16 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1callback.html">tz::callback&lt; Args &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a centralised storage/management of callback functions of a common signature <code>void(Args...)</code>.  <a href="classtz_1_1callback.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1transform__node.html">tz::transform_node&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a node within a transform hierarchy.  <a href="structtz_1_1transform__node.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1transform__hierarchy.html">tz::transform_hierarchy&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a hierarchy of 3D transformations, with a payload applied.  <a href="classtz_1_1transform__hierarchy.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1vector.html">tz::vector&lt; T, S &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1version.html">tz::version</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Versions consist of a major, minor, patch and a version_type.  <a href="structtz_1_1version.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtz_1_1engine__info.html">tz::engine_info</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents information about the current engine used.  <a href="structtz_1_1engine__info.html#details">More...</a><br /></td></tr>
@@ -170,8 +161,36 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>tz::callback_handle<
 <tr class="memdesc:gac216f70e5e67728d93138613a7e03f4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque handle representing a reference to an existing <a class="el" href="classtz_1_1callback.html">tz::callback</a> function. <br /></td></tr>
 <tr class="separator:gac216f70e5e67728d93138613a7e03f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga7e3c11361b9752a8f8eec7af87a23a1c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga7e3c11361b9752a8f8eec7af87a23a1c">tz::endian</a> { <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#gga7e3c11361b9752a8f8eec7af87a23a1caaae6635e044ac56046b2893a529b5114">endian::little</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#gga7e3c11361b9752a8f8eec7af87a23a1cad861877da56b8b4ceb35c8cbfdf65bb4">endian::big</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ga7e3c11361b9752a8f8eec7af87a23a1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates the endianness of scalar types.  <a href="group__tz__core.html#ga7e3c11361b9752a8f8eec7af87a23a1c">More...</a><br /></td></tr>
+<tr class="separator:ga7e3c11361b9752a8f8eec7af87a23a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad12da2cb05946402335871d2e282cbf9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gad12da2cb05946402335871d2e282cbf9">tz::application_flag</a> { <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#ggad12da2cb05946402335871d2e282cbf9a5deafc826baa20fe6c136c1e928e8fc3">application_flag::no_graphics</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#ggad12da2cb05946402335871d2e282cbf9ad9ca1f44f2854bcace7ddf018002c26f">application_flag::no_dbgui</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#ggad12da2cb05946402335871d2e282cbf9a1425bc6356c345ad2056f57cacf44ac4">application_flag::window_hidden</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#ggad12da2cb05946402335871d2e282cbf9a0d043ffc8c61373723263480302c143d">application_flag::window_noresize</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__core.html#ggad12da2cb05946402335871d2e282cbf9a7861ae15fcf4eb409057db8c14e8c10a">application_flag::window_transparent</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:gad12da2cb05946402335871d2e282cbf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents custom functionality to be enabled/disabled during initialisation.  <a href="group__tz__core.html#gad12da2cb05946402335871d2e282cbf9">More...</a><br /></td></tr>
+<tr class="separator:gad12da2cb05946402335871d2e282cbf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:gabed61701bea0790680354d9793946583"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtz_1_1version.html">version</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gabed61701bea0790680354d9793946583">tz::get_version</a> ()</td></tr>
+<tr class="memdesc:gabed61701bea0790680354d9793946583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the current version of Topaz.  <br /></td></tr>
+<tr class="separator:gabed61701bea0790680354d9793946583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga35faea66fc04dfa33238c863eb740c34"><td class="memTemplParams" colspan="2">template&lt;typename... Args&gt; </td></tr>
 <tr class="memitem:ga35faea66fc04dfa33238c863eb740c34"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a> (bool condition, <a class="el" href="structtz_1_1detail_1_1format__string.html">detail::format_string</a> fmt=&quot;&lt;No message&gt;&quot;, Args &amp;&amp;... args)</td></tr>
 <tr class="memdesc:ga35faea66fc04dfa33238c863eb740c34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assert on a condition.  <br /></td></tr>
@@ -184,6 +203,27 @@ Functions</h2></td></tr>
 <tr class="memitem:gab9cfea70c99d9d2b1dd82bebee489377"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gab9cfea70c99d9d2b1dd82bebee489377">tz::report</a> (<a class="el" href="structtz_1_1detail_1_1format__string.html">detail::format_string</a> fmt, Args &amp;&amp;... args)</td></tr>
 <tr class="memdesc:gab9cfea70c99d9d2b1dd82bebee489377"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print out the formatted message to standard output, including source location information.  <br /></td></tr>
 <tr class="separator:gab9cfea70c99d9d2b1dd82bebee489377"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa4d410b271156d0a6928a6d8de368282"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__tz__core.html#ga7e3c11361b9752a8f8eec7af87a23a1c">endian</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gaa4d410b271156d0a6928a6d8de368282">tz::get_local_machine_endianness</a> ()</td></tr>
+<tr class="memdesc:gaa4d410b271156d0a6928a6d8de368282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the endianness of the running machine.  <br /></td></tr>
+<tr class="separator:gaa4d410b271156d0a6928a6d8de368282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3825fb98a5dcd1cea794be8a9ae21087"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga3825fb98a5dcd1cea794be8a9ae21087">tz::is_big_endian</a> ()</td></tr>
+<tr class="memdesc:ga3825fb98a5dcd1cea794be8a9ae21087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the current system is big-endian.  <br /></td></tr>
+<tr class="separator:ga3825fb98a5dcd1cea794be8a9ae21087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad7f4858728fb24de9511dba9bdedf4ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gad7f4858728fb24de9511dba9bdedf4ce">tz::is_little_endian</a> ()</td></tr>
+<tr class="memdesc:gad7f4858728fb24de9511dba9bdedf4ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether the current system is littel-endian.  <br /></td></tr>
+<tr class="separator:gad7f4858728fb24de9511dba9bdedf4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8dbe3cbffcab15666954debd859d9ea5"><td class="memTemplParams" colspan="2">template&lt;std::integral T&gt; </td></tr>
+<tr class="memitem:ga8dbe3cbffcab15666954debd859d9ea5"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga8dbe3cbffcab15666954debd859d9ea5">tz::endian_byte_swap</a> (T value)</td></tr>
+<tr class="memdesc:ga8dbe3cbffcab15666954debd859d9ea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given an integral type, make a copy of the value, swap its bytes, and then return it.  <br /></td></tr>
+<tr class="separator:ga8dbe3cbffcab15666954debd859d9ea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5636b8096d96efb60512ae51b8e4ffb1"><td class="memTemplParams" colspan="2">template&lt;std::integral T&gt; </td></tr>
+<tr class="memitem:ga5636b8096d96efb60512ae51b8e4ffb1"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__tz__core.html#ga5636b8096d96efb60512ae51b8e4ffb1">tz::big_endian</a> (T value)</td></tr>
+<tr class="memdesc:ga5636b8096d96efb60512ae51b8e4ffb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a scalar value in big-endian form.  <br /></td></tr>
+<tr class="separator:ga5636b8096d96efb60512ae51b8e4ffb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa33aa37bcfb7f692656a9533c3c4d62b"><td class="memTemplParams" colspan="2">template&lt;std::integral T&gt; </td></tr>
+<tr class="memitem:gaa33aa37bcfb7f692656a9533c3c4d62b"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gaa33aa37bcfb7f692656a9533c3c4d62b">tz::little_endian</a> (T value)</td></tr>
+<tr class="memdesc:gaa33aa37bcfb7f692656a9533c3c4d62b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve a scalar value in little-endian form.  <br /></td></tr>
+<tr class="separator:gaa33aa37bcfb7f692656a9533c3c4d62b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacea5d629885bd9192ee6e9325a236707"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__tz__core.html#ga1f1e59ed90427ee9f69f95d8a2409bf0">mat4</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__core.html#gacea5d629885bd9192ee6e9325a236707">tz::translate</a> (tz::vec3 position)</td></tr>
 <tr class="memdesc:gacea5d629885bd9192ee6e9325a236707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a matrix which performs the following transformations at once:  <br /></td></tr>
 <tr class="separator:gacea5d629885bd9192ee6e9325a236707"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -255,6 +295,83 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="gad12da2cb05946402335871d2e282cbf9" name="gad12da2cb05946402335871d2e282cbf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad12da2cb05946402335871d2e282cbf9">&#9670;&#160;</a></span>application_flag</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class tz::application_flag</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Represents custom functionality to be enabled/disabled during initialisation. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad12da2cb05946402335871d2e282cbf9a5deafc826baa20fe6c136c1e928e8fc3" name="ggad12da2cb05946402335871d2e282cbf9a5deafc826baa20fe6c136c1e928e8fc3"></a>no_graphics&#160;</td><td class="fielddoc"><ul>
+<li>Disables all graphics and rendering. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="ggad12da2cb05946402335871d2e282cbf9ad9ca1f44f2854bcace7ddf018002c26f" name="ggad12da2cb05946402335871d2e282cbf9ad9ca1f44f2854bcace7ddf018002c26f"></a>no_dbgui&#160;</td><td class="fielddoc"><ul>
+<li>Disable all debug-ui functionality. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="ggad12da2cb05946402335871d2e282cbf9a1425bc6356c345ad2056f57cacf44ac4" name="ggad12da2cb05946402335871d2e282cbf9a1425bc6356c345ad2056f57cacf44ac4"></a>window_hidden&#160;</td><td class="fielddoc"><ul>
+<li>The created window is invisible. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="ggad12da2cb05946402335871d2e282cbf9a0d043ffc8c61373723263480302c143d" name="ggad12da2cb05946402335871d2e282cbf9a0d043ffc8c61373723263480302c143d"></a>window_noresize&#160;</td><td class="fielddoc"><ul>
+<li>The created window cannot be resized. </li>
+</ul>
+</td></tr>
+<tr><td class="fieldname"><a id="ggad12da2cb05946402335871d2e282cbf9a7861ae15fcf4eb409057db8c14e8c10a" name="ggad12da2cb05946402335871d2e282cbf9a7861ae15fcf4eb409057db8c14e8c10a"></a>window_transparent&#160;</td><td class="fielddoc"><ul>
+<li>The created window is transparent, meaning a translucent clear colour is respected. </li>
+</ul>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ga7e3c11361b9752a8f8eec7af87a23a1c" name="ga7e3c11361b9752a8f8eec7af87a23a1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7e3c11361b9752a8f8eec7af87a23a1c">&#9670;&#160;</a></span>endian</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class tz::endian</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Indicates the endianness of scalar types. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga7e3c11361b9752a8f8eec7af87a23a1caaae6635e044ac56046b2893a529b5114" name="gga7e3c11361b9752a8f8eec7af87a23a1caaae6635e044ac56046b2893a529b5114"></a>little&#160;</td><td class="fielddoc"><p>Little Endian. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7e3c11361b9752a8f8eec7af87a23a1cad861877da56b8b4ceb35c8cbfdf65bb4" name="gga7e3c11361b9752a8f8eec7af87a23a1cad861877da56b8b4ceb35c8cbfdf65bb4"></a>big&#160;</td><td class="fielddoc"><p>Big Endian. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga35faea66fc04dfa33238c863eb740c34" name="ga35faea66fc04dfa33238c863eb740c34"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga35faea66fc04dfa33238c863eb740c34">&#9670;&#160;</a></span>assert()</h2>
@@ -315,6 +432,35 @@ template&lt;typename... Args&gt; </div>
 
 </div>
 </div>
+<a id="ga5636b8096d96efb60512ae51b8e4ffb1" name="ga5636b8096d96efb60512ae51b8e4ffb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5636b8096d96efb60512ae51b8e4ffb1">&#9670;&#160;</a></span>big_endian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::integral T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T tz::big_endian </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve a scalar value in big-endian form. </p>
+<p>If the system is detected to be big-endian, the value is unchanged. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The value to ensure is big-endian. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Byte-swap of the value if the system is little-endian, otherwise the same value. </dd></dl>
+
+</div>
+</div>
 <a id="ga3444884fd2ee290340864428de1df82f" name="ga3444884fd2ee290340864428de1df82f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga3444884fd2ee290340864428de1df82f">&#9670;&#160;</a></span>end_frame()</h2>
 
@@ -332,6 +478,35 @@ template&lt;typename... Args&gt; </div>
 
 <p>End the current frame. </p>
 <dl class="section pre"><dt>Precondition</dt><dd>tz::begin_frame() must have been invoked prior to this, otherwise the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="ga8dbe3cbffcab15666954debd859d9ea5" name="ga8dbe3cbffcab15666954debd859d9ea5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8dbe3cbffcab15666954debd859d9ea5">&#9670;&#160;</a></span>endian_byte_swap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::integral T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T tz::endian_byte_swap </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given an integral type, make a copy of the value, swap its bytes, and then return it. </p>
+<p>If the value for example is little-endian, then the result will be its big-endian variant. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Value to byte swap. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Copy of value, with endianness swapped. </dd></dl>
 
 </div>
 </div>
@@ -365,6 +540,46 @@ template&lt;typename... Args&gt; </div>
 
 <p>Breakpoint if a debugger is present. </p>
 <p>If no debugger is present, terminate the application with the given message. Only works on debug builds (aka <code>if TZ_DEBUG</code>). </p>
+
+</div>
+</div>
+<a id="gaa4d410b271156d0a6928a6d8de368282" name="gaa4d410b271156d0a6928a6d8de368282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa4d410b271156d0a6928a6d8de368282">&#9670;&#160;</a></span>get_local_machine_endianness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__tz__core.html#ga7e3c11361b9752a8f8eec7af87a23a1c">endian</a> tz::get_local_machine_endianness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query the endianness of the running machine. </p>
+<dl class="section return"><dt>Returns</dt><dd><code>endian::little</code> if machine is little-endian, or <code>endian::big</code> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="gabed61701bea0790680354d9793946583" name="gabed61701bea0790680354d9793946583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabed61701bea0790680354d9793946583">&#9670;&#160;</a></span>get_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtz_1_1version.html">version</a> tz::get_version </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve the current version of Topaz. </p>
+<p>Note that the build-config/render-api information is not contained here. For that, you'll want <a class="el" href="structtz_1_1engine__info.html">engine_info</a> </p>
 
 </div>
 </div>
@@ -422,6 +637,26 @@ template&lt;typename... Args&gt; </div>
 
 </div>
 </div>
+<a id="ga3825fb98a5dcd1cea794be8a9ae21087" name="ga3825fb98a5dcd1cea794be8a9ae21087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3825fb98a5dcd1cea794be8a9ae21087">&#9670;&#160;</a></span>is_big_endian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool tz::is_big_endian </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query as to whether the current system is big-endian. </p>
+<dl class="section note"><dt>Note</dt><dd>Equivalent to <code>tz::get_local_machine_endianness() == endian::big</code> </dd></dl>
+
+</div>
+</div>
 <a id="ga4197bca3cce79edb5652963d5bd7c1f0" name="ga4197bca3cce79edb5652963d5bd7c1f0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga4197bca3cce79edb5652963d5bd7c1f0">&#9670;&#160;</a></span>is_initialised()</h2>
 
@@ -440,6 +675,55 @@ template&lt;typename... Args&gt; </div>
 <p>Query as to whether Topaz is initialised. </p>
 <dl class="section note"><dt>Note</dt><dd>This function is within the Initial Group. </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>true If <code>tz::initialise</code> has been invoked and <code>tz::terminate()</code> has not yet been invoked. Otherwise, returns false. </dd></dl>
+
+</div>
+</div>
+<a id="gad7f4858728fb24de9511dba9bdedf4ce" name="gad7f4858728fb24de9511dba9bdedf4ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad7f4858728fb24de9511dba9bdedf4ce">&#9670;&#160;</a></span>is_little_endian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool tz::is_little_endian </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query as to whether the current system is littel-endian. </p>
+<dl class="section note"><dt>Note</dt><dd>Equivalent to <code>tz::get_local_machine_endianness() == endian::little</code> </dd></dl>
+
+</div>
+</div>
+<a id="gaa33aa37bcfb7f692656a9533c3c4d62b" name="gaa33aa37bcfb7f692656a9533c3c4d62b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa33aa37bcfb7f692656a9533c3c4d62b">&#9670;&#160;</a></span>little_endian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::integral T&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T tz::little_endian </td>
+          <td>(</td>
+          <td class="paramtype">T&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieve a scalar value in little-endian form. </p>
+<p>If the system is detected to be little-endian, the value is unchanged. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>The value to ensure is little-endian. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Byte-swap of the value if the system is big-endian, otherwise the same value. </dd></dl>
 
 </div>
 </div>
@@ -760,12 +1044,9 @@ template&lt;typename... Args&gt; </div>
 </div>
 </div>
 </div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

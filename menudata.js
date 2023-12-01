@@ -24,8 +24,7 @@
 */
 var menudata={children:[
 {text:"Topaz Home",url:"index.html"},
-{text:"API",url:"usergroup0.html",children:[
-{text:"C++",url:"group__tz__cpp.html"},
-{text:"TZSL",url:"group__tzsl.html"}]},
-{text:"Shaders",url:"shaders.html"},
-{text:"Graphics",url:"graphics.html"}]}
+{text:"C++ API",url:"group__tz__cpp.html"},
+{text:"Lua API",url:"tz_lua.html"},
+{text:"TZSL API",url:"group__tzsl.html"},
+{text:"Wiki",url:"^https://github.com/harrand/Topaz/wiki"}]}

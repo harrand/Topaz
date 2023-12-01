@@ -21,5 +21,6 @@ var searchData=
   ['enum_5ffield_3c_20queuefamilytype_20_3e_18',['enum_field&lt; QueueFamilyType &gt;',['../classtz_1_1enum__field.html',1,'tz']]],
   ['enum_5ffield_3c_20renderer_5foption_20_3e_19',['enum_field&lt; renderer_option &gt;',['../classtz_1_1enum__field.html',1,'tz']]],
   ['enum_5ffield_3c_20resource_5fflag_20_3e_20',['enum_field&lt; resource_flag &gt;',['../classtz_1_1enum__field.html',1,'tz']]],
-  ['event_21',['event',['../structtz_1_1gl_1_1event.html',1,'tz::gl']]]
+  ['event_21',['event',['../structtz_1_1gl_1_1event.html',1,'tz::gl']]],
+  ['execution_5finfo_22',['execution_info',['../structtz_1_1execution__info.html',1,'tz']]]
 ];

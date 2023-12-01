@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('impl_2common_2renderer_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('impl_2common_2renderer_8hpp_source.htm
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_6c60afaf75e74ab2767b74a19a30396f.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">renderer.hpp</div></div>
 </div><!--header-->
@@ -314,37 +299,33 @@ $(document).ready(function(){initNavTree('impl_2common_2renderer_8hpp_source.htm
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_GL2_IMPL_FRONTEND_COMMON_RENDERER_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1_asset_storage_common_html"><div class="ttname"><a href="classtz_1_1gl_1_1_asset_storage_common.html">tz::gl::AssetStorageCommon</a></div><div class="ttdef"><b>Definition</b> renderer.hpp:13</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_edit_builder_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_edit_builder.html">tz::gl::RendererEditBuilder</a></div><div class="ttdoc">Helper class which can be used to generate a renderer_edit_request.</div><div class="ttdef"><b>Definition</b> renderer.hpp:298</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1_renderer_edit_builder_html"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_edit_builder.html">tz::gl::RendererEditBuilder</a></div><div class="ttdoc">Helper class which can be used to generate a renderer_edit_request.</div><div class="ttdef"><b>Definition</b> renderer.hpp:322</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1_renderer_edit_builder_html_a34deef028a6a13e0c17055174e3ea9c1"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_edit_builder.html#a34deef028a6a13e0c17055174e3ea9c1">tz::gl::RendererEditBuilder::compute</a></div><div class="ttdeci">RendererEditBuilder &amp; compute(renderer_edit::compute_config req)</div><div class="ttdoc">Make amendments to the compute configuration of the renderer.</div><div class="ttdef"><b>Definition</b> renderer.cpp:8</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1_renderer_edit_builder_html_a93c4ffa0d35525ace09a54ce897f028d"><div class="ttname"><a href="classtz_1_1gl_1_1_renderer_edit_builder.html#a93c4ffa0d35525ace09a54ce897f028d">tz::gl::RendererEditBuilder::render_state</a></div><div class="ttdeci">RendererEditBuilder &amp; render_state(renderer_edit::render_config req)</div><div class="ttdoc">Make amendments to the current render state.</div><div class="ttdef"><b>Definition</b> renderer.cpp:14</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1iresource_html_a3a908f4cbc961b740062f5d001cfe1ee"><div class="ttname"><a href="classtz_1_1gl_1_1iresource.html#a3a908f4cbc961b740062f5d001cfe1ee">tz::gl::iresource::dbgui</a></div><div class="ttdeci">virtual void dbgui()=0</div><div class="ttdoc">Display debug information about the resource.</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1renderer_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html">tz::gl::renderer</a></div><div class="ttdoc">Implements tz::gl::renderer_type.</div><div class="ttdef"><b>Definition</b> renderer.hpp:390</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1renderer_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html">tz::gl::renderer</a></div><div class="ttdoc">Implements tz::gl::renderer_type.</div><div class="ttdef"><b>Definition</b> renderer.hpp:415</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer_html_a5c3320f862a5e3fd2de7482698a6038b"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html#a5c3320f862a5e3fd2de7482698a6038b">tz::gl::renderer::get_resource</a></div><div class="ttdeci">const iresource * get_resource(tz::gl::resource_handle rh) const</div><div class="ttdoc">Retrieves a pointer to the resource via its associated handle.</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer_html_a8912cf4a9b5359b55b3a8728f7623b19"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html#a8912cf4a9b5359b55b3a8728f7623b19">tz::gl::renderer::get_options</a></div><div class="ttdeci">tz::gl::renderer_options get_options() const</div><div class="ttdoc">Retrieve the set of enabled tz::gl::renderer_option flags used by this renderer.</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer_html_a964d9415ecb24b8c3d8f99542acc6ffb"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html#a964d9415ecb24b8c3d8f99542acc6ffb">tz::gl::renderer::get_state</a></div><div class="ttdeci">const tz::gl::render_state &amp; get_state() const</div><div class="ttdoc">Retrieve the current render state.</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer_html_a9761939bb33ca72dddf9c03d669eac8d"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html#a9761939bb33ca72dddf9c03d669eac8d">tz::gl::renderer::resource_count</a></div><div class="ttdeci">unsigned int resource_count() const</div><div class="ttdoc">Retrieves the number of resources used by the renderer.</div></div>
-<div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:16</div></div>
-<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:333</div></div>
-<div class="ttc" id="agroup__tz__core_html_ga35faea66fc04dfa33238c863eb740c34"><div class="ttname"><a href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a></div><div class="ttdeci">void assert(bool condition, detail::format_string fmt=&quot;&lt;No message&gt;&quot;, Args &amp;&amp;... args)</div><div class="ttdoc">Assert on a condition.</div><div class="ttdef"><b>Definition</b> debug.inl:33</div></div>
-<div class="ttc" id="agroup__tz__core_html_gaf7a85653724742ec760ce7b235da6129"><div class="ttname"><a href="group__tz__core.html#gaf7a85653724742ec760ce7b235da6129">tz::vec3i</a></div><div class="ttdeci">vector&lt; int, 3 &gt; vec3i</div><div class="ttdoc">A vector of three ints.</div><div class="ttdef"><b>Definition</b> vector.hpp:212</div></div>
+<div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:17</div></div>
+<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:358</div></div>
+<div class="ttc" id="agroup__tz__core_html_ga35faea66fc04dfa33238c863eb740c34"><div class="ttname"><a href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a></div><div class="ttdeci">void assert(bool condition, detail::format_string fmt=&quot;&lt;No message&gt;&quot;, Args &amp;&amp;... args)</div><div class="ttdoc">Assert on a condition.</div><div class="ttdef"><b>Definition</b> debug.inl:35</div></div>
+<div class="ttc" id="agroup__tz__core_html_gaf7a85653724742ec760ce7b235da6129"><div class="ttname"><a href="group__tz__core.html#gaf7a85653724742ec760ce7b235da6129">tz::vec3i</a></div><div class="ttdeci">vector&lt; int, 3 &gt; vec3i</div><div class="ttdoc">A vector of three ints.</div><div class="ttdef"><b>Definition</b> vector.hpp:239</div></div>
 <div class="ttc" id="agroup__tz__gl2__renderer_html_ga9c3b9173cecb5e05ffa86811213c5ab0"><div class="ttname"><a href="group__tz__gl2__renderer.html#ga9c3b9173cecb5e05ffa86811213c5ab0">tz::gl::common_renderer_dbgui</a></div><div class="ttdeci">void common_renderer_dbgui(renderer_type auto &amp;renderer)</div><div class="ttdoc">Helper function which displays render-api-agnostic information about renderers.</div><div class="ttdef"><b>Definition</b> renderer.hpp:65</div></div>
 <div class="ttc" id="agroup__tz__gl2__renderer_html_gac6f74feb8cd57f49c051f5d83a12be5d"><div class="ttname"><a href="group__tz__gl2__renderer.html#gac6f74feb8cd57f49c051f5d83a12be5d">tz::gl::renderer_option</a></div><div class="ttdeci">renderer_option</div><div class="ttdoc">Specifies options to enable extra functionality within Renderers.</div><div class="ttdef"><b>Definition</b> renderer.hpp:34</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_compute_html_ab24ad64cfe49f3dce8eeb8cf91cce48e"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_compute.html#ab24ad64cfe49f3dce8eeb8cf91cce48e">tz::gl::render_state::Compute::kernel</a></div><div class="ttdeci">tz::vec3ui kernel</div><div class="ttdoc">Represents the compute kernel, which contains the number of workgroups to be launched in the X,...</div><div class="ttdef"><b>Definition</b> renderer.hpp:90</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a0e082f315122781cecfbc7063397c063"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a0e082f315122781cecfbc7063397c063">tz::gl::render_state::Graphics::tri_count</a></div><div class="ttdeci">std::size_t tri_count</div><div class="ttdoc">number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified,...</div><div class="ttdef"><b>Definition</b> renderer.hpp:82</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a3f7566566d5ad5403bdfc19813b85126"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a3f7566566d5ad5403bdfc19813b85126">tz::gl::render_state::Graphics::draw_buffer</a></div><div class="ttdeci">resource_handle draw_buffer</div><div class="ttdoc">If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::dr...</div><div class="ttdef"><b>Definition</b> renderer.hpp:78</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a5289b1d526838e9d3e855ec3ea0b7b55"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a5289b1d526838e9d3e855ec3ea0b7b55">tz::gl::render_state::Graphics::wireframe_mode</a></div><div class="ttdeci">bool wireframe_mode</div><div class="ttdoc">whether wireframe mode is enabled or not.</div><div class="ttdef"><b>Definition</b> renderer.hpp:84</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a64ef20d768cadd103a1d45e814683008"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a64ef20d768cadd103a1d45e814683008">tz::gl::render_state::Graphics::index_buffer</a></div><div class="ttdeci">resource_handle index_buffer</div><div class="ttdoc">If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buf...</div><div class="ttdef"><b>Definition</b> renderer.hpp:76</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_afdbf39b5e5e727154eb35092a5f3329e"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#afdbf39b5e5e727154eb35092a5f3329e">tz::gl::render_state::Graphics::clear_colour</a></div><div class="ttdeci">tz::vec4 clear_colour</div><div class="ttdoc">Normalised RGBA floating point colour.</div><div class="ttdef"><b>Definition</b> renderer.hpp:80</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_html_a359f1ee9b0b8fbe9ebed30bb7b37e709"><div class="ttname"><a href="structtz_1_1gl_1_1render__state.html#a359f1ee9b0b8fbe9ebed30bb7b37e709">tz::gl::render_state::compute</a></div><div class="ttdeci">Compute compute</div><div class="ttdoc">Compute state.</div><div class="ttdef"><b>Definition</b> renderer.hpp:96</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_html_a48bc0d47e4ce6f6bc9d3889d0045b2fc"><div class="ttname"><a href="structtz_1_1gl_1_1render__state.html#a48bc0d47e4ce6f6bc9d3889d0045b2fc">tz::gl::render_state::graphics</a></div><div class="ttdeci">Graphics graphics</div><div class="ttdoc">Graphics state.</div><div class="ttdef"><b>Definition</b> renderer.hpp:94</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_compute_html_ab24ad64cfe49f3dce8eeb8cf91cce48e"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_compute.html#ab24ad64cfe49f3dce8eeb8cf91cce48e">tz::gl::render_state::Compute::kernel</a></div><div class="ttdeci">tz::vec3ui kernel</div><div class="ttdoc">Represents the compute kernel, which contains the number of workgroups to be launched in the X,...</div><div class="ttdef"><b>Definition</b> renderer.hpp:105</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a0e082f315122781cecfbc7063397c063"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a0e082f315122781cecfbc7063397c063">tz::gl::render_state::Graphics::tri_count</a></div><div class="ttdeci">std::size_t tri_count</div><div class="ttdoc">number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified,...</div><div class="ttdef"><b>Definition</b> renderer.hpp:96</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a3f7566566d5ad5403bdfc19813b85126"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a3f7566566d5ad5403bdfc19813b85126">tz::gl::render_state::Graphics::draw_buffer</a></div><div class="ttdeci">resource_handle draw_buffer</div><div class="ttdoc">If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::dr...</div><div class="ttdef"><b>Definition</b> renderer.hpp:92</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a5289b1d526838e9d3e855ec3ea0b7b55"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a5289b1d526838e9d3e855ec3ea0b7b55">tz::gl::render_state::Graphics::wireframe_mode</a></div><div class="ttdeci">bool wireframe_mode</div><div class="ttdoc">whether wireframe mode is enabled or not.</div><div class="ttdef"><b>Definition</b> renderer.hpp:98</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_a64ef20d768cadd103a1d45e814683008"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#a64ef20d768cadd103a1d45e814683008">tz::gl::render_state::Graphics::index_buffer</a></div><div class="ttdeci">resource_handle index_buffer</div><div class="ttdoc">If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buf...</div><div class="ttdef"><b>Definition</b> renderer.hpp:90</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_1_1_graphics_html_afdbf39b5e5e727154eb35092a5f3329e"><div class="ttname"><a href="structtz_1_1gl_1_1render__state_1_1_graphics.html#afdbf39b5e5e727154eb35092a5f3329e">tz::gl::render_state::Graphics::clear_colour</a></div><div class="ttdeci">tz::vec4 clear_colour</div><div class="ttdoc">Normalised RGBA floating point colour.</div><div class="ttdef"><b>Definition</b> renderer.hpp:94</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_html_a359f1ee9b0b8fbe9ebed30bb7b37e709"><div class="ttname"><a href="structtz_1_1gl_1_1render__state.html#a359f1ee9b0b8fbe9ebed30bb7b37e709">tz::gl::render_state::compute</a></div><div class="ttdeci">Compute compute</div><div class="ttdoc">Compute state.</div><div class="ttdef"><b>Definition</b> renderer.hpp:111</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_html_a48bc0d47e4ce6f6bc9d3889d0045b2fc"><div class="ttname"><a href="structtz_1_1gl_1_1render__state.html#a48bc0d47e4ce6f6bc9d3889d0045b2fc">tz::gl::render_state::graphics</a></div><div class="ttdeci">Graphics graphics</div><div class="ttdoc">Graphics state.</div><div class="ttdef"><b>Definition</b> renderer.hpp:109</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_6c60afaf75e74ab2767b74a19a30396f.html">common</a></li><li class="navelem"><b>renderer.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

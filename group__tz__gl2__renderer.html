@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -69,22 +66,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
     </ul>
   </div>
 </div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('group__tz__gl2__renderer.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -179,6 +160,16 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:gac6f74feb8cd57f49c051f5d83a12be5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies options to enable extra functionality within Renderers.  <a href="group__tz__gl2__renderer.html#gac6f74feb8cd57f49c051f5d83a12be5d">More...</a><br /></td></tr>
 <tr class="separator:gac6f74feb8cd57f49c051f5d83a12be5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadf9f70703e9829dbdd82abc88dca23bd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__tz__gl2__renderer.html#gadf9f70703e9829dbdd82abc88dca23bd">tz::gl::graphics_topology</a> { <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#ggadf9f70703e9829dbdd82abc88dca23bda817d7d587258bac88b24567b17bdda87">graphics_topology::triangles</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#ggadf9f70703e9829dbdd82abc88dca23bda0aab81de5c4c87021772015efc184d67">graphics_topology::points</a>
+, <br />
+&#160;&#160;<a class="el" href="group__tz__gl2__renderer.html#ggadf9f70703e9829dbdd82abc88dca23bda6312d01627db1038b43322467edb543a">graphics_topology::triangle_strips</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:gadf9f70703e9829dbdd82abc88dca23bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Specifies which primitives shall be drawn by a renderer.  <a href="group__tz__gl2__renderer.html#gadf9f70703e9829dbdd82abc88dca23bd">More...</a><br /></td></tr>
+<tr class="separator:gadf9f70703e9829dbdd82abc88dca23bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -208,6 +199,39 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>tz::gl::common_render
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="gadf9f70703e9829dbdd82abc88dca23bd" name="gadf9f70703e9829dbdd82abc88dca23bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadf9f70703e9829dbdd82abc88dca23bd">&#9670;&#160;</a></span>graphics_topology</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class tz::gl::graphics_topology</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Specifies which primitives shall be drawn by a renderer. </p>
+<p>Defauts to <code>triangles</code>. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadf9f70703e9829dbdd82abc88dca23bda817d7d587258bac88b24567b17bdda87" name="ggadf9f70703e9829dbdd82abc88dca23bda817d7d587258bac88b24567b17bdda87"></a>triangles&#160;</td><td class="fielddoc"><p>Triangles. Each set of 3 vertices constitutes a triangle. 3n length. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggadf9f70703e9829dbdd82abc88dca23bda0aab81de5c4c87021772015efc184d67" name="ggadf9f70703e9829dbdd82abc88dca23bda0aab81de5c4c87021772015efc184d67"></a>points&#160;</td><td class="fielddoc"><p>Points. Each vertex constitutes a single point. 1n length. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggadf9f70703e9829dbdd82abc88dca23bda6312d01627db1038b43322467edb543a" name="ggadf9f70703e9829dbdd82abc88dca23bda6312d01627db1038b43322467edb543a"></a>triangle_strips&#160;</td><td class="fielddoc"><p>Triangle Strips. Each group of 3 adjacent vertices constitutes a triangle. n-2 length. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="gac6f74feb8cd57f49c051f5d83a12be5d" name="gac6f74feb8cd57f49c051f5d83a12be5d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gac6f74feb8cd57f49c051f5d83a12be5d">&#9670;&#160;</a></span>renderer_option</h2>
 
@@ -259,12 +283,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>tz::gl::common_render
 </div>
 </div>
 </div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

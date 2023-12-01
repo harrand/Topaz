@@ -12,5 +12,6 @@ var searchData=
   ['initially_5fsignalled_9',['initially_signalled',['../structtz_1_1gl_1_1vk2_1_1_fence_info.html#a22f2ab9e2e0152fde4949ea49dbd0cc4',1,'tz::gl::vk2::FenceInfo']]],
   ['input_5fattachments_10',['input_attachments',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info_1_1_subpass.html#a13ad7749e9612be5d0e8221c7d14288d',1,'tz::gl::vk2::RenderPassInfo::Subpass']]],
   ['input_5frate_11',['input_rate',['../structtz_1_1gl_1_1vk2_1_1_vertex_input_state_1_1_binding.html#a37caf3785a283d47e9e9b5f8eea0cd60',1,'tz::gl::vk2::VertexInputState::Binding']]],
-  ['instance_5fcount_12',['instance_count',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html#a365324b668b406ae92f340c15ecd30cb',1,'tz::gl::vk2::VulkanCommand::Draw']]]
+  ['instance_5fcount_12',['instance_count',['../structtz_1_1gl_1_1vk2_1_1_vulkan_command_1_1_draw.html#a365324b668b406ae92f340c15ecd30cb',1,'tz::gl::vk2::VulkanCommand::Draw']]],
+  ['is_5fvisible_13',['is_visible',['../structtz_1_1ren_1_1impl_1_1render__pass_1_1object__create__info.html#af97dde3ae4080b691f39f63f6567333a',1,'tz::ren::impl::render_pass::object_create_info']]]
 ];

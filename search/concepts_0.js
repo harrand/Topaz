@@ -8,12 +8,13 @@ var searchData=
   ['device_5ftype_5',['device_type',['../concepttz_1_1gl_1_1device__type.html',1,'tz::gl']]],
   ['enum_5fclass_6',['enum_class',['../concepttz_1_1enum__class.html',1,'tz']]],
   ['function_7',['function',['../concepttz_1_1function.html',1,'tz']]],
-  ['image_5fcomponent_5ftype_8',['image_component_type',['../concepttz_1_1gl_1_1image__component__type.html',1,'tz::gl']]],
-  ['job_5fsystem_5ftype_9',['job_system_type',['../concepttz_1_1job__system__type.html',1,'tz']]],
-  ['native_5favailable_10',['native_available',['../concepttz_1_1native__available.html',1,'tz']]],
-  ['nullable_11',['nullable',['../concepttz_1_1nullable.html',1,'tz']]],
-  ['number_12',['number',['../concepttz_1_1number.html',1,'tz']]],
-  ['renderer_5ftype_13',['renderer_type',['../concepttz_1_1gl_1_1renderer__type.html',1,'tz::gl']]],
-  ['trivially_5fcopyable_14',['trivially_copyable',['../concepttz_1_1trivially__copyable.html',1,'tz']]],
-  ['window_5fapi_15',['window_api',['../concepttz_1_1wsi_1_1window__api.html',1,'tz::wsi']]]
+  ['has_5fdbgui_5fmethod_8',['has_dbgui_method',['../concepttz_1_1has__dbgui__method.html',1,'tz']]],
+  ['image_5fcomponent_5ftype_9',['image_component_type',['../concepttz_1_1gl_1_1image__component__type.html',1,'tz::gl']]],
+  ['is_5fprintable_10',['is_printable',['../concepttz_1_1is__printable.html',1,'tz']]],
+  ['native_5favailable_11',['native_available',['../concepttz_1_1native__available.html',1,'tz']]],
+  ['nullable_12',['nullable',['../concepttz_1_1nullable.html',1,'tz']]],
+  ['number_13',['number',['../concepttz_1_1number.html',1,'tz']]],
+  ['renderer_5ftype_14',['renderer_type',['../concepttz_1_1gl_1_1renderer__type.html',1,'tz::gl']]],
+  ['trivially_5fcopyable_15',['trivially_copyable',['../concepttz_1_1trivially__copyable.html',1,'tz']]],
+  ['window_5fapi_16',['window_api',['../concepttz_1_1wsi_1_1window__api.html',1,'tz::wsi']]]
 ];

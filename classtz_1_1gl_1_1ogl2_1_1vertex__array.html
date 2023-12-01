@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('classtz_1_1gl_1_1ogl2_1_1vertex__array.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('classtz_1_1gl_1_1ogl2_1_1vertex__array
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><b>tz</b></li><li class="navelem"><b>gl</b></li><li class="navelem"><b>ogl2</b></li><li class="navelem"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html">vertex_array</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
@@ -129,12 +114,12 @@ Public Member Functions</h2></td></tr>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> ()</td></tr>
 <tr class="memdesc:aaf01a3edf3e63668020174f78199b3b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the VAO, causing subsequent GL commands using VAO state to use this. <br /></td></tr>
 <tr class="separator:aaf01a3edf3e63668020174f78199b3b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad53896fed3856db5c3a2fce42fb120bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html#ad53896fed3856db5c3a2fce42fb120bf">draw</a> (unsigned int triangle_count, bool tessellation=false)</td></tr>
-<tr class="memdesc:ad53896fed3856db5c3a2fce42fb120bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of triangles.  <br /></td></tr>
-<tr class="separator:ad53896fed3856db5c3a2fce42fb120bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0866c26d8a2d6e47b1e14d86cef0500f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a0866c26d8a2d6e47b1e14d86cef0500f">draw_indexed</a> (unsigned int triangle_count, const <a class="el" href="classtz_1_1gl_1_1ogl2_1_1buffer.html">buffer</a> &amp;index_buffer, bool tessellation=false)</td></tr>
-<tr class="memdesc:a0866c26d8a2d6e47b1e14d86cef0500f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound.  <br /></td></tr>
-<tr class="separator:a0866c26d8a2d6e47b1e14d86cef0500f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ca2490c9af9681d4e151e149197d326"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a4ca2490c9af9681d4e151e149197d326">draw</a> (unsigned int primitive_count, primitive_topology topology=primitive_topology::triangles, bool tessellation=false)</td></tr>
+<tr class="memdesc:a4ca2490c9af9681d4e151e149197d326"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of primitives.  <br /></td></tr>
+<tr class="separator:a4ca2490c9af9681d4e151e149197d326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b11ecc184617603efaa30298df4e67f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a4b11ecc184617603efaa30298df4e67f">draw_indexed</a> (unsigned int primitive_count, const <a class="el" href="classtz_1_1gl_1_1ogl2_1_1buffer.html">buffer</a> &amp;index_buffer, primitive_topology topology=primitive_topology::triangles, bool tessellation=false)</td></tr>
+<tr class="memdesc:a4b11ecc184617603efaa30298df4e67f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit a single draw call, drawing a set number of primitives, assuming an index buffer has already been bound.  <br /></td></tr>
+<tr class="separator:a4b11ecc184617603efaa30298df4e67f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dda442e0b38c14f4c091073b431c87d"><td class="memItemLeft" align="right" valign="top"><a id="a8dda442e0b38c14f4c091073b431c87d" name="a8dda442e0b38c14f4c091073b431c87d"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_null</b> () const</td></tr>
 <tr class="memdesc:a8dda442e0b38c14f4c091073b431c87d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query as to whether this is a null vertex array, which is equivalent to vertex_array::null(). <br /></td></tr>
@@ -149,8 +134,8 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper for an OpenGL VAO. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad53896fed3856db5c3a2fce42fb120bf" name="ad53896fed3856db5c3a2fce42fb120bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad53896fed3856db5c3a2fce42fb120bf">&#9670;&#160;</a></span>draw()</h2>
+<a id="a4ca2490c9af9681d4e151e149197d326" name="a4ca2490c9af9681d4e151e149197d326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ca2490c9af9681d4e151e149197d326">&#9670;&#160;</a></span>draw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -159,7 +144,13 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">void tz::gl::ogl2::vertex_array::draw </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>triangle_count</em>, </td>
+          <td class="paramname"><em>primitive_count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">primitive_topology&#160;</td>
+          <td class="paramname"><em>topology</em> = <code>primitive_topology::triangles</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -175,18 +166,18 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Emit a single draw call, drawing a set number of triangles. </p>
+<p>Emit a single draw call, drawing a set number of primitives. </p>
 <p>Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">triangle_count</td><td>number of triangles to draw. </td></tr>
+    <tr><td class="paramname">primitive_count</td><td>number of primitives to draw, i.e points, triangles etc... Does <em>not</em> represent vertex count. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a0866c26d8a2d6e47b1e14d86cef0500f" name="a0866c26d8a2d6e47b1e14d86cef0500f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0866c26d8a2d6e47b1e14d86cef0500f">&#9670;&#160;</a></span>draw_indexed()</h2>
+<a id="a4b11ecc184617603efaa30298df4e67f" name="a4b11ecc184617603efaa30298df4e67f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b11ecc184617603efaa30298df4e67f">&#9670;&#160;</a></span>draw_indexed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -195,7 +186,7 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">void tz::gl::ogl2::vertex_array::draw_indexed </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>triangle_count</em>, </td>
+          <td class="paramname"><em>primitive_count</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -206,6 +197,12 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">primitive_topology&#160;</td>
+          <td class="paramname"><em>topology</em> = <code>primitive_topology::triangles</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>tessellation</em> = <code>false</code>&#160;</td>
         </tr>
@@ -217,10 +214,10 @@ Static Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Emit a single draw call, drawing a set number of triangles, assuming an index buffer has already been bound. </p>
+<p>Emit a single draw call, drawing a set number of primitives, assuming an index buffer has already been bound. </p>
 <p>Remember that vertex attributes are not supported in this backend, so you will source input data from either hard-coded shader values or from UBO/SSBO shader resources. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">triangle_count</td><td>number of triangles to draw. </td></tr>
+    <tr><td class="paramname">primitive_count</td><td>number of primitives to draw, i.e points, triangles etc... Does <em>not</em> represent vertex count. </td></tr>
   </table>
   </dd>
 </dl>
@@ -256,13 +253,9 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 </div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><b>tz</b></li><li class="navelem"><b>gl</b></li><li class="navelem"><b>ogl2</b></li><li class="navelem"><a class="el" href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html">vertex_array</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

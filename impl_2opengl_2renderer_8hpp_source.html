@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('impl_2opengl_2renderer_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('impl_2opengl_2renderer_8hpp_source.htm
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_9eaca02b9c6ac3e186d627c155dd0218.html">opengl</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">renderer.hpp</div></div>
 </div><!--header-->
@@ -137,8 +122,8 @@ $(document).ready(function(){initNavTree('impl_2opengl_2renderer_8hpp_source.htm
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">void</span> write_dynamic_images();</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">void</span> set_image_handle(tz::gl::resource_handle h, <a class="code hl_typedef" href="classtz_1_1gl_1_1ogl2_1_1image.html#a95cc3a29802146fa924deac10a64fc72">ogl2::image::bindless_handle</a> bindless_handle);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordtype">void</span> reseat_resource_reference(tz::gl::resource_handle h, <a class="code hl_class" href="classtz_1_1gl_1_1icomponent.html">icomponent</a>* comp);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordtype">void</span> fill_bindless_image_buffer();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordtype">void</span> fill_bindless_image_buffer();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">private</span>:</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        std::vector&lt;tz::maybe_owned_ptr&lt;icomponent&gt;&gt; components;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        std::vector&lt;ogl2::image::bindless_handle&gt; image_handles;</div>
@@ -247,10 +232,10 @@ $(document).ready(function(){initNavTree('impl_2opengl_2renderer_8hpp_source.htm
 <div class="ttc" id="aclasstz_1_1gl_1_1ogl2_1_1image_html_a95cc3a29802146fa924deac10a64fc72"><div class="ttname"><a href="classtz_1_1gl_1_1ogl2_1_1image.html#a95cc3a29802146fa924deac10a64fc72">tz::gl::ogl2::image::bindless_handle</a></div><div class="ttdeci">GLuint64 bindless_handle</div><div class="ttdoc">Opaque handle for a bindless texture.</div><div class="ttdef"><b>Definition</b> image.hpp:34</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1ogl2_1_1render__buffer_html"><div class="ttname"><a href="classtz_1_1gl_1_1ogl2_1_1render__buffer.html">tz::gl::ogl2::render_buffer</a></div><div class="ttdef"><b>Definition</b> renderbuffer.hpp:19</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1ogl2_1_1shader_html"><div class="ttname"><a href="classtz_1_1gl_1_1ogl2_1_1shader.html">tz::gl::ogl2::shader</a></div><div class="ttdoc">Represents an OpenGL shader program.</div><div class="ttdef"><b>Definition</b> shader.hpp:99</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1ogl2_1_1vertex__array_html"><div class="ttname"><a href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html">tz::gl::ogl2::vertex_array</a></div><div class="ttdoc">Wrapper for an OpenGL VAO.</div><div class="ttdef"><b>Definition</b> vertex_array.hpp:14</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1renderer__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition</b> renderer.hpp:112</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1ogl2_1_1vertex__array_html"><div class="ttname"><a href="classtz_1_1gl_1_1ogl2_1_1vertex__array.html">tz::gl::ogl2::vertex_array</a></div><div class="ttdoc">Wrapper for an OpenGL VAO.</div><div class="ttdef"><b>Definition</b> vertex_array.hpp:38</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1renderer__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition</b> renderer.hpp:127</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html">tz::gl::renderer_ogl</a></div><div class="ttdoc">renderer implementation which heavily calls into the backend at OpenGL Backend.</div><div class="ttdef"><b>Definition</b> renderer.hpp:145</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_a191c8012bb11868f5934fd61fbacf168"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#a191c8012bb11868f5934fd61fbacf168">tz::gl::renderer_ogl::edit</a></div><div class="ttdeci">void edit(const renderer_edit_request &amp;edit_request)</div><div class="ttdoc">Confirm changes to a renderer.</div><div class="ttdef"><b>Definition</b> renderer.cpp:691</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_a191c8012bb11868f5934fd61fbacf168"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#a191c8012bb11868f5934fd61fbacf168">tz::gl::renderer_ogl::edit</a></div><div class="ttdeci">void edit(const renderer_edit_request &amp;edit_request)</div><div class="ttdoc">Confirm changes to a renderer.</div><div class="ttdef"><b>Definition</b> renderer.cpp:708</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_a28e3f2beda21a1c597681760d3734ae4"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#a28e3f2beda21a1c597681760d3734ae4">tz::gl::renderer_ogl::render</a></div><div class="ttdeci">void render()</div><div class="ttdoc">Invoke the renderer, emitting a single draw call of a set number of triangles.</div><div class="ttdef"><b>Definition</b> renderer.cpp:565</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_a4536f9408510194599a41fe7d983cfad"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#a4536f9408510194599a41fe7d983cfad">tz::gl::renderer_ogl::get_component</a></div><div class="ttdeci">const icomponent * get_component(resource_handle handle) const</div><div class="ttdoc">Retrieve the component sourcing the resource (read-only) corresponding to the given handle.</div><div class="ttdef"><b>Definition</b> renderer.cpp:535</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_a5b49989a7d61aa1ef55727206f1db63a"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#a5b49989a7d61aa1ef55727206f1db63a">tz::gl::renderer_ogl::resource_count</a></div><div class="ttdeci">unsigned int resource_count() const</div><div class="ttdoc">Retrieve the number of resources.</div><div class="ttdef"><b>Definition</b> renderer.cpp:520</div></div>
@@ -258,21 +243,17 @@ $(document).ready(function(){initNavTree('impl_2opengl_2renderer_8hpp_source.htm
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_a75bf5e8fb1a40adbf0569c59720fc47f"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#a75bf5e8fb1a40adbf0569c59720fc47f">tz::gl::renderer_ogl::get_resource</a></div><div class="ttdeci">const iresource * get_resource(resource_handle handle) const</div><div class="ttdoc">Retrieve the resource (read-only) corresponding to the given handle.</div><div class="ttdef"><b>Definition</b> renderer.cpp:525</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1renderer__ogl_html_aac4e76798fc197ebfa7790607da7d0af"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__ogl.html#aac4e76798fc197ebfa7790607da7d0af">tz::gl::renderer_ogl::get_state</a></div><div class="ttdeci">const render_state &amp; get_state() const</div><div class="ttdoc">Retrieve current state of the renderer.</div><div class="ttdef"><b>Definition</b> renderer.cpp:560</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1shader__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1shader__info.html">tz::gl::shader_info</a></div><div class="ttdef"><b>Definition</b> shader.hpp:26</div></div>
-<div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:16</div></div>
-<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:333</div></div>
-<div class="ttc" id="agroup__tz__gl2__renderer_html_ga73b4edabed4b0091a8b1fa6c8f618438"><div class="ttname"><a href="group__tz__gl2__renderer.html#ga73b4edabed4b0091a8b1fa6c8f618438">tz::gl::renderer_options</a></div><div class="ttdeci">tz::enum_field&lt; renderer_option &gt; renderer_options</div><div class="ttdoc">Represents a collection of renderer options.</div><div class="ttdef"><b>Definition</b> renderer.hpp:105</div></div>
-<div class="ttc" id="agroup__tz__gl2__renderer_html_gaf8ed980ac9dca61a89e98615c27a8085"><div class="ttname"><a href="group__tz__gl2__renderer.html#gaf8ed980ac9dca61a89e98615c27a8085">tz::gl::renderer_edit_request</a></div><div class="ttdeci">std::vector&lt; renderer_edit::variant &gt; renderer_edit_request</div><div class="ttdoc">Represents an edit to an existing renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:291</div></div>
+<div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:17</div></div>
+<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:358</div></div>
+<div class="ttc" id="agroup__tz__gl2__renderer_html_ga73b4edabed4b0091a8b1fa6c8f618438"><div class="ttname"><a href="group__tz__gl2__renderer.html#ga73b4edabed4b0091a8b1fa6c8f618438">tz::gl::renderer_options</a></div><div class="ttdeci">tz::enum_field&lt; renderer_option &gt; renderer_options</div><div class="ttdoc">Represents a collection of renderer options.</div><div class="ttdef"><b>Definition</b> renderer.hpp:120</div></div>
+<div class="ttc" id="agroup__tz__gl2__renderer_html_gaf8ed980ac9dca61a89e98615c27a8085"><div class="ttname"><a href="group__tz__gl2__renderer.html#gaf8ed980ac9dca61a89e98615c27a8085">tz::gl::renderer_edit_request</a></div><div class="ttdeci">std::vector&lt; renderer_edit::variant &gt; renderer_edit_request</div><div class="ttdoc">Represents an edit to an existing renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:315</div></div>
 <div class="ttc" id="agroup__tz__gl2__res_html_ga4a7818551bb2ef3d04edb95ec731d041"><div class="ttname"><a href="group__tz__gl2__res.html#ga4a7818551bb2ef3d04edb95ec731d041">tz::gl::resource_type</a></div><div class="ttdeci">resource_type</div><div class="ttdoc">Specifies the type of the resource; which is how a renderer or Processor will interpret the usage of ...</div><div class="ttdef"><b>Definition</b> resource.hpp:17</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1render__state_html"><div class="ttname"><a href="structtz_1_1gl_1_1render__state.html">tz::gl::render_state</a></div><div class="ttdoc">Stores renderer-specific state, which drives the behaviour of the rendering.</div><div class="ttdef"><b>Definition</b> renderer.hpp:72</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1render__state_html"><div class="ttname"><a href="structtz_1_1gl_1_1render__state.html">tz::gl::render_state</a></div><div class="ttdoc">Stores renderer-specific state, which drives the behaviour of the rendering.</div><div class="ttdef"><b>Definition</b> renderer.hpp:86</div></div>
 <div class="ttc" id="astructtz_1_1gl_1_1renderer__ogl__base_html"><div class="ttname"><a href="structtz_1_1gl_1_1renderer__ogl__base.html">tz::gl::renderer_ogl_base</a></div><div class="ttdef"><b>Definition</b> renderer.hpp:130</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_b6f1048c6f0057577e2c84efc97e28f6.html">impl</a></li><li class="navelem"><a class="el" href="dir_9eaca02b9c6ac3e186d627c155dd0218.html">opengl</a></li><li class="navelem"><b>renderer.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

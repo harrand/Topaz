@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['home_0',['Home',['../index.html',1,'']]]
+  ['lua_20api_20reference_0',['Lua API Reference',['../tz_lua.html',1,'']]]
 ];

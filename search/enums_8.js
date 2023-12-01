@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['physicaldevicevendor_0',['PhysicalDeviceVendor',['../group__tz__gl__vk.html#ga50848b0c20c1ec0f873eddc129dbecd7',1,'tz::gl::vk2']]],
-  ['pipelinecontext_1',['PipelineContext',['../group__tz__gl__vk__graphics__pipeline__render__pass.html#ga58cefe5ecfeac91929d767bdb56f943b',1,'tz::gl::vk2']]],
-  ['pipelinestage_2',['PipelineStage',['../group__tz__gl__vk__graphics__pipeline.html#gaa581c5a329a76e48f41ca02bd263251a',1,'tz::gl::vk2']]],
-  ['polygonmode_3',['PolygonMode',['../group__tz__gl__vk__graphics__pipeline__fixed.html#gaaeda985d06849d890d7ba2902688cd01',1,'tz::gl::vk2']]],
-  ['presentresult_4',['PresentResult',['../classtz_1_1gl_1_1vk2_1_1hardware_1_1_queue.html#a85b458bfb664176d140abf3b6b627e67',1,'tz::gl::vk2::hardware::Queue']]]
+  ['loadop_0',['LoadOp',['../group__tz__gl__vk__graphics__pipeline__render__pass.html#gaa1e0e627270d80ef86624590afc5a03f',1,'tz::gl::vk2']]],
+  ['lookup_5ffilter_1',['lookup_filter',['../group__tz__gl__ogl2__image.html#gadabff1825f7cf36d8fada93ee1164a31',1,'tz::gl::ogl2']]],
+  ['lookupfilter_2',['LookupFilter',['../group__tz__gl__vk__image.html#ga24cb95974e796673bd262b86ee9cfa89',1,'tz::gl::vk2']]]
 ];

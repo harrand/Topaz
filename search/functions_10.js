@@ -18,7 +18,7 @@ var searchData=
   ['signal_15',['signal',['../classtz_1_1gl_1_1vk2_1_1_timeline_semaphore.html#a07294686a9c9007d9eea477648ddb307',1,'tz::gl::vk2::TimelineSemaphore']]],
   ['simplex_16',['simplex',['../group__tzsl__noise.html#ga3281f996870e4b9f9a9173cd645d5be5',1,'tz::noise']]],
   ['sin_17',['sin',['../group__tzsl__math.html#ga8c0f033ba72fe4acebee70271cfb2449',1,'tz::math']]],
-  ['size_18',['size',['../classtz_1_1_polymorphic_list.html#a4ff3d2bc56929abcbea5811bff6bdbd7',1,'tz::PolymorphicList::size()'],['../classtz_1_1gl_1_1ogl2_1_1buffer.html#a0d4d708c2123da8a7fe330d9d71c958f',1,'tz::gl::ogl2::buffer::size()'],['../classtz_1_1gl_1_1vk2_1_1_buffer.html#a64c97088f04d5773f96498281c9332f9',1,'tz::gl::vk2::Buffer::size()']]],
+  ['size_18',['size',['../classtz_1_1_polymorphic_list.html#a4ff3d2bc56929abcbea5811bff6bdbd7',1,'tz::PolymorphicList::size()'],['../classtz_1_1transform__hierarchy.html#ac5d183738e59474c75fb18cb1d254464',1,'tz::transform_hierarchy::size()'],['../classtz_1_1gl_1_1ogl2_1_1buffer.html#a0d4d708c2123da8a7fe330d9d71c958f',1,'tz::gl::ogl2::buffer::size()'],['../classtz_1_1gl_1_1vk2_1_1_buffer.html#a64c97088f04d5773f96498281c9332f9',1,'tz::gl::vk2::Buffer::size()']]],
   ['smooth_5fstep_19',['smooth_step',['../group__tzsl__math.html#gae657986f8605cc005b02cbfdf92cd39c',1,'tz::math']]],
   ['span_20',['span',['../classtz_1_1grid__view.html#aa3adae7901af54ce2b0e502fa5da8858',1,'tz::grid_view::span() const'],['../classtz_1_1grid__view.html#a3100812fc7c72fa1adc98472dfc7cf1d',1,'tz::grid_view::span()']]],
   ['sqrt_21',['sqrt',['../group__tzsl__math.html#gaa2770f89b7066b4c45909e272d9e0b36',1,'tz::math']]],

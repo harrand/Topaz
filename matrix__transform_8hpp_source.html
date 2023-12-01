@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('matrix__transform_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('matrix__transform_8hpp_source.html',''
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_08a9ab9f761476898a1bf8c3b193f50f.html">core</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">matrix_transform.hpp</div></div>
 </div><!--header-->
@@ -128,25 +113,25 @@ $(document).ready(function(){initNavTree('matrix__transform_8hpp_source.html',''
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_typedef" href="group__tz__core.html#ga1f1e59ed90427ee9f69f95d8a2409bf0">mat4</a> <a class="code hl_function" href="group__tz__core.html#ga26c5e69afcfbedae7d168b332682483f">view</a>(tz::vec3 position, tz::vec3 rotation);</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_typedef" href="group__tz__core.html#ga1f1e59ed90427ee9f69f95d8a2409bf0">mat4</a> <a class="code hl_function" href="group__tz__core.html#gab069a1e647b9e13ac337c87fa7b5a7cc">perspective</a>(<span class="keywordtype">float</span> fov, <span class="keywordtype">float</span> aspect_ratio, <span class="keywordtype">float</span> near, <span class="keywordtype">float</span> far);</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_typedef" href="group__tz__core.html#ga1f1e59ed90427ee9f69f95d8a2409bf0">mat4</a> <a class="code hl_function" href="group__tz__core.html#ga234891ef18cb4fd49558abc807e172e2">orthographic</a>(<span class="keywordtype">float</span> left, <span class="keywordtype">float</span> right, <span class="keywordtype">float</span> top, <span class="keywordtype">float</span> bottom, <span class="keywordtype">float</span> near, <span class="keywordtype">float</span> far);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_MATRIX_TRANSFORM_HPP</span></div>
-<div class="ttc" id="agroup__tz__core_html_ga1f1e59ed90427ee9f69f95d8a2409bf0"><div class="ttname"><a href="group__tz__core.html#ga1f1e59ed90427ee9f69f95d8a2409bf0">tz::mat4</a></div><div class="ttdeci">matrix&lt; float, 4, 4 &gt; mat4</div><div class="ttdef"><b>Definition</b> matrix.hpp:207</div></div>
-<div class="ttc" id="agroup__tz__core_html_ga234891ef18cb4fd49558abc807e172e2"><div class="ttname"><a href="group__tz__core.html#ga234891ef18cb4fd49558abc807e172e2">tz::orthographic</a></div><div class="ttdeci">mat4 orthographic(float left, float right, float top, float bottom, float near, float far)</div><div class="ttdoc">Generates an orthographic projection matrix using the given camera properties.</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:131</div></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">void</span> dbgui_model(tz::mat4&amp; mat);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> dbgui_view(tz::mat4&amp; mat);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> dbgui_perspective(tz::mat4&amp; mat);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_MATRIX_TRANSFORM_HPP</span></div>
+<div class="ttc" id="agroup__tz__core_html_ga1f1e59ed90427ee9f69f95d8a2409bf0"><div class="ttname"><a href="group__tz__core.html#ga1f1e59ed90427ee9f69f95d8a2409bf0">tz::mat4</a></div><div class="ttdeci">matrix&lt; float, 4, 4 &gt; mat4</div><div class="ttdef"><b>Definition</b> matrix.hpp:208</div></div>
+<div class="ttc" id="agroup__tz__core_html_ga234891ef18cb4fd49558abc807e172e2"><div class="ttname"><a href="group__tz__core.html#ga234891ef18cb4fd49558abc807e172e2">tz::orthographic</a></div><div class="ttdeci">mat4 orthographic(float left, float right, float top, float bottom, float nearval, float farval)</div><div class="ttdoc">Generates an orthographic projection matrix using the given camera properties.</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:131</div></div>
 <div class="ttc" id="agroup__tz__core_html_ga26c5e69afcfbedae7d168b332682483f"><div class="ttname"><a href="group__tz__core.html#ga26c5e69afcfbedae7d168b332682483f">tz::view</a></div><div class="ttdeci">mat4 view(tz::vec3 position, tz::vec3 rotation)</div><div class="ttdoc">Generates a view matrix using the given view position and rotation.</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:109</div></div>
 <div class="ttc" id="agroup__tz__core_html_ga8eee7d1f58cb6eefcc220bc2026ba7e1"><div class="ttname"><a href="group__tz__core.html#ga8eee7d1f58cb6eefcc220bc2026ba7e1">tz::model</a></div><div class="ttdeci">mat4 model(tz::vec3 position, tz::vec3 rotation, tz::vec3 scale)</div><div class="ttdoc">Generates a model matrix using the given position, euler-rotation and scale vectors.</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:103</div></div>
-<div class="ttc" id="agroup__tz__core_html_gab069a1e647b9e13ac337c87fa7b5a7cc"><div class="ttname"><a href="group__tz__core.html#gab069a1e647b9e13ac337c87fa7b5a7cc">tz::perspective</a></div><div class="ttdeci">mat4 perspective(float fov, float aspect_ratio, float near, float far)</div><div class="ttdoc">Generates a perspective projection matrix using the given camera properties.</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:115</div></div>
+<div class="ttc" id="agroup__tz__core_html_gab069a1e647b9e13ac337c87fa7b5a7cc"><div class="ttname"><a href="group__tz__core.html#gab069a1e647b9e13ac337c87fa7b5a7cc">tz::perspective</a></div><div class="ttdeci">mat4 perspective(float fov, float aspect_ratio, float nearval, float farval)</div><div class="ttdoc">Generates a perspective projection matrix using the given camera properties.</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:115</div></div>
 <div class="ttc" id="agroup__tz__core_html_gac0457238d0094915eda4df542774a9e8"><div class="ttname"><a href="group__tz__core.html#gac0457238d0094915eda4df542774a9e8">tz::rotate</a></div><div class="ttdeci">mat4 rotate(tz::vec3 rotation)</div><div class="ttdoc">Generates a matrix which performs the following three transformations, in chronological order:</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:82</div></div>
 <div class="ttc" id="agroup__tz__core_html_gac4e79331e3b84c5a36360169f7f6d4c8"><div class="ttname"><a href="group__tz__core.html#gac4e79331e3b84c5a36360169f7f6d4c8">tz::scale</a></div><div class="ttdeci">mat4 scale(tz::vec3 scale)</div><div class="ttdoc">Generates a matrix which performs the following transformations at once:</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:92</div></div>
 <div class="ttc" id="agroup__tz__core_html_gacea5d629885bd9192ee6e9325a236707"><div class="ttname"><a href="group__tz__core.html#gacea5d629885bd9192ee6e9325a236707">tz::translate</a></div><div class="ttdeci">mat4 translate(tz::vec3 position)</div><div class="ttdoc">Generate a matrix which performs the following transformations at once:</div><div class="ttdef"><b>Definition</b> matrix_transform.cpp:7</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_08a9ab9f761476898a1bf8c3b193f50f.html">core</a></li><li class="navelem"><b>matrix_transform.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

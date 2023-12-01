@@ -20,8 +20,8 @@ var searchData=
   ['distance_17',['distance',['../group__tzsl__math.html#ga81780532b6bb411b2b550c09b76b7f93',1,'tz::math']]],
   ['done_18',['done',['../classtz_1_1delay.html#abecd402d7755f73c4a61a33b77af4963',1,'tz::delay']]],
   ['dot_19',['dot',['../classtz_1_1vector.html#a074e671fe11952ee602c6b60d542fc75',1,'tz::vector::dot()'],['../group__tzsl__math.html#gae3a061e3c170f530fbc99969abdeb333',1,'tz::math::dot()']]],
-  ['draw_20',['draw',['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#ad53896fed3856db5c3a2fce42fb120bf',1,'tz::gl::ogl2::vertex_array::draw()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf',1,'tz::gl::vk2::CommandBufferRecording::draw()']]],
-  ['draw_5findexed_21',['draw_indexed',['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a0866c26d8a2d6e47b1e14d86cef0500f',1,'tz::gl::ogl2::vertex_array::draw_indexed()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c',1,'tz::gl::vk2::CommandBufferRecording::draw_indexed(VulkanCommand::DrawIndexed draw)']]],
+  ['draw_20',['draw',['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a4ca2490c9af9681d4e151e149197d326',1,'tz::gl::ogl2::vertex_array::draw()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf',1,'tz::gl::vk2::CommandBufferRecording::draw()']]],
+  ['draw_5findexed_21',['draw_indexed',['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a4b11ecc184617603efaa30298df4e67f',1,'tz::gl::ogl2::vertex_array::draw_indexed()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c',1,'tz::gl::vk2::CommandBufferRecording::draw_indexed(VulkanCommand::DrawIndexed draw)']]],
   ['draw_5findexed_5findirect_22',['draw_indexed_indirect',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a883d311ab6e1f1c1f29260129179d0e0',1,'tz::gl::vk2::CommandBufferRecording']]],
   ['draw_5findirect_23',['draw_indirect',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3eebf5124e99fc760f29698edcda6577',1,'tz::gl::vk2::CommandBufferRecording']]]
 ];

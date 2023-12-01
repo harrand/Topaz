@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('dbgui_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('dbgui_8hpp_source.html',''); initResiz
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_5a334d1c7ed1f0f36d1b8b8a8c5647cd.html">dbgui</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">dbgui.hpp</div></div>
 </div><!--header-->
@@ -119,52 +104,55 @@ $(document).ready(function(){initNavTree('dbgui_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;tz/core/debug.hpp&quot;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;imgui.h&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;imgui_memory_editor.h&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>tz::dbgui</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structtz_1_1dbgui_1_1init__info.html">   23</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1dbgui_1_1init__info.html">init_info</a></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    {</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structtz_1_1dbgui_1_1init__info.html#a004b821a277cfa2ea7e52a97a905b3f9">   26</a></span>        <a class="code hl_struct" href="structtz_1_1game__info.html">tz::game_info</a> <a class="code hl_variable" href="structtz_1_1dbgui_1_1init__info.html#a004b821a277cfa2ea7e52a97a905b3f9">game_info</a>;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    };</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">void</span> initialise(<a class="code hl_struct" href="structtz_1_1dbgui_1_1init__info.html">init_info</a> info);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> terminate();</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">void</span> begin_frame();</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordtype">void</span> end_frame();</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="group__tz__dbgui.html#gaf1315419d15da9d6793fc6182c3f0c78">   67</a></span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__dbgui.html#gaf1315419d15da9d6793fc6182c3f0c78">run</a>([[maybe_unused]] <a class="code hl_concept" href="concepttz_1_1action.html">tz::action</a> <span class="keyword">auto</span> <a class="code hl_concept" href="concepttz_1_1action.html">action</a>)</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">        #if TZ_DEBUG</span></div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <a class="code hl_concept" href="concepttz_1_1action.html">action</a>();</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">        #endif</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">using </span>game_menu_callback_type = <a class="code hl_class" href="classtz_1_1callback.html">tz::callback&lt;&gt;</a>;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">using </span>game_bar_callback_type = game_menu_callback_type;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    game_menu_callback_type&amp; game_menu();</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    game_bar_callback_type&amp; game_bar();</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">bool</span> claims_keyboard();</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordtype">bool</span> claims_mouse();</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_DBGUI_DBGUI_HPP</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;misc/cpp/imgui_stdlib.h&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>tz::dbgui</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structtz_1_1dbgui_1_1init__info.html">   24</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1dbgui_1_1init__info.html">init_info</a></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structtz_1_1dbgui_1_1init__info.html#a004b821a277cfa2ea7e52a97a905b3f9">   27</a></span>        <a class="code hl_struct" href="structtz_1_1game__info.html">tz::game_info</a> <a class="code hl_variable" href="structtz_1_1dbgui_1_1init__info.html#a004b821a277cfa2ea7e52a97a905b3f9">game_info</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordtype">bool</span> graphics_enabled;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordtype">bool</span> dbgui_enabled;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    };</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordtype">void</span> initialise(<a class="code hl_struct" href="structtz_1_1dbgui_1_1init__info.html">init_info</a> info);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> terminate();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> begin_frame();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">void</span> end_frame();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="group__tz__dbgui.html#gaf1315419d15da9d6793fc6182c3f0c78">   70</a></span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="group__tz__dbgui.html#gaf1315419d15da9d6793fc6182c3f0c78">run</a>([[maybe_unused]] <a class="code hl_concept" href="concepttz_1_1action.html">tz::action</a> <span class="keyword">auto</span> <a class="code hl_concept" href="concepttz_1_1action.html">action</a>)</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">        #if TZ_DEBUG</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <a class="code hl_concept" href="concepttz_1_1action.html">action</a>();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="preprocessor">        #endif</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> text_memory(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> bytes);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> add_to_lua_log(std::string msg);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">using </span>game_menu_callback_type = <a class="code hl_class" href="classtz_1_1callback.html">tz::callback&lt;&gt;</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">using </span>game_bar_callback_type = game_menu_callback_type;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    game_menu_callback_type&amp; game_menu();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    game_bar_callback_type&amp; game_bar();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">bool</span> claims_keyboard();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">bool</span> claims_mouse();</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_DBGUI_DBGUI_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1callback_html"><div class="ttname"><a href="classtz_1_1callback.html">tz::callback</a></div><div class="ttdoc">Represents a centralised storage/management of callback functions of a common signature void(Args....</div><div class="ttdef"><b>Definition</b> callback.hpp:31</div></div>
 <div class="ttc" id="aconcepttz_1_1action_html"><div class="ttname"><a href="concepttz_1_1action.html">tz::action</a></div><div class="ttdoc">Just like a tz::function, except will never return anything.</div><div class="ttdef"><b>Definition</b> types.hpp:47</div></div>
-<div class="ttc" id="agroup__tz__dbgui_html_gaf1315419d15da9d6793fc6182c3f0c78"><div class="ttname"><a href="group__tz__dbgui.html#gaf1315419d15da9d6793fc6182c3f0c78">tz::dbgui::run</a></div><div class="ttdeci">void run(tz::action auto action)</div><div class="ttdoc">As dbgui is only available on TZ_DEBUG, calling ImGui functions directly in game-code will yield runt...</div><div class="ttdef"><b>Definition</b> dbgui.hpp:67</div></div>
-<div class="ttc" id="astructtz_1_1dbgui_1_1init__info_html"><div class="ttname"><a href="structtz_1_1dbgui_1_1init__info.html">tz::dbgui::init_info</a></div><div class="ttdef"><b>Definition</b> dbgui.hpp:24</div></div>
-<div class="ttc" id="astructtz_1_1dbgui_1_1init__info_html_a004b821a277cfa2ea7e52a97a905b3f9"><div class="ttname"><a href="structtz_1_1dbgui_1_1init__info.html#a004b821a277cfa2ea7e52a97a905b3f9">tz::dbgui::init_info::game_info</a></div><div class="ttdeci">tz::game_info game_info</div><div class="ttdoc">Information about the running application.</div><div class="ttdef"><b>Definition</b> dbgui.hpp:26</div></div>
+<div class="ttc" id="agroup__tz__dbgui_html_gaf1315419d15da9d6793fc6182c3f0c78"><div class="ttname"><a href="group__tz__dbgui.html#gaf1315419d15da9d6793fc6182c3f0c78">tz::dbgui::run</a></div><div class="ttdeci">void run(tz::action auto action)</div><div class="ttdoc">As dbgui is only available on TZ_DEBUG, calling ImGui functions directly in game-code will yield runt...</div><div class="ttdef"><b>Definition</b> dbgui.hpp:70</div></div>
+<div class="ttc" id="astructtz_1_1dbgui_1_1init__info_html"><div class="ttname"><a href="structtz_1_1dbgui_1_1init__info.html">tz::dbgui::init_info</a></div><div class="ttdef"><b>Definition</b> dbgui.hpp:25</div></div>
+<div class="ttc" id="astructtz_1_1dbgui_1_1init__info_html_a004b821a277cfa2ea7e52a97a905b3f9"><div class="ttname"><a href="structtz_1_1dbgui_1_1init__info.html#a004b821a277cfa2ea7e52a97a905b3f9">tz::dbgui::init_info::game_info</a></div><div class="ttdeci">tz::game_info game_info</div><div class="ttdoc">Information about the running application.</div><div class="ttdef"><b>Definition</b> dbgui.hpp:27</div></div>
 <div class="ttc" id="astructtz_1_1game__info_html"><div class="ttname"><a href="structtz_1_1game__info.html">tz::game_info</a></div><div class="ttdoc">Contains basic information about the target game/application.</div><div class="ttdef"><b>Definition</b> game_info.hpp:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_5a334d1c7ed1f0f36d1b8b8a8c5647cd.html">dbgui</a></li><li class="navelem"><b>dbgui.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

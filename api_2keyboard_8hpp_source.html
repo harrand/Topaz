@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('api_2keyboard_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('api_2keyboard_8hpp_source.html',''); i
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_599c755ba65617583b8f9ca84c06536f.html">wsi</a></li><li class="navelem"><a class="el" href="dir_ec6445c9b7ffdfd0780b9f9686149b19.html">api</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">keyboard.hpp</div></div>
 </div><!--header-->
@@ -123,9 +108,9 @@ $(document).ready(function(){initNavTree('api_2keyboard_8hpp_source.html',''); i
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, del,</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        page_up, page_down, print_screen, scroll_lock, pause, insert,</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        one, two, three, four, five, six, seven, eight, nine, zero, minus, equals, backspace, tab, q, w, e, r, t, y, u, i, o, p, left_bracket, right_bracket, enter, caps_lock, a, s, d, f, g, h, j, k, l, semi_colon, apostrophe, hash, left_shift, backslash, z, x, c, v, b, n, m, comma, period, forward_slash, right_shift, left_ctrl, win_key, alt, space, alt_gr, right_ctrl,</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        unknown</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        unknown, _count</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    };</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structtz_1_1wsi_1_1keyboard__state.html">   25</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1wsi_1_1keyboard__state.html">keyboard_state</a></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    {</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structtz_1_1wsi_1_1keyboard__state.html#ad5daea270a32a5c90478336768d6fed3">   28</a></span>        std::array&lt;key, max_simultaneous_key_presses&gt; <a class="code hl_variable" href="structtz_1_1wsi_1_1keyboard__state.html#ad5daea270a32a5c90478336768d6fed3">keys_down</a>;</div>
@@ -142,13 +127,9 @@ $(document).ready(function(){initNavTree('api_2keyboard_8hpp_source.html',''); i
 <div class="ttc" id="astructtz_1_1wsi_1_1keyboard__state_html_ad5daea270a32a5c90478336768d6fed3"><div class="ttname"><a href="structtz_1_1wsi_1_1keyboard__state.html#ad5daea270a32a5c90478336768d6fed3">tz::wsi::keyboard_state::keys_down</a></div><div class="ttdeci">std::array&lt; key, max_simultaneous_key_presses &gt; keys_down</div><div class="ttdoc">List of keys currently pressed. There is an implementation-defined maximum number of keys that can be...</div><div class="ttdef"><b>Definition</b> keyboard.hpp:28</div></div>
 <div class="ttc" id="astructtz_1_1wsi_1_1keyboard__state_html_aff2a1e6ef218cd37ac2628ae96b20492"><div class="ttname"><a href="structtz_1_1wsi_1_1keyboard__state.html#aff2a1e6ef218cd37ac2628ae96b20492">tz::wsi::keyboard_state::pop_last_key</a></div><div class="ttdeci">key pop_last_key() const</div><div class="ttdoc">Retrieve the last pressed key, and reset that state to key::unknown.</div><div class="ttdef"><b>Definition</b> keyboard.hpp:35</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_599c755ba65617583b8f9ca84c06536f.html">wsi</a></li><li class="navelem"><a class="el" href="dir_ec6445c9b7ffdfd0780b9f9686149b19.html">api</a></li><li class="navelem"><b>keyboard.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

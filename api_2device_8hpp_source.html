@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('api_2device_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('api_2device_8hpp_source.html',''); ini
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_ee9290bbb94f4eedc360bcd5845482c0.html">api</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">device.hpp</div></div>
 </div><!--header-->
@@ -188,22 +173,18 @@ $(document).ready(function(){initNavTree('api_2device_8hpp_source.html',''); ini
 <div class="ttc" id="aclasstz_1_1gl_1_1device_html_aa2adea5cb25d9712f1fe2b22dba3eec7"><div class="ttname"><a href="classtz_1_1gl_1_1device.html#aa2adea5cb25d9712f1fe2b22dba3eec7">tz::gl::device::renderer_count</a></div><div class="ttdeci">std::size_t renderer_count()</div><div class="ttdoc">Retrieve the number of existing renderers.</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1device_html_aadf1c59383bf22d41ad88f866f59df28"><div class="ttname"><a href="classtz_1_1gl_1_1device.html#aadf1c59383bf22d41ad88f866f59df28">tz::gl::device::get_renderer</a></div><div class="ttdeci">tz::gl::renderer &amp; get_renderer(tz::gl::renderer_handle rh)</div><div class="ttdoc">Retrieve a reference to the renderer associated with the given handle.</div></div>
 <div class="ttc" id="aclasstz_1_1gl_1_1device_html_af3bb467ad3c470d6f4352b4ff1a63607"><div class="ttname"><a href="classtz_1_1gl_1_1device.html#af3bb467ad3c470d6f4352b4ff1a63607">tz::gl::device::get_window_format</a></div><div class="ttdeci">tz::gl::image_format get_window_format() const</div><div class="ttdoc">Retrieve the image format that is being used by the window surface.</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1renderer__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition</b> renderer.hpp:112</div></div>
-<div class="ttc" id="aclasstz_1_1gl_1_1renderer_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html">tz::gl::renderer</a></div><div class="ttdoc">Implements tz::gl::renderer_type.</div><div class="ttdef"><b>Definition</b> renderer.hpp:390</div></div>
-<div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:16</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1renderer__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition</b> renderer.hpp:127</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1renderer_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer.html">tz::gl::renderer</a></div><div class="ttdoc">Implements tz::gl::renderer_type.</div><div class="ttdef"><b>Definition</b> renderer.hpp:415</div></div>
+<div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:17</div></div>
 <div class="ttc" id="aconcepttz_1_1gl_1_1device__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1device__type.html">tz::gl::device_type</a></div><div class="ttdoc">Named Requirement: device Implemented by tz_gl2_device.</div><div class="ttdef"><b>Definition</b> device.hpp:21</div></div>
-<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:333</div></div>
+<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:358</div></div>
 <div class="ttc" id="agroup__tz__gl2__renderer_html_gac87fead64cd4f4650e0315adb0841297"><div class="ttname"><a href="group__tz__gl2__renderer.html#gac87fead64cd4f4650e0315adb0841297">tz::gl::renderer_handle</a></div><div class="ttdeci">tz::handle&lt; detail::renderer_tag &gt; renderer_handle</div><div class="ttdoc">Represents a handle for a renderer owned by an existing device.</div><div class="ttdef"><b>Definition</b> renderer.hpp:27</div></div>
 <div class="ttc" id="agroup__tz__gl2_html_ga79b99b79311ee4f6dd10a6dfada3a235"><div class="ttname"><a href="group__tz__gl2.html#ga79b99b79311ee4f6dd10a6dfada3a235">tz::gl::image_format</a></div><div class="ttdeci">image_format</div><div class="ttdoc">Various image formats are supported in Topaz.</div><div class="ttdef"><b>Definition</b> image_format.hpp:33</div></div>
 <div class="ttc" id="astructtz_1_1gl_1_1schedule_html"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html">tz::gl::schedule</a></div><div class="ttdef"><b>Definition</b> schedule.hpp:31</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_c45f7307fd1a89701e5a7df4b0292432.html">gl</a></li><li class="navelem"><a class="el" href="dir_ee9290bbb94f4eedc360bcd5845482c0.html">api</a></li><li class="navelem"><b>device.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>

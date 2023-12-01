@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -32,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.0.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -50,9 +46,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Topaz&#160;Home</span></a></li>
-      <li><a href="usergroup0.html"><span>API</span></a></li>
-      <li><a href="shaders.html"><span>Shaders</span></a></li>
-      <li><a href="graphics.html"><span>Graphics</span></a></li>
+      <li><a href="group__tz__cpp.html"><span>C++&#160;API</span></a></li>
+      <li><a href="tz_lua.html"><span>Lua&#160;API</span></a></li>
+      <li><a href="group__tzsl.html"><span>TZSL&#160;API</span></a></li>
+      <li><a href="https://github.com/harrand/Topaz/wiki"><span>Wiki</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -68,23 +65,6 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('api_2window_8hpp_source.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -106,6 +86,11 @@ $(document).ready(function(){initNavTree('api_2window_8hpp_source.html',''); ini
 </div>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_599c755ba65617583b8f9ca84c06536f.html">wsi</a></li><li class="navelem"><a class="el" href="dir_ec6445c9b7ffdfd0780b9f9686149b19.html">api</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="headertitle"><div class="title">window.hpp</div></div>
 </div><!--header-->
@@ -159,39 +144,36 @@ $(document).ready(function(){initNavTree('api_2window_8hpp_source.html',''); ini
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    {</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">typename</span> T::native;</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        {t.get_native()} -&gt; std::convertible_to&lt;typename T::native&gt;;</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        {t.is_close_requested()} -&gt; std::same_as&lt;bool&gt;;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        {t.get_dimensions()} -&gt; std::same_as&lt;tz::vec2ui&gt;;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        {t.set_dimensions(dims)} -&gt; std::same_as&lt;void&gt;;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        {t.get_title()} -&gt; std::convertible_to&lt;std::string&gt;;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        {t.set_title(str)} -&gt; std::same_as&lt;void&gt;;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        {t.get_flags()} -&gt; std::convertible_to&lt;window_flag::flag_bit&gt;;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        {t.update()} -&gt; std::same_as&lt;void&gt;;</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        {t.make_opengl_context_current()} -&gt; std::same_as&lt;bool&gt;;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="preprocessor">        #if TZ_VULKAN</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        {t.make_vulkan_surface(vkinst)} -&gt; std::convertible_to&lt;VkSurfaceKHR&gt;;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="preprocessor">        #endif </span><span class="comment">// TZ_VULKAN</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        {t.get_keyboard_state()} -&gt; std::convertible_to&lt;keyboard_state&gt;;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        {t.get_mouse_state()} -&gt; std::convertible_to&lt;mouse_state&gt;;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        {t.get_user_data()} -&gt; std::convertible_to&lt;void*&gt;;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        {t.set_user_data(addr)} -&gt; std::same_as&lt;void&gt;;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    };</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#endif </span><span class="comment">// TZ_WSI_API_WINDOW_HPP</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        {t.request_close()} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        {t.is_close_requested()} -&gt; std::same_as&lt;bool&gt;;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        {t.get_dimensions()} -&gt; std::same_as&lt;tz::vec2ui&gt;;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        {t.set_dimensions(dims)} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        {t.get_title()} -&gt; std::convertible_to&lt;std::string&gt;;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        {t.set_title(str)} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        {t.get_flags()} -&gt; std::convertible_to&lt;window_flag::flag_bit&gt;;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        {t.update()} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        {t.make_opengl_context_current()} -&gt; std::same_as&lt;bool&gt;;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">        #if TZ_VULKAN</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        {t.make_vulkan_surface(vkinst)} -&gt; std::convertible_to&lt;VkSurfaceKHR&gt;;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="preprocessor">        #endif </span><span class="comment">// TZ_VULKAN</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        {t.get_keyboard_state()} -&gt; std::convertible_to&lt;keyboard_state&gt;;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        {t.get_mouse_state()} -&gt; std::convertible_to&lt;mouse_state&gt;;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        {t.get_user_data()} -&gt; std::convertible_to&lt;void*&gt;;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        {t.set_user_data(addr)} -&gt; std::same_as&lt;void&gt;;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    };</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="preprocessor">#endif </span><span class="comment">// TZ_WSI_API_WINDOW_HPP</span></div>
 <div class="ttc" id="aconcepttz_1_1wsi_1_1window__api_html"><div class="ttname"><a href="concepttz_1_1wsi_1_1window__api.html">tz::wsi::window_api</a></div><div class="ttdoc">Represents an API for a window.</div><div class="ttdef"><b>Definition</b> window.hpp:66</div></div>
-<div class="ttc" id="agroup__tz__core_html_gabce09c8b4e26d90dc635bac270409446"><div class="ttname"><a href="group__tz__core.html#gabce09c8b4e26d90dc635bac270409446">tz::vec2ui</a></div><div class="ttdeci">vector&lt; unsigned int, 2 &gt; vec2ui</div><div class="ttdoc">A vector of two unsigned ints.</div><div class="ttdef"><b>Definition</b> vector.hpp:217</div></div>
+<div class="ttc" id="agroup__tz__core_html_gabce09c8b4e26d90dc635bac270409446"><div class="ttname"><a href="group__tz__core.html#gabce09c8b4e26d90dc635bac270409446">tz::vec2ui</a></div><div class="ttdeci">vector&lt; unsigned int, 2 &gt; vec2ui</div><div class="ttdoc">A vector of two unsigned ints.</div><div class="ttdef"><b>Definition</b> vector.hpp:244</div></div>
 <div class="ttc" id="astructtz_1_1wsi_1_1window__info_html"><div class="ttname"><a href="structtz_1_1wsi_1_1window__info.html">tz::wsi::window_info</a></div><div class="ttdoc">Specifies creation flags for a wsi::window.</div><div class="ttdef"><b>Definition</b> window.hpp:52</div></div>
 <div class="ttc" id="astructtz_1_1wsi_1_1window__info_html_a0395b7dd58ed3b717fb8be002439c637"><div class="ttname"><a href="structtz_1_1wsi_1_1window__info.html#a0395b7dd58ed3b717fb8be002439c637">tz::wsi::window_info::title</a></div><div class="ttdeci">const char * title</div><div class="ttdoc">Title of the window. Default is &quot;Untitled&quot;.</div><div class="ttdef"><b>Definition</b> window.hpp:54</div></div>
 <div class="ttc" id="astructtz_1_1wsi_1_1window__info_html_a2bf6cc2849715ae0470c560db1a7678a"><div class="ttname"><a href="structtz_1_1wsi_1_1window__info.html#a2bf6cc2849715ae0470c560db1a7678a">tz::wsi::window_info::window_flags</a></div><div class="ttdeci">window_flag::flag_bit window_flags</div><div class="ttdoc">Extra behaviour for the window. Default is none.</div><div class="ttdef"><b>Definition</b> window.hpp:58</div></div>
 <div class="ttc" id="astructtz_1_1wsi_1_1window__info_html_a9a9be15bc17a5d71fb31b89eb8f7d13b"><div class="ttname"><a href="structtz_1_1wsi_1_1window__info.html#a9a9be15bc17a5d71fb31b89eb8f7d13b">tz::wsi::window_info::dimensions</a></div><div class="ttdeci">tz::vec2ui dimensions</div><div class="ttdoc">Dimensions of the window, in pixels. Default is 800x600.</div><div class="ttdef"><b>Definition</b> window.hpp:56</div></div>
 </div><!-- fragment --></div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_173d7eb180c4d4693124e94b33941768.html">tz</a></li><li class="navelem"><a class="el" href="dir_599c755ba65617583b8f9ca84c06536f.html">wsi</a></li><li class="navelem"><a class="el" href="dir_ec6445c9b7ffdfd0780b9f9686149b19.html">api</a></li><li class="navelem"><b>window.hpp</b></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7
+</small></address>
 </body>
 </html>
