@@ -14,7 +14,7 @@
  * Very low-level declarative graphics API.
  * Supports OpenGL/Vulkan, Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
  
- [Topaz 4.0.0](https://github.com/Harrand/Topaz/tree/Topaz4.0) is the most recent release of the Topaz Engine. The next version will be version 4.1.0.
+ [Topaz 4.1.0](https://github.com/Harrand/Topaz/tree/Topaz4.1) is the most recent release of the Topaz Engine. The next version will be version 4.2.0.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
@@ -28,7 +28,8 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes. Patch versions are not formally shipped unless they contain emergency bugfixes for a flawed release.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| 4.1.0			|TBA |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
+| 4.2.0			|TBA |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
+| 4.1.0			|Dec 1, 2023  |	[Topaz4.1](https://github.com/Harrand/Topaz/tree/Topaz4.1)	 | [Branch: gh-pages-tz4.0](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.1)
 | 4.0.0			|July 9, 2023 |	[Topaz4.0](https://github.com/Harrand/Topaz/tree/Topaz4.0)	 | [Branch: gh-pages-tz4.0](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.0)
 | 3.6.1			|Dec 10, 2022 |[Topaz3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6)	 | [Branch: gh-pages-tz3.6](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.6)
 | 3.6.0			|Dec 8, 2022 |[Topaz3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6)	 | [Branch: gh-pages-tz3.6](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.6)
@@ -79,9 +80,12 @@ The table below shows all the engine's dependencies.
 |[debugbreak](https://github.com/scottt/debugbreak)											| Both		  | All			  | Git Submodule			|
 |[GLAD](https://github.com/Dav1dde/glad)													| OpenGL	  | All			  | Included in repository	|
 |[imgui](https://github.com/ocornut/imgui)													| Both		  | All			  | Git Submodule			|
+|[imgui_club](https://github.com/ocornut/imgui_club)										| Both		  | All			  | Git Submodule			|
 |[textc](https://github.com/Harrand/textc/)													| Both		  | All			  | Git Submodule			|
 |[stb](https://github.com/nothings/stb/)													| Both		  | All			  | Git Submodule			|
-|[nlohmann json](https://github.com/nlohmann/json/)													| Both		  | All			  | Git Submodule			|
+|[nlohmann json](https://github.com/nlohmann/json/)											| Both		  | All			  | Git Submodule			|
+|[lua](https://github.com/lua/lua)															| Both		  | All			  | Git Submodule			|
+|[msdfgen](https://github.com/Chlumsky/msdfgen)												| Both		  | All			  | Git Submodule			|
 |[tracy](https://github.com/wolfpld/tracy)													| Both		  | Profile		  | Git Submodule			|
 |[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)											| Vulkan	  | All			  | Needs pre-installation	|
 |[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) | Vulkan	  | All			  | Git Submodule			|
