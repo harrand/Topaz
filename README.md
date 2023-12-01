@@ -29,7 +29,7 @@ Each major version is a total rewrite and thus completely different from the pre
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
 | 4.2.0			|TBA |	master	 | [harrand.github.io](https://harrand.github.io/Topaz/)
-| 4.1.0			|Dec 1, 2023  |	[Topaz4.1](https://github.com/Harrand/Topaz/tree/Topaz4.1)	 | [Branch: gh-pages-tz4.0](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.1)
+| 4.1.0			|Dec 1, 2023  |	[Topaz4.1](https://github.com/Harrand/Topaz/tree/Topaz4.1)	 | [Branch: gh-pages-tz4.1](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.1)
 | 4.0.0			|July 9, 2023 |	[Topaz4.0](https://github.com/Harrand/Topaz/tree/Topaz4.0)	 | [Branch: gh-pages-tz4.0](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.0)
 | 3.6.1			|Dec 10, 2022 |[Topaz3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6)	 | [Branch: gh-pages-tz3.6](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.6)
 | 3.6.0			|Dec 8, 2022 |[Topaz3.6](https://github.com/Harrand/Topaz/tree/Topaz3.6)	 | [Branch: gh-pages-tz3.6](https://github.com/Harrand/Topaz/tree/gh-pages-tz3.6)
