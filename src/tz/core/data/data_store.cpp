@@ -68,7 +68,7 @@ namespace tz
 			TZ_PROFZONE("data_store - generic operation", 0xFF3377AA);
 			std::visit(overloaded
 			{
-				[](auto arg){tz::error("Unknown variant value within bulk_write. Memory corruption? Please submit a bug report.");},
+				[]([[maybe_unused]] auto arg){tz::error("Unknown variant value within bulk_write. Memory corruption? Please submit a bug report.");},
 				[this](detail::ds_add add)
 				{
 					this->store[add.key] = add.val;
@@ -150,7 +150,7 @@ namespace tz
 		tz::lua::lua_generic val = state.stack_get_generic(3);
 		std::visit(overloaded
 		{
-			[](auto arg){tz::error("Lua value type passed to data_store.add is unknown or invalid. Please submit a bug report.");},
+			[]([[maybe_unused]] auto arg){tz::error("Lua value type passed to data_store.add is unknown or invalid. Please submit a bug report.");},
 			[this, key](bool b)
 			{
 				this->ds->add({.key = key, .val = b});
@@ -177,7 +177,7 @@ namespace tz
 		tz::lua::lua_generic val = state.stack_get_generic(3);
 		std::visit(overloaded
 		{
-			[](auto arg){tz::error("Lua value type passed to data_store.edit is unknown or invalid. Please submit a bug report.");},
+			[]([[maybe_unused]] auto arg){tz::error("Lua value type passed to data_store.edit is unknown or invalid. Please submit a bug report.");},
 			[this, key](bool b)
 			{
 				this->ds->edit({.key = key, .val = b});
@@ -210,7 +210,7 @@ namespace tz
 			data_store_value v;
 			std::visit(overloaded
 			{
-				[](auto arg){tz::error("Lua value type passed to data_store.edit is unknown or invalid. Please submit a bug report.");},
+				[]([[maybe_unused]] auto arg){tz::error("Lua value type passed to data_store.edit is unknown or invalid. Please submit a bug report.");},
 				[&v, key = keys[i]](bool b)
 				{
 					v = b;
@@ -262,7 +262,7 @@ namespace tz
 		data_store_value val = this->ds->read_raw(key, true);
 		std::visit(overloaded
 		{
-			[&state](auto arg){state.stack_push_nil();},
+			[&state]([[maybe_unused]] auto arg){state.stack_push_nil();},
 			[&state](bool b){state.stack_push_bool(b);},
 			[&state](float b){state.stack_push_float(b);},
 			[&state](double b){state.stack_push_double(b);},
@@ -287,7 +287,7 @@ namespace tz
 		{
 			std::visit(overloaded
 			{
-				[&state](auto arg){state.stack_push_nil();},
+				[&state]([[maybe_unused]] auto arg){state.stack_push_nil();},
 				[&state](bool b){state.stack_push_bool(b);},
 				[&state](float b){state.stack_push_float(b);},
 				[&state](double b){state.stack_push_double(b);},
