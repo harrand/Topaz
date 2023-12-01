@@ -11,7 +11,7 @@
 
 namespace tz
 {
-	using data_store_value = std::variant<nullptr_t, bool, float, double, int, unsigned int, std::string>;
+	using data_store_value = std::variant<std::nullptr_t, bool, float, double, int, unsigned int, std::string>;
 	namespace detail
 	{
 		struct ds_add
