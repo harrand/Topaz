@@ -314,6 +314,7 @@ namespace tz
 
 	int tz_lua_data_store::clear(tz::lua::state& state)
 	{
+		(void)state;
 		this->ds->clear();
 		return 1;
 	}
