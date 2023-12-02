@@ -5,7 +5,7 @@
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/core/matrix_transform.hpp"
 
-#include "tz/ren/animation2.hpp"
+#include "tz/ren/animation.hpp"
 struct dbgui_data_t
 {
 	bool mesh_renderer_enabled = false;
@@ -50,7 +50,7 @@ int main()
 		ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/animated_sword.glb"), sword_parent);
 		*/
 
-		tz::ren::animation_renderer2 ar;
+		tz::ren::animation_renderer ar;
 		ar.append_to_render_graph();
 
 		auto gltfh = ar.add_gltf(tz::io::gltf::from_file("../../demo/gl/tz_animation_demo/res/human_animated_textured.glb"));
