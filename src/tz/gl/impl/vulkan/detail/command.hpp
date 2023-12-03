@@ -407,10 +407,10 @@ namespace tz::gl::vk2
 		 * @return CommandBuffer that this recording corresponds to.
 		 */
 		const CommandBuffer& get_command_buffer() const;
+		CommandBuffer& get_command_buffer();
 
 		friend class RenderPassRun;
 	private:
-		CommandBuffer& get_command_buffer();
 		void register_command(VulkanCommand::variant command);
 		ImageLayout get_layout_so_far(const Image& image) const;
 

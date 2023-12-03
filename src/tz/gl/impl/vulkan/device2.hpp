@@ -114,12 +114,14 @@ namespace tz::gl
 		{
 			bool compute = false;
 			bool requires_present = true;
+			bool resettable = false;
 		};
 		device_command_pool(device_common<renderer_vulkan2>& devcom);
 		vk2::CommandPool::AllocationResult vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint);
 		void vk_free_commands(unsigned int fingerprint, std::size_t allocation_id, std::span<vk2::CommandBuffer> command_buffers);
 		void vk_command_pool_touch(unsigned int fingerprint, fingerprint_info_t finfo);
 		void vk_submit_and_run_commands_blocking(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, const vk2::CommandBuffer& buffer);
+		const vk2::hardware::Queue* vk_get_associated_queue(unsigned int fingerprint) const;
 		void vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits, const tz::basic_list<const vk2::BinarySemaphore*>& extra_signals, vk2::Fence* signal_fence);
 		/**
 		* present the acquired image.
@@ -136,13 +138,16 @@ namespace tz::gl
 		};
 		vk2::CommandPool::AllocationResult impl_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint, unsigned int attempt);
 		vk2::CommandPool& get_fitting_pool(const fingerprint_info_t& finfo);
-		vk2::hardware::Queue* get_original_queue(const fingerprint_info_t& finfo);
+		vk2::hardware::Queue* get_original_queue(const fingerprint_info_t& finfo) const;
 		vk2::hardware::Queue* graphics_queue = nullptr;
 		vk2::hardware::Queue* graphics_present_queue = nullptr;
 		vk2::hardware::Queue* compute_queue = nullptr;
 		vk2::CommandPool graphics_commands = vk2::CommandPool::null();
+		vk2::CommandPool graphics_commands_resettable = vk2::CommandPool::null();
 		vk2::CommandPool graphics_present_commands = vk2::CommandPool::null();
+		vk2::CommandPool graphics_present_commands_resettable = vk2::CommandPool::null();
 		vk2::CommandPool compute_commands = vk2::CommandPool::null();
+		vk2::CommandPool compute_commands_resettable = vk2::CommandPool::null();
 		std::unordered_map<unsigned int, fingerprint_info_t> fingerprint_alloc_types = {};
 		std::unordered_map<unsigned int, std::vector<vk2::CommandPool::Allocation>> fingerprint_allocation_history = {};
 	};

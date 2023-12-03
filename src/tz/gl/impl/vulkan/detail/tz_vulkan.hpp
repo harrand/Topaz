@@ -208,6 +208,7 @@ namespace tz::gl::vk2
 
 		bool has_surface() const;
 		bool validation_layers_enabled() const;
+		PFN_vkVoidFunction get_proc_addr(const char* pname) const;
 
 		const WindowSurface& get_surface() const;
 		const InstanceExtensionList& get_extensions() const;

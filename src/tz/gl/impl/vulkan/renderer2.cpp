@@ -1,6 +1,6 @@
 #include "tz/gl/api/renderer.hpp"
-#include "tz/gl/impl/vulkan/detail/fixed_function.hpp"
 #if TZ_VULKAN
+#include "tz/gl/impl/vulkan/detail/fixed_function.hpp"
 #include "tz/gl/impl/vulkan/renderer2.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/gl/device.hpp"
@@ -830,6 +830,7 @@ namespace tz::gl
 		TZ_PROFZONE("renderer_command_processor - initialise", 0xFFAAAA00);
 		this->allocate_commands(command_type::both);
 		this->scratch_initialise_static_resources();
+		this->scratch_create_profile_context();
 		this->record_commands(rinfo.state(), rinfo.get_options(), rinfo.debug_get_name());
 	}
 
@@ -903,6 +904,13 @@ namespace tz::gl
 			vk2::CommandBufferRecording rec = buf.record();
 			TZ_PROFZONE("do scratch work - record commands", 0xFFAAAA00);
 			record_commands(rec);
+
+			#if TZ_PROFILE
+			if(this->tracy_profile_context_initialised)
+			{
+				TracyVkCollect(this->tracy_profile_context, buf.native());
+			}
+			#endif
 		}
 		// then, execute them.
 		constexpr std::size_t scratch_id = 1;
@@ -928,6 +936,12 @@ namespace tz::gl
 		{
 			vk2::CommandBufferRecording record = bufs[i].record();
 			work_record_commands(record, i);
+			#if TZ_PROFILE
+			if(this->tracy_profile_context_initialised)
+			{
+				TracyVkCollect(this->tracy_profile_context, bufs[i].native());
+			}
+			#endif
 		}
 	}
 
@@ -1026,6 +1040,54 @@ namespace tz::gl
 		this->do_static_resource_transfers(resource_staging_buffers);
 	}
 
+	VkResult vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(VkPhysicalDevice pdev, std::uint32_t* p_time_domain_count, VkTimeDomainEXT* p_time_domains)
+	{
+		auto* func = vk2::get().get_proc_addr("vkGetPhysicalDeviceCalibrateableTimeDomainsEXT");
+		if(func != nullptr)
+		{
+			return reinterpret_cast<PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT>(func)(pdev, p_time_domain_count, p_time_domains);
+		}
+		else
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+	}
+
+	VkResult vkGetCalibratedTimestampsEXT(VkDevice device, uint32_t timestampCount, const VkCalibratedTimestampInfoEXT *pTimestampInfos, uint64_t *pTimestamps, uint64_t *pMaxDeviation)
+	{
+		auto* func = vk2::get().get_proc_addr("vkGetCalibratedTimestampsEXT");
+		if(func != nullptr)
+		{
+			return reinterpret_cast<PFN_vkGetCalibratedTimestampsEXT>(func)(device, timestampCount, pTimestampInfos, pTimestamps, pMaxDeviation);
+		}
+		else
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+	}
+
+	void renderer_command_processor::scratch_create_profile_context()
+	{
+		#if !TZ_PROFILE
+			return;
+		#else
+			// get new scratch buffer.
+			if(this->scratch_command_buffer().has_ever_recorded())
+			{
+				this->allocate_commands(command_type::scratch, true);
+			}
+			vk2::CommandBuffer& buf = this->scratch_command_buffer();
+			buf.record();
+			const vk2::LogicalDevice& ldev = buf.get_device();
+			const vk2::PhysicalDevice& pdev = ldev.get_hardware();
+			const vk2::hardware::Queue* queue = tz::gl::get_device().vk_get_associated_queue(renderer_vulkan_base::uid);
+			tz::assert(queue != nullptr);
+
+			this->tracy_profile_context = TracyVkContextCalibrated(pdev.native(), ldev.native(), queue->native(), buf.native(), vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, vkGetCalibratedTimestampsEXT);
+			this->tracy_profile_context_initialised = true;
+		#endif
+	}
+
 	void renderer_command_processor::queue_resource_write(tz::gl::renderer_edit::resource_write rwrite)
 	{
 		iresource* res = renderer_resource_manager::get_resource(rwrite.resource);
@@ -1081,6 +1143,10 @@ namespace tz::gl
 			const bool present = !options.contains(tz::gl::renderer_option::no_present) && renderer_output_manager::targets_window();
 			record.debug_begin_label({.name = label});
 			vk2::Image& cur_swapchain_image = tz::gl::get_device().get_swapchain().get_images()[render_target_id];
+
+			#if TZ_PROFILE
+			TracyVkZone(this->tracy_profile_context, record.get_command_buffer().native(), "Graphics Commands");
+			#endif
 
 			// if 'no clear output' isn't specified, then we can say old layout is undefined, so we're guaranteed to be in colour attachment after.
 			// after a present, we want this to be the case so this should work?
@@ -1263,6 +1329,9 @@ namespace tz::gl
 		this->set_work_commands([this, state, &label](vk2::CommandBufferRecording& record, unsigned int render_target_id)
 		{
 			record.debug_begin_label({.name = label});
+			#if TZ_PROFILE
+			TracyVkZone(this->tracy_profile_context, record.get_command_buffer().native(), "Compute Commands");
+			#endif
 			// bind pipeline -> bind descriptor set -> dispatch
 			record.bind_pipeline
 			({
@@ -1288,7 +1357,7 @@ namespace tz::gl
 		});
 	}
 
-	void renderer_command_processor::allocate_commands(renderer_command_processor::command_type t)
+	void renderer_command_processor::allocate_commands(renderer_command_processor::command_type t, bool resettable)
 	{
 		TZ_PROFZONE("renderer_command_processor - allocate commands", 0xFFAAAA00);
 		if(this->command_allocations.size() > 0 /* this might be incorrect logic */)
@@ -1313,7 +1382,8 @@ namespace tz::gl
 		{
 			// todo: no magic values.
 			.compute = false,
-			.requires_present = true
+			.requires_present = true,
+			.resettable = resettable
 		});
 		// one allocation for our render/compute work commands.
 		if(t == renderer_command_processor::command_type::work || t == renderer_command_processor::command_type::both)

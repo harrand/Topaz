@@ -415,6 +415,11 @@ namespace tz::gl::vk2
 		return this->info.enable_validation_layers;
 	}
 
+	PFN_vkVoidFunction VulkanInstance::get_proc_addr(const char* pname) const
+	{
+		return vkGetInstanceProcAddr(this->instance, pname);
+	}
+
 	const WindowSurface& VulkanInstance::get_surface() const
 	{
 		tz::assert(this->has_surface(), "VulkanInstance did not have attached surface. Please submit a bug report.");

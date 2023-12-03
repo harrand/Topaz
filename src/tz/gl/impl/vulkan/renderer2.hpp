@@ -12,6 +12,13 @@
 #include "tz/gl/impl/vulkan/detail/fence.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 
+#if TZ_PROFILE
+#undef assert
+#include "tracy/TracyVulkan.hpp"
+#undef assert
+#endif // TZ_PROFILE
+
+
 namespace tz::gl
 {
 	// to encapsulate the whole state of a vulkan renderer leads to *alot* of code.
@@ -178,13 +185,14 @@ namespace tz::gl
 		// only initialise the static resources specified
 		// unless parameter is empty span - in which case initialise *all* static resources.
 		void scratch_initialise_static_resources(std::span<const tz::gl::resource_handle> static_resources_to_initialise = {});
+		void scratch_create_profile_context();
 		void queue_resource_write(tz::gl::renderer_edit::resource_write rwrite);
 		void submit_resource_writes();
 		void reset_resource_write_buffers();
 	private:
 		void record_render_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
 		void record_compute_commands(const tz::gl::render_state& state, const tz::gl::renderer_options& options, std::string label);
-		void allocate_commands(command_type t = command_type::both);
+		void allocate_commands(command_type t = command_type::both, bool resettable = false);
 		void free_commands(command_type t = command_type::both);
 		void do_static_resource_transfers(std::span<vk2::Buffer> resource_staging_buffers);
 
@@ -196,6 +204,10 @@ namespace tz::gl
 		vk2::Fence render_wait_fence = vk2::Fence::null();
 		vk2::BinarySemaphore present_sync_semaphore = vk2::BinarySemaphore::null();
 		std::vector<vk2::Buffer> pending_resource_write_staging_buffers = {};
+		#if TZ_PROFILE
+		TracyVkCtx tracy_profile_context = {};
+		bool tracy_profile_context_initialised = false;
+		#endif
 	};
 
 	class renderer_vulkan2 : public renderer_command_processor

@@ -128,6 +128,9 @@ namespace tz::gl
 		#if TZ_DEBUG
 			dev_exts |= vk2::DeviceExtension::ShaderDebugPrint;
 		#endif
+		#if TZ_PROFILE
+			dev_exts |= vk2::DeviceExtension::CalibratedTimestamps;
+		#endif
 		tz::assert(pdev.get_supported_extensions().contains(dev_exts), "One or more of the %zu required DeviceExtensions are not supported by this machine/driver. Please ensure your machine meets the system requirements.", dev_exts.count());
 		return vk2::LogicalDevice
 		{{
@@ -564,6 +567,10 @@ namespace tz::gl
 		this->graphics_commands = {{.queue = this->graphics_queue}};
 		this->graphics_present_commands = {{.queue = this->graphics_present_queue}};
 		this->compute_commands = {{.queue = this->compute_queue}};
+
+		this->graphics_commands_resettable = {{.queue = this->graphics_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
+		this->graphics_present_commands_resettable = {{.queue = this->graphics_present_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
+		this->compute_commands_resettable = {{.queue = this->compute_queue, .flags = {vk2::CommandPoolFlag::Reusable}}};
 	}
 
 	vk2::CommandPool::AllocationResult device_command_pool::vk_allocate_commands(const vk2::CommandPool::Allocation& alloc, unsigned int fingerprint)
@@ -624,6 +631,11 @@ namespace tz::gl
 	   		.execution_complete_fence = &temp_fence
 		});	
 		temp_fence.wait_until_signalled();
+	}
+
+	const vk2::hardware::Queue* device_command_pool::vk_get_associated_queue(unsigned int fingerprint) const
+	{
+		return this->get_original_queue(this->fingerprint_alloc_types.at(fingerprint));
 	}
 
 	void device_command_pool::vk_submit_command(unsigned int fingerprint, std::size_t allocation_id, std::size_t buffer_id, std::span<const vk2::CommandBuffer> cmdbufs, const tz::basic_list<const vk2::BinarySemaphore*>& extra_waits, const tz::basic_list<const vk2::BinarySemaphore*>& extra_signals, vk2::Fence* signal_fence)
@@ -785,16 +797,25 @@ namespace tz::gl
 	{
 		if(finfo.compute)
 		{
-			return this->compute_commands;
+			if(finfo.resettable)
+				return this->compute_commands_resettable;
+			else
+				return this->compute_commands;
 		}
 		if(finfo.requires_present)
 		{
-			return this->graphics_present_commands;
+			if(finfo.resettable)
+				return this->graphics_present_commands_resettable;
+			else
+				return this->graphics_present_commands;
 		}
-		return this->graphics_commands;
+		if(finfo.resettable)
+			return this->graphics_commands_resettable;
+		else
+			return this->graphics_commands;
 	}
 
-	vk2::hardware::Queue* device_command_pool::get_original_queue(const fingerprint_info_t& finfo)
+	vk2::hardware::Queue* device_command_pool::get_original_queue(const fingerprint_info_t& finfo) const
 	{
 		if(finfo.compute)
 		{

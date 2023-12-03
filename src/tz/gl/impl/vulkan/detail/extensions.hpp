@@ -32,6 +32,8 @@ namespace tz::gl::vk2
 		/// - Enables Swapchain operations (required to create a swapchain and present images)
 		Swapchain,
 		ShaderDebugPrint,
+		/// - Needed for Tracy profiling
+		CalibratedTimestamps,
 
 		Count
 	};
@@ -46,11 +48,11 @@ namespace tz::gl::vk2
 	namespace util
 	{
 		constexpr std::array<const char*, static_cast<int>(InstanceExtension::Count)> instance_extension_tz_names{"Debug Messenger"};
-		constexpr std::array<const char*, static_cast<int>(DeviceExtension::Count)> device_extension_tz_names{"Swapchain", "Shader Debug Print"};
+		constexpr std::array<const char*, static_cast<int>(DeviceExtension::Count)> device_extension_tz_names{"Swapchain", "Shader Debug Print", "Calibrated Timestamps"};
 
 		using VkExtension = const char*;
 		constexpr std::array<VkExtension, static_cast<int>(InstanceExtension::Count)> instance_extension_names{VK_EXT_DEBUG_UTILS_EXTENSION_NAME};
-		constexpr std::array<VkExtension, static_cast<int>(DeviceExtension::Count)> device_extension_names{VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME};
+		constexpr std::array<VkExtension, static_cast<int>(DeviceExtension::Count)> device_extension_names{VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME, VK_EXT_CALIBRATED_TIMESTAMPS_EXTENSION_NAME};
 
 		constexpr VkExtension to_vk_extension(InstanceExtension extension)
 		{
