@@ -763,12 +763,22 @@ namespace tz::dbgui
 
 	void do_lua_cmd()
 	{
-		global_platform_data->lua_console_history += std::string("\n>") + global_platform_data->lua_console_buf;
-		bool success = tz::lua::get_state().execute(global_platform_data->lua_console_buf.c_str(), false);
+		std::string cmd = global_platform_data->lua_console_buf;
+		global_platform_data->lua_console_history += std::string("\n>") + cmd;
+
+		bool success = true;
+		std::size_t pos = 0;
+		std::string token;
+		if((pos = cmd.find("=")) != std::string::npos)
 		{
-			std::string print_cmd = "print(" + global_platform_data->lua_console_buf + ")";
-			success |= tz::lua::get_state().execute(print_cmd.c_str(), false);
+			token = cmd.substr(0, pos);
+			success &= tz::lua::get_state().execute(cmd.c_str(), false);
 		}
+		else
+		{
+			token = cmd;
+		}
+		success &= tz::lua::get_state().execute(std::string("print(" + token + ")").c_str(), false);
 		if(!success)
 		{
 			global_platform_data->lua_console_history += "\nLua Error: \"" + tz::lua::get_state().get_last_error() + "\"\n";
