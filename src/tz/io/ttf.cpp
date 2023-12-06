@@ -55,10 +55,17 @@ namespace tz::io
 		for(const auto& contour : glyph.shape.contours)
 		{
 			msdfgen::Contour msdfcont;
+			std::vector<msdfgen::Point2> points = {};
 			for(const auto& [beg, end] : contour.edges)
 			{
-				msdfcont.addEdge(msdfgen::EdgeHolder{msdfvec(beg), msdfvec(end)});
+				points.push_back(msdfvec(beg));
+				points.push_back(msdfvec(end));
 			}
+			for(std::size_t i = 1; i < points.size(); i++)
+			{
+				msdfcont.addEdge(msdfgen::EdgeHolder{points[i - 1], points[i]});
+			}
+			msdfcont.addEdge(msdfgen::EdgeHolder{points.back(), points.front()});
 			shape.addContour(msdfcont);
 		}
 //		for(std::size_t i = 1; i < glyph.shape.contours.size(); i++)
@@ -70,6 +77,7 @@ namespace tz::io
 
 		// generate bitmap
 		shape.normalize();
+		tz::assert(shape.validate());
 		msdfgen::edgeColoringSimple(shape, i.angle_threshold);
 		msdfgen::Bitmap<float, 3> msdf(i.dimensions[0], i.dimensions[1]);
 

@@ -24,13 +24,15 @@ static tz::io::ttf::rasterise_info rast
 	.translate = tz::vec2::zero()
 };
 
+constexpr char ch = 'X';
+
 int main()
 {
 	tz::initialise({.name = "tz_text_rendering_demo"});
 	{
 		dbgui_init();
 		tz::io::ttf ttf = tz::io::ttf::from_memory(ImportedTextData(ProggyClean, ttf));
-		tz::io::image img_c = ttf.rasterise_msdf('A', rast);
+		tz::io::image img_c = ttf.rasterise_msdf(ch, rast);
 
 		tz::ren::mesh_renderer mr;
 		mr.append_to_render_graph();
@@ -74,7 +76,7 @@ int main()
 
 						if(changed)
 						{
-							auto new_tex = mr.add_texture(ttf.rasterise_msdf('c', rast));
+							auto new_tex = mr.add_texture(ttf.rasterise_msdf(ch, rast));
 							mr.get_object(obj).bound_textures[0].texture = new_tex;
 						}
 
