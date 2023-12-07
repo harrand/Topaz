@@ -4,6 +4,7 @@
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/core/types.hpp"
 #include "tz/core/data/vector.hpp"
+#include "tz/io/image.hpp"
 #include <ranges>
 #include <optional>
 
@@ -131,6 +132,8 @@ namespace tz::gl
 		 * @param data Range containing a block of memory representing the image data. The length of the block should exactly match that of the image's size in bytes, or the behaviour is undefined.
 		 */
 		static image_resource from_memory(std::ranges::contiguous_range auto data, image_info info = {});
+
+		static image_resource from_struct(tz::io::image img, image_info info = {});
 		/**
 		 * Create a null image_resource.
 		 *

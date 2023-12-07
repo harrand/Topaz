@@ -24,7 +24,7 @@ static tz::io::ttf::rasterise_info rast
 	.translate = tz::vec2::zero()
 };
 
-constexpr char ch = 'X';
+constexpr char ch = 'e';
 
 int main()
 {

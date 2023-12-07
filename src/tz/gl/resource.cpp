@@ -178,6 +178,12 @@ namespace tz::gl
 		return {info.access, resource_data, 0, info.format, info.dimensions, info.flags};
 	}
 
+	image_resource image_resource::from_struct(tz::io::image img, image_info info)
+	{
+		info.dimensions = {img.width, img.height};
+		return image_resource::from_memory(img.data, info);
+	}
+
 	bool image_resource::is_null() const
 	{
 		const image_resource null = image_resource::null();

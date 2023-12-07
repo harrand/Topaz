@@ -270,6 +270,8 @@ add_library(topaz STATIC
 	src/tz/ren/mesh.cpp
 	src/tz/ren/mesh.dbgui.cpp
 	src/tz/ren/mesh.hpp
+	src/tz/ren/text.cpp
+	src/tz/ren/text.hpp
 	src/tz/ren/tz_ren.cpp
 	src/tz/ren/tz_ren.hpp
 	)
