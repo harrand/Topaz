@@ -345,6 +345,8 @@ add_shader(
 		src/tz/ren/shaders/mesh.compute.tzsl
 		src/tz/ren/shaders/mesh.vertex.tzsl
 		src/tz/ren/shaders/mesh.fragment.tzsl
+		src/tz/ren/shaders/text.vertex.tzsl
+		src/tz/ren/shaders/text.fragment.tzsl
 	)
 
 add_text(

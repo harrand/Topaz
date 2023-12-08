@@ -32,6 +32,9 @@ namespace tz::ren
 		text_renderer(std::size_t image_capacity = 1024u);
 		using font_handle = tz::handle<font_entry>;
 
+		/// Add the underlying renderers to the end of the render graph. They will not be reliant on any other renderers.
+		void append_to_render_graph();
+
 		font_handle add_font(tz::io::ttf font);
 		void remove_font(font_handle fh);
 	private:

@@ -49,7 +49,13 @@ namespace tz::io
 
 		// populate msdf shape
 		msdfgen::Shape shape;
+		shape.inverseYAxis = true;
 
+		if(this->glyphs.find(c) == this->glyphs.end())
+		{
+			// glyph didnt exist. use !
+			c = '!';
+		}
 		tz::assert(this->glyphs.find(c) != this->glyphs.end(), "TTF Did not contain glyph \'%c\'", c);
 		const auto& glyph = this->glyphs.at(c);
 		for(const auto& contour : glyph.shape.contours)

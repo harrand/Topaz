@@ -1,6 +1,7 @@
 #include "tz/tz.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/io/ttf.hpp"
+#include "tz/ren/text.hpp"
 
 #include "tz/core/imported_text.hpp"
 #include ImportedTextHeader(ProggyClean, ttf)
@@ -24,7 +25,7 @@ static tz::io::ttf::rasterise_info rast
 	.translate = tz::vec2::zero()
 };
 
-constexpr char ch = 'e';
+constexpr char ch = 'F';
 
 int main()
 {
@@ -33,6 +34,9 @@ int main()
 		dbgui_init();
 		tz::io::ttf ttf = tz::io::ttf::from_memory(ImportedTextData(ProggyClean, ttf));
 		tz::io::image img_c = ttf.rasterise_msdf(ch, rast);
+		tz::ren::text_renderer tren;
+		tren.append_to_render_graph();
+		tz::ren::text_renderer::font_handle fonth = tren.add_font(ttf);
 
 		tz::ren::mesh_renderer mr;
 		mr.append_to_render_graph();

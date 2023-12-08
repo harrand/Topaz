@@ -1,5 +1,9 @@
 #include "tz/ren/text.hpp"
 #include "tz/gl/device.hpp"
+#include "tz/gl/imported_shaders.hpp"
+
+#include ImportedShaderHeader(text, vertex)
+#include ImportedShaderHeader(text, fragment)
 
 namespace tz::ren
 {
@@ -14,6 +18,8 @@ namespace tz::ren
 	text_renderer::text_renderer(std::size_t image_capacity)
 	{
 		tz::gl::renderer_info rinfo;
+		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(text, vertex));
+		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(text, fragment));
 		this->images.resize(image_capacity, tz::nullhand);
 		for(std::size_t i = 0; i < image_capacity; i++)
 		{
@@ -23,6 +29,12 @@ namespace tz::ren
 					.dimensions = {1u, 1u}
 			}));
 		}
+		this->rh = tz::gl::get_device().create_renderer(rinfo);
+	}
+
+	void text_renderer::append_to_render_graph()
+	{
+		tz::gl::get_device().render_graph().timeline.push_back(static_cast<tz::gl::eid_t>(static_cast<tz::hanval>(this->rh)));
 	}
 
 	text_renderer::font_handle text_renderer::add_font(tz::io::ttf font)
@@ -36,6 +48,7 @@ namespace tz::ren
 		}
 
 		auto& entry = this->fonts.emplace_back();
+		tz::gl::RendererEditBuilder builder;
 		for(char c : alphabet)
 		{
 			std::uint32_t texture_id = this->texture_cursor;
@@ -55,10 +68,18 @@ namespace tz::ren
 			tz::assert(maybe_idx.has_value());
 			entry.alphabet_images[maybe_idx.value()] = texture_id;
 			// write the image.
-			tz::io::image img = font.rasterise_msdf(c, {});
+			tz::io::image img = font.rasterise_msdf(c,
+			{
+				.dimensions = {32u, 32u},
+				.angle_threshold = 3.0f,
+				.range = 0.1f,
+				.scale = 64.0f,
+				.translate = tz::vec2::zero()
+			});
+			tz::assert(img.width != 0 && img.height != 0);
 			auto data = std::span<const std::byte>(img.data);
 
-			tz::gl::get_device().get_renderer(this->rh).edit(tz::gl::RendererEditBuilder{}
+			builder
 			.image_resize
 			({
 				.image_handle = static_cast<tz::hanval>(texture_id),
@@ -69,10 +90,10 @@ namespace tz::ren
 				.resource = static_cast<tz::hanval>(texture_id),
 				.data = data,
 				.offset = 0u,
-			})
-			.build());
+			});
 		}
-		
+
+		tz::gl::get_device().get_renderer(this->rh).edit(builder.build());
 		return static_cast<tz::hanval>(font_id);
 	}
 
