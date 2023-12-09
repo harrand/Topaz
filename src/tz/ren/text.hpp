@@ -18,36 +18,52 @@ namespace tz::ren
 		return std::nullopt;
 	}
 
-	struct font_entry
+	class char_storage
 	{
-		std::uint32_t get_glyph_image(char ch) const;
+	public:
+		char_storage(tz::gl::renderer_info& rinfo);
+		char_storage() = default;
+		using string_handle = tz::handle<const char*>;
+		struct string_locator
+		{
+			std::size_t offset = 0;
+			std::size_t count = 0;
+		};
 
-		// alphabet_images is a list of image ids. [0] means the image corresponding to the glyph alphabet[0]
-		std::array<std::uint32_t, alphabet.length()> alphabet_images = {};
+		string_handle add_string(tz::gl::renderer_handle rh, std::string str);
+		void remove_string(string_handle sh);
+		std::size_t string_count(bool include_free_list = false) const;
+	private:
+		std::optional<std::size_t> try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const;
+		std::size_t get_char_capacity(tz::gl::renderer_handle rh) const;
+		void set_char_capacity(tz::gl::renderer_handle rh, std::size_t char_count);
+		// convert ascii chars into alphabet indices (in-place)
+		static constexpr void format(std::span<char> ascii_str)
+		{
+			for(char& c : ascii_str)
+			{
+				auto maybe_index = alphabet_indexof(c);
+				if(!maybe_index.has_value())
+				{
+					maybe_index = alphabet_indexof('?');
+					tz::assert(maybe_index.has_value());
+				}
+				c = maybe_index.value();
+			}
+		}
+
+		tz::gl::resource_handle char_buffer = tz::nullhand;
+		std::vector<string_locator> strings = {};
+		std::vector<string_handle> string_free_list = {};
 	};
 
 	class text_renderer
 	{
 	public:
 		text_renderer(std::size_t image_capacity = 1024u);
-		using font_handle = tz::handle<font_entry>;
-
-		/// Add the underlying renderers to the end of the render graph. They will not be reliant on any other renderers.
-		void append_to_render_graph();
-
-		font_handle add_font(tz::io::ttf font);
-		void remove_font(font_handle fh);
 	private:
-		tz::gl::renderer_handle rh = tz::nullhand;
-		// stores a set of text structures. each text has an offset + length view into the char buffer.
-		//tz::gl::resource_handle text_buffer = tz::nullhand;
-		// stores a massive list of chars (encoded not as ascii, but as alphabet indices). all text data lives here.
-		//tz::gl::resource_handle char_buffer = tz::nullhand;
-		std::vector<tz::gl::resource_handle> images = {};
-		std::size_t texture_cursor = 0;
-		std::vector<std::uint32_t> image_id_free_list = {};
-		std::vector<font_entry> fonts = {};
-		std::vector<font_handle> font_free_list = {};
+		char_storage chars;
+		tz::gl::renderer_handle rh;
 	};
 }
 
