@@ -37,6 +37,7 @@ int main()
 		tz::ren::text_renderer tren;
 		tren.append_to_render_graph();
 		tz::ren::text_renderer::font_handle fonth = tren.add_font(ttf);
+		tren.add_string("well met! i am harrand");
 
 		tz::ren::mesh_renderer mr;
 		mr.append_to_render_graph();

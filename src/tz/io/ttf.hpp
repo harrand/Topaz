@@ -193,6 +193,7 @@ namespace tz::io
 		};
 
 		tz::io::image rasterise_msdf(char c, rasterise_info i) const;
+		const ttf_glyph_map& get_glyphs() const;
 		ttf(std::string_view ttf_data);
 	private:
 		std::string_view parse_header(std::string_view str);

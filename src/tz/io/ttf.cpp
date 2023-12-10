@@ -108,6 +108,11 @@ namespace tz::io
 		return ret;
 	}
 
+	const ttf_glyph_map& ttf::get_glyphs() const
+	{
+		return this->glyphs;
+	}
+
 	ttf::ttf(std::string_view ttf_data)
 	{
 		std::string_view ttf_minus_header = this->parse_header(ttf_data);
