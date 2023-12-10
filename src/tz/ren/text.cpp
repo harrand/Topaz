@@ -256,8 +256,8 @@ namespace tz::ren
 		struct glyph_data
 		{
 			std::uint32_t image_id;
-			tz::vec2ui32 bearing;
 			std::uint32_t advance;
+			tz::vec2ui32 bearing;
 		};
 		std::array<glyph_data, alphabet.size()> glyphs = {};
 	};

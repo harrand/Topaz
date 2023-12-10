@@ -30,6 +30,7 @@ namespace tz::ren
 			std::uint32_t offset = 0;
 			std::uint32_t count = 0;
 			std::uint32_t font_id = 0;
+			float pad0;
 			tz::vec2 position = tz::vec2::zero();
 		};
 

@@ -107,7 +107,7 @@ namespace tz::gl::vk2
 					{
 						// We're printing!
 						callback_message.remove_prefix(print_pos + std::strlen(gpumsg_token));
-						callback_message.remove_suffix(callback_message.find("\""));
+						//callback_message.remove_suffix(callback_message.find("\""));
 						tz::report("%s", callback_message.data());
 					}
 				}
