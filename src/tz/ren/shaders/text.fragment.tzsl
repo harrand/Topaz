@@ -2,6 +2,7 @@ shader(type = fragment);
 
 input(id = 0, flat) uint image_id;
 input(id = 1) vec2 texcoord;
+input(id = 2) vec3 colour;
 output(id = 0) vec4 frag_colour;
 
 resource(id = 3) const texture res::textures[];
@@ -18,6 +19,10 @@ void main()
 	float opacity = clamp(screen_px_distance + 0.5f, 0.0f, 1.0f);
 
 	const vec4 bgcolour = vec4(0.0f, 0.0f, 0.0f, 0.0f);
-	const vec4 fgcolour = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	const vec4 fgcolour = vec4(colour, 1.0f);
 	frag_colour = mix(fgcolour, bgcolour, opacity);
+	if(frag_colour.w < 0.1f)
+	{
+		discard;
+	}
 }

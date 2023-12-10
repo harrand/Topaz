@@ -1,12 +1,14 @@
 shader(type = vertex);
 
 import <mesh>
+import <debug>
 
 struct string_locator
 {
 	uint offset;
 	uint count;
 	uint font_id;
+	vec3 colour;
 	vec2 position;
 };
 
@@ -42,6 +44,7 @@ resource(id = 2) const buffer font_buffer
 
 output(id = 0) uint out::image_id;
 output(id = 1) vec2 out::texcoord;
+output(id = 2) vec3 out::colour;
 
 vec2 quad_positions[6] = vec2[](
 	vec2(-1.0, -1.0), vec2(1.0, 1.0), vec2(1.0, -1.0),
@@ -68,25 +71,39 @@ void main()
 		cumulative_char_count += drawn_string.count;
 		string_char_offset = char_id - drawn_string.offset;
 		string_id++;
-		//tz::debug::printf("%u %u %u", string_id, string_char_offset, cumulative_char_count);
 	}
-	while(cumulative_char_count < char_id && string_id < 8);
-	uint char4 = char.data[string_char_offset / 4];
-	uint alphabet_id = (char4 >> (8 * (string_char_offset % 4))) & 0xFF;
-	//tz::debug::printf("%u %u", char4, alphabet_id);
+	while(cumulative_char_count < char_id);
+	// this is because we increment string id even if the condition is about to be false - a side-effect of do-while.
+	string_id--;
+	uint offset = drawn_string.offset + string_char_offset;
+	if(string_id > 0)
+	{
+		// this shouldnt need to be a thing.
+		// if this isnt the first string, these are 1 too high. hacky workaround.
+		// needs proper fix.
+		offset--;
+		string_char_offset--;
+	}
+	uint char4 = char.data[offset / 4];
+	uint alphabet_id = (char4 >> (8 * (offset % 4))) & 0xFF;
 
 	// drawn_string is the string locator we're currently in.
 	// string_char_offset is the nth character within the string we want to draw.
 	glyph_data glyph = font.list[drawn_string.font_id].glyphs[alphabet_id];
-	//quadpos.x += string_char_offset;
-	quadpos.x += (char_id * 2);
+	// fixed-size advance
+	quadpos.x += string_char_offset * 2;
+	//quadpos.x += (char_id * 2);
+	// automagic string heights
+	quadpos.y += (string_id * 2);
+	// move to the far left.
+	quadpos.x -= 9.0f;
 
 	// quadpos is the local space position
 	// todo: pretend glyph.position represents a model martix, and transform.
 	// note: glyph.position is intended to be in pixels, not NDC.
-	//tz::debug::printf("%u", glyph.image_id);
 
 	out::position = vec4(quadpos * 0.1f, 0.0, 1.0);
 	out::image_id = glyph.image_id;
 	out::texcoord = quad_texcoords[in::vertex_id % 6];
+	out::colour = drawn_string.colour;
 }

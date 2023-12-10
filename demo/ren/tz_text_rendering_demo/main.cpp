@@ -24,7 +24,7 @@ int main()
 		tz::ren::text_renderer tren;
 		tren.append_to_render_graph();
 		tz::ren::text_renderer::font_handle fonth = tren.add_font(ttf);
-		tren.add_string(fonth, tz::vec2{1.0f, 2.0f},"well met! i am harrand");
+		tren.add_string(fonth, tz::vec2{1.0f, 2.0f},"well met! i am harrand", {1.0f, 0.5f, 0.4f});
 		tren.add_string(fonth, tz::vec2{3.0f, 4.0f},"big jon was here.");
 
 		while(!tz::window().is_close_requested())

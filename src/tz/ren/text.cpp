@@ -33,7 +33,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, std::string str)
+	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, tz::vec3 colour, std::string str)
 	{
 		// first, add all the chars into the buffer.
 		std::span<char> span{str.data(), str.size()};
@@ -67,7 +67,7 @@ namespace tz::ren
 		// now we write the string locator.
 		// this is a view into the chars we just wrote.
 		// the text will "own" this portion of the char buffer.
-		string_locator loc{.offset = static_cast<std::uint32_t>(maybe_region.value()), .count = static_cast<std::uint32_t>(str.size()), .font_id = font_id, .position = position};
+		string_locator loc{.offset = static_cast<std::uint32_t>(maybe_region.value()), .count = static_cast<std::uint32_t>(str.size()), .font_id = font_id, .colour = colour, .position = position};
 		std::size_t string_id = this->string_cursor;
 		if(this->string_free_list.size())
 		{
@@ -416,9 +416,9 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::vec2 position, std::string str)
+	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::vec2 position, std::string str, tz::vec3 colour)
 	{
-		return this->chars.add_string(this->rh, static_cast<std::size_t>(static_cast<tz::hanval>(font)), position, str);
+		return this->chars.add_string(this->rh, static_cast<std::size_t>(static_cast<tz::hanval>(font)), position, colour, str);
 	}
 
 //--------------------------------------------------------------------------------------------------

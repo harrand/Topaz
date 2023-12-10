@@ -31,10 +31,13 @@ namespace tz::ren
 			std::uint32_t count = 0;
 			std::uint32_t font_id = 0;
 			float pad0;
+			tz::vec3 colour = tz::vec3::filled(1.0f);
+			float pad1;
 			tz::vec2 position = tz::vec2::zero();
+			float pad2[2];
 		};
 
-		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, std::string str);
+		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, tz::vec3 colour, std::string str);
 		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
 		std::size_t string_count(bool include_free_list = false) const;
 	private:
@@ -97,7 +100,7 @@ namespace tz::ren
 		void remove_font(font_handle fh);
 
 		// api todo: how to specify which font? remember char_storage has no concept of fonts, so simply adding a font_handle to string_locator is not that simple.
-		string_handle add_string(font_handle font, tz::vec2 position, std::string str);
+		string_handle add_string(font_handle font, tz::vec2 position, std::string str, tz::vec3 colour = tz::vec3::filled(1.0f));
 		void remove_string(string_handle sh);
 
 		void append_to_render_graph();
