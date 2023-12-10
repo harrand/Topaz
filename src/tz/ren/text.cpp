@@ -33,7 +33,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::string str)
+	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, std::string str)
 	{
 		// first, add all the chars into the buffer.
 		std::span<char> span{str.data(), str.size()};
@@ -67,7 +67,7 @@ namespace tz::ren
 		// now we write the string locator.
 		// this is a view into the chars we just wrote.
 		// the text will "own" this portion of the char buffer.
-		string_locator loc{.offset = maybe_region.value(), .count = str.size()};
+		string_locator loc{.offset = static_cast<std::uint32_t>(maybe_region.value()), .count = static_cast<std::uint32_t>(str.size()), .font_id = font_id, .position = position};
 		std::size_t string_id = this->string_cursor;
 		if(this->string_free_list.size())
 		{
@@ -147,6 +147,19 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	void char_storage::update_tri_count(tz::gl::renderer_handle rh) const
+	{
+		std::size_t char_count = this->get_char_occupancy(rh);
+		tz::gl::get_device().get_renderer(rh).edit(tz::gl::RendererEditBuilder{}
+		.render_state
+		({
+			.tri_count = char_count * 2 // each char is a quad, which is 2 triangles
+		})
+		.build());
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	void char_storage::write_string_locator(tz::gl::renderer_handle rh, std::size_t string_id, const string_locator& loc)
 	{
 		// the string buffer is static_access, meaning a renderer edit is necessary to write into it.
@@ -159,6 +172,22 @@ namespace tz::ren
 			.offset = sizeof(string_locator) * string_id
 		})
 		.build());
+		this->update_tri_count(rh);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	std::size_t char_storage::get_char_occupancy(tz::gl::renderer_handle rh) const
+	{
+		std::size_t total_char_count = 0;
+		std::vector<string_locator> locators(this->get_string_capacity(rh));
+		auto resource_data = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<const string_locator>();
+		std::copy(resource_data.begin(), resource_data.end(), locators.begin());
+		for(const auto& loc : locators)
+		{
+			total_char_count += loc.count;
+		}
+		return total_char_count;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -387,9 +416,9 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	text_renderer::string_handle text_renderer::add_string(std::string str)
+	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::vec2 position, std::string str)
 	{
-		return this->chars.add_string(this->rh, str);
+		return this->chars.add_string(this->rh, static_cast<std::size_t>(static_cast<tz::hanval>(font)), position, str);
 	}
 
 //--------------------------------------------------------------------------------------------------

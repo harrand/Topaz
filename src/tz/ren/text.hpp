@@ -27,16 +27,20 @@ namespace tz::ren
 		using string_handle = tz::handle<const char*>;
 		struct string_locator
 		{
-			std::size_t offset = 0;
-			std::size_t count = 0;
+			std::uint32_t offset = 0;
+			std::uint32_t count = 0;
+			std::uint32_t font_id = 0;
+			tz::vec2 position = tz::vec2::zero();
 		};
 
-		string_handle add_string(tz::gl::renderer_handle rh, std::string str);
+		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, std::string str);
 		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
 		std::size_t string_count(bool include_free_list = false) const;
 	private:
 		std::optional<std::size_t> try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const;
+		void update_tri_count(tz::gl::renderer_handle rh) const;
 		void write_string_locator(tz::gl::renderer_handle rh, std::size_t string_id, const string_locator& loc);
+		std::size_t get_char_occupancy(tz::gl::renderer_handle rh) const;
 		std::size_t get_char_capacity(tz::gl::renderer_handle rh) const;
 		void set_char_capacity(tz::gl::renderer_handle rh, std::size_t char_count);
 		std::size_t get_string_capacity(tz::gl::renderer_handle rh) const;
@@ -92,7 +96,7 @@ namespace tz::ren
 		void remove_font(font_handle fh);
 
 		// api todo: how to specify which font? remember char_storage has no concept of fonts, so simply adding a font_handle to string_locator is not that simple.
-		string_handle add_string(std::string str);
+		string_handle add_string(font_handle font, tz::vec2 position, std::string str);
 		void remove_string(string_handle sh);
 
 		void append_to_render_graph();
