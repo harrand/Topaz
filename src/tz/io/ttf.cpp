@@ -56,6 +56,15 @@ namespace tz::io
 			// glyph didnt exist. use !
 			c = '!';
 		}
+		if(c == ' ')
+		{
+			return
+			{
+				.width = 1u,
+				.height = 1u,
+				.data = {std::byte{255u}, std::byte{255u}, std::byte{255u}, std::byte{0u}}
+			};
+		}
 		tz::assert(this->glyphs.find(c) != this->glyphs.end(), "TTF Did not contain glyph \'%c\'", c);
 		const auto& glyph = this->glyphs.at(c);
 		for(const auto& contour : glyph.shape.contours)
