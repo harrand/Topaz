@@ -1,6 +1,8 @@
 #ifndef TOPAZ_REN_TEXT_RENDERER_HPP
 #define TOPAZ_REN_TEXT_RENDERER_HPP
 #include "tz/core/data/handle.hpp"
+#include "tz/core/data/trs.hpp"
+#include "tz/core/matrix.hpp"
 #include "tz/gl/api/resource.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/gl/renderer.hpp"
@@ -33,11 +35,10 @@ namespace tz::ren
 			float pad0 = 0.0f;
 			tz::vec3 colour = tz::vec3::filled(1.0f);
 			float pad1 = 0.0f;
-			tz::vec2 position = tz::vec2::zero();
-			float pad2[2] = {};
+			tz::mat4 model = tz::mat4::identity();
 		};
 
-		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, tz::vec3 colour, std::string str);
+		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str);
 		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
 		std::size_t string_count(bool include_free_list = false) const;
 	private:
@@ -96,17 +97,20 @@ namespace tz::ren
 
 		text_renderer(std::size_t image_capacity = 1024u);
 
+		void update();
+
 		font_handle add_font(const tz::io::ttf& font);
 		void remove_font(font_handle fh);
 
 		// api todo: how to specify which font? remember char_storage has no concept of fonts, so simply adding a font_handle to string_locator is not that simple.
-		string_handle add_string(font_handle font, tz::vec2 position, std::string str, tz::vec3 colour = tz::vec3::filled(1.0f));
+		string_handle add_string(font_handle font, tz::trs transform, std::string str, tz::vec3 colour = tz::vec3::filled(1.0f));
 		void remove_string(string_handle sh);
 
 		void append_to_render_graph();
 	private:
 		char_storage chars;
 		font_storage fonts;
+		tz::gl::resource_handle misc_buffer = tz::nullhand;
 		tz::gl::renderer_handle rh;
 	};
 }

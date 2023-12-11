@@ -1,4 +1,5 @@
 #include "tz/ren/text.hpp"
+#include "tz/core/matrix_transform.hpp"
 #include "tz/gl/api/schedule.hpp"
 #include "tz/gl/declare/image_format.hpp"
 #include "tz/gl/device.hpp"
@@ -33,7 +34,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, tz::vec3 colour, std::string str)
+	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str)
 	{
 		// first, add all the chars into the buffer.
 		std::span<char> span{str.data(), str.size()};
@@ -67,7 +68,8 @@ namespace tz::ren
 		// now we write the string locator.
 		// this is a view into the chars we just wrote.
 		// the text will "own" this portion of the char buffer.
-		string_locator loc{.offset = static_cast<std::uint32_t>(maybe_region.value()), .count = static_cast<std::uint32_t>(str.size()), .font_id = font_id, .colour = colour, .position = position};
+		tz::mat4 model = transform.matrix();
+		string_locator loc{.offset = static_cast<std::uint32_t>(maybe_region.value()), .count = static_cast<std::uint32_t>(str.size()), .font_id = font_id, .colour = colour, .model = model};
 		std::size_t string_id = this->string_cursor;
 		if(this->string_free_list.size())
 		{
@@ -276,6 +278,7 @@ namespace tz::ren
 			({
 				.format = tz::gl::image_format::RGBA32,
 				.dimensions = {1u, 1u},
+				.flags = {tz::gl::resource_flag::image_filter_linear}
 			})));
 		}	
 	}
@@ -390,16 +393,36 @@ namespace tz::ren
 // text_renderer
 //--------------------------------------------------------------------------------------------------
 
+	struct misc_data
+	{
+		tz::vec2 mondims;
+	};
+
 	text_renderer::text_renderer(std::size_t image_capacity)
 	{
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(text, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(text, fragment));
+		this->misc_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(misc_data
+		{
+			.mondims = tz::window().get_dimensions()
+		},
+		{
+			.access = tz::gl::resource_access::dynamic_access
+		}));
 		this->chars = char_storage{rinfo};
 		this->fonts = font_storage{rinfo, image_capacity};
 		rinfo.debug_name("Text Renderer");
 
 		this->rh = tz::gl::get_device().create_renderer(rinfo);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void text_renderer::update()
+	{
+		misc_data& misc = tz::gl::get_device().get_renderer(this->rh).get_resource(this->misc_buffer)->data_as<misc_data>().front();
+		misc.mondims = tz::window().get_dimensions();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -418,9 +441,9 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::vec2 position, std::string str, tz::vec3 colour)
+	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::trs transform, std::string str, tz::vec3 colour)
 	{
-		return this->chars.add_string(this->rh, static_cast<std::size_t>(static_cast<tz::hanval>(font)), position, colour, str);
+		return this->chars.add_string(this->rh, static_cast<std::size_t>(static_cast<tz::hanval>(font)), transform, colour, str);
 	}
 
 //--------------------------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ struct string_locator
 	uint count;
 	uint font_id;
 	vec3 colour;
-	vec2 position;
+	mat4 model;
 };
 
 struct glyph_data
@@ -27,17 +27,23 @@ struct font_data
 	glyph_data glyphs[96];
 };
 
-resource(id = 0) const buffer char_buffer
+resource(id = 0) const buffer misc_buffer
+{
+	vec2 mondims;
+} misc;
+
+
+resource(id = 1) const buffer char_buffer
 {
 	uint data[];
 } char;
 
-resource(id = 1) const buffer string_buffer
+resource(id = 2) const buffer string_buffer
 {
 	string_locator data[];
 } string;
 
-resource(id = 2) const buffer font_buffer
+resource(id = 3) const buffer font_buffer
 {
 	font_data list[];
 } font;
@@ -72,41 +78,27 @@ void main()
 		string_char_offset = char_id - drawn_string.offset;
 		string_id++;
 	}
-	while(cumulative_char_count < char_id);
+	while(cumulative_char_count < char_id + 1);
 	// this is because we increment string id even if the condition is about to be false - a side-effect of do-while.
 	string_id--;
 	uint offset = drawn_string.offset + string_char_offset;
-	if(string_id > 0)
-	{
-		// this shouldnt need to be a thing.
-		// if this isnt the first string, these are 1 too high. hacky workaround.
-		// needs proper fix.
-		offset--;
-		string_char_offset--;
-	}
 	uint char4 = char.data[offset / 4];
 	uint alphabet_id = (char4 >> (8 * (offset % 4))) & 0xFF;
 
 	// drawn_string is the string locator we're currently in.
 	// string_char_offset is the nth character within the string we want to draw.
 	glyph_data glyph = font.list[drawn_string.font_id].glyphs[alphabet_id];
-	// fixed-size advance
-	//quadpos.x += glyph.advance;
-	// fake advance.
+	//quadpos -= misc.mondims / 8.0f;
 	quadpos.x += string_char_offset * 1.25f;
-	//quadpos.x += (char_id * 2);
-	// automagic string heights
-	quadpos.y += (string_id * 3.0f);
-	// move to the far left.
-	quadpos.x -= 18.0f;
 
 	quadpos += vec2(glyph.bearingx, glyph.bearingy) * 3.0f;
+	vec4 worldpos = drawn_string.model * vec4(quadpos, 0.0f, 1.0f);
 
 	// quadpos is the local space position
 	// todo: pretend glyph.position represents a model martix, and transform.
 	// note: glyph.position is intended to be in pixels, not NDC.
 
-	out::position = vec4(quadpos * 0.05f, 0.0, 1.0);
+	out::position = vec4(worldpos.xy / misc.mondims, 0.0, 1.0);
 	out::image_id = glyph.image_id;
 	out::texcoord = quad_texcoords[in::vertex_id % 6];
 	out::colour = drawn_string.colour;

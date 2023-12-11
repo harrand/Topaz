@@ -17,19 +17,42 @@ void dbgui_init();
 
 int main()
 {
-	tz::initialise({.name = "tz_text_rendering_demo"});
+	tz::initialise(
+		{
+			.name = "tz_text_rendering_demo",
+			.flags = {tz::application_flag::window_transparent}
+		});
 	{
 		dbgui_init();
 		tz::io::ttf ttf = tz::io::ttf::from_memory(ImportedTextData(ProggyClean, ttf));
 		tz::ren::text_renderer tren;
 		tren.append_to_render_graph();
 		tz::ren::text_renderer::font_handle fonth = tren.add_font(ttf);
-		tren.add_string(fonth, tz::vec2{1.0f, 2.0f},"well met! i am harrand", {1.0f, 0.5f, 0.4f});
-		tren.add_string(fonth, tz::vec2{3.0f, 4.0f},"big jon was here.");
+		tren.add_string(fonth,
+		tz::trs{
+			.translate = {-500.0f, 0.0f, 0.0f},
+			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.65f),
+			.scale = tz::vec3::filled(25.0f)
+		},"well met! i am harrand", {0.2f, 0.5f, 0.9f});
+
+		tren.add_string(fonth,
+		tz::trs{
+			.translate = {-700.0f, -550.0f, 0.0f},
+			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.65f),
+			.scale = tz::vec3::filled(40.0f)
+		},"you have (achieved) [({the})] rank of \":)\"", {0.2f, 0.5f, 0.9f});
+
+		tren.add_string(fonth,
+		tz::trs{
+			.translate = {0.0f, -300.0f, 0.0f},
+			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, -0.26f),
+			.scale = tz::vec3::filled(20.0f)
+		},"congratulation. a winner is you", {0.9f, 0.5f, 0.3f});
 
 		while(!tz::window().is_close_requested())
 		{
 			tz::begin_frame();
+			tren.update();
 			tz::gl::get_device().render();
 			tz::dbgui::run([&ttf, &tren]()
 			{
