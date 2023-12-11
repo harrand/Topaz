@@ -256,8 +256,8 @@ namespace tz::ren
 		struct glyph_data
 		{
 			std::uint32_t image_id;
-			std::uint32_t advance;
-			tz::vec2ui32 bearing;
+			float advance;
+			tz::vec2 bearing;
 		};
 		std::array<glyph_data, alphabet.size()> glyphs = {};
 	};
@@ -320,13 +320,27 @@ namespace tz::ren
 
 			char c = alphabet[i];
 			// love me some magic numbers.
+			// get the glyph information we need from the ttf.
+			auto iter = font.get_glyphs().find(c);
+			if(iter == font.get_glyphs().end())
+			{
+				// if the ttf doesnt support this glyph, pretend its a question mark.
+				iter = font.get_glyphs().find('?');
+				// if the ttf doesn't support ? either, then we're really screwed. boom.
+				tz::assert(iter != font.get_glyphs().end());
+			}
+			const auto& glyph_data = iter->second;
+			d.glyphs[i].image_id = image_id;
+			d.glyphs[i].advance = glyph_data.spacing.advance;
+			d.glyphs[i].bearing = glyph_data.spacing.position;
+
 			images[i] = font.rasterise_msdf(c,
 			{
 				.dimensions = {32u, 32u},
 				.angle_threshold = 3.0f,
-				.range = 0.1f,
-				.scale = 64.0f,
-				.translate = tz::vec2::zero()
+				.range = 0.2f,
+				.scale = 48.0f,
+				.translate = static_cast<tz::vec2>(glyph_data.spacing.position) * -1.0f
 			});
 			// resize + write the new image data.
 			auto imgdata = std::span<const std::byte>(images[i].data);
@@ -344,18 +358,6 @@ namespace tz::ren
 				.offset = 0u
 			});
 
-			// get the glyph information we need from the ttf.
-			auto iter = font.get_glyphs().find(c);
-			if(iter == font.get_glyphs().end())
-			{
-				// if the ttf doesnt support this glyph, pretend its a question mark.
-				iter = font.get_glyphs().find('?');
-				// if the ttf doesn't support ? either, then we're really screwed. boom.
-				tz::assert(iter != font.get_glyphs().end());
-			}
-			const auto& glyph_data = iter->second;
-			d.glyphs[i].image_id = image_id;
-			d.glyphs[i].bearing = tz::vec2i{glyph_data.spacing.left_side_bearing, glyph_data.spacing.right_side_bearing};
 		}	
 
 		// now write the new font data.

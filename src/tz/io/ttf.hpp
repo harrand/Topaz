@@ -147,10 +147,11 @@ namespace tz::io
 
 	struct ttf_glyph_spacing_info
 	{
-		tz::vec2i position = tz::vec2ui::zero();
-		tz::vec2ui dimensions = tz::vec2ui::zero();
+		tz::vec2 position = tz::vec2ui::zero();
+		tz::vec2 dimensions = tz::vec2ui::zero();
 		int left_side_bearing = 0u;
 		int right_side_bearing = 0u;
+		float advance = 0u;
 	};
 
 	struct ttf_glyph_contour

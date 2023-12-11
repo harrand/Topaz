@@ -15,9 +15,9 @@ struct string_locator
 struct glyph_data
 {
 	uint image_id;
-	uint advance;
-	uint bearingx;
-	uint bearingy;
+	float advance;
+	float bearingx;
+	float bearingy;
 };
 
 #define FONT_ALPHABET_COUNT 95
@@ -91,18 +91,22 @@ void main()
 	// string_char_offset is the nth character within the string we want to draw.
 	glyph_data glyph = font.list[drawn_string.font_id].glyphs[alphabet_id];
 	// fixed-size advance
-	quadpos.x += string_char_offset * 2;
+	//quadpos.x += glyph.advance;
+	// fake advance.
+	quadpos.x += string_char_offset * 1.25f;
 	//quadpos.x += (char_id * 2);
 	// automagic string heights
-	quadpos.y += (string_id * 2);
+	quadpos.y += (string_id * 3.0f);
 	// move to the far left.
-	quadpos.x -= 9.0f;
+	quadpos.x -= 18.0f;
+
+	quadpos += vec2(glyph.bearingx, glyph.bearingy) * 3.0f;
 
 	// quadpos is the local space position
 	// todo: pretend glyph.position represents a model martix, and transform.
 	// note: glyph.position is intended to be in pixels, not NDC.
 
-	out::position = vec4(quadpos * 0.1f, 0.0, 1.0);
+	out::position = vec4(quadpos * 0.05f, 0.0, 1.0);
 	out::image_id = glyph.image_id;
 	out::texcoord = quad_texcoords[in::vertex_id % 6];
 	out::colour = drawn_string.colour;

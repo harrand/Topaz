@@ -705,10 +705,11 @@ namespace tz::io
 			{
 				.spacing = 
 				{
-					.position = static_cast<tz::vec2i>(tz::vector<std::int16_t, 2>{glyfd.xmin, glyfd.ymin}),
-					.dimensions = static_cast<tz::vec2ui>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}),
+					.position = static_cast<tz::vec2>(tz::vector<std::int16_t, 2>{glyfd.xmin, glyfd.ymin}) / this->head.units_per_em,
+					.dimensions = static_cast<tz::vec2>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}) / this->head.units_per_em,
 					.left_side_bearing = static_cast<int>(left_side_bearing),
-					.right_side_bearing = static_cast<int>(advance_width - left_side_bearing - (glyfd.xmax - glyfd.xmin))
+					.right_side_bearing = static_cast<int>(advance_width - left_side_bearing - (glyfd.xmax - glyfd.xmin)),
+					.advance = static_cast<float>(advance_width) / this->head.units_per_em
 				},
 				.shape = shape
 			};
