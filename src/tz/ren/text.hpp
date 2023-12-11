@@ -30,11 +30,11 @@ namespace tz::ren
 			std::uint32_t offset = 0;
 			std::uint32_t count = 0;
 			std::uint32_t font_id = 0;
-			float pad0;
+			float pad0 = 0.0f;
 			tz::vec3 colour = tz::vec3::filled(1.0f);
-			float pad1;
+			float pad1 = 0.0f;
 			tz::vec2 position = tz::vec2::zero();
-			float pad2[2];
+			float pad2[2] = {};
 		};
 
 		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::vec2 position, tz::vec3 colour, std::string str);
