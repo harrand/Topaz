@@ -93,27 +93,85 @@ namespace tz::ren
 		std::vector<font_handle> font_free_list = {};
 	};
 
+	/**
+	 * @ingroup tz_ren
+	 * A 2D text renderer. Use of the text renderer must be externally synchronised.
+	 *
+	 * Text Renderers are comprised of two major components:
+	 * <Font>
+	 * - Represents a set of glyphs imported from a TTF font. For each glyph, a MSDF and some spacing information is passed to a shader.
+	 * - To add a font, you will need to provide a @ref tz::io::ttf via `add_font`.
+	 *		- Please note that `add_font` is very slow, as it must stall the render pipeline, rasterise all the MSDF glyphs and then write them to GPU images. For that reason, you should aim to add all your fonts ahead-of-time.
+	 *
+	 * <Strings>
+	 * - Represents a single rendered text. It can have its own colour and transform (in screen-space)
+	 * - To add a text, you will need to invoke `add_string`. You can modify the string later via:
+	 * 		- `string_set_transform`, to change the position/rotation/scale of the rendered text.
+	 *		- `string_set_colour`, to change the colour of the rendered text.
+	 *		- `string_set_text`, to change the actual text being rendered. Note: If the new text has more characters than the old, then the call will take much longer.
+	 * - You can remove a text via `remove_string`. 
+	 **/
 	class text_renderer
 	{
 	public:
 		using string_handle = char_storage::string_handle;
 		using font_handle = font_storage::font_handle;
 
+		/**
+		 * Create a new text renderer.
+		 * @param image_capacity Represents the maximum number of images that can be present at once. The number of images in-use is equal to the number of fonts multiplied by `tz::ren::alphabet.size()tz::ren::alphabet.size()`. If you add too many fonts to exceed this value, the behaviour is undefined.
+		 */
 		text_renderer(std::size_t image_capacity = 1024u);
 
+		/// Invoke this every update.
 		void update();
 
+		/**
+		 * Add a new font.
+		 * @param font Font to add.
+		 * @return Handle corresponding to the created font. Pass this to `add_string` to draw text using this font.
+		 */
 		font_handle add_font(const tz::io::ttf& font);
+		/**
+		 * Remove an existing font. Its images can be re-used by another font.
+		 * @param fh Font corresponding to the handle to be removed.
+		 */
 		void remove_font(font_handle fh);
 
-		// api todo: how to specify which font? remember char_storage has no concept of fonts, so simply adding a font_handle to string_locator is not that simple.
+		/**
+		 * Add a new rendered text.
+		 * @param font Which font should the text be rendered with?
+		 * @param transform Where should the text be? This is a transform in screen-space.
+		 * @param str String representing the characters to render. Note that control characters, such as line breaks will be rendered as-is and do not function.
+		 * @param colour Colour of the rendered text.
+		 */
 		string_handle add_string(font_handle font, tz::trs transform, std::string str, tz::vec3 colour = tz::vec3::filled(1.0f));
+		/**
+		 * Remove an existing rendered text.
+		 * @param sh String corresponding to the handle to be removed.
+		 */
 		void remove_string(string_handle sh);
 
+		/**
+		 * Set the transform (in screen-space) of an existing rendered text.
+		 * @param sh String corresponding to the handle to be affected.
+		 * @param transform New transform of the rendered text.
+		 */
 		void string_set_transform(string_handle sh, tz::trs transform);
+		/**
+		 * Set the colour of an existing rendered text.
+		 * @param sh String corresponding to the handle to be affected.
+		 * @param colour New colour of the rendered text.
+		 */
 		void string_set_colour(string_handle sh, tz::vec3 colour);
+		/**
+		 * Edit an existing rendered text.
+		 * @param sh String corresponding to the handle to be affected.
+		 * @param text New characters to be drawn.
+		 */
 		void string_set_text(string_handle sh, std::string text);
 
+		/// Add the text-renderer to the render-graph, causing it to be invoked every frame.
 		void append_to_render_graph();
 	private:
 		char_storage chars;
