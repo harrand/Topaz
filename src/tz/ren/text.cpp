@@ -118,6 +118,33 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	void char_storage::string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform)
+	{
+		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
+		strings[static_cast<std::size_t>(static_cast<tz::hanval>(sh))].model = transform.matrix();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void char_storage::string_set_colour(tz::gl::renderer_handle rh, string_handle sh, tz::vec3 colour)
+	{
+		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
+		strings[static_cast<std::size_t>(static_cast<tz::hanval>(sh))].colour = colour;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void char_storage::string_set_text(tz::gl::renderer_handle rh, string_handle sh, std::string text)
+	{
+		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
+		tz::assert(false, "NYI");
+		(void)strings;
+		(void)sh;
+		(void)text;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	std::optional<std::size_t> char_storage::try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const
 	{
 		std::vector<string_locator> sorted_strings(this->get_string_capacity(rh));
@@ -166,14 +193,8 @@ namespace tz::ren
 	{
 		// the string buffer is static_access, meaning a renderer edit is necessary to write into it.
 		// this is just a helper method to do that.
-		tz::gl::get_device().get_renderer(rh).edit(tz::gl::RendererEditBuilder{}
-		.write
-		({
-			.resource = this->string_buffer,
-			.data = std::as_bytes(std::span<const string_locator>(&loc, 1)),
-			.offset = sizeof(string_locator) * string_id
-		})
-		.build());
+		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
+		strings[string_id] = loc;
 		this->update_tri_count(rh);
 	}
 
@@ -451,6 +472,27 @@ namespace tz::ren
 	void text_renderer::remove_string(string_handle sh)
 	{
 		this->chars.remove_string(this->rh, sh);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void text_renderer::string_set_transform(string_handle sh, tz::trs transform)
+	{
+		this->chars.string_set_transform(this->rh, sh, transform);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void text_renderer::string_set_colour(string_handle sh, tz::vec3 colour)
+	{
+		this->chars.string_set_colour(this->rh, sh, colour);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void text_renderer::string_set_text(string_handle sh, std::string text)
+	{
+		this->chars.string_set_text(this->rh, sh, text);
 	}
 
 //--------------------------------------------------------------------------------------------------

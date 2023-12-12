@@ -20,7 +20,6 @@ int main()
 	tz::initialise(
 		{
 			.name = "tz_text_rendering_demo",
-			.flags = {tz::application_flag::window_transparent}
 		});
 	{
 		dbgui_init();
@@ -28,7 +27,7 @@ int main()
 		tz::ren::text_renderer tren;
 		tren.append_to_render_graph();
 		tz::ren::text_renderer::font_handle fonth = tren.add_font(ttf);
-		tren.add_string(fonth,
+		auto stringh = tren.add_string(fonth,
 		tz::trs{
 			.translate = {-500.0f, 0.0f, 0.0f},
 			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.65f),
@@ -54,6 +53,11 @@ int main()
 			tz::begin_frame();
 			tren.update();
 			tz::gl::get_device().render();
+
+			static float counter = 0.01f;
+			tren.string_set_colour(stringh, {1.0f, std::sin(counter += 0.01f), 1.0f - std::cos(counter)});
+			tren.string_set_transform(stringh, tz::trs{{-800.0f, 0.0f, 0.0f}, {}, tz::vec3{50.0f, 50.0f, 50.0f} * 0.5f + std::sin(counter * 0.1f)});
+
 			tz::dbgui::run([&ttf, &tren]()
 			{
 				if(dbgui_data.text_renderer_enabled)

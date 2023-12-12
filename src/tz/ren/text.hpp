@@ -41,6 +41,10 @@ namespace tz::ren
 		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str);
 		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
 		std::size_t string_count(bool include_free_list = false) const;
+
+		void string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform);
+		void string_set_colour(tz::gl::renderer_handle rh, string_handle sh, tz::vec3 colour);
+		void string_set_text(tz::gl::renderer_handle rh, string_handle sh, std::string);
 	private:
 		std::optional<std::size_t> try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const;
 		void update_tri_count(tz::gl::renderer_handle rh) const;
@@ -105,6 +109,10 @@ namespace tz::ren
 		// api todo: how to specify which font? remember char_storage has no concept of fonts, so simply adding a font_handle to string_locator is not that simple.
 		string_handle add_string(font_handle font, tz::trs transform, std::string str, tz::vec3 colour = tz::vec3::filled(1.0f));
 		void remove_string(string_handle sh);
+
+		void string_set_transform(string_handle sh, tz::trs transform);
+		void string_set_colour(string_handle sh, tz::vec3 colour);
+		void string_set_text(string_handle sh, std::string text);
 
 		void append_to_render_graph();
 	private:
