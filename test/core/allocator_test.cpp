@@ -3,6 +3,7 @@
 #include "tz/core/memory/allocators/malloc.hpp"
 #include "tz/core/memory/allocators/null.hpp"
 #include "tz/core/memory/allocators/stack.hpp"
+#include "tz/core/memory/allocators/slab.hpp"
 #include "tz/core/debug.hpp"
 #include <type_traits>
 #include <vector>
@@ -85,10 +86,21 @@ void linear_allocator_tests()
 	mallocator.deallocate(scratch);
 }
 
+void slab_allocator_tests()
+{
+	tz::slab_allocator salloc;
+	for(std::size_t i = 0; i < 4096u; i++)
+	{
+		tz::memblk blk = salloc.allocate(9182u);
+		tz::assert(salloc.owns(blk));
+	}
+}
+
 int main()
 {
 	null_allocator_tests();
 	mallocator_test();
 	//stack_allocator_tests();
 	linear_allocator_tests();
+	slab_allocator_tests();
 }

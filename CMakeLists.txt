@@ -61,6 +61,8 @@ add_library(topaz STATIC
 	src/tz/core/memory/allocators/malloc.cpp
 	src/tz/core/memory/allocators/malloc.hpp
 	src/tz/core/memory/allocators/null.hpp
+	src/tz/core/memory/allocators/slab.cpp
+	src/tz/core/memory/allocators/slab.hpp
 	src/tz/core/memory/allocators/stack.hpp
 	src/tz/core/memory/allocators/stack.inl
 	src/tz/core/memory/clone.hpp

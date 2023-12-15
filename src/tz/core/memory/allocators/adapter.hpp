@@ -33,6 +33,13 @@ namespace tz
 
 		}
 
+		template<class U>
+		allocator_adapter(allocator_adapter<U, A>&& other):
+		A(std::move(other.get_allocator()))
+		{
+
+		}
+
 		const A& get_allocator() const
 		{
 			return static_cast<const A&>(*this);
