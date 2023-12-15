@@ -27,7 +27,16 @@ namespace tz
 		A(a){}
 
 		template<class U>
-		allocator_adapter(const allocator_adapter<U, A>& other){}
+		allocator_adapter(const allocator_adapter<U, A>& other):
+		A(other.get_allocator())
+		{
+
+		}
+
+		const A& get_allocator() const
+		{
+			return static_cast<const A&>(*this);
+		}
 
 		T* allocate(std::size_t n)
 		{
@@ -38,7 +47,7 @@ namespace tz
 
 		void deallocate(T* p, std::size_t n)
 		{
-			A::deallocate({.ptr = p, .size = n});
+			A::deallocate({.ptr = p, .size = n * sizeof(T)});
 		}
 	};
 }

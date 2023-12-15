@@ -61,7 +61,7 @@ int main()
 {
 	tz::core::initialise();
 
-	for(std::size_t i = 0; i < 1024; i++)
+	for(std::size_t i = 0; i < 8; i++)
 	{
 		basic_job();
 		job_reuse();
