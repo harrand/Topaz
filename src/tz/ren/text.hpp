@@ -121,10 +121,12 @@ namespace tz::ren
 		 * Create a new text renderer.
 		 * @param image_capacity Represents the maximum number of images that can be present at once. The number of images in-use is equal to the number of fonts multiplied by `tz::ren::alphabet.size()tz::ren::alphabet.size()`. If you add too many fonts to exceed this value, the behaviour is undefined.
 		 */
-		text_renderer(std::size_t image_capacity = 1024u);
+		text_renderer(std::size_t image_capacity = 1024u, tz::gl::renderer_options options = {}, tz::gl::ioutput* output = nullptr);
 
 		/// Invoke this every update.
 		void update();
+
+		tz::gl::renderer_handle get_render_pass() const;
 
 		/**
 		 * Add a new font.

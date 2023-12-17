@@ -419,11 +419,16 @@ namespace tz::ren
 		tz::vec2 mondims;
 	};
 
-	text_renderer::text_renderer(std::size_t image_capacity)
+	text_renderer::text_renderer(std::size_t image_capacity, tz::gl::renderer_options options, tz::gl::ioutput* output)
 	{
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(text, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(text, fragment));
+		rinfo.set_options(options);
+		if(output != nullptr)
+		{
+			rinfo.set_output(*output);
+		}
 		this->misc_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(misc_data
 		{
 			.mondims = tz::window().get_dimensions()
@@ -444,6 +449,13 @@ namespace tz::ren
 	{
 		misc_data& misc = tz::gl::get_device().get_renderer(this->rh).get_resource(this->misc_buffer)->data_as<misc_data>().front();
 		misc.mondims = tz::window().get_dimensions();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::gl::renderer_handle text_renderer::get_render_pass() const
+	{
+		return this->rh;
 	}
 
 //--------------------------------------------------------------------------------------------------
