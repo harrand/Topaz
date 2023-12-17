@@ -503,6 +503,13 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	void text_renderer::clear_strings()
+	{
+		this->chars.clear_strings(this->rh);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	void text_renderer::string_set_transform(string_handle sh, tz::trs transform)
 	{
 		this->chars.string_set_transform(this->rh, sh, transform);

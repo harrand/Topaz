@@ -154,6 +154,7 @@ namespace tz::ren
 		 * @param sh String corresponding to the handle to be removed.
 		 */
 		void remove_string(string_handle sh);
+		void clear_strings();
 
 		/**
 		 * Set the transform (in screen-space) of an existing rendered text.
