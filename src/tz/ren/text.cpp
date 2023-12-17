@@ -96,12 +96,27 @@ namespace tz::ren
 
 	void char_storage::remove_string(tz::gl::renderer_handle rh, string_handle sh)
 	{
+		if(std::find(this->string_free_list.begin(), this->string_free_list.end(), sh) != this->string_free_list.end())
+		{
+			// already in free list. early out.
+			return;
+		}
 		this->string_free_list.push_back(sh);
 		// we *must* do the write now.
 		// try_find_char_region checks through our locators. if we dont empty that locator out now, we can't recycle that space.
 		// its a shame coz remove_string is therefore very slow.
 		// possible todo: string buffer should become dynamic_access. remove_string will become very fast but slow down rendering.
 		this->write_string_locator(rh, static_cast<std::size_t>(static_cast<tz::hanval>(sh)), {});
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void char_storage::clear_strings(tz::gl::renderer_handle rh)
+	{
+		for(std::size_t i = 0; i < this->string_count(true); i++)
+		{
+			this->remove_string(rh, static_cast<tz::hanval>(i));
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------

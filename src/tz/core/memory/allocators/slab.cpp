@@ -57,6 +57,7 @@ namespace tz
 	slab_allocator::slab_t& slab_allocator::slab_t::operator=(const slab_t& cpy)
 	{
 		// does nothing.
+		(void)cpy;
 		return *this;
 	}
 

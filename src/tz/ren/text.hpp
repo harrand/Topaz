@@ -40,6 +40,7 @@ namespace tz::ren
 
 		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str);
 		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
+		void clear_strings(tz::gl::renderer_handle rh);
 		std::size_t string_count(bool include_free_list = false) const;
 
 		void string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform);
