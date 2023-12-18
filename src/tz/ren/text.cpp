@@ -113,10 +113,13 @@ namespace tz::ren
 
 	void char_storage::clear_strings(tz::gl::renderer_handle rh)
 	{
-		for(std::size_t i = 0; i < this->string_count(true); i++)
+		auto sz = this->string_count(true);
+		for(std::size_t i = 0; i < sz; i++)
 		{
-			this->remove_string(rh, static_cast<tz::hanval>(i));
+			this->write_string_locator(rh, i, {});
 		}
+		this->string_free_list.clear();
+		this->string_cursor = 0;
 	}
 
 //--------------------------------------------------------------------------------------------------
