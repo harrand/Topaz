@@ -84,7 +84,7 @@ namespace tz::ren
 			if(string_id >= this->get_string_capacity(rh))
 			{
 				// expand. double capacity.
-				this->set_string_capacity(rh, capacity *= 2);
+				this->set_string_capacity(rh, capacity * 2);
 			}
 			this->write_string_locator(rh, string_id, loc);
 			this->string_cursor++;
@@ -271,7 +271,7 @@ namespace tz::ren
 	void char_storage::set_string_capacity(tz::gl::renderer_handle rh, std::size_t string_count)
 	{
 		std::size_t old_cap = this->get_string_capacity(rh);
-		if(old_cap <= string_count)
+		if(old_cap >= string_count)
 		{
 			return;
 		}
