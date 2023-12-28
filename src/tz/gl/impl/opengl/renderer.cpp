@@ -623,6 +623,30 @@ namespace tz::gl
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LESS);
 			}
+			if(this->state.graphics.culling == tz::gl::graphics_culling::none)
+			{
+				glDisable(GL_CULL_FACE);
+			}
+			else
+			{
+				glEnable(GL_CULL_FACE);
+				GLenum cullmode;
+				switch(this->state.graphics.culling)
+				{
+					case tz::gl::graphics_culling::front:
+						cullmode = GL_FRONT;
+					break;
+					default:
+					[[fallthrough]];
+					case tz::gl::graphics_culling::back:
+						cullmode = GL_BACK;
+					break;
+					case tz::gl::graphics_culling::both:
+						cullmode = GL_FRONT_AND_BACK;
+					break;
+				}
+				glCullFace(cullmode);
+			}
 			if(this->options.contains(renderer_option::alpha_blending))
 			{
 				glEnable(GL_BLEND);
@@ -807,6 +831,10 @@ namespace tz::gl
 					if(arg.tri_count.has_value())
 					{
 						this->state.graphics.tri_count = arg.tri_count.value();
+					}
+					if(arg.culling.has_value())
+					{
+						this->state.graphics.culling = arg.culling.value();
 					}
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::resource_reference>)

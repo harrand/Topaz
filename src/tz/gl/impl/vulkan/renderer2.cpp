@@ -1642,6 +1642,14 @@ namespace tz::gl
 							side_effects.rerecord_work_commands = true;
 						}
 					}
+					if(arg.culling.has_value() && arg.culling.value() != state.graphics.culling)
+					{
+						state.graphics.culling = arg.culling.value();
+						if(valid)
+						{
+							side_effects.recreate_pipeline = true;
+						}
+					}
 				},
 				[&side_effects](tz::gl::renderer_edit::mark_dirty arg)
 				{

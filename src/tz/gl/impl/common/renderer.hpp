@@ -165,6 +165,37 @@ namespace tz::gl
 					);
 				}
 			}
+			// Graphics - Culling
+			{
+				const char* culling_strings[] = {"None", "Front", "Back", "Both"};
+				static const char* current_culling_string = culling_strings[static_cast<int>(renderer.get_state().graphics.culling)];
+				if(ImGui::BeginCombo("Culling Mode", current_culling_string))
+				{
+					for(int i = 0; i < 4; i++)
+					{
+						bool is_selected = (current_culling_string) == culling_strings[i];
+						if(ImGui::Selectable(culling_strings[i], is_selected))
+						{
+							current_culling_string = culling_strings[i];
+							renderer.edit
+							(
+								tz::gl::RendererEditBuilder{}
+								.render_state
+								({
+									.culling = static_cast<tz::gl::graphics_culling>(i)
+								})
+								.build()
+							);
+						}
+						if(is_selected)
+						{
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+			}
+
 			ImGui::Unindent();
 			ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Compute");
 			ImGui::Indent();

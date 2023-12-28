@@ -296,8 +296,12 @@ namespace tz::gl
 		{
 			/// Whether triangles should only have their outlines drawn, instead of filled.
 			std::optional<bool> wireframe_mode = std::nullopt;
+			/// Clear colour
 			std::optional<tz::vec4> clear_colour = std::nullopt;
+			/// Number of triangles (primitives)
 			std::optional<std::size_t> tri_count = std::nullopt;
+			/// Culling method to be used.
+			std::optional<tz::gl::graphics_culling> culling = std::nullopt;
 		};
 
 		struct scissor
