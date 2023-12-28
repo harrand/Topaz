@@ -40,6 +40,7 @@ namespace tz::ren
 
 		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str);
 		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
+		void clear_strings(tz::gl::renderer_handle rh);
 		std::size_t string_count(bool include_free_list = false) const;
 
 		void string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform);
@@ -121,10 +122,12 @@ namespace tz::ren
 		 * Create a new text renderer.
 		 * @param image_capacity Represents the maximum number of images that can be present at once. The number of images in-use is equal to the number of fonts multiplied by `tz::ren::alphabet.size()tz::ren::alphabet.size()`. If you add too many fonts to exceed this value, the behaviour is undefined.
 		 */
-		text_renderer(std::size_t image_capacity = 1024u);
+		text_renderer(std::size_t image_capacity = 1024u, tz::gl::renderer_options options = {}, tz::gl::ioutput* output = nullptr);
 
 		/// Invoke this every update.
 		void update();
+
+		tz::gl::renderer_handle get_render_pass() const;
 
 		/**
 		 * Add a new font.
@@ -151,6 +154,7 @@ namespace tz::ren
 		 * @param sh String corresponding to the handle to be removed.
 		 */
 		void remove_string(string_handle sh);
+		void clear_strings();
 
 		/**
 		 * Set the transform (in screen-space) of an existing rendered text.

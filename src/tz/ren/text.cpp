@@ -84,7 +84,7 @@ namespace tz::ren
 			if(string_id >= this->get_string_capacity(rh))
 			{
 				// expand. double capacity.
-				this->set_string_capacity(rh, capacity *= 2);
+				this->set_string_capacity(rh, capacity * 2);
 			}
 			this->write_string_locator(rh, string_id, loc);
 			this->string_cursor++;
@@ -96,12 +96,30 @@ namespace tz::ren
 
 	void char_storage::remove_string(tz::gl::renderer_handle rh, string_handle sh)
 	{
+		if(std::find(this->string_free_list.begin(), this->string_free_list.end(), sh) != this->string_free_list.end())
+		{
+			// already in free list. early out.
+			return;
+		}
 		this->string_free_list.push_back(sh);
 		// we *must* do the write now.
 		// try_find_char_region checks through our locators. if we dont empty that locator out now, we can't recycle that space.
 		// its a shame coz remove_string is therefore very slow.
 		// possible todo: string buffer should become dynamic_access. remove_string will become very fast but slow down rendering.
 		this->write_string_locator(rh, static_cast<std::size_t>(static_cast<tz::hanval>(sh)), {});
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void char_storage::clear_strings(tz::gl::renderer_handle rh)
+	{
+		auto sz = this->string_count(true);
+		for(std::size_t i = 0; i < sz; i++)
+		{
+			this->write_string_locator(rh, i, {});
+		}
+		this->string_free_list.clear();
+		this->string_cursor = 0;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -253,7 +271,7 @@ namespace tz::ren
 	void char_storage::set_string_capacity(tz::gl::renderer_handle rh, std::size_t string_count)
 	{
 		std::size_t old_cap = this->get_string_capacity(rh);
-		if(old_cap <= string_count)
+		if(old_cap >= string_count)
 		{
 			return;
 		}
@@ -419,11 +437,16 @@ namespace tz::ren
 		tz::vec2 mondims;
 	};
 
-	text_renderer::text_renderer(std::size_t image_capacity)
+	text_renderer::text_renderer(std::size_t image_capacity, tz::gl::renderer_options options, tz::gl::ioutput* output)
 	{
 		tz::gl::renderer_info rinfo;
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(text, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(text, fragment));
+		rinfo.set_options(options);
+		if(output != nullptr)
+		{
+			rinfo.set_output(*output);
+		}
 		this->misc_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_one(misc_data
 		{
 			.mondims = tz::window().get_dimensions()
@@ -444,6 +467,13 @@ namespace tz::ren
 	{
 		misc_data& misc = tz::gl::get_device().get_renderer(this->rh).get_resource(this->misc_buffer)->data_as<misc_data>().front();
 		misc.mondims = tz::window().get_dimensions();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::gl::renderer_handle text_renderer::get_render_pass() const
+	{
+		return this->rh;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -472,6 +502,13 @@ namespace tz::ren
 	void text_renderer::remove_string(string_handle sh)
 	{
 		this->chars.remove_string(this->rh, sh);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void text_renderer::clear_strings()
+	{
+		this->chars.clear_strings(this->rh);
 	}
 
 //--------------------------------------------------------------------------------------------------

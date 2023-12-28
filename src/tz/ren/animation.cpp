@@ -273,8 +273,16 @@ namespace tz::ren
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));
 		auto& playback = this->animated_objects[hanval];
+		const auto& gltf = this->gltfs[static_cast<std::size_t>(static_cast<tz::hanval>(playback.gltf))];
 		playback.playback = {anim};
-		this->animated_objects[hanval].playback_time = 0.0f;
+		if(anim.time_warp >= 0.0f)
+		{
+			this->animated_objects[hanval].playback_time = 0.0f;
+		}
+		else
+		{
+			this->animated_objects[hanval].playback_time = gltf.data.get_animations()[anim.animation_id].max_time;
+		}
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -463,12 +471,27 @@ namespace tz::ren
 		// advance time
 		animobj.playback_time += playing_anim.time_warp * delta;
 		// what do we do if we're at the end of the anim?
-		if(animobj.playback_time >= anim.max_time)
+		if(playing_anim.time_warp >= 0.0f && animobj.playback_time >= anim.max_time)
 		{
 			// if we need to loop, then go back.
 			if(playing_anim.loop)
 			{
 				animobj.playback_time = 0.0f;
+			}
+			else
+			{
+				// not looping, need to move to the next animation!
+				animobj.playback_time = 0.0f;
+				animobj.playback.erase(animobj.playback.begin());
+				return;
+			}
+		}
+		else if(playing_anim.time_warp < 0.0f && animobj.playback_time <= 0.0f)
+		{
+			// we're going backwards and we're done.
+			if(playing_anim.loop)
+			{
+				animobj.playback_time = anim.max_time;
 			}
 			else
 			{

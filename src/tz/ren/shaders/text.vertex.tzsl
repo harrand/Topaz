@@ -93,12 +93,16 @@ void main()
 
 	quadpos += vec2(glyph.bearingx, glyph.bearingy) * 3.0f;
 	vec4 worldpos = drawn_string.model * vec4(quadpos, 0.0f, 1.0f);
+	//worldpos.xy -= misc.mondims * 0.1f;
 
 	// quadpos is the local space position
 	// todo: pretend glyph.position represents a model martix, and transform.
 	// note: glyph.position is intended to be in pixels, not NDC.
+	//worldpos.xy -= misc.mondims * 0.5f;
+	worldpos.xy /= misc.mondims * 0.5f;
+	worldpos.xy -= vec2(1.0, 1.0);
 
-	out::position = vec4(worldpos.xy / misc.mondims, 0.0, 1.0);
+	out::position = vec4(worldpos.xy, 0.0, 1.0);
 	out::image_id = glyph.image_id;
 	out::texcoord = quad_texcoords[in::vertex_id % 6];
 	out::colour = drawn_string.colour;
