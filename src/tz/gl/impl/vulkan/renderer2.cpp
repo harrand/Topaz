@@ -680,6 +680,23 @@ namespace tz::gl
 					break;
 				}
 
+				vk2::CullMode cull_mode = vk2::CullMode::NoCulling;
+				switch(state.graphics.culling)
+				{
+					case tz::gl::graphics_culling::none:
+						cull_mode = vk2::CullMode::NoCulling;
+					break;
+					case tz::gl::graphics_culling::front:
+						cull_mode = vk2::CullMode::FrontCulling;
+					break;
+					case tz::gl::graphics_culling::back:
+						cull_mode = vk2::CullMode::BackCulling;
+					break;
+					case tz::gl::graphics_culling::both:
+						cull_mode = vk2::CullMode::BothCulling;
+					break;
+				}
+
 				this->pipeline.data =
 				{vk2::GraphicsPipelineInfo{
 					.shaders = this->shader.native_data(),
@@ -687,7 +704,11 @@ namespace tz::gl
 					.state =
 					{
 						.viewport = vk2::create_basic_viewport(static_cast<tz::vec2>(renderer_output_manager::get_render_target_dimensions())),
-						.rasteriser = {.polygon_mode = (state.graphics.wireframe_mode ? vk2::PolygonMode::Line : vk2::PolygonMode::Fill)},
+						.rasteriser =
+						{
+							.polygon_mode = (state.graphics.wireframe_mode ? vk2::PolygonMode::Line : vk2::PolygonMode::Fill),
+							.cull_mode = cull_mode
+						},
 						.depth_stencil =
 						{
 							.depth_testing = this->pipeline_config.depth_testing,

@@ -840,6 +840,7 @@ namespace tz::ren
 			this->draw_indirect_ref = rinfo.ref_resource(this->compute.get_compute_pass(), this->compute.get_draw_indirect_buffer());
 			// then set it up.
 			rinfo.state().graphics.draw_buffer = this->draw_indirect_ref;
+			rinfo.state().graphics.culling = tz::gl::graphics_culling::back;
 
 			// after that, add all the extra buffers the user requested.
 			// we're not gonna do anything with these, just expose them to the user to deal with.

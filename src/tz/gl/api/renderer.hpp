@@ -64,6 +64,15 @@ namespace tz::gl
 		/// Triangle Strips. Each group of 3 adjacent vertices constitutes a triangle. n-2 length.
 		triangle_strips,
 	};
+
+	enum class graphics_culling
+	{
+		none,
+		front,
+		back,
+		both
+	};
+
 	namespace detail
 	{
 		constexpr std::array<const char*, static_cast<int>(tz::gl::renderer_option::Count)> renderer_option_strings =
@@ -86,17 +95,20 @@ namespace tz::gl
 	{
 		struct Graphics
 		{
-			/// If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buffer. If there is no index buffer, this is nullhand.
+			/// If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buffer. If there is no index buffer, this must be nullhand. Defaults to nullhand.
 			resource_handle index_buffer = tz::nullhand;
-			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::draw_indirect_buffer. If there is no draw buffer, this is nullhand.
+			/// If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::draw_indirect_buffer. If there is no draw buffer, this must be nullhand. Defaults to nullhand.
 			resource_handle draw_buffer = tz::nullhand;
-			/// Normalised RGBA floating point colour.
+			/// Normalised RGBA floating point colour. Defaults to {0.0f, 0.0f, 0.0f, 0.0f}
 			tz::vec4 clear_colour = tz::vec4::zero();
-			/// number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified, this is ignored.
+			/// Number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified, this is ignored. Defaults to 0.
 			std::size_t tri_count = 0;
-			/// whether wireframe mode is enabled or not.
+			/// whether wireframe mode is enabled or not. Defaults to false.
 			bool wireframe_mode = false;
+			/// What kind of primitives are you drawing? Defaults to triangles.
 			graphics_topology topology = graphics_topology::triangles;
+			/// Do you want culling? Defaults to no culling.
+			graphics_culling culling = graphics_culling::none;
 			bool operator==(const Graphics& rhs) const = default;
 		};
 		struct Compute
