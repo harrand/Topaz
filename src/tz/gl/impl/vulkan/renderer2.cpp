@@ -877,9 +877,11 @@ namespace tz::gl
 		{
 			// we need to wait on the image being available.
 			const vk2::Semaphore& image_wait = dev.acquire_image(nullptr);
+			// note: we want to wait on the acquire even if we're not about to present.
+			// this is because we're about to render into a swapchain image, so it better be ready for use (e.g *not* still being presented by a previous frame.)
+			extra_waits.add(&image_wait);
 			if(will_present)
 			{
-				extra_waits.add(&image_wait);
 				// we want our work to signal a semaphore which our present waits on.
 				extra_signals.add(&this->present_sync_semaphore);
 			}
