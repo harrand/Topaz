@@ -4,7 +4,6 @@
 #include "tz/core/data/maybe_owned_list.hpp"
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/api/component.hpp"
-#include "tz/gl/impl/common/renderer.hpp"
 #include "tz/gl/impl/opengl/detail/vertex_array.hpp"
 #include "tz/gl/impl/opengl/detail/shader.hpp"
 #include "tz/gl/impl/opengl/detail/framebuffer.hpp"

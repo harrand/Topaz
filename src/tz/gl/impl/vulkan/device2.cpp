@@ -1,5 +1,6 @@
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/device2.hpp"
+#include "tz/gl/impl/common/device.dbgui.hpp"
 #include "tz/gl/impl/vulkan/detail/semaphore.hpp"
 #include "tz/gl/impl/vulkan/detail/fence.hpp"
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"

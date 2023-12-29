@@ -1,8 +1,9 @@
 #if TZ_OGL
+#include "tz/gl/impl/opengl/device.hpp"
+#include "tz/gl/impl/common/device.dbgui.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/opengl/renderer.hpp"
-#include "tz/gl/impl/opengl/device.hpp"
 
 namespace tz::gl
 {

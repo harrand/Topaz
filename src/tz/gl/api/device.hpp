@@ -56,9 +56,6 @@ namespace tz::gl
 		tz::gl::schedule render_schedule = {};
 	};
 
-	template<tz::gl::device_type<tz::gl::renderer_info> T>
-	void common_device_dbgui(T& device);
-
 	#if TZ_VULKAN && TZ_OGL
 	// Documentation only.
 	/**
