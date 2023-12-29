@@ -21,9 +21,9 @@ namespace tz::gl
 		const vk2::LogicalDevice& vk_get_logical_device() const;
 		vk2::LogicalDevice& vk_get_logical_device();
 		std::size_t vk_get_frame_id() const{return this->frame_id;}
+		std::size_t get_rid(unsigned int fingerprint) const;
 	protected:
 		void touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id);
-		std::size_t get_rid(unsigned int fingerprint) const;
 
 		std::size_t frame_id = 0;
 		std::size_t old_frame_id = 0;

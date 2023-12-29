@@ -880,7 +880,25 @@ namespace tz::gl
 			const vk2::Semaphore& image_wait = dev.acquire_image(nullptr);
 			// note: we want to wait on the acquire even if we're not about to present.
 			// this is because we're about to render into a swapchain image, so it better be ready for use (e.g *not* still being presented by a previous frame.)
-			if(!this->is_internal)
+			// we only do this if we are the first thing this frame to render into the swapchain.
+			
+			std::size_t our_rid = dev.get_rid(renderer_vulkan_base::uid);
+			const auto& timeline = tz::gl::get_device().get_timeline();
+			bool we_are_first_swapchain_render = false;
+			for(std::size_t i = 0; i < timeline.size(); i++)
+			{
+				std::size_t cur_rid = timeline[i];
+				const auto& ren = tz::gl::get_device().get_renderer(static_cast<tz::hanval>(cur_rid));
+				if(ren.get_pipeline_type() == renderer_pipeline::pipeline_type_t::graphics && (ren.get_output() == nullptr || ren.get_output()->get_target() == tz::gl::output_target::window))
+				{
+					// this is a graphics renderer that draws into a swapchain image.
+					// if this is us, then we are the first swapchain render.
+					we_are_first_swapchain_render = (cur_rid == our_rid);
+					break;
+				}
+			}
+
+			if(we_are_first_swapchain_render)
 			{
 				extra_waits.add(&image_wait);
 			}
