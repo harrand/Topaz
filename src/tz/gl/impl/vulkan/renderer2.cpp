@@ -845,6 +845,7 @@ namespace tz::gl
 	renderer_pipeline(rinfo),
 	render_wait_enabled(rinfo.get_options().contains(tz::gl::renderer_option::render_wait)),
 	no_present_enabled(rinfo.get_options().contains(tz::gl::renderer_option::no_present)),
+	is_internal(rinfo.get_options().contains(tz::gl::renderer_option::_internal)),
 	render_wait_fence(vk2::FenceInfo{.device = &tz::gl::get_device().vk_get_logical_device()}),
 	present_sync_semaphore(tz::gl::get_device().vk_get_logical_device())
 	{
@@ -879,7 +880,10 @@ namespace tz::gl
 			const vk2::Semaphore& image_wait = dev.acquire_image(nullptr);
 			// note: we want to wait on the acquire even if we're not about to present.
 			// this is because we're about to render into a swapchain image, so it better be ready for use (e.g *not* still being presented by a previous frame.)
-			extra_waits.add(&image_wait);
+			if(!this->is_internal)
+			{
+				extra_waits.add(&image_wait);
+			}
 			if(will_present)
 			{
 				// we want our work to signal a semaphore which our present waits on.

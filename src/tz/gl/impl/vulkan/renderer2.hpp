@@ -192,6 +192,7 @@ namespace tz::gl
 		vk2::CommandBuffer& scratch_command_buffer();
 		bool render_wait_enabled = false;
 		bool no_present_enabled = false;
+		bool is_internal = false;
 		std::vector<vk2::CommandPool::AllocationResult> command_allocations = {};
 		vk2::Fence render_wait_fence = vk2::Fence::null();
 		vk2::BinarySemaphore present_sync_semaphore = vk2::BinarySemaphore::null();
