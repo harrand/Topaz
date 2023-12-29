@@ -61,7 +61,7 @@ namespace tz::gl
 	}
 
 	ResourceStorage::ResourceStorage(std::span<const iresource* const> resources, std::span<const icomponent* const> components):
-	AssetStorageCommon<iresource>(resources),
+	tz::maybe_owned_list<iresource>(resources),
 	components(),
 	image_handles(),
 	bindless_image_storage_buffer(ogl2::buffer::null())
@@ -286,7 +286,7 @@ namespace tz::gl
 		iresource* newres = comp->get_resource();
 		tz::assert(oldres->get_type() == newres->get_type());
 		tz::assert(newres != nullptr);
-		AssetStorageCommon<iresource>::set(h, newres);
+		tz::maybe_owned_list<iresource>::set(h, newres);
 		auto resid = static_cast<std::size_t>(static_cast<tz::hanval>(h));
 		this->components[resid] = comp;
 		if(newres->get_type() == tz::gl::resource_type::image)

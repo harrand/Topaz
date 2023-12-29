@@ -24,7 +24,7 @@ namespace tz::gl
 
 //--------------------------------------------------------------------------------------------------
 	renderer_resource_manager::renderer_resource_manager(const tz::gl::renderer_info& rinfo):
-	AssetStorageCommon<iresource>(rinfo.get_resources())
+	tz::maybe_owned_list<iresource>(rinfo.get_resources())
 	{
 		this->patch_resource_references(rinfo);
 		this->debug_name_resources(rinfo.debug_get_name());
@@ -35,17 +35,17 @@ namespace tz::gl
 
 	unsigned int renderer_resource_manager::resource_count() const
 	{
-		return AssetStorageCommon<iresource>::count();
+		return tz::maybe_owned_list<iresource>::count();
 	}
 
 	const iresource* renderer_resource_manager::get_resource(tz::gl::resource_handle rh) const
 	{
-		return AssetStorageCommon<iresource>::get(rh);
+		return tz::maybe_owned_list<iresource>::get(rh);
 	}
 
 	iresource* renderer_resource_manager::get_resource(tz::gl::resource_handle rh)
 	{
-		return AssetStorageCommon<iresource>::get(rh);
+		return tz::maybe_owned_list<iresource>::get(rh);
 	}
 
 	const icomponent* renderer_resource_manager::get_component(tz::gl::resource_handle rh) const
@@ -97,7 +97,7 @@ namespace tz::gl
 		// an existing component exists at resref.resource. we want to entirely replace it with the component specified.
 		iresource* newres = resref.component->get_resource();
 		tz::assert(newres != nullptr);
-		AssetStorageCommon<iresource>::set(resref.resource, newres);
+		tz::maybe_owned_list<iresource>::set(resref.resource, newres);
 		auto resid = static_cast<std::size_t>(static_cast<tz::hanval>(resref.resource));
 		tz::assert(resid < this->components.size());
 		this->components[resid] = resref.component;
@@ -138,7 +138,7 @@ namespace tz::gl
 	void renderer_resource_manager::patch_resource_references(const tz::gl::renderer_info& rinfo)
 	{
 		TZ_PROFZONE("render_resource_manager - patch resource references", 0xFFAAAA00);
-		// AssetStorageCommon populates our set of resources already from the renderer info.
+		// tz::maybe_owned_list populates our set of resources already from the renderer info.
 		// However, if the renderer info contained resource references (rinfo.ref_resource), the resource will be nullptr, and we will need to patch it up ourselves now.
 		this->components.reserve(this->resource_count());
 		std::size_t resource_reference_counter = 0;
@@ -153,7 +153,7 @@ namespace tz::gl
 				icomponent* comp = const_cast<icomponent*>(rinfo.get_components()[resource_reference_counter++]);
 				// add the resource reference.
 				this->components.push_back(comp);
-				AssetStorageCommon<iresource>::set(rh, comp->get_resource());
+				tz::maybe_owned_list<iresource>::set(rh, comp->get_resource());
 			}
 			else // otherwise, we create the component ourselves.
 			{

@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GL2_IMPL_FRONTEND_OGL2_RENDERER_HPP
 #define TOPAZ_GL2_IMPL_FRONTEND_OGL2_RENDERER_HPP
 #if TZ_OGL
+#include "tz/core/data/maybe_owned_list.hpp"
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/api/component.hpp"
 #include "tz/gl/impl/common/renderer.hpp"
@@ -23,7 +24,7 @@ namespace tz::gl
 	 * @ingroup tz_gl2_graphicsapi_ogl_frontend_renderer
 	 * Copies all resource data from upon creation and handles resource and component lifetimes. Also exposes said copied resources and components to the renderer.
 	 */
-	class ResourceStorage : public AssetStorageCommon<iresource>
+	class ResourceStorage : public tz::maybe_owned_list<iresource>
 	{
 	public:
 		/**

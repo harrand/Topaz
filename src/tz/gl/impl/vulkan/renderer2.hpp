@@ -1,10 +1,10 @@
 #ifndef TZ_GL_IMPL_VULKAN_RENDERER2_HPP
 #define TZ_GL_IMPL_VULKAN_RENDERER2_HPP
 #if TZ_VULKAN
+#include "tz/core/data/maybe_owned_list.hpp"
 #include "tz/gl/api/renderer.hpp"
 #include "tz/core/memory/maybe_owned_ptr.hpp"
 #include "tz/gl/impl/vulkan/component.hpp"
-#include "tz/gl/impl/common/renderer.hpp"
 #include <functional>
 
 #include "tz/gl/impl/vulkan/detail/descriptors.hpp"
@@ -34,7 +34,7 @@ namespace tz::gl
 	// represents topaz-level resource management.
 	// the majority of this code is not specific to vulkan, however setting up dynamic-resource-spans is.
 	// possible todo: bring most of this class out into a common impl for opengl? 
-	class renderer_resource_manager : private AssetStorageCommon<iresource>, public renderer_vulkan_base
+	class renderer_resource_manager : private tz::maybe_owned_list<iresource>, public renderer_vulkan_base
 	{
 	public:
 		renderer_resource_manager(const tz::gl::renderer_info& rinfo);

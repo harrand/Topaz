@@ -160,7 +160,6 @@ add_library(topaz STATIC
 	src/tz/gl/tz_gl.cpp
 	src/tz/gl/tz_gl.hpp
 	# tz::gl (Common Impl)
-	src/tz/gl/impl/common/renderer.hpp
 	src/tz/gl/impl/common/renderer.dbgui.cpp
 	src/tz/gl/impl/common/renderer.dbgui.hpp
 	# tz::gl (Vulkan Frontend)
