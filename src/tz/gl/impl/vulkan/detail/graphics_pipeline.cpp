@@ -63,7 +63,7 @@ namespace tz::gl::vk2
 	{
 		return !this->shaders.create_infos.empty()
 			&& this->pipeline_layout != nullptr
-			&& (this->render_pass != nullptr || this->dynamic_rendering_state != vk2::GraphicsPipelineInfo::DynamicRenderingState{})
+			&& (this->dynamic_rendering_state != vk2::GraphicsPipelineInfo::DynamicRenderingState{})
 			&& this->valid_device();
 	}
 
@@ -168,15 +168,8 @@ namespace tz::gl::vk2
 		};
 		VkRenderPass render_pass_native = VK_NULL_HANDLE;
 		void* next = nullptr;
-		if(info.render_pass == nullptr)
-		{
-			tz::assert(info.dynamic_rendering_state.colour_attachment_formats.size(), "Specified no render pass within graphics pipeline creation flags. This means we're using dynamic rendering, but no colour attachment formats were passed. logic error. please submit a bug report.");
-			next = &dynamic_rendering_state;
-		}
-		else
-		{
-			render_pass_native = info.render_pass->native();
-		}
+		tz::assert(info.dynamic_rendering_state.colour_attachment_formats.size(), "Specified no render pass within graphics pipeline creation flags. This means we're using dynamic rendering, but no colour attachment formats were passed. logic error. please submit a bug report.");
+		next = &dynamic_rendering_state;
 		VkGraphicsPipelineCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,

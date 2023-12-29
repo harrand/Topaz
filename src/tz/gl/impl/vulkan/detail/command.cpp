@@ -1,66 +1,9 @@
 #if TZ_VULKAN
-#include "tz/gl/impl/vulkan/detail/framebuffer.hpp"
-#include "tz/gl/impl/vulkan/detail/render_pass.hpp"
 #include "tz/gl/impl/vulkan/detail/command.hpp"
 #include <numeric>
 
 namespace tz::gl::vk2
 {
-	CommandBufferRecording::RenderPassRun::RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, tz::vec4 clear_colour):
-	framebuffer(&framebuffer),
-	recording(&recording)
-	{
-		VkClearValue colour_clear{.color = {.float32 = {clear_colour[0], clear_colour[1], clear_colour[2], clear_colour[3]}}};
-		constexpr VkClearValue depth_clear{.depthStencil = {1.0f, 0}};
-		std::vector<VkClearValue> clear_values(framebuffer.get_attachment_views().length());
-		for(std::size_t i = 0; i < framebuffer.get_attachment_views().length(); i++)
-		{
-			switch(framebuffer.get_attachment_views()[i]->get_aspect())
-			{
-				case ImageAspectFlag::Colour:
-					clear_values[i] = colour_clear;
-				break;
-				case ImageAspectFlag::Depth:
-					clear_values[i] = depth_clear;
-				break;
-				case ImageAspectFlag::Stencil: break;
-			}
-		}
-		VkRenderPassBeginInfo begin
-		{
-			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-			.pNext = nullptr,
-			.renderPass = this->framebuffer->get_pass().native(),
-			.framebuffer = this->framebuffer->native(),
-			.renderArea =
-			{
-				.offset = {0, 0},
-				.extent =
-				{
-					.width = this->framebuffer->get_dimensions()[0],
-					.height = this->framebuffer->get_dimensions()[1]
-				}
-			},
-			.clearValueCount = static_cast<std::uint32_t>(clear_values.size()),
-			.pClearValues = clear_values.data()
-		};
-
-		vkCmdBeginRenderPass(this->recording->get_command_buffer().native(), &begin, VK_SUBPASS_CONTENTS_INLINE);
-		this->recording->register_command
-		(VulkanCommand::BeginRenderPass{
-		 	.framebuffer = this->framebuffer
-		});
-	}
-
-	CommandBufferRecording::RenderPassRun::~RenderPassRun()
-	{
-		vkCmdEndRenderPass(this->recording->get_command_buffer().native());
-		this->recording->register_command
-		(VulkanCommand::EndRenderPass{
-			.framebuffer = this->framebuffer
-		});
-	}
-
 	CommandBufferRecording::DynamicRenderingRun::DynamicRenderingRun(CommandBufferRecording& record, std::span<const vk2::ImageView> colour_attachments, const vk2::ImageView* depth_attachment, DynamicRenderingRunInfo rinfo):
 	recording(&record)
 	{
@@ -490,28 +433,6 @@ namespace tz::gl::vk2
 					if(arg.image == &image)
 					{
 						img_layout = arg.target_layout;
-					}
-				}
-				else if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
-				{
-					// If some render pass has since ended, the layout may have changed if it was an attachment.
-					auto get_framebuffer_attachment_layout = [&arg](std::size_t attachment_idx)
-					{
-						return arg.framebuffer->get_pass().get_info().attachments[attachment_idx].final_layout;
-					};
-					// We end a framebuffer, which has some number of attachments. Firstly we check if any of them are this image. If it is, we query the render pass to find out what the layout was meant to be.
-					const tz::basic_list<ImageView*>& framebuffer_attachments = arg.framebuffer->get_attachment_views();
-					auto iter = std::find_if(framebuffer_attachments.begin(), framebuffer_attachments.end(),
-					[&image](ImageView* const & view_ptr)->bool
-					{
-						return &view_ptr->get_image() == &image;
-					});
-					if(iter != framebuffer_attachments.end())
-					{
-						std::size_t attachment_idx = std::distance(framebuffer_attachments.begin(), iter);
-
-						// Now find out which layout that is.
-						img_layout = get_framebuffer_attachment_layout(attachment_idx);
 					}
 				}
 			}, previous_command);

@@ -726,7 +726,6 @@ namespace tz::gl
 						}
 					},
 					.pipeline_layout = &this->pipeline.layout,
-					.render_pass = nullptr,
 					.dynamic_rendering_state =
 					{
 						.colour_attachment_formats = colour_attachment_formats,

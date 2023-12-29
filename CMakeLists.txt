@@ -199,8 +199,6 @@ add_library(topaz STATIC
 	src/tz/gl/impl/vulkan/detail/fence.hpp
 	src/tz/gl/impl/vulkan/detail/fixed_function.cpp
 	src/tz/gl/impl/vulkan/detail/fixed_function.hpp
-	src/tz/gl/impl/vulkan/detail/framebuffer.cpp
-	src/tz/gl/impl/vulkan/detail/framebuffer.hpp
 	src/tz/gl/impl/vulkan/detail/gpu_mem.hpp
 	src/tz/gl/impl/vulkan/detail/graphics_pipeline.cpp
 	src/tz/gl/impl/vulkan/detail/graphics_pipeline.hpp
@@ -215,8 +213,6 @@ add_library(topaz STATIC
 	src/tz/gl/impl/vulkan/detail/logical_device.hpp
 	src/tz/gl/impl/vulkan/detail/pipeline_layout.cpp
 	src/tz/gl/impl/vulkan/detail/pipeline_layout.hpp
-	src/tz/gl/impl/vulkan/detail/render_pass.cpp
-	src/tz/gl/impl/vulkan/detail/render_pass.hpp
 	src/tz/gl/impl/vulkan/detail/sampler.cpp
 	src/tz/gl/impl/vulkan/detail/sampler.hpp
 	src/tz/gl/impl/vulkan/detail/semaphore.cpp

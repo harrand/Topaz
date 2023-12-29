@@ -221,33 +221,7 @@ namespace tz::gl::vk2::hardware
 			std::visit([](auto&& val)
 			{
 				using T = std::decay_t<decltype(val)>;
-				if constexpr(std::is_same_v<T, VulkanCommand::BeginRenderPass>)
-				{
-					TZ_PROFZONE("Vulkan Backend - RenderPass Begin CPU Execute", 0xFFAA0000);
-					// Change image's layout CPU-side.
-					Framebuffer& framebuffer = *val.framebuffer;
-					const RenderPass& pass = framebuffer.get_pass();
-					for(std::size_t i = 0; i < framebuffer.get_attachment_views().length(); i++)
-					{
-						Image& img = framebuffer.get_attachment_views()[i]->get_image();
-						ImageLayout output_layout = pass.get_info().attachments[i].initial_layout;
-						img.set_layout(output_layout);
-					}
-				}
-				if constexpr(std::is_same_v<T, VulkanCommand::EndRenderPass>)
-				{
-					TZ_PROFZONE("Vulkan Backend - RenderPass End CPU Execute", 0xFFAA0000);
-					// Change image's layout CPU-side.
-					Framebuffer& framebuffer = *val.framebuffer;
-					const RenderPass& pass = framebuffer.get_pass();
-					for(std::size_t i = 0; i < framebuffer.get_attachment_views().length(); i++)
-					{
-						Image& img = framebuffer.get_attachment_views()[i]->get_image();
-						ImageLayout output_layout = pass.get_info().attachments[i].final_layout;
-						img.set_layout(output_layout);
-					}
-				}
-				else if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
+				if constexpr(std::is_same_v<T, VulkanCommand::TransitionImageLayout>)
 				{
 					TZ_PROFZONE("Vulkan Backend - TransitionImageLayout CPU Execute", 0xFFAA0000);
 					// We probably need to change the image's layout CPU-side.

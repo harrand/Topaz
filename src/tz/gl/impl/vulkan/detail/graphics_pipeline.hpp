@@ -5,7 +5,6 @@
 #include "tz/gl/impl/vulkan/detail/shader.hpp"
 #include "tz/gl/impl/vulkan/detail/fixed_function.hpp"
 #include "tz/gl/impl/vulkan/detail/pipeline_layout.hpp"
-#include "tz/gl/impl/vulkan/detail/render_pass.hpp"
 
 namespace tz::gl::vk2
 {
@@ -55,7 +54,6 @@ namespace tz::gl::vk2
 		PrimitiveTopology topology = PrimitiveTopology::Triangles;
 		PipelineState state;
 		const PipelineLayout* pipeline_layout;
-		const RenderPass* render_pass;
 		struct DynamicRenderingState
 		{
 			std::vector<VkFormat> colour_attachment_formats = {};

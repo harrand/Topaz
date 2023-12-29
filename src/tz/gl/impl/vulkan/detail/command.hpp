@@ -1,10 +1,8 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_COMMAND_HPP
 #if TZ_VULKAN
-#include "tz/gl/impl/vulkan/detail/render_pass.hpp"
 #include "tz/gl/impl/vulkan/detail/hardware/queue.hpp"
 #include "tz/gl/impl/vulkan/detail/logical_device.hpp"
-#include "tz/gl/impl/vulkan/detail/framebuffer.hpp"
 #include "tz/gl/impl/vulkan/detail/graphics_pipeline.hpp"
 #include "tz/gl/impl/vulkan/detail/buffer.hpp"
 
@@ -125,30 +123,10 @@ namespace tz::gl::vk2
 			std::uint32_t first_set_id;
 		};
 
-		/**
-		 * Record a beginning of some @ref RenderPass.
-		 * See @ref CommandBufferRecording::RenderPassRun for usage.
-		 */
-		struct BeginRenderPass
-		{
-			/// Framebuffer containing the @ref RenderPass.
-			Framebuffer* framebuffer;
-		};
-
 		struct BeginDynamicRendering{};
 
 		struct EndDynamicRendering{};
 		
-		/**
-		 * Record the ending of some @ref RenderPass.
-		 * See @ref CommandBufferRecording::RenderPassRun for usage.
-		 */
-		struct EndRenderPass
-		{
-			/// Framebuffer containing the @ref RenderPass.
-			Framebuffer* framebuffer;
-		};
-
 		/**
 		 * Record a copy from one @ref Buffer to another.
 		 *
@@ -251,7 +229,7 @@ namespace tz::gl::vk2
 		struct DebugEndLabel{};
 
 		/// variant type which has alternatives for every single possible recordable command type.
-		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginRenderPass, EndRenderPass, BeginDynamicRendering, EndDynamicRendering, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
+		using variant = std::variant<Dispatch, Draw, DrawIndexed, DrawIndirect, DrawIndirectCount, DrawIndexedIndirect, DrawIndexedIndirectCount, BindIndexBuffer, BindPipeline, BindDescriptorSets, BeginDynamicRendering, EndDynamicRendering, BufferCopyBuffer, BufferCopyImage, ImageCopyImage, BindBuffer, TransitionImageLayout, SetScissorDynamic, DebugBeginLabel, DebugEndLabel>;
 	};
 
 	enum class CommandPoolFlag
@@ -291,31 +269,6 @@ namespace tz::gl::vk2
 	class CommandBufferRecording
 	{
 	public:
-		/**
-		 * Represents the full duration of an invocation of a @ref RenderPass during a @ref CommandBufferRecording.
-		 * @note Any vulkan recording commands invoked during the lifetime of this object can apply to the corresponding @ref RenderPass.
-		 */
-		class RenderPassRun
-		{
-		public:
-			/**
-			 * Record the beginning of the @ref RenderPass sourcing the provided @ref Framebuffer.
-			 * @param framebuffer Framebuffer whose @ref RenderPass should begin within the @ref CommandBuffer.
-			 * @param recording Existing recording of a @ref CommandBuffer which shall record the beginning/ending of the render pass.
-			 * @note The construction of this object begins the render pass, and the destruction ends the render pass. This means all commands recorded during the lifetime of this object will apply to the render pass.
-			 */
-			RenderPassRun(Framebuffer& framebuffer, CommandBufferRecording& recording, tz::vec4 clear_colour = {0.0f, 0.0f, 0.0f, 1.0f});
-			RenderPassRun(const RenderPassRun& copy) = delete;
-			RenderPassRun(RenderPassRun&& move) = delete;
-			~RenderPassRun();
-
-			RenderPassRun& operator=(const RenderPassRun& rhs) = delete;
-			RenderPassRun& operator=(RenderPassRun&& rhs) = delete;
-		private:
-			Framebuffer* framebuffer;
-			CommandBufferRecording* recording;
-		};
-
 		class DynamicRenderingRun
 		{
 		public:
@@ -407,8 +360,6 @@ namespace tz::gl::vk2
 		 * @return CommandBuffer that this recording corresponds to.
 		 */
 		const CommandBuffer& get_command_buffer() const;
-
-		friend class RenderPassRun;
 	private:
 		CommandBuffer& get_command_buffer();
 		void register_command(VulkanCommand::variant command);

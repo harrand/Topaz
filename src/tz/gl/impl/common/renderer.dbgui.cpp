@@ -166,7 +166,7 @@ namespace tz::gl
 			}
 			#if TZ_DEBUG
 				ImGui::PushTextWrapPos();
-				ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the debug-ui to display ontop of your rendered output.");
+				ImGui::TextDisabled("Note: In debug builds, extra options might be present that you did not ask for. These are added to allow the dbgui to display ontop of your rendered output.");
 				ImGui::PopTextWrapPos();
 			#endif //TZ_DEBUG
 		}
