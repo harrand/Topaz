@@ -34,6 +34,8 @@ add_library(topaz STATIC
 	src/tz/core/data/grid_view.hpp
 	src/tz/core/data/grid_view.inl
 	src/tz/core/data/handle.hpp
+	src/tz/core/data/maybe_owned_list.hpp
+	src/tz/core/data/maybe_owned_list.inl
 	src/tz/core/data/polymorphic_list.hpp
 	src/tz/core/data/polymorphic_list.inl
 	src/tz/core/data/quat.cpp
@@ -158,7 +160,6 @@ add_library(topaz STATIC
 	src/tz/gl/tz_gl.cpp
 	src/tz/gl/tz_gl.hpp
 	# tz::gl (Common Impl)
-	src/tz/gl/impl/common/renderer.cpp
 	src/tz/gl/impl/common/renderer.hpp
 	src/tz/gl/impl/common/renderer.dbgui.cpp
 	src/tz/gl/impl/common/renderer.dbgui.hpp

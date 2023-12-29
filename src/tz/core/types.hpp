@@ -18,6 +18,12 @@ namespace tz
 	template<typename T>
 	concept enum_class = std::is_enum_v<T> && !std::is_convertible_v<T, int>;
 
+	template<typename T>
+	concept unique_cloneable_type = requires(T* t)
+	{
+		{t->unique_clone()};
+	};
+
 	/**
 	 * A number is any arithmetic type excluding char and bool.
 	 */
