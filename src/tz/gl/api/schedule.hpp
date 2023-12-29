@@ -27,13 +27,26 @@ namespace tz::gl
 		}
 	};
 
+	/**
+	 * @ingroup tz_gl2_device
+	 * Represents a render graph.
+	 */
 	struct schedule
 	{
+		/// List of all events. Do not touch this directly.
 		std::vector<event> events = {};
+		/// Represents the event indices which will take place per frame, in chronological order.
 		timeline_t timeline = {};
 
+		/**
+		 * Retrieve all the events that depend on the provided event.
+		 */
 		std::span<const eid_t> get_dependencies(eid_t evt) const;
 
+		/**
+		 * Add a number of existing event dependencies to an existing event.
+		 * Each dependency will not run GPU-side until the event completes its GPU work.
+		 */
 		template<typename T0, typename... T>
 		void add_dependencies(T0 evth, T... deps)
 		{
@@ -43,6 +56,9 @@ namespace tz::gl
 			(iter->dependencies.push_back(static_cast<eid_t>(static_cast<tz::hanval>(deps))), ...);
 		}
 
+		/**
+		 * Retrieve the chronological rank of a renderer. The set of renderers that run first at the beginning of the frame will have a chronological rank of 0. Renderers that depend on any of those first renderers have a rank of 1, and so on...
+		 */
 		template<typename H>
 		unsigned int chronological_rank(H handle) const
 		{
@@ -50,6 +66,9 @@ namespace tz::gl
 			return chronological_rank_eid(evt);
 		}
 
+		/**
+		 * Retrieve the maximum chronological rank within the render graph.
+		 */
 		unsigned int max_chronological_rank() const
 		{
 			unsigned int maxrank = 0;
