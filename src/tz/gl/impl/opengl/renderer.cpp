@@ -769,51 +769,43 @@ namespace tz::gl
 				{
 					icomponent* comp = this->get_component(arg.resource);
 					iresource* res = comp->get_resource();
-					switch(res->get_access())
+					if(res->get_access() == tz::gl::resource_access::static_access)
 					{
-						default:
-							tz::error("Unrecognised resource access");
-							[[fallthrough]];
-						case resource_access::static_access:
-							switch(res->get_type())
+						switch(res->get_type())
+						{
+							case resource_type::buffer:
 							{
-								case resource_type::buffer:
+								ogl2::buffer& buffer = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
+								ogl2::buffer staging_buffer
+								{{
+									.target = ogl2::buffer_target::uniform,
+									.residency = ogl2::buffer_residency::dynamic,
+									.size_bytes = arg.data.size_bytes()
+								}};
 								{
-									ogl2::buffer& buffer = static_cast<buffer_component_ogl*>(comp)->ogl_get_buffer();
-									ogl2::buffer staging_buffer
-									{{
-										.target = ogl2::buffer_target::uniform,
-										.residency = ogl2::buffer_residency::dynamic,
-										.size_bytes = arg.data.size_bytes()
-									}};
-									{
-										void* ptr = staging_buffer.map();
-										std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
-										staging_buffer.unmap();
-									}
-									ogl2::buffer_helper::copy(staging_buffer, buffer);
+									void* ptr = staging_buffer.map();
+									std::memcpy(ptr, arg.data.data(), arg.data.size_bytes());
+									staging_buffer.unmap();
 								}
-								break;
-								case resource_type::image:
-									ogl2::image& image = static_cast<image_component_ogl*>(comp)->ogl_get_image();
-									ogl2::image staging_image
-									{{
-										.format = image.get_format(),
-										.dimensions = image.get_dimensions(),
-										.shader_sampler = image.get_sampler()
-									}};
-									staging_image.set_data(arg.data);
-									ogl2::image_helper::copy(staging_image, image);
-
-								break;
+								ogl2::buffer_helper::copy(staging_buffer, buffer);
 							}
-						break;
-						case resource_access::dynamic_access:
-							tz::report("Received component write edit request for resource handle %zu, which is being carried out, but is unnecessary because the resource has dynamic access, meaning you can just mutate data().", static_cast<std::size_t>(static_cast<tz::hanval>(arg.resource)));
-							std::span<std::byte> data = res->data_as<std::byte>();
-							std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
-						break;
+							break;
+							case resource_type::image:
+							{
+								ogl2::image& image = static_cast<image_component_ogl*>(comp)->ogl_get_image();
+								ogl2::image staging_image
+								{{
+									.format = image.get_format(),
+									.dimensions = image.get_dimensions(),
+									.shader_sampler = image.get_sampler()
+								}};
+								staging_image.set_data(arg.data);
+								ogl2::image_helper::copy(staging_image, image);
+							}
+						}
 					}
+					std::span<std::byte> data = res->data_as<std::byte>();
+					std::copy(arg.data.begin(), arg.data.end(), data.begin() + arg.offset);
 				}
 				else if constexpr(std::is_same_v<T, renderer_edit::compute_config>)
 				{
