@@ -1,6 +1,9 @@
 #ifndef TOPAZ_CORE_MEMORY_MAYBE_OWNED_PTR_HPP
 #define TOPAZ_CORE_MEMORY_MAYBE_OWNED_PTR_HPP
 #include "tz/core/memory/memblk.hpp"
+#include <memory>
+#include <variant>
+#include <concepts>
 
 namespace tz
 {

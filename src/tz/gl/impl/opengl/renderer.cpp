@@ -7,6 +7,7 @@
 #include "tz/gl/impl/opengl/detail/draw.hpp"
 #include "tz/gl/impl/opengl/renderer.hpp"
 #include "tz/gl/impl/opengl/component.hpp"
+#include "tz/gl/impl/common/renderer.dbgui.hpp"
 #include "tz/gl/output.hpp"
 #include "tz/gl/resource.hpp"
 

@@ -1,7 +1,8 @@
+#if TZ_VULKAN
 #include "tz/gl/api/renderer.hpp"
 #include "tz/gl/impl/vulkan/detail/fixed_function.hpp"
-#if TZ_VULKAN
 #include "tz/gl/impl/vulkan/renderer2.hpp"
+#include "tz/gl/impl/common/renderer.dbgui.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/gl/device.hpp"
 #include "tz/gl/output.hpp"
