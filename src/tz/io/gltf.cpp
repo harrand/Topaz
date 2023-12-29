@@ -2,11 +2,14 @@
 #include "tz/core/debug.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/core/matrix_transform.hpp"
+#include "nlohmann/json.hpp"
 #include <regex>
 #include <fstream>
+#undef assert
 
 namespace tz::io
 {
+	using json = nlohmann::json;
 	/**
 	 * here's an example of what a glb's json chunk might look like:
 		{
@@ -541,14 +544,16 @@ namespace tz::io
 		return tz::io::image::load_from_memory(imgdata_sv);
 	}
 
-	gltf::gltf(std::string_view glb_data)
+	gltf::gltf(std::string_view glb_data):
+	json_data(nlohmann::json{})
 	{
 		TZ_PROFZONE("gltf - import", 0xFFFF2222);
 		this->parse_header(glb_data.substr(0, 12));
 		this->parse_chunks(glb_data.substr(12));
-		if(this->data["scene"].is_number_integer())
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		if(data["scene"].is_number_integer())
 		{
-			this->active_scene_id = this->data["scene"];
+			this->active_scene_id = data["scene"];
 		}
 		this->create_scenes();
 		this->create_nodes();
@@ -633,7 +638,7 @@ namespace tz::io
 		{
 			TZ_PROFZONE("JSON Parse", 0xFFFF2222);
 			std::string json_str(chunkdata.data(), length);
-			this->data = json::parse(json_str);
+			this->json_data = json::parse(json_str);
 		}
 		chunkdata.remove_prefix(length);
 		this->parse_chunks(chunkdata);
@@ -642,7 +647,8 @@ namespace tz::io
 	void gltf::create_scenes()
 	{
 		TZ_PROFZONE("gltf - create scenes", 0xFFFF2222);
-		json scenes = this->data["scenes"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json scenes = data["scenes"];
 		tz::assert(scenes.is_array() || scenes.is_null());
 		if(scenes.is_array())
 		{
@@ -667,7 +673,8 @@ namespace tz::io
 	void gltf::create_nodes()
 	{
 		TZ_PROFZONE("gltf - create nodes", 0xFFFF2222);
-		json nodes = this->data["nodes"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json nodes = data["nodes"];
 		tz::assert(nodes.is_array() || nodes.is_null());
 		if(nodes.is_array())
 		{
@@ -737,14 +744,15 @@ namespace tz::io
 	void gltf::create_buffers()
 	{
 		TZ_PROFZONE("gltf - create buffers", 0xFFFF2222);
-		json buffers = this->data["buffers"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json buffers = data["buffers"];
 		tz::assert(buffers.is_array() || buffers.is_null());
 
 		if(buffers.is_array())
 		{
 			for(auto buf : buffers)
 			{
-				this->buffers.push_back(this->load_buffer(buf));
+				this->buffers.push_back(this->load_buffer(&buf));
 			}
 		}	
 	}
@@ -752,7 +760,8 @@ namespace tz::io
 	void gltf::create_animations()
 	{
 		TZ_PROFZONE("gltf - create animations", 0xFFFF2222);
-		json janims = this->data["animations"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json janims = data["animations"];
 		tz::assert(janims.is_array() || janims.is_null());
 		if(janims.is_array())
 		{
@@ -843,7 +852,8 @@ namespace tz::io
 	void gltf::create_images()
 	{
 		TZ_PROFZONE("gltf - load images", 0xFFFF2222);
-		json imgs = this->data["images"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json imgs = data["images"];
 		if(imgs.is_array())
 		{
 			for(auto img : imgs)
@@ -881,7 +891,8 @@ namespace tz::io
 	void gltf::create_skins()
 	{
 		TZ_PROFZONE("gltf - create skins", 0xFFFF2222);
-		json jskins = this->data["skins"];	
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json jskins = data["skins"];	
 		if(jskins.is_array())
 		{
 			for(auto jskin : jskins)
@@ -911,7 +922,8 @@ namespace tz::io
 	void gltf::create_materials()
 	{
 		TZ_PROFZONE("gltf - create materials", 0xFFFF2222);
-		json mats = this->data["materials"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json mats = data["materials"];
 		if(mats.is_array())
 		{
 			for(auto mat : mats)
@@ -1037,7 +1049,8 @@ namespace tz::io
 	void gltf::create_views()
 	{
 		TZ_PROFZONE("gltf - create views", 0xFFFF2222);
-		json bufviews = this->data["bufferViews"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json bufviews = data["bufferViews"];
 		if(bufviews.is_array())
 		{
 			for(auto view : bufviews)
@@ -1072,7 +1085,8 @@ namespace tz::io
 	void gltf::create_accessors()
 	{
 		TZ_PROFZONE("gltf - create accessors", 0xFFFF2222);
-		json node = this->data["accessors"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json node = data["accessors"];
 		if(node.is_array())
 		{
 			for(auto accessor : node)
@@ -1177,19 +1191,21 @@ namespace tz::io
 	void gltf::create_meshes()
 	{
 		TZ_PROFZONE("gltf - create meshes", 0xFFFF2222);
-		json meshes = this->data["meshes"];
+		auto& data = std::any_cast<nlohmann::json&>(this->json_data);
+		json meshes = data["meshes"];
 		if(meshes.is_array())
 		{
 			for(auto mesh : meshes)
 			{
-				this->meshes.push_back(this->load_mesh(mesh));
+				this->meshes.push_back(this->load_mesh(&mesh));
 			}
 		}
 	}
 
-	gltf_buffer gltf::load_buffer(json node)
+	gltf_buffer gltf::load_buffer(void* nodeptr)
 	{
 		TZ_PROFZONE("gltf - load buffer", 0xFFFF2222);
+		auto node = *static_cast<json*>(nodeptr);
 		std::string makeshift_bufname = "buffer" + std::to_string(this->parsed_buf_count);
 		tz::assert(node.contains("byteLength"), "gltf json buffer object \"%s\" does not have an entry named `byteLength`", makeshift_bufname.c_str());
 		std::size_t byte_length = node["byteLength"];
@@ -1215,9 +1231,10 @@ namespace tz::io
 		};	
 	}
 
-	gltf_mesh gltf::load_mesh(json node)
+	gltf_mesh gltf::load_mesh(void* nodeptr)
 	{
 		TZ_PROFZONE("gltf - load mesh", 0xFFFF2222);
+		auto node = *static_cast<json*>(nodeptr);
 		gltf_mesh ret;
 		ret.name = "Untitled";
 		if(node["name"].is_string())

@@ -3,6 +3,7 @@
 #include "tz/ren/mesh.hpp"
 #include "tz/io/gltf.hpp"
 #include "tz/core/job/job.hpp"
+#include <map>
 
 namespace tz::ren
 {

@@ -6,9 +6,8 @@
 #include "tz/core/data/trs.hpp"
 #include "tz/core/matrix.hpp"
 #include "tz/io/image.hpp"
-#include "nlohmann/json.hpp"
 #include <set>
-#undef assert
+#include <any>
 
 namespace tz::io
 {
@@ -17,7 +16,6 @@ namespace tz::io
 		// i hate msvc so damn much.
 		constexpr std::size_t badzu = static_cast<std::size_t>(-1);
 	}
-	using json = nlohmann::json;
 
 	struct gltf_buffer
 	{
@@ -317,6 +315,7 @@ namespace tz::io
 		tz::io::image get_image_data(std::size_t imageid) const;
 	private:
 		gltf(std::string_view glb_data);
+		std::any json_data;
 		void parse_header(std::string_view header);
 		void parse_chunks(std::string_view chunkdata);
 		void create_scenes();
@@ -329,15 +328,14 @@ namespace tz::io
 		void create_views();
 		void create_accessors();
 		void create_meshes();
-		gltf_buffer load_buffer(json node);
-		gltf_mesh load_mesh(json node);
+		gltf_buffer load_buffer(void* node);
+		gltf_mesh load_mesh(void* node);
 		std::span<const std::byte> get_binary_data(std::size_t offset, std::size_t len) const;
 		void compute_inverse_bind_matrices();
 		void compute_animation_data();
 
 		gltf_header header;
 		std::vector<gltf_chunk_data> chunks = {};
-		json data = {};
 		std::size_t active_scene_id = detail::badzu;
 		std::vector<gltf_scene> scenes = {};
 		std::vector<gltf_node> nodes = {};
