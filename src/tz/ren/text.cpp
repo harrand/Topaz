@@ -501,6 +501,7 @@ namespace tz::ren
 		this->fonts.compute_config(cinfo, this->rh);
 		cinfo.ref_resource(this->rh, this->render_buffer);
 		cinfo.debug_name("Text Renderer - Compute Prepass");
+		cinfo.set_options({tz::gl::renderer_option::render_wait});
 		this->ch = tz::gl::get_device().create_renderer(cinfo);
 	}
 
@@ -537,7 +538,9 @@ namespace tz::ren
 
 	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::trs transform, std::string str, tz::vec3 colour)
 	{
-		return this->chars.add_string(this->rh, this->ch, static_cast<std::size_t>(static_cast<tz::hanval>(font)), transform, colour, str);
+		auto ret = this->chars.add_string(this->rh, this->ch, static_cast<std::size_t>(static_cast<tz::hanval>(font)), transform, colour, str);
+		tz::gl::get_device().get_renderer(this->ch).render();
+		return ret;
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -545,6 +548,7 @@ namespace tz::ren
 	void text_renderer::remove_string(string_handle sh)
 	{
 		this->chars.remove_string(this->rh, this->ch, sh);
+		tz::gl::get_device().get_renderer(this->ch).render();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -552,6 +556,7 @@ namespace tz::ren
 	void text_renderer::clear_strings()
 	{
 		this->chars.clear_strings(this->rh, this->ch);
+		tz::gl::get_device().get_renderer(this->ch).render();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -573,14 +578,15 @@ namespace tz::ren
 	void text_renderer::string_set_text(string_handle sh, std::string text)
 	{
 		this->chars.string_set_text(this->rh, sh, text);
+		tz::gl::get_device().get_renderer(this->ch).render();
 	}
 
 //--------------------------------------------------------------------------------------------------
 
 	void text_renderer::append_to_render_graph()
 	{
-		tz::gl::get_device().render_graph().timeline.push_back(static_cast<tz::gl::eid_t>(static_cast<std::size_t>(static_cast<tz::hanval>(this->ch))));
+		//tz::gl::get_device().render_graph().timeline.push_back(static_cast<tz::gl::eid_t>(static_cast<std::size_t>(static_cast<tz::hanval>(this->ch))));
 		tz::gl::get_device().render_graph().timeline.push_back(static_cast<tz::gl::eid_t>(static_cast<std::size_t>(static_cast<tz::hanval>(this->rh))));
-		tz::gl::get_device().render_graph().add_dependencies(this->rh, this->ch);
+		//tz::gl::get_device().render_graph().add_dependencies(this->rh, this->ch);
 	}
 }
