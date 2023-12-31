@@ -83,9 +83,9 @@ void main()
 	glyph_render_data glyph = render.glyphs[char_id];
 	string_locator sloc = string.data[glyph.string_id];
 
-	quadpos.x += glyph.char.advance;
-	// why do we divide by 6? well, the answer is *magic*.
-	quadpos += vec2(glyph.char.minx, glyph.char.miny) * sloc.model[2][2] * 0.1667f;
+	quadpos.x += glyph.char.advance * 3.0f;
+	// why do we divide by 3? well, the answer is *magic*.
+	quadpos += vec2(glyph.char.minx, glyph.char.miny) * 3.0f;
 	// note: bearing is irrelevant. we don't need it. min does the job.
 
 	vec4 worldpos = sloc.model * vec4(quadpos, 0.0f, 1.0f);

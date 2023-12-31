@@ -72,9 +72,7 @@ void main()
 		string_locator str = string.data[glyph.string_id];
 		glyph.char = font.list[str.font_id].glyphs[alphabet_id];
 
-		// add on total advance.
-		// why do we divide by 6? well, the answer is *magic*.
-		advance += glyph.char.advance * str.model[2][2] * 0.1667f;
+		advance += glyph.char.advance;
 
 		if(string_char_offset >= str.count)
 		{
