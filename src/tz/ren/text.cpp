@@ -7,16 +7,17 @@
 
 #include ImportedShaderHeader(text, vertex)
 #include ImportedShaderHeader(text, fragment)
+#include ImportedShaderHeader(text, compute)
 
 namespace tz::ren
 {
 //--------------------------------------------------------------------------------------------------
 // char_storage
 //--------------------------------------------------------------------------------------------------
+	constexpr std::size_t initial_char_capacity = 4096u;
 
 	char_storage::char_storage(tz::gl::renderer_info& rinfo)
 	{
-		constexpr std::size_t initial_char_capacity = 4096u;
 		std::array<char, initial_char_capacity> initial_chars{0};
 		constexpr std::size_t initial_string_capacity = 64u;
 		std::array<string_locator, initial_string_capacity> initial_strings{};
@@ -34,7 +35,15 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str)
+	void char_storage::compute_config(tz::gl::renderer_info& cinfo, tz::gl::renderer_handle rh)
+	{
+		cinfo.ref_resource(rh, this->char_buffer);
+		cinfo.ref_resource(rh, this->string_buffer);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	char_storage::string_handle char_storage::add_string(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str)
 	{
 		// first, add all the chars into the buffer.
 		std::span<char> span{str.data(), str.size()};
@@ -75,7 +84,7 @@ namespace tz::ren
 		{
 			string_id = static_cast<std::size_t>(static_cast<tz::hanval>(this->string_free_list.front()));
 			this->string_free_list.erase(this->string_free_list.begin());
-			this->write_string_locator(rh, string_id, loc);
+			this->write_string_locator(rh, ch, string_id, loc);
 		}
 		else
 		{
@@ -86,7 +95,7 @@ namespace tz::ren
 				// expand. double capacity.
 				this->set_string_capacity(rh, capacity * 2);
 			}
-			this->write_string_locator(rh, string_id, loc);
+			this->write_string_locator(rh, ch, string_id, loc);
 			this->string_cursor++;
 		}
 		return static_cast<tz::hanval>(string_id);
@@ -94,7 +103,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void char_storage::remove_string(tz::gl::renderer_handle rh, string_handle sh)
+	void char_storage::remove_string(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, string_handle sh)
 	{
 		if(std::find(this->string_free_list.begin(), this->string_free_list.end(), sh) != this->string_free_list.end())
 		{
@@ -106,17 +115,17 @@ namespace tz::ren
 		// try_find_char_region checks through our locators. if we dont empty that locator out now, we can't recycle that space.
 		// its a shame coz remove_string is therefore very slow.
 		// possible todo: string buffer should become dynamic_access. remove_string will become very fast but slow down rendering.
-		this->write_string_locator(rh, static_cast<std::size_t>(static_cast<tz::hanval>(sh)), {});
+		this->write_string_locator(rh, ch, static_cast<std::size_t>(static_cast<tz::hanval>(sh)), {});
 	}
 
 //--------------------------------------------------------------------------------------------------
 
-	void char_storage::clear_strings(tz::gl::renderer_handle rh)
+	void char_storage::clear_strings(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch)
 	{
 		auto sz = this->string_count(true);
 		for(std::size_t i = 0; i < sz; i++)
 		{
-			this->write_string_locator(rh, i, {});
+			this->write_string_locator(rh, ch, i, {});
 		}
 		this->string_free_list.clear();
 		this->string_cursor = 0;
@@ -194,7 +203,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void char_storage::update_tri_count(tz::gl::renderer_handle rh) const
+	void char_storage::update_tri_count(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch) const
 	{
 		std::size_t char_count = this->get_char_occupancy(rh);
 		tz::gl::get_device().get_renderer(rh).edit(tz::gl::RendererEditBuilder{}
@@ -203,17 +212,24 @@ namespace tz::ren
 			.tri_count = char_count * 2 // each char is a quad, which is 2 triangles
 		})
 		.build());
+
+		tz::gl::get_device().get_renderer(ch).edit(tz::gl::RendererEditBuilder{}
+		.compute
+		({
+			.kernel = {static_cast<std::uint32_t>(char_count), 1u, 1u}
+		})
+		.build());
 	}
 
 //--------------------------------------------------------------------------------------------------
 
-	void char_storage::write_string_locator(tz::gl::renderer_handle rh, std::size_t string_id, const string_locator& loc)
+	void char_storage::write_string_locator(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t string_id, const string_locator& loc)
 	{
 		// the string buffer is static_access, meaning a renderer edit is necessary to write into it.
 		// this is just a helper method to do that.
 		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
 		strings[string_id] = loc;
-		this->update_tri_count(rh);
+		this->update_tri_count(rh, ch);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -320,6 +336,14 @@ namespace tz::ren
 				.flags = {tz::gl::resource_flag::image_filter_linear}
 			})));
 		}	
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void font_storage::compute_config(tz::gl::renderer_info& cinfo, tz::gl::renderer_handle rh)
+	{
+		cinfo.ref_resource(rh, this->font_buffer);
+		// dont need access to images.
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -437,6 +461,12 @@ namespace tz::ren
 		tz::vec2 mondims;
 	};
 
+	struct glyph_render_data
+	{
+		font_data::glyph_data chardata;
+		std::uint32_t string_id = static_cast<std::uint32_t>(-1);
+	};
+
 	text_renderer::text_renderer(std::size_t image_capacity, tz::gl::renderer_options options, tz::gl::ioutput* output)
 	{
 		tz::gl::renderer_info rinfo;
@@ -454,11 +484,24 @@ namespace tz::ren
 		{
 			.access = tz::gl::resource_access::dynamic_access
 		}));
+		std::array<glyph_render_data, initial_char_capacity> render_buffer_data;
+		this->render_buffer = rinfo.add_resource(tz::gl::buffer_resource::from_many(render_buffer_data));
+
 		this->chars = char_storage{rinfo};
 		this->fonts = font_storage{rinfo, image_capacity};
+
 		rinfo.debug_name("Text Renderer");
 
 		this->rh = tz::gl::get_device().create_renderer(rinfo);
+
+		// compute
+		tz::gl::renderer_info cinfo;
+		cinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(text, compute));
+		this->chars.compute_config(cinfo, this->rh);
+		this->fonts.compute_config(cinfo, this->rh);
+		cinfo.ref_resource(this->rh, this->render_buffer);
+		cinfo.debug_name("Text Renderer - Compute Prepass");
+		this->ch = tz::gl::get_device().create_renderer(cinfo);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -494,21 +537,21 @@ namespace tz::ren
 
 	text_renderer::string_handle text_renderer::add_string(font_handle font, tz::trs transform, std::string str, tz::vec3 colour)
 	{
-		return this->chars.add_string(this->rh, static_cast<std::size_t>(static_cast<tz::hanval>(font)), transform, colour, str);
+		return this->chars.add_string(this->rh, this->ch, static_cast<std::size_t>(static_cast<tz::hanval>(font)), transform, colour, str);
 	}
 
 //--------------------------------------------------------------------------------------------------
 
 	void text_renderer::remove_string(string_handle sh)
 	{
-		this->chars.remove_string(this->rh, sh);
+		this->chars.remove_string(this->rh, this->ch, sh);
 	}
 
 //--------------------------------------------------------------------------------------------------
 
 	void text_renderer::clear_strings()
 	{
-		this->chars.clear_strings(this->rh);
+		this->chars.clear_strings(this->rh, this->ch);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -536,6 +579,8 @@ namespace tz::ren
 
 	void text_renderer::append_to_render_graph()
 	{
+		tz::gl::get_device().render_graph().timeline.push_back(static_cast<tz::gl::eid_t>(static_cast<std::size_t>(static_cast<tz::hanval>(this->ch))));
 		tz::gl::get_device().render_graph().timeline.push_back(static_cast<tz::gl::eid_t>(static_cast<std::size_t>(static_cast<tz::hanval>(this->rh))));
+		tz::gl::get_device().render_graph().add_dependencies(this->rh, this->ch);
 	}
 }

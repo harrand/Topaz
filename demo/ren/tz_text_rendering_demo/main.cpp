@@ -29,21 +29,21 @@ int main()
 		tz::ren::text_renderer::font_handle fonth = tren.add_font(ttf);
 		auto stringh = tren.add_string(fonth,
 		tz::trs{
-			.translate = {-500.0f, 0.0f, 0.0f},
-			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.65f),
-			.scale = tz::vec3::filled(25.0f)
-		},"well met! i am harrand", {0.2f, 0.5f, 0.9f});
+			.translate = {1000.0f, 700.0f, 0.0f},
+			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.0f),
+			.scale = tz::vec3::filled(22.0f)
+		},"well met! i am harrand", {1.0f, 0.5f, 0.9f});
 
 		tren.add_string(fonth,
 		tz::trs{
-			.translate = {-700.0f, -550.0f, 0.0f},
-			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.65f),
-			.scale = tz::vec3::filled(40.0f)
+			.translate = {100.0f, 250.0f, 0.0f},
+			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.25f),
+			.scale = tz::vec3::filled(19.0f)
 		},"you have (achieved) [({the})] rank of \":)\"", {0.2f, 0.5f, 0.9f});
 
 		tren.add_string(fonth,
 		tz::trs{
-			.translate = {0.0f, -300.0f, 0.0f},
+			.translate = {50.0f, 450.0f, 0.0f},
 			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, -0.26f),
 			.scale = tz::vec3::filled(20.0f)
 		},"congratulation. a winner is you", {0.9f, 0.5f, 0.3f});
@@ -53,10 +53,6 @@ int main()
 			tz::begin_frame();
 			tren.update();
 			tz::gl::get_device().render();
-
-			static float counter = 0.01f;
-			tren.string_set_colour(stringh, {1.0f, std::sin(counter += 0.01f), 1.0f - std::cos(counter)});
-			tren.string_set_transform(stringh, tz::trs{{-800.0f, 0.0f, 0.0f}, {}, tz::vec3{50.0f, 50.0f, 50.0f} * 0.5f + std::sin(counter * 0.1f)});
 
 			tz::dbgui::run([&ttf, &tren]()
 			{

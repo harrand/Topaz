@@ -38,9 +38,11 @@ namespace tz::ren
 			tz::mat4 model = tz::mat4::identity();
 		};
 
-		string_handle add_string(tz::gl::renderer_handle rh, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str);
-		void remove_string(tz::gl::renderer_handle rh, string_handle sh);
-		void clear_strings(tz::gl::renderer_handle rh);
+		void compute_config(tz::gl::renderer_info& cinfo, tz::gl::renderer_handle rh);
+
+		string_handle add_string(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::uint32_t font_id, tz::trs transform, tz::vec3 colour, std::string str);
+		void remove_string(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, string_handle sh);
+		void clear_strings(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch);
 		std::size_t string_count(bool include_free_list = false) const;
 
 		void string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform);
@@ -48,8 +50,8 @@ namespace tz::ren
 		void string_set_text(tz::gl::renderer_handle rh, string_handle sh, std::string);
 	private:
 		std::optional<std::size_t> try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const;
-		void update_tri_count(tz::gl::renderer_handle rh) const;
-		void write_string_locator(tz::gl::renderer_handle rh, std::size_t string_id, const string_locator& loc);
+		void update_tri_count(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch) const;
+		void write_string_locator(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t string_id, const string_locator& loc);
 		std::size_t get_char_occupancy(tz::gl::renderer_handle rh) const;
 		std::size_t get_char_capacity(tz::gl::renderer_handle rh) const;
 		void set_char_capacity(tz::gl::renderer_handle rh, std::size_t char_count);
@@ -83,6 +85,7 @@ namespace tz::ren
 		font_storage() = default;
 		using font_handle = tz::handle<tz::io::ttf>;
 
+		void compute_config(tz::gl::renderer_info& cinfo, tz::gl::renderer_handle rh);
 		font_handle add_font(const tz::io::ttf& font, tz::gl::renderer_handle rh);
 		void remove_font(font_handle fh, tz::gl::renderer_handle rh);
 	private:
@@ -181,6 +184,8 @@ namespace tz::ren
 		char_storage chars;
 		font_storage fonts;
 		tz::gl::resource_handle misc_buffer = tz::nullhand;
+		tz::gl::resource_handle render_buffer = tz::nullhand;
+		tz::gl::renderer_handle ch;
 		tz::gl::renderer_handle rh;
 	};
 }

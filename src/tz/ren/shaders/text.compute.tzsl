@@ -1,0 +1,92 @@
+shader(type = compute);
+
+kernel(1, 1, 1);
+
+struct string_locator
+{
+	uint offset;
+	uint count;
+	uint font_id;
+	vec3 colour;
+	mat4 model;
+};
+
+struct glyph_data
+{
+	uint image_id;
+	float advance;
+	float bearingx;
+	float bearingy;
+};
+
+struct glyph_render_data
+{
+	glyph_data char;
+	uint string_id;
+};
+
+#define FONT_ALPHABET_COUNT 95
+
+struct font_data
+{
+	glyph_data glyphs[96];
+};
+
+resource(id = 0) const buffer char_buffer
+{
+	uint data[];
+} char;
+
+resource(id = 1) const buffer string_buffer
+{
+	string_locator data[];
+} string;
+
+resource(id = 2) const buffer font_buffer
+{
+	font_data list[];
+} font;
+
+// we write into this.
+resource(id = 3) buffer render_buffer
+{
+	glyph_render_data glyphs[];
+} render;
+
+
+void main()
+{
+	uint char_index = in::global_id.x;
+	// we know which char we are.
+	// we need to go through all the strings, and figure out which string we're in.
+	uint string_char_offset = 0;
+	float advance = 0.0f;
+	glyph_render_data glyph;
+	for(uint i = 0; i <= char_index; i++, string_char_offset++)
+	{
+		uint char4 = char.data[i / 4];
+		uint alphabet_id = (char4 >> (8 * (i % 4))) & 0xFF;
+		// get the char metrics for this glyph and add it.
+		string_locator str = string.data[glyph.string_id];
+		glyph.char = font.list[str.font_id].glyphs[alphabet_id];
+
+		// add on total advance.
+		advance += glyph.char.advance;
+
+		if(string_char_offset >= str.count)
+		{
+			// we're at the end of the string.
+			// reset advance because we're at the start of a new string.
+			advance = 0.0f;
+			// same with char offset.
+			string_char_offset = 0;
+			// next string.
+			glyph.string_id++;
+		}
+	}
+
+	// we now have the glyph data we need.
+	render.glyphs[char_index] = glyph;
+	// overwrite the advance to be the total advance so far.
+	render.glyphs[char_index].char.advance = advance;
+}

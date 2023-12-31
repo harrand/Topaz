@@ -20,6 +20,12 @@ struct glyph_data
 	float bearingy;
 };
 
+struct glyph_render_data
+{
+	glyph_data char;
+	uint string_id;
+};
+
 #define FONT_ALPHABET_COUNT 95
 
 struct font_data
@@ -33,17 +39,22 @@ resource(id = 0) const buffer misc_buffer
 } misc;
 
 
-resource(id = 1) const buffer char_buffer
+resource(id = 1) const buffer render_buffer
+{
+	glyph_render_data glyphs[];
+} render;
+
+resource(id = 2) const buffer char_buffer
 {
 	uint data[];
 } char;
 
-resource(id = 2) const buffer string_buffer
+resource(id = 3) const buffer string_buffer
 {
 	string_locator data[];
 } string;
 
-resource(id = 3) const buffer font_buffer
+resource(id = 4) const buffer font_buffer
 {
 	font_data list[];
 } font;
@@ -67,43 +78,19 @@ void main()
 	uint char_id = in::vertex_id / 6;
 	vec2 quadpos = quad_positions[in::vertex_id % 6];
 
-	uint string_id = 0;
-	string_locator drawn_string = string.data[string_id];
-	uint cumulative_char_count = drawn_string.offset;
-	uint string_char_offset = 0;
-	do
-	{
-		drawn_string = string.data[string_id];
-		cumulative_char_count += drawn_string.count;
-		string_char_offset = char_id - drawn_string.offset;
-		string_id++;
-	}
-	while(cumulative_char_count < char_id + 1);
-	// this is because we increment string id even if the condition is about to be false - a side-effect of do-while.
-	string_id--;
-	uint offset = drawn_string.offset + string_char_offset;
-	uint char4 = char.data[offset / 4];
-	uint alphabet_id = (char4 >> (8 * (offset % 4))) & 0xFF;
-
-	// drawn_string is the string locator we're currently in.
-	// string_char_offset is the nth character within the string we want to draw.
-	glyph_data glyph = font.list[drawn_string.font_id].glyphs[alphabet_id];
-	//quadpos -= misc.mondims / 8.0f;
-	quadpos.x += string_char_offset * 1.25f;
-
-	quadpos += vec2(glyph.bearingx, glyph.bearingy) * 3.0f;
-	vec4 worldpos = drawn_string.model * vec4(quadpos, 0.0f, 1.0f);
-	//worldpos.xy -= misc.mondims * 0.1f;
-
-	// quadpos is the local space position
-	// todo: pretend glyph.position represents a model martix, and transform.
-	// note: glyph.position is intended to be in pixels, not NDC.
-	//worldpos.xy -= misc.mondims * 0.5f;
+	glyph_render_data glyph = render.glyphs[char_id];
+	string_locator sloc = string.data[glyph.string_id];
+	// advance is in pixels? presumably.	
+	// get it in normalised.
+	float advance_amt = glyph.char.advance;
+	quadpos.x += advance_amt * 4.0f;
+	quadpos += vec2(glyph.char.bearingx, glyph.char.bearingy) * 4.0f;
+	vec4 worldpos = sloc.model * vec4(quadpos, 0.0f, 1.0f);
 	worldpos.xy /= misc.mondims * 0.5f;
 	worldpos.xy -= vec2(1.0, 1.0);
 
 	out::position = vec4(worldpos.xy, 0.0, 1.0);
-	out::image_id = glyph.image_id;
+	out::image_id = glyph.char.image_id;
 	out::texcoord = quad_texcoords[in::vertex_id % 6];
-	out::colour = drawn_string.colour;
+	out::colour = sloc.colour;
 }

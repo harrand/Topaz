@@ -5,7 +5,7 @@ input(id = 1) vec2 texcoord;
 input(id = 2) vec3 colour;
 output(id = 0) vec4 frag_colour;
 
-resource(id = 4) const texture res::textures[];
+resource(id = 5) const texture res::textures[];
 
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
