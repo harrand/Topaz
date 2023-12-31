@@ -8,6 +8,7 @@ struct string_locator
 	uint offset;
 	uint count;
 	uint font_id;
+	float string_width_pixels;
 	vec3 colour;
 	mat4 model;
 };

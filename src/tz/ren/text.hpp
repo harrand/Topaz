@@ -32,7 +32,7 @@ namespace tz::ren
 			std::uint32_t offset = 0;
 			std::uint32_t count = 0;
 			std::uint32_t font_id = 0;
-			float pad0 = 0.0f;
+			float string_width_pixels = 0.0f;
 			tz::vec3 colour = tz::vec3::filled(1.0f);
 			float pad1 = 0.0f;
 			tz::mat4 model = tz::mat4::identity();
@@ -48,6 +48,7 @@ namespace tz::ren
 		void string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform);
 		void string_set_colour(tz::gl::renderer_handle rh, string_handle sh, tz::vec3 colour);
 		void string_set_text(tz::gl::renderer_handle rh, string_handle sh, std::string);
+		float string_get_width_pixels(tz::gl::renderer_handle rh, string_handle sh) const;
 	private:
 		std::optional<std::size_t> try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const;
 		void update_tri_count(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch) const;
@@ -177,6 +178,11 @@ namespace tz::ren
 		 * @param text New characters to be drawn.
 		 */
 		void string_set_text(string_handle sh, std::string text);
+		/**
+		 * Get the horizontal width of the string, in pixels. This is the cumulative sum of all character widths (axis-aligned, i.e ignoring rotation).
+		 * @param sh Handle corresponding to the string whose width needs to be retrieved.
+		 */
+		float string_get_width_pixels(string_handle sh) const;
 
 		/// Add the text-renderer to the render-graph, causing it to be invoked every frame.
 		void append_to_render_graph();

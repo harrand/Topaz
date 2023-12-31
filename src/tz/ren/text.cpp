@@ -172,6 +172,14 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	float char_storage::string_get_width_pixels(tz::gl::renderer_handle rh, string_handle sh) const
+	{
+		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
+		return strings[static_cast<std::size_t>(static_cast<tz::hanval>(sh))].string_width_pixels;
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	std::optional<std::size_t> char_storage::try_find_char_region(std::size_t char_count, tz::gl::renderer_handle rh) const
 	{
 		std::vector<string_locator> sorted_strings(this->get_string_capacity(rh));
@@ -582,6 +590,13 @@ namespace tz::ren
 	{
 		this->chars.string_set_text(this->rh, sh, text);
 		tz::gl::get_device().get_renderer(this->ch).render();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	float text_renderer::string_get_width_pixels(string_handle sh) const
+	{
+		return this->chars.string_get_width_pixels(this->rh, sh);
 	}
 
 //--------------------------------------------------------------------------------------------------

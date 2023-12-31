@@ -7,6 +7,7 @@ struct string_locator
 	uint offset;
 	uint count;
 	uint font_id;
+	float string_width_pixels;
 	vec3 colour;
 	mat4 model;
 };
@@ -39,7 +40,7 @@ resource(id = 0) const buffer char_buffer
 	uint data[];
 } char;
 
-resource(id = 1) const buffer string_buffer
+resource(id = 1) buffer string_buffer
 {
 	string_locator data[];
 } string;
@@ -90,4 +91,19 @@ void main()
 	render.glyphs[char_index] = glyph;
 	// overwrite the advance to be the total advance so far.
 	render.glyphs[char_index].char.advance = advance;
+
+	// write string lengths (we just want to know this for every string.)
+	for(uint i = 0; i < string.data.length(); i++)
+	{
+		// multiply complete advance by 3. it's magic?
+		float cumulative_advance = 0.0f;
+		string_locator str = string.data[i];
+		for(uint j = str.offset; j < (str.offset + str.count); j++)
+		{
+			uint char4 = char.data[j / 4];
+			uint alphabet_id = (char4 >> (8 * (j % 4))) & 0xFF;
+			cumulative_advance += font.list[str.font_id].glyphs[alphabet_id].advance;
+		}
+		string.data[i].string_width_pixels = cumulative_advance * str.model[2][2] * 3.0f;
+	}
 }
