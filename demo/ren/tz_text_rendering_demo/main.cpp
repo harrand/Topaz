@@ -32,21 +32,31 @@ int main()
 			.translate = {1000.0f, 700.0f, 0.0f},
 			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.0f),
 			.scale = tz::vec3::filled(22.0f)
-		},"well met! i am harrand", {1.0f, 0.5f, 0.9f});
+		},"well met! i am harrand.", {1.0f, 0.5f, 0.9f});
 
-		tren.add_string(fonth,
+		auto stringh2 = tren.add_string(fonth,
 		tz::trs{
 			.translate = {100.0f, 250.0f, 0.0f},
 			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.25f),
 			.scale = tz::vec3::filled(19.0f)
 		},"you have (achieved) [({the})] rank of \":)\"", {0.2f, 0.5f, 0.9f});
 
-		tren.add_string(fonth,
+		auto stringh3 = tren.add_string(fonth,
 		tz::trs{
 			.translate = {50.0f, 450.0f, 0.0f},
 			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, -0.26f),
 			.scale = tz::vec3::filled(20.0f)
 		},"congratulation. a winner is you", {0.9f, 0.5f, 0.3f});
+
+		//tren.remove_string(stringh);
+		tren.remove_string(stringh3);
+
+		stringh = tren.add_string(fonth,
+		tz::trs{
+			.translate = {1000.0f, 600.0f, 0.0f},
+			.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, 0.0f),
+			.scale = tz::vec3::filled(22.0f)
+		},"harry returns!!", {1.0f, 0.5f, 0.0f});
 
 		while(!tz::window().is_close_requested())
 		{
