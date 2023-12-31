@@ -18,6 +18,8 @@ struct glyph_data
 	float advance;
 	float bearingx;
 	float bearingy;
+	float minx;
+	float miny;
 };
 
 struct glyph_render_data
@@ -80,11 +82,12 @@ void main()
 
 	glyph_render_data glyph = render.glyphs[char_id];
 	string_locator sloc = string.data[glyph.string_id];
-	// advance is in pixels? presumably.	
-	// get it in normalised.
-	float advance_amt = glyph.char.advance;
-	quadpos.x += advance_amt * 4.0f;
-	quadpos += vec2(glyph.char.bearingx, glyph.char.bearingy) * 4.0f;
+
+	quadpos.x += glyph.char.advance;
+	// why do we divide by 6? well, the answer is *magic*.
+	quadpos += vec2(glyph.char.minx, glyph.char.miny) * sloc.model[2][2] * 0.1667f;
+	// note: bearing is irrelevant. we don't need it. min does the job.
+
 	vec4 worldpos = sloc.model * vec4(quadpos, 0.0f, 1.0f);
 	worldpos.xy /= misc.mondims * 0.5f;
 	worldpos.xy -= vec2(1.0, 1.0);

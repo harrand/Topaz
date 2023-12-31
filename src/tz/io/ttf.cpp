@@ -716,8 +716,8 @@ namespace tz::io
 				{
 					.position = static_cast<tz::vec2>(tz::vector<std::int16_t, 2>{glyfd.xmin, glyfd.ymin}) / this->head.units_per_em,
 					.dimensions = static_cast<tz::vec2>(tz::vector<int, 2>{glyfd.xmax - glyfd.xmin, glyfd.ymax - glyfd.ymin}) / this->head.units_per_em,
-					.left_side_bearing = static_cast<int>(left_side_bearing),
-					.right_side_bearing = static_cast<int>(advance_width - left_side_bearing - (glyfd.xmax - glyfd.xmin)),
+					.left_side_bearing = static_cast<int>(left_side_bearing) / this->head.units_per_em,
+					.right_side_bearing = static_cast<int>(advance_width - left_side_bearing - (glyfd.xmax - glyfd.xmin)) / this->head.units_per_em,
 					.advance = static_cast<float>(advance_width) / this->head.units_per_em
 				},
 				.shape = shape

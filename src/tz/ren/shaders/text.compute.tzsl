@@ -17,6 +17,8 @@ struct glyph_data
 	float advance;
 	float bearingx;
 	float bearingy;
+	float minx;
+	float miny;
 };
 
 struct glyph_render_data
@@ -71,7 +73,8 @@ void main()
 		glyph.char = font.list[str.font_id].glyphs[alphabet_id];
 
 		// add on total advance.
-		advance += glyph.char.advance;
+		// why do we divide by 6? well, the answer is *magic*.
+		advance += glyph.char.advance * str.model[2][2] * 0.1667f;
 
 		if(string_char_offset >= str.count)
 		{

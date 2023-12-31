@@ -315,6 +315,7 @@ namespace tz::ren
 			std::uint32_t image_id;
 			float advance;
 			tz::vec2 bearing;
+			tz::vec2 min;
 		};
 		std::array<glyph_data, alphabet.size()> glyphs = {};
 	};
@@ -398,7 +399,8 @@ namespace tz::ren
 			const auto& glyph_data = iter->second;
 			d.glyphs[i].image_id = image_id;
 			d.glyphs[i].advance = glyph_data.spacing.advance;
-			d.glyphs[i].bearing = glyph_data.spacing.position;
+			d.glyphs[i].bearing = tz::vec2i{glyph_data.spacing.left_side_bearing, glyph_data.spacing.right_side_bearing};
+			d.glyphs[i].min = glyph_data.spacing.position;
 
 			images[i] = font.rasterise_msdf(c,
 			{
