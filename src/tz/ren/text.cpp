@@ -475,6 +475,7 @@ namespace tz::ren
 		rinfo.shader().set_shader(tz::gl::shader_stage::vertex, ImportedShaderSource(text, vertex));
 		rinfo.shader().set_shader(tz::gl::shader_stage::fragment, ImportedShaderSource(text, fragment));
 		rinfo.set_options(options);
+		rinfo.state().graphics.culling = tz::gl::graphics_culling::back;
 		if(output != nullptr)
 		{
 			rinfo.set_output(*output);
