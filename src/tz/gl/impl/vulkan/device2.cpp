@@ -151,14 +151,14 @@ namespace tz::gl
 		return this->ldev;
 	}
 
-	void device_vulkan_base::touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id)
-	{
-		this->fingerprint_to_renderer_id.emplace(fingerprint, renderer_id);
-	}
-
 	std::size_t device_vulkan_base::get_rid(unsigned int fingerprint) const
 	{
 		return this->fingerprint_to_renderer_id.at(fingerprint);
+	}
+
+	void device_vulkan_base::touch_renderer_id(unsigned int fingerprint, std::size_t renderer_id)
+	{
+		this->fingerprint_to_renderer_id.emplace(fingerprint, renderer_id);
 	}
 	
 

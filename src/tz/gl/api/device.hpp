@@ -33,6 +33,10 @@ namespace tz::gl
 		{t.frame_wait()} -> std::same_as<void>;
 	};
 
+	/**
+	 * @ingroup tz_gl2_device
+	 * Device API.
+	 */
 	template<renderer_type R>
 	class device_common
 	{
@@ -42,7 +46,13 @@ namespace tz::gl
 		R& get_renderer(tz::gl::renderer_handle handle);
 		void destroy_renderer(tz::gl::renderer_handle handle);
 		std::size_t renderer_count() const;
+		/**
+		 * Retrieve the render graph.
+		 */
 		const tz::gl::schedule& render_graph() const;
+		/**
+		 * Retrieve the render graph.
+		 */
 		tz::gl::schedule& render_graph();
 		void render();
 		// Derived needs to define create_renderer still. They can use emplace_renderer as a helper function.
