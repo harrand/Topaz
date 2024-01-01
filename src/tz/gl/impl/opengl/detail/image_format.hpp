@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_OGL2_IMAGE_FORMAT_HPP
 #define TOPAZ_GL_IMPL_BACKEND_OGL2_IMAGE_FORMAT_HPP
+#if TZ_OGL
 #include "tz/gl/impl/opengl/detail/tz_opengl.hpp"
 #include <array>
 
@@ -142,4 +143,5 @@ namespace tz::gl::ogl2
 	}
 }
 
+#endif // TZ_OGL
 #endif // TOPAZ_GL_IMPL_BACKEND_OGL2_IMAGE_FORMAT_HPP

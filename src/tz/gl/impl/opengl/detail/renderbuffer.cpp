@@ -1,5 +1,5 @@
-#include "tz/gl/impl/opengl/detail/renderbuffer.hpp"
 #if TZ_OGL
+#include "tz/gl/impl/opengl/detail/renderbuffer.hpp"
 
 namespace tz::gl::ogl2
 {
