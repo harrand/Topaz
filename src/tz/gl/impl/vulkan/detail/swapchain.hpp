@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP
 #define TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP
+#if TZ_VULKAN
 #include "tz/gl/impl/vulkan/detail/logical_device.hpp"
 #include "tz/gl/impl/vulkan/detail/image_view.hpp"
 
@@ -135,4 +136,5 @@ namespace tz::gl::vk2
 	};
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_BACKEND_VK2_SWAPCHAIN_HPP

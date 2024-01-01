@@ -1,5 +1,6 @@
 #ifndef TOPAZ_GL_IMPL_VULKAN_BACKEND_DRAW_HPP
 #define TOPAZ_GL_IMPL_VULKAN_BACKEND_DRAW_HPP
+#if TZ_VULKAN
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
 
 namespace tz::gl::vk2
@@ -21,4 +22,5 @@ namespace tz::gl::vk2
 	};
 }
 
+#endif // TZ_VULKAN
 #endif // TOPAZ_GL_IMPL_VULKAN_BACKEND_DRAW_HPP
