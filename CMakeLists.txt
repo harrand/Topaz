@@ -260,6 +260,8 @@ add_library(topaz STATIC
 	src/tz/lua/api.cpp
 	src/tz/lua/api.hpp
 	src/tz/lua/lua.hpp
+	src/tz/lua/slab.cpp
+	src/tz/lua/slab.hpp
 	src/tz/lua/state.cpp
 	src/tz/lua/state.hpp
 
