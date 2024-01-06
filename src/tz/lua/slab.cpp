@@ -88,8 +88,8 @@ namespace tz::lua
 			for(std::size_t j = i; j < s.size(); j++)
 			{
 				const auto& left = s.data()[i];
-				const auto& right = s.data()[i];
-				if(left.context_id == right.context_id && left.subject_id == right.subject_id)
+				const auto& right = s.data()[j];
+				if(i != j && left.context_id == right.context_id && left.subject_id == right.subject_id)
 				{
 					auto& list = sorted_operations[{left.context_id, left.subject_id}];
 					list.push_back(left);
@@ -111,7 +111,7 @@ namespace tz::lua
 				{
 					for(std::size_t i = 1; i < list.size(); i++)
 					{
-						op = proc.merge(op, this_slab.data()[i]);
+						op = proc.merge(op, list[i]);
 					}
 				}
 				// push that op into the final list.
