@@ -29,7 +29,7 @@ namespace tz::lua
 
 		constexpr virtual bool does_anything() const
 		{
-			return !std::is_same_v<decltype(*this), empty_slab_processor>;
+			return true;
 		}
 	};
 
@@ -43,6 +43,11 @@ namespace tz::lua
 		virtual void process_operation(lua_operation op) override final
 		{
 			
+		}
+
+		virtual bool does_anything() const override final
+		{
+			return false;
 		}
 	};
 
@@ -60,7 +65,8 @@ namespace tz::lua
 	slab& get_slab();
 	i_slab_processor& get_slab_processor();
 	void install_slab_processor(i_slab_processor& proc);
-	void process_slab();
+	std::vector<lua_operation> process_slab();
+	void process_all_slabs();
 }
 
 #endif // TOPAZ_LUA_SLAB_HPP

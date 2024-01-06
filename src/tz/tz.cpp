@@ -6,6 +6,7 @@
 #include "tz/core/debug.hpp"
 #include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
+#include "tz/lua/slab.hpp"
 
 #if TZ_VULKAN
 #include "tz/gl/impl/vulkan/detail/tz_vulkan.hpp"
@@ -115,6 +116,7 @@ namespace tz
 	{
 		tz::dbgui::end_frame();
 		tz::wsi::update();
+		tz::lua::process_all_slabs();
 		if(!init_info.flags.contains(tz::application_flag::no_graphics))
 		{
 			tz::gl::get_device().end_frame();
