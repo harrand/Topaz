@@ -24,7 +24,7 @@ namespace tz
 
 	void initialise(initialise_info init)
 	{
-		TZ_PROFZONE("Topaz Initialise", 0xFF0000AA);
+		TZ_PROFZONE("Topaz Initialise", 0xFFFFAA00);
 		tz::core::initialise();
 		tz::report("%s v%u.%u.%u (%s)", init.name, init.version.major, init.version.minor, init.version.patch, tz::info().to_string().c_str());
 		tz::wsi::initialise();
@@ -81,7 +81,7 @@ namespace tz
 
 	void terminate()
 	{
-		TZ_PROFZONE("Topaz Terminate", 0xFF0000AA);
+		TZ_PROFZONE("Topaz Terminate", 0xFFFFAA00);
 		tz::assert(wnd != tz::nullhand && initialised, "tz::terminate(): Not initialised");
 		tz::dbgui::terminate();
 		if(!init_info.flags.contains(tz::application_flag::no_graphics))
@@ -103,6 +103,7 @@ namespace tz
 
 	void begin_frame()
 	{
+		TZ_PROFZONE("Begin Frame", 0xFFFFAA00);
 		TZ_FRAME_BEGIN;
 		tz::dbgui::begin_frame();
 		tz::job_system().new_frame();
@@ -114,6 +115,7 @@ namespace tz
 
 	void end_frame()
 	{
+		TZ_PROFZONE("End Frame", 0xFFFFAA00);
 		tz::dbgui::end_frame();
 		tz::wsi::update();
 		tz::lua::process_all_slabs();

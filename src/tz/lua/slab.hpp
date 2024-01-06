@@ -58,6 +58,8 @@ namespace tz::lua
 		void clear();
 		std::size_t size() const;
 		std::span<const lua_operation> data() const;
+		void add(lua_operation op, bool is_new = true);
+		void add_bulk(std::span<const lua_operation> operations, bool is_new = true);
 	private:
 		std::vector<lua_operation> operations = {};
 	};

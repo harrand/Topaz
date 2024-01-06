@@ -1,5 +1,6 @@
 #include "tz/lua/slab.hpp"
 #include "tz/core/debug.hpp"
+#include "tz/core/profile.hpp"
 #include "tz/core/job/job.hpp"
 #include "tz/lua/state.hpp"
 #include <memory>
@@ -7,6 +8,8 @@
 
 namespace tz::lua
 {
+	std::atomic<int> frame_operation_count = 0;
+
 	void slab::clear()
 	{
 		this->operations.clear();
@@ -20,6 +23,24 @@ namespace tz::lua
 	std::span<const lua_operation> slab::data() const
 	{
 		return this->operations;
+	}
+
+	void slab::add(lua_operation op, bool is_new)
+	{
+		this->operations.push_back(op);
+		if(is_new)
+		{
+			frame_operation_count++;
+		}
+	}
+
+	void slab::add_bulk(std::span<const lua_operation> operations, bool is_new)
+	{
+		this->operations.insert(this->operations.end(), operations.begin(), operations.end());
+		if(is_new)
+		{
+			frame_operation_count += operations.size();
+		}
 	}
 
 	thread_local slab this_slab = {};
@@ -47,6 +68,7 @@ namespace tz::lua
 
 	std::vector<lua_operation> process_single_slab(const slab& s)
 	{
+		TZ_PROFZONE("Slab - Process One", 0xFF0000AA);
 		// return a set of merged lua operations for the provided slab.
 		auto& proc = get_slab_processor();
 		// firstly, find all operations with the same subject and context
@@ -107,8 +129,14 @@ namespace tz::lua
 
 	void process_all_slabs()
 	{
+		TZ_PROFZONE("Lua Process Slabs", 0xFF0000AA);
 		// for all slabs on all worker threads, combine them into a single mega-list of lua operations, and then process them all.
 		auto thread_count = tz::job_system().worker_count() + 1; // include this thread (main thread).
+		if(frame_operation_count.load() == 0)
+		{
+			// early out if nobody added a new operation this frame.
+			return;
+		}
 		slab final_slab;
 		std::vector<std::vector<lua_operation>> all_operations;
 		all_operations.resize(thread_count);
@@ -121,10 +149,16 @@ namespace tz::lua
 		});
 		tz::assert(std::cmp_equal(counter.load(), thread_count));
 		// combine them all. one more time.
+		for(const auto& ops : all_operations)
+		{
+			final_slab.add_bulk(ops, false);
+		}
 		std::vector<lua_operation> combined_ops = process_single_slab(final_slab);
 		for(lua_operation op : combined_ops)
 		{
+			TZ_PROFZONE("Slab - Process Operations", 0xFF0000AA);
 			this_proc->process_operation(op);
 		}
+		frame_operation_count.store(0);
 	}
 }
