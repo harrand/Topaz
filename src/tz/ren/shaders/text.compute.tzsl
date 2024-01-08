@@ -24,7 +24,7 @@ struct glyph_data
 
 struct glyph_render_data
 {
-	glyph_data char;
+	glyph_data chard;
 	uint string_id;
 };
 
@@ -38,7 +38,7 @@ struct font_data
 resource(id = 0) const buffer char_buffer
 {
 	uint data[];
-} char;
+} chars;
 
 resource(id = 1) buffer string_buffer
 {
@@ -131,12 +131,12 @@ void main()
 
 			string_locator str = string.data[glyph.string_id];
 			uint cur_char = str.offset + string_char_offset;
-			uint char4 = char.data[cur_char / 4];
+			uint char4 = chars.data[cur_char / 4];
 			uint alphabet_id = (char4 >> (8 * (cur_char % 4))) & 0xFF;
 			// get the char metrics for this glyph and add it.
-			glyph.char = font.list[str.font_id].glyphs[alphabet_id];
+			glyph.chard = font.list[str.font_id].glyphs[alphabet_id];
 
-			advance += glyph.char.advance;
+			advance += glyph.chard.advance;
 		}
 	}
 	else
@@ -147,7 +147,7 @@ void main()
 	// we now have the glyph data we need.
 	render.glyphs[char_index] = glyph;
 	// overwrite the advance to be the total advance so far.
-	render.glyphs[char_index].char.advance = advance;
+	render.glyphs[char_index].chard.advance = advance;
 
 	// write string lengths (we just want to know this for every string.)
 	for(uint i = 0; i < string.data.length(); i++)
@@ -157,7 +157,7 @@ void main()
 		string_locator str = string.data[i];
 		for(uint j = str.offset; j < (str.offset + str.count); j++)
 		{
-			uint char4 = char.data[j / 4];
+			uint char4 = chars.data[j / 4];
 			uint alphabet_id = (char4 >> (8 * (j % 4))) & 0xFF;
 			cumulative_advance += font.list[str.font_id].glyphs[alphabet_id].advance;
 		}

@@ -45,6 +45,7 @@ namespace tz::gl::ogl2
 		std::swap(this->img, rhs.img);
 		std::swap(this->info, rhs.info);
 		std::swap(this->maybe_bindless_handle, rhs.maybe_bindless_handle);
+		std::swap(this->debug_name, rhs.debug_name);
 		return *this;
 	}
 

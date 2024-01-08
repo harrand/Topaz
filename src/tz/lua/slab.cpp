@@ -144,6 +144,7 @@ namespace tz::lua
 		// collaborate all final operations from all workers.
 		tz::lua::for_all_states([&counter, &all_operations](tz::lua::state& state)
 		{
+			(void)state;
 			all_operations[counter++] = process_slab();
 			this_slab.clear();
 		});

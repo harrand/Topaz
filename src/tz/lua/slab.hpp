@@ -24,6 +24,7 @@ namespace tz::lua
 		virtual void process_operation(lua_operation op) = 0;
 		virtual std::string describe(const lua_operation& op) const
 		{
+			(void)op;
 			return {};
 		}
 
@@ -37,12 +38,13 @@ namespace tz::lua
 	{
 		virtual lua_operation merge(lua_operation lhs, lua_operation rhs) const override final
 		{
+			(void)lhs; (void)rhs;
 			return lhs;
 		}
 
 		virtual void process_operation(lua_operation op) override final
 		{
-			
+			(void)op;	
 		}
 
 		virtual bool does_anything() const override final

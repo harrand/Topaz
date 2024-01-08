@@ -250,7 +250,11 @@ namespace tz::gl
 				#if TZ_DEBUG
 					int max_textures;
 					glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &max_textures);
-					tz::assert(std::cmp_less(i, max_textures), "Too many textures bound at once. Max of %d, but we have %zu", max_textures, this->image_handles.size());
+					if(std::cmp_greater_equal(i, max_textures))
+					{
+						tz::report("Warning: Too many textures bound at once. Max of %d, but we have %zu", max_textures, this->image_handles.size());
+						break;
+					}
 				#endif
 				glActiveTexture(GL_TEXTURE0 + i);
 				glBindTexture(GL_TEXTURE_2D, img_nat);
@@ -277,7 +281,7 @@ namespace tz::gl
 
 	void ResourceStorage::set_image_handle(tz::gl::resource_handle h, ogl2::image::bindless_handle bindless_handle)
 	{
-		this->image_handles[static_cast<std::size_t>(static_cast<tz::hanval>(h))] = bindless_handle;
+		this->image_handles[static_cast<std::size_t>(static_cast<tz::hanval>(h)) - this->resource_count_of(resource_type::buffer)] = bindless_handle;
 	}
 
 	void ResourceStorage::reseat_resource_reference(tz::gl::resource_handle h, icomponent* comp)

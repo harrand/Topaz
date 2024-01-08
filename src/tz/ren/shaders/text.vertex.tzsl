@@ -25,7 +25,7 @@ struct glyph_data
 
 struct glyph_render_data
 {
-	glyph_data char;
+	glyph_data chard;
 	uint string_id;
 };
 
@@ -50,7 +50,7 @@ resource(id = 1) const buffer render_buffer
 resource(id = 2) const buffer char_buffer
 {
 	uint data[];
-} char;
+} chars;
 
 resource(id = 3) const buffer string_buffer
 {
@@ -84,9 +84,9 @@ void main()
 	glyph_render_data glyph = render.glyphs[char_id];
 	string_locator sloc = string.data[glyph.string_id];
 
-	quadpos.x += glyph.char.advance * 3.0f;
+	quadpos.x += glyph.chard.advance * 3.0f;
 	// why do we divide by 3? well, the answer is *magic*.
-	quadpos += vec2(glyph.char.minx, glyph.char.miny) * 3.0f;
+	quadpos += vec2(glyph.chard.minx, glyph.chard.miny) * 3.0f;
 	// note: bearing is irrelevant. we don't need it. min does the job.
 
 	vec4 worldpos = sloc.model * vec4(quadpos, 0.0f, 1.0f);
@@ -94,7 +94,7 @@ void main()
 	worldpos.xy -= vec2(1.0, 1.0);
 
 	out::position = vec4(worldpos.xy, 0.0, 1.0);
-	out::image_id = glyph.char.image_id;
+	out::image_id = glyph.chard.image_id;
 	out::texcoord = quad_texcoords[in::vertex_id % 6];
 	out::colour = sloc.colour;
 }

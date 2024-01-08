@@ -323,7 +323,7 @@ namespace tz::ren
 					({
 						.format = tz::gl::image_format::RGBA32,
 						.dimensions = {1u, 1u},
-						.flags = image_flags
+						.flags = image_flags,
 					})
 				));
 			}
