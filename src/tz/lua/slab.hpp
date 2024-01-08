@@ -10,7 +10,8 @@ namespace tz::lua
 	struct lua_operation
 	{
 		unsigned int context_id;
-		unsigned int subject_id;
+		long int subject_id;
+		unsigned int operation_id;
 		std::any value = {};
 	};
 

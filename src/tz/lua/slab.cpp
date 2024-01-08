@@ -89,7 +89,7 @@ namespace tz::lua
 			{
 				const auto& left = s.data()[i];
 				const auto& right = s.data()[j];
-				if(i != j && left.context_id == right.context_id && left.subject_id == right.subject_id)
+				if(i != j && left.context_id == right.context_id && left.subject_id == right.subject_id && left.operation_id == right.operation_id)
 				{
 					auto& list = sorted_operations[{left.context_id, left.subject_id}];
 					list.push_back(left);
