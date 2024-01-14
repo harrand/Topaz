@@ -19,6 +19,8 @@ tracy_server/
 *.swp
 # No compile_commands.json either please.
 compile_commands.json
+# No imgui runtime saves
+imgui.ini
 # I don't want any libs in my source directory (from unit tests) to leak through either (TZ1).
 src/test/**/*.a
 src/test/**/*.o
