@@ -10,6 +10,10 @@ add_tz_test(NAME tz_clone_test
 	SOURCE_FILES clone_test.cpp
 	)
 
+add_tz_test(NAME tz_container_test
+	SOURCE_FILES tz_container_test.cpp
+	)
+
 add_tz_test(NAME tz_initialise_test
 	SOURCE_FILES initialise_test.cpp
 	)

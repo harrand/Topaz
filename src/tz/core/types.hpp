@@ -2,6 +2,7 @@
 #define TOPAZ_CORE_TYPES_HPP
 #include <type_traits>
 #include <concepts>
+#include <iterator>
 #include "tz/core/memory/memblk.hpp"
 
 namespace tz
@@ -64,7 +65,7 @@ namespace tz
 	template<typename T>
 	concept nullable = requires(const T t)
 	{
-		//{decltype(t)::null()};
+		{T::null()};
 		{t.is_null()} -> std::same_as<bool>;
 	};
 
@@ -81,6 +82,30 @@ namespace tz
 		{t.allocate(sz)} -> std::same_as<tz::memblk>;
 		{t.deallocate(blk)} -> std::same_as<void>;
 		{t.owns(blk)} -> std::same_as<bool>;
+	};
+
+	template<typename T>
+	concept container = requires(T a, const T b)
+	{
+		requires std::regular<T>;
+		requires std::swappable<T>;
+		requires std::destructible<typename T::value_type>;
+		requires std::same_as<typename T::reference, typename T::value_type &>;
+		requires std::same_as<typename T::const_reference, const typename T::value_type &>;
+		requires std::forward_iterator<typename T::iterator>;
+		requires std::forward_iterator<typename T::const_iterator>;
+		requires std::signed_integral<typename T::difference_type>;
+		requires std::same_as<typename T::difference_type, typename std::iterator_traits<typename T::iterator>::difference_type>;
+		requires std::same_as<typename T::difference_type, typename std::iterator_traits<typename T::const_iterator>::difference_type>;
+		{ a.begin() } -> std::same_as<typename T::iterator>;
+		{ a.end() } -> std::same_as<typename T::iterator>;
+		{ b.begin() } -> std::same_as<typename T::const_iterator>;
+		{ b.end() } -> std::same_as<typename T::const_iterator>;
+		{ a.cbegin() } -> std::same_as<typename T::const_iterator>;
+		{ a.cend() } -> std::same_as<typename T::const_iterator>;
+		{ a.size() } -> std::same_as<typename T::size_type>;
+		{ a.max_size() } -> std::same_as<typename T::size_type>;
+		{ a.empty() } -> std::same_as<bool>;
 	};
 }
 

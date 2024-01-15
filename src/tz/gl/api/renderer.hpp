@@ -373,7 +373,7 @@ namespace tz::gl
 	template<typename T>
 	concept renderer_type = requires(T t, resource_handle r, std::size_t tri_count, const renderer_edit_request& edit_request, const tz::gl::renderer_info& rinfo)
 	{
-		requires tz::nullable<T>;
+		requires tz::nullable<std::decay_t<T>>;
 		/**
 		 * Retrieves the number of resources used by the renderer.
 		 * @return number of resources of any type.
