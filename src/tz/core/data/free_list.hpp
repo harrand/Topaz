@@ -77,10 +77,15 @@ namespace tz
 		using iterator = free_list_iterator<T, C>;
 		friend class free_list_iterator<T, C>;
 		free_list() = default;
+		free_list(C&& container);
+		free_list& operator=(const free_list<T, C>& rhs);
+		free_list& operator=(free_list<T, C>&& rhs);
+		free_list& operator=(C&& container);
 
 		std::size_t size() const;
 		bool empty() const;
 		void clear();
+		void reserve(std::size_t count);
 
 		iterator begin();
 		iterator end();

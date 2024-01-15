@@ -3,6 +3,35 @@
 namespace tz
 {
 	template<tz::nullable T, tz::container C>
+	free_list<T, C>::free_list(C&& container):
+	elements(container),
+	frees(){}
+
+	template<tz::nullable T, tz::container C>
+	free_list<T, C>& free_list<T, C>::operator=(const free_list<T, C>& rhs)
+	{
+		this->elements = rhs.container;
+		this->frees = rhs.frees;
+		return *this;
+	}
+
+	template<tz::nullable T, tz::container C>
+	free_list<T, C>& free_list<T, C>::operator=(free_list<T, C>&& rhs)
+	{
+		std::swap(this->elements, rhs.elements);
+		std::swap(this->frees, rhs.frees);
+		return *this;
+	}
+
+	template<tz::nullable T, tz::container C>
+	free_list<T, C>& free_list<T, C>::operator=(C&& container)
+	{
+		this->elements = container;
+		this->frees = {};
+		return *this;
+	}
+
+	template<tz::nullable T, tz::container C>
 	std::size_t free_list<T, C>::size() const
 	{
 		return this->elements.size() - this->frees.size();
@@ -19,6 +48,12 @@ namespace tz
 	{
 		this->elements.clear();
 		this->frees.clear();
+	}
+
+	template<tz::nullable T, tz::container C>
+	void free_list<T, C>::reserve(std::size_t count)
+	{
+		this->elements.reserve(count + this->frees.size());
 	}
 
 	template<tz::nullable T, tz::container C>

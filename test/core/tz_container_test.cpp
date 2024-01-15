@@ -59,7 +59,7 @@ void free_list()
 	tz::assert(classes.size() == 2);
 
 	// iterators
-	ints = {};	
+	ints = tz::free_list<nullable_int>{};
 	// fibonacci
 	// 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610
 	int a = 0;
