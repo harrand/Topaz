@@ -51,7 +51,7 @@ namespace tz
 		free_list_iterator operator+(const difference_type dst) const{auto old = *this; return old += dst;}
 		free_list_iterator operator-(const difference_type dst) const{auto old = *this; return old -= dst;}
 
-		difference_type operator-(const free_list_iterator& rhs) const {tz::assert(this->l == rhs.l); return this->internal_handle - rhs.internal_handle}
+		difference_type operator-(const free_list_iterator& rhs) const {tz::assert(this->l == rhs.l); return this->internal_handle - rhs.internal_handle;}
 
 		T& operator*()
 		{
