@@ -1,4 +1,4 @@
-#include "tz/core/data/contiguous_free_list.hpp"
+#include "tz/core/data/free_list.hpp"
 
 struct nullable_int
 {
@@ -36,10 +36,10 @@ private:
 	char z;
 };
 
-void contiguous_free_list()
+void free_list()
 {
 	// push back, size, empty, clear
-	tz::contiguous_free_list<nullable_int> ints;
+	tz::free_list<nullable_int> ints;
 	tz::assert(ints.size() == 0);
 	tz::assert(ints.empty());
 	ints.push_back({.i = 5});
@@ -50,7 +50,7 @@ void contiguous_free_list()
 	tz::assert(ints.empty());
 
 	// emplace back
-	tz::contiguous_free_list<nullable_class> classes;
+	tz::free_list<nullable_class> classes;
 	tz::assert(classes.size() == 0);
 	tz::assert(classes.empty());
 	classes.push_back(nullable_class{5, 6.9f, 'e'});
@@ -91,7 +91,7 @@ void contiguous_free_list()
 	tz::assert(ints.size() == 15);
 	// should no longer exist.
 	iter = std::find(ints.begin(), ints.end(), magic);
-	tz::assert(iter == ints.end(), "contiguous_free_list was not able to properly remove %d, or there is a bug in its iterator.", magic.i);
+	tz::assert(iter == ints.end(), "free_list was not able to properly remove %d, or there is a bug in its iterator.", magic.i);
 	// now do the iteration again.
 	internal_counter = 0;
 	for(nullable_int ni : ints)
@@ -123,5 +123,5 @@ void contiguous_free_list()
 
 int main()
 {
-	contiguous_free_list();
+	free_list();
 }

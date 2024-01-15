@@ -27,9 +27,9 @@ add_library(topaz STATIC
 	# tz::core
 	src/tz/core/algorithms/static.hpp
 	src/tz/core/data/basic_list.hpp
-	src/tz/core/data/contiguous_free_list.cpp
-	src/tz/core/data/contiguous_free_list.hpp
-	src/tz/core/data/contiguous_free_list.inl
+	src/tz/core/data/free_list.cpp
+	src/tz/core/data/free_list.hpp
+	src/tz/core/data/free_list.inl
 	src/tz/core/data/data_store.cpp
 	src/tz/core/data/data_store.hpp
 	src/tz/core/data/enum_field.hpp

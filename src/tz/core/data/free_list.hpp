@@ -1,14 +1,15 @@
-#ifndef TOPAZ_CORE_DATA_CONTIGUOUS_FREE_LIST_HPP
-#define TOPAZ_CORE_DATA_CONTIGUOUS_FREE_LIST_HPP
+#ifndef TOPAZ_CORE_DATA_free_list_HPP
+#define TOPAZ_CORE_DATA_free_list_HPP
 #include "tz/core/data/handle.hpp"
 #include "tz/core/types.hpp"
+#include "tz/core/debug.hpp"
 #include <vector>
 #include <iterator>
 
 namespace tz
 {
 	template<tz::nullable T, tz::container C = std::vector<T>>
-	class contiguous_free_list;
+	class free_list;
 
 	template<tz::nullable T, tz::container C = std::vector<T>>
 	struct free_list_iterator
@@ -54,28 +55,28 @@ namespace tz
 
 		T& operator*()
 		{
-			auto handle = static_cast<contiguous_free_list<T, C>::handle>(static_cast<tz::hanval>(this->internal_handle));
+			auto handle = static_cast<free_list<T, C>::handle>(static_cast<tz::hanval>(this->internal_handle));
 			return this->l->operator[](handle);
 		}
 
 		const T& operator*() const
 		{
-			auto handle = static_cast<contiguous_free_list<T, C>::handle>(static_cast<tz::hanval>(this->internal_handle));
+			auto handle = static_cast<free_list<T, C>::handle>(static_cast<tz::hanval>(this->internal_handle));
 			return this->l->operator[](handle);
 		}
 
-		contiguous_free_list<T, C>* l;	
+		free_list<T, C>* l;	
 		std::size_t internal_handle;
 	};
 
 	template<tz::nullable T, tz::container C>
-	class contiguous_free_list
+	class free_list
 	{
 	public:
 		using handle = tz::handle<T>;
 		using iterator = free_list_iterator<T, C>;
 		friend class free_list_iterator<T, C>;
-		contiguous_free_list() = default;
+		free_list() = default;
 
 		std::size_t size() const;
 		bool empty() const;
@@ -104,5 +105,5 @@ namespace tz
 	};
 }
 
-#include "tz/core/data/contiguous_free_list.inl"
-#endif // TOPAZ_CORE_DATA_CONTIGUOUS_FREE_LIST_HPP
+#include "tz/core/data/free_list.inl"
+#endif // TOPAZ_CORE_DATA_free_list_HPP
