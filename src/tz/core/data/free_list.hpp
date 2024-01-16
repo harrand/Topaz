@@ -12,6 +12,60 @@ namespace tz
 	class free_list;
 
 	template<tz::nullable T, tz::container C = std::vector<T>>
+	struct free_list_const_iterator
+	{
+		using iterator_category = std::random_access_iterator_tag;
+		using value_type = const T;
+		using difference_type = std::ptrdiff_t;
+		using pointer = const T*;
+		using reference = const T&;
+
+		auto operator<=>(const free_list_const_iterator<T, C>& lhs) const = default;
+		free_list_const_iterator& operator+=(const difference_type dst)
+		{
+			for(difference_type i = 0; i < dst; i++)
+			{
+				(*this)++;
+			}
+			return *this;
+		}
+		free_list_const_iterator& operator-=(const difference_type dst)
+		{
+			for(difference_type i = 0; i < dst; i++)
+			{
+				(*this)--;
+			}
+			return *this;
+		}
+		free_list_const_iterator& operator++()
+		{
+			while(this->internal_handle < this->l->elements.size() && this->l->is_in_free_list(++this->internal_handle));
+			return *this;
+		}
+		free_list_const_iterator& operator--()
+		{
+			tz::assert(this->internal_handle > 0);
+			while(this->internal_handle > 0 && this->l->is_in_free_list(--this->internal_handle));
+			return *this;
+		}
+		free_list_const_iterator operator++(int){auto tmp = *this; --tmp; return tmp;}
+		free_list_const_iterator operator--(int){auto tmp = *this; --tmp; return tmp;}
+		free_list_const_iterator operator+(const difference_type dst) const{auto old = *this; return old += dst;}
+		free_list_const_iterator operator-(const difference_type dst) const{auto old = *this; return old -= dst;}
+
+		difference_type operator-(const free_list_const_iterator& rhs) const {tz::assert(this->l == rhs.l); return this->internal_handle - rhs.internal_handle;}
+
+		const T& operator*() const
+		{
+			auto handle = static_cast<free_list<T, C>::handle>(static_cast<tz::hanval>(this->internal_handle));
+			return this->l->operator[](handle);
+		}
+
+		const free_list<T, C>* l;	
+		std::size_t internal_handle;
+	};
+
+	template<tz::nullable T, tz::container C = std::vector<T>>
 	struct free_list_iterator
 	{
 		using iterator_category = std::random_access_iterator_tag;
@@ -20,10 +74,10 @@ namespace tz
 		using pointer = T*;
 		using reference = T&;
 
-		bool operator==(const free_list_iterator<T, C>& lhs) const = default;
+		auto operator<=>(const free_list_iterator<T, C>& lhs) const = default;
 		free_list_iterator& operator+=(const difference_type dst)
 		{
-			for(std::size_t i = 0; i < dst; i++)
+			for(difference_type i = 0; i < dst; i++)
 			{
 				(*this)++;
 			}
@@ -31,7 +85,7 @@ namespace tz
 		}
 		free_list_iterator& operator-=(const difference_type dst)
 		{
-			for(std::size_t i = 0; i < dst; i++)
+			for(difference_type i = 0; i < dst; i++)
 			{
 				(*this)--;
 			}
@@ -48,6 +102,8 @@ namespace tz
 			while(this->internal_handle > 0 && this->l->is_in_free_list(--this->internal_handle));
 			return *this;
 		}
+		free_list_iterator operator++(int){auto tmp = *this; --tmp; return tmp;}
+		free_list_iterator operator--(int){auto tmp = *this; --tmp; return tmp;}
 		free_list_iterator operator+(const difference_type dst) const{auto old = *this; return old += dst;}
 		free_list_iterator operator-(const difference_type dst) const{auto old = *this; return old -= dst;}
 
@@ -59,15 +115,21 @@ namespace tz
 			return this->l->operator[](handle);
 		}
 
-		const T& operator*() const
+		T& operator*() const
 		{
 			auto handle = static_cast<free_list<T, C>::handle>(static_cast<tz::hanval>(this->internal_handle));
 			return this->l->operator[](handle);
 		}
 
+		operator free_list_const_iterator<T, C>() const
+		{
+			return {.l = this->l, .internal_handle = this->internal_handle};
+		}
+
 		free_list<T, C>* l;	
 		std::size_t internal_handle;
 	};
+
 
 	template<tz::nullable T, tz::container C>
 	class free_list
@@ -75,8 +137,12 @@ namespace tz
 	public:
 		using handle = tz::handle<T>;
 		using iterator = free_list_iterator<T, C>;
-		friend class free_list_iterator<T, C>;
+		using const_iterator = free_list_const_iterator<T, C>;
+		friend struct free_list_iterator<T, C>;
+		friend struct free_list_const_iterator<T, C>;
 		free_list() = default;
+		free_list(const free_list<T, C>& cpy) = default;
+		free_list(free_list<T, C>&& move) = default;
 		free_list(C&& container);
 		free_list& operator=(const free_list<T, C>& rhs);
 		free_list& operator=(free_list<T, C>&& rhs);
@@ -88,16 +154,26 @@ namespace tz
 		void reserve(std::size_t count);
 
 		iterator begin();
+		const_iterator begin() const;
 		iterator end();
+		const_iterator end() const;
+
+		handle push_back(const T& t) requires
+			requires(C con, T t) {con.push_back(t);};
 
 		handle push_back(T&& t) requires
-			requires(C con) {con.push_back(std::forward<T>(t));};
+			requires(C con, T&& t) {con.push_back(std::move(t));};
 
 		template<typename... Ts>
 		handle emplace_back(Ts&&... ts) requires
 			requires(C con) {{con.emplace_back(std::forward<Ts>(ts)...)} -> std::same_as<T&>;};
 
 		void erase(handle h);
+
+		const T& front() const;
+		T& front();
+		const T& back() const;
+		T& back();
 
 		const T& operator[](handle h) const;
 		T& operator[](handle h);

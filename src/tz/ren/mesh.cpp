@@ -98,17 +98,7 @@ namespace tz::ren
 			// first get our mesh locator.
 			mesh_locator loc = this->add_mesh_impl(rh, m);
 			// either re-use an old mesh handle
-			if(!this->mesh_handle_free_list.empty())
-			{
-				hanval = static_cast<std::size_t>(this->mesh_handle_free_list.front());
-				this->mesh_handle_free_list.pop_front();
-				tz::assert(this->mesh_locators[hanval] == mesh_locator{}, "mesh_locator id %zu (from free-list) was *not* an empty mesh. logic error", hanval);
-				this->mesh_locators[hanval] = loc;
-			}
-			else // or create a new one.
-			{
-				this->mesh_locators.push_back(loc);
-			}
+			return this->mesh_locators.push_back(loc);
 			return static_cast<tz::hanval>(hanval);
 		}
 
@@ -116,9 +106,7 @@ namespace tz::ren
 
 		const mesh_locator& vertex_wrangler::get_mesh(mesh_handle h) const
 		{
-			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
-			tz::assert(hanval < this->mesh_locators.size(), "Invalid mesh handle %zu", hanval);
-			return this->mesh_locators[hanval];
+			return this->mesh_locators[h];
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -137,10 +125,7 @@ namespace tz::ren
 
 		std::size_t vertex_wrangler::get_mesh_count(bool include_free_list) const
 		{
-			if(!include_free_list)
-			{
-				return this->mesh_locators.size() - this->mesh_handle_free_list.size();
-			}
+			(void)include_free_list;
 			return this->mesh_locators.size();
 		}
 
@@ -149,10 +134,7 @@ namespace tz::ren
 		void vertex_wrangler::remove_mesh(mesh_handle mh)
 		{
 			TZ_PROFZONE("vertex_wrangler - remove mesh", 0xFF02F3B5);
-			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(mh));
-			// just add the handle to the free-list and empty out the corresponding locator.
-			this->mesh_locators[hanval] = {};
-			this->mesh_handle_free_list.push_back(static_cast<tz::hanval>(mh));
+			this->mesh_locators.erase(mh);
 		}
 
 //--------------------------------------------------------------------------------------------------
@@ -161,7 +143,7 @@ namespace tz::ren
 		{
 			TZ_PROFZONE("vertex_wrangler - try find vertex region", 0xFF02F3B5);
 			// Sort mesh locators by vertex offset
-			std::vector<mesh_locator> sorted_meshes = this->mesh_locators;
+			auto sorted_meshes = this->mesh_locators;
 			std::sort(sorted_meshes.begin(), sorted_meshes.end(),
 					[](const mesh_locator& a, const mesh_locator& b) {
 						return a.vertex_offset + a.vertex_count < b.vertex_offset + b.vertex_count;
@@ -195,7 +177,7 @@ namespace tz::ren
 		{
 			TZ_PROFZONE("vertex_wrangler - try find index region", 0xFF02F3B5);
 			// Sort mesh locators by index offset
-			std::vector<mesh_locator> sorted_meshes = this->mesh_locators;
+			auto sorted_meshes = this->mesh_locators;
 			std::sort(sorted_meshes.begin(), sorted_meshes.end(),
 					[](const mesh_locator& a, const mesh_locator& b) {
 						return a.index_offset + a.index_count < b.index_offset + b.index_count;

@@ -1,5 +1,6 @@
 #ifndef TZ_REN_mesh_renderer_HPP
 #define TZ_REN_mesh_renderer_HPP
+#include "tz/core/data/free_list.hpp"
 #include "tz/core/data/transform_hierarchy.hpp"
 #include "tz/gl/resource.hpp"
 #include "tz/io/image.hpp"
@@ -45,6 +46,9 @@ namespace tz::ren
 			std::uint32_t index_offset = 0;	
 			// how many indices does this mesh have?
 			std::uint32_t index_count = 0;
+
+			static mesh_locator null(){return mesh_locator{};}
+			bool is_null() const{return *this == mesh_locator{};}
 			bool operator==(const mesh_locator& rhs) const = default;
 		};
 
@@ -91,8 +95,9 @@ namespace tz::ren
 			tz::gl::resource_handle vertex_buffer = tz::nullhand;
 			tz::gl::resource_handle index_buffer = tz::nullhand;
 
-			std::vector<mesh_locator> mesh_locators = {};
-			std::deque<tz::hanval> mesh_handle_free_list = {};
+			tz::free_list<mesh_locator> mesh_locators = {};
+			//std::vector<mesh_locator> mesh_locators = {};
+			//std::deque<tz::hanval> mesh_handle_free_list = {};
 			int dbgui_mesh_cursor = 0;
 		};
 

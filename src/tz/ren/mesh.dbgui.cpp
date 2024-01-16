@@ -20,7 +20,7 @@ namespace tz::ren
 			ImGui::Text("%zu/%zu indices (%.2f/%.2f KiB) - %.2f%% used",
 				this->get_index_count(), this->get_index_capacity(rh), idx_count_kib, idx_capacity_kib, 100.0f * idx_count_kib / idx_capacity_kib);
 
-			ImGui::Text("%zu meshes (%zu locators - %zu in free-list)", this->get_mesh_count(), this->mesh_locators.size(), this->mesh_handle_free_list.size());
+			ImGui::Text("%zu meshes", this->get_mesh_count());
 
 			if(this->mesh_locators.size())
 			{
@@ -30,7 +30,7 @@ namespace tz::ren
 					this->dbgui_mesh_cursor++;
 				}
 				ImGui::VSliderInt("##mesh_id", ImVec2{18.0f, slider_height}, &this->dbgui_mesh_cursor, 0, this->mesh_locators.size() - 1);
-				const auto& loc = this->mesh_locators[this->dbgui_mesh_cursor];
+				const auto& loc = this->mesh_locators[static_cast<tz::hanval>(this->dbgui_mesh_cursor)];
 				ImGui::SameLine();
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
 				if(ImGui::BeginChild("##123", ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
