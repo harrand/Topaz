@@ -68,7 +68,9 @@ namespace tz
 			return this->l->operator[](handle);
 		}
 
-		operator free_list_iterator<T, C, const F>() const
+		// note: a mutable iterator needs to be implicitly convertible to a const iterator.
+		// however, a const iterator shouldn't be implicitly convertible to a const-const iterator (hence the concept constraint.)
+		operator free_list_iterator<T, C, const F>() const requires(!std::is_const_v<F>)
 		{
 			return {.l = this->l, .internal_handle = this->internal_handle};
 		}
