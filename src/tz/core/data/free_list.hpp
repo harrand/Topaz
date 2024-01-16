@@ -9,10 +9,10 @@
 
 namespace tz
 {
-	template<tz::nullable T, tz::container C = std::vector<T>>
+	template<tz::nullable T, tz::random_access_container C = std::vector<T>>
 	class free_list;
 
-	template<tz::nullable T, tz::container C = std::vector<T>, typename F = free_list<T, C>>
+	template<tz::nullable T, tz::random_access_container C = std::vector<T>, typename F = free_list<T, C>>
 	struct free_list_iterator
 	{
 		using iterator_category = std::random_access_iterator_tag;
@@ -22,7 +22,7 @@ namespace tz
 		using reference = std::conditional_t<std::is_const_v<F>, const T&, T&>;
 
 		auto operator<=>(const free_list_iterator<T, C, F>& lhs) const = default;
-		free_list_iterator& operator+=(const difference_type dst)
+		free_list_iterator& operator+=(const std::integral auto dst)
 		{
 			for(difference_type i = 0; i < dst; i++)
 			{
@@ -30,7 +30,7 @@ namespace tz
 			}
 			return *this;
 		}
-		free_list_iterator& operator-=(const difference_type dst)
+		free_list_iterator& operator-=(const std::integral auto dst)
 		{
 			for(difference_type i = 0; i < dst; i++)
 			{
@@ -51,10 +51,22 @@ namespace tz
 		}
 		free_list_iterator operator++(int){auto tmp = *this; --tmp; return tmp;}
 		free_list_iterator operator--(int){auto tmp = *this; --tmp; return tmp;}
-		free_list_iterator operator+(const difference_type dst) const{auto old = *this; return old += dst;}
-		free_list_iterator operator-(const difference_type dst) const{auto old = *this; return old -= dst;}
+		free_list_iterator operator+(const std::integral auto dst) const{auto old = *this; return old += dst;}
+		free_list_iterator operator-(const std::integral auto dst) const{auto old = *this; return old -= dst;}
 
 		difference_type operator-(const free_list_iterator& rhs) const {tz::assert(this->l == rhs.l); return this->internal_handle - rhs.internal_handle;}
+
+		T& operator[](difference_type i) requires(!std::is_const_v<F>)
+		{
+			auto iter_cpy = (*this) + i;
+			return *iter_cpy;
+		}
+
+		std::conditional_t<std::is_const_v<F>, const T&, T&> operator[](difference_type i) const
+		{
+			auto iter_cpy = (*this) + i;
+			return *iter_cpy;
+		}
 
 		T& operator*() requires(!std::is_const_v<F>)
 		{
@@ -79,7 +91,23 @@ namespace tz
 		std::size_t internal_handle;
 	};
 
-	template<tz::nullable T, tz::container C>
+	// support for int + free_list_iterator
+	// as operator+ needs to be commutative to be a proper random_access_iterator.
+
+	template<tz::nullable T, tz::random_access_container C = std::vector<T>, typename F>
+	free_list_iterator<T, C, F> operator+(std::integral auto lhs, const free_list_iterator<T, C, F>& iter)
+	{
+		return iter + lhs;
+	}
+
+	template<tz::nullable T, tz::random_access_container C = std::vector<T>, typename F>
+	free_list_iterator<T, C, F> operator-(std::integral auto lhs, const free_list_iterator<T, C, F>& iter)
+	{
+		return iter - lhs;
+	}
+
+
+	template<tz::nullable T, tz::random_access_container C>
 	class free_list
 	{
 	public:

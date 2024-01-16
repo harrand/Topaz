@@ -1,4 +1,5 @@
 #include "tz/core/data/free_list.hpp"
+#include <ranges>
 
 struct nullable_int
 {
@@ -38,6 +39,10 @@ private:
 
 void free_list()
 {
+	// free list is both a bidirectional range and a random_access_range by default.
+	static_assert(std::ranges::bidirectional_range<tz::free_list<nullable_int>>);
+	static_assert(std::ranges::random_access_range<tz::free_list<nullable_int>>);
+
 	// push back, size, empty, clear
 	tz::free_list<nullable_int> ints;
 	tz::assert(ints.size() == 0);

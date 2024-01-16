@@ -89,6 +89,7 @@ namespace tz
 	{
 		requires std::regular<T>;
 		requires std::swappable<T>;
+		typename T::iterator;	
 		requires std::destructible<typename T::value_type>;
 		requires std::same_as<typename T::reference, typename T::value_type &>;
 		requires std::same_as<typename T::const_reference, const typename T::value_type &>;
@@ -107,6 +108,14 @@ namespace tz
 		{ a.max_size() } -> std::same_as<typename T::size_type>;
 		{ a.empty() } -> std::same_as<bool>;
 	};
+
+	template<typename T>
+	concept random_access_container = requires(T a, const T b)
+	{
+		requires tz::container<T>;
+		requires std::random_access_iterator<typename T::iterator>;
+	};
+	
 }
 
 #endif // TOPAZ_CORE_TYPES_HPP
