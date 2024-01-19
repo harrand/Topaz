@@ -47,6 +47,8 @@ namespace tz::gl
 		image_wrap_repeat,
 		/// - Indicates that if sampled outside of this dimensions, the colour of the sampled pixel will begin repeating as if from zero, except each time the image will look mirrored.
 		image_wrap_mirrored_repeat,
+		/// - Image can be written to via imageLoad/imageStore within a compute/fragment shader. Equivalent to vulkan storage image.
+		image_gpu_writeable,
 
 		Count
 	};

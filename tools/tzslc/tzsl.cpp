@@ -313,7 +313,7 @@ namespace tzslc
 		});
 
 		// And then texture resources.
-		constexpr char texture_resource_regex_vk[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?texture";
+		constexpr char texture_resource_regex_vk[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z0-9]*) ?texture";
 		constexpr char texture_resource_regex_ogl[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?texture (.+)\\[([0-9]*)\\]?;";
 		// For VK, this is pretty easy.
 		if(dialect == GLSLDialect::Vulkan)
@@ -322,8 +322,15 @@ namespace tzslc
 			[](auto beg, auto end)
 			{
 				std::string flag = *(beg + 1);
+				if(flag == "const")
+				{
+					// this is a sampled image.
+					return "layout(binding = " + *(beg) + ") uniform sampler2D";
+				}
+				// storage image.
+				// flag is just the format.
+				return "uniform layout(binding = " + *(beg) + ", " + flag + ") writeonly image2D";
 				tzslc_assert(flag == "const", "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`. Non-const texture resources are not yet implemented.", flag.c_str());
-				return "layout(binding = " + *(beg) + ") uniform sampler2D";
 			});
 		}
 		else if(dialect == GLSLDialect::OpenGL)

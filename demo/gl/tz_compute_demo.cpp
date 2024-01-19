@@ -27,11 +27,18 @@ int main()
 			}
 		);
 		tz::gl::buffer_resource time_buffer = tz::gl::buffer_resource::from_one(0u);
+		tz::gl::image_resource colour_image = tz::gl::image_resource::from_uninitialised
+		({
+			.format = tz::gl::image_format::RGBA32,
+			.dimensions = {32u, 32u},
+			.flags = {tz::gl::resource_flag::image_gpu_writeable}
+		});
 
 		tz::gl::renderer_info pinfo;
 		pinfo.shader().set_shader(tz::gl::shader_stage::compute, ImportedShaderSource(tz_compute_demo, compute));
 		auto cbuf = pinfo.add_resource(colour_buffer);
 		tz::gl::resource_handle tbufh = pinfo.add_resource(time_buffer);
+		tz::gl::resource_handle colimgh = pinfo.add_resource(colour_image);
 
 		tz::gl::renderer_handle compute_workerh = tz::gl::get_device().create_renderer(pinfo);
 

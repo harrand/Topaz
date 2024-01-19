@@ -69,6 +69,11 @@ namespace tz::gl::vk2
 	vma_alloc_info()
 	{
 		TZ_PROFZONE("Vulkan Backend - Image Create", 0xFFAA0000);
+		if(info.usage.contains(ImageUsage::StorageImage))
+		{
+			// storage images live in General layout all the time.
+			this->layout = ImageLayout::General;
+		}
 		VkImageCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,

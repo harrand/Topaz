@@ -227,7 +227,9 @@ namespace tz::gl
 		this->image_resource_samplers.clear();
 		for(auto& component_ptr : this->components)
 		{
-			if(component_ptr->get_resource()->get_type() == tz::gl::resource_type::image)
+			// if the component is a buffer, no sampler.
+			// also no sampler if the image is a storage image.
+			if(component_ptr->get_resource()->get_type() == tz::gl::resource_type::image && !component_ptr->get_resource()->get_flags().contains(tz::gl::resource_flag::image_gpu_writeable))
 			{
 				this->image_resource_samplers.emplace_back(renderer_resource_manager::make_fitting_sampler(*component_ptr->get_resource()));
 			}
@@ -420,6 +422,7 @@ namespace tz::gl
 		// the old value of this->layout is discarded. it is an error to call this function while the layout is "in-use"
 		std::size_t buffer_count = 0;
 		std::size_t image_count = 0;
+		std::size_t storage_image_count = 0;
 		for(std::size_t i = 0; i < renderer_resource_manager::resource_count(); i++)
 		{
 			const iresource* res = renderer_resource_manager::get_resource(static_cast<tz::hanval>(i));	
@@ -431,6 +434,10 @@ namespace tz::gl
 				break;
 				case tz::gl::resource_type::image:
 					image_count++;
+					if(res->get_flags().contains(tz::gl::resource_flag::image_gpu_writeable))
+					{
+						storage_image_count++;
+					}
 				break;
 			}
 		}
@@ -467,17 +474,35 @@ namespace tz::gl
 		}
 		if(image_count > 0)
 		{
-			builder.with_binding
-			({
-				.type = vk2::DescriptorType::ImageWithSampler,
-				.count = static_cast<std::uint32_t>(image_count),
-				.flags = 
-				{
-					vk2::DescriptorFlag::PartiallyBound,
-					vk2::DescriptorFlag::UpdateAfterBind,
-					vk2::DescriptorFlag::UpdateUnusedWhilePending
-				}
-			});
+			std::size_t non_storage_image_count = image_count - storage_image_count;
+			if(non_storage_image_count > 0)
+			{
+				builder.with_binding
+				({
+					.type = vk2::DescriptorType::ImageWithSampler,
+					.count = static_cast<std::uint32_t>(non_storage_image_count),
+					.flags = 
+					{
+						vk2::DescriptorFlag::PartiallyBound,
+						vk2::DescriptorFlag::UpdateAfterBind,
+						vk2::DescriptorFlag::UpdateUnusedWhilePending
+					}
+				});
+			}
+			if(storage_image_count > 0)
+			{
+				builder.with_binding
+				({
+					.type = vk2::DescriptorType::StorageImage,
+					.count = static_cast<std::uint32_t>(storage_image_count),
+					.flags = 
+					{
+						vk2::DescriptorFlag::PartiallyBound,
+						vk2::DescriptorFlag::UpdateAfterBind,
+						vk2::DescriptorFlag::UpdateUnusedWhilePending
+					}
+				});
+			}
 		}
 		this->descriptors.layout = builder.build();
 		if(buffer_count == 0 && image_count == 0)
@@ -1440,32 +1465,39 @@ namespace tz::gl
 						// - Transition the texture component to TransferDestination
 						// - Transfer from the staging texture buffer
 						// - Transition the texture component to ShaderResource so it can be used in the shader.
-						recording.transition_image_layout
-						({
-							.image = &img,
-							.target_layout = vk2::ImageLayout::TransferDestination,
-							.source_access = {vk2::AccessFlag::NoneNeeded},
-							.destination_access = {vk2::AccessFlag::TransferOperationWrite},
-							.source_stage = vk2::PipelineStage::Bottom,
-							.destination_stage = vk2::PipelineStage::TransferCommands,
-							.image_aspects = aspect
-						});
+						const bool is_storage_image = res->get_flags().contains(tz::gl::resource_flag::image_gpu_writeable);
+						if(!is_storage_image)
+						{
+							recording.transition_image_layout
+							({
+								.image = &img,
+								.target_layout = vk2::ImageLayout::TransferDestination,
+								.source_access = {vk2::AccessFlag::NoneNeeded},
+								.destination_access = {vk2::AccessFlag::TransferOperationWrite},
+								.source_stage = vk2::PipelineStage::Bottom,
+								.destination_stage = vk2::PipelineStage::TransferCommands,
+								.image_aspects = aspect
+							});
+						}
 						recording.buffer_copy_image
 						({
 							.src = &staging_buffer,
 							.dst = &img,
 							.image_aspects = aspect
 						});
-						recording.transition_image_layout
-						({
-							.image = &img,
-							.target_layout = vk2::ImageLayout::ShaderResource,
-							.source_access = {vk2::AccessFlag::TransferOperationWrite},
-							.destination_access = {vk2::AccessFlag::ShaderResourceRead},
-							.source_stage = vk2::PipelineStage::TransferCommands,
-							.destination_stage = vk2::PipelineStage::FragmentShader,
-							.image_aspects = aspect
-						});
+						if(!is_storage_image)
+						{
+							recording.transition_image_layout
+							({
+								.image = &img,
+								.target_layout = vk2::ImageLayout::ShaderResource,
+								.source_access = {vk2::AccessFlag::TransferOperationWrite},
+								.destination_access = {vk2::AccessFlag::ShaderResourceRead},
+								.source_stage = vk2::PipelineStage::TransferCommands,
+								.destination_stage = vk2::PipelineStage::FragmentShader,
+								.image_aspects = aspect
+							});
+						}
 					}
 					break;
 					default:

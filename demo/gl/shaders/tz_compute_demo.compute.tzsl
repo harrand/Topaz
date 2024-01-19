@@ -14,6 +14,8 @@ resource(id = 1) buffer Time
 	uint time;
 };
 
+resource(id = 2) rgba8 texture ColourImage;
+
 float get_value(float mul)
 {
 	return (tz::math::sin(time * mul * 0.00001f) + 1.0f) * 0.5f;

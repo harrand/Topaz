@@ -184,6 +184,11 @@ namespace tz::gl
 		tz::assert(this->resource->get_type() == resource_type::image, "image_component was provided a resource which was not an image_resource. Please submit a bug report.");
 		const image_resource* img_res = static_cast<const image_resource*>(this->resource);
 		vk2::ImageUsageField usage_field = {vk2::ImageUsage::TransferDestination, vk2::ImageUsage::SampledImage};
+		if(this->resource->get_flags().contains(resource_flag::image_gpu_writeable))
+		{
+			// we are a storage image.
+			usage_field |= vk2::ImageUsage::StorageImage;
+		}
 		if(this->resource->get_flags().contains(resource_flag::renderer_output))
 		{
 			usage_field |= vk2::ImageUsage::ColourAttachment;
