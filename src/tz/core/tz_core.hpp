@@ -18,6 +18,12 @@ namespace tz::core
 	 */
 
 	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_messaging Messaging
+	 * Documentation for object-to-object messaging.
+	 */
+
+	/**
 	 * @ingroup tz_core_memory
 	 * @defgroup tz_core_memory_allocator Allocators
 	 * Documentation for bespoke memory allocators.

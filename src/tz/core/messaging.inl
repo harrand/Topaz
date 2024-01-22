@@ -58,4 +58,30 @@ namespace tz
 			this->process_message(msg);
 		}
 	}
+
+	template<tz::message M, bool thread_safe>
+	message_passer<M, thread_safe>::message_passer(message_receiver<M, thread_safe>& parent):
+	parent(&parent)
+	{}
+
+	template<tz::message M, bool thread_safe>
+	void message_passer<M, thread_safe>::process_message(const M& msg)
+	{
+		if(this->target != nullptr)
+		{
+			this->target->send_message(msg);
+		}
+	}
+
+	template<tz::message M, bool thread_safe>
+	void message_passer<M, thread_safe>::set_target(message_receiver<M, thread_safe>& target)
+	{
+		this->target = &target;
+	}
+
+	template<tz::message M, bool thread_safe>
+	void message_passer<M, thread_safe>::clear_target()
+	{
+		this->target = nullptr;
+	}
 }

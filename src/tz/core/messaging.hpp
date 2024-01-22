@@ -30,6 +30,7 @@ namespace tz
 	}
 
 	/**
+	 * @ingroup tz_core_messaging
 	 * Conditionally thread-safe message receiver.
 	 * @tparam M Message Type. Must satisfy `tz::message<M>`
 	 * @tparam thread_safe Whether the object should lock an internal mutex. Defaults to true, but you might want to set this to false for a thread-local receiver, for example.
@@ -45,16 +46,43 @@ namespace tz
 		/// Retrieve the number of messages in the receiver's queue. Conditionally thread-safe.
 		std::size_t message_count() const;
 	protected:
-		// Processes all messages and then clears the list.
+		// Processes all messages and then clears the list. Thread-safe.
 		void process_messages();
 		/// Invoked when a message is sent. Your override can return false to drop the message. By default, no messages are dropped. Not thread safe.
 		virtual bool on_send_message(const M& msg) {return true;};
 		/// Invoked when a message is processed. You must override this. Not thread safe.
 		/// @note If processing a message causes the receiver to send a new message to itself, this is safe, but will not be processed until the next invocation to `process_messages`.
-		constexpr virtual void process_message(const M& msg) = 0;
+		virtual void process_message(const M& msg) = 0;
 	private:
 		using base_t = std::conditional_t<thread_safe, detail::with_lock, detail::no_lock>;
 		std::vector<M> messages = {};
+	};
+
+	/**
+	 * @ingroup tz_core_messaging
+	 * Conditionally thread-safe message passer.
+	 *
+	 * When you send messages to a passer, they are held in the queue just like a normal passer. However, when a passer processes its messages, it simply re-sends those messages to its target receiver.
+	 *
+	 * If the passer has no target, message processing does nothing.
+	 */ 
+	template<tz::message M, bool thread_safe = true>
+	class message_passer : public message_receiver<M, thread_safe>
+	{
+	public:
+		/// Create a passer with no target.
+		message_passer() = default;
+		/// Create a passer with an existing target.
+		message_passer(message_receiver<M, thread_safe>& target);
+		/// Redirect messages to the target.
+		virtual void process_message(const M& msg) override final;
+
+		/// Redirect messages to a new target. Not thread-safe.
+		void set_target(message_receiver<M, thread_safe>& target);
+		/// Clear the target. Processed messages will no longer be redirected. Not thread-safe.
+		void clear_target();
+	private:
+		message_receiver<M, thread_safe>* target = nullptr;
 	};
 }
 
