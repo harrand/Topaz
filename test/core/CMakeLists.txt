@@ -26,6 +26,10 @@ add_tz_test(NAME tz_matrix_test
 	SOURCE_FILES matrix_test.cpp
 	)
 
+add_tz_test(NAME tz_message_test
+	SOURCE_FILES message_test.cpp
+	)
+
 add_tz_test(NAME tz_time_test
 	SOURCE_FILES time_test.cpp
 	)

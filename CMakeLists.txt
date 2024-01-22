@@ -91,6 +91,9 @@ add_library(topaz STATIC
 	src/tz/core/matrix.inl
 	src/tz/core/matrix_transform.cpp
 	src/tz/core/matrix_transform.hpp
+	src/tz/core/messaging.cpp
+	src/tz/core/messaging.hpp
+	src/tz/core/messaging.inl
 	src/tz/core/time.cpp
 	src/tz/core/time.hpp
 	src/tz/core/types.hpp

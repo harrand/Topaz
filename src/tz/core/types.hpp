@@ -1,9 +1,10 @@
 #ifndef TOPAZ_CORE_TYPES_HPP
 #define TOPAZ_CORE_TYPES_HPP
+#include "tz/core/memory/memblk.hpp"
 #include <type_traits>
 #include <concepts>
 #include <iterator>
-#include "tz/core/memory/memblk.hpp"
+#include <ranges>
 
 namespace tz
 {
@@ -115,7 +116,15 @@ namespace tz
 		requires tz::container<T>;
 		requires std::random_access_iterator<typename T::iterator>;
 	};
-	
+
+	template<typename T>
+	concept message = requires(T a)
+	{
+		requires std::is_standard_layout_v<T>;
+	};
+
+	template<typename R, typename T>
+	concept range_of = std::ranges::range<R> && std::same_as<std::decay_t<std::ranges::range_value_t<R>>, std::decay_t<T>>; 
 }
 
 #endif // TOPAZ_CORE_TYPES_HPP
