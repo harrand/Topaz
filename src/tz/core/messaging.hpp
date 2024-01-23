@@ -4,6 +4,7 @@
 #include <vector>
 #include <mutex>
 #include <ranges>
+#include <variant>
 
 namespace tz
 {
@@ -23,9 +24,9 @@ namespace tz
 		struct with_lock
 		{
 		protected:
-			std::mutex mtx = {};	
+			mutable std::mutex mtx = {};	
 			using lock_t = std::unique_lock<std::mutex>;
-			lock_t lock() {return lock_t{this->mtx};}
+			lock_t lock() const {return lock_t{this->mtx};}
 		};
 	}
 
@@ -47,13 +48,13 @@ namespace tz
 		std::size_t message_count() const;
 	protected:
 		// Processes all messages and then clears the list. Thread-safe.
-		void process_messages();
+		virtual void process_messages();
 		/// Invoked when a message is sent. Your override can return false to drop the message. By default, no messages are dropped. Not thread safe.
 		virtual bool on_send_message(const M& msg) {return true;};
 		/// Invoked when a message is processed. You must override this. Not thread safe.
 		/// @note If processing a message causes the receiver to send a new message to itself, this is safe, but will not be processed until the next invocation to `process_messages`.
 		virtual void process_message(const M& msg) = 0;
-	private:
+	protected:
 		using base_t = std::conditional_t<thread_safe, detail::with_lock, detail::no_lock>;
 		std::vector<M> messages = {};
 	};
@@ -73,16 +74,23 @@ namespace tz
 		/// Create a passer with no target.
 		message_passer() = default;
 		/// Create a passer with an existing target.
-		message_passer(message_receiver<M, thread_safe>& target);
+		message_passer(message_receiver<M, false>& target);
+		/// Create a passer with an existing target.
+		message_passer(message_receiver<M, true>& target);
+		/// Redirect all messages to the target.
+		virtual void process_messages() override final;
 		/// Redirect messages to the target.
 		virtual void process_message(const M& msg) override final;
 
 		/// Redirect messages to a new target. Not thread-safe.
-		void set_target(message_receiver<M, thread_safe>& target);
+		void set_target(message_receiver<M, true>& target);
+		/// Redirect messages to a new target. Not thread-safe.
+		void set_target(message_receiver<M, false>& target);
 		/// Clear the target. Processed messages will no longer be redirected. Not thread-safe.
 		void clear_target();
 	private:
-		message_receiver<M, thread_safe>* target = nullptr;
+		using base_t = message_receiver<M, thread_safe>::base_t;
+		std::variant<message_receiver<M, true>*, message_receiver<M, false>*, std::monostate> target = std::monostate{};
 	};
 }
 

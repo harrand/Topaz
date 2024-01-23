@@ -8,7 +8,7 @@ struct assignment_msg
 };
 static_assert(tz::message<assignment_msg>);
 
-class deferred_assignment : public tz::message_receiver<assignment_msg>
+class deferred_assignment : public tz::message_receiver<assignment_msg, true>
 {
 public:
 	int x = 0;
@@ -93,8 +93,46 @@ void scenario2()
 	tz::assert(sys.x == 95);
 }
 
+// scenario 3 - thread-safe and non-thread-safe message passers to the same thread-safe message receiver.
+
+template<bool thread_safe>
+struct deferred_assignment_passer : public tz::message_passer<assignment_msg, thread_safe>
+{
+	using tz::message_passer<assignment_msg, thread_safe>::message_passer;
+	void update()
+	{
+		tz::message_passer<assignment_msg, thread_safe>::process_messages();
+	}
+};
+
+using deferred_assignment_passer_ts = deferred_assignment_passer<true>;
+using deferred_assignment_passer_nts = deferred_assignment_passer<false>;
+
+void scenario3()
+{
+	deferred_assignment sys;
+
+	deferred_assignment_passer_ts ts(sys);
+	ts.set_target(sys);
+
+	deferred_assignment_passer_nts nts(sys);
+	nts.set_target(sys);
+
+	tz::assert(sys.x == 0);
+	ts.send_message({.new_val = 2});
+	nts.send_message({.new_val = 5});
+	// both of the following updates can happen concurrently on different threads, and its safe (so long as `nts` isnt also being sent new messages at the same time)
+	ts.update();
+	nts.update();
+	tz::assert(sys.message_count() == 2);
+	tz::assert(sys.x == 0);
+	sys.update();
+	tz::assert(sys.x == 5);
+}
+
 int main()
 {
 	scenario1();
 	scenario2();
+	scenario3();
 }

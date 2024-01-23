@@ -60,21 +60,59 @@ namespace tz
 	}
 
 	template<tz::message M, bool thread_safe>
-	message_passer<M, thread_safe>::message_passer(message_receiver<M, thread_safe>& parent):
-	parent(&parent)
+	message_passer<M, thread_safe>::message_passer(message_receiver<M, true>& target):
+	target(&target)
 	{}
+
+	template<tz::message M, bool thread_safe>
+	message_passer<M, thread_safe>::message_passer(message_receiver<M, false>& target):
+	target(&target)
+	{}
+
+	template<tz::message M, bool thread_safe>
+	void message_passer<M, thread_safe>::process_messages()
+	{
+		typename base_t::lock_t lock = base_t::lock();
+		if(this->messages.empty())
+		{
+			return;
+		}
+		std::visit([this](auto&& receiver_ptr)
+		{
+			if constexpr(!std::is_same_v<std::decay_t<decltype(receiver_ptr)>, std::monostate>)
+			{
+				if(receiver_ptr != nullptr)
+				{
+					receiver_ptr->send_messages(this->messages);
+				}
+			}
+		}, this->target);
+		this->messages.clear();
+	}
 
 	template<tz::message M, bool thread_safe>
 	void message_passer<M, thread_safe>::process_message(const M& msg)
 	{
-		if(this->target != nullptr)
+		std::visit([&msg](auto&& receiver_ptr)
 		{
-			this->target->send_message(msg);
-		}
+			if constexpr(!std::is_same_v<std::decay_t<decltype(receiver_ptr)>, std::monostate>)
+			{
+				if(receiver_ptr != nullptr)
+				{
+					receiver_ptr->send_message(msg);
+				}
+			}
+		}, this->target);
 	}
 
 	template<tz::message M, bool thread_safe>
-	void message_passer<M, thread_safe>::set_target(message_receiver<M, thread_safe>& target)
+	void message_passer<M, thread_safe>::set_target(message_receiver<M, true>& target)
+	{
+		this->target = &target;
+	}
+
+	template<tz::message M, bool thread_safe>
+	void message_passer<M, thread_safe>::set_target(message_receiver<M, false>& target)
 	{
 		this->target = &target;
 	}
@@ -82,6 +120,6 @@ namespace tz
 	template<tz::message M, bool thread_safe>
 	void message_passer<M, thread_safe>::clear_target()
 	{
-		this->target = nullptr;
+		this->target = std::monostate{};
 	}
 }
