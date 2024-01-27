@@ -387,6 +387,34 @@ namespace tz::lua
 		lua_pushlstring(s, sv.data(), sv.size());
 	}
 
+	void state::stack_push_generic(lua_generic generic) const
+	{
+		std::visit([this](auto&& arg)
+		{
+			using T = std::decay_t<decltype(arg)>;
+			if constexpr(std::is_same_v<T, bool>)
+			{
+				this->stack_push_bool(arg);
+			}
+			else if constexpr(std::is_same_v<T, double>)
+			{
+				this->stack_push_double(arg);
+			}
+			else if constexpr(std::is_same_v<T, std::int64_t>)
+			{
+				this->stack_push_int(arg);
+			}
+			else if constexpr(std::is_same_v<T, std::string>)
+			{
+				this->stack_push_string(arg);
+			}
+			else if constexpr(std::is_same_v<T, tz::lua::nil>)
+			{
+				this->stack_push_nil();
+			}
+		}, generic);
+	}
+
 	void state::stack_push_ptr(void* ptr) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);

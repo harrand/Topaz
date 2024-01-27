@@ -108,6 +108,7 @@ namespace tz::lua
 		void stack_push_int(std::int64_t i) const;
 		void stack_push_uint(std::uint64_t u) const;
 		void stack_push_string(std::string_view sv) const;
+		void stack_push_generic(lua_generic generic) const;
 		// light user data
 		void stack_push_ptr(void* ptr) const;
 		template<typename T>
