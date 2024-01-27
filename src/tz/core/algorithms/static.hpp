@@ -1,4 +1,5 @@
-#include "tz/core/types.hpp"
+#ifndef TOPAZ_CORE_ALGORITHM_STATIC_HPP
+#define TOPAZ_CORE_ALGORITHM_STATIC_HPP
 #include <cstdint>
 #include <tuple>
 #include <variant>
@@ -19,7 +20,7 @@ namespace tz
 		}
 
 		template<typename Functor>
-		void operator()(const Functor& f) const
+		inline constexpr void operator()(const Functor& f) const
 		{
 			apply(f);
 		}
@@ -69,3 +70,4 @@ namespace tz
 		return b;
 	}
 }
+#endif // TOPAZ_CORE_ALGORITHM_STATIC_HPP
