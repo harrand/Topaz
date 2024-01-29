@@ -397,7 +397,7 @@ namespace tz::ren
 	{
 		TZ_PROFZONE("animation_renderer - animation advance", 0xFFE54550);
 
-		std::size_t job_count = std::thread::hardware_concurrency();
+		std::size_t job_count = tz::job_system().worker_count();
 		std::size_t objects_per_job = this->animated_objects.size() / job_count;
 		std::size_t remainder_objects = this->animated_objects.size() % job_count;
 		tz::assert((objects_per_job * job_count) + remainder_objects == this->animated_objects.size());
@@ -685,7 +685,7 @@ namespace tz::ren
 		{
 			TZ_PROFZONE("load textures - execute jobs", 0xFF44DD44);
 			// we should split this into threads.
-			std::size_t job_count = std::thread::hardware_concurrency();
+			std::size_t job_count = tz::job_system().worker_count();
 			std::size_t imgs_per_job = gltf.data.get_images().size() / job_count; 
 			std::size_t remainder_imgs = gltf.data.get_images().size() % job_count;
 			std::vector<tz::job_handle> jobs(job_count);

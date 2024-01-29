@@ -1,6 +1,7 @@
 #include "tz/core/job/impl/concurrentqueue_blocking/job.hpp"
 #include "tz/core/debug.hpp"
 #include "tz/core/profile.hpp"
+#include <atomic>
 #include <limits>
 #include <chrono>
 
@@ -174,7 +175,7 @@ namespace tz::impl
 
 	std::size_t job_system_blockingcurrentqueue::worker_count() const
 	{
-		return this->thread_pool.size();
+		return std::max(static_cast<unsigned int>(this->thread_pool.size() * this->aggression), 1u);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -195,6 +196,20 @@ namespace tz::impl
 	unsigned int job_system_blockingcurrentqueue::jobs_started_this_frame() const
 	{
 		return this->jobs_created_this_frame.load();
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	float job_system_blockingcurrentqueue::get_aggression() const
+	{
+		return this->aggression.load();
+	}
+	
+//--------------------------------------------------------------------------------------------------
+
+	void job_system_blockingcurrentqueue::set_aggression(float aggression)
+	{
+		this->aggression.store(std::clamp(aggression, 0.0f, 1.0f), std::memory_order_relaxed);
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -221,15 +236,45 @@ namespace tz::impl
 		{
 			job_info_t job;
 
+			bool found = false;
+			// some workers are disabled depending on the aggressiveness of the job system.
+			// aggressiveness 0 means 1 worker.
+			// aggressiveness 1.0 means all workers
+
+			const float aggro = this->get_aggression();
+			const float aggro_step = 1.0f / std::thread::hardware_concurrency();
+			if(worker.local_tid > 0)
+			{
+				if(worker.local_tid > aggro / aggro_step)
+				{
+					// naptime. unless we have an affine job
+					found = worker.affine_jobs.try_dequeue(job);
+					if(!found)
+					{
+						//tz::report("worker %zu is naptime coz aggression is only %.2f", worker.local_tid, aggro);
+						std::this_thread::sleep_for(std::chrono::milliseconds(5));
+						continue;
+					}
+				}
+			}
+
 			// lets try to retrieve an affine job, if thats empty then get a job from the global queue.
 			// this `if statement` could not happen if we hit the timeout without getting a job.
 			// in which case we simply recurse.
 
 			// note: on e.g windows sleeps suck asshole. 15-16ms is each quantum. moodycamel::concurrentqueue will spin for a maximum amount before actually sleeping - under which case we should expect to wait at least 16ms - too long.
-			// what we really want to do is spin for a certain amount of time, not until a maximum number of spins:
-			// spin for 10 micros.
+			// what we really want to do is spin for a certain amount of time, not until a maximum number of spins.
+			// however, how much we spin for *drastically* affects performance. spin for too short a time? you sleep almost instantly and kill perf when load is high
+			// spin too long? you're maxing out cpu resources even when the application isnt doing anything.
+			// the solution here is something PGO aligned.
+			// im going to clamp between a very low spin time and a very high spin time, depending on how many jobs have been requested this frame.
+			// this means if tons of jobs are requested, we spin for a long time to keep up.
+			// if very few are submitted, we chill way the fuck out.
+
+			// 10us is super tiny, will basically never catch anything.
+			// 2000us is incredibly long. highly likely to catch everything. will also definitely max out the cpu usage.
+			long long spin_duration = std::lerp(2, 2000, aggro);
 			auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(2000);
-			bool found = false;
 			{
 				while(!found)
 				{
