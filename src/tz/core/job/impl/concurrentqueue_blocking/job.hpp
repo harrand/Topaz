@@ -8,6 +8,13 @@
 
 namespace tz::impl
 {
+	struct concurrentqueue_traits : public moodycamel::ConcurrentQueueDefaultTraits
+	{
+		// here im trying to trade some ram for less churn on enqueue - too often enqueue takes a really long time (like over 1ms)
+		static const size_t BLOCK_SIZE = 512;
+		// given we expect a not-so-volatile number of new jobs to be enqueued every frame, recycling hopefully makes nice gains.
+		static const bool RECYCLE_ALLOCATED_BLOCKS = true;
+	};
 	class job_system_blockingcurrentqueue : public i_job_system
 	{
 	public:
@@ -48,7 +55,7 @@ namespace tz::impl
 		void worker_thread_entrypoint(std::size_t local_tid);
 
 		std::deque<worker_t> thread_pool;
-		moodycamel::BlockingConcurrentQueue<job_info_t> global_job_queue;
+		moodycamel::BlockingConcurrentQueue<job_info_t, concurrentqueue_traits> global_job_queue;
 		moodycamel::ProducerToken ptok;
 		mutable std::mutex done_job_list_mutex;
 		std::vector<std::size_t> running_job_ids = {};
