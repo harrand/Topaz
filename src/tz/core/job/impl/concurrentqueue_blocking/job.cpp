@@ -9,7 +9,8 @@
 
 namespace tz::impl
 {
-	job_system_blockingcurrentqueue::job_system_blockingcurrentqueue()
+	job_system_blockingcurrentqueue::job_system_blockingcurrentqueue():
+	ptok(this->global_job_queue)
 	{
 		TZ_PROFZONE("job_system - initialise", 0xFFAA0000);
 		this->running_job_ids.reserve(128);
@@ -18,6 +19,7 @@ namespace tz::impl
 			auto& worker = this->thread_pool.emplace_back();
 			worker.thread = std::thread([this, i](){this->worker_thread_entrypoint(i);});
 			worker.local_tid = i;
+			worker.ctok = moodycamel::ConsumerToken{this->global_job_queue};
 		}
 	}
 
@@ -58,6 +60,7 @@ namespace tz::impl
 		}
 		if(einfo.maybe_worker_affinity.has_value())
 		{
+			TZ_PROFZONE("execute - affine job enqueue", 0xFFAA8888);
 			// add to list of affine jobs instead.
 			auto val = einfo.maybe_worker_affinity.value();
 			tz::assert(this->thread_pool[val].local_tid == val);
@@ -67,7 +70,8 @@ namespace tz::impl
 		}
 		else
 		{
-			this->global_job_queue.enqueue(jinfo);
+			TZ_PROFZONE("execute - global job enqueue", 0xFFAA8888);
+			this->global_job_queue.enqueue(this->ptok, jinfo);
 		}
 		//std::osyncstream(std::cout) << "added new job " << jinfo.job_id << "\n";
 		return ret;
@@ -212,7 +216,7 @@ namespace tz::impl
 		std::string thread_name = "Topaz Job Thread " + std::to_string(local_tid);
 		TZ_THREAD(thread_name.c_str());
 		worker_t& worker = this->thread_pool[local_tid];
-		constexpr std::int64_t queue_wait_timer_micros = 1000; // 1 millis
+		constexpr std::int64_t queue_wait_timer_micros = 1000; // 1 millis. this is the minimum amount of time we're willing to wait if our spins yield nothing. in practice it will wait way longer.
 		while(!this->close_requested.load())
 		{
 			job_info_t job;
@@ -220,7 +224,26 @@ namespace tz::impl
 			// lets try to retrieve an affine job, if thats empty then get a job from the global queue.
 			// this `if statement` could not happen if we hit the timeout without getting a job.
 			// in which case we simply recurse.
-			if(worker.affine_jobs.try_dequeue(job) || this->global_job_queue.wait_dequeue_timed(job, queue_wait_timer_micros))
+
+			// note: on e.g windows sleeps suck asshole. 15-16ms is each quantum. moodycamel::concurrentqueue will spin for a maximum amount before actually sleeping - under which case we should expect to wait at least 16ms - too long.
+			// what we really want to do is spin for a certain amount of time, not until a maximum number of spins:
+			// spin for 10 micros.
+			auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(2000);
+			bool found = false;
+			{
+				while(!found)
+				{
+					if(std::chrono::steady_clock::now() >= deadline)
+					{
+						// 10 micros of spinning has passed, and nothing. time to take the big bullet and sleep.
+						TZ_PROFZONE("job worker - go to sleep", 0xFFAAFFEE);
+						found = this->global_job_queue.wait_dequeue_timed(worker.ctok.value(), job, queue_wait_timer_micros);
+						break;
+					}
+					found = worker.affine_jobs.try_dequeue(job) || this->global_job_queue.try_dequeue(worker.ctok.value(), job);
+				}
+			}
+			if(found)
 			{
 				TZ_PROFZONE("job worker - do collected job", 0xFFAA0000);
 				// we have a job to do

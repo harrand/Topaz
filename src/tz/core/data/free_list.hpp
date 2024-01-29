@@ -49,7 +49,7 @@ namespace tz
 			while(this->internal_handle > 0 && this->l->is_in_free_list(--this->internal_handle));
 			return *this;
 		}
-		free_list_iterator operator++(int){auto tmp = *this; --tmp; return tmp;}
+		free_list_iterator operator++(int){auto tmp = *this; ++tmp; return tmp;}
 		free_list_iterator operator--(int){auto tmp = *this; --tmp; return tmp;}
 		free_list_iterator operator+(const std::integral auto dst) const{auto old = *this; return old += dst;}
 		free_list_iterator operator-(const std::integral auto dst) const{auto old = *this; return old -= dst;}

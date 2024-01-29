@@ -38,6 +38,7 @@ namespace tz::impl
 			std::size_t local_tid;
 			std::atomic<std::size_t> currently_running_job_id = std::numeric_limits<std::size_t>::max();
 			moodycamel::ConcurrentQueue<job_info_t> affine_jobs;
+			std::optional<moodycamel::ConsumerToken> ctok = std::nullopt;
 			std::vector<std::size_t> completed_job_cache;
 			std::optional<std::size_t> get_running_job() const;
 			void clear_job_cache(job_system_blockingcurrentqueue& js);
@@ -48,6 +49,7 @@ namespace tz::impl
 
 		std::deque<worker_t> thread_pool;
 		moodycamel::BlockingConcurrentQueue<job_info_t> global_job_queue;
+		moodycamel::ProducerToken ptok;
 		mutable std::mutex done_job_list_mutex;
 		std::vector<std::size_t> running_job_ids = {};
 		mutable std::mutex wake_me_on_a_job_done_mutex;
