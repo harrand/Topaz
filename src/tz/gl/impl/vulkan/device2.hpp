@@ -56,6 +56,8 @@ namespace tz::gl
 		std::size_t get_image_index() const;
 		std::span<vk2::BinarySemaphore> get_image_semaphores();
 		const vk2::Swapchain::ImageAcquisitionResult* get_recent_acquire() const;
+		bool is_vsync_enabled_impl() const;
+		void set_vsync_enabled_impl(bool vsync);
 		void vk_acquire_done();
 		void vk_notify_resize();
 	private:
@@ -155,6 +157,8 @@ namespace tz::gl
 		device_vulkan2();
 		~device_vulkan2();
 		tz::gl::renderer_handle create_renderer(const tz::gl::renderer_info& rinfo);
+		bool is_vsync_enabled() const;
+		void set_vsync_enabled(bool vsync);
 		using device_common<renderer_vulkan2>::get_renderer;
 		void dbgui();
 		void begin_frame(){}

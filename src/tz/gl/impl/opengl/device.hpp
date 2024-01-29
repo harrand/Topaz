@@ -33,6 +33,8 @@ namespace tz::gl
 		using device_common<renderer_ogl>::get_renderer;
 		using device_common<renderer_ogl>::destroy_renderer;
 		image_format get_window_format() const;
+		bool is_vsync_enabled() const;
+		void set_vsync_enabled(bool vsync_enabled);
 		void dbgui();
 		void begin_frame();
 		void end_frame();

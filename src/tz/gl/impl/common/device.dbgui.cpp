@@ -12,6 +12,11 @@ namespace tz::gl
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Summary");
 		ImGui::Text("- The device currently stores %zu renderers", renderer_count);
 		ImGui::Text("- The image_format of the window is %s", detail::image_format_strings[static_cast<int>(device.get_window_format())]);
+		bool vsync_enabled = device.is_vsync_enabled();
+		if(ImGui::Checkbox("Vsync", &vsync_enabled))
+		{
+			device.set_vsync_enabled(vsync_enabled);
+		}
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4{1.0f, 0.6f, 0.6f, 1.0f}, "Renderers");
 		static bool display_internal_renderers = false;

@@ -217,6 +217,8 @@ namespace tz::gl
 		// NYI
 		std::string_view debug_get_name() const;
 
+		void vk_notify_swapchain_changed();
+
 		// Satisfies tz::nullable
 		static renderer_vulkan2 null();
 		bool is_null() const;

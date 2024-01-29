@@ -4,6 +4,9 @@
 #include "tz/core/profile.hpp"
 #include "tz/dbgui/dbgui.hpp"
 #include "tz/gl/impl/opengl/renderer.hpp"
+#ifdef _WIN32
+#include "tz/wsi/impl/windows/wsi_windows.hpp"
+#endif
 
 namespace tz::gl
 {
@@ -81,6 +84,24 @@ namespace tz::gl
 	image_format device_ogl::get_window_format() const
 	{
 		return image_format::RGBA32;
+	}
+
+	bool device_ogl::is_vsync_enabled() const
+	{
+		#ifdef _WIN32
+			return tz::wsi::impl::get_wgl_functions().wgl_get_swap_interval_ext() == 1;
+		#else
+			return false; // linux NYI
+		#endif
+	}
+
+	void device_ogl::set_vsync_enabled(bool vsync_enabled)
+	{
+		#ifdef _WIN32
+			tz::wsi::impl::get_wgl_functions().wgl_swap_interval_ext(vsync_enabled ? 1 : 0);
+		#else
+			// linux NYI.
+		#endif
 	}
 
 	void device_ogl::dbgui()

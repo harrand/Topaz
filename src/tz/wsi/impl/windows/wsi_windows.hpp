@@ -19,6 +19,7 @@ namespace tz::wsi::impl
 		PFNWGLCHOOSEPIXELFORMATARBPROC wgl_choose_pixel_format_arb = nullptr;
 		PFNWGLCREATECONTEXTATTRIBSARBPROC wgl_create_context_attribs_arb = nullptr;
 		PFNWGLSWAPINTERVALEXTPROC wgl_swap_interval_ext = nullptr;
+		PFNWGLGETSWAPINTERVALEXTPROC wgl_get_swap_interval_ext = nullptr;
 		bool operator==(const wgl_function_data& rhs) const = default;
 	};
 	wgl_function_data get_wgl_functions();

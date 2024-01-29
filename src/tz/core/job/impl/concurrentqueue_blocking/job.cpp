@@ -274,7 +274,7 @@ namespace tz::impl
 			// 10us is super tiny, will basically never catch anything.
 			// 2000us is incredibly long. highly likely to catch everything. will also definitely max out the cpu usage.
 			long long spin_duration = std::lerp(2, 3000, aggro);
-			auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(2000);
+			auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(spin_duration);
 			{
 				while(!found)
 				{

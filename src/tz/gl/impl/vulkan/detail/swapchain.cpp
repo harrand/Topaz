@@ -244,6 +244,12 @@ namespace tz::gl::vk2
 		*this = std::move(second);
 	}
 
+	void Swapchain::refresh(SurfacePresentMode new_present_mode)
+	{
+		this->info.present_mode = new_present_mode;
+		this->refresh();
+	}
+
 	Swapchain::Swapchain():
 	swapchain(VK_NULL_HANDLE),
 	info(){}

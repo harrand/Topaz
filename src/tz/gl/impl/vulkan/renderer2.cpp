@@ -1753,6 +1753,13 @@ namespace tz::gl
 		return this->debug_name;
 	}
 
+	void renderer_vulkan2::vk_notify_swapchain_changed()
+	{
+		renderer_output_manager::populate_render_targets(this->options);
+		renderer_pipeline::update_pipeline(this->state);
+		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
+	}
+
 	renderer_vulkan2 renderer_vulkan2::null()
 	{
 		return {};
@@ -1796,9 +1803,7 @@ namespace tz::gl
 				renderer_resource_manager::notify_image_dirty(rh);
 			}
 		}
-		renderer_output_manager::populate_render_targets(this->options);
-		renderer_pipeline::update_pipeline(this->state);
-		renderer_command_processor::record_commands(this->state, this->options, this->debug_name);
+		this->vk_notify_swapchain_changed();
 	}
 }
 #endif // TZ_VULKAN

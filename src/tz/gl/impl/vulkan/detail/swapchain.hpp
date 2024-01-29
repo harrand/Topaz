@@ -124,6 +124,7 @@ namespace tz::gl::vk2
 		 */
 		tz::vec2ui get_dimensions() const;
 		void refresh();
+		void refresh(SurfacePresentMode new_present_mode);
 	private:
 		Swapchain();
 		void initialise_images();

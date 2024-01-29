@@ -283,6 +283,23 @@ namespace tz::gl
 		return this->recent_acquire.has_value() ? &this->recent_acquire.value() : nullptr;
 	}
 
+	bool device_window::is_vsync_enabled_impl() const
+	{
+		return this->swapchain.get_present_mode() == vk2::SurfacePresentMode::Fifo;
+	}
+
+	void device_window::set_vsync_enabled_impl(bool vsync)
+	{
+		if(this->is_vsync_enabled_impl() == vsync)
+		{
+			return;
+		}
+		device_vulkan_base::vk_get_logical_device().wait_until_idle();
+		this->swapchain.refresh(vsync ? vk2::SurfacePresentMode::Fifo : vk2::SurfacePresentMode::Mailbox);
+		this->make_depth_image();
+		this->dimensions_cache = tz::window().get_dimensions();
+	}
+
 	void device_window::vk_acquire_done()
 	{
 		this->recent_acquire = std::nullopt;
@@ -832,6 +849,24 @@ namespace tz::gl
 		tz::gl::renderer_handle rh = device_common<renderer_vulkan2>::emplace_renderer(rinfo);
 		device_vulkan_base::touch_renderer_id(device_common<renderer_vulkan2>::get_renderer(rh).vk_get_uid(), device_common<renderer_vulkan2>::renderer_count() - 1);
 		return rh;
+	}
+
+	bool device_vulkan2::is_vsync_enabled() const
+	{
+		return device_window::is_vsync_enabled_impl();
+	}
+
+	void device_vulkan2::set_vsync_enabled(bool vsync)
+	{
+		if(this->is_vsync_enabled() == vsync)
+		{
+			return;
+		}
+		device_window::set_vsync_enabled_impl(vsync);
+		for(std::size_t i = 0; i < device_common<renderer_vulkan2>::renderer_count(); i++)
+		{
+			device_common<renderer_vulkan2>::get_renderer(static_cast<tz::hanval>(i)).vk_notify_swapchain_changed();
+		}
 	}
 
 	void device_vulkan2::dbgui()

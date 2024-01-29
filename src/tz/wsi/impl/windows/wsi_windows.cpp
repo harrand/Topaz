@@ -239,6 +239,7 @@ namespace tz::wsi::impl
 			if(cur == "WGL_EXT_swap_control")
 			{
 				wgl_data.wgl_swap_interval_ext = reinterpret_cast<PFNWGLSWAPINTERVALEXTPROC>(reinterpret_cast<void*>(wglGetProcAddress("wglSwapIntervalEXT")));
+				wgl_data.wgl_get_swap_interval_ext = reinterpret_cast<PFNWGLGETSWAPINTERVALEXTPROC>(reinterpret_cast<void*>(wglGetProcAddress("wglGetSwapIntervalEXT")));
 			}
 			
 			if(*ext == '\0')
