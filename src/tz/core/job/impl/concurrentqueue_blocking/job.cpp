@@ -15,7 +15,7 @@ namespace tz::impl
 	{
 		TZ_PROFZONE("job_system - initialise", 0xFFAA0000);
 		this->running_job_ids.reserve(128);
-		for(std::size_t i = 0; i < std::thread::hardware_concurrency(); i++)
+		for(std::size_t i = 0; i < std::thread::hardware_concurrency() - 1; i++)
 		{
 			auto& worker = this->thread_pool.emplace_back();
 			worker.thread = std::thread([this, i](){this->worker_thread_entrypoint(i);});
@@ -175,7 +175,7 @@ namespace tz::impl
 
 	std::size_t job_system_blockingcurrentqueue::worker_count() const
 	{
-		return std::max(static_cast<unsigned int>(this->thread_pool.size() * this->aggression), 1u);
+		return std::max(1u + static_cast<std::size_t>(this->thread_pool.size() * this->aggression), this->thread_pool.size());
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ namespace tz::impl
 
 			// 10us is super tiny, will basically never catch anything.
 			// 2000us is incredibly long. highly likely to catch everything. will also definitely max out the cpu usage.
-			long long spin_duration = std::lerp(2, 2000, aggro);
+			long long spin_duration = std::lerp(2, 3000, aggro);
 			auto deadline = std::chrono::steady_clock::now() + std::chrono::microseconds(2000);
 			{
 				while(!found)
