@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_MESSAGING_HPP
 #define TOPAZ_CORE_MESSAGING_HPP
 #include "tz/core/types.hpp"
+#include "tz/core/profile.hpp"
 #include <vector>
 #include <mutex>
 #include <ranges>
@@ -26,7 +27,11 @@ namespace tz
 		protected:
 			mutable std::mutex mtx = {};	
 			using lock_t = std::unique_lock<std::mutex>;
-			lock_t lock() const {return lock_t{this->mtx};}
+			lock_t lock() const
+			{
+				TZ_PROFZONE("message receiver - lock", 0xFFCCAACC);
+				return lock_t{this->mtx};
+			}
 		};
 	}
 
