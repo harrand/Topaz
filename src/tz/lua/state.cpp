@@ -569,17 +569,12 @@ namespace tz::lua
 		return defstate;
 	}
 
-	void for_all_states(state_applicator fn, bool ignore_aggression)
+	void for_all_states(state_applicator fn)
 	{
 		// for each worker, execute a new job to register the function with the necessary affinity.
 		std::vector<tz::job_handle> handles = {};
-		const float aggro = tz::job_system().get_aggression();
 		for(tz::worker_id_t wid : tz::job_system().get_worker_ids())
 		{
-			if(!ignore_aggression && wid > aggro / (1.0f / std::thread::hardware_concurrency()))
-			{
-				continue;
-			}
 			handles.push_back(tz::job_system().execute([fn]()
 			{
 				fn(get_state());

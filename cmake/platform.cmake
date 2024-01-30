@@ -1,5 +1,5 @@
 function(configure_windows target)
-	target_link_libraries(${target} PUBLIC OpenGL32 dwmapi)
+	target_link_libraries(${target} PUBLIC OpenGL32 dwmapi winmm)
 endfunction()
 
 function(configure_linux target)

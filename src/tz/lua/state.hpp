@@ -148,7 +148,7 @@ namespace tz::lua
 	state& get_state();
 
 	using state_applicator = std::function<void(state&)>;
-	void for_all_states(state_applicator fn, bool ignore_aggression = true);
+	void for_all_states(state_applicator fn);
 
 }
 

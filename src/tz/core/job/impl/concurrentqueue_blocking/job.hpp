@@ -31,8 +31,6 @@ namespace tz::impl
 		virtual std::size_t worker_count() const override;
 		virtual std::vector<worker_id_t> get_worker_ids() const override;
 		unsigned int jobs_started_this_frame() const;
-		float get_aggression() const;
-		void set_aggression(float aggression);
 	private:
 		struct job_info_t
 		{
@@ -66,7 +64,6 @@ namespace tz::impl
 		std::atomic<std::uint64_t> lifetime_jobs_created = 0u;
 		std::atomic<std::size_t> jobs_created_this_frame = 0u;
 		std::atomic<bool> close_requested = false;
-		std::atomic<float> aggression = 0.0f;
 	};
 }
 
