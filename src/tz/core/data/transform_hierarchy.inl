@@ -30,6 +30,8 @@ namespace tz
 	void transform_hierarchy<T>::clear()
 	{
 		this->nodes.clear();
+		this->node_free_list.clear();
+		this->value_node_map.clear();
 	}
 
 	template<typename T>
@@ -89,6 +91,13 @@ namespace tz
 	std::optional<unsigned int> transform_hierarchy<T>::find_node(const T& value) const
 	{
 		TZ_PROFZONE("transform_hierarchy - find node", 0xFF0000AA);
+		auto iter = this->value_node_map.find(value);
+		if(iter == this->value_node_map.end())
+		{
+			return std::nullopt;
+		}
+		return iter->second;
+		/*
 		auto iter = std::find_if(this->nodes.begin(), this->nodes.end(),
 		[value](const auto& node)
 		{
@@ -99,6 +108,7 @@ namespace tz
 			return std::nullopt;
 		}
 		return std::distance(this->nodes.begin(), iter);
+		*/
 	}
 
 	template<typename T>
@@ -140,6 +150,8 @@ namespace tz
 		{
 			this->nodes[parent.value()].children.push_back(id);
 		}
+		tz::assert(this->value_node_map.find(data) == this->value_node_map.end(), "Node values must be unique. Detected there was already an existing node with the given value.");
+		this->value_node_map[data] = id;
 		return id;
 	}
 
@@ -157,6 +169,7 @@ namespace tz
 			auto& parent = this->nodes[node.parent.value()];
 			parent.children.erase(std::remove(parent.children.begin(), parent.children.end(), node_id), parent.children.end());
 		}
+		this->value_node_map.erase(node.data);
 		switch(strategy)
 		{
 			case remove_strategy::patch_children_to_parent:

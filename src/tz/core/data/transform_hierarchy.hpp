@@ -1,5 +1,6 @@
 #ifndef TZ_CORE_DATA_TRANSFORM_HIERARCHY_HPP
 #define TZ_CORE_DATA_TRANSFORM_HIERARCHY_HPP
+#include "tz/core/data/free_list.hpp"
 #include "tz/core/data/trs.hpp"
 #include "tz/core/data/handle.hpp"
 #include <optional>
@@ -171,6 +172,7 @@ namespace tz
 	private:
 		std::vector<transform_node<T>> nodes = {};
 		std::vector<std::size_t> node_free_list = {};
+		std::unordered_map<T, std::size_t> value_node_map = {};
 		mutable std::vector<std::size_t> node_local_transform_hashes = {};
 		mutable std::vector<tz::trs> node_global_transform_cache = {};
 	};
