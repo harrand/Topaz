@@ -326,7 +326,7 @@ namespace tz
 					for(std::size_t j = 0; j < child_count; j++)
 					{
 						unsigned int child = node.children[j + offset];
-						callback(child); this->iterate_descendants(child, callback, true);
+						callback(child); this->iterate_descendants(child, callback, false);
 					}
 				});
 			}
@@ -334,7 +334,7 @@ namespace tz
 			{
 				unsigned int child = node.children[i];
 				callback(child);
-				this->iterate_descendants(child, callback, true);
+				this->iterate_descendants(child, callback, false);
 			}
 			for(tz::job_handle jh : jobs)
 			{
