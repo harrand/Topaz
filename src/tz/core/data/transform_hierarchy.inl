@@ -275,7 +275,8 @@ namespace tz
 	template<typename T>
 	const transform_node<T>& transform_hierarchy<T>::get_node(unsigned int id) const
 	{
-		TZ_PROFZONE("transform_hierarchy - get node", 0xFF0000AA);
+		// dont instrument this. this gets called a **ton** even on tiny scenes.
+		//TZ_PROFZONE("transform_hierarchy - get node", 0xFF0000AA);
 		tz::assert(id < this->nodes.size(), "Invalid node id %u", id);
 		return this->nodes[id];
 	}

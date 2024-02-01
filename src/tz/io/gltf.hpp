@@ -207,9 +207,11 @@ namespace tz::io
 			mutable tz::vec4 transform = tz::vec4::zero();
 
 			bool operator<(const keyframe_data_element& rhs) const{return this->time_point < rhs.time_point;}
+			bool operator<(float time) const{return this->time_point < time;}
 		};
-		using keyframe_data = std::tuple<std::set<keyframe_data_element>, std::set<keyframe_data_element>, std::set<keyframe_data_element>>;
-		using keyframe_iterator = std::set<keyframe_data_element>::iterator;
+		using keyframe_container = std::set<keyframe_data_element>;
+		using keyframe_data = std::tuple<keyframe_container, keyframe_container, keyframe_container>;
+		using keyframe_iterator = keyframe_container::iterator;
 		std::string name = "Unnamed";
 		std::vector<gltf_animation_channel> channels = {};
 		std::vector<gltf_animation_sampler> samplers = {};

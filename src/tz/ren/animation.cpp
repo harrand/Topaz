@@ -3,6 +3,7 @@
 
 #include "tz/gl/imported_shaders.hpp"
 #include "tz/io/gltf.hpp"
+
 #include ImportedShaderHeader(animation, vertex)
 #include ImportedShaderHeader(animation, fragment)
 
@@ -427,26 +428,25 @@ namespace tz::ren
 //--------------------------------------------------------------------------------------------------
 
 	// implementation detail for single_animation_advance
-	using keyframe_iterator = std::set<tz::io::gltf_animation::keyframe_data_element>::iterator;
-	std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(keyframe_iterator front, keyframe_iterator back, float time)
+	using keyframe_container = tz::io::gltf_animation::keyframe_container;
+	std::pair<std::size_t, std::size_t> interpolate_animation_keyframes(const keyframe_container& set, float time)
 	{
 		TZ_PROFZONE("animation - interpolate keyframes", 0xFFE54550);
-		keyframe_iterator iter = front;
-		while(iter != back && iter->time_point <= time)
-		{
-			iter++;
-		}
-		std::size_t idx = std::distance(front, iter);
-		if(idx == 0)
+		auto iter = set.upper_bound({.time_point = time});
+		// if all time points are greater than the given time point, return the first 1 indices.
+		if(iter == set.begin())
 		{
 			return {0u, 1u};
 		}
-		auto dist = std::distance(front, back);
-		if(std::cmp_greater_equal(idx, dist))
+		// if there are no time points greater, then return the last 2.
+		if(iter == set.end())
 		{
-			return {dist - 2, dist - 1};
+			auto sz = set.size();
+			return {sz - 2, sz - 1};
 		}
-		return {idx - 1, idx};
+		// otherwise simply return the iterator-before-this and this.
+		auto dist = std::distance(set.begin(), iter);
+		return {dist - 1, dist - 0};
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -516,9 +516,9 @@ namespace tz::ren
 
 
 			const auto& [kf_positions, kf_rotations, kf_scales] = anim.node_animation_data[nid];
-			auto [pos_before_id, pos_after_id] = interpolate_animation_keyframes(kf_positions.begin(), kf_positions.end(), t);
-			auto [rot_before_id, rot_after_id] = interpolate_animation_keyframes(kf_rotations.begin(), kf_rotations.end(), t);
-			auto [scale_before_id, scale_after_id] = interpolate_animation_keyframes(kf_scales.begin(), kf_scales.end(), t);
+			auto [pos_before_id, pos_after_id] = interpolate_animation_keyframes(kf_positions, t);
+			auto [rot_before_id, rot_after_id] = interpolate_animation_keyframes(kf_rotations, t);
+			auto [scale_before_id, scale_after_id] = interpolate_animation_keyframes(kf_scales, t);
 			if(kf_positions.size() > 1)
 			{
 				TZ_PROFZONE("update objects - position", 0xFFE54550);
