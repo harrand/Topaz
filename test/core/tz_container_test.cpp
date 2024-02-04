@@ -92,7 +92,9 @@ void free_list()
 	auto iter = std::find(ints.begin(), ints.end(), magic);
 	tz::assert(iter != ints.end(), "list of fibonacci numbers did not contain %d", magic.i);
 	// now erase it.
+	tz::assert(ints.contains(static_cast<tz::hanval>(9)));
 	ints.erase(static_cast<tz::hanval>(9));
+	tz::assert(!ints.contains(static_cast<tz::hanval>(9)));
 	tz::assert(ints.size() == 15);
 	// should no longer exist.
 	iter = std::find(ints.begin(), ints.end(), magic);
@@ -111,6 +113,7 @@ void free_list()
 	// adding a new integer again should replace the old thing (which was element 9 - 89)
 	// its now 99999.
 	auto handle = ints.push_back({.i = 99999});
+	tz::assert(ints.contains(handle));
 	tz::assert(static_cast<std::size_t>(static_cast<tz::hanval>(handle)) == 9u);
 	tz::assert(ints[handle].i == 99999);
 	tz::assert(ints.size() == 16);

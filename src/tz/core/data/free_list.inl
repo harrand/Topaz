@@ -230,13 +230,21 @@ namespace tz
 	template<tz::nullable T, tz::random_access_container C>
 	const T& free_list<T, C>::operator[](handle h) const
 	{
+		tz::assert(this->contains(h), "Handle did not exist in free-list");
 		return this->elements[static_cast<std::size_t>(static_cast<tz::hanval>(h))];
 	}
 
 	template<tz::nullable T, tz::random_access_container C>
 	T& free_list<T, C>::operator[](handle h)
 	{
+		tz::assert(this->contains(h), "Handle did not exist in free-list");
 		return this->elements[static_cast<std::size_t>(static_cast<tz::hanval>(h))];
+	}
+
+	template<tz::nullable T, tz::random_access_container C>
+	bool free_list<T, C>::contains(handle h) const
+	{
+		return !is_in_free_list(h) && this->elements.size() > static_cast<std::size_t>(static_cast<tz::hanval>(h));
 	}
 
 	template<tz::nullable T, tz::random_access_container C>

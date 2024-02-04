@@ -224,6 +224,8 @@ namespace tz
 		 * θ(x) where `x` is the worst-case time complexity of the underlying container's `operator[]` method.
 		 */
 		T& operator[](handle h);
+
+		bool contains(handle h) const;
 	private:
 		bool is_in_free_list(std::size_t internal_id) const;
 		bool is_in_free_list(handle h) const;
