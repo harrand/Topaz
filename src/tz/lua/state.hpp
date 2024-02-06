@@ -93,6 +93,7 @@ namespace tz::lua
 		std::int64_t stack_get_int(std::size_t idx, bool type_check = true) const;
 		std::uint64_t stack_get_uint(std::size_t idx, bool type_check = true) const;
 		std::string stack_get_string(std::size_t idx, bool type_check = true) const;
+		tz::lua::nil stack_get_nil(std::size_t idx, bool type_check = true) const;
 		void* stack_get_ptr(std::size_t idx, bool type_check = true) const;
 		template<typename T>
 		T& stack_get_userdata(std::size_t idx, bool type_check = true) const

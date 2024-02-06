@@ -309,6 +309,19 @@ namespace tz::lua
 		}
 	}
 
+	tz::lua::nil state::stack_get_nil(std::size_t idx, bool type_check) const
+	{
+		auto* s = static_cast<lua_State*>(this->lstate);
+		if(lua_isnil(s, idx) || !type_check)
+		{
+			return {};
+		}
+		std::string stackdata = this->collect_stack();
+		std::string traceback = this->print_traceback();
+		tz::error("Lua stack entry %zu requested as `nil`, type error. Stack:\n%s\nTraceback:\n%s", idx, stackdata.c_str(), traceback.c_str());
+		return {};
+	}
+
 	void* state::stack_get_ptr(std::size_t idx, bool type_check) const
 	{
 		auto* s = static_cast<lua_State*>(this->lstate);
@@ -344,6 +357,14 @@ namespace tz::lua
 		else if(lua_isstring(s, idx))
 		{
 			ret = this->stack_get_string(idx);
+		}
+		else if(lua_isnil(s, idx))
+		{
+			ret = this->stack_get_nil(idx);
+		}
+		else
+		{
+			tz::error("Unrecognised generic");
 		}
 		return ret;
 	}
