@@ -183,7 +183,7 @@ namespace tz
 		 * @param end Value to be appended to the end of the resultant vector.
 		 * @return vector with extra element appended.
 		 */
-		vector<T, S + 1> with_more(T&& end) const;
+		vector<T, S + 1> with_more(T end) const;
 		/**
 		 * Create a new vector, with another vector appended to the end.
 		 *

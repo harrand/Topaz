@@ -201,7 +201,7 @@ namespace tz
 	}
 
 	template<tz::number T, std::size_t S>
-	vector<T, S + 1> vector<T, S>::with_more(T&& end) const
+	vector<T, S + 1> vector<T, S>::with_more(T end) const
 	{
 		std::array<T, S + 1> new_data;
 		std::copy(this->vec.begin(), this->vec.end(), new_data.begin());
