@@ -113,6 +113,8 @@ namespace tz::lua
 		s.assign_func("tz.stack_dump", LUA_FN_NAME(stack_dump));
 		s.assign_func("tz.callstack_dump", LUA_FN_NAME(callstack_dump));
 		s.assign_func("tz.breakpoint", LUA_FN_NAME(breakpoint));
+		s.assign_bool("tz.debug", TZ_DEBUG);
+		s.assign_bool("tz.profile", TZ_PROFILE);
 		LUA_REGISTER_ONE(print, s);
 		LUA_REGISTER_ONE(stack_dump, s);
 		s.assign_emptytable("tz.version");
