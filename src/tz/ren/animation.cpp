@@ -216,6 +216,26 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	std::optional<std::size_t> animation_renderer::gltf_get_animation_id_by_name(gltf_handle h, std::string anim_name) const
+	{
+		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(h));
+		tz::assert(hanval < this->gltfs.size());
+		const gltf_data& gltf = this->gltfs[hanval];
+		const auto& anims = gltf.data.get_animations();
+		auto iter = std::find_if(anims.begin(), anims.end(),
+		[&anim_name](const tz::io::gltf_animation& anim)
+		{
+			return anim.name == anim_name;
+		});
+		if(iter == anims.end())
+		{
+			return std::nullopt;
+		}
+		return std::distance(anims.begin(), iter);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	std::span<const animation_renderer::object_handle> animation_renderer::animated_object_get_subobjects(animated_objects_handle handle) const
 	{
 		auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(handle));

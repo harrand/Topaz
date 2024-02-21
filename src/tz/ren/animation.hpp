@@ -84,6 +84,7 @@ namespace tz::ren
 		std::size_t gltf_get_animation_count(gltf_handle h) const;
 		std::string_view gltf_get_animation_name(gltf_handle h, std::size_t anim_id) const;
 		float gltf_get_animation_length(gltf_handle h, std::size_t anim_id) const;
+		std::optional<std::size_t> gltf_get_animation_id_by_name(gltf_handle h, std::string anim_name) const;
 
 		// API get for animated_objects
 
