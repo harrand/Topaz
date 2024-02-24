@@ -536,10 +536,10 @@ namespace tz::dbgui
 			TopazShaderRenderData& shader_data = renderer.get_resource(global_render_data->shader_data_buffer)->data_as<TopazShaderRenderData>().front();
 			const ImGuiIO& io = ImGui::GetIO();
 			shader_data.vp = tz::orthographic(
-				0,
-				io.DisplaySize.x,
-				0,
-				io.DisplaySize.y,
+				-io.DisplaySize.x * 0.5f,
+				io.DisplaySize.x * 0.5f,
+				-io.DisplaySize.y * 0.5f,
+				io.DisplaySize.y * 0.5f,
 				-0.1f,
 				0.1f
 			) * tz::view(tz::vec3{io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f, 0.0f}, {});

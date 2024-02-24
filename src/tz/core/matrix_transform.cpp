@@ -136,7 +136,7 @@ namespace tz
 		m(1, 1) = 2.0f / (top - bottom);
 		m(2, 2) = -2.0f / (farval - nearval);
 
-		mat4::Row& bottom_row = m[2];
+		mat4::Row& bottom_row = m[3];
 		bottom_row[0] = -(right + left) / (right - left);
 		bottom_row[1] = -(top + bottom) / (top - bottom);
 		bottom_row[2] = -(farval + nearval) / (farval - nearval);
