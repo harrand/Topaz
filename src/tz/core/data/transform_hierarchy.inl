@@ -207,6 +207,7 @@ namespace tz
 		}
 		this->nodes[node_id] = {};
 		this->node_free_list.push_back(node_id);
+		this->clear_cache_for(node_id);
 		//this->nodes.erase(this->nodes.begin() + node_id);
 	}
 
