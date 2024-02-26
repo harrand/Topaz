@@ -153,6 +153,14 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+	tz::trs char_storage::string_get_transform(tz::gl::renderer_handle rh, string_handle sh) const
+	{
+		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<const string_locator>();
+		return tz::trs::from_matrix(strings[static_cast<std::size_t>(static_cast<tz::hanval>(sh))].model);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
 	void char_storage::string_set_colour(tz::gl::renderer_handle rh, string_handle sh, tz::vec3 colour)
 	{
 		auto strings = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<string_locator>();
@@ -575,6 +583,13 @@ namespace tz::ren
 	void text_renderer::string_set_transform(string_handle sh, tz::trs transform)
 	{
 		this->chars.string_set_transform(this->rh, sh, transform);
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	tz::trs text_renderer::string_get_transform(string_handle sh)
+	{
+		return this->chars.string_get_transform(this->rh, sh);
 	}
 
 //--------------------------------------------------------------------------------------------------

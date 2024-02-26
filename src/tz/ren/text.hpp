@@ -46,6 +46,7 @@ namespace tz::ren
 		std::size_t string_count(bool include_free_list = false) const;
 
 		void string_set_transform(tz::gl::renderer_handle rh, string_handle sh, tz::trs transform);
+		tz::trs string_get_transform(tz::gl::renderer_handle rh, string_handle sh) const;
 		void string_set_colour(tz::gl::renderer_handle rh, string_handle sh, tz::vec3 colour);
 		void string_set_text(tz::gl::renderer_handle rh, string_handle sh, std::string);
 		float string_get_width_pixels(tz::gl::renderer_handle rh, string_handle sh) const;
@@ -166,6 +167,7 @@ namespace tz::ren
 		 * @param transform New transform of the rendered text.
 		 */
 		void string_set_transform(string_handle sh, tz::trs transform);
+		tz::trs string_get_transform(string_handle sh);
 		/**
 		 * Set the colour of an existing rendered text.
 		 * @param sh String corresponding to the handle to be affected.
