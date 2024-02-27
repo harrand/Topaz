@@ -317,12 +317,21 @@ namespace tz::ren
 		{
 			return;
 		}
+		std::vector<string_locator> new_empties;
+		new_empties.resize(string_count - old_cap);
+		std::span<const string_locator> new_empties_span = new_empties;
 		tz::gl::get_device().get_renderer(rh).edit(
 			tz::gl::RendererEditBuilder{}
 			.buffer_resize
 			({
 				.buffer_handle = this->string_buffer,
 				.size = string_count * sizeof(string_locator)
+			})
+			.write
+			({
+				.resource = this->string_buffer,
+				.data = std::as_bytes(new_empties_span),
+				.offset = old_cap * sizeof(string_locator),
 			})
 			.build()
 		);
