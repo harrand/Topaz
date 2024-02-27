@@ -71,7 +71,8 @@ namespace tz::gl::vk2
 
 	void Fence::wait_until_signalled() const
 	{
-		vkWaitForFences(this->get_device().native(), 1, &this->fence, VK_FALSE, std::numeric_limits<std::uint64_t>::max());
+		VkResult res = vkWaitForFences(this->get_device().native(), 1, &this->fence, VK_FALSE, std::numeric_limits<std::uint64_t>::max());
+		tz::assert(res == VK_SUCCESS);
 	}
 
 	void Fence::unsignal()

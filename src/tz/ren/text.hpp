@@ -56,9 +56,9 @@ namespace tz::ren
 		void write_string_locator(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t string_id, const string_locator& loc);
 		std::size_t get_char_occupancy(tz::gl::renderer_handle rh) const;
 		std::size_t get_char_capacity(tz::gl::renderer_handle rh) const;
-		void set_char_capacity(tz::gl::renderer_handle rh, std::size_t char_count);
+		void set_char_capacity(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t char_count);
 		std::size_t get_string_capacity(tz::gl::renderer_handle rh) const;
-		void set_string_capacity(tz::gl::renderer_handle rh, std::size_t string_count);
+		void set_string_capacity(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t string_count);
 		// convert ascii chars into alphabet indices (in-place)
 		static constexpr void format(std::span<char> ascii_str)
 		{

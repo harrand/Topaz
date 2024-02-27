@@ -57,7 +57,7 @@ namespace tz::ren
 			const std::size_t old_capacity = this->get_char_capacity(rh);
 			// double or add by string size, whichever is larger.
 			const std::size_t new_capacity = std::max(old_capacity + str.size(), old_capacity * 2);
-			this->set_char_capacity(rh, new_capacity);
+			this->set_char_capacity(rh, ch, new_capacity);
 			maybe_region = this->try_find_char_region(str.size(), rh);
 			tz::assert(maybe_region.has_value());
 		}
@@ -93,7 +93,7 @@ namespace tz::ren
 			if(string_id >= this->get_string_capacity(rh))
 			{
 				// expand. double capacity.
-				this->set_string_capacity(rh, capacity * 2);
+				this->set_string_capacity(rh, ch, capacity * 2);
 			}
 			this->write_string_locator(rh, ch, string_id, loc);
 			this->string_cursor++;
@@ -253,9 +253,9 @@ namespace tz::ren
 	std::size_t char_storage::get_char_occupancy(tz::gl::renderer_handle rh) const
 	{
 		std::size_t total_char_count = 0;
-		std::vector<string_locator> locators(this->get_string_capacity(rh));
+		std::vector<string_locator> locators(this->string_cursor);
 		auto resource_data = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<const string_locator>();
-		std::copy(resource_data.begin(), resource_data.end(), locators.begin());
+		std::copy(resource_data.begin(), resource_data.begin() + this->string_cursor, locators.begin());
 		for(const auto& loc : locators)
 		{
 			total_char_count += loc.count;
@@ -272,7 +272,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void char_storage::set_char_capacity(tz::gl::renderer_handle rh, std::size_t char_count)
+	void char_storage::set_char_capacity(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t char_count)
 	{
 		std::size_t old_cap = this->get_char_capacity(rh);
 		if(old_cap <= char_count)
@@ -288,6 +288,16 @@ namespace tz::ren
 			})
 			.build()
 		);
+		tz::gl::get_device().get_renderer(ch).edit(
+			tz::gl::RendererEditBuilder{}
+			.mark_dirty
+			({
+				.work_commands = true,
+				.buffers = true,
+			})
+			.build()
+		);
+
 		tz::assert(this->get_char_capacity(rh) == char_count);
 	}
 
@@ -300,7 +310,7 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
-	void char_storage::set_string_capacity(tz::gl::renderer_handle rh, std::size_t string_count)
+	void char_storage::set_string_capacity(tz::gl::renderer_handle rh, tz::gl::renderer_handle ch, std::size_t string_count)
 	{
 		std::size_t old_cap = this->get_string_capacity(rh);
 		if(old_cap >= string_count)
@@ -313,6 +323,15 @@ namespace tz::ren
 			({
 				.buffer_handle = this->string_buffer,
 				.size = string_count * sizeof(string_locator)
+			})
+			.build()
+		);
+		tz::gl::get_device().get_renderer(ch).edit(
+			tz::gl::RendererEditBuilder{}
+			.mark_dirty
+			({
+				.work_commands = true,
+				.buffers = true,
 			})
 			.build()
 		);
