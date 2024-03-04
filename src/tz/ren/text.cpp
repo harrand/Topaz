@@ -253,9 +253,9 @@ namespace tz::ren
 	std::size_t char_storage::get_char_occupancy(tz::gl::renderer_handle rh) const
 	{
 		std::size_t total_char_count = 0;
-		std::vector<string_locator> locators(this->string_cursor);
+		std::vector<string_locator> locators(this->get_string_capacity(rh));
 		auto resource_data = tz::gl::get_device().get_renderer(rh).get_resource(this->string_buffer)->data_as<const string_locator>();
-		std::copy(resource_data.begin(), resource_data.begin() + this->string_cursor, locators.begin());
+		std::copy(resource_data.begin(), resource_data.end(), locators.begin());
 		for(const auto& loc : locators)
 		{
 			total_char_count += loc.count;
