@@ -31,6 +31,7 @@ add_library(topaz STATIC
 	src/tz/core/data/free_list.hpp
 	src/tz/core/data/free_list.inl
 	src/tz/core/data/data_store.cpp
+	src/tz/core/data/data_store.dbgui.cpp
 	src/tz/core/data/data_store.hpp
 	src/tz/core/data/enum_field.hpp
 	src/tz/core/data/enum_field.inl

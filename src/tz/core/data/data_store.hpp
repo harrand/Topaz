@@ -75,6 +75,7 @@ namespace tz
 		data_store() = default;
 		void clear();
 		void add(detail::ds_add add);
+		void set(detail::ds_edit edit);
 		void edit(detail::ds_edit edit);
 		void remove(detail::ds_remove remove);
 		void remove_all_of(std::string_view prefix);
@@ -106,6 +107,8 @@ namespace tz
 				ret = static_cast<T>(arg);
 			}, val);
 		}
+
+		void dbgui();
 	private:
 		bool contains_nolock(std::string_view key) const;
 
@@ -119,6 +122,7 @@ namespace tz
 	{
 		data_store* ds;
 		int add(tz::lua::state& state);
+		int set(tz::lua::state& state);
 		int edit(tz::lua::state& state);
 		int edit_some(tz::lua::state& state);
 		int remove(tz::lua::state& state);
@@ -133,6 +137,7 @@ namespace tz
 	LUA_CLASS_BEGIN(tz_lua_data_store)
 		LUA_CLASS_METHODS_BEGIN
 			LUA_METHOD(tz_lua_data_store, add)
+			LUA_METHOD(tz_lua_data_store, set)
 			LUA_METHOD(tz_lua_data_store, edit)
 			LUA_METHOD(tz_lua_data_store, edit_some)
 			LUA_METHOD(tz_lua_data_store, remove)

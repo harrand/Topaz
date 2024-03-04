@@ -14,7 +14,15 @@ namespace tz
 	{
 		TZ_PROFZONE("data_store - single add", 0xFF3377AA);
 		std::unique_lock<mutex> ulock(this->mtx);
+		tz::assert(!this->contains_nolock(add.key), "add called on %s which already exists in the datastore.", add.key.data());
 		this->store[add.key] = add.val;
+	}
+
+	void data_store::set(detail::ds_edit edit)
+	{
+		TZ_PROFZONE("data_store - single set", 0xFF3377AA);
+		std::unique_lock<mutex> ulock(this->mtx);
+		this->store[edit.key] = edit.val;
 	}
 
 	void data_store::edit(detail::ds_edit edit)
@@ -166,6 +174,29 @@ namespace tz
 			[this, key](std::string str)
 			{
 				this->ds->add({.key = key, .val = str});
+			},
+		}, val);
+		return 0;
+	}
+
+	int tz_lua_data_store::set(tz::lua::state& state)
+	{
+		std::string key = state.stack_get_string(2);
+		tz::lua::lua_generic val = state.stack_get_generic(3);
+		std::visit(overloaded
+		{
+			[]([[maybe_unused]] auto arg){tz::error("Lua value type passed to data_store.set is unknown or invalid. Please submit a bug report.");},
+			[this, key](bool b)
+			{
+				this->ds->set({.key = key, .val = b});
+			},
+			[this, key](double d)
+			{
+				this->ds->set({.key = key, .val = d});
+			},
+			[this, key](std::string str)
+			{
+				this->ds->set({.key = key, .val = str});
 			},
 		}, val);
 		return 0;
