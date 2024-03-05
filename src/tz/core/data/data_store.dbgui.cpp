@@ -24,6 +24,7 @@ namespace tz
 				{
 					set();
 				}
+				ImGui::SameLine(); ImGui::Text("bool");
 			}
 			else if constexpr(std::is_same_v<T, float>)
 			{
@@ -31,6 +32,7 @@ namespace tz
 				{
 					set();
 				}
+				ImGui::SameLine(); ImGui::Text("float");
 			}
 			else if constexpr(std::is_same_v<T, double>)
 			{
@@ -38,6 +40,7 @@ namespace tz
 				{
 					set();
 				}
+				ImGui::SameLine(); ImGui::Text("double");
 			}
 			else if constexpr(std::is_same_v<T, int>)
 			{
@@ -45,6 +48,7 @@ namespace tz
 				{
 					set();
 				}
+				ImGui::SameLine(); ImGui::Text("int");
 			}
 			else if constexpr(std::is_same_v<T, unsigned int>)
 			{
@@ -52,6 +56,7 @@ namespace tz
 				{
 					set();
 				}
+				ImGui::SameLine(); ImGui::Text("uint");
 			}
 			else if constexpr(std::is_same_v<T, std::string>)
 			{
@@ -59,8 +64,62 @@ namespace tz
 				{
 					set();
 				}
+				ImGui::SameLine(); ImGui::Text("string");
 			}
 		}, val);
+	}
+
+	void data_store_dbgui_new_row(data_store* ds)
+	{
+		static std::string key = "";
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::Text("New Entry:");
+		ImGui::SameLine();
+		ImGui::InputText("##newkey", &key);
+		ImGui::TableNextColumn();
+		if(ImGui::Button("null"))
+		{
+			ds->add({.key = key, .val = nullptr});
+			key = "";
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("bool"))
+		{
+			ds->add({.key = key, .val = false});
+			key = "";
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("float"))
+		{
+			ds->add({.key = key, .val = 0.0f});
+			key = "";
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("double"))
+		{
+			ds->add({.key = key, .val = 0.0});
+			key = "";
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("int"))
+		{
+			ds->add({.key = key, .val = 0});
+			key = "";
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("uint"))
+		{
+			ds->add({.key = key, .val = 0u});
+			key = "";
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("string"))
+		{
+			ds->add({.key = key, .val = std::string{""}});
+			key = "";
+		}
+		ImGui::SameLine();
 	}
 
 	void data_store::dbgui()
@@ -100,9 +159,42 @@ namespace tz
 				ImGui::SameLine();
 				ImGui::Text("%s", key.c_str());
 				ImGui::TableNextColumn();
-				dbgui_data_store_value(this, key, val);
+
+				if(std::holds_alternative<std::nullptr_t>(val))
+				{
+					// is null. give it some initialisation options.
+					if(ImGui::Button("float"))
+					{
+						this->set({.key = key, .val = 0.0f});
+					}
+					ImGui::SameLine();
+					if(ImGui::Button("double"))
+					{
+						this->set({.key = key, .val = 0.0});
+					}
+					ImGui::SameLine();
+					if(ImGui::Button("int"))
+					{
+						this->set({.key = key, .val = 0});
+					}
+					ImGui::SameLine();
+					if(ImGui::Button("uint"))
+					{
+						this->set({.key = key, .val = 0u});
+					}
+					ImGui::SameLine();
+					if(ImGui::Button("string"))
+					{
+						this->set({.key = key, .val = std::string{""}});
+					}
+				}
+				else
+				{
+					dbgui_data_store_value(this, key, val);
+				}
 				ImGui::PopID();
 			}
+			data_store_dbgui_new_row(this);
 			ImGui::EndTable();
 		}
 	}
