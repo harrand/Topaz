@@ -136,11 +136,22 @@ namespace tz
 		{
 			this->clear();
 		}
+		static std::string filter = "";
+		if(ImGui::Button("x"))
+		{
+			filter.clear();
+		}
+		ImGui::SameLine();
+		ImGui::InputText("Filter", &filter);
 		ImGui::Separator();
 		if(ImGui::BeginTable("datastore", 2))
 		{
 			for(const auto& [key, val] : store_cpy)
 			{
+				if(!filter.empty() && !key.starts_with(filter))
+				{
+					continue;
+				}
 				int hash = std::hash<std::string>{}(key);
 				ImGui::PushID(hash);
 				ImGui::TableNextRow();
