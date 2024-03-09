@@ -364,7 +364,10 @@ namespace tz::lua
 		}
 		else
 		{
-			tz::error("Unrecognised generic");
+			#if TZ_DEBUG
+			std::string stack = this->collect_stack();
+			tz::error("Unrecognised generic at stack index %zu. Stack: %s", idx, stack.c_str());
+			#endif
 		}
 		return ret;
 	}
