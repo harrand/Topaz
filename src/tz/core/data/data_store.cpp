@@ -194,6 +194,10 @@ namespace tz
 			{
 				this->ds->set({.key = key, .val = d});
 			},
+			[this, key](std::int64_t d)
+			{
+				this->ds->set({.key = key, .val = static_cast<int>(d)});
+			},
 			[this, key](std::string str)
 			{
 				this->ds->set({.key = key, .val = str});
@@ -216,6 +220,10 @@ namespace tz
 			[this, key](double d)
 			{
 				this->ds->edit({.key = key, .val = d});
+			},
+			[this, key](std::int64_t d)
+			{
+				this->ds->edit({.key = key, .val = static_cast<int>(d)});
 			},
 			[this, key](std::string str)
 			{
