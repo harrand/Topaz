@@ -13,7 +13,13 @@
 
 namespace tz::lua
 {
-	struct nil{};
+	struct nil
+	{
+		// allow construction with parameter (which we proceed to completely ignore)
+		// this is basically so its easy to assign a lua_generic to a value with a visitor (coz if its nil it will still compile but still be nil)
+		nil([[maybe_unused]] auto t){}
+		nil(){}
+	};
 	namespace impl
 	{
 		using fn_t = int(*)(void*);
