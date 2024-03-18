@@ -120,7 +120,8 @@ namespace tz
 	template<typename T>
 	concept message = requires(T a)
 	{
-		requires std::is_standard_layout_v<T>;
+		// note: this used to be only standard layout types. but that's really inflexible (i also think its an arbitrary requirement. no storing strings or source_locations in your messages if you do that!)
+		requires true;
 	};
 
 	template<typename R, typename T>
