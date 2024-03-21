@@ -7,10 +7,7 @@ function(setup_build_config)
 	else()
 		# Must match one of the values:
 
-		if(${CMAKE_BUILD_TYPE} MATCHES "superdebug")
-			# Superdebug (debug but "give me all the sanitisers" too). Use this to track down nasty UB.
-			configure_superdebug()
-		elseif(${CMAKE_BUILD_TYPE} MATCHES "debug")
+		if(${CMAKE_BUILD_TYPE} MATCHES "debug")
 			# Debug (debug symbols, minimal optimisation, asserts enabled). Use this if superdebug gets too slow for you.
 			configure_debug()
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "release")
@@ -25,10 +22,6 @@ function(setup_build_config)
 endfunction()
 
 function(configure_debug)
-	# TODO
-endfunction()
-
-function(configure_superdebug)
 	# TODO
 endfunction()
 
