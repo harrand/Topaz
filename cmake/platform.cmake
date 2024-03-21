@@ -10,8 +10,10 @@ endfunction()
 
 function(configure_windows)
 	# TODO
+	set(default_render_api "vulkan")
 endfunction()
 
 function(configure_linux)
 	# TODO
+	set(default_render_api "vulkan")
 endfunction()
