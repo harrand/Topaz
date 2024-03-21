@@ -17,6 +17,8 @@ function(setup_build_config)
 		elseif(${CMAKE_BUILD_TYPE} MATCHES "profile")
 			# Profile (similar to release, but profiling instrumentation is not compiled out. Use this to profile performance)
 			configure_profile()
+		else()
+			message(FATAL_ERROR "Unknown build type (CMAKE_BUILD_TYPE) \"${CMAKE_BUILD_TYPE}\"")
 		endif()
 
 	endif()
@@ -24,12 +26,15 @@ endfunction()
 
 function(configure_debug)
 	# TODO
+	target_compile_definitions(topaz PRIVATE -DTOPAZ_DEBUG=1)
 endfunction()
 
 function(configure_release)
 	# TODO
+	target_compile_definitions(topaz PRIVATE -DTOPAZ_DEBUG=0)
 endfunction()
 
 function(configure_profile)
 	# TODO
+	target_compile_definitions(topaz PRIVATE -DTOPAZ_DEBUG=0)
 endfunction()

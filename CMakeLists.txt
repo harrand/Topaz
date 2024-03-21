@@ -38,6 +38,7 @@ target_sources(topaz
 	FILE_SET CXX_MODULES FILES
 		# Module Sources
 		src/tz/topaz.cppm
+		src/tz/debug/error.cppm
 	PRIVATE
 		# Non-Module Sources
 		src/tz/deleteme.cpp
