@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 #####################
 ## TOPAZ - VERSION ##
 #####################
+
 configure_file(version.txt version_txt_dummy.xml)
 file(READ version.txt TZ_VERSION_TXT)
 string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" TZ_VERSION ${TZ_VERSION_TXT})
@@ -62,5 +63,6 @@ setup_render_api()
 ###################
 ## TOPAZ - TESTS ##
 ###################
+
 include(CTest)
 add_subdirectory(test)
