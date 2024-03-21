@@ -42,7 +42,6 @@ target_sources(topaz
 		src/tz/topaz.cppm
 	PRIVATE
 		# Non-Module Sources
-		src/tz/deleteme.cpp
 )
 
 ######################

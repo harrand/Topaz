@@ -1,10 +1,10 @@
 # Compiler Config
 function(setup_compiler)
-	if(CMAKE_CXX_ID MATCHES "MSVC")
+	if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 		configure_msvc()
-	elseif(CMAKE_CXX_ID MATCHES "Clang")
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		configure_clang()
-	elseif(CMAKE_CXX_ID MATCHES "GNU")
+	elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		configure_gcc()
 	endif()
 endfunction()
