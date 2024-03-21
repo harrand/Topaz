@@ -4,7 +4,6 @@ module;
 #include <source_location>
 #include <iostream>
 #include <format>
-#include <utility>
 export module topaz.debug;
 
 namespace tz::debug
