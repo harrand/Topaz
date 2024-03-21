@@ -36,6 +36,7 @@ set_target_properties(topaz PROPERTIES
 include(cmake/config.cmake) # setup_build_config
 setup_build_config()
 # Config-Independent compiler settings, e.g warnings.
+include(cmake/compiler.cmake)
 setup_compiler()
 # Platform Settings (Windows/Linux)
 setup_platform()

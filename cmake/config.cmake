@@ -1,3 +1,4 @@
+# Build Config
 function(setup_build_config)
 	set(topaz_default_build_config "debug")
 
