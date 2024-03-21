@@ -1,8 +1,0 @@
-shader(type = fragment);
-
-output(id = 0) vec4 o;
-
-void main()
-{
-	o = vec4(0.0, 0.0, 0.0, 0.0);
-}
