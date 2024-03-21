@@ -1,5 +1,5 @@
 # Compiler Config
-function(setup)
+function(setup_compiler)
 	if(CMAKE_CXX_ID MATCHES "MSVC")
 		configure_msvc()
 	elseif(CMAKE_CXX_ID MATCHES "Clang")

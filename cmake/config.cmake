@@ -2,7 +2,7 @@
 function(setup_build_config)
 	set(topaz_default_build_config "debug")
 
-	if(NOT ${CMAKE_BUILD_TYPE})
+	if(NOT DEFINED CMAKE_BUILD_TYPE)
 		message(WARNING "Build Config `\$\{CMAKE_BUILD_TYPE\}` not specified - defaulting to `debug`.")
 		set(CMAKE_BUILD_TYPE ${topaz_default_build_config})
 	else()

@@ -1,26 +1,34 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.28)
 
+#####################
 ## TOPAZ - VERSION ##
+#####################
 configure_file(version.txt version_txt_dummy.xml)
 file(READ version.txt TZ_VERSION_TXT)
 string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" TZ_VERSION ${TZ_VERSION_TXT})
 
+#####################
 ## TOPAZ - PROJECT ##
+#####################
+
 project(topaz
 	VERSION ${TZ_VERSION}
 	DESCRIPTION "C++20 Game Engine"
 )
 
+####################
 ## TOPAZ - TARGET ##
+####################
+
 add_library(topaz)
-target_sources(main_triangle
+target_sources(topaz
 	PUBLIC
 	FILE_SET CXX_MODULES FILES
 		# Module Sources
-		src1/vulkan.cppm
+		src/tz/topaz.cppm
 	PRIVATE
 		# Non-Module Sources
-		src1/main_triangle.cpp
+		src/tz/deleteme.cpp
 )
 set_target_properties(topaz PROPERTIES
 	# Allow non-module sources to still import modules.
@@ -32,6 +40,11 @@ set_target_properties(topaz PROPERTIES
 	# Do not enable compiler-specific extensions.
 	CXX_EXTENSIONS OFF
 )
+
+######################
+## TOPAZ - SETTINGS ##
+######################
+
 # Build Config specific compiler settings (Debug/Release).
 include(cmake/config.cmake) # setup_build_config
 setup_build_config()
