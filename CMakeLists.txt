@@ -19,19 +19,19 @@ project(topaz
 # Note: The following are global set variables instead of target properties.
 # This is because *everything* should be std C++20 with modules support, including tests, applications, demos etc...
 # Allow non-module sources to still import modules.
-set(CXX_SCAN_FOR_MODULES ON)
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 # C++20
-set(CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20)
 # C++20 is a hard-requirement; **only** support C++20.
-set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Do not enable compiler-specific extensions.
-set(CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 ####################
 ## TOPAZ - TARGET ##
 ####################
 
-add_library(topaz)
+add_library(topaz STATIC)
 target_sources(topaz
 	PUBLIC
 	FILE_SET CXX_MODULES FILES
@@ -41,7 +41,6 @@ target_sources(topaz
 		# Non-Module Sources
 		src/tz/deleteme.cpp
 )
-target_compile_features(topaz PUBLIC cxx_std_20)
 
 ######################
 ## TOPAZ - SETTINGS ##

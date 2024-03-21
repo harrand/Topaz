@@ -1,3 +1,5 @@
-add_executable(tz_initialise_test initialise.cpp)
-target_link_libraries(tz_initialise_test PRIVATE topaz)
-add_test(NAME tz_initialise_test COMMAND tz_initialise_test)
+topaz_add_test(
+  TARGET tz_initialise_test
+  SOURCES
+    initialise.cpp
+)
