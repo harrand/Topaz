@@ -16,6 +16,17 @@ project(topaz
 	DESCRIPTION "C++20 Game Engine"
 )
 
+# Note: The following are global set variables instead of target properties.
+# This is because *everything* should be std C++20 with modules support, including tests, applications, demos etc...
+# Allow non-module sources to still import modules.
+set(CXX_SCAN_FOR_MODULES ON)
+# C++20
+set(CXX_STANDARD 20)
+# C++20 is a hard-requirement; **only** support C++20.
+set(CXX_STANDARD_REQUIRED ON)
+# Do not enable compiler-specific extensions.
+set(CXX_EXTENSIONS OFF)
+
 ####################
 ## TOPAZ - TARGET ##
 ####################
@@ -30,16 +41,7 @@ target_sources(topaz
 		# Non-Module Sources
 		src/tz/deleteme.cpp
 )
-set_target_properties(topaz PROPERTIES
-	# Allow non-module sources to still import modules.
-	CXX_SCAN_FOR_MODULES ON
-	# C++20
-	CXX_STANDARD 20
-	# C++20 is a hard-requirement; **only** support C++20.
-	CXX_STANDARD_REQUIRED ON
-	# Do not enable compiler-specific extensions.
-	CXX_EXTENSIONS OFF
-)
+target_compile_features(topaz PUBLIC cxx_std_20)
 
 ######################
 ## TOPAZ - SETTINGS ##
@@ -57,3 +59,9 @@ setup_platform()
 # Render API Settings (Vulkan)
 include(cmake/render_api.cmake)
 setup_render_api()
+
+###################
+## TOPAZ - TESTS ##
+###################
+include(CTest)
+add_subdirectory(test)
