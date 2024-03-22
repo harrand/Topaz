@@ -20,14 +20,15 @@ endfunction()
 
 function(configure_clang)
 	# Either clang or clang-cl.
+	#target_compile_options(topaz PUBLIC -Xclang -fskip-odr-check-in-gmf # Added at https://github.com/llvm/llvm-project/pull/79959 to workaround false-positive ODR violations from global module fragment (see: https://github.com/llvm/llvm-project/issues/78850))
+
 	if(CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
-		# clang-cl. Just pretend we're msvc.
+		# clang-cl (or clang against MSVC). Just pretend we're msvc.
 		configure_msvc()
 		return()
 	endif()
 	# Code below runs if we're clang proper.
 	configure_gnu_like()
-	# TODO	
 endfunction()
 
 function(configure_gcc)

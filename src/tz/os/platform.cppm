@@ -1,4 +1,4 @@
-export module topaz.os;
+export module topaz.os:platform;
 
 export namespace tz::os
 {
