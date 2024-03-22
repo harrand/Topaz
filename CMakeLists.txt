@@ -38,8 +38,6 @@ target_sources(topaz
 	FILE_SET CXX_MODULES FILES
 		# Module Sources
 		src/tz/debug/error.cppm
-        $<$<PLATFORM_ID:Windows>:src/tz/os/windows/hardware_windows.cppm>
-		src/tz/os/common/hardware_common.cppm
 		src/tz/os/hardware.cppm
 		src/tz/os/os.cppm
 		src/tz/os/platform.cppm
