@@ -3,14 +3,15 @@ module;
 #ifdef _WIN32
 	#include "windows/winapi.hpp"
 	#include <intrin.h>
-	#include <string>
-	#include <format>
 #else
 	// TODO: Linux Includes.
 #endif
+#include <string>
+#include <format>
+#include <vector>
+#include <utility>
 
 export module topaz.os:hardware;
-
 import topaz.debug;
 
 export namespace tz::os
@@ -19,8 +20,12 @@ export namespace tz::os
 	//----------------------------------------------------------//
 	struct monitor
 	{
-
+		std::string name;
+		unsigned int resolutionw;
+		unsigned int resolutionh;
 	};
+
+	using monitor_list = std::vector<monitor>;
 
 	struct system
 	{
@@ -29,29 +34,76 @@ export namespace tz::os
 		unsigned int logical_processor_count;
 		unsigned int page_size;
 		unsigned long long physical_memory_kib;
+		monitor_list monitors;
 
 		std::string to_string() const
 		{
+			std::string monitors_section = "{";
+			for(std::size_t i = 0; i < this->monitors.size(); i++)
+			{
+				const auto& mon = this->monitors[i];
+				monitors_section += std::format("\n\t{}name: {}\n\tdimensions = {}x{}\n", i == 0 ? "primary monitor\n\t" : "", mon.name, mon.resolutionw, mon.resolutionh);
+			}
+			monitors_section += "}";
+
 			return std::format(R"(
 name: {}
 cpu: {}
 processor count: {}
 page size: {}B
 physical memory: {}MiB
+monitors: {}
 			)",
 			this->computer_name,
 			this->cpu_name,
 			this->logical_processor_count,
 			this->page_size,
-			this->physical_memory_kib / 1024u
+			this->physical_memory_kib / 1024u,
+			monitors_section
 			);
 		}
 	};
 
+	system get_system_windows();
+	system get_system_linux();
+
+	system get_system()
+	{
+		#ifdef _WIN32
+			return get_system_windows();
+		#elif defined(__linux__)
+			return get_system_linux();
+		#else
+			return {};
+		#endif
+	}
+}
+
+namespace tz::os
+{
 	//	  				Windows Implementation					//
 	//----------------------------------------------------------//
-	#ifdef _WIN32
-	system get_system()
+#ifdef _WIN32
+	BOOL CALLBACK mon_enum_proc(HMONITOR hmon, [[maybe_unused]] HDC hdcmon, [[maybe_unused]] LPRECT lprcmon, LPARAM dwdata)
+	{
+		auto mons = reinterpret_cast<monitor_list*>(dwdata);
+		MONITORINFOEXA minfo;
+		minfo.cbSize = sizeof(MONITORINFOEXA);
+		GetMonitorInfo(hmon, &minfo);
+		mons->push_back
+		({
+			.name = minfo.szDevice,
+			.resolutionw = static_cast<unsigned int>(minfo.rcMonitor.right - minfo.rcMonitor.left),
+			.resolutionh = static_cast<unsigned int>(minfo.rcMonitor.bottom - minfo.rcMonitor.top)
+		});
+		if(hmon == MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY))
+		{
+			std::swap(mons->front(), mons->back());
+		}
+		return TRUE;
+	}
+
+	tz::os::system get_system_windows()
 	{
 		system ret;
 
@@ -87,18 +139,21 @@ physical memory: {}MiB
 		ret.logical_processor_count = internal_sysinfo.dwNumberOfProcessors;
 		ret.page_size = internal_sysinfo.dwPageSize;
 		GetPhysicallyInstalledSystemMemory(&ret.physical_memory_kib);
+
+		EnumDisplayMonitors(nullptr, nullptr, mon_enum_proc, reinterpret_cast<LPARAM>(&ret.monitors));
+
 		return ret;
 	}
 
 	//	  				Linux Implementation					//
 	//----------------------------------------------------------//
-	#elif defined(__linux__)
-	system get_system()
+#elif defined(__linux__)
+	tz::os::system get_system_linux()
 	{
 		tz::debug::error("get_system() is not yet implemented on linux.");	
 		return {};
 	}
-	#else
+#else
 		static_assert(false);
-	#endif
+#endif
 }
