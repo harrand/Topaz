@@ -12,6 +12,8 @@ int main()
 	tz::terminate();
 	tz::debug::assert_that(!tz::is_initialised(), "Real Bad: `tz::is_initialised()` returned true after `tz::terminate()`.");
 
+	tz::version engine_ver = tz::get_engine_version();
+	std::cout << "Topaz v" << engine_ver.to_string() << "\n";
 	tz::os::system sys = tz::os::get_system();
 	std::cout << "system: " << sys.to_string() << "\n";
 
