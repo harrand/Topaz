@@ -154,9 +154,7 @@ namespace tz
 
 	template<tz::nullable T, tz::random_access_container C>
 	template<typename... Ts>
-	free_list<T, C>::handle free_list<T, C>::emplace_back(Ts&&... ts) requires
-		requires(C con) {{con.emplace_back(std::forward<Ts>(ts)...)} -> std::same_as<T&>;}
-		// implementation note: i dont think the `requires` clause needs to be here. i am only re-defining it coz of a clang bug. https://github.com/llvm/llvm-project/issues/56482 
+	free_list<T, C>::handle free_list<T, C>::emplace_back(Ts&&... ts)
 	{
 		handle ret;
 		if(this->frees.size())

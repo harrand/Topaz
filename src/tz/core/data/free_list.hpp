@@ -176,8 +176,7 @@ namespace tz
 		 * θ(1)
 		 */ 
 		template<typename... Ts>
-		handle emplace_back(Ts&&... ts) requires
-			requires(C con) {{con.emplace_back(std::forward<Ts>(ts)...)} -> std::same_as<T&>;};
+		handle emplace_back(Ts&&... ts);
 
 		/**
 		 * Erase an existing element from the list using its handle.
