@@ -17,5 +17,6 @@ function(setup_render_api)
 endfunction()
 
 function(configure_vulkan)
-	# TODO	
+	find_package(Vulkan REQUIRED)
+	target_link_libraries(topaz PRIVATE Vulkan::Vulkan)
 endfunction()
