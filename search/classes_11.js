@@ -22,12 +22,8 @@ var searchData=
   ['renderer_5fvulkan2_19',['renderer_vulkan2',['../classtz_1_1gl_1_1renderer__vulkan2.html',1,'tz::gl']]],
   ['renderer_5fvulkan_5fbase_20',['renderer_vulkan_base',['../structtz_1_1gl_1_1renderer__vulkan__base.html',1,'tz::gl']]],
   ['renderereditbuilder_21',['RendererEditBuilder',['../classtz_1_1gl_1_1_renderer_edit_builder.html',1,'tz::gl']]],
-  ['renderpass_22',['RenderPass',['../classtz_1_1gl_1_1vk2_1_1_render_pass.html',1,'tz::gl::vk2']]],
-  ['renderpassbuilder_23',['RenderPassBuilder',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html',1,'tz::gl::vk2']]],
-  ['renderpassinfo_24',['RenderPassInfo',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html',1,'tz::gl::vk2']]],
-  ['renderpassrun_25',['RenderPassRun',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording_1_1_render_pass_run.html',1,'tz::gl::vk2::CommandBufferRecording']]],
-  ['resource_26',['resource',['../classtz_1_1gl_1_1resource.html',1,'tz::gl']]],
-  ['resource_5freference_27',['resource_reference',['../structtz_1_1gl_1_1renderer__edit_1_1resource__reference.html',1,'tz::gl::renderer_edit']]],
-  ['resource_5fwrite_28',['resource_write',['../structtz_1_1gl_1_1renderer__edit_1_1resource__write.html',1,'tz::gl::renderer_edit']]],
-  ['resourcestorage_29',['ResourceStorage',['../classtz_1_1gl_1_1_resource_storage.html',1,'tz::gl']]]
+  ['resource_22',['resource',['../classtz_1_1gl_1_1resource.html',1,'tz::gl']]],
+  ['resource_5freference_23',['resource_reference',['../structtz_1_1gl_1_1renderer__edit_1_1resource__reference.html',1,'tz::gl::renderer_edit']]],
+  ['resource_5fwrite_24',['resource_write',['../structtz_1_1gl_1_1renderer__edit_1_1resource__write.html',1,'tz::gl::renderer_edit']]],
+  ['resourcestorage_25',['ResourceStorage',['../classtz_1_1gl_1_1_resource_storage.html',1,'tz::gl']]]
 ];

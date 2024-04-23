@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -124,75 +124,81 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        }</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    };</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html">   30</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1schedule.html">schedule</a></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        std::vector&lt;event&gt; events = {};</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_struct" href="structtz_1_1gl_1_1timeline__t.html">timeline_t</a> timeline = {};</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        std::span&lt;const eid_t&gt; get_dependencies(eid_t evt) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T0, <span class="keyword">typename</span>... T&gt;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordtype">void</span> add_dependencies(T0 evth, T... deps)</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keyword">auto</span> evt = <span class="keyword">static_cast&lt;</span>eid_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::hanval<span class="keyword">&gt;</span>(evth));</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <span class="keyword">auto</span> iter = std::find_if(this-&gt;events.begin(), this-&gt;events.end(), [evt](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_struct" href="structtz_1_1gl_1_1event.html">event</a>){return event.eid == evt;});</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <a class="code hl_function" href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a>(iter != this-&gt;events.end());</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            (iter-&gt;dependencies.push_back(<span class="keyword">static_cast&lt;</span>eid_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::hanval<span class="keyword">&gt;</span>(deps))), ...);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html">   34</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1gl_1_1schedule.html">schedule</a></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html#a84bd8bc69e532771537bb6c737e61229">   37</a></span>        std::vector&lt;event&gt; <a class="code hl_variable" href="structtz_1_1gl_1_1schedule.html#a84bd8bc69e532771537bb6c737e61229">events</a> = {};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html#a11e0249c57327983d389d127cd7158f4">   39</a></span>        <a class="code hl_struct" href="structtz_1_1gl_1_1timeline__t.html">timeline_t</a> <a class="code hl_variable" href="structtz_1_1gl_1_1schedule.html#a11e0249c57327983d389d127cd7158f4">timeline</a> = {};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        std::span&lt;const eid_t&gt; get_dependencies(eid_t evt) <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> H&gt;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> chronological_rank(H <a class="code hl_class" href="classtz_1_1handle.html">handle</a>)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keyword">auto</span> evt = <span class="keyword">static_cast&lt;</span>eid_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::hanval<span class="keyword">&gt;</span>(<a class="code hl_class" href="classtz_1_1handle.html">handle</a>));</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">return</span> chronological_rank_eid(evt);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> max_chronological_rank()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxrank = 0;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">for</span>(eid_t evt : this-&gt;timeline)</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                maxrank = std::max(maxrank, this-&gt;chronological_rank_eid(evt));</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> maxrank;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        std::optional&lt;unsigned int&gt; get_wait_rank(eid_t evt)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T0, <span class="keyword">typename</span>... T&gt;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html#acb82217e570acc1e33881ea46d2b0a00">   51</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="structtz_1_1gl_1_1schedule.html#acb82217e570acc1e33881ea46d2b0a00">add_dependencies</a>(T0 evth, T... deps)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keyword">auto</span> evt = <span class="keyword">static_cast&lt;</span>eid_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::hanval<span class="keyword">&gt;</span>(evth));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keyword">auto</span> iter = std::find_if(this-&gt;events.begin(), this-&gt;events.end(), [evt](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_struct" href="structtz_1_1gl_1_1event.html">event</a>){return event.eid == evt;});</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <a class="code hl_function" href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a>(iter != this-&gt;events.end());</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            (iter-&gt;dependencies.push_back(<span class="keyword">static_cast&lt;</span>eid_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::hanval<span class="keyword">&gt;</span>(deps))), ...);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> H&gt;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html#ab8cb4713b3c9a7c0bbb3fc6182631010">   63</a></span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code hl_function" href="structtz_1_1gl_1_1schedule.html#ab8cb4713b3c9a7c0bbb3fc6182631010">chronological_rank</a>(H <a class="code hl_class" href="classtz_1_1handle.html">handle</a>)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">if</span>(this-&gt;chronological_rank_eid(evt) == 0)</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">return</span> std::nullopt;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            }</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> max_wait_rank = 0;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">for</span>(eid_t dep : this-&gt;get_dependencies(evt))</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                max_wait_rank = std::max(max_wait_rank, this-&gt;chronological_rank_eid(dep));</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            }</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">return</span> {max_wait_rank};</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> chronological_rank_eid(eid_t evt)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> rank = 0;</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">if</span>(this-&gt;get_dependencies(evt).size())</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            {</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                <span class="keywordflow">for</span>(std::size_t dep : this-&gt;get_dependencies(evt))</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                    rank = std::max(rank, this-&gt;chronological_rank_eid(dep));</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                rank++;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keyword">auto</span> evt = <span class="keyword">static_cast&lt;</span>eid_t<span class="keyword">&gt;</span>(<span class="keyword">static_cast&lt;</span>tz::hanval<span class="keyword">&gt;</span>(<a class="code hl_class" href="classtz_1_1handle.html">handle</a>));</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">return</span> chronological_rank_eid(evt);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structtz_1_1gl_1_1schedule.html#ab7d1d3bd45c313429389ad56f437c617">   72</a></span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code hl_function" href="structtz_1_1gl_1_1schedule.html#ab7d1d3bd45c313429389ad56f437c617">max_chronological_rank</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> maxrank = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">for</span>(eid_t evt : this-&gt;timeline)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                maxrank = std::max(maxrank, this-&gt;chronological_rank_eid(evt));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">return</span> maxrank;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        std::optional&lt;unsigned int&gt; get_wait_rank(eid_t evt)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">if</span>(this-&gt;chronological_rank_eid(evt) == 0)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <span class="keywordflow">return</span> std::nullopt;</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordflow">return</span> rank;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    };</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">#endif </span><span class="comment">// TZ_GL_API_SCHEDULE_HPP</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> max_wait_rank = 0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordflow">for</span>(eid_t dep : this-&gt;get_dependencies(evt))</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                max_wait_rank = std::max(max_wait_rank, this-&gt;chronological_rank_eid(dep));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keywordflow">return</span> {max_wait_rank};</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> chronological_rank_eid(eid_t evt)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> rank = 0;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">if</span>(this-&gt;<a class="code hl_function" href="structtz_1_1gl_1_1schedule.html#af0cbcf0f3d30b199c1dd6bba7b09edff">get_dependencies</a>(evt).size())</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">for</span>(std::size_t dep : this-&gt;<a class="code hl_function" href="structtz_1_1gl_1_1schedule.html#af0cbcf0f3d30b199c1dd6bba7b09edff">get_dependencies</a>(evt))</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                    rank = std::max(rank, this-&gt;chronological_rank_eid(dep));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                rank++;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">return</span> rank;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    };</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif </span><span class="comment">// TZ_GL_API_SCHEDULE_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1handle_html"><div class="ttname"><a href="classtz_1_1handle.html">tz::handle</a></div><div class="ttdef"><b>Definition</b> handle.hpp:17</div></div>
 <div class="ttc" id="agroup__tz__core_html_ga35faea66fc04dfa33238c863eb740c34"><div class="ttname"><a href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a></div><div class="ttdeci">void assert(bool condition, detail::format_string fmt=&quot;&lt;No message&gt;&quot;, Args &amp;&amp;... args)</div><div class="ttdoc">Assert on a condition.</div><div class="ttdef"><b>Definition</b> debug.inl:35</div></div>
 <div class="ttc" id="astructtz_1_1gl_1_1event_html"><div class="ttname"><a href="structtz_1_1gl_1_1event.html">tz::gl::event</a></div><div class="ttdef"><b>Definition</b> schedule.hpp:15</div></div>
-<div class="ttc" id="astructtz_1_1gl_1_1schedule_html"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html">tz::gl::schedule</a></div><div class="ttdef"><b>Definition</b> schedule.hpp:31</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html">tz::gl::schedule</a></div><div class="ttdoc">Represents a render graph.</div><div class="ttdef"><b>Definition</b> schedule.hpp:35</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html_a11e0249c57327983d389d127cd7158f4"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html#a11e0249c57327983d389d127cd7158f4">tz::gl::schedule::timeline</a></div><div class="ttdeci">timeline_t timeline</div><div class="ttdoc">Represents the event indices which will take place per frame, in chronological order.</div><div class="ttdef"><b>Definition</b> schedule.hpp:39</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html_a84bd8bc69e532771537bb6c737e61229"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html#a84bd8bc69e532771537bb6c737e61229">tz::gl::schedule::events</a></div><div class="ttdeci">std::vector&lt; event &gt; events</div><div class="ttdoc">List of all events. Do not touch this directly.</div><div class="ttdef"><b>Definition</b> schedule.hpp:37</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html_ab7d1d3bd45c313429389ad56f437c617"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html#ab7d1d3bd45c313429389ad56f437c617">tz::gl::schedule::max_chronological_rank</a></div><div class="ttdeci">unsigned int max_chronological_rank() const</div><div class="ttdoc">Retrieve the maximum chronological rank within the render graph.</div><div class="ttdef"><b>Definition</b> schedule.hpp:72</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html_ab8cb4713b3c9a7c0bbb3fc6182631010"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html#ab8cb4713b3c9a7c0bbb3fc6182631010">tz::gl::schedule::chronological_rank</a></div><div class="ttdeci">unsigned int chronological_rank(H handle) const</div><div class="ttdoc">Retrieve the chronological rank of a renderer.</div><div class="ttdef"><b>Definition</b> schedule.hpp:63</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html_acb82217e570acc1e33881ea46d2b0a00"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html#acb82217e570acc1e33881ea46d2b0a00">tz::gl::schedule::add_dependencies</a></div><div class="ttdeci">void add_dependencies(T0 evth, T... deps)</div><div class="ttdoc">Add a number of existing event dependencies to an existing event.</div><div class="ttdef"><b>Definition</b> schedule.hpp:51</div></div>
+<div class="ttc" id="astructtz_1_1gl_1_1schedule_html_af0cbcf0f3d30b199c1dd6bba7b09edff"><div class="ttname"><a href="structtz_1_1gl_1_1schedule.html#af0cbcf0f3d30b199c1dd6bba7b09edff">tz::gl::schedule::get_dependencies</a></div><div class="ttdeci">std::span&lt; const eid_t &gt; get_dependencies(eid_t evt) const</div><div class="ttdoc">Retrieve all the events that depend on the provided event.</div><div class="ttdef"><b>Definition</b> schedule.cpp:8</div></div>
 <div class="ttc" id="astructtz_1_1gl_1_1timeline__t_html"><div class="ttname"><a href="structtz_1_1gl_1_1timeline__t.html">tz::gl::timeline_t</a></div><div class="ttdef"><b>Definition</b> schedule.hpp:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

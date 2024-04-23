@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -95,59 +95,61 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
   <div class="headertitle"><div class="title">static.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;tz/core/types.hpp&quot;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>tz</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">int</span> F, <span class="keywordtype">int</span> L&gt;</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structtz_1_1static__for__t.html">    9</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t</a></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor&gt;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> apply(<span class="keyword">const</span> Functor&amp; f)</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>            <span class="keywordflow">if</span>(F &lt; L)</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            {</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                f(std::integral_constant&lt;int, F&gt;{});</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                <a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t&lt;F + 1, L&gt;::apply</a>(f);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            }</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        }</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor&gt;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordtype">void</span> operator()(<span class="keyword">const</span> Functor&amp; f)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            apply(f);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        }</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    };</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">int</span> N&gt;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structtz_1_1static__for__t_3_01_n_00_01_n_01_4.html">   42</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t</a>&lt;N, N&gt;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor&gt;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> apply([[maybe_unused]] <span class="keyword">const</span> Functor&amp; f){}</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    };</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">int</span> F, <span class="keywordtype">int</span> L&gt;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t&lt;F, L&gt;</a> static_for = {};</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> needle, <span class="keyword">typename</span>... haystack&gt;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">   59</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">static_find</a>()</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordtype">bool</span> b = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        static_for&lt;0, <span class="keyword">sizeof</span>...(haystack)&gt;([&amp;b]([[maybe_unused]] <span class="keyword">auto</span> i) <span class="keyword">constexpr</span></div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(std::is_same&lt;std::decay_t&lt;<span class="keyword">decltype</span>(std::get&lt;i.value&gt;(std::declval&lt;std::tuple&lt;haystack...&gt;&gt;()))&gt;, needle&gt;::value)</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                b = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            }</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        });</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> b;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
-<div class="ttc" id="agroup__tz__core__algorithms_html_gac864efe5932f846519806594da168044"><div class="ttname"><a href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">tz::static_find</a></div><div class="ttdeci">constexpr bool static_find()</div><div class="ttdoc">Check if a needle is found in a haystack at compile-time.</div><div class="ttdef"><b>Definition</b> static.hpp:59</div></div>
-<div class="ttc" id="astructtz_1_1static__for__t_html"><div class="ttname"><a href="structtz_1_1static__for__t.html">tz::static_for_t</a></div><div class="ttdef"><b>Definition</b> static.hpp:10</div></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef TOPAZ_CORE_ALGORITHM_STATIC_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define TOPAZ_CORE_ALGORITHM_STATIC_HPP</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>tz</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">int</span> F, <span class="keywordtype">int</span> L&gt;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structtz_1_1static__for__t.html">   10</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t</a></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor&gt;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> apply(<span class="keyword">const</span> Functor&amp; f)</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            <span class="keywordflow">if</span>(F &lt; L)</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                f(std::integral_constant&lt;int, F&gt;{});</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>                <a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t&lt;F + 1, L&gt;::apply</a>(f);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor&gt;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> operator()(<span class="keyword">const</span> Functor&amp; f)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            apply(f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">int</span> N&gt;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structtz_1_1static__for__t_3_01_n_00_01_n_01_4.html">   43</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t</a>&lt;N, N&gt;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Functor&gt;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keywordtype">void</span> apply([[maybe_unused]] <span class="keyword">const</span> Functor&amp; f){}</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    };</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">template</span>&lt;<span class="keywordtype">int</span> F, <span class="keywordtype">int</span> L&gt;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structtz_1_1static__for__t.html">static_for_t&lt;F, L&gt;</a> static_for = {};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> needle, <span class="keyword">typename</span>... haystack&gt;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">   60</a></span>    <span class="keyword">constexpr</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">static_find</a>()</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordtype">bool</span> b = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        static_for&lt;0, <span class="keyword">sizeof</span>...(haystack)&gt;([&amp;b]([[maybe_unused]] <span class="keyword">auto</span> i) <span class="keyword">constexpr</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(std::is_same&lt;std::decay_t&lt;<span class="keyword">decltype</span>(std::get&lt;i.value&gt;(std::declval&lt;std::tuple&lt;haystack...&gt;&gt;()))&gt;, needle&gt;::value)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                b = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        });</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> b;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_ALGORITHM_STATIC_HPP</span></div>
+<div class="ttc" id="agroup__tz__core__algorithms_html_gac864efe5932f846519806594da168044"><div class="ttname"><a href="group__tz__core__algorithms.html#gac864efe5932f846519806594da168044">tz::static_find</a></div><div class="ttdeci">constexpr bool static_find()</div><div class="ttdoc">Check if a needle is found in a haystack at compile-time.</div><div class="ttdef"><b>Definition</b> static.hpp:60</div></div>
+<div class="ttc" id="astructtz_1_1static__for__t_html"><div class="ttname"><a href="structtz_1_1static__for__t.html">tz::static_for_t</a></div><div class="ttdef"><b>Definition</b> static.hpp:11</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

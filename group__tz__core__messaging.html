@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.7"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Topaz: tz::gl::vk2::RenderPass Class Reference</title>
+<title>Topaz: Messaging</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -65,6 +65,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
       </li>
     </ul>
   </div>
+</div><!-- top -->
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -86,33 +87,28 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><b>tz</b></li><li class="navelem"><b>gl</b></li><li class="navelem"><b>vk2</b></li><li class="navelem"><a class="el" href="classtz_1_1gl_1_1vk2_1_1_render_pass.html">RenderPass</a></li>  </ul>
-</div>
-</div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a>  </div>
-  <div class="headertitle"><div class="title">tz::gl::vk2::RenderPass Class Reference<div class="ingroups"><a class="el" href="group__tz__cpp.html">C++ API Reference</a> &raquo; <a class="el" href="group__tz__gl2.html">Graphics Library</a> &raquo; <a class="el" href="group__tz__gl2__graphicsapi.html">Maintainer Guide</a> &raquo; <a class="el" href="group__tz__gl2__graphicsapi__vk.html">Vulkan</a> &raquo; <a class="el" href="group__tz__gl__vk.html">Vulkan Backend</a> &raquo; <a class="el" href="group__tz__gl__vk__graphics__pipeline.html">Graphics Pipeline</a> &raquo; <a class="el" href="group__tz__gl__vk__graphics__pipeline__render__pass.html">Render Passes</a></div></div></div>
+<a href="#nested-classes">Data Structures</a>  </div>
+  <div class="headertitle"><div class="title">Messaging<div class="ingroups"><a class="el" href="group__tz__cpp.html">C++ API Reference</a> &raquo; <a class="el" href="group__tz__core.html">Core Functionality</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Represents a collection of attachments and subpasses and describes how the attachments are used throughout the subpases.  
- <a href="classtz_1_1gl_1_1vk2_1_1_render_pass.html#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="render__pass_8hpp_source.html">render_pass.hpp</a>&gt;</code></p>
+<p>Documentation for object-to-object messaging.  
+<a href="#details">More...</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:ad43e05dd5535ca6430dbba0cfee87b01"><td class="memItemLeft" align="right" valign="top"><a id="ad43e05dd5535ca6430dbba0cfee87b01" name="ad43e05dd5535ca6430dbba0cfee87b01"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>RenderPass</b> (<a class="el" href="structtz_1_1gl_1_1vk2_1_1_render_pass_info.html">RenderPassInfo</a> info)</td></tr>
-<tr class="memdesc:ad43e05dd5535ca6430dbba0cfee87b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the <a class="el" href="classtz_1_1gl_1_1vk2_1_1_render_pass.html" title="Represents a collection of attachments and subpasses and describes how the attachments are used throu...">RenderPass</a>. <br /></td></tr>
-<tr class="separator:ad43e05dd5535ca6430dbba0cfee87b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Data Structures</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1message__receiver.html">tz::message_receiver&lt; M, thread_safe &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conditionally thread-safe message receiver.  <a href="classtz_1_1message__receiver.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtz_1_1message__passer.html">tz::message_passer&lt; M, thread_safe &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conditionally thread-safe message passer.  <a href="classtz_1_1message__passer.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Represents a collection of attachments and subpasses and describes how the attachments are used throughout the subpases. </p>
-</div></div><!-- contents -->
+<p>Documentation for object-to-object messaging. </p>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.7

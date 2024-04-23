@@ -20,8 +20,10 @@ var searchData=
   ['gltf_5fsubmesh_5fdata_17',['gltf_submesh_data',['../structtz_1_1io_1_1gltf__submesh__data.html',1,'tz::io']]],
   ['gltf_5fsubmesh_5ftexture_5fdata_18',['gltf_submesh_texture_data',['../structtz_1_1io_1_1gltf__submesh__texture__data.html',1,'tz::io']]],
   ['gltf_5fvertex_5fdata_19',['gltf_vertex_data',['../structtz_1_1io_1_1gltf__vertex__data.html',1,'tz::io']]],
-  ['graphics_20',['Graphics',['../structtz_1_1gl_1_1render__state_1_1_graphics.html',1,'tz::gl::render_state']]],
-  ['graphicspipeline_21',['GraphicsPipeline',['../classtz_1_1gl_1_1vk2_1_1_graphics_pipeline.html',1,'tz::gl::vk2']]],
-  ['graphicspipelineinfo_22',['GraphicsPipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html',1,'tz::gl::vk2']]],
-  ['grid_5fview_23',['grid_view',['../classtz_1_1grid__view.html',1,'tz']]]
+  ['glyph_5fdata_20',['glyph_data',['../structglyph__data.html',1,'glyph_data'],['../structtz_1_1ren_1_1font__data_1_1glyph__data.html',1,'tz::ren::font_data::glyph_data']]],
+  ['glyph_5frender_5fdata_21',['glyph_render_data',['../structglyph__render__data.html',1,'glyph_render_data'],['../structtz_1_1ren_1_1glyph__render__data.html',1,'tz::ren::glyph_render_data']]],
+  ['graphics_22',['Graphics',['../structtz_1_1gl_1_1render__state_1_1_graphics.html',1,'tz::gl::render_state']]],
+  ['graphicspipeline_23',['GraphicsPipeline',['../classtz_1_1gl_1_1vk2_1_1_graphics_pipeline.html',1,'tz::gl::vk2']]],
+  ['graphicspipelineinfo_24',['GraphicsPipelineInfo',['../structtz_1_1gl_1_1vk2_1_1_graphics_pipeline_info.html',1,'tz::gl::vk2']]],
+  ['grid_5fview_25',['grid_view',['../classtz_1_1grid__view.html',1,'tz']]]
 ];

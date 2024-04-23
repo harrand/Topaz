@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -109,6 +109,18 @@ Data Fields</h2></td></tr>
 std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>wireframe_mode</b> = std::nullopt</td></tr>
 <tr class="memdesc:a1f284abaf7a4ca67423539505b8b572c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether triangles should only have their outlines drawn, instead of filled. <br /></td></tr>
 <tr class="separator:a1f284abaf7a4ca67423539505b8b572c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c7a818dad1cdc504ae8204173e57c95"><td class="memItemLeft" align="right" valign="top"><a id="a0c7a818dad1cdc504ae8204173e57c95" name="a0c7a818dad1cdc504ae8204173e57c95"></a>
+std::optional&lt; tz::vec4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>clear_colour</b> = std::nullopt</td></tr>
+<tr class="memdesc:a0c7a818dad1cdc504ae8204173e57c95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear colour. <br /></td></tr>
+<tr class="separator:a0c7a818dad1cdc504ae8204173e57c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13eb389536539f9f26fd7d8e5c369f26"><td class="memItemLeft" align="right" valign="top"><a id="a13eb389536539f9f26fd7d8e5c369f26" name="a13eb389536539f9f26fd7d8e5c369f26"></a>
+std::optional&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tri_count</b> = std::nullopt</td></tr>
+<tr class="memdesc:a13eb389536539f9f26fd7d8e5c369f26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of triangles (primitives) <br /></td></tr>
+<tr class="separator:a13eb389536539f9f26fd7d8e5c369f26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee896426a882186c409639069131bc12"><td class="memItemLeft" align="right" valign="top"><a id="aee896426a882186c409639069131bc12" name="aee896426a882186c409639069131bc12"></a>
+std::optional&lt; tz::gl::graphics_culling &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>culling</b> = std::nullopt</td></tr>
+<tr class="memdesc:aee896426a882186c409639069131bc12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Culling method to be used. <br /></td></tr>
+<tr class="separator:aee896426a882186c409639069131bc12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an edit to the fixed-function renderer state. </p>

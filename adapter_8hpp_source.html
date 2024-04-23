@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -117,23 +117,39 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        A(a){}</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">template</span>&lt;<span class="keyword">class</span> U&gt;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_class" href="classtz_1_1allocator__adapter.html">allocator_adapter</a>(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1allocator__adapter.html">allocator_adapter&lt;U, A&gt;</a>&amp; other){}</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        T* allocate(std::size_t n)</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <a class="code hl_struct" href="structtz_1_1memblk.html">tz::memblk</a> blk = A::allocate(n * <span class="keyword">sizeof</span>(T));</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <a class="code hl_function" href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a>(blk != nullblk, <span class="stringliteral">&quot;allocator_adapter -- The underlying tz allocator returned a null-block. Memory allocation failed. The standard library allocator is going to crash.&quot;</span>);</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(blk.<a class="code hl_variable" href="structtz_1_1memblk.html#a1fbc7ecd17b8e88fafd516f747371d5d">ptr</a>);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordtype">void</span> deallocate(T* p, std::size_t n)</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            A::deallocate({.ptr = p, .size = n});</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        }</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    };</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_ALLOCATORS_ADAPTER_HPP</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_class" href="classtz_1_1allocator__adapter.html">allocator_adapter</a>(<span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1allocator__adapter.html">allocator_adapter&lt;U, A&gt;</a>&amp; other):</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        A(other.get_allocator())</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">template</span>&lt;<span class="keyword">class</span> U&gt;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_class" href="classtz_1_1allocator__adapter.html">allocator_adapter</a>(<a class="code hl_class" href="classtz_1_1allocator__adapter.html">allocator_adapter&lt;U, A&gt;</a>&amp;&amp; other):</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        A(std::move(other.get_allocator()))</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keyword">const</span> A&amp; get_allocator()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>A&amp;<span class="keyword">&gt;</span>(*this);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        T* allocate(std::size_t n)</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <a class="code hl_struct" href="structtz_1_1memblk.html">tz::memblk</a> blk = A::allocate(n * <span class="keyword">sizeof</span>(T));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <a class="code hl_function" href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a>(blk != nullblk, <span class="stringliteral">&quot;allocator_adapter -- The underlying tz allocator returned a null-block. Memory allocation failed. The standard library allocator is going to crash.&quot;</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>T*<span class="keyword">&gt;</span>(blk.<a class="code hl_variable" href="structtz_1_1memblk.html#a1fbc7ecd17b8e88fafd516f747371d5d">ptr</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordtype">void</span> deallocate(T* p, std::size_t n)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            A::deallocate({.ptr = p, .size = n * <span class="keyword">sizeof</span>(T)});</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    };</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#endif </span><span class="comment">// TOPAZ_CORE_ALLOCATORS_ADAPTER_HPP</span></div>
 <div class="ttc" id="aclasstz_1_1allocator__adapter_html"><div class="ttname"><a href="classtz_1_1allocator__adapter.html">tz::allocator_adapter</a></div><div class="ttdoc">A meta-allocator which allows a tz allocator to be used as if it were a std::allocator.</div><div class="ttdef"><b>Definition</b> adapter.hpp:18</div></div>
 <div class="ttc" id="agroup__tz__core_html_ga35faea66fc04dfa33238c863eb740c34"><div class="ttname"><a href="group__tz__core.html#ga35faea66fc04dfa33238c863eb740c34">tz::assert</a></div><div class="ttdeci">void assert(bool condition, detail::format_string fmt=&quot;&lt;No message&gt;&quot;, Args &amp;&amp;... args)</div><div class="ttdoc">Assert on a condition.</div><div class="ttdef"><b>Definition</b> debug.inl:35</div></div>
 <div class="ttc" id="astructtz_1_1memblk_html"><div class="ttname"><a href="structtz_1_1memblk.html">tz::memblk</a></div><div class="ttdoc">A non-owning, contiguous block of memory.</div><div class="ttdef"><b>Definition</b> memblk.hpp:12</div></div>

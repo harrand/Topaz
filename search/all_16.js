@@ -28,13 +28,9 @@ var searchData=
   ['window_5fx11_25',['window_x11',['../classtz_1_1wsi_1_1impl_1_1window__x11.html',1,'tz::wsi::impl']]],
   ['windowsurface_26',['WindowSurface',['../classtz_1_1gl_1_1vk2_1_1_window_surface.html',1,'tz::gl::vk2::WindowSurface'],['../classtz_1_1gl_1_1vk2_1_1_window_surface.html#adc8f618fa1ee901c61e87f02ae7f3445',1,'tz::gl::vk2::WindowSurface::WindowSurface()']]],
   ['wireframe_5fmode_27',['wireframe_mode',['../structtz_1_1gl_1_1render__state_1_1_graphics.html#a5289b1d526838e9d3e855ec3ea0b7b55',1,'tz::gl::render_state::Graphics::wireframe_mode'],['../structtz_1_1gl_1_1renderer__edit_1_1render__config.html#a1f284abaf7a4ca67423539505b8b572c',1,'tz::gl::renderer_edit::render_config::wireframe_mode']]],
-  ['with_5fattachment_28',['with_attachment',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#aacae02f036f07e6f321ac35420819ffe',1,'tz::gl::vk2::RenderPassBuilder']]],
-  ['with_5fbinding_29',['with_binding',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a35bee4b07c0c343b53520a5f9c693691',1,'tz::gl::vk2::DescriptorLayoutBuilder']]],
-  ['with_5fcolour_5fattachment_30',['with_colour_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#ae944eb1b322cc08eb4a9f7105cdab265',1,'tz::gl::vk2::SubpassBuilder']]],
-  ['with_5fdepth_5fstencil_5fattachment_31',['with_depth_stencil_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#af3b5e86fed158d329db4b084556eab85',1,'tz::gl::vk2::SubpassBuilder']]],
-  ['with_5finput_5fattachment_32',['with_input_attachment',['../classtz_1_1gl_1_1vk2_1_1_subpass_builder.html#a732e8dc67451e314bae38faf24cd1fa6',1,'tz::gl::vk2::SubpassBuilder']]],
-  ['with_5fmore_33',['with_more',['../classtz_1_1vector.html#a2ca6acb21aba2f36f341688ffa7e7101',1,'tz::vector::with_more(T &amp;&amp;end) const'],['../classtz_1_1vector.html#ac484780fbef820de4004781a119a56d1',1,'tz::vector::with_more(const vector&lt; T, S2 &gt; &amp;end) const']]],
-  ['with_5fsubpass_34',['with_subpass',['../classtz_1_1gl_1_1vk2_1_1_render_pass_builder.html#a2d7d398247571d6314e727923d8f7160',1,'tz::gl::vk2::RenderPassBuilder']]],
-  ['write_35',['Write',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html',1,'tz::gl::vk2::DescriptorSet']]],
-  ['write_5finfos_36',['write_infos',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html#af4094e04b87ad5da6c8c8861bf9dfb73',1,'tz::gl::vk2::DescriptorSet::Write']]]
+  ['with_5fbinding_28',['with_binding',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a35bee4b07c0c343b53520a5f9c693691',1,'tz::gl::vk2::DescriptorLayoutBuilder']]],
+  ['with_5flock_29',['with_lock',['../structtz_1_1detail_1_1with__lock.html',1,'tz::detail']]],
+  ['with_5fmore_30',['with_more',['../classtz_1_1vector.html#a17082649b5b1dcfdda21e3225f99c247',1,'tz::vector::with_more(T end) const'],['../classtz_1_1vector.html#ac484780fbef820de4004781a119a56d1',1,'tz::vector::with_more(const vector&lt; T, S2 &gt; &amp;end) const']]],
+  ['write_31',['Write',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html',1,'tz::gl::vk2::DescriptorSet']]],
+  ['write_5finfos_32',['write_infos',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html#af4094e04b87ad5da6c8c8861bf9dfb73',1,'tz::gl::vk2::DescriptorSet::Write']]]
 ];

@@ -21,12 +21,13 @@ var searchData=
   ['loadop_18',['LoadOp',['../group__tz__gl__vk__graphics__pipeline__render__pass.html#gaa1e0e627270d80ef86624590afc5a03f',1,'tz::gl::vk2']]],
   ['local_5ftransform_19',['local_transform',['../structtz_1_1ren_1_1impl_1_1render__pass_1_1object__create__info.html#ae78b727f0165f5b952900cafbaa1d77f',1,'tz::ren::impl::render_pass::object_create_info::local_transform'],['../structtz_1_1transform__node.html#ad6eba04c7e83f7ac3a57ffc5cd7d558e',1,'tz::transform_node::local_transform']]],
   ['log_20',['log',['../group__tzsl__math.html#gaa8fbf2fd8ac5c0c3e7a3ad51cfe5acca',1,'tz::math']]],
-  ['logical_5fdevice_21',['logical_device',['../structtz_1_1gl_1_1vk2_1_1_render_pass_info.html#a1dc269fba5204ec4558be348e043353e',1,'tz::gl::vk2::RenderPassInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_pipeline_layout_info.html#a54a3f0e47bb70c14d39bf1e57551e85d',1,'tz::gl::vk2::PipelineLayoutInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_info.html#aec347e650449b8bb1e4d2ddba4e7312e',1,'tz::gl::vk2::DescriptorPoolInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_layout_info.html#af62a5ae0b0d0ecd5936c4efc36569cf7',1,'tz::gl::vk2::DescriptorLayoutInfo::logical_device']]],
+  ['logical_5fdevice_21',['logical_device',['../structtz_1_1gl_1_1vk2_1_1_pipeline_layout_info.html#a54a3f0e47bb70c14d39bf1e57551e85d',1,'tz::gl::vk2::PipelineLayoutInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_pool_info.html#aec347e650449b8bb1e4d2ddba4e7312e',1,'tz::gl::vk2::DescriptorPoolInfo::logical_device'],['../structtz_1_1gl_1_1vk2_1_1_descriptor_layout_info.html#af62a5ae0b0d0ecd5936c4efc36569cf7',1,'tz::gl::vk2::DescriptorLayoutInfo::logical_device']]],
   ['logicaldevice_22',['LogicalDevice',['../classtz_1_1gl_1_1vk2_1_1_logical_device.html#a2bee85f2a05cbf3653a887f471745cdb',1,'tz::gl::vk2::LogicalDevice::LogicalDevice()'],['../classtz_1_1gl_1_1vk2_1_1_logical_device.html',1,'tz::gl::vk2::LogicalDevice']]],
   ['logicaldeviceinfo_23',['LogicalDeviceInfo',['../structtz_1_1gl_1_1vk2_1_1_logical_device_info.html',1,'tz::gl::vk2']]],
   ['lookup_5ffilter_24',['lookup_filter',['../group__tz__gl__ogl2__image.html#gadabff1825f7cf36d8fada93ee1164a31',1,'tz::gl::ogl2']]],
   ['lookupfilter_25',['LookupFilter',['../group__tz__gl__vk__image.html#ga24cb95974e796673bd262b86ee9cfa89',1,'tz::gl::vk2']]],
   ['lua_20api_20reference_26',['Lua API Reference',['../tz_lua.html',1,'']]],
   ['lua_20integration_27',['Lua Integration',['../group__tz__lua__cpp.html',1,'']]],
-  ['lua_5fregister_28',['lua_register',['../structtz_1_1lua_1_1impl_1_1lua__register.html',1,'tz::lua::impl']]]
+  ['lua_5foperation_28',['lua_operation',['../structtz_1_1lua_1_1lua__operation.html',1,'tz::lua']]],
+  ['lua_5fregister_29',['lua_register',['../structtz_1_1lua_1_1impl_1_1lua__register.html',1,'tz::lua::impl']]]
 ];

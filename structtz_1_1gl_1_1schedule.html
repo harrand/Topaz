@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -92,9 +92,123 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle"><div class="title">tz::gl::schedule Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Represents a render graph.  
+ <a href="structtz_1_1gl_1_1schedule.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="schedule_8hpp_source.html">schedule.hpp</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:af0cbcf0f3d30b199c1dd6bba7b09edff"><td class="memItemLeft" align="right" valign="top"><a id="af0cbcf0f3d30b199c1dd6bba7b09edff" name="af0cbcf0f3d30b199c1dd6bba7b09edff"></a>
+std::span&lt; const eid_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_dependencies</b> (eid_t evt) const</td></tr>
+<tr class="memdesc:af0cbcf0f3d30b199c1dd6bba7b09edff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve all the events that depend on the provided event. <br /></td></tr>
+<tr class="separator:af0cbcf0f3d30b199c1dd6bba7b09edff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb82217e570acc1e33881ea46d2b0a00"><td class="memTemplParams" colspan="2">template&lt;typename T0 , typename... T&gt; </td></tr>
+<tr class="memitem:acb82217e570acc1e33881ea46d2b0a00"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structtz_1_1gl_1_1schedule.html#acb82217e570acc1e33881ea46d2b0a00">add_dependencies</a> (T0 evth, T... deps)</td></tr>
+<tr class="memdesc:acb82217e570acc1e33881ea46d2b0a00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a number of existing event dependencies to an existing event.  <br /></td></tr>
+<tr class="separator:acb82217e570acc1e33881ea46d2b0a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8cb4713b3c9a7c0bbb3fc6182631010"><td class="memTemplParams" colspan="2">template&lt;typename H &gt; </td></tr>
+<tr class="memitem:ab8cb4713b3c9a7c0bbb3fc6182631010"><td class="memTemplItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structtz_1_1gl_1_1schedule.html#ab8cb4713b3c9a7c0bbb3fc6182631010">chronological_rank</a> (H <a class="el" href="classtz_1_1handle.html">handle</a>) const</td></tr>
+<tr class="memdesc:ab8cb4713b3c9a7c0bbb3fc6182631010"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the chronological rank of a renderer.  <br /></td></tr>
+<tr class="separator:ab8cb4713b3c9a7c0bbb3fc6182631010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7d1d3bd45c313429389ad56f437c617"><td class="memItemLeft" align="right" valign="top"><a id="ab7d1d3bd45c313429389ad56f437c617" name="ab7d1d3bd45c313429389ad56f437c617"></a>
+unsigned int&#160;</td><td class="memItemRight" valign="bottom"><b>max_chronological_rank</b> () const</td></tr>
+<tr class="memdesc:ab7d1d3bd45c313429389ad56f437c617"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve the maximum chronological rank within the render graph. <br /></td></tr>
+<tr class="separator:ab7d1d3bd45c313429389ad56f437c617"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a84bd8bc69e532771537bb6c737e61229"><td class="memItemLeft" align="right" valign="top"><a id="a84bd8bc69e532771537bb6c737e61229" name="a84bd8bc69e532771537bb6c737e61229"></a>
+std::vector&lt; <a class="el" href="structtz_1_1gl_1_1event.html">event</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>events</b> = {}</td></tr>
+<tr class="memdesc:a84bd8bc69e532771537bb6c737e61229"><td class="mdescLeft">&#160;</td><td class="mdescRight">List of all events. Do not touch this directly. <br /></td></tr>
+<tr class="separator:a84bd8bc69e532771537bb6c737e61229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e0249c57327983d389d127cd7158f4"><td class="memItemLeft" align="right" valign="top"><a id="a11e0249c57327983d389d127cd7158f4" name="a11e0249c57327983d389d127cd7158f4"></a>
+<a class="el" href="structtz_1_1gl_1_1timeline__t.html">timeline_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>timeline</b> = {}</td></tr>
+<tr class="memdesc:a11e0249c57327983d389d127cd7158f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents the event indices which will take place per frame, in chronological order. <br /></td></tr>
+<tr class="separator:a11e0249c57327983d389d127cd7158f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Represents a render graph. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="acb82217e570acc1e33881ea46d2b0a00" name="acb82217e570acc1e33881ea46d2b0a00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb82217e570acc1e33881ea46d2b0a00">&#9670;&#160;</a></span>add_dependencies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T0 , typename... T&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tz::gl::schedule::add_dependencies </td>
+          <td>(</td>
+          <td class="paramtype">T0&#160;</td>
+          <td class="paramname"><em>evth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">T...&#160;</td>
+          <td class="paramname"><em>deps</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a number of existing event dependencies to an existing event. </p>
+<p>Each dependency will not run GPU-side until the event completes its GPU work. </p>
+
+</div>
+</div>
+<a id="ab8cb4713b3c9a7c0bbb3fc6182631010" name="ab8cb4713b3c9a7c0bbb3fc6182631010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8cb4713b3c9a7c0bbb3fc6182631010">&#9670;&#160;</a></span>chronological_rank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename H &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int tz::gl::schedule::chronological_rank </td>
+          <td>(</td>
+          <td class="paramtype">H&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieve the chronological rank of a renderer. </p>
+<p>The set of renderers that run first at the beginning of the frame will have a chronological rank of 0. Renderers that depend on any of those first renderers have a rank of 1, and so on... </p>
+
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,8 +1,8 @@
 var searchData=
 [
   ['identity_0',['identity',['../classtz_1_1matrix.html#ac3c2819f55748e942c0b31473befba0f',1,'tz::matrix']]],
-  ['image_1',['Image',['../classtz_1_1gl_1_1vk2_1_1_image.html#a9749cb054c3afbc18d56331793c7c247',1,'tz::gl::vk2::Image']]],
-  ['image_2',['image',['../classtz_1_1gl_1_1ogl2_1_1image.html#ac20bf3b1847956d4b3b56160e3c0fa8d',1,'tz::gl::ogl2::image']]],
+  ['image_1',['image',['../classtz_1_1gl_1_1ogl2_1_1image.html#ac20bf3b1847956d4b3b56160e3c0fa8d',1,'tz::gl::ogl2::image']]],
+  ['image_2',['Image',['../classtz_1_1gl_1_1vk2_1_1_image.html#a9749cb054c3afbc18d56331793c7c247',1,'tz::gl::vk2::Image']]],
   ['image_5fcopy_5fimage_3',['image_copy_image',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a25b7a8e42401dd2af896c3c9459e112e',1,'tz::gl::vk2::CommandBufferRecording']]],
   ['image_5fresize_4',['image_resize',['../classtz_1_1gl_1_1_renderer_edit_builder.html#ae26ce64c12ecca5c355f85869e666ded',1,'tz::gl::RendererEditBuilder']]],
   ['info_5',['info',['../group__tz__core.html#ga1134f9d409701427b780589ca9fd48e5',1,'tz::engine_info']]],

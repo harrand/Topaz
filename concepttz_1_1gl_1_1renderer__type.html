@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -104,7 +104,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 <div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">concept </span><a class="code hl_concept" href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a> =  <span class="keyword">requires</span>(T t, resource_handle r, std::size_t tri_count, <span class="keyword">const</span> <a class="code hl_typedef" href="group__tz__gl2__renderer.html#gaf8ed980ac9dca61a89e98615c27a8085">renderer_edit_request</a>&amp; edit_request, <span class="keyword">const</span> <a class="code hl_class" href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a>&amp; rinfo)</div>
 <div class="line">    {</div>
-<div class="line">        <span class="keyword">requires</span> <a class="code hl_concept" href="concepttz_1_1nullable.html">tz::nullable&lt;T&gt;</a>;</div>
+<div class="line">        <span class="keyword">requires</span> <a class="code hl_concept" href="concepttz_1_1nullable.html">tz::nullable&lt;std::decay_t&lt;T&gt;</a>&gt;;</div>
 <div class="line">        </div>
 <div class="line">        {t.resource_count()} -&gt; std::convertible_to&lt;unsigned int&gt;;</div>
 <div class="line">        </div>
@@ -124,10 +124,10 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 <div class="line">        {t.dbgui()} -&gt; std::same_as&lt;void&gt;;</div>
 <div class="line">        {t.debug_get_name()} -&gt; std::convertible_to&lt;std::string_view&gt;;</div>
 <div class="line">    }</div>
-<div class="ttc" id="aclasstz_1_1gl_1_1renderer__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition</b> renderer.hpp:127</div></div>
-<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:358</div></div>
-<div class="ttc" id="aconcepttz_1_1nullable_html"><div class="ttname"><a href="concepttz_1_1nullable.html">tz::nullable</a></div><div class="ttdef"><b>Definition</b> types.hpp:59</div></div>
-<div class="ttc" id="agroup__tz__gl2__renderer_html_gaf8ed980ac9dca61a89e98615c27a8085"><div class="ttname"><a href="group__tz__gl2__renderer.html#gaf8ed980ac9dca61a89e98615c27a8085">tz::gl::renderer_edit_request</a></div><div class="ttdeci">std::vector&lt; renderer_edit::variant &gt; renderer_edit_request</div><div class="ttdoc">Represents an edit to an existing renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:315</div></div>
+<div class="ttc" id="aclasstz_1_1gl_1_1renderer__info_html"><div class="ttname"><a href="classtz_1_1gl_1_1renderer__info.html">tz::gl::renderer_info</a></div><div class="ttdoc">Helper struct which the user can use to specify which inputs, resources they want and where they want...</div><div class="ttdef"><b>Definition</b> renderer.hpp:139</div></div>
+<div class="ttc" id="aconcepttz_1_1gl_1_1renderer__type_html"><div class="ttname"><a href="concepttz_1_1gl_1_1renderer__type.html">tz::gl::renderer_type</a></div><div class="ttdoc">Named requirement for a renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:374</div></div>
+<div class="ttc" id="aconcepttz_1_1nullable_html"><div class="ttname"><a href="concepttz_1_1nullable.html">tz::nullable</a></div><div class="ttdef"><b>Definition</b> types.hpp:67</div></div>
+<div class="ttc" id="agroup__tz__gl2__renderer_html_gaf8ed980ac9dca61a89e98615c27a8085"><div class="ttname"><a href="group__tz__gl2__renderer.html#gaf8ed980ac9dca61a89e98615c27a8085">tz::gl::renderer_edit_request</a></div><div class="ttdeci">std::vector&lt; renderer_edit::variant &gt; renderer_edit_request</div><div class="ttdoc">Represents an edit to an existing renderer.</div><div class="ttdef"><b>Definition</b> renderer.hpp:331</div></div>
 </div><!-- fragment --><a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Named requirement for a renderer. </p>
 </div></div><!-- contents -->

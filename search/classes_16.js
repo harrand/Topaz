@@ -10,5 +10,6 @@ var searchData=
   ['window_5fwinapi_7',['window_winapi',['../classtz_1_1wsi_1_1impl_1_1window__winapi.html',1,'tz::wsi::impl']]],
   ['window_5fx11_8',['window_x11',['../classtz_1_1wsi_1_1impl_1_1window__x11.html',1,'tz::wsi::impl']]],
   ['windowsurface_9',['WindowSurface',['../classtz_1_1gl_1_1vk2_1_1_window_surface.html',1,'tz::gl::vk2']]],
-  ['write_10',['Write',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html',1,'tz::gl::vk2::DescriptorSet']]]
+  ['with_5flock_10',['with_lock',['../structtz_1_1detail_1_1with__lock.html',1,'tz::detail']]],
+  ['write_11',['Write',['../structtz_1_1gl_1_1vk2_1_1_descriptor_set_1_1_write.html',1,'tz::gl::vk2::DescriptorSet']]]
 ];

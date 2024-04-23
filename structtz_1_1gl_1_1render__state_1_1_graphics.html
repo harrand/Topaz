@@ -28,7 +28,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="tz.png"/></td>
   <td id="projectalign">
-   <div id="projectname">Topaz<span id="projectnumber">&#160;4.1.0.0</span>
+   <div id="projectname">Topaz<span id="projectnumber">&#160;4.2.0.0</span>
    </div>
    <div id="projectbrief">C++20 Graphics Engine</div>
   </td>
@@ -102,24 +102,32 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 Data Fields</h2></td></tr>
 <tr class="memitem:a64ef20d768cadd103a1d45e814683008"><td class="memItemLeft" align="right" valign="top"><a id="a64ef20d768cadd103a1d45e814683008" name="a64ef20d768cadd103a1d45e814683008"></a>
 resource_handle&#160;</td><td class="memItemRight" valign="bottom"><b>index_buffer</b> = tz::nullhand</td></tr>
-<tr class="memdesc:a64ef20d768cadd103a1d45e814683008"><td class="mdescLeft">&#160;</td><td class="mdescRight">If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buffer. If there is no index buffer, this is nullhand. <br /></td></tr>
+<tr class="memdesc:a64ef20d768cadd103a1d45e814683008"><td class="mdescLeft">&#160;</td><td class="mdescRight">If an index buffer is used, this refers to the buffer resource. It must have resource_flag::index_buffer. If there is no index buffer, this must be nullhand. Defaults to nullhand. <br /></td></tr>
 <tr class="separator:a64ef20d768cadd103a1d45e814683008"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f7566566d5ad5403bdfc19813b85126"><td class="memItemLeft" align="right" valign="top"><a id="a3f7566566d5ad5403bdfc19813b85126" name="a3f7566566d5ad5403bdfc19813b85126"></a>
 resource_handle&#160;</td><td class="memItemRight" valign="bottom"><b>draw_buffer</b> = tz::nullhand</td></tr>
-<tr class="memdesc:a3f7566566d5ad5403bdfc19813b85126"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::draw_indirect_buffer. If there is no draw buffer, this is nullhand. <br /></td></tr>
+<tr class="memdesc:a3f7566566d5ad5403bdfc19813b85126"><td class="mdescLeft">&#160;</td><td class="mdescRight">If a draw-indirect buffer is used, this refers to the buffer resource. It must have resource_flag::draw_indirect_buffer. If there is no draw buffer, this must be nullhand. Defaults to nullhand. <br /></td></tr>
 <tr class="separator:a3f7566566d5ad5403bdfc19813b85126"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdbf39b5e5e727154eb35092a5f3329e"><td class="memItemLeft" align="right" valign="top"><a id="afdbf39b5e5e727154eb35092a5f3329e" name="afdbf39b5e5e727154eb35092a5f3329e"></a>
 tz::vec4&#160;</td><td class="memItemRight" valign="bottom"><b>clear_colour</b> = tz::vec4::zero()</td></tr>
-<tr class="memdesc:afdbf39b5e5e727154eb35092a5f3329e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalised RGBA floating point colour. <br /></td></tr>
+<tr class="memdesc:afdbf39b5e5e727154eb35092a5f3329e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalised RGBA floating point colour. Defaults to {0.0f, 0.0f, 0.0f, 0.0f}. <br /></td></tr>
 <tr class="separator:afdbf39b5e5e727154eb35092a5f3329e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e082f315122781cecfbc7063397c063"><td class="memItemLeft" align="right" valign="top"><a id="a0e082f315122781cecfbc7063397c063" name="a0e082f315122781cecfbc7063397c063"></a>
 std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>tri_count</b> = 0</td></tr>
-<tr class="memdesc:a0e082f315122781cecfbc7063397c063"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified, this is ignored. <br /></td></tr>
+<tr class="memdesc:a0e082f315122781cecfbc7063397c063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of triangles to be rendered in the next draw call. note@ if a draw_buffer has been specified, this is ignored. Defaults to 0. <br /></td></tr>
 <tr class="separator:a0e082f315122781cecfbc7063397c063"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5289b1d526838e9d3e855ec3ea0b7b55"><td class="memItemLeft" align="right" valign="top"><a id="a5289b1d526838e9d3e855ec3ea0b7b55" name="a5289b1d526838e9d3e855ec3ea0b7b55"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>wireframe_mode</b> = false</td></tr>
-<tr class="memdesc:a5289b1d526838e9d3e855ec3ea0b7b55"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether wireframe mode is enabled or not. <br /></td></tr>
+<tr class="memdesc:a5289b1d526838e9d3e855ec3ea0b7b55"><td class="mdescLeft">&#160;</td><td class="mdescRight">whether wireframe mode is enabled or not. Defaults to false. <br /></td></tr>
 <tr class="separator:a5289b1d526838e9d3e855ec3ea0b7b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fcc1dbc2c8cf0ab7bfe4a5627bfa1e4"><td class="memItemLeft" align="right" valign="top"><a id="a1fcc1dbc2c8cf0ab7bfe4a5627bfa1e4" name="a1fcc1dbc2c8cf0ab7bfe4a5627bfa1e4"></a>
+<a class="el" href="group__tz__gl2__renderer.html#gadf9f70703e9829dbdd82abc88dca23bd">graphics_topology</a>&#160;</td><td class="memItemRight" valign="bottom"><b>topology</b> = graphics_topology::triangles</td></tr>
+<tr class="memdesc:a1fcc1dbc2c8cf0ab7bfe4a5627bfa1e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">What kind of primitives are you drawing? Defaults to triangles. <br /></td></tr>
+<tr class="separator:a1fcc1dbc2c8cf0ab7bfe4a5627bfa1e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ed1637640b717cce295a8a272880603"><td class="memItemLeft" align="right" valign="top"><a id="a7ed1637640b717cce295a8a272880603" name="a7ed1637640b717cce295a8a272880603"></a>
+graphics_culling&#160;</td><td class="memItemRight" valign="bottom"><b>culling</b> = graphics_culling::none</td></tr>
+<tr class="memdesc:a7ed1637640b717cce295a8a272880603"><td class="mdescLeft">&#160;</td><td class="mdescRight">Do you want culling? Defaults to no culling. <br /></td></tr>
+<tr class="separator:a7ed1637640b717cce295a8a272880603"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
