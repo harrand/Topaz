@@ -101,6 +101,7 @@ namespace tz::gl
 			tz::wsi::impl::get_wgl_functions().wgl_swap_interval_ext(vsync_enabled ? 1 : 0);
 		#else
 			// linux NYI.
+			(void)vsync_enabled;
 		#endif
 	}
 
