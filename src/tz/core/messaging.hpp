@@ -55,7 +55,7 @@ namespace tz
 		// Processes all messages and then clears the list. Thread-safe.
 		virtual void process_messages();
 		/// Invoked when a message is sent. Your override can return false to drop the message. By default, no messages are dropped. Not thread safe.
-		virtual bool on_send_message(const M& msg) {return true;};
+		virtual bool on_send_message([[maybe_unused]] const M& msg) {return true;};
 		/// Invoked when a message is processed. You must override this. Not thread safe.
 		/// @note If processing a message causes the receiver to send a new message to itself, this is safe, but will not be processed until the next invocation to `process_messages`.
 		virtual void process_message(const M& msg) = 0;
