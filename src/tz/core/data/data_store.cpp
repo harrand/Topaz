@@ -37,7 +37,7 @@ namespace tz
 	{
 		TZ_PROFZONE("data_store - remove", 0xFF3377AA);
 		std::unique_lock<mutex> ulock(this->mtx);
-		tz::assert(this->contains_nolock(remove.key), "remove called on %s, which does not exist in the datastore", remove.key.data());
+		//tz::assert(this->contains_nolock(remove.key), "remove called on %s, which does not exist in the datastore", remove.key.data());
 		this->store.erase(remove.key);
 	}
 

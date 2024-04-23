@@ -1,3 +1,4 @@
+#include "tz/core/debug.hpp"
 namespace tz
 {
 	template<tz::message M, bool thread_safe>
