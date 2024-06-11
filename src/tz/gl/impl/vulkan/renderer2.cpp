@@ -713,7 +713,7 @@ namespace tz::gl
 						.depth_stencil =
 						{
 							.depth_testing = this->pipeline_config.depth_testing,
-							.depth_writes = this->pipeline_config.depth_testing
+							.depth_writes = this->pipeline_config.depth_writes
 						},
 						.colour_blend =
 						{
@@ -751,6 +751,7 @@ namespace tz::gl
 		this->pipeline_config =
 		{
 			.depth_testing = !rinfo.get_options().contains(tz::gl::renderer_option::no_depth_testing),
+			.depth_writes = !rinfo.get_options().contains(tz::gl::renderer_option::no_depth_writes),
 			.alpha_blending = rinfo.get_options().contains(tz::gl::renderer_option::alpha_blending),
 			.type = rinfo.shader().has_shader(tz::gl::shader_stage::compute) ? pipeline_type_t::compute : pipeline_type_t::graphics
 		};

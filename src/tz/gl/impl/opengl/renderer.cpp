@@ -628,6 +628,7 @@ namespace tz::gl
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LESS);
 			}
+			glDepthMask(this->options.contains(renderer_option::no_depth_writes) ? GL_FALSE : GL_TRUE);
 			if(this->state.graphics.culling == tz::gl::graphics_culling::none)
 			{
 				glDisable(GL_CULL_FACE);

@@ -32,8 +32,10 @@ namespace tz::gl
 	 */
 	enum class renderer_option
 	{
-		/// - Disables depth-testing and depth-writing.
+		/// - Disables depth-testing and depth writing.
 		no_depth_testing,
+		/// - Disables depth-writing only. Has no effect on depth-testing.
+		no_depth_writes,
 		/// - Enables alpha-blending. Causes pixels with alpha value <1.0 to blend with the previous colour in the framebuffer, at a small cost to performance.
 		alpha_blending,
 		/// - When a renderer submits its render work to the GPU, the caller thread blocks until the GPU work has been completed.

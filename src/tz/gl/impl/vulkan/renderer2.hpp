@@ -136,6 +136,7 @@ namespace tz::gl
 		struct pipeline_invariant_config_t
 		{
 			bool depth_testing = false;
+			bool depth_writes = false;
 			bool alpha_blending = false;
 			pipeline_type_t type = pipeline_type_t::graphics;
 			// all of these cannot change for a renderer. wireframe mode can be disabled/enabled, so we don't want to cache that. have to query that every time.
