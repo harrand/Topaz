@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['data_0',['data',['../classtz_1_1basic__list.html#a32759f2f577643e9e013c4f16dd4f78f',1,'tz::basic_list::data() const'],['../classtz_1_1basic__list.html#af8197a468d2e4ca683280b99eb2c83b4',1,'tz::basic_list::data()'],['../classtz_1_1vector.html#a0efc07fae32cc2bfa2b2150f30bf7bc8',1,'tz::vector::data() const'],['../classtz_1_1vector.html#a58f744948751f1306d7e95ae61273b74',1,'tz::vector::data()'],['../classtz_1_1gl_1_1iresource.html#a4efedec0ff8764ec37a647a6b34cc27b',1,'tz::gl::iresource::data() const =0'],['../classtz_1_1gl_1_1iresource.html#a2034c319803f53dc374f4dc57f7e89e7',1,'tz::gl::iresource::data()=0'],['../classtz_1_1gl_1_1resource.html#a9578c37147e86fe368e4b4191d8dd8fc',1,'tz::gl::resource::data() const final'],['../classtz_1_1gl_1_1resource.html#a21ab68fe797184ae314b626f72a98062',1,'tz::gl::resource::data() final']]],
+  ['data_5fas_1',['data_as',['../classtz_1_1gl_1_1iresource.html#a1031b5190ca48fc22b1ac0dbe4b29dcd',1,'tz::gl::iresource::data_as() const'],['../classtz_1_1gl_1_1iresource.html#a9ca9a48d880b6cb785f24639a206ca6c',1,'tz::gl::iresource::data_as()']]],
+  ['days_2',['days',['../classtz_1_1duration.html#a9ebbab08c04bf01f2a14d6f65dc795f0',1,'tz::duration']]],
+  ['dbgui_3',['dbgui',['../classtz_1_1gl_1_1iresource.html#a3a908f4cbc961b740062f5d001cfe1ee',1,'tz::gl::iresource::dbgui()'],['../classtz_1_1gl_1_1resource.html#aab282aa2e01daa9fec11e78a4895033c',1,'tz::gl::resource::dbgui()'],['../classtz_1_1gl_1_1buffer__resource.html#a1a9a921e465982e11da32771c35d5199',1,'tz::gl::buffer_resource::dbgui()'],['../classtz_1_1gl_1_1image__resource.html#a2c23cc9b2996385456e84a3b89b5301a',1,'tz::gl::image_resource::dbgui()']]],
+  ['debug_5fget_5fname_4',['debug_get_name',['../classtz_1_1gl_1_1renderer__info.html#aad262d25b64ee45c5cd79faf8c6d5af0',1,'tz::gl::renderer_info']]],
+  ['debug_5fname_5',['debug_name',['../classtz_1_1gl_1_1renderer__info.html#a92f4e4d9f25acb3151987066df17db48',1,'tz::gl::renderer_info']]],
+  ['decompose_5fquaternion_6',['decompose_quaternion',['../group__tzsl__matrix.html#ga382271ea9bd62c983a9cc777d6c0baad',1,'tz::matrix']]],
+  ['delay_7',['delay',['../classtz_1_1delay.html#a8b18e64689f16949afe24964e132fe58',1,'tz::delay']]],
+  ['descriptor_5fcount_8',['descriptor_count',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#accc746a50caa61641bb14fc4f8fadc6a',1,'tz::gl::vk2::DescriptorLayout']]],
+  ['descriptor_5fcount_5fof_9',['descriptor_count_of',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#a4dcee1b2805e6163351ea0aefbcc3305',1,'tz::gl::vk2::DescriptorLayout']]],
+  ['descriptorlayout_10',['DescriptorLayout',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout.html#a9ef5579debbf8a3d6d758c714edaf3b8',1,'tz::gl::vk2::DescriptorLayout']]],
+  ['descriptorlayoutbuilder_11',['DescriptorLayoutBuilder',['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#a44093ba76ad98d8c6209143c8f4de242',1,'tz::gl::vk2::DescriptorLayoutBuilder::DescriptorLayoutBuilder()=default'],['../classtz_1_1gl_1_1vk2_1_1_descriptor_layout_builder.html#ab2892131f4b7b43aed19eda352dfef81',1,'tz::gl::vk2::DescriptorLayoutBuilder::DescriptorLayoutBuilder(DescriptorLayoutInfo existing_info)']]],
+  ['destroy_5frenderer_12',['destroy_renderer',['../classtz_1_1gl_1_1device.html#a6e5026b0eafd4a9bd7e8f5242b7c4899',1,'tz::gl::device']]],
+  ['destroy_5fwindow_13',['destroy_window',['../group__tz__wsi__window.html#ga54f16c6122b5d08eef234586de422eef',1,'tz::wsi']]],
+  ['determinant_14',['determinant',['../group__tzsl__matrix.html#ga8da6239534e090803b41e5c853042977',1,'tz::matrix']]],
+  ['device_5fsupports_5fflags_15',['device_supports_flags',['../structtz_1_1gl_1_1vk2_1_1_descriptor_layout_info.html#a2e5cab5844cce37fcc8a06c1436f33e6',1,'tz::gl::vk2::DescriptorLayoutInfo']]],
+  ['dispatch_16',['dispatch',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3c305e3576f093dad51bd911c6dbab60',1,'tz::gl::vk2::CommandBufferRecording']]],
+  ['distance_17',['distance',['../group__tzsl__math.html#ga81780532b6bb411b2b550c09b76b7f93',1,'tz::math']]],
+  ['done_18',['done',['../classtz_1_1delay.html#abecd402d7755f73c4a61a33b77af4963',1,'tz::delay']]],
+  ['dot_19',['dot',['../classtz_1_1vector.html#a074e671fe11952ee602c6b60d542fc75',1,'tz::vector::dot()'],['../group__tzsl__math.html#gae3a061e3c170f530fbc99969abdeb333',1,'tz::math::dot()']]],
+  ['draw_20',['draw',['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a4ca2490c9af9681d4e151e149197d326',1,'tz::gl::ogl2::vertex_array::draw()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#acd2074bf1faa8b35502ec823cfde1abf',1,'tz::gl::vk2::CommandBufferRecording::draw()']]],
+  ['draw_5findexed_21',['draw_indexed',['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a4b11ecc184617603efaa30298df4e67f',1,'tz::gl::ogl2::vertex_array::draw_indexed()'],['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#ad5539795d16fdb9fc6d507d38a45123c',1,'tz::gl::vk2::CommandBufferRecording::draw_indexed(VulkanCommand::DrawIndexed draw)']]],
+  ['draw_5findexed_5findirect_22',['draw_indexed_indirect',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a883d311ab6e1f1c1f29260129179d0e0',1,'tz::gl::vk2::CommandBufferRecording']]],
+  ['draw_5findirect_23',['draw_indirect',['../classtz_1_1gl_1_1vk2_1_1_command_buffer_recording.html#a3eebf5124e99fc760f29698edcda6577',1,'tz::gl::vk2::CommandBufferRecording']]]
+];

@@ -1,0 +1,7 @@
+var searchData=
+[
+  ['nanos_0',['nanos',['../classtz_1_1duration.html#a2a250959a205d0533fa459eb7635141d',1,'tz::duration']]],
+  ['normalise_1',['normalise',['../classtz_1_1vector.html#a6c5d76ac6e6c423a3939a68a104a2476',1,'tz::vector::normalise()'],['../group__tzsl__math.html#ga7e9161c4554681c9e3455f2044d74378',1,'tz::math::normalise()']]],
+  ['normalised_2',['normalised',['../classtz_1_1vector.html#a7d3f52f2b2eee13ed28869b1d5775a40',1,'tz::vector']]],
+  ['null_3',['null',['../classtz_1_1gl_1_1ogl2_1_1buffer.html#a198db31e0a5081dca6a29fdedfcb2e7d',1,'tz::gl::ogl2::buffer::null()'],['../classtz_1_1gl_1_1ogl2_1_1framebuffer.html#a1043574f330dd12e7bcc56bf41291e91',1,'tz::gl::ogl2::framebuffer::null()'],['../classtz_1_1gl_1_1ogl2_1_1image.html#a47abf1514f9156f568d16abfa09ceb64',1,'tz::gl::ogl2::image::null()'],['../classtz_1_1gl_1_1ogl2_1_1shader.html#a189789a1dd30c80d8e0c1b8be0b0c7ee',1,'tz::gl::ogl2::shader::null()'],['../classtz_1_1gl_1_1ogl2_1_1vertex__array.html#a39da177cf71a9462d79fcc82230ee702',1,'tz::gl::ogl2::vertex_array::null()'],['../classtz_1_1gl_1_1vk2_1_1_logical_device.html#a29a6419aa0f11bc338774da7ec9db6ed',1,'tz::gl::vk2::LogicalDevice::null()'],['../classtz_1_1gl_1_1vk2_1_1_swapchain.html#a4a22a47532955e0b373b671bf4e310dc',1,'tz::gl::vk2::Swapchain::null()'],['../classtz_1_1gl_1_1buffer__resource.html#adc992b7120e61ca9e84236b84a96b760',1,'tz::gl::buffer_resource::null()'],['../classtz_1_1gl_1_1image__resource.html#ad7b2f90494cadde953d63ff92a1c7568',1,'tz::gl::image_resource::null()']]]
+];
