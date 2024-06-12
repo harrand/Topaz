@@ -31,8 +31,10 @@ namespace tz::gl
 		index_buffer,
 		/// - Indicates that the buffer should contain draw commands which will be used in a render invocation.
 		draw_indirect_buffer,
-		/// - Indicates that the image can be used as an image_output for another renderer. Can only be applied to image resources.
+		/// - Indicates that the image can be used as a colour image_output for another renderer. Can only be applied to image resources.
 		renderer_output,
+		/// - Indicates that the image can be used as a depth image_output for another renderer. Can only be applied to image resources.
+		renderer_depth_output,
 		/// - Indicates that when doing min/mag on the image, the value of the nearest texel to the texcoord is retrieved.
 		image_filter_nearest,
 		/// - Indicates that when doing min/mag on the image, the value of the weighted average of the nearest texels is retrieved. This is the default filter.

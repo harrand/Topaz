@@ -189,9 +189,22 @@ namespace tz::gl
 			usage_field |= vk2::ImageUsage::ColourAttachment;
 			// Let's make sure the format is applicable. We will not allow the user to use an image format that isn't guaranteed to be safe as a colour attachment, even if the machine building the engine allows it. This prevents horrific runtime issues.
 			constexpr auto allowed = vk2::format_traits::get_mandatory_colour_attachment_formats();
+			// todo: re-enable in a way to allow device-specific attachments. allowing only mandatory attachments is too extreme.
+			#if 0
 			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
 			{
 				tz::error("Detected resource_flag::renderer_output in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
+			}
+			#endif
+		}
+		if(this->resource->get_flags().contains(resource_flag::renderer_depth_output))
+		{
+			usage_field |= vk2::ImageUsage::DepthStencilAttachment;
+			// Let's make sure the format is applicable. We will not allow the user to use an image format that isn't guaranteed to be safe as a colour attachment, even if the machine building the engine allows it. This prevents horrific runtime issues.
+			constexpr auto allowed = vk2::format_traits::get_mandatory_depth_attachment_formats();
+			if(std::find(allowed.begin(), allowed.end(), to_vk2(img_res->get_format())) == allowed.end())
+			{
+				tz::error("Detected resource_flag::renderer_depth_output in combination with an image_format that is not guaranteed to work on all GPUs. This may work on some machines, but not others. I cannot allow code to ship which is guaranteed to crash on some devices, sorry.");
 			}
 		}
 		vk2::MemoryResidency residency;
