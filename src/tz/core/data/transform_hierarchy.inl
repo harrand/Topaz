@@ -212,6 +212,26 @@ namespace tz
 	}
 
 	template<typename T>
+	std::optional<unsigned int> transform_hierarchy<T>::node_get_parent(unsigned int node_id) const
+	{
+		return this->get_node(node_id).parent;
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::node_set_parent(unsigned int node_id, unsigned int new_parent_node_id)
+	{
+		this->get_node(node_id).parent = new_parent_node_id;
+		this->clear_cache_for(node_id);
+	}
+
+	template<typename T>
+	void transform_hierarchy<T>::node_clear_parent(unsigned int node_id)
+	{
+		this->get_node(node_id).parent = std::nullopt;
+		this->clear_cache_for(node_id);
+	}
+
+	template<typename T>
 	unsigned int transform_hierarchy<T>::add_hierarchy(const transform_hierarchy<T>& tree)
 	{
 		unsigned int offset = this->size();
@@ -275,6 +295,15 @@ namespace tz
 
 	template<typename T>
 	const transform_node<T>& transform_hierarchy<T>::get_node(unsigned int id) const
+	{
+		// dont instrument this. this gets called a **ton** even on tiny scenes.
+		//TZ_PROFZONE("transform_hierarchy - get node", 0xFF0000AA);
+		tz::assert(id < this->nodes.size(), "Invalid node id %u", id);
+		return this->nodes[id];
+	}
+
+	template<typename T>
+	transform_node<T>& transform_hierarchy<T>::get_node(unsigned int id)
 	{
 		// dont instrument this. this gets called a **ton** even on tiny scenes.
 		//TZ_PROFZONE("transform_hierarchy - get node", 0xFF0000AA);

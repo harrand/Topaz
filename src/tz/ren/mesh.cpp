@@ -1063,6 +1063,34 @@ namespace tz::ren
 
 //--------------------------------------------------------------------------------------------------
 
+		render_pass::object_handle render_pass::object_get_parent(object_handle oh) const
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			auto ret = this->get_hierarchy().node_get_parent(hanval);
+			if(ret.has_value())
+			{
+				return static_cast<tz::hanval>(ret.value());
+			}
+			return tz::nullhand;
+		}
+
+		void render_pass::object_set_parent(object_handle oh, object_handle new_parent)
+		{
+			auto hanval = static_cast<std::size_t>(static_cast<tz::hanval>(oh));
+			if(new_parent == tz::nullhand)
+			{
+				this->get_hierarchy().node_clear_parent(hanval);
+			}
+			else
+			{
+				this->get_hierarchy().node_set_parent(hanval, static_cast<std::size_t>(static_cast<tz::hanval>(new_parent)));
+			}
+		}
+
+//--------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------------
+
 		tz::trs render_pass::object_get_global_transform(object_handle oh) const
 		{
 			TZ_PROFZONE("render_pass - object get global transform", 0xFFF1F474);

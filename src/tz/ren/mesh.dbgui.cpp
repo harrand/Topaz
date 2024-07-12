@@ -1,5 +1,6 @@
 #include "tz/ren/mesh.hpp"
 #include "imgui.h"
+#include <sstream>
 
 
 namespace tz::ren
@@ -91,12 +92,13 @@ namespace tz::ren
 					this->dbgui_object_cursor++;
 				}
 				ImGui::VSliderInt("##object_id", ImVec2{18.0f, slider_height}, &this->dbgui_object_cursor, 0, this->get_object_count(true) - 1);
+				object_handle oh = static_cast<tz::hanval>(this->dbgui_object_cursor);
 				auto& obj = this->obj.get_object_internals(this->render)[this->dbgui_object_cursor];
 				ImGui::SameLine();
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 10.0f);
 				if(ImGui::BeginChild("##1234", ImVec2(0, slider_height), false, ImGuiWindowFlags_ChildWindow))
 				{
-					if(this->object_is_in_free_list(static_cast<tz::hanval>(this->dbgui_object_cursor)))
+					if(this->object_is_in_free_list(oh))
 					{
 						ImGui::Text("Object %d is in free-list", this->dbgui_object_cursor);
 					}
@@ -111,6 +113,38 @@ namespace tz::ren
 						if(ImGui::Checkbox("Visibility", &visible))
 						{
 							this->compute.set_visibility_at(this->dbgui_object_cursor, visible);
+						}
+
+						std::string parent_str;
+						object_handle parent = this->object_get_parent(oh);
+						if(parent == tz::nullhand)
+						{
+							parent_str = "none";
+						}
+						else
+						{
+							parent_str = std::to_string(static_cast<unsigned int>(static_cast<tz::hanval>(parent)));
+						}
+						ImGui::Text("Parent");
+						ImGui::SameLine();
+						if(ImGui::InputText("##parent", &parent_str, ImGuiInputTextFlags_EnterReturnsTrue))
+						{
+							std::stringstream sstr;
+							sstr.str(parent_str);
+							unsigned int new_parent;
+							sstr >> new_parent;
+							if(new_parent < this->get_object_count())
+							{
+								this->object_set_parent(oh, static_cast<tz::hanval>(new_parent));
+							}
+						}
+						if(parent != tz::nullhand)
+						{
+							ImGui::SameLine();
+							if(ImGui::Button("Unparent"))
+							{
+								this->object_set_parent(oh, tz::nullhand);
+							}
 						}
 
 						mesh_locator loc = this->compute.get_mesh_at(this->dbgui_object_cursor);

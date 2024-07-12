@@ -1,5 +1,6 @@
 #ifndef TZ_DATA_HANDLE_HPP
 #define TZ_DATA_HANDLE_HPP
+#include "tz/core/types.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -9,7 +10,13 @@ namespace tz
 {
 	enum class hanval : std::uint32_t{};
 
-	struct nullhand_t{};
+	struct nullhand_t
+	{
+		bool operator==(tz::number auto num) const
+		{
+			return std::cmp_equal(num, std::numeric_limits<std::underlying_type_t<hanval>>::max());
+		}
+	};
 	constexpr nullhand_t nullhand;
 
 	template<typename T>

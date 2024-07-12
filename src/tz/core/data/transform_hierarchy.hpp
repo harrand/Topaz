@@ -98,6 +98,9 @@ namespace tz
 		 * @note Invalidates indices.
 		 **/
 		void remove_node(unsigned int node_id, remove_strategy strategy);
+		std::optional<unsigned int> node_get_parent(unsigned int node_id) const;
+		void node_set_parent(unsigned int node_id, unsigned int new_parent_node_id);
+		void node_clear_parent(unsigned int node_id);
 		// returns offset to be applied to the previous hierarchy's set of nodes to get their corresponding node ids
 		// within this hierarchy
 		/**
@@ -129,6 +132,13 @@ namespace tz
 		 * @pre `id` < `this->size()`, otherwise the behaviour is undefined.
 		 **/
 		const transform_node<T>& get_node(unsigned int id) const;
+		/**
+		 * Retrieve the node corresponding to the given index.
+		 * @param id Index corresponding to the node to retrieve.
+		 * @return Node corresponding to the provided index.
+		 * @pre `id` < `this->size()`, otherwise the behaviour is undefined.
+		 **/
+		transform_node<T>& get_node(unsigned int id);
 		/**
 		 * Retrieve the global transform of the node corresponding to the provided id.
 		 * @param id Index corresponding to the node to calculate the global transform.

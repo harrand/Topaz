@@ -69,6 +69,12 @@ int main()
 			.mesh = mesh,
 			.parent = obj
 		});
+		mr.add_object
+		({
+			.local_transform = {.translate = {2.5f, -0.25f, 0.0f}, .scale = {1.5f, 1.5f, 1.5f}},
+			.mesh = mesh,
+			.bound_textures = {{{.texture = tex}}}
+		});
 		mr.append_to_render_graph();
 
 		tz::duration update_timer = tz::system_time();

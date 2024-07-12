@@ -384,6 +384,9 @@ namespace tz::ren
 			 */
 			void object_set_global_transform(object_handle oh, tz::trs trs);
 
+			object_handle object_get_parent(object_handle oh) const;
+			void object_set_parent(object_handle oh, object_handle new_parent);
+
 			texture_locator object_get_texture(object_handle oh, std::size_t bound_texture_id) const;
 			void object_set_texture(object_handle oh, std::size_t bound_texture_id, texture_locator tloc);
 			bool object_get_visible(object_handle oh) const;
