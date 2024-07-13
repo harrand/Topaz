@@ -1,0 +1,3 @@
+[submodule "cppfront_cmake"]
+	path = cppfront_cmake
+	url = https://github.com/modern-cmake/cppfront
