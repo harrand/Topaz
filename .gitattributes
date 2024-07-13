@@ -5,3 +5,4 @@ src/** linguist-vendored=false
 test/** linguist-vendored=false
 tools/** linguist-vendored=false
 *.tzsl linguist-language=GLSL
+*.cpp2 linguist-language=C++

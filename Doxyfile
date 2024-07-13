@@ -6,7 +6,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Topaz"
 @INCLUDE = "version.txt"
-PROJECT_BRIEF          = "C++20 Graphics Engine"
+PROJECT_BRIEF          = "Game Engine"
 PROJECT_LOGO           = doc/tz.png
 OUTPUT_DIRECTORY       = ./doc
 CREATE_SUBDIRS         = NO
@@ -118,6 +118,7 @@ FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
                          *.cpp \
+                         *.cpp2 \
                          *.c++ \
                          *.java \
                          *.ii \

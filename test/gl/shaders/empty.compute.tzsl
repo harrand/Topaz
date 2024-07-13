@@ -1,7 +1,0 @@
-shader(type = compute);
-kernel(1, 1, 1);
-
-void main()
-{
-
-}

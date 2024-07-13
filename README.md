@@ -10,7 +10,7 @@
 ## About
 
  Topaz is a 3D graphics engine.
- * C++20 (no modules)
+ * Language: [cpp2](https://github.com/hsutter/cppfront), previously C++20.
  * Very low-level declarative graphics API.
  * Supports OpenGL/Vulkan, Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
  
@@ -28,7 +28,7 @@ The Topaz project has been ongoing since it began as a school project in 2015.
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes. Patch versions are not formally shipped unless they contain emergency bugfixes for a flawed release.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| ...			|TBD		   |[master](https://github.com/Harrand/Topaz/)	 | [harrand.github.io](https://harrand.github.io/Topaz)
+| 5.0			|TBD		   |[master](https://github.com/Harrand/Topaz/)	 | [harrand.github.io](https://harrand.github.io/Topaz)
 | 4.2.0			|Apr 23, 2024 |	[Topaz4.2](https://github.com/Harrand/Topaz/tree/Topaz4.2)	 | [Branch: gh-pages-tz4.2](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.2)
 | 4.1.0			|Dec 1, 2023  |	[Topaz4.1](https://github.com/Harrand/Topaz/tree/Topaz4.1)	 | [Branch: gh-pages-tz4.1](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.1)
 | 4.0.0			|July 9, 2023 |	[Topaz4.0](https://github.com/Harrand/Topaz/tree/Topaz4.0)	 | [Branch: gh-pages-tz4.0](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.0)
