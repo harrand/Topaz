@@ -17,6 +17,15 @@ namespace tz
 		}.normalised();
 	}
 
+	quat quat::from_euler_angles(tz::vec3 euler_angles)
+	{
+		tz::vec3 vx{1.0f, 0.0f, 0.0f}, vy = {0.0f, 1.0f, 0.0f}, vz = {0.0f, 0.0f, 1.0f};
+		auto qx = quat::from_axis_angle(vx, euler_angles[0]);
+		auto qy = quat::from_axis_angle(vy, euler_angles[1]);
+		auto qz = quat::from_axis_angle(vz, euler_angles[2]);
+		return ((qx*qy).normalised() * qz).normalised();
+	}
+
 	tz::mat4 quat::matrix() const
 	{
 		TZ_PROFZONE("Quaternion - Generate Matrix", 0xFF0000AA);
