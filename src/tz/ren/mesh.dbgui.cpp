@@ -189,6 +189,11 @@ namespace tz::ren
 
 	void mesh_renderer::dbgui(bool include_operations)
 	{
+		if(ImGui::BeginTabItem("Camera"))
+		{
+			this->camera_transform.dbgui();
+			ImGui::EndTabItem();
+		}
 		if(ImGui::BeginTabItem("Mesh Data"))
 		{
 			render_pass::dbgui_mesh();

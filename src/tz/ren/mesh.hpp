@@ -450,6 +450,7 @@ namespace tz::ren
 			tz::gl::renderer_handle get_render_pass() const;
 		protected:
 			bool object_is_in_free_list(object_handle oh) const;
+			tz::trs camera_transform;
 		private:
 			compute_pass compute;
 			tz::gl::renderer_handle render = tz::nullhand;
