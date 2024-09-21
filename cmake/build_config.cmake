@@ -28,15 +28,15 @@ endfunction()
 
 function(configure_debug)
 	# TODO
-	target_compile_definitions(topaz PRIVATE -DTOPAZ_DEBUG=1)
+	target_compile_definitions(topaz PUBLIC -DTOPAZ_DEBUG=1)
 endfunction()
 
 function(configure_release)
 	# TODO
-	target_compile_definitions(topaz PRIVATE -DTOPAZ_DEBUG=0)
+	target_compile_definitions(topaz PUBLIC -DTOPAZ_DEBUG=0)
 endfunction()
 
 function(configure_profile)
 	# TODO
-	target_compile_definitions(topaz PRIVATE -DTOPAZ_DEBUG=0)
+	target_compile_definitions(topaz PUBLIC -DTOPAZ_DEBUG=0)
 endfunction()

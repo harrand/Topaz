@@ -7,4 +7,6 @@ namespace tz
 	void terminate();
 }
 
+#include "detail/debug.hpp"
+
 #endif // TOPAZ_HPP
