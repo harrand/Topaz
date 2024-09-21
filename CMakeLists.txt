@@ -36,6 +36,8 @@ target_include_directories(topaz INTERFACE ${PROJECT_SOURCE_DIR}/include)
 ## TOPAZ - SETTINGS ##
 ######################
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+add_subdirectory(docs)
 include(cmake/build_config.cmake)
 setup_build_config()
 include(cmake/compiler.cmake)
