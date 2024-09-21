@@ -28,24 +28,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(topaz STATIC
 	src/tz/topaz.cpp
-	src/tz/topaz.hpp
 )
-target_include_directories(topaz INTERFACE ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 ######################
 ## TOPAZ - SETTINGS ##
 ######################
 
-# Build Config specific compiler settings (Debug/Release).
-include(cmake/config.cmake) # setup_build_config
+include(cmake/build_config.cmake)
 setup_build_config()
-# Config-Independent compiler settings, e.g warnings.
 include(cmake/compiler.cmake)
 setup_compiler()
-# Platform Settings (Windows/Linux)
 include(cmake/platform.cmake)
 setup_platform()
-# Render API Settings (Vulkan)
 include(cmake/render_api.cmake)
 setup_render_api()
 
