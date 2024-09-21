@@ -17,35 +17,20 @@ project(topaz
 	DESCRIPTION "C++20 Game Engine"
 )
 
-# Note: The following are global set variables instead of target properties.
-# This is because *everything* should be std C++20 with modules support, including tests, applications, demos etc...
-# Allow non-module sources to still import modules.
-set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 # C++20
 set(CMAKE_CXX_STANDARD 20)
-# C++20 is a hard-requirement; **only** support C++20.
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# Do not enable compiler-specific extensions.
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 ####################
 ## TOPAZ - TARGET ##
 ####################
 
-add_library(topaz STATIC)
-target_sources(topaz
-	PUBLIC
-	FILE_SET CXX_MODULES FILES
-		# Module Sources
-		src/tz/debug/error.cppm
-		src/tz/os/hardware.cppm
-		src/tz/os/os.cppm
-		src/tz/os/platform.cppm
-		src/tz/topaz.cppm
-	PRIVATE
-		# Non-Module Sources
-        $<$<PLATFORM_ID:Windows>:src/tz/os/windows/winapi.hpp>
+add_library(topaz STATIC
+	src/tz/topaz.cpp
+	src/tz/topaz.hpp
 )
+target_include_directories(topaz INTERFACE ${PROJECT_SOURCE_DIR}/src)
 
 ######################
 ## TOPAZ - SETTINGS ##
