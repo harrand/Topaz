@@ -48,6 +48,60 @@ void test_accessors()
 	tz_assert(ints[3] == 4, "vector accessor failed. Expected {}, got {}", 4, ints[3]);
 }
 
+void test_basic_operations()
+{
+	// Test indexing operator (const and non-const)
+    tz::vector<float, 3> vec1(1.0f, 2.0f, 3.0f);
+    tz_assert(vec1[0] == 1.0f, "Indexing failed. Expected 1.0f, got %f", vec1[0]);
+    tz_assert(vec1[1] == 2.0f, "Indexing failed. Expected 2.0f, got %f", vec1[1]);
+    tz_assert(vec1[2] == 3.0f, "Indexing failed. Expected 3.0f, got %f", vec1[2]);
+
+    // Modify using non-const indexing
+    vec1[0] = 10.0f;
+    tz_assert(vec1[0] == 10.0f, "Indexing failed after modification. Expected 10.0f, got %f", vec1[0]);
+	// Test += operator
+    tz::vector<float, 3> vec2(1.0f, 1.0f, 1.0f);
+    vec1 += vec2;
+    tz_assert((vec1 == tz::vector<float, 3>(11.0f, 3.0f, 4.0f)), 
+              "Addition assignment failed. Expected: {{11.0f, 3.0f, 4.0f}}, got: {{{}, {}, {}}}", vec1[0], vec1[1], vec1[2]);
+
+    // Test -= operator
+    vec1 -= vec2;
+    tz_assert((vec1 == tz::vector<float, 3>(10.0f, 2.0f, 3.0f)), 
+              "Subtraction assignment failed. Expected: {{10.0f, 2.0f, 3.0f}}, got: {{{}, {}, {}}}", vec1[0], vec1[1], vec1[2]);
+
+    // Test *= operator
+    vec1 *= vec2;
+    tz_assert((vec1 == tz::vector<float, 3>(10.0f, 2.0f, 3.0f)), 
+              "Multiplication assignment failed. Expected: {{10.0f, 2.0f, 3.0f}}, got: {{{}, {}, {}}}", vec1[0], vec1[1], vec1[2]);
+
+    // Test /= operator
+    tz::vector<float, 3> vec3(10.0f, 1.0f, 3.0f);
+    vec3 /= tz::vector<float, 3>(1.0f, 1.0f, 1.0f);  // Divide each element by 1
+    tz_assert((vec3 == tz::vector<float, 3>(10.0f, 1.0f, 3.0f)),
+              "Division assignment failed. Expected: {{10.0f, 1.0f, 3.0f}}, got: {{{}, {}, {}}}", vec3[0], vec3[1], vec3[2]);
+
+    // Test + operator
+    auto sum_vec = vec1 + vec2;
+    tz_assert((sum_vec == tz::vector<float, 3>(11.0f, 3.0f, 4.0f)), 
+              "Addition failed. Expected: {{11.0f, 3.0f, 4.0f}}, got: {{{}, {}, {}}}", sum_vec[0], sum_vec[1], sum_vec[2]);
+
+    // Test - operator
+    auto diff_vec = vec1 - vec2;
+    tz_assert((diff_vec == tz::vector<float, 3>(9.0f, 1.0f, 2.0f)), 
+              "Subtraction failed. Expected: {{9.0f, 1.0f, 2.0f}}, got: {{{}, {}, {}}}", diff_vec[0], diff_vec[1], diff_vec[2]);
+
+    // Test * operator
+    auto prod_vec = vec1 * vec2;
+    tz_assert((prod_vec == tz::vector<float, 3>(10.0f, 2.0f, 3.0f)),
+              "Multiplication failed. Expected: {{10.0f, 2.0f, 3.0f}}, got: {{{}, {}, {}}}", prod_vec[0], prod_vec[1], prod_vec[2]);
+
+    // Test / operator
+    auto div_vec = vec1 / tz::vector<float, 3>(1.0f, 1.0f, 1.0f);
+    tz_assert((div_vec == tz::vector<float, 3>(10.0f, 2.0f, 3.0f)),
+              "Division failed. Expected: {{10.0f, 2.0f, 3.0f}}, got: {{{}, {}, {}}}", div_vec[0], div_vec[1], div_vec[2]);
+}
+
 int main()
 {
 	test_constructor<int, 2>();
@@ -66,5 +120,6 @@ int main()
 	test_constructor<double, 3>();
 	test_constructor<double, 4>();
 	test_accessors();
+	test_basic_operations();
 	return 0;
 }

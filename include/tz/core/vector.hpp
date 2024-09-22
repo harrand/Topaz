@@ -26,7 +26,10 @@ namespace tz
 		 * If the number of parameters provided is less than the vector's length, the remainder elements of the vector will be of indeterminate value.
 		 */
 		template<typename... Ts>
-		requires(sizeof...(Ts) <= N)
+		requires(
+			sizeof...(Ts) <= N
+			&& sizeof...(Ts) > 0
+			&& std::is_convertible_v<std::tuple_element_t<0, std::tuple<Ts...>>, T>)
 		constexpr vector(Ts&&... ts) :
 		arr({ std::forward<Ts>(ts)... }) {}
 		/**
@@ -37,6 +40,7 @@ namespace tz
 		 * Default-constructed vectors have indeterminate values.
 		 */
 		vector() = default;
+		vector(const vector<T, N>& cpy) = default;
 
 		/**
 		 * Retrieve the element value at the given index.
@@ -50,6 +54,16 @@ namespace tz
 		 * @return The value at the given index.
 		 */
 		T& operator[](std::size_t idx);
+
+		vector<T, N>& operator+=(const vector<T, N>& rhs);
+		vector<T, N>& operator-=(const vector<T, N>& rhs);
+		vector<T, N>& operator*=(const vector<T, N>& rhs);
+		vector<T, N>& operator/=(const vector<T, N>& rhs);
+
+		vector<T, N> operator+(const vector<T, N>& rhs){auto cpy = *this; return cpy += rhs;}
+		vector<T, N> operator-(const vector<T, N>& rhs){auto cpy = *this; return cpy -= rhs;}
+		vector<T, N> operator*(const vector<T, N>& rhs){auto cpy = *this; return cpy *= rhs;}
+		vector<T, N> operator/(const vector<T, N>& rhs){auto cpy = *this; return cpy /= rhs;}
 
 		bool operator==(const vector<T, N>& rhs) const = default;
 	private:

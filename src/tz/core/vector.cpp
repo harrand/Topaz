@@ -18,6 +18,46 @@ namespace tz
 		return this->arr[idx];
 	}
 
+	VECTOR_TEMPLATE_IMPL
+	vector<T, N>& vector<T, N>::operator+=(const vector<T, N>& rhs)
+	{
+		for(std::size_t i = 0; i < N; i++)
+		{
+			this->arr[i] += rhs.arr[i];
+		}
+		return *this;
+	}
+
+	VECTOR_TEMPLATE_IMPL
+	vector<T, N>& vector<T, N>::operator-=(const vector<T, N>& rhs)
+	{
+		for(std::size_t i = 0; i < N; i++)
+		{
+			this->arr[i] -= rhs.arr[i];
+		}
+		return *this;
+	}
+
+	VECTOR_TEMPLATE_IMPL
+	vector<T, N>& vector<T, N>::operator*=(const vector<T, N>& rhs)
+	{
+		for(std::size_t i = 0; i < N; i++)
+		{
+			this->arr[i] *= rhs.arr[i];
+		}
+		return *this;
+	}
+
+	VECTOR_TEMPLATE_IMPL
+	vector<T, N>& vector<T, N>::operator/=(const vector<T, N>& rhs)
+	{
+		for(std::size_t i = 0; i < N; i++)
+		{
+			this->arr[i] /= rhs.arr[i];
+		}
+		return *this;
+	}
+
     template struct vector<int, 2>;
 	template struct vector<int, 3>;
 	template struct vector<int, 4>;
