@@ -29,6 +29,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(topaz STATIC
 	src/tz/topaz.cpp
 	src/tz/core/vector.cpp
+	src/tz/gpu/rhi_vulkan.cpp
 )
 target_include_directories(topaz PRIVATE ${PROJECT_SOURCE_DIR}/include/tz)
 target_include_directories(topaz INTERFACE ${PROJECT_SOURCE_DIR}/include)
