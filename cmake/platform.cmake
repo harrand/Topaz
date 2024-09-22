@@ -1,14 +1,19 @@
-function(configure_windows target)
-	target_link_libraries(${target} PUBLIC OpenGL32 dwmapi winmm)
+function(setup_platform)
+	if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+		configure_windows()
+	elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+		configure_linux()
+	else()
+		message(FATAL_ERROR "Building on unknown OS \"${CMAKE_HOST_SYSTEM_NAME}\". Only supoprt \"Windows\" or \"Linux\".")
+	endif()
 endfunction()
 
-function(configure_linux target)
-	# Linux via X11
-	message(WARNING "Support for Linux is not yet fully implemented")
-	find_package(X11 REQUIRED)
-	# Prefer new OGL over legacy.
-	cmake_policy(SET CMP0072 NEW)
-	find_package(OpenGL REQUIRED)
-	# Xrandr for retrieving monitor info.
-	target_link_libraries(${target} PUBLIC X11 X11::Xrandr OpenGL::GL)
+function(configure_windows)
+	# TODO
+	set(default_render_api "vulkan")
+endfunction()
+
+function(configure_linux)
+	# TODO
+	set(default_render_api "vulkan")
 endfunction()

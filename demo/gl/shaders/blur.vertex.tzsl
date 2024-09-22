@@ -1,8 +1,0 @@
-shader(type = vertex);
-
-void main()
-{
-	float x = -1.0 + float((in::vertex_id & 1) << 2);
-	float y = -1.0 + float((in::vertex_id & 2) << 1);
-	out::position = vec4(x, y, 0, 1);
-}

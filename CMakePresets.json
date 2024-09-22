@@ -17,7 +17,7 @@
 			"CMAKE_BUILD_TYPE":
 			{
 				"type": "string",
-				"value": "Debug"
+				"value": "debug"
 			}
 		},
 		"hidden": true
@@ -31,7 +31,7 @@
 			"CMAKE_BUILD_TYPE":
 			{
 				"type": "string",
-				"value": "Release"
+				"value": "release"
 			}
 		},
 		"hidden": true
@@ -45,7 +45,7 @@
 			"CMAKE_BUILD_TYPE":
 			{
 				"type": "string",
-				"value": "Release"
+				"value": "profile"
 			}
 		},
 		"hidden": true
@@ -57,19 +57,7 @@
 			"TOPAZ_RENDER_API":
 			{
 				"type": "string",
-				"value": "Vulkan"
-			}
-		},
-		"hidden": true
-	},
-	{
-		"name": "opengl",
-		"cacheVariables":
-		{
-			"TOPAZ_RENDER_API":
-			{
-				"type": "string",
-				"value": "OpenGL"
+				"value": "vulkan"
 			}
 		},
 		"hidden": true
@@ -94,27 +82,6 @@
 		"displayName": "Vulkan Profile",
 		"description": "A vulkan profile build.",
 		"inherits": [ "vulkan", "profile" ]
-	},
-	{
-		"name": "host_opengl_debug",
-		"binaryDir": "${sourceDir}/build/${hostSystemName}_opengl_debug",
-		"displayName": "OpenGL Debug",
-		"description": "An OpenGL debug build.",
-		"inherits": [ "opengl", "debug" ]
-	},
-	{
-		"name": "host_opengl_release",
-		"binaryDir": "${sourceDir}/build/${hostSystemName}_opengl_release",
-		"displayName": "OpenGL Release",
-		"description": "An OpenGL release build.",
-		"inherits": [ "opengl", "release" ]
-	},
-	{
-		"name": "host_opengl_profile",
-		"binaryDir": "${sourceDir}/build/${hostSystemName}_opengl_profile",
-		"displayName": "OpenGL Profile",
-		"description": "An OpenGL profile build.",
-		"inherits": [ "opengl", "profile" ]
 	}
 	]
 }
