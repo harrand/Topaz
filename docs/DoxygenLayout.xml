@@ -3,7 +3,7 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title="Topaz Home"/>
-    <tab type="user" visible="yes" title="C++ API" url="@ref topaz"/>
+    <tab type="user" visible="yes" title="API Reference" url="@ref tz"/>
     <tab type="user" visible="yes" title="Wiki" url="https://github.com/harrand/Topaz/wiki"/ target="_blank">
   </navindex>
 

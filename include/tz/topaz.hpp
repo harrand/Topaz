@@ -2,28 +2,32 @@
 #define TOPAZ_HPP
 
 /**
- * @defgroup topaz Topaz Engine
- * Top-level engine functionality.
- * @{
+ * @defgroup tz Topaz API Reference
 **/
 namespace tz
 {
 	/**
-	 * @ingroup topaz
-	 * Initialise the engine.
+	 * @ingroup tz
+	 * @brief Initialise the engine.
+	 *
+	 * You should call this at the start of your program's runtime, before the first Topaz API call you make. You should expect this function to take a significantly long time.
 	**/
 	void initialise();
 	/**
-	 * @ingroup topaz
-	 * Terminate the engine, cleaning up all resources.
+	 * @ingroup tz
+	 * @brief Terminate the engine, cleaning up all resources.
+	 *
+	 * You should call this at the end of your program's runtime, after the last Topaz API call you make. You should expect this function to take a significantly long time.
 	**/
 	void terminate();
 }
 
-#include "detail/debug.hpp"
-
 /**
- * @}
+ * @ingroup tz
+ * @defgroup tz_core Core Libraries
+ * @brief Lowest-level libraries, structs and functionality. Everything is expected to depend on this.
 **/
+
+#include "detail/debug.hpp"
 
 #endif // TOPAZ_HPP

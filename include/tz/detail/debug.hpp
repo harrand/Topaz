@@ -23,8 +23,23 @@ namespace tz::detail
 	}
 }
 
+/**
+* @ingroup tz
+* @brief Assert that the given condition must be true. Cause a #tz_error if not.
+* @param cond Condition which must evaluate to true.
+* @param fmt Format string, following the fmtlib convention (i.e the n'th instance of `{}` in the string will be replaced with the n'th variadic parameter).
+* @param ... Additional arguments (size should correspond to the number of occurrences of `{}` in `fmt`) that shall be substituted into the format string.
+* @hideinitializer
+**/
 #define tz_assert(cond, fmt, ...) if(!(cond)){tz::detail::error_internal("[Assertion Fail]: ", fmt, std::source_location::current(), __VA_ARGS__);}
 
+/**
+* @ingroup tz
+* @brief Cause a runtime error. If a debugger is present, a breakpoint will occur at the call-site. Otherwise, the program will terminate.
+* @param fmt Format string, following the fmtlib convention (i.e the n'th instance of `{}` in the string will be replaced with the n'th variadic parameter).
+* @param ... Additional arguments (size should correspond to the number of occurrences of `{}` in `fmt`) that shall be substituted into the format string.
+* @hideinitializer
+**/
 #define tz_error(fmt, ...) tz::detail::error_internal("[Error]: ", fmt, std::source_location::current(), __VA_ARGS__)
 
 #endif // TOPAZ_DEBUG_HPP
