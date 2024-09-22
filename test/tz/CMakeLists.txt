@@ -9,3 +9,9 @@ topaz_add_test(
   SOURCES
     vector_test.cpp
 )
+
+topaz_add_test(
+  TARGET tz_gpu_initialise_test
+  SOURCES
+    gpu_initialise.cpp
+)

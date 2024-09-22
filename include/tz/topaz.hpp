@@ -20,6 +20,12 @@ namespace tz
 	 * You should call this at the end of your program's runtime, after the last Topaz API call you make. You should expect this function to take a significantly long time.
 	**/
 	void terminate();
+
+	namespace gpu
+	{
+		void initialise();
+		void terminate();
+	}
 }
 
 /**
