@@ -1,4 +1,6 @@
+#include <vulkan/vulkan_core.h>
 #if TOPAZ_VULKAN
+#include "topaz.hpp"
 #include "gpu/device.hpp"
 
 #include "vulkan/vulkan.h"
@@ -10,14 +12,61 @@ namespace tz::gpu
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 
-	void initialise()
+	void initialise(tz::appinfo info)
 	{
+		VkApplicationInfo vk_appinfo
+		{
+			.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+			.pApplicationName = info.name,
+			.applicationVersion = VK_MAKE_API_VERSION(0, info.major, info.minor, 0),
+			.engineVersion = VK_MAKE_API_VERSION(0, 5, 0, 0),
+			.apiVersion = VK_MAKE_API_VERSION(0, 1, 2, 0),
+		};
+		VkInstanceCreateInfo inst_create
+		{
+			.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.pApplicationInfo = &vk_appinfo,
+			.enabledLayerCount = 0,
+			.ppEnabledLayerNames = nullptr,
+			.enabledExtensionCount = 0,
+			.ppEnabledExtensionNames = nullptr
+		};
+		VkResult res = vkCreateInstance(&inst_create, nullptr, &current_instance);	
+		switch(res)
+		{
+			case VK_SUCCESS:
 
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("OOM'd while initialising vulkan instance. Reduce memory usage and try again.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("VOOM'd while initialising vulkan instance. Reduce video memory usage and try again.");
+			break;
+			case VK_ERROR_INITIALIZATION_FAILED:
+				tz_error("Vulkan instance creation failed due to an implementation-specific error. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+			break;
+			case VK_ERROR_LAYER_NOT_PRESENT:
+				tz_error("Vulkan instance creation failed due to a missing layer that the implementation asked for. Please submit a bug report.");
+			break;
+			case VK_ERROR_EXTENSION_NOT_PRESENT:
+				tz_error("Vulkan instance creation failed due to a missing extension that the implementation asked for. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+			break;
+			case VK_ERROR_INCOMPATIBLE_DRIVER:
+				tz_error("Vulkan instance creation failed due to the requested version not being compatible by this machine's drivers. Verify that your machine meets the minimum requirements, and then update your graphics card drivers and try again.");
+			break;
+			default:
+				tz_error("Vulkan instance creation failed due to an undocumented vulkan error code \"{}\"", static_cast<int>(res));
+			break;
+		}
 	}
 
 	void terminate()
 	{
-
+		tz_assert(current_instance != VK_NULL_HANDLE, "Requested to terminate tz::gpu (vulkan) when the vulkan instance was null, implying we had never initialised. This is a game-side logic error.");
+		vkDestroyInstance(current_instance, nullptr);
 	}
 
 	error_code iterate_hardware(std::span<hardware> devices, std::size_t* device_count)

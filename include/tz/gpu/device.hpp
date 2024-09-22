@@ -13,6 +13,8 @@ namespace tz::gpu
 		partial_success,
 		precondition_failure,
 		unknown_error,
+		oom,
+		voom,
 		_count
 	};
 	constexpr std::array<const char*, static_cast<int>(error_code::_count)> error_code_names
@@ -20,7 +22,9 @@ namespace tz::gpu
 		"success",
 		"partial success",
 		"precondition failure",
-		"unknown error"
+		"unknown error",
+		"out of memory",
+		"out of video memory"
 	};
 
 	enum class device_type

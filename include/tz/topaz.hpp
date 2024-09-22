@@ -8,11 +8,24 @@ namespace tz
 {
 	/**
 	 * @ingroup tz
+	 * @brief Contains information about the application being initialised.
+	 **/
+	struct appinfo
+	{
+		/// Name of the application.
+		const char* name = "A Topaz Application";
+		// Major version of the application.
+		unsigned int major = 1u;
+		// Minor version of the application.
+		unsigned int minor = 0u;
+	};
+	/**
+	 * @ingroup tz
 	 * @brief Initialise the engine.
 	 *
 	 * You should call this at the start of your program's runtime, before the first Topaz API call you make. You should expect this function to take a significantly long time.
 	**/
-	void initialise();
+	void initialise(appinfo info = {});
 	/**
 	 * @ingroup tz
 	 * @brief Terminate the engine, cleaning up all resources.
@@ -23,7 +36,7 @@ namespace tz
 
 	namespace gpu
 	{
-		void initialise();
+		void initialise(appinfo info);
 		void terminate();
 	}
 }

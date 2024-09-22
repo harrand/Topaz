@@ -2,13 +2,13 @@
 
 namespace tz
 {
-	void initialise()
+	void initialise(appinfo info)
 	{
-		gpu::initialise();
+		gpu::initialise(info);
 	}
 
 	void terminate()
 	{
-		gpu::initialise();
+		gpu::terminate();
 	}
 }
