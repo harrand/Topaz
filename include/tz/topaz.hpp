@@ -3,13 +3,20 @@
 
 /**
  * @defgroup topaz Topaz Engine
+ * Top-level engine functionality.
  * @{
 **/
 namespace tz
 {
-	/// Initialise Topaz.
+	/**
+	 * @ingroup topaz
+	 * Initialise the engine.
+	**/
 	void initialise();
-	/// Terminate Topaz.
+	/**
+	 * @ingroup topaz
+	 * Terminate the engine, cleaning up all resources.
+	**/
 	void terminate();
 }
 
