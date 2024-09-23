@@ -4,6 +4,7 @@
 
 #include "vulkan/vulkan.h"
 #include <vector>
+#include <array>
 
 namespace tz::gpu
 {
@@ -31,6 +32,13 @@ namespace tz::gpu
 		"unknown error",
 		"out of CPU memory error",
 		"out of GPU memory error",
+	};
+
+	std::array<const char*, static_cast<int>(hardware_feature_coverage::_count)> hardware_feature_coverage_strings
+	{
+		"ideal",
+		"insufficient",
+		"poor"
 	};
 
 	/////////////////// chunky impl predecls ///////////////////
@@ -175,9 +183,9 @@ namespace tz::gpu
 		return best_hardware;
 	}
 
-	device_handle create_device(hardware hw)
+	error_code use_hardware(hardware hw)
 	{
-		tz_assert(hw.caps != hardware_capabilities::neither, "call to create_device using hardware \"{}\" which supports neither 'graphics' nor 'compute' operations. you can only create a device from a piece of hardware that supports at least one of these.", hw.name);
+		tz_assert(hw.caps != hardware_capabilities::neither, "call to use_hardware using hardware \"{}\" which supports neither 'graphics' nor 'compute' operations. you can only create a device from a piece of hardware that supports at least one of these.", hw.name);
 		auto pdev = reinterpret_cast<VkPhysicalDevice>(static_cast<std::uintptr_t>(hw.internals.i0.peek()));
 
 		float queue_priority = 1.0f;
@@ -189,17 +197,32 @@ namespace tz::gpu
 			.pQueuePriorities = &queue_priority
 		};
 
+		VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features
+		{
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES ,
+			.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+			.descriptorBindingPartiallyBound = VK_TRUE,
+			.descriptorBindingVariableDescriptorCount = VK_TRUE,
+			.runtimeDescriptorArray = VK_TRUE,
+		};
+		VkPhysicalDeviceFeatures2 enabled_features
+		{
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+			.pNext = &descriptor_indexing_features
+		};
+
 		VkDeviceCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-			.pNext = nullptr,
+			.pNext = &enabled_features,
 			.flags = 0,
 			.queueCreateInfoCount = 1,
 			.pQueueCreateInfos = &qcreate,
 			.enabledLayerCount = 0,
 			.ppEnabledLayerNames = nullptr,
 			.enabledExtensionCount = 0,
-			.ppEnabledExtensionNames = nullptr
+			.ppEnabledExtensionNames = nullptr,
+			.pEnabledFeatures = nullptr
 		};
 
 		VkDevice ldev;
@@ -207,34 +230,46 @@ namespace tz::gpu
 		switch(res)
 		{
 			case VK_SUCCESS:
-
+				return error_code::success;
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				tz_error("OOM'd while create vulkan device. Reduce memory usage and try again.");
+				return error_code::oom;
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				tz_error("VOOM'd while creating vulkan device. Reduce video memory usage and try again.");
+				return error_code::voom;
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				tz_error("Vulkan device creation failed due to an implementation-specific error. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+				return error_code::unknown_error;
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
 				tz_error("Vulkan device creation failed due to a missing extension that the implementation asked for. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+				return error_code::precondition_failure;
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
-				tz_error("Vulkan device creation failed due to a missing device feature that the implementation asked for. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+				switch(hw.features)
+				{
+					case tz::gpu::hardware_feature_coverage::ideal:
+					tz_error("Vulkan device creation failed due to a missing device feature that the implementation asked for. This is surprising, as Topaz considered the feature coverage of \"{}\" to be: \"{}\". Please submit a bug report.", hw.name, hardware_feature_coverage_strings[static_cast<int>(hw.features)]);
+					break;
+					default:
+					tz_error("Vulkan device creation failed due to a missing device feature that the implementation asked for. However, Topaz considered the feature coverage of \"{}\" to be: \"{}\". Your GPU does not meet Topaz's system requirements. Try updating your drivers and trying again.", hw.name, hardware_feature_coverage_strings[static_cast<int>(hw.features)]);
+					break;
+				}
+				return error_code::precondition_failure;
 			break;
 			case VK_ERROR_TOO_MANY_OBJECTS:
 				tz_error("Vulkan device creation failed due to too many objects. The driver says you have created too many devices. If you think this diagnosis is incorrect, proceed with troubleshooting.");
+				return error_code::unknown_error;
 			break;
 			case VK_ERROR_DEVICE_LOST:
 				tz_error("Vulkan device creation failed due to device lost. This could be a once-off crash. If not, please verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+				return error_code::unknown_error;
 			break;
 			default:
 				tz_error("GPU Device creation failed due to undocumented vulkan error \"{}\"", static_cast<int>(res));
+				return error_code::unknown_error;
 			break;
 		}
-		return static_cast<tz::hanval>(reinterpret_cast<std::uintptr_t>(ldev));
 	}
 
 	void destroy_device(device_handle device)
@@ -248,10 +283,15 @@ namespace tz::gpu
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
 	{
 		// get all the damn information about the stupid ass hardware, in as many lines as possible because this is vulkan
+		VkPhysicalDeviceDescriptorIndexingFeatures descriptor_features
+		{
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES ,
+			.pNext = nullptr
+		};
 		VkPhysicalDeviceFeatures2 base_features
 		{
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-			.pNext = nullptr
+			.pNext = &descriptor_features
 		};
 		vkGetPhysicalDeviceFeatures2(from, &base_features);
 		VkPhysicalDeviceProperties2 base_properties
@@ -262,7 +302,44 @@ namespace tz::gpu
 		vkGetPhysicalDeviceProperties2(from, &base_properties);
 		VkPhysicalDeviceMemoryProperties base_memory;
 		vkGetPhysicalDeviceMemoryProperties(from, &base_memory);
-		to.vram_size = 0;
+		to.vram_size_mib = 0;
+		to.features = hardware_feature_coverage::insufficient;
+
+		std::size_t missing_features = 0;
+		if(!base_features.features.multiDrawIndirect)
+		{
+			missing_features++;
+		}
+		if(!descriptor_features.runtimeDescriptorArray)
+		{
+			missing_features++;
+		}
+		if(!descriptor_features.descriptorBindingPartiallyBound)
+		{
+			missing_features++;
+		}
+		if(!descriptor_features.descriptorBindingVariableDescriptorCount)
+		{
+			missing_features++;
+		}
+		if(!descriptor_features.shaderSampledImageArrayNonUniformIndexing)
+		{
+			missing_features++;
+		}
+		switch(missing_features)
+		{
+			case 0:
+				to.features = hardware_feature_coverage::ideal;
+			break;
+			case 1:
+			[[fallthrough]];
+			case 2:
+				to.features = hardware_feature_coverage::insufficient;	
+			break;
+			default:
+				to.features = hardware_feature_coverage::poor;
+			break;
+		}
 		
 		switch(base_properties.properties.deviceType)
 		{
@@ -285,7 +362,7 @@ namespace tz::gpu
 			const VkMemoryHeap& heap = base_memory.memoryHeaps[i];
 			if(heap.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
 			{
-				to.vram_size = std::max(to.vram_size, heap.size);
+				to.vram_size_mib = std::max(to.vram_size_mib, heap.size / (1024 * 1024));
 			}
 		}
 
@@ -347,7 +424,19 @@ namespace tz::gpu
 		// or in other words, more vram = good
 		// arbitrarily: 6 GiB VRAM should be equivalent to 50 score.
 		// i.e score = vram * 50 / (6 * 1024 * 1024 * 1024)
-		score += hw.vram_size * 50 / (6ull * 1024 * 1024 * 1024);
+		score += hw.vram_size_mib * 50 / (6ull * 1024);
+		switch(hw.features)
+		{
+			case tz::gpu::hardware_feature_coverage::ideal:
+				// if it supports all features, then big score bonus.
+				score += 500;
+			break;
+			case tz::gpu::hardware_feature_coverage::poor:
+				// if it is poor, then no matter what its specs are we really shouldnt use it.
+				score = 0;
+			break;
+			default: break;
+		}
 		return score;
 	}
 }

@@ -4,7 +4,6 @@
 #include <string>
 #include <span>
 #include <cstddef>
-#include <array>
 
 namespace tz::gpu
 {
@@ -67,6 +66,21 @@ namespace tz::gpu
 		neither
 	};
 
+	/**
+	 * @ingroup tz_gpu_device
+	 * @brief Describes to what extent the rendering hardware supports all the features that Topaz requires.
+	 **/
+	enum class hardware_feature_coverage
+	{
+		/// The hardware supports everything Topaz needs to do to support all @ref tz_gpu features.
+		ideal,
+		/// The hardware does not support all features, and as such could crash.
+		insufficient,
+		/// The hardware does not come close to supporting all required features, and as such should not be attempted to be used.
+		poor,
+		_count
+	};
+
 	using hardware_handle = tz::handle<hardware_type>;
 
 
@@ -80,10 +94,12 @@ namespace tz::gpu
 	{
 		/// User-facing name of the hardware. In most cases this should be the name of your graphics card. Note that some drivers may truncate this to an implementation-defined maximum size.
 		std::string name;
-		/// Estimated size of the biggest heap, in bytes. If the hardware is not a discrete GPU, this value could be inaccurate.
-		std::uint64_t vram_size;
+		/// Estimated size of the biggest heap, in MiB. If the hardware is not a discrete GPU, this value could be inaccurate.
+		std::uint64_t vram_size_mib;
 		/// Describes which type of hardware this is (e.g a discrete GPU, or a CPU).
 		hardware_type type;
+		/// Describes whether this hardware is suited to Topaz rendering based upon the GPU features it supports.
+		hardware_feature_coverage features;
 		/// Describes which sort of GPU operations this hardware is capable of doing.
 		hardware_capabilities caps;
 
@@ -130,13 +146,14 @@ namespace tz::gpu
 	hardware find_best_hardware();
 	/**
 	 * @ingroup tz_gpu_device
-	 * @brief Create a logical device to interface with the provided rendering hardware.
+	 * @brief Select a piece of hardware to use for future graphical operations.
 	 * @param hw A hardware component of your choice that you wish to use to perform some GPU work.
-	 * @return An interface through the provided piece of hardware which you can use to start rendering.
 	 *
-	 * Once you are done rendering, you should destroy the device before your application ends via @ref destroy_device.
+	 * You must select a piece of hardware using this API call before attempting to submit any GPU work. There is no default device selection.
+
+	 * @note All previous tz::gpu state will be invalidated if you use a new piece of hardware. It is recommended to select your hardware once after @ref tz::initialise, use it with this function and never attempt to use other hardware.
 	 **/
-	device_handle create_device(hardware hw);
+	error_code use_hardware(hardware hw);
 	/**
 	 * @ingroup tz_gpu_device
 	 * @brief Destroy an existing logical device.
