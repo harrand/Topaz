@@ -8,6 +8,7 @@
 namespace tz::gpu
 {
 	VkInstance current_instance = VK_NULL_HANDLE;
+	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 
 	/////////////////// chunky impl predecls ///////////////////
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
@@ -16,13 +17,15 @@ namespace tz::gpu
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
 	{
+		// create a valid vulkan instance
 		VkApplicationInfo vk_appinfo
 		{
 			.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
 			.pApplicationName = info.name,
 			.applicationVersion = VK_MAKE_API_VERSION(0, info.major, info.minor, 0),
+			// todo: don't hardcode this idiot -.-
 			.engineVersion = VK_MAKE_API_VERSION(0, 5, 0, 0),
-			.apiVersion = VK_MAKE_API_VERSION(0, 1, 2, 0),
+			.apiVersion = VULKAN_API_VERSION_USED
 		};
 		VkInstanceCreateInfo inst_create
 		{
@@ -208,6 +211,8 @@ namespace tz::gpu
 		auto ldev = reinterpret_cast<VkDevice>(static_cast<std::uintptr_t>(device.peek()));
 		vkDestroyDevice(ldev, nullptr);
 	}
+
+	/////////////////// chunky impl IMPLEMENTATION ///////////////////
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
 	{

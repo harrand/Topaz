@@ -14,23 +14,28 @@ namespace tz
 	{
 		/// Name of the application.
 		const char* name = "A Topaz Application";
-		// Major version of the application.
+		/// Major version of the application.
 		unsigned int major = 1u;
-		// Minor version of the application.
+		/// Minor version of the application.
 		unsigned int minor = 0u;
 	};
 	/**
 	 * @ingroup tz
 	 * @brief Initialise the engine.
+	 * @param info Some basic information about your application. If you don't provide this, some placeholder values will be provided for you.
 	 *
-	 * You should call this at the start of your program's runtime, before the first Topaz API call you make. You should expect this function to take a significantly long time.
+	 * This function *must* be the first Topaz API call you make, ideally at the start of your program's runtime.
+	 *
+	 * You should expect this function to take a significantly long time.
 	**/
 	void initialise(appinfo info = {});
 	/**
 	 * @ingroup tz
 	 * @brief Terminate the engine, cleaning up all resources.
 	 *
-	 * You should call this at the end of your program's runtime, after the last Topaz API call you make. You should expect this function to take a significantly long time.
+	 * This function should be the last Topaz API call you make before the end of your program's runtime.
+	 *
+	 * You should expect this function to take a significantly long time.
 	**/
 	void terminate();
 
