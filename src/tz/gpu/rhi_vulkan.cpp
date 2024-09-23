@@ -10,6 +10,19 @@ namespace tz::gpu
 	VkInstance current_instance = VK_NULL_HANDLE;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 
+	const char* validation_layers[] =
+	{
+		#if TOPAZ_DEBUG
+		"VK_LAYER_KHRONOS_validation"
+		#endif
+	};
+	const char* layers[] =
+	{
+		#if TOPAZ_DEBUG
+		VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+		#endif
+	};
+
 	/////////////////// chunky impl predecls ///////////////////
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 	unsigned int impl_rate_hardware(const hardware&);
@@ -33,10 +46,10 @@ namespace tz::gpu
 			.pNext = nullptr,
 			.flags = 0,
 			.pApplicationInfo = &vk_appinfo,
-			.enabledLayerCount = 0,
-			.ppEnabledLayerNames = nullptr,
-			.enabledExtensionCount = 0,
-			.ppEnabledExtensionNames = nullptr
+			.enabledLayerCount = sizeof(validation_layers) / sizeof(validation_layers[0]),
+			.ppEnabledLayerNames = validation_layers,
+			.enabledExtensionCount = sizeof(layers) / sizeof(layers[0]),
+			.ppEnabledExtensionNames = layers
 		};
 		VkResult res = vkCreateInstance(&inst_create, nullptr, &current_instance);	
 		switch(res)
