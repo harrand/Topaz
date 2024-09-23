@@ -6,11 +6,9 @@ int main()
 {
 	tz::initialise();
 
-	std::size_t hardware_count;
-	tz::gpu::error_code res;
-	res = tz::gpu::iterate_hardware({}, &hardware_count);
-	std::vector<tz::gpu::hardware> hardware(hardware_count);
-	res = tz::gpu::iterate_hardware(hardware);
+	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
+	tz::gpu::device_handle dev = tz::gpu::create_device(gpu);
+	tz::gpu::destroy_device(dev);
 
 	tz::terminate();
 

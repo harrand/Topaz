@@ -1,7 +1,6 @@
-#include <vulkan/vulkan_core.h>
 #if TOPAZ_VULKAN
-#include "topaz.hpp"
-#include "gpu/device.hpp"
+#include "tz/topaz.hpp"
+#include "tz/gpu/device.hpp"
 
 #include "vulkan/vulkan.h"
 #include <vector>
@@ -10,8 +9,11 @@ namespace tz::gpu
 {
 	VkInstance current_instance = VK_NULL_HANDLE;
 
+	/////////////////// chunky impl predecls ///////////////////
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
+	unsigned int impl_rate_hardware(const hardware&);
 
+	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
 	{
 		VkApplicationInfo vk_appinfo
@@ -109,8 +111,102 @@ namespace tz::gpu
 			hardware& dev = devices[i];
 			VkPhysicalDevice vk_dev = vk_devices[i];
 			impl_retrieve_physical_device_info(vk_dev, dev);
+			dev.internals.i0 = static_cast<tz::hanval>(reinterpret_cast<std::uintptr_t>(vk_dev));
 		}
 		return ret;
+	}
+
+	hardware find_best_hardware()
+	{
+		std::size_t hardware_count;
+		tz::gpu::error_code res;
+		res = tz::gpu::iterate_hardware({}, &hardware_count);
+		tz_assert(res == error_code::success || res == error_code::partial_success, "fooey");
+		std::vector<tz::gpu::hardware> hardware(hardware_count);
+		std::vector<unsigned int> hardware_scores(hardware_count);
+		res = tz::gpu::iterate_hardware(hardware);
+		tz_assert(res == error_code::success, "fooey");
+
+		unsigned int max_score = 0;
+		tz::gpu::hardware best_hardware = hardware.front();
+		for(std::size_t i = 0; i < hardware_count; i++)
+		{
+			unsigned int score = impl_rate_hardware(hardware[i]);
+			if(score > max_score)
+			{
+				max_score = score;
+				best_hardware = hardware[i];
+			}
+		}
+		return best_hardware;
+	}
+
+	device_handle create_device(hardware hw)
+	{
+		tz_assert(hw.caps != hardware_capabilities::neither, "call to create_device using hardware \"{}\" which supports neither 'graphics' nor 'compute' operations. you can only create a device from a piece of hardware that supports at least one of these.", hw.name);
+		auto pdev = reinterpret_cast<VkPhysicalDevice>(static_cast<std::uintptr_t>(hw.internals.i0.peek()));
+
+		float queue_priority = 1.0f;
+		VkDeviceQueueCreateInfo qcreate
+		{
+			.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+			.queueFamilyIndex = hw.internals.i1,
+			.queueCount = 1,
+			.pQueuePriorities = &queue_priority
+		};
+
+		VkDeviceCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.queueCreateInfoCount = 1,
+			.pQueueCreateInfos = &qcreate,
+			.enabledLayerCount = 0,
+			.ppEnabledLayerNames = nullptr,
+			.enabledExtensionCount = 0,
+			.ppEnabledExtensionNames = nullptr
+		};
+
+		VkDevice ldev;
+		VkResult res = vkCreateDevice(pdev, &create, nullptr, &ldev);
+		switch(res)
+		{
+			case VK_SUCCESS:
+
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("OOM'd while create vulkan device. Reduce memory usage and try again.");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("VOOM'd while creating vulkan device. Reduce video memory usage and try again.");
+			break;
+			case VK_ERROR_INITIALIZATION_FAILED:
+				tz_error("Vulkan device creation failed due to an implementation-specific error. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+			break;
+			case VK_ERROR_EXTENSION_NOT_PRESENT:
+				tz_error("Vulkan device creation failed due to a missing extension that the implementation asked for. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+			break;
+			case VK_ERROR_FEATURE_NOT_PRESENT:
+				tz_error("Vulkan device creation failed due to a missing device feature that the implementation asked for. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+			break;
+			case VK_ERROR_TOO_MANY_OBJECTS:
+				tz_error("Vulkan device creation failed due to too many objects. The driver says you have created too many devices. If you think this diagnosis is incorrect, proceed with troubleshooting.");
+			break;
+			case VK_ERROR_DEVICE_LOST:
+				tz_error("Vulkan device creation failed due to device lost. This could be a once-off crash. If not, please verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
+			break;
+			default:
+				tz_error("GPU Device creation failed due to undocumented vulkan error \"{}\"", static_cast<int>(res));
+			break;
+		}
+		return static_cast<tz::hanval>(reinterpret_cast<std::uintptr_t>(ldev));
+	}
+
+	void destroy_device(device_handle device)
+	{
+		auto ldev = reinterpret_cast<VkDevice>(static_cast<std::uintptr_t>(device.peek()));
+		vkDestroyDevice(ldev, nullptr);
 	}
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
@@ -127,8 +223,91 @@ namespace tz::gpu
 			.pNext = nullptr
 		};
 		vkGetPhysicalDeviceProperties2(from, &base_properties);
-
+		VkPhysicalDeviceMemoryProperties base_memory;
+		vkGetPhysicalDeviceMemoryProperties(from, &base_memory);
+		to.vram_size = 0;
+		
+		switch(base_properties.properties.deviceType)
+		{
+			case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+				to.type = tz::gpu::hardware_type::gpu;
+			break;
+			case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+				to.type = tz::gpu::hardware_type::integrated_gpu;
+			break;
+			case VK_PHYSICAL_DEVICE_TYPE_CPU:
+				to.type = tz::gpu::hardware_type::cpu;
+			break;
+			default:
+				to.type = tz::gpu::hardware_type::unknown;
+			break;
+		}
 		to.name = base_properties.properties.deviceName;
+		for(std::size_t i = 0; i < base_memory.memoryHeapCount; i++)
+		{
+			const VkMemoryHeap& heap = base_memory.memoryHeaps[i];
+			if(heap.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT)
+			{
+				to.vram_size = std::max(to.vram_size, heap.size);
+			}
+		}
+
+		// queue family ridiculous boilerplate. this is stupid.
+		uint32_t family_count = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(from, &family_count, nullptr);
+
+		std::vector<VkQueueFamilyProperties> families(family_count);
+		vkGetPhysicalDeviceQueueFamilyProperties(from, &family_count, families.data());
+		for(std::size_t i = 0; i < family_count; i++)
+		{
+			const auto& fam = families[i];
+			if(fam.queueFlags & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT))
+			{
+				to.caps = hardware_capabilities::graphics_compute;
+				to.internals.i1 = i;
+			}
+			else if(fam.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
+				to.caps = hardware_capabilities::graphics_only;
+				to.internals.i1 = i;
+			}
+			else if(fam.queueFlags & VK_QUEUE_COMPUTE_BIT)
+			{
+				to.caps = hardware_capabilities::compute_only;
+				to.internals.i1 = i;
+			}
+			else
+			{
+				to.caps = hardware_capabilities::neither;
+			}
+		}
 	}
+
+	unsigned int impl_rate_hardware(const hardware& hw)
+	{
+		unsigned int score = 0;
+		switch(hw.caps)
+		{
+			case tz::gpu::hardware_capabilities::graphics_compute:
+				score += 200;
+			break;
+			default: break;
+		}
+		switch(hw.type)
+		{
+			case tz::gpu::hardware_type::gpu:
+				score += 1000;
+			break;
+			case tz::gpu::hardware_type::integrated_gpu:
+				score += 250;
+			break;
+			default: break;
+		}
+		// 6 GiB VRAM should be equivalent to 50 score.
+		// i.e score = vram * 50 / (6 * 1024 * 1024 * 1024)
+		score += hw.vram_size * 50 / (6ull * 1024 * 1024 * 1024);
+		return score;
+	}
+
 }
 #endif
