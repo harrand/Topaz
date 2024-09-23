@@ -32,6 +32,7 @@ namespace tz::gpu
 		oom,
 		/// An error has occurred due to lack of GPU memory.
 		voom,
+		_count
 	};
 
 	/**
@@ -105,6 +106,9 @@ namespace tz::gpu
 	 * @brief Retrieve information about all detected rendering hardware currently available on the machine.
 	 * @param devices A region of memory through which hardware information shall be written to. As many hardware components as possible will be written, until all hardware has been listed or the region does not have enough available space.
 	 * @param hardware_count A pointer to a value which (if not-null) will be updated with the total number of rendering hardware components available on the machine.
+	 * @return - @ref error_code::partial_success If the span of devices provides is not large enough to store all devices on the machine.
+	 * @return - @ref error_code::precondition_failure If Topaz has not yet been initialised via @ref tz::initialise.
+	 * @return - @ref error_code::unknown_error If some other error occurs.
 	 *
 	 * If you aren't interested in choosing a device yourself, and are happy to let Topaz figure out the best for you, use @ref find_best_hardware instead of this.
 	 *
@@ -120,6 +124,8 @@ namespace tz::gpu
 	 * This function prefers desktop GPUs that handle compute/graphics/transfer on the same queue.
 	 *
 	 * If you want more control over which hardware is used, or you don't trust Topaz's opinion, consider calling @ref iterate_hardware and choosing one yourself.
+	 *
+	 * Unlike @ref iterate_hardware, any error that the driver reports is considered fatal and will emit a @ref tz_error.
 	 **/
 	hardware find_best_hardware();
 	/**

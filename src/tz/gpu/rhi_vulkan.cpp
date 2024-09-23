@@ -23,6 +23,16 @@ namespace tz::gpu
 		#endif
 	};
 
+	std::array<const char*, static_cast<int>(error_code::_count)> error_code_strings
+	{
+		"success",
+		"partial success",
+		"precondition failure error",
+		"unknown error",
+		"out of CPU memory error",
+		"out of GPU memory error",
+	};
+
 	/////////////////// chunky impl predecls ///////////////////
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 	unsigned int impl_rate_hardware(const hardware&);
@@ -101,11 +111,15 @@ namespace tz::gpu
 		std::vector<VkPhysicalDevice> vk_devices;
 		vk_devices.resize(devices.size());
 
-		std::uint32_t vk_device_count;
+		std::uint32_t vk_device_count = devices.size();
 		VkResult res = vkEnumeratePhysicalDevices(current_instance, &vk_device_count, vk_devices.data());
 		if(device_count != nullptr)
 		{
 			*device_count = vk_device_count;
+		}
+		if(devices.empty())
+		{
+			return error_code::partial_success;
 		}
 		error_code ret;
 
@@ -136,12 +150,16 @@ namespace tz::gpu
 	{
 		std::size_t hardware_count;
 		tz::gpu::error_code res;
-		res = tz::gpu::iterate_hardware({}, &hardware_count);
-		tz_assert(res == error_code::success || res == error_code::partial_success, "fooey");
-		std::vector<tz::gpu::hardware> hardware(hardware_count);
+		std::vector<tz::gpu::hardware> hardware;
+		hardware.resize(8);
+		res = tz::gpu::iterate_hardware(hardware, &hardware_count);
+		if(res == error_code::partial_success)
+		{
+			hardware.resize(hardware_count);
+			res = tz::gpu::iterate_hardware(hardware);
+		}
 		std::vector<unsigned int> hardware_scores(hardware_count);
-		res = tz::gpu::iterate_hardware(hardware);
-		tz_assert(res == error_code::success, "fooey");
+		tz_assert(res == error_code::success, "find_best_hardware failed due to {}", error_code_strings[static_cast<int>(res)]);
 
 		unsigned int max_score = 0;
 		tz::gpu::hardware best_hardware = hardware.front();

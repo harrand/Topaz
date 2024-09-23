@@ -1,6 +1,5 @@
 #include "tz/topaz.hpp"
 #include "tz/gpu/device.hpp"
-#include <vector>
 
 int main()
 {
