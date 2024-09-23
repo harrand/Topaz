@@ -155,14 +155,12 @@ namespace tz::gpu
 	 **/
 	error_code use_hardware(hardware hw);
 	/**
-	 * @ingroup tz_gpu_device
-	 * @brief Destroy an existing logical device.
-	 * @param device Logical device from a previous call to @ref create_device.
+	 * @ingroup tz_gpu_device	
+	 * @brief Retrieve the hardware that's currently being used.
 	 *
-	 * You should call this to cleanup resources after you have completed whatever rendering work you needed to do with the hardware.
-	 * @note Creating and destroying devices should be considered *extremely* slow. For that reason, only create a device when you are sure you need to do some GPU work, and only destroy it once you are certain you have no further need of it.
+	 * This will return the hardware selected in a previous call to @ref use_hardware. If you have never selected a hardware component by calling this previous function, this function will emit a @ref tz_error.
 	 **/
-	void destroy_device(device_handle device);
+	hardware get_used_hardware();
 }
 
 #endif // TZ_GPU_DEVICE_HPP

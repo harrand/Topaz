@@ -9,6 +9,8 @@
 namespace tz::gpu
 {
 	VkInstance current_instance = VK_NULL_HANDLE;
+	VkDevice current_device = VK_NULL_HANDLE;
+	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 
 	const char* validation_layers[] =
@@ -101,6 +103,10 @@ namespace tz::gpu
 
 	void terminate()
 	{
+		if(current_device != VK_NULL_HANDLE)
+		{
+			vkDestroyDevice(current_device, nullptr);
+		}
 		tz_assert(current_instance != VK_NULL_HANDLE, "Requested to terminate tz::gpu (vulkan) when the vulkan instance was null, implying we had never initialised. This is a game-side logic error.");
 		vkDestroyInstance(current_instance, nullptr);
 	}
@@ -225,8 +231,8 @@ namespace tz::gpu
 			.pEnabledFeatures = nullptr
 		};
 
-		VkDevice ldev;
-		VkResult res = vkCreateDevice(pdev, &create, nullptr, &ldev);
+		VkResult res = vkCreateDevice(pdev, &create, nullptr, &current_device);
+		current_hardware = hw;
 		switch(res)
 		{
 			case VK_SUCCESS:
@@ -272,10 +278,10 @@ namespace tz::gpu
 		}
 	}
 
-	void destroy_device(device_handle device)
+	hardware get_used_hardware()
 	{
-		auto ldev = reinterpret_cast<VkDevice>(static_cast<std::uintptr_t>(device.peek()));
-		vkDestroyDevice(ldev, nullptr);
+		tz_assert(current_device != VK_NULL_HANDLE, "A call to get_used_hardware() was invalid because a piece of hardware has seemingly not yet been selected in a previous call to use_hardware(...). Did you forget to use a specific hardware component?");
+		return current_hardware;
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
