@@ -12,23 +12,20 @@
  Topaz is a 3D graphics engine.
  * C++20 (no modules)
  * Very low-level declarative graphics API.
- * Supports OpenGL/Vulkan, Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
+ * Supports Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
  
- [Topaz 4.2.0](https://github.com/Harrand/Topaz/tree/Topaz4.2) is the most recent release of the Topaz Engine.
+ [Topaz 4.2.0](https://github.com/Harrand/Topaz/tree/Topaz4.2) is the most recent release of the Topaz Engine. The next version is Topaz 5.0, currently in early development on the master branch.
 
 The Topaz project has been ongoing since it began as a school project in 2015.
 
 ## Notable Features
-- Low-level graphics API, with either a Vulkan or OpenGL backend, configured at compile-time.
-- Barebones lua scripting support
-- GLTF model importing
-- Ability to embed arbitrary text-files within built executables.
+- Low-level GPU rendering API.
 
 ## Version History
 Each major version is a total rewrite and thus completely different from the previous. Each minor version typically consists of API-breaking feature changes. Patch versions are not formally shipped unless they contain emergency bugfixes for a flawed release.
 | Topaz Version | Release Date | Branch      | Documentation        |
 |:-------------:|:-------------|-------------|----------------------|
-| ...			|TBD		   |[master](https://github.com/Harrand/Topaz/)	 | [harrand.github.io](https://harrand.github.io/Topaz)
+| 5.0			|TBD		   |[master](https://github.com/Harrand/Topaz/)	 | [harrand.github.io](https://harrand.github.io/Topaz)
 | 4.2.0			|Apr 23, 2024 |	[Topaz4.2](https://github.com/Harrand/Topaz/tree/Topaz4.2)	 | [Branch: gh-pages-tz4.2](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.2)
 | 4.1.0			|Dec 1, 2023  |	[Topaz4.1](https://github.com/Harrand/Topaz/tree/Topaz4.1)	 | [Branch: gh-pages-tz4.1](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.1)
 | 4.0.0			|July 9, 2023 |	[Topaz4.0](https://github.com/Harrand/Topaz/tree/Topaz4.0)	 | [Branch: gh-pages-tz4.0](https://github.com/Harrand/Topaz/tree/gh-pages-tz4.0)
@@ -77,19 +74,7 @@ The table below shows all the engine's dependencies.
 
 | Dependency                                                                                |  Render API | Build Config  | Dependency Type         |
 |-------------------------------------------------------------------------------------------|:-----------:|:-------------:|-------------------------|
-|[concurrentqueue](https://github.com/cameron314/concurrentqueue)							| Both		  | All			  | Git Submodule			|
-|[debugbreak](https://github.com/scottt/debugbreak)											| Both		  | All			  | Git Submodule			|
-|[GLAD](https://github.com/Dav1dde/glad)													| OpenGL	  | All			  | Included in repository	|
-|[imgui](https://github.com/ocornut/imgui)													| Both		  | All			  | Git Submodule			|
-|[imgui_club](https://github.com/ocornut/imgui_club)										| Both		  | All			  | Git Submodule			|
-|[textc](https://github.com/Harrand/textc/)													| Both		  | All			  | Git Submodule			|
-|[stb](https://github.com/nothings/stb/)													| Both		  | All			  | Git Submodule			|
-|[nlohmann json](https://github.com/nlohmann/json/)											| Both		  | All			  | Git Submodule			|
-|[lua](https://github.com/lua/lua)															| Both		  | All			  | Git Submodule			|
-|[msdfgen](https://github.com/Chlumsky/msdfgen)												| Both		  | All			  | Git Submodule			|
-|[tracy](https://github.com/wolfpld/tracy)													| Both		  | Profile		  | Git Submodule			|
 |[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)											| Vulkan	  | All			  | Needs pre-installation	|
-|[VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) | Vulkan	  | All			  | Git Submodule			|
 
 ## Requirements
 The following requirements apply for all possible build configurations:
@@ -97,18 +82,10 @@ The following requirements apply for all possible build configurations:
 * CMake 3.21 or later is required to build.
 #### Vulkan Build
 * Windows or Linux.
-	* macOS may be theoretically possible now that MoltenVK supports VK1.2, but no investigation has been done to decipher how much work is needed. Definitely, no work is planned for proper Metal support.
-* Vulkan SDK 1.2 or later must be installed.
+	* macOS may be theoretically possible down-the-line via MoltenVK, but no work at all has been done or planned to provide support for it.
+* Vulkan SDK 1.3 or later must be installed.
 
 * Your graphics card must support Vulkan 1.3. [Check your graphics card here](https://vulkan.gpuinfo.org/).
 	* It must also support the following vulkan extension(s):
 		- VK_KHR_swapchain
 		- VK_KHR_shader_non_semantic_info (debug builds only)
-#### OpenGL Build
-* Windows or Linux.
-* Your graphics card must support OpenGL 4.6. [Check your graphics card here](https://opengl.gpuinfo.org/).
-	* It must also support the following opengl extension(s):
-		- ARB_bindless_texture
-			* Note: If this extension is not supported, the engine can still build & run, but you cannot use `tz::gl::image_resource`s of any kind. The unit-tests are guaranteed not to use image resources, so those are safe to run if you lack this extension.
-		- ARB_indirect_parameters
-			* Note: If this extension is not supported, the engine can still build and run, but you cannot use `tz::gl::renderer_option::draw_indirect_count`. None of the tests do this, but `tz_gpu_driven_demo` is a demo that does use this, and thus won't run for you on OGL.
