@@ -216,6 +216,7 @@ namespace tz::gpu
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
 	{
+		// get all the damn information about the stupid ass hardware, in as many lines as possible because this is vulkan
 		VkPhysicalDeviceFeatures2 base_features
 		{
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
@@ -290,16 +291,19 @@ namespace tz::gpu
 
 	unsigned int impl_rate_hardware(const hardware& hw)
 	{
+		// give the hardware a score based on how good it will be for rendering.
 		unsigned int score = 0;
 		switch(hw.caps)
 		{
 			case tz::gpu::hardware_capabilities::graphics_compute:
+				// if it has graphics+compute in the same queue (this includes transfer), then i like it. otherwise it's dogshit.
 				score += 200;
 			break;
 			default: break;
 		}
 		switch(hw.type)
 		{
+			// gpu >> igpu > anything else
 			case tz::gpu::hardware_type::gpu:
 				score += 1000;
 			break;
@@ -308,11 +312,12 @@ namespace tz::gpu
 			break;
 			default: break;
 		}
-		// 6 GiB VRAM should be equivalent to 50 score.
+		// give extra score based on the amount of memory of the largest heap on the hardware.
+		// or in other words, more vram = good
+		// arbitrarily: 6 GiB VRAM should be equivalent to 50 score.
 		// i.e score = vram * 50 / (6 * 1024 * 1024 * 1024)
 		score += hw.vram_size * 50 / (6ull * 1024 * 1024 * 1024);
 		return score;
 	}
-
 }
 #endif
