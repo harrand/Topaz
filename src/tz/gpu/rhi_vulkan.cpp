@@ -31,16 +31,12 @@ namespace tz::gpu
 		"success",
 		"partial success",
 		"precondition failure error",
+		"hardware unsuitability error",
+		"engine bug error",
+		"driver hazard error",
 		"unknown error",
 		"out of CPU memory error",
 		"out of GPU memory error",
-	};
-
-	std::array<const char*, static_cast<int>(hardware_feature_coverage::_count)> hardware_feature_coverage_strings
-	{
-		"ideal",
-		"insufficient",
-		"poor"
 	};
 
 	/////////////////// chunky impl predecls ///////////////////
@@ -191,7 +187,11 @@ namespace tz::gpu
 
 	error_code use_hardware(hardware hw)
 	{
-		tz_assert(hw.caps != hardware_capabilities::neither, "call to use_hardware using hardware \"{}\" which supports neither 'graphics' nor 'compute' operations. you can only create a device from a piece of hardware that supports at least one of these.", hw.name);
+		if(hw.caps != hardware_capabilities::graphics_compute)
+		{
+			// incompatible hardware.
+			return error_code::hardware_unsuitable;
+		}
 		auto pdev = reinterpret_cast<VkPhysicalDevice>(static_cast<std::uintptr_t>(hw.internals.i0.peek()));
 
 		float queue_priority = 1.0f;
@@ -203,18 +203,24 @@ namespace tz::gpu
 			.pQueuePriorities = &queue_priority
 		};
 
-		VkPhysicalDeviceDescriptorIndexingFeatures descriptor_indexing_features
+		VkPhysicalDeviceVulkan13Features features13
 		{
-			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES ,
-			.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
-			.descriptorBindingPartiallyBound = VK_TRUE,
-			.descriptorBindingVariableDescriptorCount = VK_TRUE,
-			.runtimeDescriptorArray = VK_TRUE,
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+			.pNext = nullptr,
+			.synchronization2 = VK_TRUE,
+			.dynamicRendering = VK_TRUE,
+		};
+		VkPhysicalDeviceVulkan12Features features12
+		{
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+			.pNext = &features13,
+			.descriptorIndexing = VK_TRUE,
+			.bufferDeviceAddress = VK_TRUE,
 		};
 		VkPhysicalDeviceFeatures2 enabled_features
 		{
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-			.pNext = &descriptor_indexing_features
+			.pNext = &features12,
 		};
 
 		VkDeviceCreateInfo create
@@ -244,35 +250,25 @@ namespace tz::gpu
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
 				return error_code::voom;
 			break;
-			case VK_ERROR_INITIALIZATION_FAILED:
-				return error_code::unknown_error;
-			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				tz_error("Vulkan device creation failed due to a missing extension that the implementation asked for. Verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
-				return error_code::precondition_failure;
+				return error_code::hardware_unsuitable;
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
 				switch(hw.features)
 				{
 					case tz::gpu::hardware_feature_coverage::ideal:
-					tz_error("Vulkan device creation failed due to a missing device feature that the implementation asked for. This is surprising, as Topaz considered the feature coverage of \"{}\" to be: \"{}\". Please submit a bug report.", hw.name, hardware_feature_coverage_strings[static_cast<int>(hw.features)]);
+						return error_code::engine_bug;
 					break;
 					default:
-					tz_error("Vulkan device creation failed due to a missing device feature that the implementation asked for. However, Topaz considered the feature coverage of \"{}\" to be: \"{}\". Your GPU does not meet Topaz's system requirements. Try updating your drivers and trying again.", hw.name, hardware_feature_coverage_strings[static_cast<int>(hw.features)]);
+						return error_code::hardware_unsuitable;
 					break;
 				}
 				return error_code::precondition_failure;
 			break;
-			case VK_ERROR_TOO_MANY_OBJECTS:
-				tz_error("Vulkan device creation failed due to too many objects. The driver says you have created too many devices. If you think this diagnosis is incorrect, proceed with troubleshooting.");
-				return error_code::unknown_error;
-			break;
 			case VK_ERROR_DEVICE_LOST:
-				tz_error("Vulkan device creation failed due to device lost. This could be a once-off crash. If not, please verify that your machine meets the minimum requirements, and proceed with troubleshooting.");
-				return error_code::unknown_error;
+				return error_code::driver_hazard;
 			break;
 			default:
-				tz_error("GPU Device creation failed due to undocumented vulkan error \"{}\"", static_cast<int>(res));
 				return error_code::unknown_error;
 			break;
 		}
@@ -289,15 +285,20 @@ namespace tz::gpu
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
 	{
 		// get all the damn information about the stupid ass hardware, in as many lines as possible because this is vulkan
-		VkPhysicalDeviceDescriptorIndexingFeatures descriptor_features
+		VkPhysicalDeviceVulkan13Features features13
 		{
-			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES ,
-			.pNext = nullptr
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES,
+			.pNext = nullptr,
+		};
+		VkPhysicalDeviceVulkan12Features features12
+		{
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
+			.pNext = &features13,
 		};
 		VkPhysicalDeviceFeatures2 base_features
 		{
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
-			.pNext = &descriptor_features
+			.pNext = &features12
 		};
 		vkGetPhysicalDeviceFeatures2(from, &base_features);
 		VkPhysicalDeviceProperties2 base_properties
@@ -316,19 +317,19 @@ namespace tz::gpu
 		{
 			missing_features++;
 		}
-		if(!descriptor_features.runtimeDescriptorArray)
+		if(!features13.dynamicRendering)
 		{
 			missing_features++;
 		}
-		if(!descriptor_features.descriptorBindingPartiallyBound)
+		if(!features13.synchronization2)
 		{
 			missing_features++;
 		}
-		if(!descriptor_features.descriptorBindingVariableDescriptorCount)
+		if(!features12.bufferDeviceAddress)
 		{
 			missing_features++;
 		}
-		if(!descriptor_features.shaderSampledImageArrayNonUniformIndexing)
+		if(!features12.descriptorIndexing)
 		{
 			missing_features++;
 		}

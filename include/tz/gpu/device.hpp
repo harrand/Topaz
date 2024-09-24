@@ -25,6 +25,12 @@ namespace tz::gpu
 		partial_success,
 		/// An error has occurred because some previously-required setup has not been complete. The most common cause of this is not initialising the engine via @ref tz::initialise
 		precondition_failure,
+		/// An error has occurred because the hardware currently being used is not suitable for the given task.
+		hardware_unsuitable,
+		/// An error has occurred due to an engine-side logic error, and you should submit a bug report.
+		engine_bug,
+		/// An error has occurred due to a serious hazard relating to the driver/hardware. This most likely means a graphics driver crash/device-lost.
+		driver_hazard,
 		/// An error has occurred, but it's not clear why.
 		unknown_error,
 		/// An error has occurred due to lack of CPU memory.
