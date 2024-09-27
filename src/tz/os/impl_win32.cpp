@@ -10,6 +10,7 @@ namespace tz::os
 	constexpr char wndclass_name[] = "Topaz Window";
 	auto hinst = GetModuleHandle(nullptr);
 	bool initialised = false;
+	bool window_open = false;
 	#define ERROR_UNLESS_INITIALISED if(!initialised){return tz::error_code::precondition_failure;}
 	WNDCLASSEXA wndclass
 	{
@@ -52,15 +53,32 @@ namespace tz::os
 			return tz::error_code::unknown_error;
 		}
 		ShowWindow(wnd, SW_SHOW);
+		window_open = true;
 		return tz::error_code::success;
 	}
 
 	tz::error_code close_window()
 	{
 		ERROR_UNLESS_INITIALISED;
+		window_open = false;
 		auto ret = DestroyWindow(wnd) == 0 ? tz::error_code::unknown_error : tz::error_code::success;
 		wnd = nullptr;
 		return ret;
+	}
+
+	bool window_is_open()
+	{
+		return window_open;
+	}
+
+	void window_update()
+	{
+		MSG msg{};
+		if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
 	}
 
 	window_handle get_window_handle()
@@ -76,6 +94,12 @@ namespace tz::os
 
 	LRESULT CALLBACK impl_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
+		switch(msg)
+		{
+			case WM_CLOSE:
+				window_open = false;
+			break;
+		}
 		return DefWindowProcA(hwnd, msg, wparam, lparam);
 	}
 }

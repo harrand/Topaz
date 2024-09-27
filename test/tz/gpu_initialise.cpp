@@ -1,6 +1,8 @@
 #include "tz/topaz.hpp"
 #include "tz/gpu/hardware.hpp"
 
+#include "tz/os/window.hpp"
+
 int main()
 {
 	tz::initialise();

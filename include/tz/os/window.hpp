@@ -37,6 +37,10 @@ namespace tz::os
 
 	tz::error_code open_window(window_info winfo);
 	tz::error_code close_window();
+
+	bool window_is_open();
+	void window_update();	
+
 	window_handle get_window_handle();
 
 }
