@@ -30,6 +30,7 @@ add_library(topaz STATIC
 	src/tz/topaz.cpp
 	src/tz/core/vector.cpp
 	src/tz/gpu/rhi_vulkan.cpp
+	src/tz/os/impl_win32.cpp
 )
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
 

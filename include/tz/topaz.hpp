@@ -44,12 +44,23 @@ namespace tz
 		void initialise(appinfo info);
 		void terminate();
 	}
+	namespace os
+	{
+		void initialise();
+		void terminate();
+	}
 }
 
 /**
  * @ingroup tz
  * @defgroup tz_core Core Libraries
  * @brief Lowest-level libraries, structs and functionality. Everything is expected to depend on this.
+**/
+
+/**
+ * @ingroup tz
+ * @defgroup tz_os OS Libraries
+ * @brief Cross-platform API to interact with operating-system level components, such as windowing, hardware input, and machine non-GPU hardware.
 **/
 
 /**
