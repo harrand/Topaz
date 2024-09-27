@@ -15,6 +15,7 @@ namespace tz::os
 	WNDCLASSEXA wndclass
 	{
 		.cbSize = sizeof(WNDCLASSEXA),
+		.style = CS_OWNDC | CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW,
 		.lpfnWndProc = impl_wndproc,
 		.cbClsExtra = 0,
 		.cbWndExtra = 0,
