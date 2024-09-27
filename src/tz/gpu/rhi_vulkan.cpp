@@ -26,6 +26,8 @@ namespace tz::gpu
 	};
 
 	/////////////////// chunky impl predecls ///////////////////
+	#define ERROR_UNLESS_INIT if(current_instance == VK_NULL_HANDLE) return tz::error_code::precondition_failure;
+	#define ASSERT_INIT tz_assert(current_instance != VK_NULL_HANDLE, "Topaz has not been initialised.");
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 	unsigned int impl_rate_hardware(const hardware&);
 
@@ -99,10 +101,7 @@ namespace tz::gpu
 		{
 			*device_count = 0;
 		}
-		if(current_instance == VK_NULL_HANDLE)
-		{
-			return error_code::precondition_failure;
-		}
+		ERROR_UNLESS_INIT;
 		// we need a buffer of vulkan native handles of size equal to the span provided, so we can fill the infos as necessary.
 		std::vector<VkPhysicalDevice> vk_devices;
 		vk_devices.resize(devices.size());

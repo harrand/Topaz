@@ -14,7 +14,6 @@ namespace tz::gpu
 	 * @brief Documentation specialised for iterating over rendering hardware and selecting one to be used for rendering.
 	 **/
 
-
 	/**
 	 * @ingroup tz_gpu_hardware
 	 * @brief Describes a specific type of rendering hardware.
