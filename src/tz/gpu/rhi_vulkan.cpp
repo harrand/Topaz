@@ -4,7 +4,6 @@
 
 #include "vulkan/vulkan.h"
 #include <vector>
-#include <array>
 
 namespace tz::gpu
 {
@@ -24,19 +23,6 @@ namespace tz::gpu
 		#if TOPAZ_DEBUG
 		VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 		#endif
-	};
-
-	std::array<const char*, static_cast<int>(error_code::_count)> error_code_strings
-	{
-		"success",
-		"partial success",
-		"precondition failure error",
-		"hardware unsuitability error",
-		"engine bug error",
-		"driver hazard error",
-		"unknown error",
-		"out of CPU memory error",
-		"out of GPU memory error",
 	};
 
 	/////////////////// chunky impl predecls ///////////////////
@@ -159,7 +145,7 @@ namespace tz::gpu
 	hardware find_best_hardware()
 	{
 		std::size_t hardware_count;
-		tz::gpu::error_code res;
+		error_code res;
 		std::vector<tz::gpu::hardware> hardware;
 		hardware.resize(8);
 		res = tz::gpu::iterate_hardware(hardware, &hardware_count);
@@ -168,8 +154,12 @@ namespace tz::gpu
 			hardware.resize(hardware_count);
 			res = tz::gpu::iterate_hardware(hardware);
 		}
+		else
+		{
+			tz_assert(res == error_code::success, "{} occurred when attempting to find the best hardware.", tz::error_code_name(res));
+		}
 		std::vector<unsigned int> hardware_scores(hardware_count);
-		tz_assert(res == error_code::success, "find_best_hardware failed due to {}", error_code_strings[static_cast<int>(res)]);
+		tz_assert(res == error_code::success, "find_best_hardware failed due to {}", tz::error_code_name(res));
 
 		unsigned int max_score = 0;
 		tz::gpu::hardware best_hardware = hardware.front();
@@ -438,6 +428,8 @@ namespace tz::gpu
 				// if it supports all features, then big score bonus.
 				score += 500;
 			break;
+			case tz::gpu::hardware_feature_coverage::insufficient:
+			[[fallthrough]];
 			case tz::gpu::hardware_feature_coverage::poor:
 				// if it is poor, then no matter what its specs are we really shouldnt use it.
 				score = 0;

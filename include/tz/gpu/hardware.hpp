@@ -1,6 +1,7 @@
 #ifndef TZ_GPU_HARDWARE_HPP
 #define TZ_GPU_HARDWARE_HPP
 #include "tz/core/handle.hpp"
+#include "tz/core/error.hpp"
 #include <string>
 #include <span>
 #include <cstddef>
@@ -13,32 +14,6 @@ namespace tz::gpu
 	 * @brief Documentation specialised for iterating over rendering hardware and selecting one to be used for rendering.
 	 **/
 
-	/**
-	 * @ingroup tz_gpu_hardware
-	 * @brief Error codes for the @ref tz_gpu
-	 **/
-	enum class error_code
-	{
-		/// Correct behaviour has occurred. No need to do any sanity checking.
-		success,
-		/// Nothing erroneous happened, but the process did not complete fully or otherwise provide an ideal result.
-		partial_success,
-		/// An error has occurred because some previously-required setup has not been complete. The most common cause of this is not initialising the engine via @ref tz::initialise
-		precondition_failure,
-		/// An error has occurred because the hardware currently being used is not suitable for the given task.
-		hardware_unsuitable,
-		/// An error has occurred due to an engine-side logic error, and you should submit a bug report.
-		engine_bug,
-		/// An error has occurred due to a serious hazard relating to the driver/hardware. This most likely means a graphics driver crash/hardware-lost.
-		driver_hazard,
-		/// An error has occurred, but it's not clear why.
-		unknown_error,
-		/// An error has occurred due to lack of CPU memory.
-		oom,
-		/// An error has occurred due to lack of GPU memory.
-		voom,
-		_count
-	};
 
 	/**
 	 * @ingroup tz_gpu_hardware

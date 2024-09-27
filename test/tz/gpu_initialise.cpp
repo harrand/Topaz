@@ -6,8 +6,8 @@ int main()
 	tz::initialise();
 
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
-	tz::gpu::error_code err = tz::gpu::use_hardware(gpu);
-	tz_assert(err == tz::gpu::error_code::success, "failed to use hardware \"{}\"", gpu.name);
+	tz::error_code err = tz::gpu::use_hardware(gpu);
+	tz_assert(err == tz::error_code::success, "{} occurred when trying to use hardware \"{}\"", tz::error_code_name(err), gpu.name);
 
 	tz::terminate();
 
