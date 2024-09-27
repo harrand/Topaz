@@ -1,6 +1,6 @@
 #if TOPAZ_VULKAN
 #include "tz/topaz.hpp"
-#include "tz/gpu/device.hpp"
+#include "tz/gpu/hardware.hpp"
 
 #include "vulkan/vulkan.h"
 #include <vector>

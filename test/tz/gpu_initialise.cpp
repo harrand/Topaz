@@ -1,5 +1,5 @@
 #include "tz/topaz.hpp"
-#include "tz/gpu/device.hpp"
+#include "tz/gpu/hardware.hpp"
 
 int main()
 {
