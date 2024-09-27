@@ -1,6 +1,7 @@
 #ifndef TOPAZ_OS_WINDOW_HPP
 #define TOPAZ_OS_WINDOW_HPP
 #include "tz/core/handle.hpp"
+#include "tz/core/error.hpp"
 #include <string>
 
 namespace tz::os
@@ -17,6 +18,11 @@ namespace tz::os
 		return static_cast<window_flags>(static_cast<int>(lhs) | static_cast<int>(rhs));
 	}
 
+	constexpr bool operator&(window_flags lhs, window_flags& rhs)
+	{
+		return static_cast<int>(lhs) & static_cast<int>(rhs);
+	}
+
 	struct window_info
 	{
 		std::string name = "Untitled";
@@ -29,7 +35,10 @@ namespace tz::os
 
 	using window_handle = tz::handle<window_info>;
 
-	window_handle create_window(window_info winfo);
+	tz::error_code open_window(window_info winfo);
+	tz::error_code close_window();
+	window_handle get_window_handle();
+
 }
 
 #endif // TOPAZ_OS_WINDOW_HPP

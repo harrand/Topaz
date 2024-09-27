@@ -9,6 +9,8 @@ namespace tz::os
 
 	constexpr char wndclass_name[] = "Topaz Window";
 	auto hinst = GetModuleHandle(nullptr);
+	bool initialised = false;
+	#define ERROR_UNLESS_INITIALISED if(!initialised){return tz::error_code::precondition_failure;}
 	WNDCLASSEXA wndclass
 	{
 		.cbSize = sizeof(WNDCLASSEXA),
@@ -23,22 +25,54 @@ namespace tz::os
 		.lpszClassName = wndclass_name,
 		.hIconSm = LoadIconA(nullptr, MAKEINTRESOURCEA(32512)),
 	};
+	HWND wnd = nullptr;
+
+	// API
 
 	void initialise()
 	{
 		tz_assert(RegisterClassExA(&wndclass), "Window class registration failed: winapi system error code {}", GetLastError());
+		initialised = true;
 	}
 
 	void terminate()
 	{
 		UnregisterClassA(wndclass_name, hinst);
+		initialised = false;
 	}
 
-	window_handle create_window(window_info winfo)
+	tz::error_code open_window(window_info winfo)
 	{
-		(void)winfo;
-		return tz::nullhand;
+		ERROR_UNLESS_INITIALISED;
+
+		bool centrered = winfo.flags & window_flags::centered_window;
+		wnd = CreateWindowExA(WS_EX_OVERLAPPEDWINDOW, wndclass_name, winfo.name.c_str(), WS_OVERLAPPEDWINDOW, centrered ? CW_USEDEFAULT : winfo.x, centrered ? CW_USEDEFAULT : winfo.y, winfo.width, winfo.height, nullptr, nullptr, hinst, nullptr);
+		if(wnd == nullptr)
+		{
+			return tz::error_code::unknown_error;
+		}
+		ShowWindow(wnd, SW_SHOW);
+		return tz::error_code::success;
 	}
+
+	tz::error_code close_window()
+	{
+		ERROR_UNLESS_INITIALISED;
+		auto ret = DestroyWindow(wnd) == 0 ? tz::error_code::unknown_error : tz::error_code::success;
+		wnd = nullptr;
+		return ret;
+	}
+
+	window_handle get_window_handle()
+	{
+		if(wnd == nullptr)
+		{
+			return tz::nullhand;
+		}
+		return static_cast<tz::hanval>(reinterpret_cast<std::uintptr_t>(wnd));
+	}
+
+	// IMPL
 
 	LRESULT CALLBACK impl_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
