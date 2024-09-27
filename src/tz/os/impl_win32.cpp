@@ -2,6 +2,7 @@
 #include "tz/os/window.hpp"
 #include "tz/topaz.hpp"
 #include <windows.h>
+#include <dwmapi.h>
 
 namespace tz::os
 {
@@ -53,9 +54,28 @@ namespace tz::os
 		{
 			return tz::error_code::unknown_error;
 		}
-		ShowWindow(wnd, SW_SHOW);
+		auto ret = tz::error_code::success;
+		if(winfo.flags & window_flags::transparent)
+		{
+			DWM_BLURBEHIND bb =
+			{
+				.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION,
+				.fEnable = TRUE,
+				.hRgnBlur = CreateRectRgn(0, 0, -1, -1),
+				.fTransitionOnMaximized = 0
+			};
+			HRESULT res = DwmEnableBlurBehindWindow(wnd, &bb);
+			if(!SUCCEEDED(res))
+			{
+				ret = tz::error_code::partial_success;
+			}
+		}
+		if(!(winfo.flags & window_flags::invisible))
+		{
+			ShowWindow(wnd, SW_SHOW);
+		}
 		window_open = true;
-		return tz::error_code::success;
+		return ret;
 	}
 
 	tz::error_code close_window()

@@ -10,7 +10,11 @@ namespace tz::os
 	{
 		none = 0x00,
 		/// Ignore the x and y coordinates provided within @ref window_info and position the window exactly at the centre of the screen instead.
-		centered_window = 0x01,
+		centered_window = 0b0001,
+		/// When a pixel of the window's framebuffer is never drawn to, instead of being a clamped colour it is instead fully transparent. Your mileage may vary, depending on your platform.
+		transparent = 0b0010,
+		/// When the window is opened, it is initially invisible and you must invoke @ref window_set_visible(true) to see it.
+		invisible = 0b0100,
 	};
 
 	constexpr window_flags operator|(window_flags lhs, window_flags rhs)

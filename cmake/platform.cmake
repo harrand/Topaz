@@ -11,6 +11,7 @@ endfunction()
 function(configure_windows)
 	# TODO
 	set(default_render_api "vulkan")
+	target_link_libraries(topaz PRIVATE Dwmapi)
 endfunction()
 
 function(configure_linux)
