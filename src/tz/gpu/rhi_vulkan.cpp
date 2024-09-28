@@ -22,6 +22,7 @@ namespace tz::gpu
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
+	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
 
 	const char* validation_layers[] =
 	{
@@ -47,7 +48,7 @@ namespace tz::gpu
 	// returns partial_success if the swapchain previously existed, but has been recreated for some important reason (you will maybe need to rerecord commands)
 	// returns oom if oom, voom if voom
 	// returns unknown_error if some undocumented vulkan error occurred.
-	tz::error_code impl_need_swapchain();
+	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -105,12 +106,24 @@ namespace tz::gpu
 
 	void terminate()
 	{
+		if(swapchain != VK_NULL_HANDLE)
+		{
+			vkDestroySwapchainKHR(current_device, swapchain, nullptr);
+			swapchain = VK_NULL_HANDLE;
+		}
 		if(current_device != VK_NULL_HANDLE)
 		{
 			vkDestroyDevice(current_device, nullptr);
+			current_device = VK_NULL_HANDLE;
+		}
+		if(surface != VK_NULL_HANDLE)
+		{
+			vkDestroySurfaceKHR(current_instance, surface, nullptr);
+			surface = VK_NULL_HANDLE;
 		}
 		tz_assert(current_instance != VK_NULL_HANDLE, "Requested to terminate tz::gpu (vulkan) when the vulkan instance was null, implying we had never initialised. This is a game-side logic error.");
 		vkDestroyInstance(current_instance, nullptr);
+		current_instance = VK_NULL_HANDLE;
 	}
 
 	error_code iterate_hardware(std::span<hardware> devices, std::size_t* device_count)
@@ -456,7 +469,7 @@ namespace tz::gpu
 		return score;
 	}
 
-	tz::error_code impl_need_swapchain()
+	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h)
 	{
 		tz::os::window_handle wnd = tz::os::get_window_handle();
 		if(wnd == tz::nullhand)
@@ -512,6 +525,28 @@ namespace tz::gpu
 		}
 		// recreate swapchain.
 		tz_error("creating swapchain from valid surface {} is NYI", reinterpret_cast<std::uintptr_t>(surface));
+		VkSwapchainCreateInfoKHR create
+		{
+			.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+			.pNext = nullptr,
+			.flags = 0,
+			.surface = surface,
+			.minImageCount = 2,
+			.imageFormat = swapchain_format,
+			.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+			.imageExtent = {.width = w, .height = h},
+			.imageArrayLayers = 1,
+			.imageUsage = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+			.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 1,
+			.pQueueFamilyIndices = &current_hardware.internals.i1,
+			.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+			.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+			.presentMode = VK_PRESENT_MODE_MAILBOX_KHR,
+			.clipped = VK_FALSE,
+			.oldSwapchain = swapchain
+		};
+		vkCreateSwapchainKHR(current_device, &create, nullptr, &swapchain);
 		return tz::error_code::partial_success;
 	}
 }
