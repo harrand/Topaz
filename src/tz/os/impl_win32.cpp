@@ -1,5 +1,6 @@
 #ifdef _WIN32
 #include "tz/os/window.hpp"
+#include "tz/os/input.hpp"
 #include "tz/topaz.hpp"
 #include <windows.h>
 #include <dwmapi.h>
@@ -12,6 +13,7 @@ namespace tz::os
 	auto hinst = GetModuleHandle(nullptr);
 	bool initialised = false;
 	bool window_open = false;
+	char_type_callback kb_callback = nullptr;
 	#define ERROR_UNLESS_INITIALISED if(!initialised){return tz::error_code::precondition_failure;}
 	WNDCLASSEXA wndclass
 	{
@@ -111,6 +113,16 @@ namespace tz::os
 		return static_cast<tz::hanval>(reinterpret_cast<std::uintptr_t>(wnd));
 	}
 
+	tz::error_code install_char_typed_callback(char_type_callback callback)
+	{
+		if(wnd == nullptr)
+		{
+			return tz::error_code::precondition_failure;
+		}
+		kb_callback = callback;
+		return tz::error_code::success;
+	}
+
 	// IMPL
 
 	LRESULT CALLBACK impl_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -119,6 +131,16 @@ namespace tz::os
 		{
 			case WM_CLOSE:
 				window_open = false;
+			break;
+			case WM_CHAR:
+				if(kb_callback != nullptr)
+				{
+					if(wparam == '\r')
+					{
+						wparam = '\n';
+					}
+					kb_callback(wparam);
+				}
 			break;
 		}
 		return DefWindowProcA(hwnd, msg, wparam, lparam);
