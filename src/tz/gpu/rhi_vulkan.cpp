@@ -31,11 +31,16 @@ namespace tz::gpu
 		"VK_LAYER_KHRONOS_validation"
 		#endif
 	};
-	const char* layers[] =
+	const char* instance_extensions[] =
 	{
 		#if TOPAZ_DEBUG
-		VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 		#endif
+		VK_KHR_SURFACE_EXTENSION_NAME,
+	};
+	const char* device_extensions[] =
+	{
+		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 
 	/////////////////// chunky impl predecls ///////////////////
@@ -72,8 +77,8 @@ namespace tz::gpu
 			.pApplicationInfo = &vk_appinfo,
 			.enabledLayerCount = sizeof(validation_layers) / sizeof(validation_layers[0]),
 			.ppEnabledLayerNames = validation_layers,
-			.enabledExtensionCount = sizeof(layers) / sizeof(layers[0]),
-			.ppEnabledExtensionNames = layers
+			.enabledExtensionCount = sizeof(instance_extensions) / sizeof(instance_extensions[0]),
+			.ppEnabledExtensionNames = instance_extensions
 		};
 		VkResult res = vkCreateInstance(&inst_create, nullptr, &current_instance);	
 		switch(res)
@@ -253,8 +258,8 @@ namespace tz::gpu
 			.pQueueCreateInfos = &qcreate,
 			.enabledLayerCount = 0,
 			.ppEnabledLayerNames = nullptr,
-			.enabledExtensionCount = 0,
-			.ppEnabledExtensionNames = nullptr,
+			.enabledExtensionCount = sizeof(device_extensions) / sizeof(device_extensions[0]),
+			.ppEnabledExtensionNames = device_extensions,
 			.pEnabledFeatures = nullptr
 		};
 
