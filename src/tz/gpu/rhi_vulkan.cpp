@@ -20,6 +20,7 @@ namespace tz::gpu
 	VkDevice current_device = VK_NULL_HANDLE;
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+	unsigned int swapchain_width = -1; unsigned int swapchain_height = -1;
 	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
@@ -431,10 +432,10 @@ namespace tz::gpu
 		switch(hw.caps)
 		{
 			case tz::gpu::hardware_capabilities::graphics_compute:
-				// if it has graphics+compute in the same queue (this includes transfer), then i like it. otherwise it's dogshit.
 				score += 200;
 			break;
-			default: break;
+			// we dont support anything that doesnt support graphics+compute on a single queue.
+			default: return 0; break;
 		}
 		switch(hw.type)
 		{
@@ -445,7 +446,7 @@ namespace tz::gpu
 			case tz::gpu::hardware_type::integrated_gpu:
 				score += 250;
 			break;
-			default: break;
+			default: score += 1; break;
 		}
 		// give extra score based on the amount of memory of the largest heap on the hardware.
 		// or in other words, more vram = good
@@ -462,7 +463,7 @@ namespace tz::gpu
 			[[fallthrough]];
 			case tz::gpu::hardware_feature_coverage::poor:
 				// if it is poor, then no matter what its specs are we really shouldnt use it.
-				score = 0;
+				return 0;
 			break;
 			default: break;
 		}
@@ -519,12 +520,12 @@ namespace tz::gpu
 			}
 		}
 		// create the swapchain if need be.
-		if(swapchain == VK_NULL_HANDLE)
+		if(swapchain_width == w && swapchain_height == h)
 		{
+			// width/height are the same as before, no need to recreate swapchain.
 			return tz::error_code::success;
 		}
 		// recreate swapchain.
-		tz_error("creating swapchain from valid surface {} is NYI", reinterpret_cast<std::uintptr_t>(surface));
 		VkSwapchainCreateInfoKHR create
 		{
 			.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
@@ -546,7 +547,34 @@ namespace tz::gpu
 			.clipped = VK_FALSE,
 			.oldSwapchain = swapchain
 		};
-		vkCreateSwapchainKHR(current_device, &create, nullptr, &swapchain);
+		VkResult res = vkCreateSwapchainKHR(current_device, &create, nullptr, &swapchain);
+		switch(res)
+		{
+			case VK_SUCCESS: break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				return tz::error_code::oom;
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				return tz::error_code::voom;
+			break;
+			case VK_ERROR_DEVICE_LOST:
+				return tz::error_code::driver_hazard;
+			break;
+			case VK_ERROR_SURFACE_LOST_KHR:
+				return tz::error_code::driver_hazard;
+			break;
+			case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+				return tz::error_code::precondition_failure;
+			break;
+			case VK_ERROR_INITIALIZATION_FAILED:
+				return tz::error_code::hardware_unsuitable;
+			break;
+			default:
+				return tz::error_code::unknown_error;
+			break;
+		}
+		swapchain_width = w;
+		swapchain_height = h;
 		return tz::error_code::partial_success;
 	}
 }
