@@ -21,6 +21,7 @@ namespace tz::gpu
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	unsigned int swapchain_width = -1; unsigned int swapchain_height = -1;
+	std::vector<VkImage> swapchain_images = {};
 	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
@@ -580,6 +581,12 @@ namespace tz::gpu
 		}
 		swapchain_width = w;
 		swapchain_height = h;
+
+		swapchain_images.clear();
+		std::uint32_t swapchain_image_count;
+		vkGetSwapchainImagesKHR(current_device, swapchain, &swapchain_image_count, nullptr);
+		swapchain_images.resize(swapchain_image_count);
+		vkGetSwapchainImagesKHR(current_device, swapchain, &swapchain_image_count, swapchain_images.data());
 		return tz::error_code::partial_success;
 	}
 }
