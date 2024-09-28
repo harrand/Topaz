@@ -49,6 +49,10 @@ namespace tz::os
 	tz::error_code open_window(window_info winfo)
 	{
 		ERROR_UNLESS_INITIALISED;
+		if(wnd != nullptr)
+		{
+			close_window();
+		}
 
 		bool centrered = winfo.flags & window_flags::centered_window;
 		wnd = CreateWindowExA(WS_EX_OVERLAPPEDWINDOW, wndclass_name, winfo.name.c_str(), WS_OVERLAPPEDWINDOW, centrered ? CW_USEDEFAULT : winfo.x, centrered ? CW_USEDEFAULT : winfo.y, winfo.width, winfo.height, nullptr, nullptr, hinst, nullptr);
@@ -74,7 +78,7 @@ namespace tz::os
 		}
 		if(!(winfo.flags & window_flags::invisible))
 		{
-			ShowWindow(wnd, SW_SHOW);
+			ShowWindow(wnd, winfo.flags & window_flags::maximised ? SW_SHOWMAXIMIZED : SW_SHOW);
 		}
 		window_open = true;
 		return ret;
@@ -83,6 +87,10 @@ namespace tz::os
 	tz::error_code close_window()
 	{
 		ERROR_UNLESS_INITIALISED;
+		if(wnd == nullptr)
+		{
+			return tz::error_code::precondition_failure;
+		}
 		window_open = false;
 		auto ret = DestroyWindow(wnd) == 0 ? tz::error_code::unknown_error : tz::error_code::success;
 		wnd = nullptr;
@@ -96,6 +104,10 @@ namespace tz::os
 
 	void window_update()
 	{
+		if(!window_is_open())
+		{
+			return;
+		}
 		MSG msg{};
 		if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{

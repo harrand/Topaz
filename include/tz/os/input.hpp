@@ -4,6 +4,16 @@
 
 namespace tz::os
 {
+	/**
+	 * @ingroup tz_os
+	 * @defgroup tz_os_input Input System
+	 * @brief Retrieve keyboard/mouse input.
+	 **/
+
+	/**
+	 * @ingroup tz_os_input
+	 * Represents a key on your keyboard.
+	 **/
 	enum class key
 	{
 		// Letters
@@ -18,13 +28,13 @@ namespace tz::os
 		undefined
 	};
 
-	enum class key_state
-	{
-		pressed,
-		released
-	};
 	using char_type_callback = void(*)(char);
-	/// Returns @ref precondition_failure if a window has not yet been opened.
+	/**
+	 * @ingroup tz_os_input
+	 * @brief Install a callback which will be invoked whenever the user types a character on the keyboard.
+	 * @param callback Pointer to a function which will be called whenever a character is typed. If you pass nullptr, the callback will safely be ignored.
+	 * @return - @ref error_code::precondition_failure if a window has not yet been opened.
+	 **/
 	tz::error_code install_char_typed_callback(char_type_callback callback);
 }
 
