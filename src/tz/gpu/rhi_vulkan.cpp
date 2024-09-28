@@ -1,7 +1,16 @@
 #if TOPAZ_VULKAN
 #include "tz/topaz.hpp"
 #include "tz/gpu/hardware.hpp"
+#include "tz/os/window.hpp"
 
+#ifdef _WIN32
+#define NOMINMAX
+#define VK_USE_PLATFORM_WIN32_KHR
+#elif defined(__linux__)
+#define VK_USE_PLATFORM_XLIB_KHR
+#else
+#error could not decipher platform in vulkan rhi implementation
+#endif
 #include "vulkan/vulkan.h"
 #include <vector>
 
@@ -9,6 +18,8 @@ namespace tz::gpu
 {
 	VkInstance current_instance = VK_NULL_HANDLE;
 	VkDevice current_device = VK_NULL_HANDLE;
+	VkSurfaceKHR surface = VK_NULL_HANDLE;
+	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 
@@ -30,6 +41,13 @@ namespace tz::gpu
 	#define ASSERT_INIT tz_assert(current_instance != VK_NULL_HANDLE, "Topaz has not been initialised.");
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 	unsigned int impl_rate_hardware(const hardware&);
+	// call this when you have need of the swapchain.
+	// returns success if a swapchain already exists and is ready for use.
+	// returns partial success if a new swapchain has been created (typically if this is your first time calling it, or if the old swapchain was out-of-date). you might want to rerecord commands.
+	// returns partial_success if the swapchain previously existed, but has been recreated for some important reason (you will maybe need to rerecord commands)
+	// returns oom if oom, voom if voom
+	// returns unknown_error if some undocumented vulkan error occurred.
+	tz::error_code impl_need_swapchain();
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -436,6 +454,65 @@ namespace tz::gpu
 			default: break;
 		}
 		return score;
+	}
+
+	tz::error_code impl_need_swapchain()
+	{
+		tz::os::window_handle wnd = tz::os::get_window_handle();
+		if(wnd == tz::nullhand)
+		{
+			return tz::error_code::precondition_failure;
+		}
+		if(surface == VK_NULL_HANDLE)
+		{
+			// create surface jit
+			VkResult res;
+			#ifdef _WIN32
+				VkWin32SurfaceCreateInfoKHR create
+				{
+					.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+					.pNext = nullptr,
+					.flags = 0
+				};
+				res = vkCreateWin32SurfaceKHR(current_instance, &create, nullptr, &surface);
+			#else
+				// assume xlib
+				// 2 choices here for future harry:
+				// a.) have the handle actually represent a pointer to some stable struct defined in impl_linux, containing both the display and the window and deref it here.
+				// b.) if applicable, open a new display here if its easy and trivial to do, and just use that and let the handle represent the window?
+				VkXlibSurfaceCreateInfoKHR create
+				{
+					.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+					.pNext = nullptr,
+					.flags = 0,
+					.dpy = 0,
+					.window = 0,
+				};
+				#error swapchain creation for this platform is NYI
+			#endif
+
+			switch(res)
+			{
+				case VK_SUCCESS: break;
+				case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+					return tz::error_code::voom;
+				break;
+				case VK_ERROR_OUT_OF_HOST_MEMORY:
+					return tz::error_code::oom;
+				break;
+				default:
+					return tz::error_code::unknown_error;
+				break;
+			}
+		}
+		// create the swapchain if need be.
+		if(swapchain == VK_NULL_HANDLE)
+		{
+			return tz::error_code::success;
+		}
+		// recreate swapchain.
+		tz_error("creating swapchain from valid surface {} is NYI", reinterpret_cast<std::uintptr_t>(surface));
+		return tz::error_code::partial_success;
 	}
 }
 #endif
