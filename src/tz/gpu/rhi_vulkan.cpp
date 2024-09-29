@@ -585,7 +585,7 @@ namespace tz::gpu
 		{
 			missing_features++;
 		}
-		if(!features12.bufferDeviceAddress)
+		if(!features12.timelineSemaphore)
 		{
 			missing_features++;
 		}
