@@ -1,6 +1,7 @@
 #if TOPAZ_VULKAN
 #include "tz/topaz.hpp"
 #include "tz/gpu/hardware.hpp"
+#include "tz/gpu/resource.hpp"
 #include "tz/os/window.hpp"
 
 #ifdef _WIN32
@@ -305,6 +306,18 @@ namespace tz::gpu
 	{
 		tz_assert(current_device != VK_NULL_HANDLE, "A call to get_used_hardware() was invalid because a piece of hardware has seemingly not yet been selected in a previous call to use_hardware(...). Did you forget to use a specific hardware component?");
 		return current_hardware;
+	}
+
+	resource_handle create_buffer(buffer_info info)
+	{
+		(void)info;
+		return tz::nullhand;		
+	}
+
+	resource_handle create_image(image_info info)
+	{
+		(void)info;
+		return tz::nullhand;		
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
