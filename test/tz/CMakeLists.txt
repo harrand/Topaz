@@ -15,3 +15,9 @@ topaz_add_test(
   SOURCES
     gpu_initialise.cpp
 )
+
+topaz_add_test(
+  TARGET tz_gpu_resource_test
+  SOURCES
+    gpu_resource_test.cpp
+)

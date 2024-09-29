@@ -180,16 +180,18 @@ namespace tz::gpu
 			vmaDestroyAllocator(alloc);
 			alloc = VK_NULL_HANDLE;
 		}
-		vkDeviceWaitIdle(current_device);
-		for(std::size_t i = 0; i < frame_overlap; i++)
-		{
-			if(frames[i].cpool != VK_NULL_HANDLE)
-			{
-				vkDestroyCommandPool(current_device, frames[i].cpool, nullptr);
-			}
-		}
 		if(current_device != VK_NULL_HANDLE)
 		{
+			// destroy command buffers
+			vkDeviceWaitIdle(current_device);
+			for(std::size_t i = 0; i < frame_overlap; i++)
+			{
+				if(frames[i].cpool != VK_NULL_HANDLE)
+				{
+					vkDestroyCommandPool(current_device, frames[i].cpool, nullptr);
+				}
+			}
+			// then destroy the device itself.
 			vkDestroyDevice(current_device, nullptr);
 			current_device = VK_NULL_HANDLE;
 		}
@@ -458,10 +460,41 @@ namespace tz::gpu
 			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 			.pNext = nullptr,
 			.flags = 0,
+			.size = info.data.size_bytes(),
+			.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 1,
+			.pQueueFamilyIndices = &current_hardware.internals.i1
 		};
-		(void)create;
-		(void)hanval;
-		return std::unexpected(tz::error_code::engine_bug);
+		VmaAllocationCreateInfo alloc_info = {};
+		switch(info.access)
+		{
+			case tz::gpu::resource_access::static_access:
+				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+			break;
+			case tz::gpu::resource_access::dynamic_access:
+				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+			break;
+		}
+		VkResult ret = vmaCreateBuffer(alloc, &create, &alloc_info, &res.buf, &res.mem, nullptr);
+		switch(ret)
+		{
+			case VK_SUCCESS: break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				return std::unexpected(tz::error_code::oom);
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				return std::unexpected(tz::error_code::voom);
+			break;
+			case VK_ERROR_INITIALIZATION_FAILED:
+				return std::unexpected(tz::error_code::precondition_failure);
+			break;
+			default:
+				return std::unexpected(tz::error_code::unknown_error);
+			break;
+		}
+		return static_cast<tz::hanval>(hanval);
 	}
 
 	std::expected<resource_handle, tz::error_code> create_image(image_info info)
@@ -529,8 +562,8 @@ namespace tz::gpu
 		}
 		else if(info.is_buffer())
 		{
-			// todo: implement
-			return tz::error_code::engine_bug;
+			vmaDestroyBuffer(alloc, info.buf, info.mem);
+			info = {};
 		}
 		else if(info.is_image())
 		{
