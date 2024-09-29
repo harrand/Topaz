@@ -15,6 +15,7 @@
 #include "vulkan/vulkan.h"
 #define VMA_NOT_NULL
 #define VMA_NULLABLE
+#define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 #include <vector>
 #include <variant>
@@ -28,8 +29,9 @@ namespace tz::gpu
 	unsigned int swapchain_width = -1; unsigned int swapchain_height = -1;
 	std::vector<VkImage> swapchain_images = {};
 	hardware current_hardware;
-	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
+	#define VULKAN_API_VERSION_USED VK_API_VERSION_1_3
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
+	VmaAllocator alloc = VK_NULL_HANDLE;
 
 	std::size_t global_resource_counter = 0;
 	using generic_resource = std::variant<std::monostate, buffer_info, image_info>;
@@ -38,6 +40,7 @@ namespace tz::gpu
 		generic_resource res;	
 		VkBuffer buf = VK_NULL_HANDLE;
 		VkImage img = VK_NULL_HANDLE;
+		VmaAllocation mem = VK_NULL_HANDLE;
 		std::vector<std::byte> data;
 
 		bool is_invalid() const
@@ -154,6 +157,11 @@ namespace tz::gpu
 		{
 			vkDestroySwapchainKHR(current_device, swapchain, nullptr);
 			swapchain = VK_NULL_HANDLE;
+		}
+		if(alloc != VK_NULL_HANDLE)
+		{
+			vmaDestroyAllocator(alloc);
+			alloc = VK_NULL_HANDLE;
 		}
 		if(current_device != VK_NULL_HANDLE)
 		{
@@ -303,11 +311,10 @@ namespace tz::gpu
 
 		VkResult res = vkCreateDevice(pdev, &create, nullptr, &current_device);
 		current_hardware = hw;
+
 		switch(res)
 		{
-			case VK_SUCCESS:
-				return error_code::success;
-			break;
+			case VK_SUCCESS: break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
 				return error_code::oom;
 			break;
@@ -336,6 +343,27 @@ namespace tz::gpu
 				return error_code::unknown_error;
 			break;
 		}
+
+		VmaVulkanFunctions vk_funcs = {};
+		vk_funcs.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
+		vk_funcs.vkGetDeviceProcAddr = &vkGetDeviceProcAddr;
+
+		VmaAllocatorCreateInfo alloc_create
+		{
+			.flags = 0,
+			.physicalDevice = pdev,
+			.device = current_device,
+			.pVulkanFunctions = &vk_funcs,
+			.instance = current_instance,
+			.vulkanApiVersion = VK_API_VERSION_1_3,
+		};
+		res = vmaCreateAllocator(&alloc_create, &alloc);
+		if(res != VK_SUCCESS)
+		{
+			return tz::error_code::unknown_error;
+		}
+
+		return tz::error_code::success;
 	}
 
 	hardware get_used_hardware()
@@ -379,8 +407,19 @@ namespace tz::gpu
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
 			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
 		};
+		VmaAllocationCreateInfo alloc_info = {};
+		switch(info.access)
+		{
+			case tz::gpu::resource_access::static_access:
+				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+			break;
+			case tz::gpu::resource_access::dynamic_access:
+				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+			break;
+		}
 
-		VkResult ret = vkCreateImage(current_device, &create, nullptr, &res.img);
+		VkResult ret = vmaCreateImage(alloc, &create, &alloc_info, &res.img, &res.mem, nullptr);
 		switch(ret)
 		{
 			case VK_SUCCESS:
@@ -409,7 +448,7 @@ namespace tz::gpu
 		}
 		else if(info.is_image())
 		{
-			vkDestroyImage(current_device, info.img, nullptr);
+			vmaDestroyImage(alloc, info.img, info.mem);
 			info = {};
 		}
 		return tz::error_code::success;
