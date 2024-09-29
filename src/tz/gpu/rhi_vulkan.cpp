@@ -13,10 +13,18 @@
 #error could not decipher platform in vulkan rhi implementation
 #endif
 #include "vulkan/vulkan.h"
+
+// vma refuses to fix compiler warnings, so use a nasty hack for each compiler (this will almost certainly require manual intervention for each of the big 3 -.-)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-field-initializers"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-variable"
+
 #define VMA_NOT_NULL
 #define VMA_NULLABLE
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
+#pragma clang diagnostic pop
 #include <vector>
 #include <variant>
 
