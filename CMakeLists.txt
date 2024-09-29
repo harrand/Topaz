@@ -17,10 +17,11 @@ project(topaz
 	DESCRIPTION "C++20 Game Engine"
 )
 
-# C++20
-set(CMAKE_CXX_STANDARD 20)
+# C++23
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+add_subdirectory(lib)
 
 ####################
 ## TOPAZ - TARGET ##
@@ -33,6 +34,7 @@ add_library(topaz STATIC
 	src/tz/os/impl_win32.cpp
 )
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(topaz PRIVATE VulkanMemoryAllocator)
 
 ######################
 ## TOPAZ - SETTINGS ##

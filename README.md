@@ -10,7 +10,7 @@
 ## About
 
  Topaz is a 3D graphics engine.
- * C++20 (no modules)
+ * C++23 (no modules)
  * Very low-level declarative graphics API.
  * Supports Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
  
@@ -78,7 +78,7 @@ The table below shows all the engine's dependencies.
 
 ## Requirements
 The following requirements apply for all possible build configurations:
-* A C++20-compliant compiler. GCC, MSVC and Clang are all tested so you can be confident using these. If you're not using any of these compilers, your mileage may vary.
+* A C++23-compliant compiler. GCC, MSVC and Clang are all tested so you can be confident using these. If you're not using any of these compilers, your mileage may vary.
 * CMake 3.21 or later is required to build.
 #### Vulkan Build
 * Windows or Linux.

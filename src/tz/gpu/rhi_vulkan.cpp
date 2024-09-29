@@ -13,7 +13,11 @@
 #error could not decipher platform in vulkan rhi implementation
 #endif
 #include "vulkan/vulkan.h"
+#define VMA_NOT_NULL
+#define VMA_NULLABLE
+#include "vk_mem_alloc.h"
 #include <vector>
+#include <variant>
 
 namespace tz::gpu
 {
@@ -26,6 +30,30 @@ namespace tz::gpu
 	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_MAKE_API_VERSION(0, 1, 2, 0)
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
+
+	std::size_t global_resource_counter = 0;
+	using generic_resource = std::variant<std::monostate, buffer_info, image_info>;
+	struct resource_info
+	{
+		generic_resource res;	
+		VkBuffer buf = VK_NULL_HANDLE;
+		VkImage img = VK_NULL_HANDLE;
+		std::vector<std::byte> data;
+
+		bool is_invalid() const
+		{
+			return res.index() == 0;
+		}
+		bool is_buffer() const
+		{
+			return res.index() == 1;
+		}
+		bool is_image() const
+		{
+			return res.index() == 2;
+		}
+	};
+	std::vector<resource_info> resources = {};
 
 	const char* validation_layers[] =
 	{
@@ -57,6 +85,7 @@ namespace tz::gpu
 	// returns oom if oom, voom if voom
 	// returns unknown_error if some undocumented vulkan error occurred.
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
+	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -114,6 +143,13 @@ namespace tz::gpu
 
 	void terminate()
 	{
+		for(std::size_t i = 0 ; i < resources.size(); i++)
+		{
+			if(!resources[i].is_invalid())
+			{
+				destroy_resource(static_cast<tz::hanval>(i));
+			}
+		}
 		if(swapchain != VK_NULL_HANDLE)
 		{
 			vkDestroySwapchainKHR(current_device, swapchain, nullptr);
@@ -308,16 +344,75 @@ namespace tz::gpu
 		return current_hardware;
 	}
 
-	resource_handle create_buffer(buffer_info info)
+	std::expected<resource_handle, tz::error_code> create_buffer(buffer_info info)
 	{
 		(void)info;
-		return tz::nullhand;		
+		return std::unexpected(tz::error_code::engine_bug);
 	}
 
-	resource_handle create_image(image_info info)
+	std::expected<resource_handle, tz::error_code> create_image(image_info info)
 	{
-		(void)info;
-		return tz::nullhand;		
+		auto hanval = resources.size();
+		resource_info& res = resources.emplace_back();
+		res.res = info;
+
+		VkImageCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.imageType = VK_IMAGE_TYPE_2D,
+			.format = impl_get_format_from_image_type(info.type),
+			.extent =
+			{
+				.width = info.width,
+				.height = info.height,
+				.depth = 1
+			},
+			.mipLevels = 1,
+			.arrayLayers = 1,
+			.samples = VK_SAMPLE_COUNT_1_BIT,
+			.tiling = info.access == tz::gpu::resource_access::static_access ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR,
+			.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 1,
+			.pQueueFamilyIndices = &current_hardware.internals.i1,
+			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+		};
+
+		VkResult ret = vkCreateImage(current_device, &create, nullptr, &res.img);
+		switch(ret)
+		{
+			case VK_SUCCESS:
+			break;
+			default:
+				return std::unexpected(tz::error_code::precondition_failure);
+			break;
+		}
+
+		res.data.resize(info.data.size());
+		std::copy(info.data.begin(), info.data.end(), res.data.begin());
+		return static_cast<tz::hanval>(hanval);
+	}
+
+	tz::error_code destroy_resource(resource_handle res)
+	{
+		auto& info = resources[res.peek()];
+		if(info.is_invalid())
+		{
+			return tz::error_code::precondition_failure;
+		}
+		else if(info.is_buffer())
+		{
+			// todo: implement
+			return tz::error_code::engine_bug;
+		}
+		else if(info.is_image())
+		{
+			vkDestroyImage(current_device, info.img, nullptr);
+			info = {};
+		}
+		return tz::error_code::success;
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
@@ -601,6 +696,25 @@ namespace tz::gpu
 		swapchain_images.resize(swapchain_image_count);
 		vkGetSwapchainImagesKHR(current_device, swapchain, &swapchain_image_count, swapchain_images.data());
 		return tz::error_code::partial_success;
+	}
+
+	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type)
+	{
+		switch(type)
+		{
+			case tz::gpu::image_type::rgba:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+			break;
+			case tz::gpu::image_type::depth:
+				return VK_FORMAT_D16_UNORM;
+			break;
+			case tz::gpu::image_type::floats:
+				return VK_FORMAT_R32_SFLOAT;
+			break;
+			default:
+				return VK_FORMAT_UNDEFINED;
+			break;
+		}
 	}
 }
 #endif
