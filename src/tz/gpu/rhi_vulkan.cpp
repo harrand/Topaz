@@ -40,6 +40,15 @@ namespace tz::gpu
 	#define VULKAN_API_VERSION_USED VK_API_VERSION_1_3
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
 	VmaAllocator alloc = VK_NULL_HANDLE;
+	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
+
+	struct frame_data_t
+	{
+		VkCommandPool cpool = VK_NULL_HANDLE;
+		VkCommandBuffer cmds = VK_NULL_HANDLE;
+	};
+	constexpr std::size_t frame_overlap = 2;
+	std::array<frame_data_t, frame_overlap> frames;
 
 	std::size_t global_resource_counter = 0;
 	using generic_resource = std::variant<std::monostate, buffer_info, image_info>;
@@ -170,6 +179,14 @@ namespace tz::gpu
 		{
 			vmaDestroyAllocator(alloc);
 			alloc = VK_NULL_HANDLE;
+		}
+		vkDeviceWaitIdle(current_device);
+		for(std::size_t i = 0; i < frame_overlap; i++)
+		{
+			if(frames[i].cpool != VK_NULL_HANDLE)
+			{
+				vkDestroyCommandPool(current_device, frames[i].cpool, nullptr);
+			}
 		}
 		if(current_device != VK_NULL_HANDLE)
 		{
@@ -352,6 +369,8 @@ namespace tz::gpu
 			break;
 		}
 
+		vkGetDeviceQueue(current_device, current_hardware.internals.i1, 0, &graphics_compute_queue);
+
 		VmaVulkanFunctions vk_funcs = {};
 		vk_funcs.vkGetInstanceProcAddr = &vkGetInstanceProcAddr;
 		vk_funcs.vkGetDeviceProcAddr = &vkGetDeviceProcAddr;
@@ -371,6 +390,54 @@ namespace tz::gpu
 			return tz::error_code::unknown_error;
 		}
 
+		VkCommandPoolCreateInfo pool_create
+		{
+			.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+			.queueFamilyIndex = current_hardware.internals.i1
+		};
+		for(std::size_t i = 0; i < frame_overlap; i++)
+		{
+			VkResult res = vkCreateCommandPool(current_device, &pool_create, nullptr, &frames[i].cpool);
+			switch(res)
+			{
+				case VK_SUCCESS: break;
+				case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+					return tz::error_code::voom;
+				break;
+				case VK_ERROR_OUT_OF_HOST_MEMORY:
+					return tz::error_code::oom;
+				break;
+				default:
+					return tz::error_code::unknown_error;
+				break;
+			}
+
+			VkCommandBufferAllocateInfo cmd_info
+			{
+				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+				.pNext = nullptr,
+				.commandPool = frames[i].cpool,
+				.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+				.commandBufferCount = 1,
+			};
+			res = vkAllocateCommandBuffers(current_device, &cmd_info, &frames[i].cmds);
+			switch(res)
+			{
+				case VK_SUCCESS: break;
+				case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+					return tz::error_code::voom;
+				break;
+				case VK_ERROR_OUT_OF_HOST_MEMORY:
+					return tz::error_code::oom;
+				break;
+				default:
+					return tz::error_code::unknown_error;
+				break;
+			}
+		}
+
 		return tz::error_code::success;
 	}
 
@@ -382,7 +449,18 @@ namespace tz::gpu
 
 	std::expected<resource_handle, tz::error_code> create_buffer(buffer_info info)
 	{
-		(void)info;
+		auto hanval = resources.size();
+		resource_info& res = resources.emplace_back();
+		res.res = info;
+
+		VkBufferCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+		};
+		(void)create;
+		(void)hanval;
 		return std::unexpected(tz::error_code::engine_bug);
 	}
 
