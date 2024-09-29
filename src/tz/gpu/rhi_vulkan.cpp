@@ -377,7 +377,7 @@ namespace tz::gpu
 
 		VmaAllocatorCreateInfo alloc_create
 		{
-			.flags = 0,
+			.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT,
 			.physicalDevice = pdev,
 			.device = current_device,
 			.pVulkanFunctions = &vk_funcs,
