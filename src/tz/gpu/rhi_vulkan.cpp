@@ -86,6 +86,11 @@ namespace tz::gpu
 		#if TOPAZ_DEBUG
 		VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 		#endif
+		#ifdef _WIN32
+		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+		#elif defined(__linux__)
+		VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
+		#endif
 		VK_KHR_SURFACE_EXTENSION_NAME,
 	};
 	const char* device_extensions[] =
@@ -494,6 +499,10 @@ namespace tz::gpu
 				return std::unexpected(tz::error_code::unknown_error);
 			break;
 		}
+
+		res.data.resize(info.data.size());
+		std::copy(info.data.begin(), info.data.end(), res.data.begin());
+
 		return static_cast<tz::hanval>(hanval);
 	}
 
@@ -550,6 +559,7 @@ namespace tz::gpu
 
 		res.data.resize(info.data.size());
 		std::copy(info.data.begin(), info.data.end(), res.data.begin());
+
 		return static_cast<tz::hanval>(hanval);
 	}
 
@@ -758,7 +768,9 @@ namespace tz::gpu
 				{
 					.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
 					.pNext = nullptr,
-					.flags = 0
+					.flags = 0,
+					.hinstance = GetModuleHandle(nullptr),
+					.hwnd = reinterpret_cast<HWND>(static_cast<std::uintptr_t>(wnd.peek()))
 				};
 				res = vkCreateWin32SurfaceKHR(current_instance, &create, nullptr, &surface);
 			#else
@@ -797,7 +809,12 @@ namespace tz::gpu
 			// width/height are the same as before, no need to recreate swapchain.
 			return tz::error_code::success;
 		}
+		auto pdev = reinterpret_cast<VkPhysicalDevice>(static_cast<std::uintptr_t>(current_hardware.internals.i0.peek()));
+		VkSurfaceCapabilitiesKHR surface_caps;
+		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pdev, surface, &surface_caps);
 		// recreate swapchain.
+		w = std::clamp(w, surface_caps.minImageExtent.width, surface_caps.maxImageExtent.width);
+		h = std::clamp(h, surface_caps.minImageExtent.height, surface_caps.maxImageExtent.height);
 		VkSwapchainCreateInfoKHR create
 		{
 			.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
@@ -813,8 +830,8 @@ namespace tz::gpu
 			.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
 			.queueFamilyIndexCount = 1,
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
-			.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
-			.compositeAlpha = VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+			.preTransform = surface_caps.currentTransform,
+			.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
 			.presentMode = VK_PRESENT_MODE_MAILBOX_KHR,
 			.clipped = VK_FALSE,
 			.oldSwapchain = swapchain

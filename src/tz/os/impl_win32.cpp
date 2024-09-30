@@ -42,6 +42,10 @@ namespace tz::os
 
 	void terminate()
 	{
+		if(wnd != nullptr)
+		{
+			close_window();
+		}
 		UnregisterClassA(wndclass_name, hinst);
 		initialised = false;
 	}

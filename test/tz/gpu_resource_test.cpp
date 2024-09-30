@@ -1,4 +1,3 @@
-
 #include "tz/topaz.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/resource.hpp"
