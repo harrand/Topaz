@@ -46,6 +46,13 @@ namespace tz::gpu
 	{
 		VkCommandPool cpool = VK_NULL_HANDLE;
 		VkCommandBuffer cmds = VK_NULL_HANDLE;
+
+		// might not need it. signalled when image is acquired. dont think CPU ever needs to wait?
+		VkFence swapchain_fence = VK_NULL_HANDLE;
+		// signalled when image is acquired, ideally present operations will wait on this.
+		VkSemaphore swapchain_sem = VK_NULL_HANDLE;
+		// incremented for each "renderer" in the timeline. allows renderer dependencies to be sync'd properly.
+		VkSemaphore timeline_sem = VK_NULL_HANDLE;
 	};
 	constexpr std::size_t frame_overlap = 2;
 	std::array<frame_data_t, frame_overlap> frames;
@@ -194,6 +201,23 @@ namespace tz::gpu
 				if(frames[i].cpool != VK_NULL_HANDLE)
 				{
 					vkDestroyCommandPool(current_device, frames[i].cpool, nullptr);
+					frames[i].cpool = VK_NULL_HANDLE;
+					frames[i].cmds = VK_NULL_HANDLE;
+				}
+				if(frames[i].swapchain_fence != VK_NULL_HANDLE)
+				{
+					vkDestroyFence(current_device, frames[i].swapchain_fence, nullptr);
+					frames[i].swapchain_fence = VK_NULL_HANDLE;
+				}
+				if(frames[i].swapchain_sem != VK_NULL_HANDLE)
+				{
+					vkDestroySemaphore(current_device, frames[i].swapchain_sem, nullptr);
+					frames[i].swapchain_sem = VK_NULL_HANDLE;
+				}
+				if(frames[i].timeline_sem != VK_NULL_HANDLE)
+				{
+					vkDestroySemaphore(current_device, frames[i].timeline_sem, nullptr);
+					frames[i].timeline_sem = VK_NULL_HANDLE;
 				}
 			}
 			// then destroy the device itself.
@@ -319,6 +343,7 @@ namespace tz::gpu
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
 			.pNext = &features13,
 			.descriptorIndexing = VK_TRUE,
+			.timelineSemaphore = VK_TRUE,
 			.bufferDeviceAddress = VK_TRUE,
 		};
 		VkPhysicalDeviceFeatures2 enabled_features
@@ -443,6 +468,38 @@ namespace tz::gpu
 					return tz::error_code::unknown_error;
 				break;
 			}
+
+			// Sync Variables
+			VkFenceCreateInfo fence_create
+			{
+				.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0
+			};
+			vkCreateFence(current_device, &fence_create, nullptr, &frames[i].swapchain_fence);
+
+			VkSemaphoreCreateInfo swapchain_sem_create
+			{
+				.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0
+			};
+			vkCreateSemaphore(current_device, &swapchain_sem_create, nullptr, &frames[i].swapchain_sem);
+
+			VkSemaphoreTypeCreateInfo timeline_create
+			{
+				.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
+				.pNext = nullptr,
+				.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
+				.initialValue = 0
+			};
+			VkSemaphoreCreateInfo sem_create
+			{
+				.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+				.pNext = &timeline_create,
+				.flags = 0
+			};
+			vkCreateSemaphore(current_device, &sem_create, nullptr, &frames[i].timeline_sem);
 		}
 
 		return tz::error_code::success;
