@@ -864,7 +864,7 @@ namespace tz::gpu
 				return VK_FORMAT_R8G8B8A8_UNORM;
 			break;
 			case tz::gpu::image_type::depth:
-				return VK_FORMAT_D16_UNORM;
+				return VK_FORMAT_D32_SFLOAT;
 			break;
 			case tz::gpu::image_type::floats:
 				return VK_FORMAT_R32_SFLOAT;
