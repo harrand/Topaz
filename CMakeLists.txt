@@ -29,6 +29,7 @@ add_subdirectory(lib)
 
 add_library(topaz STATIC
 	src/tz/topaz.cpp
+	src/tz/core/error.cpp
 	src/tz/core/vector.cpp
 	src/tz/gpu/rhi_vulkan.cpp
 	src/tz/os/impl_win32.cpp

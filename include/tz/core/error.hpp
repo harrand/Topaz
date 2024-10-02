@@ -1,5 +1,6 @@
 #ifndef TOPAZ_CORE_ERROR_HPP
 #define TOPAZ_CORE_ERROR_HPP
+#include <string_view>
 #include <array>
 
 namespace tz
@@ -51,6 +52,9 @@ namespace tz
 	{
 		return detail::error_code_strings[static_cast<int>(ec)];
 	}
+
+	std::string_view last_error();
+	void set_last_error(std::string errmsg);
 
 }
 

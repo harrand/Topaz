@@ -43,6 +43,8 @@ namespace tz::gpu
 	VmaAllocator alloc = VK_NULL_HANDLE;
 	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
 
+	#define UNERR(errcode, msg) tz_seterror(errcode, msg); return std::unexpected(errcode);
+
 	struct frame_data_t
 	{
 		VkCommandPool cpool = VK_NULL_HANDLE;
@@ -555,16 +557,23 @@ namespace tz::gpu
 		{
 			case VK_SUCCESS: break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				return std::unexpected(tz::error_code::oom);
+				UNERR(tz::error_code::oom, "oom while creating buffer");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				return std::unexpected(tz::error_code::voom);
+				UNERR(tz::error_code::voom, "voom while creating buffer");
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				return std::unexpected(tz::error_code::precondition_failure);
+				if(info.data.size_bytes() == 0)
+				{
+					UNERR(tz::error_code::precondition_failure, "zero-size buffers are not allowed");
+				}
+				else
+				{
+					UNERR(tz::error_code::driver_hazard, "unexpected failure when creating buffer due to an implementation-specific reason");
+				}
 			break;
 			default:
-				return std::unexpected(tz::error_code::unknown_error);
+				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code returned when creating buffer.");
 			break;
 		}
 

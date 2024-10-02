@@ -42,4 +42,27 @@ namespace tz::detail
 **/
 #define tz_error(fmt, ...) tz::detail::error_internal("[Error]: ", fmt, std::source_location::current(), __VA_ARGS__)
 
+
+#define tz_seterror(errcode, msg) set_last_error(std::format("({}): {}", error_code_name(errcode), msg))
+
+/**
+* @ingroup tz
+* @brief Cause a runtime error if the expected value is erroneous. If not, the unwrapped expected value is returned.
+*
+* Many API functions in Topaz return some variant of `std::expected`. Handling them on an individual basis can be verbose and unnecessary. Surround the call with this macro to instead yield the expected value directly, and emit a runtime error if an error code was returned instead.
+*
+* @note You should only use this macro on a return value if you are happy to crash if the value is erroneous. Treat it as a glorified @ref tz_assert.
+*
+* Example before:
+
+* `std::expected<tz::gpu::resource_handle, tz::error_code> img = tz::gpu::create_image({...});`
+
+* Example after:
+
+* `tz::gpu::resource_handle img = tz_must(tz::gpu::create_image({...}));`
+
+* @hideinitializer
+**/
+#define tz_must(fnret) [sl = std::source_location::current()](auto ret){if(!ret.has_value()){tz::detail::error_internal("[Must Failure]: ", "error {} {}", sl, static_cast<int>(ret.error()), tz::last_error());} return ret.value();}(fnret)
+
 #endif // TOPAZ_DEBUG_HPP
