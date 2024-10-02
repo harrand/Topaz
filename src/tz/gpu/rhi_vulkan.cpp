@@ -2,6 +2,7 @@
 #include "tz/topaz.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/resource.hpp"
+#include "tz/gpu/shader.hpp"
 #include "tz/os/window.hpp"
 
 #ifdef _WIN32
@@ -81,6 +82,16 @@ namespace tz::gpu
 		}
 	};
 	std::vector<resource_info> resources = {};
+	enum class shader_type
+	{
+		vertex, fragment, compute
+	};
+	struct shader_info
+	{
+		shader_type ty;
+		VkShaderModule smod;
+	};
+	std::vector<shader_info> shaders = {};
 
 	const char* validation_layers[] =
 	{
@@ -638,6 +649,94 @@ namespace tz::gpu
 			info = {};
 		}
 		return tz::error_code::success;
+	}
+
+	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string vertex_source, std::string fragment_source)
+	{
+		auto& vshad = shaders.emplace_back();
+		std::uint16_t vid = shaders.size();
+		vshad.ty = shader_type::vertex;
+		auto& fshad = shaders.emplace_back();
+		std::uint16_t fid = shaders.size();
+		fshad.ty = shader_type::fragment;
+
+		VkShaderModuleCreateInfo vcreate
+		{
+			.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.codeSize = vertex_source.size(),
+			.pCode = reinterpret_cast<const std::uint32_t*>(vertex_source.data())
+		};
+		VkResult res = vkCreateShaderModule(current_device, &vcreate, nullptr, &vshad.smod);
+		switch(res)
+		{
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				return std::unexpected(tz::error_code::voom);
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				return std::unexpected(tz::error_code::oom);
+			break;
+			case VK_SUCCESS: break;
+			default: return std::unexpected(tz::error_code::unknown_error); break;
+		}
+		
+		VkShaderModuleCreateInfo fcreate
+		{
+			.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.codeSize = fragment_source.size(),
+			.pCode = reinterpret_cast<const std::uint32_t*>(fragment_source.data())
+		};
+		res = vkCreateShaderModule(current_device, &fcreate, nullptr, &fshad.smod);
+		switch(res)
+		{
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				return std::unexpected(tz::error_code::voom);
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				return std::unexpected(tz::error_code::oom);
+			break;
+			case VK_SUCCESS: break;
+			default: return std::unexpected(tz::error_code::unknown_error); break;
+		}
+
+		return static_cast<tz::hanval>((static_cast<std::uint32_t>(fid) << 16) + static_cast<std::uint32_t>(vid));
+	}
+
+	std::expected<shader_handle, tz::error_code> create_compute_shader(std::string compute_source)
+	{
+		auto& shad = shaders.emplace_back();
+		std::size_t cid = shaders.size();
+		shad.ty = shader_type::compute;
+
+		VkShaderModuleCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.codeSize = compute_source.size(),
+			.pCode = reinterpret_cast<const std::uint32_t*>(compute_source.data())
+		};
+		VkResult res = vkCreateShaderModule(current_device, &create, nullptr, &shad.smod);
+		switch(res)
+		{
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				return std::unexpected(tz::error_code::voom);
+			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				return std::unexpected(tz::error_code::oom);
+			break;
+			case VK_SUCCESS: break;
+			default: return std::unexpected(tz::error_code::unknown_error); break;
+		}
+		return static_cast<tz::hanval>(static_cast<std::uint32_t>(cid) << 16);
+	}
+
+	void destroy_shader(shader_handle handle)
+	{
+		(void)handle;
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
