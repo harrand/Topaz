@@ -1,6 +1,7 @@
 #ifdef _WIN32
 #include "tz/os/window.hpp"
 #include "tz/os/input.hpp"
+#include "tz/os/file.hpp"
 #include "tz/topaz.hpp"
 #include <windows.h>
 #include <dwmapi.h>
@@ -137,6 +138,32 @@ namespace tz::os
 		}
 		kb_callback = callback;
 		return tz::error_code::success;
+	}
+
+	std::expected<std::string, tz::error_code> read_file(std::filesystem::path path)
+	{
+		HANDLE file = CreateFileA(path.string().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		if(file == INVALID_HANDLE_VALUE)
+		{
+			// file does not exist.
+			UNERR(tz::error_code::precondition_failure, "failed to open file \"{}\"", path.string());
+		}
+		LARGE_INTEGER file_size;
+		GetFileSizeEx(file, &file_size);
+		std::string ret;
+		ret.resize(file_size.QuadPart, '\0');
+		DWORD real_byte_count;
+		BOOL read_status = ReadFile(file, ret.data(), ret.size(), &real_byte_count, nullptr);
+		ret.resize(real_byte_count);
+		if(!read_status && GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+		{
+			UNERR(tz::error_code::engine_bug, "windows read file logic is invalid. buffer was too small even when i specifically asked for the size correctly.");
+		}
+		if(read_status)
+		{
+			return ret;
+		}
+		UNERR(tz::error_code::unknown_error, "undocumented windows error occurred when trying to read file");
 	}
 
 	// IMPL
