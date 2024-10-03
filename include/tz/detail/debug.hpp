@@ -63,6 +63,10 @@ namespace tz::detail
 
 * @hideinitializer
 **/
-#define tz_must(fnret) [sl = std::source_location::current()](auto ret){if(!ret.has_value()){tz::detail::error_internal("[Must Failure]: ", "error {} {}", sl, static_cast<int>(ret.error()), tz::last_error());} return ret.value();}(fnret)
+#define tz_must(fnret) [sl = std::source_location::current()](auto ret){if constexpr(std::is_same_v<std::decay_t<decltype(ret)>, tz::error_code>){if(ret != tz::error_code::success){tz::detail::error_internal("[Must Failure]: ", "error {} {}", sl, static_cast<int>(ret), tz::last_error());}} else{if(!ret.has_value()){tz::detail::error_internal("[Must Failure]: ", "error {} {}", sl, static_cast<int>(ret.error()), tz::last_error());} return ret.value();}}(fnret)
+
+
+#define UNERR(errcode, preamble, ...) {auto msg = std::format(preamble, __VA_ARGS__); tz_seterror(errcode, msg); return std::unexpected(errcode);}
+#define RETERR(errcode, preamble, ...){auto msg = std::format(preamble, __VA_ARGS__); tz_seterror(errcode, msg); return errcode;}
 
 #endif // TOPAZ_DEBUG_HPP

@@ -27,6 +27,8 @@ int main()
 		.data = std::as_bytes(std::span<const int>(&data, 1))
 	}));
 
+	tz_must(tz::gpu::destroy_resource(buf));
+
 	tz::terminate();
 
 	return 0;

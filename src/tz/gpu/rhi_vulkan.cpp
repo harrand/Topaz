@@ -43,8 +43,6 @@ namespace tz::gpu
 	VmaAllocator alloc = VK_NULL_HANDLE;
 	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
 
-	#define UNERR(errcode, msg) tz_seterror(errcode, msg); return std::unexpected(errcode);
-
 	struct frame_data_t
 	{
 		VkCommandPool cpool = VK_NULL_HANDLE;
@@ -192,7 +190,7 @@ namespace tz::gpu
 		{
 			if(!resources[i].is_invalid())
 			{
-				destroy_resource(static_cast<tz::hanval>(i));
+				tz_must(destroy_resource(static_cast<tz::hanval>(i)));
 			}
 		}
 		if(swapchain != VK_NULL_HANDLE)
@@ -278,8 +276,14 @@ namespace tz::gpu
 			case VK_INCOMPLETE:
 				ret = error_code::partial_success;
 			break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				RETERR(tz::error_code::oom, "ran out of CPU memory whilst iterating over hardware");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				RETERR(tz::error_code::voom, "ran out of GPU memory whilst iterating over hardware");
+			break;
 			default:
-				ret = error_code::unknown_error;
+				RETERR(tz::error_code::unknown_error, "an implementation-side error occurred in the driver whilst iterating over hardware");
 			break;
 		}
 
@@ -305,12 +309,8 @@ namespace tz::gpu
 			hardware.resize(hardware_count);
 			res = tz::gpu::iterate_hardware(hardware);
 		}
-		else
-		{
-			tz_assert(res == error_code::success, "{} occurred when attempting to find the best hardware.", tz::error_code_name(res));
-		}
 		std::vector<unsigned int> hardware_scores(hardware_count);
-		tz_assert(res == error_code::success, "find_best_hardware failed due to {}", tz::error_code_name(res));
+		tz_must(res);
 
 		unsigned int max_score = 0;
 		tz::gpu::hardware best_hardware = hardware.front();
@@ -386,31 +386,30 @@ namespace tz::gpu
 		{
 			case VK_SUCCESS: break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				return error_code::oom;
+				RETERR(tz::error_code::oom, "ran out of CPU memory while trying to create vulkan device");
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				return error_code::voom;
+				RETERR(tz::error_code::voom, "ran out of GPU memory while trying to create vulkan device");
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				return error_code::hardware_unsuitable;
+				RETERR(tz::error_code::hardware_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan extension");
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
 				switch(hw.features)
 				{
 					case tz::gpu::hardware_feature_coverage::ideal:
-						return error_code::engine_bug;
+						RETERR(tz::error_code::engine_bug, "vulkan driver says not all features were available for the device, even though the engine said it was suitable. please submit a bug report.");
 					break;
 					default:
-						return error_code::hardware_unsuitable;
+						RETERR(tz::error_code::hardware_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan feature");
 					break;
 				}
-				return error_code::precondition_failure;
 			break;
 			case VK_ERROR_DEVICE_LOST:
-				return error_code::driver_hazard;
+				RETERR(tz::error_code::driver_hazard, "vulkan driver reported a device lost error whilst trying to create a device. something extremely cursed has happened - time to troubleshoot!");
 			break;
 			default:
-				return error_code::unknown_error;
+				RETERR(tz::error_code::unknown_error, "vulkan device creation failed due to an undocumented error.");
 			break;
 		}
 
@@ -432,7 +431,7 @@ namespace tz::gpu
 		res = vmaCreateAllocator(&alloc_create, &alloc);
 		if(res != VK_SUCCESS)
 		{
-			return tz::error_code::unknown_error;
+			RETERR(tz::error_code::unknown_error, "vulkan memory allocator creation failed due to an unknown error");
 		}
 
 		VkCommandPoolCreateInfo pool_create
@@ -449,13 +448,13 @@ namespace tz::gpu
 			{
 				case VK_SUCCESS: break;
 				case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-					return tz::error_code::voom;
+					RETERR(tz::error_code::voom, "ran out of GPU memory while trying to create a vulkan command pool");
 				break;
 				case VK_ERROR_OUT_OF_HOST_MEMORY:
-					return tz::error_code::oom;
+					RETERR(tz::error_code::oom, "ran out of CPU memory while trying to create a vulkan command pool");
 				break;
 				default:
-					return tz::error_code::unknown_error;
+					RETERR(tz::error_code::unknown_error, "undocumented error code reported while trying to create a vulkan command pool");
 				break;
 			}
 
@@ -472,13 +471,13 @@ namespace tz::gpu
 			{
 				case VK_SUCCESS: break;
 				case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-					return tz::error_code::voom;
+					RETERR(tz::error_code::voom, "ran out of GPU memory while trying to create vulkan command buffers");
 				break;
 				case VK_ERROR_OUT_OF_HOST_MEMORY:
-					return tz::error_code::oom;
+					RETERR(tz::error_code::oom, "ran out of CPU memory while trying to create vulkan command buffers");
 				break;
 				default:
-					return tz::error_code::unknown_error;
+					RETERR(tz::error_code::unknown_error, "undocumented error code reported while trying to create vulkan command buffers");
 				break;
 			}
 
@@ -489,6 +488,7 @@ namespace tz::gpu
 				.pNext = nullptr,
 				.flags = 0
 			};
+			// todo: error check.
 			vkCreateFence(current_device, &fence_create, nullptr, &frames[i].swapchain_fence);
 
 			VkSemaphoreCreateInfo swapchain_sem_create
@@ -497,6 +497,7 @@ namespace tz::gpu
 				.pNext = nullptr,
 				.flags = 0
 			};
+			// todo: error check.
 			vkCreateSemaphore(current_device, &swapchain_sem_create, nullptr, &frames[i].swapchain_sem);
 
 			VkSemaphoreTypeCreateInfo timeline_create
@@ -512,9 +513,9 @@ namespace tz::gpu
 				.pNext = &timeline_create,
 				.flags = 0
 			};
+			// todo: error check.
 			vkCreateSemaphore(current_device, &sem_create, nullptr, &frames[i].timeline_sem);
 		}
-
 		return tz::error_code::success;
 	}
 
@@ -529,6 +530,11 @@ namespace tz::gpu
 		auto hanval = resources.size();
 		resource_info& res = resources.emplace_back();
 		res.res = info;
+		std::string_view name = info.debug_name;
+		if(name.empty())
+		{
+			name = "unnamed buffer";
+		}
 
 		VkBufferCreateInfo create
 		{
@@ -557,23 +563,23 @@ namespace tz::gpu
 		{
 			case VK_SUCCESS: break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				UNERR(tz::error_code::oom, "oom while creating buffer");
+				UNERR(tz::error_code::oom, "oom while creating buffer \"{}\"", name);
 			break;
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				UNERR(tz::error_code::voom, "voom while creating buffer");
+				UNERR(tz::error_code::voom, "voom while creating buffer \"{}\"", name);
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
 				if(info.data.size_bytes() == 0)
 				{
-					UNERR(tz::error_code::precondition_failure, "zero-size buffers are not allowed");
+					UNERR(tz::error_code::precondition_failure, "zero-size buffers ({}) are not allowed", name);
 				}
 				else
 				{
-					UNERR(tz::error_code::driver_hazard, "unexpected failure when creating buffer due to an implementation-specific reason");
+					UNERR(tz::error_code::driver_hazard, "unexpected failure when creating buffer \"{}\" due to an implementation-specific reason", name);
 				}
 			break;
 			default:
-				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code returned when creating buffer.");
+				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code returned when creating buffer \"{}\"", name);
 			break;
 		}
 
@@ -588,6 +594,11 @@ namespace tz::gpu
 		auto hanval = resources.size();
 		resource_info& res = resources.emplace_back();
 		res.res = info;
+		std::string_view name = info.debug_name;
+		if(name.empty())
+		{
+			name = "unnamed image";
+		}
 
 		VkImageCreateInfo create
 		{
@@ -627,10 +638,15 @@ namespace tz::gpu
 		VkResult ret = vmaCreateImage(alloc, &create, &alloc_info, &res.img, &res.mem, nullptr);
 		switch(ret)
 		{
-			case VK_SUCCESS:
+			case VK_SUCCESS: break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				UNERR(tz::error_code::oom, "oom while creating image \"{}\"", name);
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				UNERR(tz::error_code::voom, "voom while creating image \"{}\"", name);
 			break;
 			default:
-				return std::unexpected(tz::error_code::precondition_failure);
+				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code returned when creating image \"{}\"", name);
 			break;
 		}
 
@@ -645,7 +661,7 @@ namespace tz::gpu
 		auto& info = resources[res.peek()];
 		if(info.is_invalid())
 		{
-			return tz::error_code::precondition_failure;
+			RETERR(tz::error_code::precondition_failure, "invalid resource handle - either the handle is garbage or you have already destroyed it.");
 		}
 		else if(info.is_buffer())
 		{
@@ -681,13 +697,15 @@ namespace tz::gpu
 		switch(res)
 		{
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				return std::unexpected(tz::error_code::voom);
+				UNERR(tz::error_code::voom, "ran out of GPU memory while trying to create vertex shader");
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				return std::unexpected(tz::error_code::oom);
+				UNERR(tz::error_code::oom, "ran out of CPU memory while trying to create a vertex shader");
 			break;
 			case VK_SUCCESS: break;
-			default: return std::unexpected(tz::error_code::unknown_error); break;
+			default:
+				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code reported when attempting to create vertex shader")
+			break;
 		}
 		
 		VkShaderModuleCreateInfo fcreate
@@ -702,13 +720,15 @@ namespace tz::gpu
 		switch(res)
 		{
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				return std::unexpected(tz::error_code::voom);
+				UNERR(tz::error_code::voom, "ran out of GPU memory while trying to create fragment shader");
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				return std::unexpected(tz::error_code::oom);
+				UNERR(tz::error_code::oom, "ran out of CPU memory while trying to create a fragment shader");
 			break;
 			case VK_SUCCESS: break;
-			default: return std::unexpected(tz::error_code::unknown_error); break;
+			default:
+				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code reported when attempting to create fragment shader")
+			break;
 		}
 
 		return static_cast<tz::hanval>((static_cast<std::uint32_t>(fid) << 16) + static_cast<std::uint32_t>(vid));
@@ -732,13 +752,15 @@ namespace tz::gpu
 		switch(res)
 		{
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-				return std::unexpected(tz::error_code::voom);
+				UNERR(tz::error_code::voom, "ran out of GPU memory while trying to create compute shader");
 			break;
 			case VK_ERROR_OUT_OF_HOST_MEMORY:
-				return std::unexpected(tz::error_code::oom);
+				UNERR(tz::error_code::oom, "ran out of CPU memory while trying to create a compute shader");
 			break;
 			case VK_SUCCESS: break;
-			default: return std::unexpected(tz::error_code::unknown_error); break;
+			default:
+				UNERR(tz::error_code::unknown_error, "undocumented vulkan error code reported when attempting to create compute shader")
+			break;
 		}
 		return static_cast<tz::hanval>(static_cast<std::uint32_t>(cid) << 16);
 	}
