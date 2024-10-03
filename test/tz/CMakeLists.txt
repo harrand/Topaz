@@ -21,3 +21,9 @@ topaz_add_test(
   SOURCES
     gpu_resource_test.cpp
 )
+
+topaz_add_test(
+  TARGET tz_gpu_shader_test
+  SOURCES
+    gpu_shader_test.cpp
+)

@@ -231,6 +231,14 @@ namespace tz::gpu
 					frames[i].timeline_sem = VK_NULL_HANDLE;
 				}
 			}
+			for(std::size_t i = 0; i < shaders.size(); i++)
+			{
+				if(shaders[i].smod != VK_NULL_HANDLE)
+				{
+					vkDestroyShaderModule(current_device, shaders[i].smod, nullptr);
+					shaders[i] = {};
+				}
+			}
 			// then destroy the device itself.
 			vkDestroyDevice(current_device, nullptr);
 			current_device = VK_NULL_HANDLE;
@@ -678,6 +686,7 @@ namespace tz::gpu
 
 	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string vertex_source, std::string fragment_source)
 	{
+		shaders.reserve(shaders.size() + 2);
 		auto& vshad = shaders.emplace_back();
 		std::uint16_t vid = shaders.size();
 		vshad.ty = shader_type::vertex;
@@ -767,7 +776,19 @@ namespace tz::gpu
 
 	void destroy_shader(shader_handle handle)
 	{
-		(void)handle;
+		auto top_part = (handle.peek() >> 16) & 0xFFFFFFFF;
+		auto bottom_part = handle.peek() & 0x0000FFFF;
+		if(bottom_part > 0x0)
+		{
+			// top part is a compute shader.
+			auto& bottom_shader = shaders[--bottom_part];
+			vkDestroyShaderModule(current_device, bottom_shader.smod, nullptr);
+			bottom_shader = {};
+		}
+		// top part is a compute shader.
+		auto& top_shader = shaders[--top_part];
+		vkDestroyShaderModule(current_device, top_shader.smod, nullptr);
+		top_shader = {};
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
