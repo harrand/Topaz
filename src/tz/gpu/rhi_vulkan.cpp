@@ -3,6 +3,7 @@
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/resource.hpp"
 #include "tz/gpu/shader.hpp"
+#include "tz/gpu/pass.hpp"
 #include "tz/os/window.hpp"
 
 #ifdef _WIN32
@@ -684,7 +685,7 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
-	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string vertex_source, std::string fragment_source)
+	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string_view vertex_source, std::string_view fragment_source)
 	{
 		shaders.reserve(shaders.size() + 2);
 		auto& vshad = shaders.emplace_back();
@@ -743,7 +744,7 @@ namespace tz::gpu
 		return static_cast<tz::hanval>((static_cast<std::uint32_t>(fid) << 16) + static_cast<std::uint32_t>(vid));
 	}
 
-	std::expected<shader_handle, tz::error_code> create_compute_shader(std::string compute_source)
+	std::expected<shader_handle, tz::error_code> create_compute_shader(std::string_view compute_source)
 	{
 		auto& shad = shaders.emplace_back();
 		std::size_t cid = shaders.size();
@@ -780,15 +781,33 @@ namespace tz::gpu
 		auto bottom_part = handle.peek() & 0x0000FFFF;
 		if(bottom_part > 0x0)
 		{
-			// top part is a compute shader.
 			auto& bottom_shader = shaders[--bottom_part];
 			vkDestroyShaderModule(current_device, bottom_shader.smod, nullptr);
 			bottom_shader = {};
 		}
-		// top part is a compute shader.
 		auto& top_shader = shaders[--top_part];
 		vkDestroyShaderModule(current_device, top_shader.smod, nullptr);
 		top_shader = {};
+	}
+
+	std::expected<pass_handle, tz::error_code> create_pass(pass_info info)
+	{
+		if(info.shader == tz::nullhand)
+		{
+			UNERR(tz::error_code::precondition_failure, "no shader program provided when creating pass. you must provide a valid shader program.");
+		}
+		auto top_part = (info.shader.peek() >> 16) & 0xFFFFFFFF;
+		auto& shader1 = shaders[--top_part];
+		auto bottom_part = info.shader.peek() & 0x0000FFFF;
+		if(bottom_part == 0x0)
+		{
+			if(shader1.ty != shader_type::compute)
+			{
+				UNERR(tz::error_code::precondition_failure, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader.");
+			}
+		}
+		//UNERR(tz::error_code::engine_bug, "creating a pass is NYI");
+		return tz::nullhand;
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////

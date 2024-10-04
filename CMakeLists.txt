@@ -36,6 +36,7 @@ add_library(topaz STATIC
 )
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(topaz PRIVATE VulkanMemoryAllocator)
+target_link_libraries(topaz PUBLIC textc_lib)
 
 ######################
 ## TOPAZ - SETTINGS ##

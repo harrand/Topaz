@@ -29,7 +29,7 @@ namespace tz::gpu
 	 * @return @ref tz::error_code::voom If GPU memory is exhausted whilst trying to create the shader program.
 	 * @return @ref tz::error_code::unknown_error If some other undocumented error occurs.
 	 **/
-	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string vertex_source, std::string fragment_source);
+	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string_view vertex_source, std::string_view fragment_source);
 	/**
 	 * @ingroup tz_gpu_shader
 	 * @brief Create a new shader intended for compute GPU work, comprised of a single compute shader.
@@ -39,7 +39,7 @@ namespace tz::gpu
 	 * @return @ref tz::error_code::voom If GPU memory is exhausted whilst trying to create the shader program.
 	 * @return @ref tz::error_code::unknown_error If some other undocumented error occurs.
 	 **/
-	std::expected<shader_handle, tz::error_code> create_compute_shader(std::string compute_source);
+	std::expected<shader_handle, tz::error_code> create_compute_shader(std::string_view compute_source);
 	/**
 	 * @ingroup tz_gpu_shader
 	 * @brief Manually destroy a previously-created shader.

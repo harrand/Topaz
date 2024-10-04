@@ -1,5 +1,6 @@
 #ifndef TOPAZ_HPP
 #define TOPAZ_HPP
+#include "textc/imported_text.hpp"
 
 /**
  * @defgroup tz Topaz API Reference
