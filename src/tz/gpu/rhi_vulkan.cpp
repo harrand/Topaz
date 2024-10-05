@@ -43,6 +43,9 @@ namespace tz::gpu
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
 	VmaAllocator alloc = VK_NULL_HANDLE;
 	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
+	VkPipelineLayout default_layout = VK_NULL_HANDLE;
+	std::vector<VkDescriptorSetLayout> set_layouts = {};
+	constexpr std::uint32_t max_image_count = 8192;
 
 	struct frame_data_t
 	{
@@ -93,6 +96,13 @@ namespace tz::gpu
 		VkShaderModule smod;
 	};
 	std::vector<shader_info> shaders = {};
+	struct pass_data
+	{
+		pass_info info;
+		VkPipelineLayout layout = VK_NULL_HANDLE;
+		VkPipeline pipeline = VK_NULL_HANDLE;
+	};
+	std::vector<pass_data> passes = {};
 
 	const char* validation_layers[] =
 	{
@@ -122,6 +132,7 @@ namespace tz::gpu
 	#define ASSERT_INIT tz_assert(current_instance != VK_NULL_HANDLE, "Topaz has not been initialised.");
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 	unsigned int impl_rate_hardware(const hardware&);
+	VkPipelineLayout impl_create_layout();
 	// call this when you have need of the swapchain.
 	// returns success if a swapchain already exists and is ready for use.
 	// returns partial success if a new swapchain has been created (typically if this is your first time calling it, or if the old swapchain was out-of-date). you might want to rerecord commands.
@@ -239,6 +250,17 @@ namespace tz::gpu
 					vkDestroyShaderModule(current_device, shaders[i].smod, nullptr);
 					shaders[i] = {};
 				}
+			}
+			if(default_layout != VK_NULL_HANDLE)
+			{
+				vkDestroyPipelineLayout(current_device, default_layout, nullptr);
+				default_layout = VK_NULL_HANDLE;
+
+				for(auto set_layout : set_layouts)
+				{
+					vkDestroyDescriptorSetLayout(current_device, set_layout, nullptr);
+				}
+				set_layouts.clear();
 			}
 			// then destroy the device itself.
 			vkDestroyDevice(current_device, nullptr);
@@ -365,6 +387,12 @@ namespace tz::gpu
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES,
 			.pNext = &features13,
 			.descriptorIndexing = VK_TRUE,
+			.shaderSampledImageArrayNonUniformIndexing = VK_TRUE,
+			.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
+			.descriptorBindingUpdateUnusedWhilePending = VK_TRUE,
+			.descriptorBindingPartiallyBound = VK_TRUE,
+			.descriptorBindingVariableDescriptorCount = VK_TRUE,
+			.runtimeDescriptorArray = VK_TRUE,
 			.timelineSemaphore = VK_TRUE,
 			.bufferDeviceAddress = VK_TRUE,
 		};
@@ -525,6 +553,7 @@ namespace tz::gpu
 			// todo: error check.
 			vkCreateSemaphore(current_device, &sem_create, nullptr, &frames[i].timeline_sem);
 		}
+		default_layout = impl_create_layout();
 		return tz::error_code::success;
 	}
 
@@ -796,6 +825,7 @@ namespace tz::gpu
 		{
 			UNERR(tz::error_code::precondition_failure, "no shader program provided when creating pass. you must provide a valid shader program.");
 		}
+		std::size_t ret_id = passes.size();
 		auto top_part = (info.shader.peek() >> 16) & 0xFFFFFFFF;
 		auto& shader1 = shaders[--top_part];
 		auto bottom_part = info.shader.peek() & 0x0000FFFF;
@@ -806,8 +836,11 @@ namespace tz::gpu
 				UNERR(tz::error_code::precondition_failure, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader.");
 			}
 		}
-		//UNERR(tz::error_code::engine_bug, "creating a pass is NYI");
-		return tz::nullhand;
+
+		auto& pass = passes.emplace_back();
+		pass.info = info;
+		pass.layout = default_layout;
+		return static_cast<tz::hanval>(ret_id);
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
@@ -1117,6 +1150,63 @@ namespace tz::gpu
 				return VK_FORMAT_UNDEFINED;
 			break;
 		}
+	}
+
+	VkPipelineLayout impl_create_layout()
+	{
+		VkDescriptorSetLayoutBinding images_binding
+		{
+			.binding = 0,
+			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			.descriptorCount = max_image_count,
+			.stageFlags = VK_SHADER_STAGE_ALL,
+			.pImmutableSamplers = nullptr
+		};
+		VkDescriptorBindingFlags flags =
+			VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
+			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT |
+			VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT;
+
+		VkDescriptorSetLayoutBindingFlagsCreateInfo flags_create
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
+			.pNext = nullptr,
+			.bindingCount = 1,
+			.pBindingFlags = &flags
+		};
+		VkDescriptorSetLayoutCreateInfo dlcreate
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+			.pNext = &flags_create,
+			.flags =
+				VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
+			.bindingCount = 1,
+			.pBindings = &images_binding
+		};
+		set_layouts.clear();
+		set_layouts.resize(frame_overlap);
+		for(std::size_t i = 0; i < frame_overlap; i++)
+		{
+			vkCreateDescriptorSetLayout(current_device, &dlcreate, nullptr, &set_layouts[i]);
+		}
+		VkPipelineLayoutCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.setLayoutCount = frame_overlap,
+			.pSetLayouts = set_layouts.data(),
+			.pushConstantRangeCount = 0,
+			.pPushConstantRanges = nullptr
+		};
+		VkPipelineLayout ret;
+		VkResult res = vkCreatePipelineLayout(current_device, &create, nullptr, &ret);
+		switch(res)
+		{
+			default: break;
+		}
+		return ret;
 	}
 }
 #endif
