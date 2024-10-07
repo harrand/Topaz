@@ -27,7 +27,6 @@ namespace tz::gpu
 
 	enum pass_flags
 	{
-		none = 0x00
 	};
 
 	constexpr pass_flags operator|(pass_flags lhs, pass_flags rhs)
@@ -40,9 +39,26 @@ namespace tz::gpu
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
 
+	enum graphics_pass_flags
+	{
+	};
+
+	constexpr graphics_pass_flags operator|(graphics_pass_flags lhs, graphics_pass_flags rhs)
+	{
+		return static_cast<graphics_pass_flags>(static_cast<int>(lhs) | static_cast<int>(rhs));
+	}
+
+	constexpr bool operator&(graphics_pass_flags lhs, graphics_pass_flags& rhs)
+	{
+		return static_cast<int>(lhs) & static_cast<int>(rhs);
+	}
+
 	struct pass_graphics_state
 	{
 		tz::v3f clear_colour = tz::v3f::zero();
+		std::span<const resource_handle> colour_targets = {};
+		resource_handle depth_target = tz::nullhand;
+		graphics_pass_flags flags = static_cast<graphics_pass_flags>(0);
 	};
 
 	struct pass_compute_state
@@ -56,7 +72,7 @@ namespace tz::gpu
 		pass_compute_state compute = {};
 		shader_handle shader = tz::nullhand;
 		std::span<const resource_handle> resources = {};
-		pass_flags flags = pass_flags::none;
+		pass_flags flags = static_cast<pass_flags>(0);
 		const char* debug_name = "";
 	};
 

@@ -104,6 +104,11 @@ namespace tz::gpu
 	 * @brief Corresponds to a previously-created resource (buffer or image).
 	 */
 	using resource_handle = tz::handle<buffer_info>;
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Corresponds to either the window image (as a colour target) or the system depth image (as a depth target).
+	 */
+	constexpr auto window_resource = static_cast<tz::hanval>(std::numeric_limits<std::underlying_type_t<tz::hanval>>::max() - 1);
 
 	/**
 	 * @ingroup tz_gpu_resource

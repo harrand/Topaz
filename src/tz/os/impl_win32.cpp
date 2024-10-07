@@ -9,6 +9,7 @@
 namespace tz::os
 {
 	LRESULT CALLBACK impl_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	std::pair<DWORD, DWORD> impl_get_window_dims();
 
 	constexpr char wndclass_name[] = "Topaz Window";
 	auto hinst = GetModuleHandle(nullptr);
@@ -130,6 +131,16 @@ namespace tz::os
 		return static_cast<tz::hanval>(reinterpret_cast<std::uintptr_t>(wnd));
 	}
 
+	unsigned int window_get_width()
+	{
+		return impl_get_window_dims().first;
+	}
+
+	unsigned int window_get_height()
+	{
+		return impl_get_window_dims().second;
+	}
+
 	tz::error_code install_char_typed_callback(char_type_callback callback)
 	{
 		if(wnd == nullptr)
@@ -167,6 +178,16 @@ namespace tz::os
 	}
 
 	// IMPL
+
+	std::pair<DWORD, DWORD> impl_get_window_dims()
+	{
+		RECT rect;
+		if(wnd != nullptr && GetWindowRect(wnd, &rect))
+		{
+			return {rect.right - rect.left, rect.bottom - rect.top};
+		}
+		return {0, 0};
+	}
 
 	LRESULT CALLBACK impl_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{

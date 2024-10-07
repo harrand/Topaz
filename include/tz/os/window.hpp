@@ -107,6 +107,9 @@ namespace tz::os
 	 **/
 	window_handle get_window_handle();
 
+	unsigned int window_get_width();
+	unsigned int window_get_height();
+
 }
 
 #endif // TOPAZ_OS_WINDOW_HPP

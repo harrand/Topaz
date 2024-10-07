@@ -15,9 +15,14 @@ int main()
 
 	tz::gpu::shader_handle graphics = tz_must(tz::gpu::create_graphics_shader(ImportedTextData(empty_vertex, spv), ImportedTextData(empty_fragment, spv)));
 
+	tz::gpu::resource_handle window = tz::gpu::window_resource;
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
-		.graphics = {.clear_colour = {1.0f, 1.0f, 1.0f}},
+		.graphics =
+		{
+			.clear_colour = {1.0f, 1.0f, 1.0f},
+			.colour_targets = {&window, 1},
+		},
 		.shader = graphics
 	}));
 	tz::gpu::destroy_pass(pass);
