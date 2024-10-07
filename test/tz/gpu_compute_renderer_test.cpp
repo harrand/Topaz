@@ -1,5 +1,4 @@
 #include "tz/topaz.hpp"
-#include "tz/os/window.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/pass.hpp"
 #include ImportedTextHeader(empty_compute, spv)
@@ -7,7 +6,6 @@
 int main()
 {
 	tz::initialise();
-	tz::os::open_window({});
 
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));
