@@ -892,7 +892,7 @@ namespace tz::gpu
 					.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
 					.pNext = nullptr,
 					.flags = 0,
-					.stage = VK_SHADER_STAGE_VERTEX_BIT,
+					.stage = VK_SHADER_STAGE_FRAGMENT_BIT,
 					.module = shader1.smod,
 					.pName = "main",
 					.pSpecializationInfo = nullptr
@@ -925,22 +925,139 @@ namespace tz::gpu
 				.flags = 0,
 				.patchControlPoints = 3
 			};
+
+			// swapchain width/height are not safe to use here, and are wrong for passes that render into a texture.
+
+			VkViewport vp
+			{
+				.x = 0.0f,
+				.y = static_cast<float>(swapchain_height),
+				.width = static_cast<float>(swapchain_width),
+				.height = -static_cast<float>(swapchain_height),
+				.minDepth = 0.0f,
+				.maxDepth = 1.0f
+			};
+
+			VkRect2D sci
+			{
+				.offset = {0, 0},
+				.extent =
+				{
+					.width = swapchain_width,
+					.height = swapchain_height
+				}
+			};
+
+			VkPipelineViewportStateCreateInfo viewport
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.viewportCount = 1,
+				.pViewports = &vp,
+				.scissorCount = 1,
+				.pScissors = &sci
+			};
+
+			VkPipelineRasterizationStateCreateInfo raster
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.depthClampEnable = VK_FALSE,
+				.rasterizerDiscardEnable = VK_FALSE,
+				.polygonMode = VK_POLYGON_MODE_FILL,
+				.cullMode = VK_CULL_MODE_BACK_BIT,
+				.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
+				.depthBiasEnable = VK_FALSE,
+				.depthBiasConstantFactor = 0.0f,
+				.depthBiasClamp = 0.0f,
+				.depthBiasSlopeFactor = 0.0f,
+				.lineWidth = 1.0f
+			};
+
+			VkPipelineMultisampleStateCreateInfo ms
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+				.sampleShadingEnable = VK_FALSE,
+				.minSampleShading = 1.0f,
+				.pSampleMask = nullptr,
+				.alphaToCoverageEnable = VK_FALSE,
+				.alphaToOneEnable = VK_FALSE
+			};
+			
+			VkPipelineDepthStencilStateCreateInfo depth
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.depthTestEnable = VK_TRUE,
+				.depthWriteEnable = VK_TRUE,
+				.depthCompareOp = VK_COMPARE_OP_LESS,
+				.depthBoundsTestEnable = VK_TRUE,
+				.stencilTestEnable = VK_FALSE,
+				.front = VkStencilOpState{},
+				.back = VkStencilOpState{},
+				.minDepthBounds = 0.0f,
+				.maxDepthBounds = 1.0f	
+			};
+
+			VkPipelineColorBlendAttachmentState no_blending
+			{
+				.blendEnable = VK_FALSE,
+				.srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+				.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+				.colorBlendOp = VK_BLEND_OP_ADD,
+				.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+				.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+				.alphaBlendOp = VK_BLEND_OP_ADD,
+				.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+			};
+
+			VkPipelineColorBlendStateCreateInfo blend
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.logicOpEnable = VK_FALSE,
+				.logicOp = VkLogicOp{},
+				.attachmentCount = 1,
+				.pAttachments = &no_blending,
+				.blendConstants = {0.0f, 0.0f, 0.0f, 0.0f}
+			};
+
+			VkFormat col_form = impl_get_format_from_image_type(tz::gpu::image_type::rgba);
+
+			// dynamic rendering requires extra:
+			VkPipelineRenderingCreateInfo rendering
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
+				.pNext = nullptr,
+				.viewMask = 0,
+				.colorAttachmentCount = 1,
+				.pColorAttachmentFormats = &col_form,
+				.depthAttachmentFormat = impl_get_format_from_image_type(tz::gpu::image_type::depth),
+				.stencilAttachmentFormat = VK_FORMAT_UNDEFINED
+			};
 			
 			VkGraphicsPipelineCreateInfo create
 			{
 				.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-				.pNext = nullptr,
+				.pNext = &rendering,
 				.flags = 0,
 				.stageCount = 2,
 				.pStages = shader_creates.data(),
 				.pVertexInputState = &vtx,
 				.pInputAssemblyState = &iasm,
 				.pTessellationState = &tess,
-				.pViewportState = nullptr, // todo
-				.pRasterizationState = nullptr, // todo
-				.pMultisampleState = nullptr, // todo
-				.pDepthStencilState = nullptr, // todo
-				.pColorBlendState = nullptr, // todo
+				.pViewportState = &viewport,
+				.pRasterizationState = &raster,
+				.pMultisampleState = &ms,
+				.pDepthStencilState = &depth,
+				.pColorBlendState = &blend,
 				.pDynamicState = nullptr, // todo
 				.layout = default_layout,
 				.renderPass = VK_NULL_HANDLE,

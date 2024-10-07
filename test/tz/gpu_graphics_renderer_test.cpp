@@ -1,23 +1,22 @@
 #include "tz/topaz.hpp"
-#include "tz/os/window.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/pass.hpp"
-#include ImportedTextHeader(empty_compute, spv)
+#include ImportedTextHeader(empty_vertex, spv)
+#include ImportedTextHeader(empty_fragment, spv)
 
 int main()
 {
 	tz::initialise();
-	tz::os::open_window({});
 
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));
 
-	tz::gpu::shader_handle shad = tz_must(tz::gpu::create_compute_shader(ImportedTextData(empty_compute, spv)));
+	tz::gpu::shader_handle graphics = tz_must(tz::gpu::create_graphics_shader(ImportedTextData(empty_vertex, spv), ImportedTextData(empty_fragment, spv)));
 
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
-		.compute = {.kernel = {64u, 64u, 64u}},
-		.shader = shad
+		.graphics = {.clear_colour = {1.0f, 1.0f, 1.0f}},
+		.shader = graphics
 	}));
 	tz::gpu::destroy_pass(pass);
 
