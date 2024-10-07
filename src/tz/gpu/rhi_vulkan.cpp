@@ -829,15 +829,127 @@ namespace tz::gpu
 		auto top_part = (info.shader.peek() >> 16) & 0xFFFFFFFF;
 		auto& shader1 = shaders[--top_part];
 		auto bottom_part = info.shader.peek() & 0x0000FFFF;
-		if(bottom_part == 0x0)
-		{
-			if(shader1.ty != shader_type::compute)
-			{
-				UNERR(tz::error_code::precondition_failure, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader.");
-			}
-		}
 
 		auto& pass = passes.emplace_back();
+		VkResult res = VK_SUCCESS;
+
+		if(shader1.ty == shader_type::compute)
+		{
+			VkComputePipelineCreateInfo create
+			{
+				.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.stage = VkPipelineShaderStageCreateInfo
+				{
+					.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					.pNext = nullptr,
+					.flags = 0,
+					.stage = VK_SHADER_STAGE_COMPUTE_BIT,
+					.module = shader1.smod,
+					.pName = "main",
+					.pSpecializationInfo = nullptr
+				},
+				.layout = default_layout,
+				.basePipelineHandle = VK_NULL_HANDLE,
+				.basePipelineIndex = -1
+			};
+			// create compute pipeline and record etc...
+			res = vkCreateComputePipelines(current_device, VK_NULL_HANDLE, 1, &create, nullptr, &pass.pipeline);
+		}
+		else
+		{
+			if(bottom_part == 0x0)
+			{
+				UNERR(tz::error_code::precondition_failure, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader. a graphics shader program must be comprised of both a vertex shader and fragment shader");
+			}
+			auto& shader2 = shaders[--bottom_part];
+
+			std::array<VkPipelineShaderStageCreateInfo, 2> shader_creates
+			{
+				VkPipelineShaderStageCreateInfo
+				{
+					.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					.pNext = nullptr,
+					.flags = 0,
+					.stage = VK_SHADER_STAGE_VERTEX_BIT,
+					.module = shader2.smod,
+					.pName = "main",
+					.pSpecializationInfo = nullptr
+				},
+				VkPipelineShaderStageCreateInfo
+				{
+					.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+					.pNext = nullptr,
+					.flags = 0,
+					.stage = VK_SHADER_STAGE_VERTEX_BIT,
+					.module = shader1.smod,
+					.pName = "main",
+					.pSpecializationInfo = nullptr
+				}
+			};
+			VkPipelineVertexInputStateCreateInfo vtx
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.vertexBindingDescriptionCount = 0,
+				.pVertexBindingDescriptions = nullptr,
+				.vertexAttributeDescriptionCount = 0,
+				.pVertexAttributeDescriptions = nullptr
+			};
+
+			VkPipelineInputAssemblyStateCreateInfo iasm
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+				.primitiveRestartEnable = VK_FALSE
+			};
+
+			VkPipelineTessellationStateCreateInfo tess
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.patchControlPoints = 3
+			};
+			
+			VkGraphicsPipelineCreateInfo create
+			{
+				.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.stageCount = 2,
+				.pStages = shader_creates.data(),
+				.pVertexInputState = &vtx,
+				.pInputAssemblyState = &iasm,
+				.pTessellationState = &tess,
+				.pViewportState = nullptr, // todo
+				.pRasterizationState = nullptr, // todo
+				.pMultisampleState = nullptr, // todo
+				.pDepthStencilState = nullptr, // todo
+				.pColorBlendState = nullptr, // todo
+				.pDynamicState = nullptr, // todo
+				.layout = default_layout,
+				.renderPass = VK_NULL_HANDLE,
+				.subpass = 0,
+				.basePipelineHandle = VK_NULL_HANDLE,
+				.basePipelineIndex = -1
+			};
+			// create graphics pipeline and record etc...
+			res = vkCreateGraphicsPipelines(current_device, VK_NULL_HANDLE, 1, &create, nullptr, &pass.pipeline);
+		}
+
+		switch(res)
+		{
+			case VK_SUCCESS: break;
+			default:
+				UNERR(tz::error_code::unknown_error, "failed to create vulkan pipeline");
+			break;
+		}
+
 		pass.info = info;
 		pass.layout = default_layout;
 		return static_cast<tz::hanval>(ret_id);
