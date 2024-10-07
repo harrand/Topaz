@@ -1,6 +1,7 @@
 #ifndef TOPAZ_GPU_PASS_HPP
 #define TOPAZ_GPU_PASS_HPP
 #include "tz/core/handle.hpp"
+#include "tz/core/vector.hpp"
 #include "tz/gpu/resource.hpp"
 #include "tz/gpu/shader.hpp"
 
@@ -39,8 +40,20 @@ namespace tz::gpu
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
 
+	struct pass_graphics_state
+	{
+		tz::v3f clear_colour = tz::v3f::zero();
+	};
+
+	struct pass_compute_state
+	{
+		tz::v3u kernel = tz::v3u::zero();
+	};
+
 	struct pass_info
 	{
+		pass_graphics_state graphics = {};
+		pass_compute_state compute = {};
 		shader_handle shader = tz::nullhand;
 		std::span<const resource_handle> resources = {};
 		pass_flags flags = pass_flags::none;

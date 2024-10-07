@@ -41,6 +41,9 @@ namespace tz
 		 */
 		vector() = default;
 		vector(const vector<T, N>& cpy) = default;
+		vector(vector<T, N>&& move) = default;
+		vector& operator=(const vector<T, N>& rhs) = default;
+		vector& operator=(vector<T, N>&& rhs) = default;
 
 		/**
 		 * Retrieve the element value at the given index.

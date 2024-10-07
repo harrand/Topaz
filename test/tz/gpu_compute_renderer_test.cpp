@@ -14,6 +14,7 @@ int main()
 
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
+		.compute = {.kernel = {64u, 64u, 64u}},
 		.shader = shad
 	}));
 	tz::gpu::destroy_pass(pass);
