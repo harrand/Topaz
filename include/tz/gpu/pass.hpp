@@ -49,6 +49,8 @@ namespace tz::gpu
 
 	using pass_handle = tz::handle<pass_info>;
 	std::expected<pass_handle, tz::error_code> create_pass(pass_info);
+
+	void destroy_pass(pass_handle);
 }
 
 #endif // TOPAZ_GPU_PASS_HPP

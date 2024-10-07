@@ -16,6 +16,7 @@ int main()
 	({
 		.shader = shad
 	}));
+	tz::gpu::destroy_pass(pass);
 
 	tz::terminate();
 	return 0;

@@ -194,6 +194,8 @@ namespace tz::gpu
 				tz_error("Vulkan instance creation failed due to an undocumented vulkan error code \"{}\"", static_cast<int>(res));
 			break;
 		}
+		passes.reserve(256);
+		shaders.reserve(256);
 	}
 
 	void terminate()
@@ -249,6 +251,14 @@ namespace tz::gpu
 				{
 					vkDestroyShaderModule(current_device, shaders[i].smod, nullptr);
 					shaders[i] = {};
+				}
+			}
+			for(std::size_t i = 0; i < passes.size(); i++)
+			{
+				if(passes[i].pipeline != VK_NULL_HANDLE)
+				{
+					vkDestroyPipeline(current_device, passes[i].pipeline, nullptr);
+					passes[i] = {};
 				}
 			}
 			if(default_layout != VK_NULL_HANDLE)
@@ -953,6 +963,14 @@ namespace tz::gpu
 		pass.info = info;
 		pass.layout = default_layout;
 		return static_cast<tz::hanval>(ret_id);
+	}
+
+	void destroy_pass(pass_handle pass)
+	{
+		auto i = pass.peek();
+		tz_assert(passes.size() > i, "Dodgy handle (value {}) passed to destroy_pass", i);
+		vkDestroyPipeline(current_device, passes[i].pipeline, nullptr);
+		passes[i] = {};
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
