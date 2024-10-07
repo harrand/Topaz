@@ -68,6 +68,8 @@ namespace tz::gpu
 	{
 		generic_resource res;	
 		VkBuffer buf = VK_NULL_HANDLE;
+		VkDeviceAddress buffer_device_address = 0;
+		void* buffer_mapped_address = nullptr;
 		VkImage img = VK_NULL_HANDLE;
 		VmaAllocation mem = VK_NULL_HANDLE;
 		std::vector<std::byte> data;
@@ -606,7 +608,19 @@ namespace tz::gpu
 				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
 			break;
 		}
-		VkResult ret = vmaCreateBuffer(alloc, &create, &alloc_info, &res.buf, &res.mem, nullptr);
+		VmaAllocationInfo alloc_result;
+		VkResult ret = vmaCreateBuffer(alloc, &create, &alloc_info, &res.buf, &res.mem, &alloc_result);
+		if(info.access == tz::gpu::resource_access::dynamic_access)
+		{
+			res.buffer_mapped_address = alloc_result.pMappedData;
+		}
+		VkBufferDeviceAddressInfo bda
+		{
+			.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+			.pNext = nullptr,
+			.buffer = res.buf
+		};
+		res.buffer_device_address = vkGetBufferDeviceAddress(current_device, &bda);
 		switch(ret)
 		{
 			case VK_SUCCESS: break;
