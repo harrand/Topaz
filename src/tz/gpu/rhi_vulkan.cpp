@@ -112,6 +112,8 @@ namespace tz::gpu
 		pass_info info;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
+		std::uint32_t viewport_width = 0;
+		std::uint32_t viewport_height = 0;
 	};
 	std::vector<pass_data> passes = {};
 
@@ -980,24 +982,23 @@ namespace tz::gpu
 			}
 
 			// set our viewport width/height to that of the first colour target, but assert that *all* colour targets have those same exact dimensions.
-			std::uint32_t viewport_width = 0, viewport_height = 0;
 			for(std::size_t i = 0; i < info.graphics.colour_targets.size(); i++)
 			{
 				auto [w, h] = impl_get_image_dimensions(info.graphics.colour_targets[i]);
 				if(i == 0)
 				{
-					viewport_width = w;
-					viewport_height = h;
+					pass.viewport_width = w;
+					pass.viewport_height = h;
 				}
 				else
 				{
-					if(viewport_width != w)
+					if(pass.viewport_width != w)
 					{
-						UNERR(tz::error_code::precondition_failure, "width of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, w, viewport_width);
+						UNERR(tz::error_code::precondition_failure, "width of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, w, pass.viewport_width);
 					}
-					if(viewport_height != h)
+					if(pass.viewport_height != h)
 					{
-						UNERR(tz::error_code::precondition_failure, "height of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, h, viewport_height);
+						UNERR(tz::error_code::precondition_failure, "height of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, h, pass.viewport_height);
 					}
 				}
 			}
@@ -1035,9 +1036,9 @@ namespace tz::gpu
 			VkViewport vp
 			{
 				.x = 0.0f,
-				.y = static_cast<float>(viewport_height),
-				.width = static_cast<float>(viewport_width),
-				.height = -static_cast<float>(viewport_height),
+				.y = static_cast<float>(pass.viewport_height),
+				.width = static_cast<float>(pass.viewport_width),
+				.height = -static_cast<float>(pass.viewport_height),
 				.minDepth = 0.0f,
 				.maxDepth = 1.0f
 			};
@@ -1047,8 +1048,8 @@ namespace tz::gpu
 				.offset = {0, 0},
 				.extent =
 				{
-					.width = viewport_width,
-					.height = viewport_height
+					.width = pass.viewport_width,
+					.height = pass.viewport_height
 				}
 			};
 
@@ -1303,6 +1304,7 @@ namespace tz::gpu
 			{
 				to.caps = hardware_capabilities::graphics_compute;
 				to.internals.i1 = i;
+				break;
 			}
 			else if(fam.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
@@ -1726,14 +1728,59 @@ namespace tz::gpu
 
 	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame)
 	{
-		(void)pass;
-		(void)frame;
+		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.pipeline);
 	}
 
 	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame)
 	{
-		(void)pass;
-		(void)frame;
+		std::vector<VkRenderingAttachmentInfo> colour_attachments;
+		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
+		for(const auto colour_resh : pass.info.graphics.colour_targets)
+		{
+			VkImageView rtv = VK_NULL_HANDLE;
+			if(colour_resh == window_resource)
+			{
+				// rtv == ...
+			}
+			else
+			{
+				const auto& res = resources[colour_resh.peek()];
+				(void)res;
+				// rtv == ...
+			}
+			colour_attachments.push_back
+			({
+				.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+				.pNext = nullptr,
+				.imageView = rtv,
+				.imageLayout = VK_IMAGE_LAYOUT_GENERAL,
+				.resolveMode = VK_RESOLVE_MODE_NONE,
+				.resolveImageView = VK_NULL_HANDLE,
+				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
+				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+			});
+		}
+		VkRenderingInfo render
+		{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.renderArea =
+			{
+				.offset = {0, 0},
+				.extent = {pass.viewport_width, pass.viewport_height}
+			},
+			.layerCount = 1,
+			.viewMask = 0,
+			.colorAttachmentCount = static_cast<std::uint32_t>(colour_attachments.size()),
+			.pColorAttachments = colour_attachments.data(),
+			.pDepthAttachment = nullptr,
+			.pStencilAttachment = nullptr
+		};
+		vkCmdBeginRendering(frame.cmds, &render);
+		// render commands go here.
+		vkCmdEndRendering(frame.cmds);
 	}
 
 
