@@ -150,6 +150,7 @@ namespace tz::gpu
 	// returns partial_success if the swapchain previously existed, but has been recreated for some important reason (you will maybe need to rerecord commands)
 	// returns oom if oom, voom if voom
 	// returns unknown_error if some undocumented vulkan error occurred.
+	std::pair<std::uint32_t, std::uint32_t> impl_get_image_dimensions(tz::gpu::resource_handle imagey_resource);
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
@@ -977,70 +978,26 @@ namespace tz::gpu
 			{
 				UNERR(tz::error_code::precondition_failure, "detected graphics pass with no colour targets. a graphics pass must have *at least* one colour target");
 			}
-			std::uint32_t viewport_width = 0;
-			std::uint32_t viewport_height = 0;
-			// we need to know width/height for viewport state and some other bits.
-			// we do this by getting the first colour attachment and using that
-			// note that if there are multiple colour attachments, all their width/height must be identical or we will return an error.
+
+			// set our viewport width/height to that of the first colour target, but assert that *all* colour targets have those same exact dimensions.
+			std::uint32_t viewport_width = 0, viewport_height = 0;
 			for(std::size_t i = 0; i < info.graphics.colour_targets.size(); i++)
 			{
-				resource_handle colour_target = info.graphics.colour_targets[i];
-				if(colour_target == tz::nullhand)
+				auto [w, h] = impl_get_image_dimensions(info.graphics.colour_targets[i]);
+				if(i == 0)
 				{
-					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is the null resource. the list of colour targets must not contain a null resource", info.name);
-				}
-				if(colour_target == window_resource)
-				{
-					// drawing into the window!
-					tz::error_code err = impl_need_swapchain(tz::os::window_get_width(), tz::os::window_get_height());
-					if(err == tz::error_code::success || err == tz::error_code::partial_success)
-					{
-						if(i == 0)
-						{
-							viewport_width = swapchain_width;
-							viewport_height = swapchain_height;
-						}
-					}
-					else
-					{
-						UNERR(err, "error while retrieving window as target: {}", tz::last_error());
-					}
+					viewport_width = w;
+					viewport_height = h;
 				}
 				else
 				{
-					// colour_target is an actual resource. it better be an image.
-					const auto& colour_target_res = resources[colour_target.peek()];
-					if(colour_target_res.is_invalid())
+					if(viewport_width != w)
 					{
-						UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is an invalid resource", info.name);
+						UNERR(tz::error_code::precondition_failure, "width of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, w, viewport_width);
 					}
-					else if(colour_target_res.is_buffer())
+					if(viewport_height != h)
 					{
-						UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is buffer resource \"{}\" -- it must be an image resource", info.name, std::get<buffer_info>(colour_target_res.res).name);
-					}
-					else if(colour_target_res.is_image())
-					{
-						const auto& img = std::get<image_info>(colour_target_res.res);
-						if(i == 0)
-						{
-							viewport_width = img.width;
-							viewport_height = img.height;
-						}
-						else
-						{
-							if(viewport_width != img.width)
-							{
-								UNERR(tz::error_code::precondition_failure, "colour target {} has width {}, which does not match the width of the first colour target ({})", i, img.width, viewport_width);
-							}
-							if(viewport_height != img.height)
-							{
-								UNERR(tz::error_code::precondition_failure, "colour target {} has height {}, which does not match the height of the first colour target ({})", i, img.height, viewport_height);
-							}
-						}
-					}
-					else
-					{
-						UNERR(tz::error_code::engine_bug, "first colour target passed into graphicspass info {} is corrupt: neither \"invalid\", \"buffer\" nor \"resource\", which should be impossible. likely memory corruption.", info.name);
+						UNERR(tz::error_code::precondition_failure, "height of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, h, viewport_height);
 					}
 				}
 			}
@@ -1074,7 +1031,7 @@ namespace tz::gpu
 			};
 
 			// swapchain width/height are not safe to use here, and are wrong for passes that render into a texture.
-
+			// opengl-like coordinate system.
 			VkViewport vp
 			{
 				.x = 0.0f,
@@ -1407,6 +1364,34 @@ namespace tz::gpu
 			default: break;
 		}
 		return score;
+	}
+
+	std::pair<std::uint32_t, std::uint32_t> impl_get_image_dimensions(tz::gpu::resource_handle colour_target)
+	{
+		if(colour_target == tz::nullhand)
+		{
+			return {0, 0};
+		}
+		if(colour_target == window_resource)
+		{
+			// drawing into the window!
+			tz::error_code err = impl_need_swapchain(tz::os::window_get_width(), tz::os::window_get_height());
+			if(err == tz::error_code::success || err == tz::error_code::partial_success)
+			{
+				return {swapchain_width, swapchain_height};
+			}
+		}
+		else
+		{
+			// colour_target is an actual resource. it better be an image.
+			const auto& colour_target_res = resources[colour_target.peek()];
+			if(colour_target_res.is_image())
+			{
+				const auto& img = std::get<image_info>(colour_target_res.res);
+				return {img.width, img.height};
+			}
+		}
+		return {0, 0};
 	}
 
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h)
