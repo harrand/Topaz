@@ -615,7 +615,7 @@ namespace tz::gpu
 		auto hanval = resources.size();
 		resource_info& res = resources.emplace_back();
 		res.res = info;
-		std::string_view name = info.debug_name;
+		std::string_view name = info.name;
 		if(name.empty())
 		{
 			name = "unnamed buffer";
@@ -691,7 +691,7 @@ namespace tz::gpu
 		auto hanval = resources.size();
 		resource_info& res = resources.emplace_back();
 		res.res = info;
-		std::string_view name = info.debug_name;
+		std::string_view name = info.name;
 		if(name.empty())
 		{
 			name = "unnamed image";
@@ -957,7 +957,7 @@ namespace tz::gpu
 			std::uint32_t viewport_height = 0;
 			if(first_colour_target == tz::nullhand)
 			{
-				UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is the null resource. the list of colour targets must not contain a null resource", info.debug_name);
+				UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is the null resource. the list of colour targets must not contain a null resource", info.name);
 			}
 			if(first_colour_target == window_resource)
 			{
@@ -979,11 +979,11 @@ namespace tz::gpu
 				const auto& colour_target_res = resources[first_colour_target.peek()];
 				if(colour_target_res.is_invalid())
 				{
-					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is an invalid resource", info.debug_name);
+					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is an invalid resource", info.name);
 				}
 				else if(colour_target_res.is_buffer())
 				{
-					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is buffer resource \"{}\" -- it must be an image resource", info.debug_name, std::get<buffer_info>(colour_target_res.res).debug_name);
+					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is buffer resource \"{}\" -- it must be an image resource", info.name, std::get<buffer_info>(colour_target_res.res).name);
 				}
 				else if(colour_target_res.is_image())
 				{
@@ -993,7 +993,7 @@ namespace tz::gpu
 				}
 				else
 				{
-					UNERR(tz::error_code::engine_bug, "first colour target passed into graphicspass info {} is corrupt: neither \"invalid\", \"buffer\" nor \"resource\", which should be impossible. likely memory corruption.", info.debug_name);
+					UNERR(tz::error_code::engine_bug, "first colour target passed into graphicspass info {} is corrupt: neither \"invalid\", \"buffer\" nor \"resource\", which should be impossible. likely memory corruption.", info.name);
 				}
 			}
 

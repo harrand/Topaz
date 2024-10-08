@@ -73,7 +73,7 @@ namespace tz::gpu
 		shader_handle shader = tz::nullhand;
 		std::span<const resource_handle> resources = {};
 		pass_flags flags = static_cast<pass_flags>(0);
-		const char* debug_name = "";
+		const char* name = "";
 	};
 
 	using pass_handle = tz::handle<pass_info>;

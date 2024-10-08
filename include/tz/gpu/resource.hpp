@@ -58,7 +58,7 @@ namespace tz::gpu
 		/// What initial data shall I have? @warning This must not be empty -- zero-sized buffers are not supported.
 		std::span<const std::byte> data;
 		/// What name shall I have when you're looking at me in your graphics debugger of choice? If you don't specify one, I will be named "Resource 123B" (not necessarily 123)
-		const char* debug_name = "";
+		const char* name = "";
 	};
 
 	/**
@@ -96,7 +96,7 @@ namespace tz::gpu
 		/// What initial data shall I have? @note The size of the data, in bytes, should be equal to `width * height * 4` (all @ref image_type values are 32-bit aka 4 bytes per pixel). 
 		std::span<const std::byte> data;
 		/// What name shall I have when you're looking at me in your graphics debugger of choice? If you don't specify one, I will be named "Resource 123I" (not necessarily 123)
-		const char* debug_name = "";
+		const char* name = "";
 	};
 
 	/**
