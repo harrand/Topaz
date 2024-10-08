@@ -53,6 +53,7 @@ namespace tz::gpu
 	{
 		VkCommandPool cpool = VK_NULL_HANDLE;
 		VkCommandBuffer cmds = VK_NULL_HANDLE;
+		VkDescriptorSet set = VK_NULL_HANDLE;
 
 		// might not need it. signalled when image is acquired. dont think CPU ever needs to wait?
 		VkFence swapchain_fence = VK_NULL_HANDLE;
@@ -64,6 +65,7 @@ namespace tz::gpu
 	constexpr std::size_t frame_overlap = 2;
 	std::array<VkDescriptorSetLayout, frame_overlap> set_layouts = {};
 	std::array<frame_data_t, frame_overlap> frames;
+	std::vector<VkDescriptorPool> descriptor_pools = {};
 
 	std::size_t global_resource_counter = 0;
 	using generic_resource = std::variant<std::monostate, buffer_info, image_info>;
