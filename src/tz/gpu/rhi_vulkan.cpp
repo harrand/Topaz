@@ -44,7 +44,6 @@ namespace tz::gpu
 	VmaAllocator alloc = VK_NULL_HANDLE;
 	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
 	VkPipelineLayout default_layout = VK_NULL_HANDLE;
-	std::vector<VkDescriptorSetLayout> set_layouts = {};
 	constexpr std::uint32_t max_image_count = 8192;
 
 	struct frame_data_t
@@ -60,6 +59,7 @@ namespace tz::gpu
 		VkSemaphore timeline_sem = VK_NULL_HANDLE;
 	};
 	constexpr std::size_t frame_overlap = 2;
+	std::array<VkDescriptorSetLayout, frame_overlap> set_layouts = {};
 	std::array<frame_data_t, frame_overlap> frames;
 
 	std::size_t global_resource_counter = 0;
@@ -268,11 +268,11 @@ namespace tz::gpu
 				vkDestroyPipelineLayout(current_device, default_layout, nullptr);
 				default_layout = VK_NULL_HANDLE;
 
-				for(auto set_layout : set_layouts)
+				for(auto& set_layout : set_layouts)
 				{
 					vkDestroyDescriptorSetLayout(current_device, set_layout, nullptr);
+					set_layout = VK_NULL_HANDLE;
 				}
-				set_layouts.clear();
 			}
 			// then destroy the device itself.
 			vkDestroyDevice(current_device, nullptr);
@@ -1495,8 +1495,6 @@ namespace tz::gpu
 			.bindingCount = 1,
 			.pBindings = &images_binding
 		};
-		set_layouts.clear();
-		set_layouts.resize(frame_overlap);
 		for(std::size_t i = 0; i < frame_overlap; i++)
 		{
 			vkCreateDescriptorSetLayout(current_device, &dlcreate, nullptr, &set_layouts[i]);
