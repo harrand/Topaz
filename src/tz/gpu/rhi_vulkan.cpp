@@ -44,7 +44,8 @@ namespace tz::gpu
 	VmaAllocator alloc = VK_NULL_HANDLE;
 	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
 	VkPipelineLayout default_layout = VK_NULL_HANDLE;
-	constexpr std::uint32_t max_image_count = 8192;
+	constexpr std::uint32_t max_global_image_count = 8192;
+	constexpr std::uint32_t max_image_count_per_pass = 1024;
 
 	VkCommandPool scratch_pool = VK_NULL_HANDLE;
 	VkCommandBuffer scratch_cmds = VK_NULL_HANDLE;
@@ -53,7 +54,6 @@ namespace tz::gpu
 	{
 		VkCommandPool cpool = VK_NULL_HANDLE;
 		VkCommandBuffer cmds = VK_NULL_HANDLE;
-		VkDescriptorSet set = VK_NULL_HANDLE;
 
 		// might not need it. signalled when image is acquired. dont think CPU ever needs to wait?
 		VkFence swapchain_fence = VK_NULL_HANDLE;
@@ -64,8 +64,8 @@ namespace tz::gpu
 	};
 	constexpr std::size_t frame_overlap = 2;
 	std::array<VkDescriptorSetLayout, frame_overlap> set_layouts = {};
-	std::array<frame_data_t, frame_overlap> frames;
 	std::vector<VkDescriptorPool> descriptor_pools = {};
+	std::array<frame_data_t, frame_overlap> frames;
 
 	std::size_t global_resource_counter = 0;
 	using generic_resource = std::variant<std::monostate, buffer_info, image_info>;
@@ -114,6 +114,7 @@ namespace tz::gpu
 		pass_info info;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
+		std::array<VkDescriptorSet, frame_overlap> descriptor_sets = {};
 		std::uint32_t viewport_width = 0;
 		std::uint32_t viewport_height = 0;
 	};
@@ -147,6 +148,7 @@ namespace tz::gpu
 	#define ASSERT_INIT tz_assert(current_instance != VK_NULL_HANDLE, "Topaz has not been initialised.");
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to);
 	unsigned int impl_rate_hardware(const hardware&);
+	void impl_populate_descriptors(pass_handle passh);
 	VkPipelineLayout impl_create_layout();
 	// call this when you have need of the swapchain.
 	// returns success if a swapchain already exists and is ready for use.
@@ -221,7 +223,6 @@ namespace tz::gpu
 	{
 		if(current_device != VK_NULL_HANDLE)
 		{
-			// destroy command buffers
 			vkDeviceWaitIdle(current_device);
 		}
 
@@ -260,6 +261,11 @@ namespace tz::gpu
 				vkDestroyFence(current_device, scratch_fence, nullptr);
 				scratch_fence = VK_NULL_HANDLE;
 			}
+			for(const auto dpool : descriptor_pools)
+			{
+				vkDestroyDescriptorPool(current_device, dpool, nullptr);
+			}
+			descriptor_pools.clear();
 			for(std::size_t i = 0; i < frame_overlap; i++)
 			{
 				if(frames[i].cpool != VK_NULL_HANDLE)
@@ -1188,6 +1194,7 @@ namespace tz::gpu
 		pass.layout = default_layout;
 		pass_handle ret = static_cast<tz::hanval>(ret_id);
 		impl_write_all_resources(ret);
+		impl_populate_descriptors(ret);
 		impl_record_gpu_work(ret);
 		return ret;
 	}
@@ -1695,8 +1702,8 @@ namespace tz::gpu
 		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
 	}
 
-	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame);
-	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame);
+	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
+	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
 
 	void impl_record_gpu_work(pass_handle passh)
 	{
@@ -1718,24 +1725,24 @@ namespace tz::gpu
 			auto& shader1 = shaders[--top_part];
 			if(shader1.ty == shader_type::compute)
 			{
-				impl_record_compute_work(pass, frame);
+				impl_record_compute_work(pass, frame, i);
 			}
 			else
 			{
-				impl_record_graphics_work(pass, frame);
+				impl_record_graphics_work(pass, frame, i);
 			}
 			vkEndCommandBuffer(frame.cmds);
 		}
 	}
 
-	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame)
+	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
 	{
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.pipeline);
-		// bind descriptor sets
+		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
 		// dispatch
 	}
 
-	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame)
+	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
 	{
 		std::vector<VkRenderingAttachmentInfo> colour_attachments;
 		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
@@ -1785,13 +1792,80 @@ namespace tz::gpu
 		// first: transition swapchain image layout from undefined (trashes data) to colour attachment (if we're rendering directly into the window and we're the first pass in the timeline) OR general
 		vkCmdBeginRendering(frame.cmds, &render);
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.pipeline);
-		// bind descriptor sets
+		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
 		// maybe bind index buffer
 		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
 		vkCmdEndRendering(frame.cmds);
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 	}
 
+	bool impl_try_allocate_descriptors(VkDescriptorPool pool, std::span<VkDescriptorSet> sets)
+	{
+		VkDescriptorSetAllocateInfo alloc
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+			.pNext = nullptr,
+			.descriptorPool = pool,
+			.descriptorSetCount = frame_overlap,
+			.pSetLayouts = set_layouts.data()
+		};
+		VkResult res = vkAllocateDescriptorSets(current_device, &alloc, sets.data());
+		switch(res)
+		{
+			case VK_SUCCESS: return true; break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				tz_error("ran out of ram while trying to allocate descriptors...");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				tz_error("ran out of vram while trying to allocate descriptors...");
+			break;
+			default:
+				tz_error("undocumented error occurred. big bad");
+			break;
+			case VK_ERROR_FRAGMENTED_POOL:
+			[[fallthrough]];
+			case VK_ERROR_OUT_OF_POOL_MEMORY:
+				return false;
+			break;
+		}
+		return true;
+	}
+	
+	void impl_new_pool()
+	{
+		VkDescriptorPool& newpool = descriptor_pools.emplace_back();
+		VkDescriptorPoolSize image_limit
+		{
+			.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			.descriptorCount = max_image_count_per_pass
+		};
+		VkDescriptorPoolCreateInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT,
+			.maxSets = frame_overlap * 256,
+			.poolSizeCount = 1,
+			.pPoolSizes = &image_limit
+		};
+		VkResult res = vkCreateDescriptorPool(current_device, &create, nullptr, &newpool);
+		tz_assert(res == VK_SUCCESS, "ruh roh raggy");
+	}
+
+	void impl_populate_descriptors(pass_handle passh)
+	{
+		auto& pass = passes[passh.peek()];
+		if(descriptor_pools.empty())
+		{
+			impl_new_pool();
+		}
+		VkDescriptorPool pool = descriptor_pools.back();
+		while(!impl_try_allocate_descriptors(pool, pass.descriptor_sets))
+		{
+			impl_new_pool();
+			pool = descriptor_pools.back();
+		}
+	}
 
 	VkPipelineLayout impl_create_layout()
 	{
@@ -1799,7 +1873,7 @@ namespace tz::gpu
 		{
 			.binding = 0,
 			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.descriptorCount = max_image_count,
+			.descriptorCount = max_global_image_count,
 			.stageFlags = VK_SHADER_STAGE_ALL,
 			.pImmutableSamplers = nullptr
 		};
