@@ -1729,6 +1729,8 @@ namespace tz::gpu
 	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame)
 	{
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.pipeline);
+		// bind descriptor sets
+		// dispatch
 	}
 
 	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame)
@@ -1778,9 +1780,14 @@ namespace tz::gpu
 			.pDepthAttachment = nullptr,
 			.pStencilAttachment = nullptr
 		};
+		// first: transition swapchain image layout from undefined (trashes data) to colour attachment (if we're rendering directly into the window and we're the first pass in the timeline) OR general
 		vkCmdBeginRendering(frame.cmds, &render);
-		// render commands go here.
+		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.pipeline);
+		// bind descriptor sets
+		// maybe bind index buffer
+		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
 		vkCmdEndRendering(frame.cmds);
+		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 	}
 
 
