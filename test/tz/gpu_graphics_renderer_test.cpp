@@ -23,7 +23,7 @@ int main()
 			.clear_colour = {1.0f, 1.0f, 1.0f},
 			.colour_targets = {&window, 1},
 		},
-		.shader = graphics
+		.shader = graphics,
 	}));
 	tz::gpu::destroy_pass(pass);
 

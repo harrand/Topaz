@@ -9,7 +9,7 @@ namespace tz::gpu
 {
 	/**
 	 * @ingroup tz_gpu
-	 * @defgroup tz_gpu_resource GPU Resources
+	 * @defgroup tz_gpu_resource Resources
 	 * @brief Create/edit/destroy resources (images and buffers).
 	 **/
 

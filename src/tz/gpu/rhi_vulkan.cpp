@@ -91,6 +91,12 @@ namespace tz::gpu
 		}
 	};
 	std::vector<resource_info> resources = {};
+	struct scratchbuf_t
+	{
+		VkBuffer buf;
+		VmaAllocation mem;
+	};
+	std::vector<scratchbuf_t> scratch_buffers = {};
 	enum class shader_type
 	{
 		vertex, fragment, compute
@@ -146,6 +152,7 @@ namespace tz::gpu
 	// returns unknown_error if some undocumented vulkan error occurred.
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
+	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
 	void impl_record_gpu_work(pass_handle pass);
 
@@ -207,6 +214,12 @@ namespace tz::gpu
 
 	void terminate()
 	{
+		if(current_device != VK_NULL_HANDLE)
+		{
+			// destroy command buffers
+			vkDeviceWaitIdle(current_device);
+		}
+
 		for(std::size_t i = 0 ; i < resources.size(); i++)
 		{
 			if(!resources[i].is_invalid())
@@ -214,6 +227,12 @@ namespace tz::gpu
 				tz_must(destroy_resource(static_cast<tz::hanval>(i)));
 			}
 		}
+		for(const auto& scratch : scratch_buffers)
+		{
+			vmaDestroyBuffer(alloc, scratch.buf, scratch.mem);
+		}
+		scratch_buffers.clear();
+
 		if(swapchain != VK_NULL_HANDLE)
 		{
 			vkDestroySwapchainKHR(current_device, swapchain, nullptr);
@@ -226,8 +245,6 @@ namespace tz::gpu
 		}
 		if(current_device != VK_NULL_HANDLE)
 		{
-			// destroy command buffers
-			vkDeviceWaitIdle(current_device);
 			if(scratch_pool != VK_NULL_HANDLE)
 			{
 				vkDestroyCommandPool(current_device, scratch_pool, nullptr);
@@ -637,6 +654,8 @@ namespace tz::gpu
 		{
 			case tz::gpu::resource_access::static_access:
 				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+				// add transfer_dst because static resources will need a transfer command to set their data.
+				create.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 			break;
 			case tz::gpu::resource_access::dynamic_access:
 				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
@@ -714,7 +733,7 @@ namespace tz::gpu
 			.arrayLayers = 1,
 			.samples = VK_SAMPLE_COUNT_1_BIT,
 			.tiling = info.access == tz::gpu::resource_access::static_access ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR,
-			.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+			.usage = VK_IMAGE_USAGE_SAMPLED_BIT,
 			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 			.queueFamilyIndexCount = 1,
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
@@ -725,6 +744,7 @@ namespace tz::gpu
 		{
 			case tz::gpu::resource_access::static_access:
 				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+				create.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 			break;
 			case tz::gpu::resource_access::dynamic_access:
 				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
@@ -732,7 +752,12 @@ namespace tz::gpu
 			break;
 		}
 
-		VkResult ret = vmaCreateImage(alloc, &create, &alloc_info, &res.img, &res.mem, nullptr);
+		VmaAllocationInfo alloc_result;
+		VkResult ret = vmaCreateImage(alloc, &create, &alloc_info, &res.img, &res.mem, &alloc_result);
+		if(info.access == tz::gpu::resource_access::dynamic_access)
+		{
+			res.buffer_mapped_address = alloc_result.pMappedData;
+		}
 		switch(ret)
 		{
 			case VK_SUCCESS: break;
@@ -1482,6 +1507,109 @@ namespace tz::gpu
 		return tz::error_code::partial_success;
 	}
 
+	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset)
+	{
+		auto& res = resources[resource.peek()];
+		if(res.is_buffer())
+		{
+			const auto& buffer = std::get<buffer_info>(res.res);
+			if(buffer.data.size_bytes() < (newdata.size_bytes() + offset))
+			{
+				RETERR(tz::error_code::precondition_failure, "attempt to write {} bytes into buffer {} at offset {}, which is only {} bytes large", newdata.size_bytes(), buffer.name, offset, buffer.data.size_bytes());
+			}
+
+			if(buffer.access == tz::gpu::resource_access::dynamic_access)
+			{
+				void* addr = res.buffer_mapped_address;
+				addr = ((char*)addr) + offset;
+				std::memcpy(addr, newdata.data(), newdata.size_bytes());
+				return tz::error_code::success;
+			}
+
+			scratchbuf_t& scratchbuf = scratch_buffers.emplace_back();
+			VkBufferCreateInfo create
+			{
+				.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.size = newdata.size_bytes(),
+				.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+				.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+				.queueFamilyIndexCount = 1,
+				.pQueueFamilyIndices = &current_hardware.internals.i1
+			};
+			VmaAllocationCreateInfo alloc_create
+			{
+				.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+				.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
+			};
+			VmaAllocationInfo alloc_out;
+			vmaCreateBuffer(alloc, &create, &alloc_create, &scratchbuf.buf, &scratchbuf.mem, &alloc_out);
+			std::memcpy(alloc_out.pMappedData, newdata.data(), newdata.size_bytes());
+			VkBufferCopy cpy
+			{
+				.srcOffset = 0,
+				.dstOffset = offset,
+				.size = newdata.size_bytes()
+			};
+			vkCmdCopyBuffer(cmds, scratchbuf.buf, res.buf, 1, &cpy);
+			// done. scratch buffers will be cleared up later.
+		}
+		else if(res.is_image())
+		{
+			const auto& image = std::get<image_info>(res.res);
+			if(image.data.size_bytes() < (newdata.size_bytes() + offset))
+			{
+				RETERR(tz::error_code::precondition_failure, "attempt to write {} bytes into image {} at offset {}, which is only {} bytes large", newdata.size_bytes(), image.name, offset, image.data.size_bytes());
+			}
+
+			if(image.access == tz::gpu::resource_access::dynamic_access)
+			{
+				void* addr = res.buffer_mapped_address;
+				addr = ((char*)addr) + offset;
+				std::memcpy(addr, newdata.data(), newdata.size_bytes());
+				return tz::error_code::success;
+			}
+
+			scratchbuf_t& scratchbuf = scratch_buffers.emplace_back();
+			VkBufferCreateInfo create
+			{
+				.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.size = newdata.size_bytes(),
+				.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+				.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+				.queueFamilyIndexCount = 1,
+				.pQueueFamilyIndices = &current_hardware.internals.i1
+			};
+			VmaAllocationCreateInfo alloc_create
+			{
+				.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+				.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
+			};
+			VmaAllocationInfo alloc_out;
+			vmaCreateBuffer(alloc, &create, &alloc_create, &scratchbuf.buf, &scratchbuf.mem, &alloc_out);
+			std::memcpy(alloc_out.pMappedData, newdata.data(), newdata.size_bytes());
+			VkBufferImageCopy cpy
+			{
+				.bufferOffset = 0,
+				.bufferRowLength = 0,
+				.bufferImageHeight = 0,
+				.imageSubresource = VkImageSubresourceLayers
+				{
+					.aspectMask = static_cast<VkImageAspectFlags>(image.type == tz::gpu::image_type::depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
+					.mipLevel = 0,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				}
+			};
+			vkCmdCopyBufferToImage(cmds, scratchbuf.buf, res.img, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &cpy);
+			// done. scratch buffers will be cleared up later.
+		}
+		return tz::error_code::success;
+	}
+
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type)
 	{
 		switch(type)
@@ -1523,12 +1651,12 @@ namespace tz::gpu
 			if(res.is_buffer())
 			{
 				const auto& buffer = std::get<buffer_info>(res.res);
-				(void)buffer;
+				impl_cmd_resource_write(scratch_cmds, resh, buffer.data, 0);
 			}
 			else if(res.is_image())
 			{
 				const auto& image = std::get<image_info>(res.res);
-				(void)image;
+				impl_cmd_resource_write(scratch_cmds, resh, image.data, 0);
 			}
 			else
 			{

@@ -10,7 +10,7 @@ namespace tz::gpu
 {
 	/**
 	 * @ingroup tz_gpu
-	 * @defgroup tz_gpu_hardware GPU Hardware
+	 * @defgroup tz_gpu_hardware Hardware
 	 * @brief Documentation specialised for iterating over rendering hardware and selecting one to be used for rendering.
 	 **/
 
