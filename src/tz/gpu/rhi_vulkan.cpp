@@ -147,6 +147,7 @@ namespace tz::gpu
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
 	void impl_write_all_resources(pass_handle pass);
+	void impl_record_gpu_work(pass_handle pass);
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -1179,6 +1180,7 @@ namespace tz::gpu
 		pass.layout = default_layout;
 		pass_handle ret = static_cast<tz::hanval>(ret_id);
 		impl_write_all_resources(ret);
+		impl_record_gpu_work(ret);
 		return ret;
 	}
 
@@ -1552,6 +1554,52 @@ namespace tz::gpu
 		vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
 		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
 	}
+
+	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame);
+	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame);
+
+	void impl_record_gpu_work(pass_handle passh)
+	{
+		const auto& pass = passes[passh.peek()]; 
+		for(std::size_t i = 0; i < frame_overlap; i++)
+		{
+			const auto& frame = frames[i];
+			vkResetCommandBuffer(frame.cmds, 0);
+			VkCommandBufferBeginInfo begin
+			{
+				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.pInheritanceInfo = nullptr
+			};
+			vkBeginCommandBuffer(frame.cmds, &begin);
+			// GPU work goes here.
+			auto top_part = (pass.info.shader.peek() >> 16) & 0xFFFFFFFF;
+			auto& shader1 = shaders[--top_part];
+			if(shader1.ty == shader_type::compute)
+			{
+				impl_record_compute_work(pass, frame);
+			}
+			else
+			{
+				impl_record_graphics_work(pass, frame);
+			}
+			vkEndCommandBuffer(frame.cmds);
+		}
+	}
+
+	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame)
+	{
+		(void)pass;
+		(void)frame;
+	}
+
+	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame)
+	{
+		(void)pass;
+		(void)frame;
+	}
+
 
 	VkPipelineLayout impl_create_layout()
 	{
