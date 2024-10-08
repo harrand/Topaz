@@ -46,6 +46,9 @@ namespace tz::gpu
 	VkPipelineLayout default_layout = VK_NULL_HANDLE;
 	constexpr std::uint32_t max_image_count = 8192;
 
+	VkCommandPool scratch_pool = VK_NULL_HANDLE;
+	VkCommandBuffer scratch_cmds = VK_NULL_HANDLE;
+	VkFence scratch_fence = VK_NULL_HANDLE;
 	struct frame_data_t
 	{
 		VkCommandPool cpool = VK_NULL_HANDLE;
@@ -143,6 +146,7 @@ namespace tz::gpu
 	// returns unknown_error if some undocumented vulkan error occurred.
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
+	void impl_write_all_resources(pass_handle pass);
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -223,6 +227,16 @@ namespace tz::gpu
 		{
 			// destroy command buffers
 			vkDeviceWaitIdle(current_device);
+			if(scratch_pool != VK_NULL_HANDLE)
+			{
+				vkDestroyCommandPool(current_device, scratch_pool, nullptr);
+				scratch_pool = VK_NULL_HANDLE;
+			}
+			if(scratch_fence != VK_NULL_HANDLE)
+			{
+				vkDestroyFence(current_device, scratch_fence, nullptr);
+				scratch_fence = VK_NULL_HANDLE;
+			}
 			for(std::size_t i = 0; i < frame_overlap; i++)
 			{
 				if(frames[i].cpool != VK_NULL_HANDLE)
@@ -566,6 +580,26 @@ namespace tz::gpu
 			vkCreateSemaphore(current_device, &sem_create, nullptr, &frames[i].timeline_sem);
 		}
 		default_layout = impl_create_layout();
+
+		vkCreateCommandPool(current_device, &pool_create, nullptr, &scratch_pool);
+		VkCommandBufferAllocateInfo cmd_info
+		{
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+			.pNext = nullptr,
+			.commandPool = scratch_pool,
+			.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+			.commandBufferCount = 1,
+		};
+		res = vkAllocateCommandBuffers(current_device, &cmd_info, &scratch_cmds);
+
+		VkFenceCreateInfo fence_create
+		{
+			.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0
+		};
+		vkCreateFence(current_device, &fence_create, nullptr, &scratch_fence);
+
 		return tz::error_code::success;
 	}
 
@@ -1143,7 +1177,9 @@ namespace tz::gpu
 
 		pass.info = info;
 		pass.layout = default_layout;
-		return static_cast<tz::hanval>(ret_id);
+		pass_handle ret = static_cast<tz::hanval>(ret_id);
+		impl_write_all_resources(ret);
+		return ret;
 	}
 
 	void destroy_pass(pass_handle pass)
@@ -1461,6 +1497,60 @@ namespace tz::gpu
 				return VK_FORMAT_UNDEFINED;
 			break;
 		}
+	}
+
+	void impl_write_all_resources(pass_handle passh)
+	{
+		VkCommandBufferBeginInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+			.pNext = nullptr,
+			.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+			.pInheritanceInfo = nullptr
+		};
+		// todo: error checking.
+		vkBeginCommandBuffer(scratch_cmds, &create);
+		const auto& pass = passes[passh.peek()];
+		if(pass.info.resources.empty())
+		{
+			return;
+		}
+		for(const auto& resh : pass.info.resources)
+		{
+			const auto& res = resources[resh.peek()];	
+			if(res.is_buffer())
+			{
+				const auto& buffer = std::get<buffer_info>(res.res);
+				(void)buffer;
+			}
+			else if(res.is_image())
+			{
+				const auto& image = std::get<image_info>(res.res);
+				(void)image;
+			}
+			else
+			{
+				tz_error("ruh roh");
+			}
+		}
+
+		vkEndCommandBuffer(scratch_cmds);
+		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
+		VkSubmitInfo submit
+		{
+			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+			.pNext = nullptr,
+			.waitSemaphoreCount = 0,
+			.pWaitSemaphores = nullptr,
+			.pWaitDstStageMask = &stage_mask,
+			.commandBufferCount = 1,
+			.pCommandBuffers = &scratch_cmds,
+			.signalSemaphoreCount = 0,
+			.pSignalSemaphores = nullptr
+		};
+		// todo: check errors.
+		vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
+		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
 	}
 
 	VkPipelineLayout impl_create_layout()
