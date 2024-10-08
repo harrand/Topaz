@@ -182,7 +182,7 @@ namespace tz::os
 	std::pair<DWORD, DWORD> impl_get_window_dims()
 	{
 		RECT rect;
-		if(wnd != nullptr && GetWindowRect(wnd, &rect))
+		if(wnd != nullptr && GetClientRect(wnd, &rect))
 		{
 			return {rect.right - rect.left, rect.bottom - rect.top};
 		}

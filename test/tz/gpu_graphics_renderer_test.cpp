@@ -15,13 +15,25 @@ int main()
 
 	tz::gpu::shader_handle graphics = tz_must(tz::gpu::create_graphics_shader(ImportedTextData(empty_vertex, spv), ImportedTextData(empty_fragment, spv)));
 
-	tz::gpu::resource_handle window = tz::gpu::window_resource;
+	tz::gpu::resource_handle colour_targets[] =
+	{
+		tz::gpu::window_resource,
+		tz_must(tz::gpu::create_image
+		({
+			.access = tz::gpu::resource_access::static_access,
+			.width = tz::os::window_get_width(),
+			.height = tz::os::window_get_height(),
+			.type = tz::gpu::image_type::rgba,
+			.data = {}
+		})),
+	};
+
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
 		.graphics =
 		{
 			.clear_colour = {1.0f, 1.0f, 1.0f},
-			.colour_targets = {&window, 1},
+			.colour_targets = colour_targets,
 		},
 		.shader = graphics,
 	}));

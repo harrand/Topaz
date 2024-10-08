@@ -977,48 +977,71 @@ namespace tz::gpu
 			{
 				UNERR(tz::error_code::precondition_failure, "detected graphics pass with no colour targets. a graphics pass must have *at least* one colour target");
 			}
-			resource_handle first_colour_target = info.graphics.colour_targets.front();
 			std::uint32_t viewport_width = 0;
 			std::uint32_t viewport_height = 0;
-			if(first_colour_target == tz::nullhand)
+			// we need to know width/height for viewport state and some other bits.
+			// we do this by getting the first colour attachment and using that
+			// note that if there are multiple colour attachments, all their width/height must be identical or we will return an error.
+			for(std::size_t i = 0; i < info.graphics.colour_targets.size(); i++)
 			{
-				UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is the null resource. the list of colour targets must not contain a null resource", info.name);
-			}
-			if(first_colour_target == window_resource)
-			{
-				// drawing into the window!
-				tz::error_code err = impl_need_swapchain(tz::os::window_get_width(), tz::os::window_get_height());
-				if(err == tz::error_code::success || err == tz::error_code::partial_success)
+				resource_handle colour_target = info.graphics.colour_targets[i];
+				if(colour_target == tz::nullhand)
 				{
-					viewport_width = swapchain_width;
-					viewport_height = swapchain_height;
+					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is the null resource. the list of colour targets must not contain a null resource", info.name);
+				}
+				if(colour_target == window_resource)
+				{
+					// drawing into the window!
+					tz::error_code err = impl_need_swapchain(tz::os::window_get_width(), tz::os::window_get_height());
+					if(err == tz::error_code::success || err == tz::error_code::partial_success)
+					{
+						if(i == 0)
+						{
+							viewport_width = swapchain_width;
+							viewport_height = swapchain_height;
+						}
+					}
+					else
+					{
+						UNERR(err, "error while retrieving window as target: {}", tz::last_error());
+					}
 				}
 				else
 				{
-					UNERR(err, "error while retrieving window as target: {}", tz::last_error());
-				}
-			}
-			else
-			{
-				// first_colour_target is an actual resource. it better be an image.
-				const auto& colour_target_res = resources[first_colour_target.peek()];
-				if(colour_target_res.is_invalid())
-				{
-					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is an invalid resource", info.name);
-				}
-				else if(colour_target_res.is_buffer())
-				{
-					UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is buffer resource \"{}\" -- it must be an image resource", info.name, std::get<buffer_info>(colour_target_res.res).name);
-				}
-				else if(colour_target_res.is_image())
-				{
-					const auto& img = std::get<image_info>(colour_target_res.res);
-					viewport_width = img.width;
-					viewport_height = img.height;
-				}
-				else
-				{
-					UNERR(tz::error_code::engine_bug, "first colour target passed into graphicspass info {} is corrupt: neither \"invalid\", \"buffer\" nor \"resource\", which should be impossible. likely memory corruption.", info.name);
+					// colour_target is an actual resource. it better be an image.
+					const auto& colour_target_res = resources[colour_target.peek()];
+					if(colour_target_res.is_invalid())
+					{
+						UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is an invalid resource", info.name);
+					}
+					else if(colour_target_res.is_buffer())
+					{
+						UNERR(tz::error_code::precondition_failure, "first colour target passed into graphics pass info {} is buffer resource \"{}\" -- it must be an image resource", info.name, std::get<buffer_info>(colour_target_res.res).name);
+					}
+					else if(colour_target_res.is_image())
+					{
+						const auto& img = std::get<image_info>(colour_target_res.res);
+						if(i == 0)
+						{
+							viewport_width = img.width;
+							viewport_height = img.height;
+						}
+						else
+						{
+							if(viewport_width != img.width)
+							{
+								UNERR(tz::error_code::precondition_failure, "colour target {} has width {}, which does not match the width of the first colour target ({})", i, img.width, viewport_width);
+							}
+							if(viewport_height != img.height)
+							{
+								UNERR(tz::error_code::precondition_failure, "colour target {} has height {}, which does not match the height of the first colour target ({})", i, img.height, viewport_height);
+							}
+						}
+					}
+					else
+					{
+						UNERR(tz::error_code::engine_bug, "first colour target passed into graphicspass info {} is corrupt: neither \"invalid\", \"buffer\" nor \"resource\", which should be impossible. likely memory corruption.", info.name);
+					}
 				}
 			}
 
