@@ -172,7 +172,7 @@ namespace tz::gpu
 	tz::error_code impl_validate_colour_targets(tz::gpu::pass_info& pinfo, pass_data& data);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
-	void impl_record_gpu_work(pass_handle pass);
+	tz::error_code impl_record_gpu_work(pass_handle pass);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 
@@ -1279,7 +1279,11 @@ namespace tz::gpu
 		pass_handle ret = static_cast<tz::hanval>(ret_id);
 		impl_write_all_resources(ret);
 		impl_populate_descriptors(ret);
-		impl_record_gpu_work(ret);
+		tz::error_code err = impl_record_gpu_work(ret);
+		if(err != tz::error_code::success)
+		{
+			return std::unexpected(err);
+		}
 		return ret;
 	}
 
@@ -1865,12 +1869,13 @@ namespace tz::gpu
 		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
 	}
 
-	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
-	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
+	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
+	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
 
-	void impl_record_gpu_work(pass_handle passh)
+	tz::error_code impl_record_gpu_work(pass_handle passh)
 	{
 		const auto& pass = passes[passh.peek()]; 
+		tz::error_code ret = tz::error_code::success;
 		for(std::size_t i = 0; i < frame_overlap; i++)
 		{
 			const auto& frame = frames[i];
@@ -1888,24 +1893,32 @@ namespace tz::gpu
 			auto& shader1 = shaders[--top_part];
 			if(shader1.ty == shader_type::compute)
 			{
-				impl_record_compute_work(pass, frame, i);
+				ret = impl_record_compute_work(pass, frame, i);
 			}
 			else
 			{
-				impl_record_graphics_work(pass, frame, i);
+				ret = impl_record_graphics_work(pass, frame, i);
+			}
+			// if anything fails, return immediately.
+			if(ret != tz::error_code::success)
+			{
+				return ret;
 			}
 			vkEndCommandBuffer(frame.cmds);
 		}
+		return ret;
 	}
 
-	void impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
+	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
 	{
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.pipeline);
 		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
 		// dispatch
+
+		return tz::error_code::success;
 	}
 
-	void impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
+	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
 	{
 		std::vector<VkRenderingAttachmentInfo> colour_attachments;
 		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
@@ -2024,6 +2037,7 @@ namespace tz::gpu
 			vkCmdCopyImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_GENERAL, 1, &cpy);
 		}
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
+		return tz::error_code::success;
 	}
 
 	bool impl_try_allocate_descriptors(VkDescriptorPool pool, std::span<VkDescriptorSet> sets)
