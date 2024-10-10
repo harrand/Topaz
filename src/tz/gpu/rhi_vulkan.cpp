@@ -1959,15 +1959,29 @@ namespace tz::gpu
 			else
 			{
 				const auto& depth_image_resource = resources[pass.info.graphics.depth_target.peek()];
-				const auto& depth_res = std::get<tz::gpu::image_info>(depth_image_resource.res);
-				tz_assert(depth_res.flags & tz::gpu::image_flag::depth_target, "image resource \"{}\" provided as depth target, but this is invalid because the image is missing image_flag::depth_target", depth_res.name);
+				if(depth_image_resource.is_invalid())
+				{
+					RETERR(tz::error_code::precondition_failure, "invalid resource handle provided as depth target to pass \"{}\"", pass.info.name);
+				}
+				else if(depth_image_resource.is_buffer())
+				{
+					RETERR(tz::error_code::precondition_failure, "resource provided as depth target to pass \"{}\" was not an image, but infact a buffer", pass.info.name);
+				}
 				tz_assert(depth_image_resource.is_image(), "non-image passed a depth target");
+				const auto& depth_res = std::get<tz::gpu::image_info>(depth_image_resource.res);
+				if(!(depth_res.flags & tz::gpu::image_flag::depth_target))
+				{
+					RETERR(tz::error_code::precondition_failure, "image resource \"{}\" provided as depth target to pass \"{}\", but the image does not have the \"depth_target\" flag.", depth_res.name, pass.info.name);
+				}
 				depth_rtv = depth_image_resource.img_view;
 			}
 		}
 		else
 		{
-			tz_assert(pass.info.graphics.flags & graphics_flag::no_depth_test, "if you dont disable depth testing you need to provide a depth target.");
+			if(!(pass.info.graphics.flags & graphics_flag::no_depth_test))
+			{
+				RETERR(tz::error_code::precondition_failure, "no depth target was provided for pass \"{}\". you either need to pass \"graphics_flag::no_depth_test\" to disable depth testing entirely, or pass a valid depth target.", pass.info.name);
+			}
 		}
 		VkRenderingAttachmentInfo maybe_depth
 		{

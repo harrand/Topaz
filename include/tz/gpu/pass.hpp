@@ -124,7 +124,7 @@ namespace tz::gpu
 		/// Specifies extra optional behaviour for the pass.
 		pass_flag flags = static_cast<pass_flag>(0);
 		/// Name identifying the pass. Debug tools/error checking will refer to the pass by this name if you provide one. If you do not provide a name, one will be automatically generated for you.
-		const char* name = "";
+		const char* name = "<untitled pass>";
 	};
 
 	using pass_handle = tz::handle<pass_info>;
