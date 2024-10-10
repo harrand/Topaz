@@ -25,9 +25,19 @@ int main()
 			.height = tz::os::window_get_height(),
 			.type = tz::gpu::image_type::rgba,
 			.data = {},
-			.flags = tz::gpu::image_flag::render_target
+			.flags = tz::gpu::image_flag::colour_target
 		})),
 	};
+
+	tz::gpu::resource_handle depth_target = tz_must(tz::gpu::create_image
+	({
+		.access = tz::gpu::resource_access::static_access,
+		.width = tz::os::window_get_width(),
+		.height = tz::os::window_get_height(),
+		.type = tz::gpu::image_type::depth,
+		.data = {},
+		.flags = tz::gpu::image_flag::depth_target
+	}));
 
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
@@ -35,6 +45,7 @@ int main()
 		{
 			.clear_colour = {1.0f, 1.0f, 1.0f},
 			.colour_targets = colour_targets,
+			.depth_target = depth_target,
 			.flags = tz::gpu::graphics_flag::dont_clear
 		},
 		.shader = graphics,

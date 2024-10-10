@@ -79,7 +79,8 @@ namespace tz::gpu
 
 	enum image_flag
 	{
-		render_target = 0x01,
+		colour_target = 0b0001,
+		depth_target = 0b0010,
 	};
 
 	constexpr image_flag operator|(image_flag lhs, image_flag rhs)

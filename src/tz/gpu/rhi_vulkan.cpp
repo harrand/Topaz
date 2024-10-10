@@ -782,9 +782,13 @@ namespace tz::gpu
 				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
 			break;
 		}
-		if(info.flags & image_flag::render_target)
+		if(info.flags & image_flag::colour_target)
 		{
 			create.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		}
+		if(info.flags & image_flag::depth_target)
+		{
+			create.usage |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		}
 
 		VmaAllocationInfo alloc_result;
@@ -1932,6 +1936,38 @@ namespace tz::gpu
 				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 			});
 		}
+		VkImageView depth_rtv = VK_NULL_HANDLE;
+		if(pass.info.graphics.depth_target != tz::nullhand)
+		{
+			if(pass.info.graphics.depth_target == tz::gpu::window_resource)
+			{
+				depth_rtv = system_depth_image_view;
+			}
+			else
+			{
+				const auto& depth_image_resource = resources[pass.info.graphics.depth_target.peek()];
+				const auto& depth_res = std::get<tz::gpu::image_info>(depth_image_resource.res);
+				tz_assert(depth_res.flags & tz::gpu::image_flag::depth_target, "image resource \"{}\" provided as depth target, but this is invalid because the image is missing image_flag::depth_target", depth_res.name);
+				tz_assert(depth_image_resource.is_image(), "non-image passed a depth target");
+				depth_rtv = depth_image_resource.img_view;
+			}
+		}
+		else
+		{
+			tz_assert(pass.info.graphics.flags & graphics_flag::no_depth_test, "if you dont disable depth testing you need to provide a depth target.");
+		}
+		VkRenderingAttachmentInfo maybe_depth
+		{
+			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
+			.pNext = nullptr,
+			.imageView = depth_rtv,
+			.imageLayout = VK_IMAGE_LAYOUT_GENERAL,
+			.resolveMode = VK_RESOLVE_MODE_NONE,
+			.resolveImageView = VK_NULL_HANDLE,
+			.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.loadOp = (pass.info.graphics.flags & graphics_flag::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR,
+			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE, // potentially want to store if another pass is going to read from depth afterwards (in the timeline)
+		};
 		VkRenderingInfo render
 		{
 			.sType = VK_STRUCTURE_TYPE_RENDERING_INFO,
@@ -1946,7 +1982,7 @@ namespace tz::gpu
 			.viewMask = 0,
 			.colorAttachmentCount = static_cast<std::uint32_t>(colour_attachments.size()),
 			.pColorAttachments = colour_attachments.data(),
-			.pDepthAttachment = nullptr,
+			.pDepthAttachment = (pass.info.graphics.flags & graphics_flag::no_depth_test) ? nullptr : &maybe_depth,
 			.pStencilAttachment = nullptr
 		};
 		// first: transition swapchain image layout from undefined (trashes data) to colour attachment (if we're rendering directly into the window and we're the first pass in the timeline) OR general
@@ -2175,9 +2211,9 @@ namespace tz::gpu
 				else
 				{
 					const auto& img = std::get<image_info>(res.res);
-					if(!(img.flags & image_flag::render_target))
+					if(!(img.flags & image_flag::colour_target))
 					{
-						RETERR(tz::error_code::precondition_failure, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"render_target\" flag.", i, pass.info.name);
+						RETERR(tz::error_code::precondition_failure, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"colour_target\" flag.", i, pass.info.name);
 					}
 				}
 			}
