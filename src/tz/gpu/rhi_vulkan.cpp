@@ -169,6 +169,7 @@ namespace tz::gpu
 	std::pair<std::uint32_t, std::uint32_t> impl_get_image_dimensions(tz::gpu::resource_handle imagey_resource);
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
+	tz::error_code impl_validate_colour_targets(tz::gpu::pass_info& pinfo, pass_data& data);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
 	void impl_record_gpu_work(pass_handle pass);
@@ -1056,29 +1057,12 @@ namespace tz::gpu
 			{
 				UNERR(tz::error_code::precondition_failure, "detected graphics pass with no colour targets. a graphics pass must have *at least* one colour target");
 			}
-
-			// set our viewport width/height to that of the first colour target, but assert that *all* colour targets have those same exact dimensions.
-			for(std::size_t i = 0; i < info.graphics.colour_targets.size(); i++)
+			tz::error_code colour_target_validity = impl_validate_colour_targets(info, pass);
+			if(colour_target_validity != tz::error_code::success)
 			{
-				auto [w, h] = impl_get_image_dimensions(info.graphics.colour_targets[i]);
-				if(i == 0)
-				{
-					pass.viewport_width = w;
-					pass.viewport_height = h;
-				}
-				else
-				{
-					if(pass.viewport_width != w)
-					{
-						UNERR(tz::error_code::precondition_failure, "width of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, w, pass.viewport_width);
-					}
-					if(pass.viewport_height != h)
-					{
-						UNERR(tz::error_code::precondition_failure, "height of {}'th colour target of pass {} ({}) does not match the rest ({})", i, info.name, h, pass.viewport_height);
-					}
-				}
+				// already sets error message, so just propagate the error code.
+				return std::unexpected(colour_target_validity);
 			}
-
 			VkPipelineVertexInputStateCreateInfo vtx
 			{
 				.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -2149,6 +2133,49 @@ namespace tz::gpu
 			default: break;
 		}
 		return ret;
+	}
+
+	tz::error_code impl_validate_colour_targets(pass_info& info, pass_data& pass)
+	{
+		// set our viewport width/height to that of the first colour target, but assert that *all* colour targets have those same exact dimensions.
+		for(std::size_t i = 0; i < info.graphics.colour_targets.size(); i++)
+		{
+			auto target = info.graphics.colour_targets[i];
+			auto [w, h] = impl_get_image_dimensions(target);
+			if(target != window_resource && target != tz::nullhand)
+			{
+				const auto& res = resources[target.peek()];
+				if(!res.is_image())
+				{
+					RETERR(tz::error_code::precondition_failure, "colour target {} of pass \"{}\" is neither tz::gpu::window_resource nor a valid image resource. colour targets must consist of a valid image resource that is viable as a colour target, or the window resource.", i, pass.info.name);
+				}
+				else
+				{
+					const auto& img = std::get<image_info>(res.res);
+					if(!(img.flags & image_flags::render_target))
+					{
+						RETERR(tz::error_code::precondition_failure, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"render_target\" flag.", i, pass.info.name);
+					}
+				}
+			}
+			if(i == 0)
+			{
+				pass.viewport_width = w;
+				pass.viewport_height = h;
+			}
+			else
+			{
+				if(pass.viewport_width != w)
+				{
+					RETERR(tz::error_code::precondition_failure, "width of {}'th colour target of pass {} ({}) does not match the rest ({}). all colour targets within a single pass *must* be valid image resources, all with the exact same dimensions.", i, info.name, w, pass.viewport_width);
+				}
+				if(pass.viewport_height != h)
+				{
+					RETERR(tz::error_code::precondition_failure, "height of {}'th colour target of pass {} ({}) does not match the rest ({}). all colour targets within a single pass *must* be valid image resources, all with the exact same dimensions.", i, info.name, h, pass.viewport_height);
+				}
+			}
+		}
+		return tz::error_code::success;
 	}
 
 	void impl_destroy_system_images()
