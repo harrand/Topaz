@@ -1898,12 +1898,14 @@ namespace tz::gpu
 	{
 		std::vector<VkRenderingAttachmentInfo> colour_attachments;
 		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
+		bool render_into_system_image = false;
 		for(const auto colour_resh : pass.info.graphics.colour_targets)
 		{
 			VkImageView rtv = VK_NULL_HANDLE;
 			if(colour_resh == window_resource)
 			{
 				rtv = system_image_view;
+				render_into_system_image = true;
 			}
 			else
 			{
@@ -1948,6 +1950,36 @@ namespace tz::gpu
 		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
 		vkCmdDraw(frame.cmds, 3, 1, 0, 0); // todo: dont hardcode this IDIOT
 		vkCmdEndRendering(frame.cmds);
+		if(render_into_system_image)
+		{
+			VkImageCopy cpy
+			{
+				.srcSubresource = VkImageSubresourceLayers
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.mipLevel = 0,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				},
+				.srcOffset = VkOffset3D{.x = 0, .y = 0, .z = 0},
+				.dstSubresource = VkImageSubresourceLayers
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.mipLevel = 0,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				},
+				.dstOffset = VkOffset3D{.x = 0, .y = 0, .z = 0},
+				.extent = VkExtent3D{
+					.width = swapchain_width,
+					.height = swapchain_height,
+					.depth = 1,
+				}
+			};
+			// do *not* use this index into the swapchain images. id is the n'th frame in flight with respect to frame_overlap.
+			// the index we actually want to use is the recently acquired swapchain image (which isnt being done yet)
+			vkCmdCopyImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_GENERAL, 1, &cpy);
+		}
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 	}
 
