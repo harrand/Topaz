@@ -48,6 +48,13 @@ namespace tz::gpu
 	constexpr std::uint32_t max_global_image_count = 8192;
 	constexpr std::uint32_t max_image_count_per_pass = 1024;
 
+	VkImage system_image = VK_NULL_HANDLE;
+	VmaAllocation system_image_mem = VK_NULL_HANDLE;
+	VkImageView system_image_view = VK_NULL_HANDLE;
+	VkImage system_depth_image = VK_NULL_HANDLE;
+	VmaAllocation system_depth_image_mem = VK_NULL_HANDLE;
+	VkImageView system_depth_image_view = VK_NULL_HANDLE;
+
 	VkCommandPool scratch_pool = VK_NULL_HANDLE;
 	VkCommandBuffer scratch_cmds = VK_NULL_HANDLE;
 	VkFence scratch_fence = VK_NULL_HANDLE;
@@ -166,6 +173,7 @@ namespace tz::gpu
 	void impl_write_all_resources(pass_handle pass);
 	void impl_record_gpu_work(pass_handle pass);
 	void impl_pass_go(pass_handle pass);
+	void impl_destroy_system_images();
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -252,6 +260,7 @@ namespace tz::gpu
 			swapchain_views.clear();
 			vkDestroySwapchainKHR(current_device, swapchain, nullptr);
 			swapchain = VK_NULL_HANDLE;
+			impl_destroy_system_images();
 		}
 		if(alloc != VK_NULL_HANDLE)
 		{
@@ -772,6 +781,10 @@ namespace tz::gpu
 				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
 			break;
 		}
+		if(info.flags & image_flags::render_target)
+		{
+			create.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		}
 
 		VmaAllocationInfo alloc_result;
 		VkResult ret = vmaCreateImage(alloc, &create, &alloc_info, &res.img, &res.mem, &alloc_result);
@@ -1173,17 +1186,21 @@ namespace tz::gpu
 				.maxDepthBounds = 1.0f	
 			};
 
-			VkPipelineColorBlendAttachmentState no_blending
-			{
-				.blendEnable = VK_FALSE,
-				.srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
-				.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
-				.colorBlendOp = VK_BLEND_OP_ADD,
-				.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-				.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
-				.alphaBlendOp = VK_BLEND_OP_ADD,
-				.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
-			};
+			std::vector<VkPipelineColorBlendAttachmentState> blend_states;
+			blend_states.resize(info.graphics.colour_targets.size(),
+				// no blending.
+				VkPipelineColorBlendAttachmentState
+				{
+					.blendEnable = VK_FALSE,
+					.srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
+					.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
+					.colorBlendOp = VK_BLEND_OP_ADD,
+					.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
+					.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
+					.alphaBlendOp = VK_BLEND_OP_ADD,
+					.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT
+				}
+			);
 
 			VkPipelineColorBlendStateCreateInfo blend
 			{
@@ -1192,12 +1209,13 @@ namespace tz::gpu
 				.flags = 0,
 				.logicOpEnable = VK_FALSE,
 				.logicOp = VkLogicOp{},
-				.attachmentCount = 1,
-				.pAttachments = &no_blending,
+				.attachmentCount = static_cast<std::uint32_t>(blend_states.size()),
+				.pAttachments = blend_states.data(),
 				.blendConstants = {0.0f, 0.0f, 0.0f, 0.0f}
 			};
 
-			VkFormat col_form = impl_get_format_from_image_type(tz::gpu::image_type::rgba);
+			std::vector<VkFormat> col_forms;
+			col_forms.resize(info.graphics.colour_targets.size(), impl_get_format_from_image_type(tz::gpu::image_type::rgba));
 
 			// dynamic rendering requires extra:
 			VkPipelineRenderingCreateInfo rendering
@@ -1205,8 +1223,8 @@ namespace tz::gpu
 				.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO,
 				.pNext = nullptr,
 				.viewMask = 0,
-				.colorAttachmentCount = 1,
-				.pColorAttachmentFormats = &col_form,
+				.colorAttachmentCount = static_cast<std::uint32_t>(col_forms.size()),
+				.pColorAttachmentFormats = col_forms.data(),
 				.depthAttachmentFormat = impl_get_format_from_image_type(tz::gpu::image_type::depth),
 				.stencilAttachmentFormat = VK_FORMAT_UNDEFINED
 			};
@@ -1584,29 +1602,79 @@ namespace tz::gpu
 		swapchain_images.resize(swapchain_image_count);
 		vkGetSwapchainImagesKHR(current_device, swapchain, &swapchain_image_count, swapchain_images.data());
 
+		VkImageViewCreateInfo view_create
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.image = VK_NULL_HANDLE, // note for code below this: set this when you create a copy for use
+			.viewType = VK_IMAGE_VIEW_TYPE_2D,
+			.format = swapchain_format,
+			.components = VkComponentMapping{},
+			.subresourceRange =
+			{
+				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+				.baseMipLevel = 0,
+				.levelCount = 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			}
+		};
 		for(VkImage swapchain_img : swapchain_images)
 		{
-			VkImageViewCreateInfo view_create
-			{
-				.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-				.pNext = nullptr,
-				.flags = 0,
-				.image = swapchain_img,
-				.viewType = VK_IMAGE_VIEW_TYPE_2D,
-				.format = swapchain_format,
-				.components = VkComponentMapping{},
-				.subresourceRange =
-				{
-					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-					.baseMipLevel = 0,
-					.levelCount = 1,
-					.baseArrayLayer = 0,
-					.layerCount = 1
-				}
-			};
+			// make copy and point to swapchain image.
+			view_create.image = swapchain_img;
 			VkImageView& view = swapchain_views.emplace_back();
 			vkCreateImageView(current_device, &view_create, nullptr, &view);
 		}
+
+		// create system image and depth image (an internal image that is rendered into when the user wants to render "into the window". it is blitted to a swapchain image, saves us having to worry about the swapchain image being in a different format.)
+		// let's delete the old ones first if they exist...
+		impl_destroy_system_images();
+
+		VkImageCreateInfo system_image_create
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.imageType = VK_IMAGE_TYPE_2D,
+			.format = impl_get_format_from_image_type(tz::gpu::image_type::rgba),
+			.extent =
+			{
+				.width = w,
+				.height = h,
+				.depth = 1
+			},
+			.mipLevels = 1,
+			.arrayLayers = 1,
+			.samples = VK_SAMPLE_COUNT_1_BIT,
+			.tiling = VK_IMAGE_TILING_OPTIMAL,
+			.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // can be rendered into but also transfer source (system image -> swapchain image blit)
+			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 1,
+			.pQueueFamilyIndices = &current_hardware.internals.i1,
+			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+		};
+		VmaAllocationCreateInfo system_image_alloc =
+		{
+			.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST
+		};
+		vmaCreateImage(alloc, &system_image_create, &system_image_alloc, &system_image, &system_image_mem, nullptr);
+
+		view_create.image = system_image;
+		view_create.format = system_image_create.format;
+		vkCreateImageView(current_device, &view_create, nullptr, &system_image_view);
+
+		// depth image.
+		system_image_create.format = impl_get_format_from_image_type(tz::gpu::image_type::depth);
+		system_image_create.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		vmaCreateImage(alloc, &system_image_create, &system_image_alloc, &system_depth_image, &system_depth_image_mem, nullptr);
+
+		view_create.image = system_depth_image;
+		view_create.format = system_image_create.format;
+		view_create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+		vkCreateImageView(current_device, &view_create, nullptr, &system_depth_image_view);
+
 		return tz::error_code::partial_success;
 	}
 
@@ -1835,8 +1903,7 @@ namespace tz::gpu
 			VkImageView rtv = VK_NULL_HANDLE;
 			if(colour_resh == window_resource)
 			{
-				// DO NOT USE ID HERE, YOU SHOULD ACQUIRE A SWAPCHAIN IMAGE AT SOME POINT AND USE THAT.
-				rtv = swapchain_views[id];
+				rtv = system_image_view;
 			}
 			else
 			{
@@ -2050,6 +2117,20 @@ namespace tz::gpu
 			default: break;
 		}
 		return ret;
+	}
+
+	void impl_destroy_system_images()
+	{
+		if(system_image != VK_NULL_HANDLE)
+		{
+			vkDestroyImageView(current_device, system_image_view, nullptr);
+			vmaDestroyImage(alloc, system_image, system_image_mem);
+		}
+		if(system_depth_image)
+		{
+			vkDestroyImageView(current_device, system_depth_image_view, nullptr);
+			vmaDestroyImage(alloc, system_depth_image, system_depth_image_mem);
+		}
 	}
 }
 #endif

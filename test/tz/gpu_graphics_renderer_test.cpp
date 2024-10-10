@@ -24,7 +24,8 @@ int main()
 			.width = tz::os::window_get_width(),
 			.height = tz::os::window_get_height(),
 			.type = tz::gpu::image_type::rgba,
-			.data = {}
+			.data = {},
+			.flags = tz::gpu::image_flags::render_target
 		})),
 	};
 

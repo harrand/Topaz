@@ -77,6 +77,21 @@ namespace tz::gpu
 		floats,
 	};
 
+	enum image_flags
+	{
+		render_target = 0x01,
+	};
+
+	constexpr image_flags operator|(image_flags lhs, image_flags rhs)
+	{
+		return static_cast<image_flags>(static_cast<int>(lhs) | static_cast<int>(rhs));
+	}
+
+	constexpr bool operator&(image_flags lhs, image_flags& rhs)
+	{
+		return static_cast<int>(lhs) & static_cast<int>(rhs);
+	}
+
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Specifies creation flags for an image.
@@ -97,6 +112,8 @@ namespace tz::gpu
 		std::span<const std::byte> data;
 		/// What name shall I have when you're looking at me in your graphics debugger of choice? If you don't specify one, I will be named "Resource 123I" (not necessarily 123)
 		const char* name = "";
+		/// Any extra optional flags to specify?
+		image_flags flags = static_cast<image_flags>(0);
 	};
 
 	/**
