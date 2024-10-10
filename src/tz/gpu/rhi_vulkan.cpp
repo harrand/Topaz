@@ -1124,6 +1124,23 @@ namespace tz::gpu
 				.pScissors = &sci
 			};
 
+			VkCullModeFlags cull_bits;
+			switch(info.graphics.culling)
+			{
+				case cull::both:
+					cull_bits = VK_CULL_MODE_FRONT_AND_BACK;
+				break;
+				case cull::back:
+					cull_bits = VK_CULL_MODE_BACK_BIT;
+				break;
+				case cull::front:
+					cull_bits = VK_CULL_MODE_FRONT_BIT;
+				break;
+				case cull::none:
+					cull_bits = VK_CULL_MODE_NONE;
+				break;
+			}
+
 			VkPipelineRasterizationStateCreateInfo raster
 			{
 				.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
@@ -1132,7 +1149,7 @@ namespace tz::gpu
 				.depthClampEnable = VK_FALSE,
 				.rasterizerDiscardEnable = VK_FALSE,
 				.polygonMode = VK_POLYGON_MODE_FILL,
-				.cullMode = VK_CULL_MODE_BACK_BIT,
+				.cullMode = cull_bits,
 				.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
 				.depthBiasEnable = VK_FALSE,
 				.depthBiasConstantFactor = 0.0f,
@@ -1159,8 +1176,8 @@ namespace tz::gpu
 				.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
 				.pNext = nullptr,
 				.flags = 0,
-				.depthTestEnable = VK_TRUE,
-				.depthWriteEnable = VK_TRUE,
+				.depthTestEnable = (info.graphics.flags & graphics_flag::no_depth_test) ? VK_FALSE : VK_TRUE,
+				.depthWriteEnable = (info.graphics.flags & graphics_flag::no_depth_write) ? VK_FALSE : VK_TRUE,
 				.depthCompareOp = VK_COMPARE_OP_LESS,
 				.depthBoundsTestEnable = VK_TRUE,
 				.stencilTestEnable = VK_FALSE,
@@ -1242,6 +1259,12 @@ namespace tz::gpu
 		switch(res)
 		{
 			case VK_SUCCESS: break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+				UNERR(tz::error_code::oom, "ran out of CPU memory while trying to create vulkan pipeline");
+			break;
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+				UNERR(tz::error_code::voom, "ran out of GPU memory while trying to create vulkan pipeline");
+			break;
 			default:
 				UNERR(tz::error_code::unknown_error, "failed to create vulkan pipeline");
 			break;
