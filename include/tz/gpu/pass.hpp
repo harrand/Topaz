@@ -25,16 +25,16 @@ namespace tz::gpu
 		compute
 	};
 
-	enum pass_flags
+	enum pass_flag
 	{
 	};
 
-	constexpr pass_flags operator|(pass_flags lhs, pass_flags rhs)
+	constexpr pass_flag operator|(pass_flag lhs, pass_flag rhs)
 	{
-		return static_cast<pass_flags>(static_cast<int>(lhs) | static_cast<int>(rhs));
+		return static_cast<pass_flag>(static_cast<int>(lhs) | static_cast<int>(rhs));
 	}
 
-	constexpr bool operator&(pass_flags lhs, pass_flags& rhs)
+	constexpr bool operator&(pass_flag lhs, pass_flag& rhs)
 	{
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
@@ -73,7 +73,7 @@ namespace tz::gpu
 		pass_compute_state compute = {};
 		shader_handle shader = tz::nullhand;
 		std::span<const resource_handle> resources = {};
-		pass_flags flags = static_cast<pass_flags>(0);
+		pass_flag flags = static_cast<pass_flag>(0);
 		const char* name = "";
 	};
 
