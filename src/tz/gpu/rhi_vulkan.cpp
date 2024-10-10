@@ -782,7 +782,7 @@ namespace tz::gpu
 				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
 			break;
 		}
-		if(info.flags & image_flags::render_target)
+		if(info.flags & image_flag::render_target)
 		{
 			create.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 		}
@@ -1905,7 +1905,7 @@ namespace tz::gpu
 				.resolveMode = VK_RESOLVE_MODE_NONE,
 				.resolveImageView = VK_NULL_HANDLE,
 				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-				.loadOp = (pass.info.graphics.flags & graphics_pass_flags::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
+				.loadOp = (pass.info.graphics.flags & graphics_flag::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
 				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 			});
 		}
@@ -2152,7 +2152,7 @@ namespace tz::gpu
 				else
 				{
 					const auto& img = std::get<image_info>(res.res);
-					if(!(img.flags & image_flags::render_target))
+					if(!(img.flags & image_flag::render_target))
 					{
 						RETERR(tz::error_code::precondition_failure, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"render_target\" flag.", i, pass.info.name);
 					}

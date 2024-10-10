@@ -39,17 +39,17 @@ namespace tz::gpu
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
 
-	enum graphics_pass_flags
+	enum graphics_flag
 	{
 		dont_clear = 0x01, /// do not clear the colour targets of the pass - preserve their contents instead.
 	};
 
-	constexpr graphics_pass_flags operator|(graphics_pass_flags lhs, graphics_pass_flags rhs)
+	constexpr graphics_flag operator|(graphics_flag lhs, graphics_flag rhs)
 	{
-		return static_cast<graphics_pass_flags>(static_cast<int>(lhs) | static_cast<int>(rhs));
+		return static_cast<graphics_flag>(static_cast<int>(lhs) | static_cast<int>(rhs));
 	}
 
-	constexpr bool operator&(graphics_pass_flags lhs, graphics_pass_flags& rhs)
+	constexpr bool operator&(graphics_flag lhs, graphics_flag& rhs)
 	{
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
@@ -59,7 +59,7 @@ namespace tz::gpu
 		tz::v3f clear_colour = tz::v3f::zero();
 		std::span<const resource_handle> colour_targets = {};
 		resource_handle depth_target = tz::nullhand;
-		graphics_pass_flags flags = static_cast<graphics_pass_flags>(0);
+		graphics_flag flags = static_cast<graphics_flag>(0);
 	};
 
 	struct pass_compute_state

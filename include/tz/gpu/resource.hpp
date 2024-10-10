@@ -77,17 +77,17 @@ namespace tz::gpu
 		floats,
 	};
 
-	enum image_flags
+	enum image_flag
 	{
 		render_target = 0x01,
 	};
 
-	constexpr image_flags operator|(image_flags lhs, image_flags rhs)
+	constexpr image_flag operator|(image_flag lhs, image_flag rhs)
 	{
-		return static_cast<image_flags>(static_cast<int>(lhs) | static_cast<int>(rhs));
+		return static_cast<image_flag>(static_cast<int>(lhs) | static_cast<int>(rhs));
 	}
 
-	constexpr bool operator&(image_flags lhs, image_flags& rhs)
+	constexpr bool operator&(image_flag lhs, image_flag& rhs)
 	{
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
@@ -113,7 +113,7 @@ namespace tz::gpu
 		/// What name shall I have when you're looking at me in your graphics debugger of choice? If you don't specify one, I will be named "Resource 123I" (not necessarily 123)
 		const char* name = "";
 		/// Any extra optional flags to specify?
-		image_flags flags = static_cast<image_flags>(0);
+		image_flag flags = static_cast<image_flag>(0);
 	};
 
 	/**

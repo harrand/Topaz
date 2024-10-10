@@ -25,7 +25,7 @@ int main()
 			.height = tz::os::window_get_height(),
 			.type = tz::gpu::image_type::rgba,
 			.data = {},
-			.flags = tz::gpu::image_flags::render_target
+			.flags = tz::gpu::image_flag::render_target
 		})),
 	};
 
@@ -35,7 +35,7 @@ int main()
 		{
 			.clear_colour = {1.0f, 1.0f, 1.0f},
 			.colour_targets = colour_targets,
-			.flags = tz::gpu::graphics_pass_flags::dont_clear
+			.flags = tz::gpu::graphics_flag::dont_clear
 		},
 		.shader = graphics,
 	}));
