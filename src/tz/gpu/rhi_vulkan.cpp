@@ -38,6 +38,7 @@ namespace tz::gpu
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
 	unsigned int swapchain_width = -1; unsigned int swapchain_height = -1;
 	std::vector<VkImage> swapchain_images = {};
+	std::vector<VkImageView> swapchain_views = {};
 	hardware current_hardware;
 	#define VULKAN_API_VERSION_USED VK_API_VERSION_1_3
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
@@ -76,6 +77,8 @@ namespace tz::gpu
 		VkDeviceAddress buffer_device_address = 0;
 		void* buffer_mapped_address = nullptr;
 		VkImage img = VK_NULL_HANDLE;
+		VkImageView img_view = VK_NULL_HANDLE;
+		VkSampler img_sampler = VK_NULL_HANDLE;
 		VmaAllocation mem = VK_NULL_HANDLE;
 		std::vector<std::byte> data;
 
@@ -162,6 +165,7 @@ namespace tz::gpu
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
 	void impl_record_gpu_work(pass_handle pass);
+	void impl_pass_go(pass_handle pass);
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -241,6 +245,11 @@ namespace tz::gpu
 
 		if(swapchain != VK_NULL_HANDLE)
 		{
+			for(const VkImageView view : swapchain_views)
+			{
+				vkDestroyImageView(current_device, view, nullptr);
+			}
+			swapchain_views.clear();
 			vkDestroySwapchainKHR(current_device, swapchain, nullptr);
 			swapchain = VK_NULL_HANDLE;
 		}
@@ -726,6 +735,7 @@ namespace tz::gpu
 		{
 			name = "unnamed image";
 		}
+		VkFormat fmt = impl_get_format_from_image_type(info.type);
 
 		VkImageCreateInfo create
 		{
@@ -733,7 +743,7 @@ namespace tz::gpu
 			.pNext = nullptr,
 			.flags = 0,
 			.imageType = VK_IMAGE_TYPE_2D,
-			.format = impl_get_format_from_image_type(info.type),
+			.format = fmt,
 			.extent =
 			{
 				.width = info.width,
@@ -744,7 +754,7 @@ namespace tz::gpu
 			.arrayLayers = 1,
 			.samples = VK_SAMPLE_COUNT_1_BIT,
 			.tiling = info.access == tz::gpu::resource_access::static_access ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR,
-			.usage = VK_IMAGE_USAGE_SAMPLED_BIT,
+			.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 			.queueFamilyIndexCount = 1,
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
@@ -783,6 +793,49 @@ namespace tz::gpu
 			break;
 		}
 
+		VkImageViewCreateInfo view_create
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.image = res.img,
+			.viewType = VK_IMAGE_VIEW_TYPE_2D,
+			.format = fmt,
+			.components = VkComponentMapping{},
+			.subresourceRange =
+			{
+				.aspectMask = static_cast<VkImageAspectFlags>(info.type == tz::gpu::image_type::depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
+				.baseMipLevel = 0,
+				.levelCount = 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1
+			}
+		};
+
+		vkCreateImageView(current_device, &view_create, nullptr, &res.img_view);
+		VkSamplerCreateInfo samp_create
+		{
+			.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.magFilter = VK_FILTER_NEAREST,
+			.minFilter = VK_FILTER_NEAREST,
+			.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST,
+			.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+			.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+			.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+			.mipLodBias = 0.0f,
+			.anisotropyEnable = VK_FALSE,
+			.maxAnisotropy = 0.0f,
+			.compareEnable = VK_FALSE,
+			.compareOp = VK_COMPARE_OP_ALWAYS,
+			.minLod = 0.0f,
+			.maxLod = 0.0f,
+			.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+			.unnormalizedCoordinates = VK_FALSE
+		};
+		vkCreateSampler(current_device, &samp_create, nullptr, &res.img_sampler);
+
 		res.data.resize(info.data.size());
 		std::copy(info.data.begin(), info.data.end(), res.data.begin());
 
@@ -803,6 +856,8 @@ namespace tz::gpu
 		}
 		else if(info.is_image())
 		{
+			vkDestroyImageView(current_device, info.img_view, nullptr);
+			vkDestroySampler(current_device, info.img_sampler, nullptr);
 			vmaDestroyImage(alloc, info.img, info.mem);
 			info = {};
 		}
@@ -1479,7 +1534,7 @@ namespace tz::gpu
 			.imageColorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
 			.imageExtent = {.width = w, .height = h},
 			.imageArrayLayers = 1,
-			.imageUsage = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+			.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 			.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
 			.queueFamilyIndexCount = 1,
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
@@ -1519,10 +1574,39 @@ namespace tz::gpu
 		swapchain_height = h;
 
 		swapchain_images.clear();
+		for(VkImageView view : swapchain_views)
+		{
+			vkDestroyImageView(current_device, view, nullptr);
+		}
+		swapchain_views.clear();
 		std::uint32_t swapchain_image_count;
 		vkGetSwapchainImagesKHR(current_device, swapchain, &swapchain_image_count, nullptr);
 		swapchain_images.resize(swapchain_image_count);
 		vkGetSwapchainImagesKHR(current_device, swapchain, &swapchain_image_count, swapchain_images.data());
+
+		for(VkImage swapchain_img : swapchain_images)
+		{
+			VkImageViewCreateInfo view_create
+			{
+				.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.image = swapchain_img,
+				.viewType = VK_IMAGE_VIEW_TYPE_2D,
+				.format = swapchain_format,
+				.components = VkComponentMapping{},
+				.subresourceRange =
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.baseMipLevel = 0,
+					.levelCount = 1,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				}
+			};
+			VkImageView& view = swapchain_views.emplace_back();
+			vkCreateImageView(current_device, &view_create, nullptr, &view);
+		}
 		return tz::error_code::partial_success;
 	}
 
@@ -1751,13 +1835,13 @@ namespace tz::gpu
 			VkImageView rtv = VK_NULL_HANDLE;
 			if(colour_resh == window_resource)
 			{
-				// rtv == ...
+				// DO NOT USE ID HERE, YOU SHOULD ACQUIRE A SWAPCHAIN IMAGE AT SOME POINT AND USE THAT.
+				rtv = swapchain_views[id];
 			}
 			else
 			{
 				const auto& res = resources[colour_resh.peek()];
-				(void)res;
-				// rtv == ...
+				rtv = res.img_view;
 			}
 			colour_attachments.push_back
 			({
@@ -1795,6 +1879,7 @@ namespace tz::gpu
 		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
 		// maybe bind index buffer
 		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
+		vkCmdDraw(frame.cmds, 3, 1, 0, 0); // todo: dont hardcode this IDIOT
 		vkCmdEndRendering(frame.cmds);
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 	}
@@ -1865,6 +1950,51 @@ namespace tz::gpu
 			impl_new_pool();
 			pool = descriptor_pools.back();
 		}
+		constexpr std::uint32_t image_array_descriptor_binding = 0;
+		std::vector<VkDescriptorImageInfo> image_writes;
+		std::array<VkWriteDescriptorSet, frame_overlap> descriptor_writes;
+		image_writes.reserve(pass.info.resources.size());
+		std::size_t image_count = 0;
+		for(std::size_t j = 0; j < frame_overlap; j++)
+		{
+			for(std::size_t i = 0; i < pass.info.resources.size(); i++)
+			{
+				tz::gpu::resource_handle resh = pass.info.resources[i];
+				const auto& res = resources[resh.peek()];
+				if(res.is_image())
+				{
+					image_writes.push_back
+					({
+						.sampler = res.img_sampler, // todo: samplers.
+						.imageView = res.img_view, // todo: image view
+						.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+					});
+					if(j == 0)
+					{
+						image_count++;
+					}
+				}
+			}
+			descriptor_writes[j] = VkWriteDescriptorSet
+			{
+				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				.pNext = nullptr,
+				.dstSet = pass.descriptor_sets[j],
+				.dstBinding = image_array_descriptor_binding,
+				.dstArrayElement = 0,
+				.descriptorCount = static_cast<std::uint32_t>(image_count),
+				.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				.pImageInfo = image_writes.data() + (j * image_count),
+				.pBufferInfo = nullptr,
+				.pTexelBufferView = nullptr
+			};
+		}
+		if(image_count == 0)
+		{
+			// no need to update anything if tere's no images at all.
+			return;
+		}
+		vkUpdateDescriptorSets(current_device, descriptor_writes.size(), descriptor_writes.data(), 0, nullptr);
 	}
 
 	VkPipelineLayout impl_create_layout()
