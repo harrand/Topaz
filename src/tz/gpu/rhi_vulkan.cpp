@@ -1905,7 +1905,7 @@ namespace tz::gpu
 				.resolveMode = VK_RESOLVE_MODE_NONE,
 				.resolveImageView = VK_NULL_HANDLE,
 				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-				.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
+				.loadOp = (pass.info.graphics.flags & graphics_pass_flags::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
 				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 			});
 		}

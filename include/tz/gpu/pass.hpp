@@ -41,6 +41,7 @@ namespace tz::gpu
 
 	enum graphics_pass_flags
 	{
+		dont_clear = 0x01, /// do not clear the colour targets of the pass - preserve their contents instead.
 	};
 
 	constexpr graphics_pass_flags operator|(graphics_pass_flags lhs, graphics_pass_flags rhs)

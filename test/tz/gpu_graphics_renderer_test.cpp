@@ -35,6 +35,7 @@ int main()
 		{
 			.clear_colour = {1.0f, 1.0f, 1.0f},
 			.colour_targets = colour_targets,
+			.flags = tz::gpu::graphics_pass_flags::dont_clear
 		},
 		.shader = graphics,
 	}));
