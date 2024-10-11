@@ -89,7 +89,7 @@ namespace tz::gpu
 	struct pass_graphics_state
 	{
 		/// When a colour target is cleared, what colour (RGBA normalised floats) should it be cleared to?
-		tz::v3f clear_colour = tz::v3f::zero();
+		tz::v4f clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// List of all colour targets. The n'th colour target specified here will be the n'th output of the fragment shader. If you want the window itself to be a colour target, pass @ref tz::gpu::window_resource.
 		std::span<const resource_handle> colour_targets = {};
 		/// Optional depth target. This will act as the depth image when performing depth testing/writes.

@@ -44,7 +44,7 @@ int main()
 	({
 		.graphics =
 		{
-			.clear_colour = {0.0f, 0.0f, 0.0f},
+			.clear_colour = {0.25f, 0.0f, 0.0f, 0.0f},
 			.colour_targets = colour_targets,
 			.depth_target = depth_target,
 		},

@@ -2054,10 +2054,11 @@ namespace tz::gpu
 		colour_transitions.reserve(pass.info.graphics.colour_targets.size());
 		bool render_into_system_image = false;
 		VkClearColorValue clear_colour{.float32 = {}};
-		clear_colour.float32[0] = pass.info.graphics.clear_colour[0];
+		// BGRA
+		clear_colour.float32[0] = pass.info.graphics.clear_colour[2];
 		clear_colour.float32[1] = pass.info.graphics.clear_colour[1];
-		clear_colour.float32[2] = pass.info.graphics.clear_colour[2];
-		clear_colour.float32[3] = 1.0f;
+		clear_colour.float32[2] = pass.info.graphics.clear_colour[0];
+		clear_colour.float32[3] = pass.info.graphics.clear_colour[3];
 
 		for(const auto colour_resh : pass.info.graphics.colour_targets)
 		{
