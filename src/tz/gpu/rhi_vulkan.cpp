@@ -2053,6 +2053,12 @@ namespace tz::gpu
 		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
 		colour_transitions.reserve(pass.info.graphics.colour_targets.size());
 		bool render_into_system_image = false;
+		VkClearColorValue clear_colour{.float32 = {}};
+		clear_colour.float32[0] = pass.info.graphics.clear_colour[0];
+		clear_colour.float32[1] = pass.info.graphics.clear_colour[1];
+		clear_colour.float32[2] = pass.info.graphics.clear_colour[2];
+		clear_colour.float32[3] = 1.0f;
+
 		for(const auto colour_resh : pass.info.graphics.colour_targets)
 		{
 			VkImage rt = VK_NULL_HANDLE;
@@ -2080,6 +2086,7 @@ namespace tz::gpu
 				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 				.loadOp = (pass.info.graphics.flags & graphics_flag::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
 				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+				.clearValue = VkClearValue{clear_colour}
 			});
 			if(!(pass.info.graphics.flags & graphics_flag::dont_clear))
 			{
