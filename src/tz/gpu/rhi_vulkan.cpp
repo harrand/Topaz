@@ -2055,9 +2055,9 @@ namespace tz::gpu
 		bool render_into_system_image = false;
 		VkClearColorValue clear_colour{.float32 = {}};
 		// BGRA
-		clear_colour.float32[0] = pass.info.graphics.clear_colour[2];
+		clear_colour.float32[0] = pass.info.graphics.clear_colour[0];
 		clear_colour.float32[1] = pass.info.graphics.clear_colour[1];
-		clear_colour.float32[2] = pass.info.graphics.clear_colour[0];
+		clear_colour.float32[2] = pass.info.graphics.clear_colour[2];
 		clear_colour.float32[3] = pass.info.graphics.clear_colour[3];
 
 		for(const auto colour_resh : pass.info.graphics.colour_targets)
@@ -2212,7 +2212,7 @@ namespace tz::gpu
 		vkCmdEndRendering(frame.cmds);
 		if(render_into_system_image)
 		{
-			VkImageCopy cpy
+			VkImageBlit blit
 			{
 				.srcSubresource = VkImageSubresourceLayers
 				{
@@ -2221,7 +2221,11 @@ namespace tz::gpu
 					.baseArrayLayer = 0,
 					.layerCount = 1
 				},
-				.srcOffset = VkOffset3D{.x = 0, .y = 0, .z = 0},
+				.srcOffsets =
+				{
+					VkOffset3D{0, 0, 0},
+					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
+				},
 				.dstSubresource = VkImageSubresourceLayers
 				{
 					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -2229,16 +2233,15 @@ namespace tz::gpu
 					.baseArrayLayer = 0,
 					.layerCount = 1
 				},
-				.dstOffset = VkOffset3D{.x = 0, .y = 0, .z = 0},
-				.extent = VkExtent3D{
-					.width = swapchain_width,
-					.height = swapchain_height,
-					.depth = 1,
-				}
+				.dstOffsets =
+				{
+					VkOffset3D{0, 0, 0},
+					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
+				},
 			};
 			// do *not* use this index into the swapchain images. id is the n'th frame in flight with respect to frame_overlap.
 			// the index we actually want to use is the recently acquired swapchain image (which isnt being done yet)
-			vkCmdCopyImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_GENERAL, 1, &cpy);
+			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_GENERAL, 1, &blit, VK_FILTER_NEAREST);
 		}
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 		return tz::error_code::success;

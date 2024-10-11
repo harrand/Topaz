@@ -55,6 +55,12 @@ topaz_add_test(
   SOURCES
     gpu_graphics_renderer_test.cpp
 )
+add_shader(
+  TARGET tz_gpu_graphics_renderer_test
+  SHADERS
+    test/tz/shaders/triangle.vertex.tzsl
+    test/tz/shaders/triangle.fragment.tzsl
+)
 add_text(
   TARGET tz_gpu_graphics_renderer_test
   INPUT_DIR ${PROJECT_SOURCE_DIR}
