@@ -1698,7 +1698,7 @@ namespace tz::gpu
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
 			.preTransform = surface_caps.currentTransform,
 			.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-			.presentMode = VK_PRESENT_MODE_MAILBOX_KHR,
+			.presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR,
 			.clipped = VK_FALSE,
 			.oldSwapchain = swapchain
 		};
