@@ -1372,7 +1372,7 @@ namespace tz::gpu
 		// go through timeline and record all gpu work.
 		for(pass_handle pass : graph.timeline)
 		{
-			impl_record_gpu_work(pass, current_frame);
+			tz_must(impl_record_gpu_work(pass, current_frame));
 		}
 		// transition swapchain image to present
 		barrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
