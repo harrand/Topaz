@@ -1095,37 +1095,15 @@ namespace tz::gpu
 				.patchControlPoints = 3
 			};
 
-			// swapchain width/height are not safe to use here, and are wrong for passes that render into a texture.
-			// opengl-like coordinate system.
-			VkViewport vp
-			{
-				.x = 0.0f,
-				.y = static_cast<float>(pass.viewport_height),
-				.width = static_cast<float>(pass.viewport_width),
-				.height = -static_cast<float>(pass.viewport_height),
-				.minDepth = 0.0f,
-				.maxDepth = 1.0f
-			};
-
-			VkRect2D sci
-			{
-				.offset = {0, 0},
-				.extent =
-				{
-					.width = pass.viewport_width,
-					.height = pass.viewport_height
-				}
-			};
-
 			VkPipelineViewportStateCreateInfo viewport
 			{
 				.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
 				.pNext = nullptr,
 				.flags = 0,
 				.viewportCount = 1,
-				.pViewports = &vp,
+				.pViewports = nullptr,
 				.scissorCount = 1,
-				.pScissors = &sci
+				.pScissors = nullptr
 			};
 
 			VkCullModeFlags cull_bits;
@@ -1234,6 +1212,21 @@ namespace tz::gpu
 				.stencilAttachmentFormat = VK_FORMAT_UNDEFINED
 			};
 			
+			VkDynamicState dynamic_states[] =
+			{
+				VK_DYNAMIC_STATE_VIEWPORT,
+				VK_DYNAMIC_STATE_SCISSOR
+			};
+
+			VkPipelineDynamicStateCreateInfo dynamic
+			{
+				.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.dynamicStateCount = sizeof(dynamic_states) / sizeof(dynamic_states[0]),
+				.pDynamicStates = dynamic_states
+			};
+			
 			VkGraphicsPipelineCreateInfo create
 			{
 				.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -1249,7 +1242,7 @@ namespace tz::gpu
 				.pMultisampleState = &ms,
 				.pDepthStencilState = &depth,
 				.pColorBlendState = &blend,
-				.pDynamicState = nullptr, // todo
+				.pDynamicState = &dynamic, // todo
 				.layout = default_layout,
 				.renderPass = VK_NULL_HANDLE,
 				.subpass = 0,
@@ -2016,6 +2009,29 @@ namespace tz::gpu
 		vkCmdBeginRendering(frame.cmds, &render);
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.pipeline);
 		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
+
+		VkViewport vp
+		{
+			.x = 0.0f,
+			.y = static_cast<float>(pass.viewport_height),
+			.width = static_cast<float>(pass.viewport_width),
+			.height = -static_cast<float>(pass.viewport_height),
+			.minDepth = 0.0f,
+			.maxDepth = 1.0f
+		};
+
+		VkRect2D sci
+		{
+			.offset = {0, 0},
+			.extent =
+			{
+				.width = pass.viewport_width,
+				.height = pass.viewport_height
+			}
+		};
+
+		vkCmdSetViewport(frame.cmds, 0, 1, &vp);
+		vkCmdSetScissor(frame.cmds, 0, 1, &sci);
 		// maybe bind index buffer
 		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
 		vkCmdDraw(frame.cmds, 3, 1, 0, 0); // todo: dont hardcode this IDIOT
