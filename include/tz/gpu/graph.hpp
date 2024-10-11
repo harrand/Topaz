@@ -19,6 +19,7 @@ namespace tz::gpu
 	};
 
 	std::expected<graph_handle, tz::error_code> create_graph(graph_info graph);
+	void execute(graph_handle);
 	void destroy_graph(graph_handle);
 }
 

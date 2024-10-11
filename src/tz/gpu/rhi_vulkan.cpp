@@ -72,6 +72,7 @@ namespace tz::gpu
 		VkSemaphore timeline_sem = VK_NULL_HANDLE;
 	};
 	constexpr std::size_t frame_overlap = 2;
+	std::size_t current_frame = 0;
 	std::array<VkDescriptorSetLayout, frame_overlap> set_layouts = {};
 	std::vector<VkDescriptorPool> descriptor_pools = {};
 	std::array<frame_data_t, frame_overlap> frames;
@@ -133,7 +134,8 @@ namespace tz::gpu
 
 	struct graph_data
 	{
-		graph_info info;
+		std::vector<pass_handle> timeline = {};
+		std::vector<std::vector<pass_handle>> dependencies = {};
 	};
 	std::vector<graph_data> graphs = {};
 
@@ -179,7 +181,7 @@ namespace tz::gpu
 	tz::error_code impl_validate_colour_targets(tz::gpu::pass_info& pinfo, pass_data& data);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
-	tz::error_code impl_record_gpu_work(pass_handle pass);
+	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 
@@ -1279,11 +1281,6 @@ namespace tz::gpu
 		pass_handle ret = static_cast<tz::hanval>(ret_id);
 		impl_write_all_resources(ret);
 		impl_populate_descriptors(ret);
-		tz::error_code err = impl_record_gpu_work(ret);
-		if(err != tz::error_code::success)
-		{
-			return std::unexpected(err);
-		}
 		return ret;
 	}
 
@@ -1295,10 +1292,126 @@ namespace tz::gpu
 		passes[i] = {};
 	}
 
-	std::expected<graph_handle, tz::error_code> create_graph(graph_info graph)
+	std::expected<graph_handle, tz::error_code> create_graph(graph_info info)
 	{
-		(void)graph;
-		UNERR(tz::error_code::engine_bug, "graphs creation on vulkan is not yet implemented.");
+		if(info.dependencies.size() > info.timeline.size())
+		{
+			UNERR(tz::error_code::precondition_failure, "invalid graph - {} sets of dependencies but only {} passes in the timeline. the number of sets of dependencies should be less than or equal to the number of passes.", info.dependencies.size(), info.timeline.size());
+		}
+		std::size_t ret_id = graphs.size();
+		auto& graph = graphs.emplace_back();
+		// copy over timeline and dependencies
+		graph.timeline.resize(info.timeline.size());
+		std::copy(info.timeline.begin(), info.timeline.end(), graph.timeline.begin());
+		
+		graph.dependencies.resize(info.dependencies.size());
+		for(std::size_t i = 0; i < info.dependencies.size(); i++)
+		{
+			const auto& deps = info.dependencies[i];
+			for(pass_handle dep : deps)
+			{
+				graph.dependencies[i].push_back(dep);
+			}
+		}
+
+		graph_handle ret = static_cast<tz::hanval>(ret_id);
+		return ret;
+	}
+
+	void execute(graph_handle graphh)
+	{
+		const auto& frame = frames[current_frame];
+		const auto& graph = graphs[graphh.peek()];
+
+		std::uint32_t image_index;
+		vkAcquireNextImageKHR(current_device, swapchain, std::numeric_limits<std::uint64_t>::max(), VK_NULL_HANDLE, frame.swapchain_fence, &image_index);
+		vkWaitForFences(current_device, 1, &frame.swapchain_fence, VK_TRUE, std::numeric_limits<std::uint32_t>::max());
+		vkResetFences(current_device, 1, &frame.swapchain_fence);
+
+		std::uint64_t begin_point;
+		// todo: ec
+		// whats the value of our semaphore when the frame starts?
+		// this is our new 0
+		vkGetSemaphoreCounterValue(current_device, frame.timeline_sem, &begin_point);
+
+		VkImageMemoryBarrier barrier
+		{
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+			.pNext = nullptr,
+			.srcAccessMask = 0,
+			.dstAccessMask = 0,
+			.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+			.newLayout = VK_IMAGE_LAYOUT_GENERAL,
+			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+			.image = swapchain_images[image_index],
+			.subresourceRange = VkImageSubresourceRange
+			{
+				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+				.baseMipLevel = 0,
+				.levelCount = 1,
+				.baseArrayLayer = 0,
+				.layerCount = 1,
+			}
+		};
+
+		// record all commands jit
+		vkResetCommandBuffer(frame.cmds, 0);
+		VkCommandBufferBeginInfo begin
+		{
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.pInheritanceInfo = nullptr
+		};
+		// go go go
+		vkBeginCommandBuffer(frame.cmds, &begin);
+		// transition swapchain image to general
+		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+		// go through timeline and record all gpu work.
+		for(pass_handle pass : graph.timeline)
+		{
+			impl_record_gpu_work(pass, current_frame);
+		}
+		// transition swapchain image to present
+		barrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+		barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+		vkEndCommandBuffer(frame.cmds);
+		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
+		VkSubmitInfo submit
+		{
+			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+			.pNext = nullptr,
+			.waitSemaphoreCount = 0,
+			.pWaitSemaphores = nullptr,
+			.pWaitDstStageMask = &stage_mask,
+			.commandBufferCount = 1,
+			.pCommandBuffers = &frame.cmds,
+			.signalSemaphoreCount = 1,
+			.pSignalSemaphores = &frame.swapchain_sem
+		};
+		vkQueueSubmit(graphics_compute_queue, 1, &submit, frame.swapchain_fence);
+		vkWaitForFences(current_device, 1, &frame.swapchain_fence, VK_TRUE, std::numeric_limits<std::uint32_t>::max());
+		vkResetFences(current_device, 1, &frame.swapchain_fence);
+
+		VkResult res;
+		VkPresentInfoKHR present
+		{
+			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+			.pNext = nullptr,
+			.waitSemaphoreCount = 1,
+			.pWaitSemaphores = &frame.swapchain_sem,
+			.swapchainCount = 1,
+			.pSwapchains = &swapchain,
+			.pImageIndices = &image_index,
+			.pResults = &res
+		};
+		vkQueuePresentKHR(graphics_compute_queue, &present);
+
+		current_frame = (current_frame + 1) % frame_overlap;
 	}
 
 	void destroy_graph(graph_handle graph)
@@ -1802,6 +1915,27 @@ namespace tz::gpu
 					.layerCount = 1
 				}
 			};
+			VkImageMemoryBarrier barrier
+			{
+				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+				.pNext = nullptr,
+				.srcAccessMask = 0,
+				.dstAccessMask = 0,
+				.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.newLayout = VK_IMAGE_LAYOUT_GENERAL,
+				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.image = res.img,
+				.subresourceRange = VkImageSubresourceRange
+				{
+					.aspectMask = static_cast<VkImageAspectFlags>(image.type == tz::gpu::image_type::depth ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT),
+					.baseMipLevel = 0,
+					.levelCount = 1,
+					.baseArrayLayer = 0,
+					.layerCount = 1,
+				}
+			};
+			vkCmdPipelineBarrier(cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 			vkCmdCopyBufferToImage(cmds, scratchbuf.buf, res.img, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &cpy);
 			// done. scratch buffers will be cleared up later.
 		}
@@ -1884,39 +2018,21 @@ namespace tz::gpu
 	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
 	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
 
-	tz::error_code impl_record_gpu_work(pass_handle passh)
+	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i)
 	{
 		const auto& pass = passes[passh.peek()]; 
 		tz::error_code ret = tz::error_code::success;
-		for(std::size_t i = 0; i < frame_overlap; i++)
+		const auto& frame = frames[i];
+		// GPU work goes here.
+		auto top_part = (pass.info.shader.peek() >> 16) & 0xFFFFFFFF;
+		auto& shader1 = shaders[--top_part];
+		if(shader1.ty == shader_type::compute)
 		{
-			const auto& frame = frames[i];
-			vkResetCommandBuffer(frame.cmds, 0);
-			VkCommandBufferBeginInfo begin
-			{
-				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-				.pNext = nullptr,
-				.flags = 0,
-				.pInheritanceInfo = nullptr
-			};
-			vkBeginCommandBuffer(frame.cmds, &begin);
-			// GPU work goes here.
-			auto top_part = (pass.info.shader.peek() >> 16) & 0xFFFFFFFF;
-			auto& shader1 = shaders[--top_part];
-			if(shader1.ty == shader_type::compute)
-			{
-				ret = impl_record_compute_work(pass, frame, i);
-			}
-			else
-			{
-				ret = impl_record_graphics_work(pass, frame, i);
-			}
-			// if anything fails, return immediately.
-			if(ret != tz::error_code::success)
-			{
-				return ret;
-			}
-			vkEndCommandBuffer(frame.cmds);
+			ret = impl_record_compute_work(pass, frame, i);
+		}
+		else
+		{
+			ret = impl_record_graphics_work(pass, frame, i);
 		}
 		return ret;
 	}
@@ -1933,19 +2049,24 @@ namespace tz::gpu
 	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
 	{
 		std::vector<VkRenderingAttachmentInfo> colour_attachments;
+		std::vector<VkImageMemoryBarrier> colour_transitions;
 		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
+		colour_transitions.reserve(pass.info.graphics.colour_targets.size());
 		bool render_into_system_image = false;
 		for(const auto colour_resh : pass.info.graphics.colour_targets)
 		{
+			VkImage rt = VK_NULL_HANDLE;
 			VkImageView rtv = VK_NULL_HANDLE;
 			if(colour_resh == window_resource)
 			{
+				rt = system_image;
 				rtv = system_image_view;
 				render_into_system_image = true;
 			}
 			else
 			{
 				const auto& res = resources[colour_resh.peek()];
+				rt = res.img;
 				rtv = res.img_view;
 			}
 			colour_attachments.push_back
@@ -1960,6 +2081,32 @@ namespace tz::gpu
 				.loadOp = (pass.info.graphics.flags & graphics_flag::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR, // clear colour target before rendered into
 				.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 			});
+			if(!(pass.info.graphics.flags & graphics_flag::dont_clear))
+			{
+				colour_transitions.push_back({
+					.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+					.pNext = nullptr,
+					.srcAccessMask = 0,
+					.dstAccessMask = 0,
+					.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+					.newLayout = VK_IMAGE_LAYOUT_GENERAL,
+					.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+					.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+					.image = rt,
+					.subresourceRange = VkImageSubresourceRange
+					{
+						.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+						.baseMipLevel = 0,
+						.levelCount = 1,
+						.baseArrayLayer = 0,
+						.layerCount = 1,
+					}
+				});
+			}
+		}
+		if(colour_transitions.size())
+		{
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, colour_transitions.size(), colour_transitions.data());
 		}
 		VkImageView depth_rtv = VK_NULL_HANDLE;
 		if(pass.info.graphics.depth_target != tz::nullhand)

@@ -2,13 +2,14 @@
 #include "tz/os/window.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/pass.hpp"
+#include "tz/gpu/graph.hpp"
 #include ImportedTextHeader(empty_vertex, spv)
 #include ImportedTextHeader(empty_fragment, spv)
 
 int main()
 {
 	tz::initialise();
-	tz::os::open_window({.name = "Graphics Render Test", .flags = tz::os::window_flags::invisible});
+	tz::os::open_window({.name = "Graphics Render Test"});
 
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));
@@ -46,12 +47,22 @@ int main()
 			.clear_colour = {1.0f, 1.0f, 1.0f},
 			.colour_targets = colour_targets,
 			.depth_target = depth_target,
-			.flags = tz::gpu::graphics_flag::dont_clear
 		},
 		.shader = graphics,
 	}));
-	tz::gpu::destroy_pass(pass);
 
+	tz::gpu::graph_handle graph = tz_must(tz::gpu::create_graph
+	({
+		.timeline = {&pass, 1}
+	}));
+
+	while(tz::os::window_is_open())
+	{
+		tz::os::window_update();
+		tz::gpu::execute(graph);
+	}
+
+	tz::gpu::destroy_pass(pass);
 	tz::terminate();
 	return 0;
 }
