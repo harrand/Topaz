@@ -4,6 +4,7 @@
 #include "tz/gpu/resource.hpp"
 #include "tz/gpu/shader.hpp"
 #include "tz/gpu/pass.hpp"
+#include "tz/gpu/graph.hpp"
 #include "tz/os/window.hpp"
 
 #ifdef _WIN32
@@ -129,6 +130,12 @@ namespace tz::gpu
 		std::uint32_t viewport_height = 0;
 	};
 	std::vector<pass_data> passes = {};
+
+	struct graph_data
+	{
+		graph_info info;
+	};
+	std::vector<graph_data> graphs = {};
 
 	const char* validation_layers[] =
 	{
@@ -1286,6 +1293,18 @@ namespace tz::gpu
 		tz_assert(passes.size() > i, "Dodgy handle (value {}) passed to destroy_pass", i);
 		vkDestroyPipeline(current_device, passes[i].pipeline, nullptr);
 		passes[i] = {};
+	}
+
+	std::expected<graph_handle, tz::error_code> create_graph(graph_info graph)
+	{
+		(void)graph;
+		UNERR(tz::error_code::engine_bug, "graphs creation on vulkan is not yet implemented.");
+	}
+
+	void destroy_graph(graph_handle graph)
+	{
+		(void)graph;
+		tz_error("graph destruction on vulkan is not yet implemented.");
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////

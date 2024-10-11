@@ -9,8 +9,8 @@ namespace tz::gpu
 {
 	/**
 	 * @ingroup tz_gpu
-	 * @defgroup tz_gpu_pass Render/Compute Passes
-	 * @brief Documentation for render/compute passes - each a single node within a render graph.
+	 * @defgroup tz_gpu_pass Passes
+	 * @brief Documentation for render/compute passes - each a single node within @ref tz_gpu_graph.
 	 **/
 
 	/**
