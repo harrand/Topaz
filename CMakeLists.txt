@@ -53,6 +53,9 @@ setup_platform()
 include(cmake/render_api.cmake)
 setup_render_api()
 
+add_subdirectory(tools)
+include(cmake/shader.cmake)
+
 ###################
 ## TOPAZ - TESTS ##
 ###################
