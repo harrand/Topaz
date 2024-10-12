@@ -184,6 +184,7 @@ namespace tz::gpu
 	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
+	void impl_check_for_resize();
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -1320,6 +1321,11 @@ namespace tz::gpu
 
 	void execute(graph_handle graphh)
 	{
+		impl_check_for_resize();
+		if(swapchain_width == 0 || swapchain_height == 0)
+		{
+			return;
+		}
 		const auto& frame = frames[current_frame];
 		const auto& graph = graphs[graphh.peek()];
 
@@ -1338,10 +1344,10 @@ namespace tz::gpu
 		{
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
 			.pNext = nullptr,
-			.srcAccessMask = 0,
-			.dstAccessMask = 0,
+			.srcAccessMask = VK_ACCESS_NONE,
+			.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
 			.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-			.newLayout = VK_IMAGE_LAYOUT_GENERAL,
+			.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 			.image = swapchain_images[image_index],
@@ -1367,7 +1373,7 @@ namespace tz::gpu
 		// go go go
 		vkBeginCommandBuffer(frame.cmds, &begin);
 		// transition swapchain image to general
-		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
 		// go through timeline and record all gpu work.
 		for(pass_handle pass : graph.timeline)
@@ -1375,9 +1381,11 @@ namespace tz::gpu
 			tz_must(impl_record_gpu_work(pass, current_frame));
 		}
 		// transition swapchain image to present
-		barrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_NONE;
+		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
 		vkEndCommandBuffer(frame.cmds);
 		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
@@ -1702,7 +1710,12 @@ namespace tz::gpu
 			.clipped = VK_FALSE,
 			.oldSwapchain = swapchain
 		};
+		VkSwapchainKHR old_swapchain = swapchain;
 		VkResult res = vkCreateSwapchainKHR(current_device, &create, nullptr, &swapchain);
+		if(old_swapchain != VK_NULL_HANDLE)
+		{
+			vkDestroySwapchainKHR(current_device, old_swapchain, nullptr);
+		}
 		switch(res)
 		{
 			case VK_SUCCESS: break;
@@ -2241,7 +2254,7 @@ namespace tz::gpu
 			};
 			// do *not* use this index into the swapchain images. id is the n'th frame in flight with respect to frame_overlap.
 			// the index we actually want to use is the recently acquired swapchain image (which isnt being done yet)
-			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_GENERAL, 1, &blit, VK_FILTER_NEAREST);
+			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
 		}
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 		return tz::error_code::success;
@@ -2469,6 +2482,34 @@ namespace tz::gpu
 		{
 			vkDestroyImageView(current_device, system_depth_image_view, nullptr);
 			vmaDestroyImage(alloc, system_depth_image, system_depth_image_mem);
+		}
+	}
+
+	void impl_check_for_resize()
+	{
+		if(!tz::os::window_is_open())
+		{
+			return;
+		}
+		auto cur_width = tz::os::window_get_width();
+		auto cur_height = tz::os::window_get_height();
+		if(cur_width == 0 || cur_height == 0)
+		{
+			swapchain_width = 0;
+			swapchain_height = 0;
+		}
+		if(cur_width != swapchain_width || cur_height != swapchain_height)
+		{
+			// window size has changed.
+			tz::error_code res = impl_need_swapchain(cur_width, cur_height);
+			if(res != tz::error_code::partial_success)
+			{
+				tz_must(res);
+			}
+			for(auto& pass : passes)
+			{
+				tz_must(impl_validate_colour_targets(pass.info, pass));
+			}
 		}
 	}
 }
