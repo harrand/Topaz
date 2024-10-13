@@ -11,7 +11,7 @@
 int main()
 {
 	tz::initialise();
-	tz::os::open_window({.name = "Graphics Render Test"});
+	tz::os::open_window({.name = "Graphics Render Test", .flags = tz::os::window_flags::invisible});
 
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));
@@ -39,7 +39,7 @@ int main()
 		.add_pass(pass)
 		.build());
 
-	while(tz::os::window_is_open())
+	for(std::size_t i = 0; i < 64; i++)
 	{
 		tz::os::window_update();
 		tz::gpu::execute(graph);
