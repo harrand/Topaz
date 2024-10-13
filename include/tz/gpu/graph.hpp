@@ -13,8 +13,20 @@ namespace tz::gpu
 
 	enum graph_flag
 	{
-
+		/// After the graph has completed execution, present the system image to the window.
+		present_after = 0b0001
 	};
+
+	constexpr graph_flag operator|(graph_flag lhs, graph_flag rhs)
+	{
+		return static_cast<graph_flag>(static_cast<int>(lhs) | static_cast<int>(rhs));
+	}
+
+	constexpr bool operator&(graph_flag lhs, graph_flag& rhs)
+	{
+		return static_cast<int>(lhs) & static_cast<int>(rhs);
+	}
+
 
 	/**
 	 * @ingroup tz_gpu_graph
@@ -45,6 +57,7 @@ namespace tz::gpu
 	{
 		std::vector<pass_handle> passes;
 		std::vector<std::vector<pass_handle>> dependencies{};
+		graph_flag flags = static_cast<graph_flag>(0);
 
 		/// Add a new pass to the end of the timeline.
 		graph_builder& add_pass(pass_handle pass)
@@ -63,6 +76,12 @@ namespace tz::gpu
 				auto id = std::distance(this->passes.begin(), iter);
 				dependencies[id].push_back(dependency);
 			}
+			return *this;
+		}
+
+		graph_builder& set_flags(graph_flag flags)
+		{
+			this->flags = flags;
 			return *this;
 		}
 		/// Attempt to create the graph based on all previous calls and return the result. This will call @ref create_graph for you.
@@ -85,7 +104,8 @@ namespace tz::gpu
 	{
 		graph_info i
 		{
-			.timeline = this->passes	
+			.timeline = this->passes,
+			.flags = this->flags
 		};
 		std::vector<std::span<const pass_handle>> dependency_pointers;
 		for(const auto& dep_list : dependencies)

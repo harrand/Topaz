@@ -128,6 +128,7 @@ namespace tz::gpu
 	};
 
 	using pass_handle = tz::handle<pass_info>;
+
 	/**
 	 * @ingroup tz_gpu_pass
 	 * @brief Create a new pass.

@@ -134,6 +134,7 @@ namespace tz::gpu
 
 	struct graph_data
 	{
+		graph_info info;
 		std::vector<pass_handle> timeline = {};
 		std::vector<std::vector<pass_handle>> dependencies = {};
 	};
@@ -1301,6 +1302,7 @@ namespace tz::gpu
 		}
 		std::size_t ret_id = graphs.size();
 		auto& graph = graphs.emplace_back();
+		graph.info = info;
 		// copy over timeline and dependencies
 		graph.timeline.resize(info.timeline.size());
 		std::copy(info.timeline.begin(), info.timeline.end(), graph.timeline.begin());
@@ -1328,11 +1330,15 @@ namespace tz::gpu
 		}
 		const auto& frame = frames[current_frame];
 		const auto& graph = graphs[graphh.peek()];
+		const bool will_present = graph.info.flags & graph_flag::present_after;
 
 		std::uint32_t image_index;
-		vkAcquireNextImageKHR(current_device, swapchain, std::numeric_limits<std::uint64_t>::max(), VK_NULL_HANDLE, frame.swapchain_fence, &image_index);
-		vkWaitForFences(current_device, 1, &frame.swapchain_fence, VK_TRUE, std::numeric_limits<std::uint32_t>::max());
-		vkResetFences(current_device, 1, &frame.swapchain_fence);
+		if(will_present)
+		{
+			vkAcquireNextImageKHR(current_device, swapchain, std::numeric_limits<std::uint64_t>::max(), VK_NULL_HANDLE, frame.swapchain_fence, &image_index);
+			vkWaitForFences(current_device, 1, &frame.swapchain_fence, VK_TRUE, std::numeric_limits<std::uint32_t>::max());
+			vkResetFences(current_device, 1, &frame.swapchain_fence);
+		}
 
 		std::uint64_t begin_point;
 		// todo: ec
@@ -1350,7 +1356,7 @@ namespace tz::gpu
 			.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 			.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-			.image = swapchain_images[image_index],
+			.image = VK_NULL_HANDLE,
 			.subresourceRange = VkImageSubresourceRange
 			{
 				.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
@@ -1360,6 +1366,10 @@ namespace tz::gpu
 				.layerCount = 1,
 			}
 		};
+		if(will_present)
+		{
+			barrier.image = swapchain_images[image_index];
+		}
 
 		// record all commands jit
 		vkResetCommandBuffer(frame.cmds, 0);
@@ -1373,7 +1383,10 @@ namespace tz::gpu
 		// go go go
 		vkBeginCommandBuffer(frame.cmds, &begin);
 		// transition swapchain image to general
-		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		if(will_present)
+		{
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		}
 
 		// go through timeline and record all gpu work.
 		for(pass_handle pass : graph.timeline)
@@ -1381,11 +1394,14 @@ namespace tz::gpu
 			tz_must(impl_record_gpu_work(pass, current_frame));
 		}
 		// transition swapchain image to present
-		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_NONE_KHR;
-		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		if(will_present)
+		{
+			barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+			barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_NONE_KHR;
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		}
 
 		vkEndCommandBuffer(frame.cmds);
 		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
@@ -1398,26 +1414,29 @@ namespace tz::gpu
 			.pWaitDstStageMask = &stage_mask,
 			.commandBufferCount = 1,
 			.pCommandBuffers = &frame.cmds,
-			.signalSemaphoreCount = 1,
-			.pSignalSemaphores = &frame.swapchain_sem
+			.signalSemaphoreCount = will_present ? 1u : 0u,
+			.pSignalSemaphores = will_present ? &frame.swapchain_sem : nullptr
 		};
 		vkQueueSubmit(graphics_compute_queue, 1, &submit, frame.swapchain_fence);
 		vkWaitForFences(current_device, 1, &frame.swapchain_fence, VK_TRUE, std::numeric_limits<std::uint32_t>::max());
 		vkResetFences(current_device, 1, &frame.swapchain_fence);
 
 		VkResult res;
-		VkPresentInfoKHR present
+		if(will_present)
 		{
-			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-			.pNext = nullptr,
-			.waitSemaphoreCount = 1,
-			.pWaitSemaphores = &frame.swapchain_sem,
-			.swapchainCount = 1,
-			.pSwapchains = &swapchain,
-			.pImageIndices = &image_index,
-			.pResults = &res
-		};
-		vkQueuePresentKHR(graphics_compute_queue, &present);
+			VkPresentInfoKHR present
+			{
+				.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+				.pNext = nullptr,
+				.waitSemaphoreCount = 1,
+				.pWaitSemaphores = &frame.swapchain_sem,
+				.swapchainCount = 1,
+				.pSwapchains = &swapchain,
+				.pImageIndices = &image_index,
+				.pResults = &res
+			};
+			vkQueuePresentKHR(graphics_compute_queue, &present);
+		}
 
 		current_frame = (current_frame + 1) % frame_overlap;
 	}
