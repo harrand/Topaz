@@ -34,10 +34,9 @@ int main()
 		.shader = graphics,
 	}));
 
-	tz::gpu::graph_handle graph = tz_must(tz::gpu::create_graph
-	({
-		.timeline = {&pass, 1}
-	}));
+	tz::gpu::graph_handle graph = tz_must(tz::gpu::graph_builder{}
+		.add_pass(pass)
+		.build());
 
 	while(tz::os::window_is_open())
 	{
