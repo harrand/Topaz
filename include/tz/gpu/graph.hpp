@@ -11,7 +11,10 @@ namespace tz::gpu
 	 * @brief Documentation for render graphs - describes the execution of @ref tz_gpu_pass.
 	 */
 
-	using graph_handle = tz::handle<pass_handle>;
+	enum graph_flag
+	{
+
+	};
 
 	/**
 	 * @ingroup tz_gpu_graph
@@ -26,8 +29,11 @@ namespace tz::gpu
 		std::span<const pass_handle> timeline = {};
 		/// List of dependencies for each pass in the timeline. The n'th index of dependencies corresponds to the dependencies for the pass at the n'th index of the timeline.
 		std::span<std::span<const pass_handle>> dependencies = {};
+		/// Specifies extra optional behaviour for the graph.
+		graph_flag flags = static_cast<graph_flag>(0);
 	};
 
+	using graph_handle = tz::handle<pass_handle>;
 	/**
 	 * @ingroup tz_gpu_graph
 	 * @brief Helper struct for creating a new graph. Follows the builder pattern.
