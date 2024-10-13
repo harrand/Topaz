@@ -13,17 +13,34 @@ namespace tz::gpu
 
 	using graph_handle = tz::handle<pass_handle>;
 
+	/**
+	 * @ingroup tz_gpu_graph
+	 * @brief Specifies creation flags for a new graph.
+	 *
+	 * See @ref tz::gpu::create_graph for usage.
+	 * @note You may prefer to use the helper struct @ref graph_builder to generate a graph instead.
+	 */
 	struct graph_info
 	{
+		/// Contains all the passes that will be executed during a single frame - in chronological order.
 		std::span<const pass_handle> timeline = {};
+		/// List of dependencies for each pass in the timeline. The n'th index of dependencies corresponds to the dependencies for the pass at the n'th index of the timeline.
 		std::span<std::span<const pass_handle>> dependencies = {};
 	};
 
+	/**
+	 * @ingroup tz_gpu_graph
+	 * @brief Helper struct for creating a new graph. Follows the builder pattern.
+	 *
+	 * To populate the fields in @ref graph_info manually will require you to lay out the passes in memory in a particular way, so to avoid allocations. However, if you're happy to accept an allocation or two, you can use this helper builder to construct the graph instead.
+	 *
+	 */
 	struct graph_builder
 	{
 		std::vector<pass_handle> passes;
 		std::vector<std::vector<pass_handle>> dependencies{};
 
+		/// Add a new pass to the end of the timeline.
 		graph_builder& add_pass(pass_handle pass)
 		{
 			this->passes.push_back(pass);
@@ -31,6 +48,7 @@ namespace tz::gpu
 			return *this;
 		}
 
+		/// Add a new dependency to an existing pass in the timeline. Make sure the pass has already been added via @ref add_pass.
 		graph_builder& add_dependency(pass_handle pass, pass_handle dependency)
 		{
 			auto iter = std::find(this->passes.begin(), this->passes.end(), pass);
@@ -41,12 +59,20 @@ namespace tz::gpu
 			}
 			return *this;
 		}
+		/// Attempt to create the graph based on all previous calls and return the result. This will call @ref create_graph for you.
 		inline std::expected<graph_handle, tz::error_code> build();
 	};
 
+	/**
+	 * @ingroup tz_gpu_graph
+	 * @brief Create a new graph, which can be used for rendering a frame.
+	 */
 	std::expected<graph_handle, tz::error_code> create_graph(graph_info graph);
+	/**
+	 * @ingroup tz_gpu_graph
+	 * @brief Execute the graph - invoking all passes contained a single time.
+	 */
 	void execute(graph_handle);
-	void destroy_graph(graph_handle);
 
 
 	std::expected<graph_handle, tz::error_code> graph_builder::build()

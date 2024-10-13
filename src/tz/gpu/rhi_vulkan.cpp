@@ -1422,12 +1422,6 @@ namespace tz::gpu
 		current_frame = (current_frame + 1) % frame_overlap;
 	}
 
-	void destroy_graph(graph_handle graph)
-	{
-		(void)graph;
-		tz_error("graph destruction on vulkan is not yet implemented.");
-	}
-
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
