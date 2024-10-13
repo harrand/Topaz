@@ -182,7 +182,7 @@ namespace tz::gpu
 	tz::error_code impl_validate_colour_targets(tz::gpu::pass_info& pinfo, pass_data& data);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
-	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i);
+	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i, std::uint32_t swapchain_image_id);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 	void impl_check_for_resize();
@@ -1382,20 +1382,22 @@ namespace tz::gpu
 		};
 		// go go go
 		vkBeginCommandBuffer(frame.cmds, &begin);
-		// transition swapchain image to general
+		// TODOOO: respect graph dependencies. probably by vkCmdSetEvent and vkCmdWaitEvent?
 		if(will_present)
 		{
+			// transition swapchain image to TRANSFER_DST
 			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 		}
 
 		// go through timeline and record all gpu work.
+		// any of these may or may not try to blit (transfer) an image into our current swapchain image.
 		for(pass_handle pass : graph.timeline)
 		{
-			tz_must(impl_record_gpu_work(pass, current_frame));
+			tz_must(impl_record_gpu_work(pass, current_frame, image_index));
 		}
-		// transition swapchain image to present
 		if(will_present)
 		{
+			// transition swapchain image to PRESENT
 			barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 			barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -2042,9 +2044,9 @@ namespace tz::gpu
 	}
 
 	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
-	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
+	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id, std::uint32_t swapchain_image_id);
 
-	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i)
+	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i, std::uint32_t swapchain_image_id)
 	{
 		const auto& pass = passes[passh.peek()]; 
 		tz::error_code ret = tz::error_code::success;
@@ -2058,7 +2060,7 @@ namespace tz::gpu
 		}
 		else
 		{
-			ret = impl_record_graphics_work(pass, frame, i);
+			ret = impl_record_graphics_work(pass, frame, i, swapchain_image_id);
 		}
 		return ret;
 	}
@@ -2072,7 +2074,7 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
-	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
+	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id, std::uint32_t swapchain_image_id)
 	{
 		std::vector<VkRenderingAttachmentInfo> colour_attachments;
 		std::vector<VkImageMemoryBarrier> colour_transitions;
@@ -2267,7 +2269,7 @@ namespace tz::gpu
 			};
 			// do *not* use this index into the swapchain images. id is the n'th frame in flight with respect to frame_overlap.
 			// the index we actually want to use is the recently acquired swapchain image (which isnt being done yet)
-			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[id], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
+			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[swapchain_image_id], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
 		}
 		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 		return tz::error_code::success;
