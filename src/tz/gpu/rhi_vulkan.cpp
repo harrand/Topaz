@@ -1373,7 +1373,7 @@ namespace tz::gpu
 		// go go go
 		vkBeginCommandBuffer(frame.cmds, &begin);
 		// transition swapchain image to general
-		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
 		// go through timeline and record all gpu work.
 		for(pass_handle pass : graph.timeline)
@@ -1384,8 +1384,8 @@ namespace tz::gpu
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_NONE;
-		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+		barrier.dstAccessMask = VK_ACCESS_NONE_KHR;
+		vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
 		vkEndCommandBuffer(frame.cmds);
 		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
