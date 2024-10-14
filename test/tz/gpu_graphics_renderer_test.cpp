@@ -11,7 +11,7 @@
 int main()
 {
 	tz::initialise();
-	tz::os::open_window({.name = "Graphics Render Test", .flags = tz::os::window_flags::invisible});
+	tz::os::open_window({.title = "Graphics Render Test", .flags = tz::os::window_flags::invisible});
 
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));

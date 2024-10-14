@@ -61,7 +61,7 @@ namespace tz::os
 		}
 
 		bool centrered = winfo.flags & window_flags::centered_window;
-		wnd = CreateWindowExA(WS_EX_OVERLAPPEDWINDOW, wndclass_name, winfo.name.c_str(), WS_OVERLAPPEDWINDOW, centrered ? CW_USEDEFAULT : winfo.x, centrered ? CW_USEDEFAULT : winfo.y, winfo.width, winfo.height, nullptr, nullptr, hinst, nullptr);
+		wnd = CreateWindowExA(WS_EX_OVERLAPPEDWINDOW, wndclass_name, winfo.title.c_str(), WS_OVERLAPPEDWINDOW, centrered ? CW_USEDEFAULT : winfo.x, centrered ? CW_USEDEFAULT : winfo.y, winfo.width, winfo.height, nullptr, nullptr, hinst, nullptr);
 		if(wnd == nullptr)
 		{
 			return tz::error_code::unknown_error;
@@ -139,6 +139,19 @@ namespace tz::os
 	unsigned int window_get_height()
 	{
 		return impl_get_window_dims().second;
+	}
+
+	std::string window_get_title()
+	{
+		std::string ret;
+		ret.resize(GetWindowTextLength(wnd));
+		GetWindowTextA(wnd, ret.data(), ret.size());
+		return ret;
+	}
+
+	void window_set_title(std::string_view title)
+	{
+		SetWindowTextA(wnd, title.data());
 	}
 
 	tz::error_code install_char_typed_callback(char_type_callback callback)

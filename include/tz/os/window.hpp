@@ -46,7 +46,7 @@ namespace tz::os
 	struct window_info
 	{
 		/// Title of the window.
-		std::string name = "Untitled";
+		std::string title = "Untitled";
 		/// x-position of the window, in pixels.
 		unsigned int x = 0;
 		/// y-position of the window, in pixels.
@@ -82,7 +82,6 @@ namespace tz::os
 	 **/
 	tz::error_code close_window();
 
-
 	/**
 	 * @ingroup tz_os_window
 	 * @brief Query as to whether a window has been opened that has not yet been closed.
@@ -110,6 +109,8 @@ namespace tz::os
 	unsigned int window_get_width();
 	unsigned int window_get_height();
 
+	std::string window_get_title();
+	void window_set_title(std::string_view title);
 }
 
 #endif // TOPAZ_OS_WINDOW_HPP
