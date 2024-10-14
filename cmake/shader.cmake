@@ -7,6 +7,9 @@ macro(add_shader_vulkan)
 	set(shader_path ${PROJECT_SOURCE_DIR}/${SHADER})
 	set(processed_shader_name ${SHADER}.glsl)
 	set(processed_shader_path ${PROJECT_BINARY_DIR}/${processed_shader_name})
+	if(TARGET processed_shader_path)
+		return()
+	endif()
 
 	if(${CMAKE_BUILD_TYPE} MATCHES "debug")
 		add_custom_command( OUTPUT ${processed_shader_path}
@@ -50,7 +53,6 @@ function(topaz_add_shader)
 		"SHADERS"
 		${ARGN}
 	)
-
 	foreach(SHADER ${TOPAZ_ADD_SHADER_SHADERS})
 		add_shader_vulkan()
 		# `output_path` is the path to the built shader (i.e glsl (ogl) or spv (vk)).

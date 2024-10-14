@@ -3,7 +3,7 @@ function(topaz_add_test)
 		TOPAZ_ADD_TEST
 		""
 		"TARGET"
-		"SOURCES;SHADERS"
+		"SOURCES;SHADERS;TEXT_FILES"
 		${ARGN}
 	)	
 
@@ -13,6 +13,8 @@ function(topaz_add_test)
 			${TOPAZ_ADD_TEST_SOURCES}
 		SHADERS
 			${TOPAZ_ADD_TEST_SHADERS}
+		TEXT_FILES
+			${TOPAZ_ADD_TEST_TEXT_FILES}
 	)
 	# All tests link against topaz.
 	target_link_libraries(${TOPAZ_ADD_TEST_TARGET} PRIVATE topaz)

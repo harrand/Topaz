@@ -65,3 +65,9 @@ setup_render_api()
 
 include(CTest)
 add_subdirectory(test)
+
+###################
+## TOPAZ - DEMOS ##
+###################
+
+add_subdirectory(demo)

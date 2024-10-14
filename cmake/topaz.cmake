@@ -30,7 +30,7 @@ function(topaz_add_executable)
 		TOPAZ_ADD_EXECUTABLE
 		""
 		"TARGET"
-		"SOURCES;SHADERS"
+		"SOURCES;SHADERS;TEXT_FILES"
 		${ARGN}
 	)
 
