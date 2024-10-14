@@ -21,19 +21,25 @@ project(topaz
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+include(cmake/topaz.cmake)
 add_subdirectory(lib)
+add_subdirectory(tools)
+include(cmake/shader.cmake)
 
 ####################
 ## TOPAZ - TARGET ##
 ####################
 
-add_library(topaz STATIC
-	src/tz/topaz.cpp
-	src/tz/core/error.cpp
-	src/tz/core/vector.cpp
-	src/tz/gpu/rhi_vulkan.cpp
-	src/tz/os/impl_win32.cpp
+topaz_add_library(
+	TARGET topaz
+	SOURCES	
+		src/tz/topaz.cpp
+		src/tz/core/error.cpp
+		src/tz/core/vector.cpp
+		src/tz/gpu/rhi_vulkan.cpp
+		src/tz/os/impl_win32.cpp
 )
+
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(topaz PRIVATE VulkanMemoryAllocator)
 target_link_libraries(topaz PUBLIC textc_lib)
@@ -52,9 +58,6 @@ include(cmake/platform.cmake)
 setup_platform()
 include(cmake/render_api.cmake)
 setup_render_api()
-
-add_subdirectory(tools)
-include(cmake/shader.cmake)
 
 ###################
 ## TOPAZ - TESTS ##

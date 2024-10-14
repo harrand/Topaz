@@ -7,9 +7,12 @@ function(topaz_add_test)
 		${ARGN}
 	)	
 
-	# Add the test executable.
-	add_executable(${TOPAZ_ADD_TEST_TARGET}
-		${TOPAZ_ADD_TEST_SOURCES}
+	topaz_add_executable(
+		TARGET ${TOPAZ_ADD_TEST_TARGET}
+		SOURCES
+			${TOPAZ_ADD_TEST_SOURCES}
+		SHADERS
+			${TOPAZ_ADD_TEST_SHADERS}
 	)
 	# All tests link against topaz.
 	target_link_libraries(${TOPAZ_ADD_TEST_TARGET} PRIVATE topaz)
@@ -33,13 +36,6 @@ function(topaz_add_test)
 	add_test(${TOPAZ_ADD_TEST_TARGET} ${TOPAZ_ADD_TEST_TARGET})
 	# (4)
 	set_tests_properties(${TOPAZ_ADD_TEST_TARGET} PROPERTIES FIXTURES_REQUIRED ${TOPAZ_ADD_TEST_TARGET}_fixture)
-	if(TOPAZ_ADD_TEST_SHADERS)
-		add_shader(
-			TARGET ${TOPAZ_ADD_TEST_TARGET}
-			SHADERS
-				${TOPAZ_ADD_TEST_SHADERS}
-		)
-	endif()
 endfunction()
 
 # When top-level topaz CMakeLists includes CTest, this `BUILD_TESTING` option is created which defaults to ON. I guess the idea is that this is a cache variable you can turn off if you really want to.

@@ -41,22 +41,22 @@ macro(add_shader_vulkan)
 	set_source_files_properties(${processed_shader_path} ${output_path} PROPERTIES GENERATED TRUE)
 endmacro()
 
-function(add_shader)
+function(topaz_add_shader)
 	set(TZSLC_EXECUTABLE_PATH $<TARGET_FILE:tzslc>)
 	cmake_parse_arguments(
-		ADD_SHADER
+		TOPAZ_ADD_SHADER
 		""
 		"TARGET"
 		"SHADERS"
 		${ARGN}
 	)
 
-	foreach(SHADER ${ADD_SHADER_SHADERS})
+	foreach(SHADER ${TOPAZ_ADD_SHADER_SHADERS})
 		add_shader_vulkan()
 		# `output_path` is the path to the built shader (i.e glsl (ogl) or spv (vk)).
 		STRING(REGEX REPLACE "^${PROJECT_BINARY_DIR}/" "" built_shader_offset_path ${output_path})
 		add_text(
-			TARGET ${ADD_SHADER_TARGET}
+			TARGET ${TOPAZ_ADD_SHADER_TARGET}
 			INPUT_DIR ${PROJECT_BINARY_DIR}
 			OUTPUT_DIR ${PROJECT_BINARY_DIR}
 			TEXT_FILES ${built_shader_offset_path}
