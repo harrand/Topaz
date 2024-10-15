@@ -40,6 +40,11 @@ namespace tz
 	**/
 	void terminate();
 
+	namespace detail
+	{
+		void job_system_initialise();
+		void job_system_terminate();
+	}
 	namespace gpu
 	{
 		void initialise(appinfo info);

@@ -1,2 +1,3 @@
+add_subdirectory(concurrentqueue)
 add_subdirectory(VulkanMemoryAllocator)
 add_subdirectory(textc)

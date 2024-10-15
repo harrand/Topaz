@@ -35,13 +35,14 @@ topaz_add_library(
 	SOURCES	
 		src/tz/topaz.cpp
 		src/tz/core/error.cpp
+		src/tz/core/job.cpp
 		src/tz/core/vector.cpp
 		src/tz/gpu/rhi_vulkan.cpp
 		src/tz/os/impl_win32.cpp
 )
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(topaz PRIVATE VulkanMemoryAllocator)
+target_link_libraries(topaz PRIVATE VulkanMemoryAllocator concurrentqueue)
 target_link_libraries(topaz PUBLIC textc_lib)
 
 ######################

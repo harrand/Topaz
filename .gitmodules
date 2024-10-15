@@ -4,3 +4,6 @@
 [submodule "lib/textc"]
 	path = lib/textc
 	url = https://github.com/harrand/textc
+[submodule "lib/concurrentqueue"]
+	path = lib/concurrentqueue
+	url = https://github.com/cameron314/concurrentqueue
