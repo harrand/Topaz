@@ -16,7 +16,6 @@ namespace tz
 	job_handle job_execute(job_function fn);
 	job_handle job_execute_on(job_function fn, job_worker worker);
 	void job_wait(job_handle job);
-	void job_wait_all();
 	bool job_complete(job_handle job);
 	std::size_t job_count();
 	std::size_t job_worker_count();
