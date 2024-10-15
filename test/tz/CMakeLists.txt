@@ -5,6 +5,17 @@ topaz_add_test(
 )
 
 topaz_add_test(
+  TARGET tz_bundle_test
+  SOURCES
+    bundle_test.cpp
+)
+topaz_bundle_files(
+  TARGET tz_bundle_test
+  FILES
+    files/secret.txt
+)
+
+topaz_add_test(
   TARGET tz_vector_test
   SOURCES
     vector_test.cpp
