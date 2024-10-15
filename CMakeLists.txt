@@ -58,6 +58,7 @@ include(cmake/platform.cmake)
 setup_platform()
 include(cmake/render_api.cmake)
 setup_render_api()
+include(cmake/bundle.cmake)
 
 ###################
 ## TOPAZ - TESTS ##
