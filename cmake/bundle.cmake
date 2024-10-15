@@ -8,31 +8,27 @@ function(topaz_bundle_files)
 	)
 
 	# source dir: CMAKE_CURRENT_SOURCE_DIR
-	# binary dir: $<TARGET_FILE_DIR:${TOPAZ_BUNDLE_FILES_TARGET}>
-	set(binary_root $<TARGET_FILE_DIR:${TOPAZ_BUNDLE_FILES_TARGET}>)
 	# Loop over each file and replicate the directory structure in the binary directory
+    set(counter 0)
     foreach(file IN LISTS TOPAZ_BUNDLE_FILES_FILES)
-        # Get the relative path from the source directory
-        set(file_path "${CMAKE_CURRENT_SOURCE_DIR}/${file}")
-        file(RELATIVE_PATH relative_path "${CMAKE_CURRENT_SOURCE_DIR}" ${file_path})
+        # Ensure the file exists
+        set(file_path ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+        if(NOT EXISTS ${file_path})
+            message(FATAL_ERROR "File '${file_path}' does not exist!")
+        endif()
 
-        # Construct the destination directory path in the binary directory
-        set(destination_dir "$<TARGET_FILE_DIR:${TOPAZ_BUNDLE_FILES_TARGET}>/${relative_path}")
-
-        # Ensure the directory exists
+        # Mark the target to depend on the file
         add_custom_command(
-            TARGET ${TOPAZ_BUNDLE_FILES_TARGET}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${TOPAZ_BUNDLE_FILES_TARGET}>/$$(dirname ${relative_path})"
-            COMMENT "Creating directory $<TARGET_FILE_DIR:${TOPAZ_BUNDLE_FILES_TARGET}>/$(dirname ${relative_path})"
+            OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${file}"
+            DEPENDS "${file_path}"
+            COMMAND ${CMAKE_COMMAND} -E copy "${file_path}" "${CMAKE_CURRENT_BINARY_DIR}/${file}"
+            COMMENT "Copying ${file_path} to ${CMAKE_CURRENT_BINARY_DIR}"
         )
 
-        # Copy the file to the destination directory
-        add_custom_command(
-            TARGET ${TOPAZ_BUNDLE_FILES_TARGET}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${file_path}" "${destination_dir}"
-            COMMENT "Copying ${file} to ${destination_dir}"
-        )
+        set(bundle_target_name ${TOPAZ_BUNDLE_FILES_TARGET}_bundle${counter})
+        add_custom_target(${bundle_target_name} DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${file}")
+
+        add_dependencies(${TOPAZ_BUNDLE_FILES_TARGET} ${bundle_target_name})
+        MATH(EXPR counter "${counter}+1")
     endforeach()
 endfunction()
