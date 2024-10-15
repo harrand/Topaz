@@ -8,6 +8,11 @@
 #include <atomic>
 #include <chrono>
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#endif
+
 namespace tz
 {
 	// state begin
@@ -159,6 +164,9 @@ namespace tz
 	{
 		void job_system_initialise()
 		{
+			#ifdef _WIN32
+				timeBeginPeriod(1u);
+			#endif
 			for(std::size_t i = 0; i < job_worker_count(); i++)
 			{
 				auto& worker = workers.emplace_back();
@@ -179,6 +187,9 @@ namespace tz
 			{
 				worker.thread.join();
 			}
+			#ifdef _WIN32
+				timeEndPeriod(1u);
+			#endif
 		}
 	}
 
