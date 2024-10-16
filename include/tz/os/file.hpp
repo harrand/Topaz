@@ -8,6 +8,7 @@
 namespace tz::os
 {
 	std::expected<std::string, tz::error_code> read_file(std::filesystem::path path);
+	tz::error_code write_file(std::filesystem::path path, std::string_view data);
 }
 
 #endif // TOPAZ_OS_FILE_HPP

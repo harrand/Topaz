@@ -190,6 +190,22 @@ namespace tz::os
 		UNERR(tz::error_code::unknown_error, "undocumented windows error occurred when trying to read file");
 	}
 
+	tz::error_code write_file(std::filesystem::path path, std::string_view data)
+	{
+		HANDLE file = CreateFileA(path.string().c_str(), GENERIC_WRITE, 0, nullptr, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		if(file == INVALID_HANDLE_VALUE)
+		{
+			// file does not exist.
+			RETERR(tz::error_code::precondition_failure, "failed to open file \"{}\"", path.string());
+		}
+		BOOL success = WriteFile(file, data.data(), data.size(), nullptr, nullptr);
+		if(success == 0)
+		{
+			RETERR(tz::error_code::precondition_failure, "failed to write to file \"{}\"", path.string());
+		}
+		return tz::error_code::success;
+	}
+
 	// IMPL
 
 	std::pair<DWORD, DWORD> impl_get_window_dims()
