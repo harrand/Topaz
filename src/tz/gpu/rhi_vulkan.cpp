@@ -2122,10 +2122,10 @@ namespace tz::gpu
 				colour_transitions.push_back({
 					.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
 					.pNext = nullptr,
-					.srcAccessMask = 0,
-					.dstAccessMask = 0,
+					.srcAccessMask = VK_ACCESS_NONE,
+					.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 					.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
-					.newLayout = VK_IMAGE_LAYOUT_GENERAL,
+					.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 					.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 					.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
 					.image = rt,
@@ -2142,7 +2142,7 @@ namespace tz::gpu
 		}
 		if(colour_transitions.size())
 		{
-			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, colour_transitions.size(), colour_transitions.data());
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, colour_transitions.size(), colour_transitions.data());
 		}
 		VkImageView depth_rtv = VK_NULL_HANDLE;
 		if(pass.info.graphics.depth_target != tz::nullhand)
@@ -2267,11 +2267,33 @@ namespace tz::gpu
 					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
 				},
 			};
-			// do *not* use this index into the swapchain images. id is the n'th frame in flight with respect to frame_overlap.
-			// the index we actually want to use is the recently acquired swapchain image (which isnt being done yet)
-			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_GENERAL, swapchain_images[swapchain_image_id], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
+			// we're about to blit the system image into the swapchain image.
+			// however we've just rendered into the system image, so its layout must be color_attachment.
+			// to do the transfer we must first transition the system image to transfer_src.
+			// we can assume the swapchain image is already in transfer_dst.
+			VkImageMemoryBarrier system_image_transfer
+			{
+				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+				.pNext = nullptr,
+				.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+				.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+				.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.image = system_image,
+				.subresourceRange = VkImageSubresourceRange
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.baseMipLevel = 0,
+					.levelCount = 1,
+					.baseArrayLayer = 0,
+					.layerCount = 1,
+				}
+			};
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &system_image_transfer);
+			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, swapchain_images[swapchain_image_id], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
 		}
-		// last: transition swapchain image layout from colour attachment (OR general) to present if we need to present the image next.
 		return tz::error_code::success;
 	}
 
