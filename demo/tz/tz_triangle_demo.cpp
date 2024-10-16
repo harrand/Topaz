@@ -29,7 +29,7 @@ int main()
 		{
 			.clear_colour = {0.0f, 0.0f, 0.0f, 1.0f},
 			.colour_targets = colour_targets,
-			.flags = tz::gpu::graphics_flag::no_depth_test
+			.depth_target = tz::gpu::window_resource
 		},
 		.shader = graphics,
 	}));

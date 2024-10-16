@@ -2149,11 +2149,13 @@ namespace tz::gpu
 		{
 			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, colour_transitions.size(), colour_transitions.data());
 		}
+		VkImage depth_rt = VK_NULL_HANDLE;
 		VkImageView depth_rtv = VK_NULL_HANDLE;
 		if(pass.info.graphics.depth_target != tz::nullhand)
 		{
 			if(pass.info.graphics.depth_target == tz::gpu::window_resource)
 			{
+				depth_rt = system_depth_image;
 				depth_rtv = system_depth_image_view;
 			}
 			else
@@ -2173,8 +2175,31 @@ namespace tz::gpu
 				{
 					RETERR(tz::error_code::precondition_failure, "image resource \"{}\" provided as depth target to pass \"{}\", but the image does not have the \"depth_target\" flag.", depth_res.name, pass.info.name);
 				}
+				depth_rt = depth_image_resource.img;
 				depth_rtv = depth_image_resource.img_view;
 			}
+
+			VkImageMemoryBarrier depth_barrier
+			{
+				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+				.pNext = nullptr,
+				.srcAccessMask = VK_ACCESS_NONE,
+				.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+				.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+				.newLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
+				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.image = depth_rt,
+				.subresourceRange = VkImageSubresourceRange
+				{
+					.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+					.baseMipLevel = 0,
+					.levelCount = 1,
+					.baseArrayLayer = 0,
+					.layerCount = 1,
+				}
+			};
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_NONE, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, 0, 0, nullptr, 0, nullptr, 1, &depth_barrier);
 		}
 		else
 		{
@@ -2188,12 +2213,18 @@ namespace tz::gpu
 			.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
 			.pNext = nullptr,
 			.imageView = depth_rtv,
-			.imageLayout = VK_IMAGE_LAYOUT_GENERAL,
+			.imageLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL,
 			.resolveMode = VK_RESOLVE_MODE_NONE,
 			.resolveImageView = VK_NULL_HANDLE,
 			.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
 			.loadOp = (pass.info.graphics.flags & graphics_flag::dont_clear) ? VK_ATTACHMENT_LOAD_OP_LOAD : VK_ATTACHMENT_LOAD_OP_CLEAR,
 			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE, // potentially want to store if another pass is going to read from depth afterwards (in the timeline)
+			.clearValue =
+			{
+				.depthStencil = VkClearDepthStencilValue
+				{
+					.depth = 1.0f
+				}}
 		};
 		VkRenderingInfo render
 		{
