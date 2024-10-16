@@ -187,6 +187,7 @@ namespace tz
 			{
 				worker.thread.join();
 			}
+			workers.clear();
 			#ifdef _WIN32
 				timeEndPeriod(1u);
 			#endif
