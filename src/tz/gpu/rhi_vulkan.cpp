@@ -681,6 +681,15 @@ namespace tz::gpu
 			name = "unnamed buffer";
 		}
 
+		if(info.flags & buffer_flag::index)
+		{
+			UNERR(tz::error_code::engine_bug, "index buffers are not yet implemented.");
+		}
+		if(info.flags & buffer_flag::draw)
+		{
+			UNERR(tz::error_code::engine_bug, "draw buffers are not yet implemented.");
+		}
+
 		VkBufferCreateInfo create
 		{
 			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,

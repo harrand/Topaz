@@ -22,7 +22,6 @@ int main()
 	tz::gpu::resource_handle buf = tz_must(tz::gpu::create_buffer
 	({
 		.access = tz::gpu::resource_access::dynamic_access,
-		.type = tz::gpu::buffer_type::storage,
 		.data = std::as_bytes(std::span<const int>(&data, 1))
 	}));
 

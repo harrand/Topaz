@@ -29,19 +29,21 @@ namespace tz::gpu
 		dynamic_access
 	};
 
-	/**
-	 * @ingroup tz_gpu_resource
-	 * @brief Specifies what a buffer resource shall be used for.
-	 **/
-	enum class buffer_type
+	enum buffer_flag
 	{
-		/// The buffer exists to store data for read/write by a shader running on the GPU.
-		storage,
-		/// The buffer exists purely to store index data for use when rendering a mesh. Index buffers are expected to be filled entirely with std::uint32_t.
-		index,
-		/// The buffer mainly contains draw commands with a count at the front, intended for use in GPU-driven rendering.
-		draw_indirect
+		index = 0b0001,
+		draw = 0b0010,
 	};
+
+	constexpr buffer_flag operator|(buffer_flag lhs, buffer_flag rhs)
+	{
+		return static_cast<buffer_flag>(static_cast<int>(lhs) | static_cast<int>(rhs));
+	}
+
+	constexpr bool operator&(buffer_flag lhs, buffer_flag& rhs)
+	{
+		return static_cast<int>(lhs) & static_cast<int>(rhs);
+	}
 
 	/**
 	 * @ingroup tz_gpu_resource
@@ -53,12 +55,12 @@ namespace tz::gpu
 	{
 		/// Do you intend to write to my buffer data very rarely (static) or very often, perhaps even on a per-frame basis (dynamic)?
 		resource_access access;
-		/// What kind of GPU work do you intend to use me for?
-		buffer_type type;
 		/// What initial data shall I have? @warning This must not be empty -- zero-sized buffers are not supported.
 		std::span<const std::byte> data;
 		/// What name shall I have when you're looking at me in your graphics debugger of choice? If you don't specify one, I will be named "Resource 123B" (not necessarily 123)
 		const char* name = "<untitled buffer resource>";
+		/// Any extra optional flags to specify?
+		buffer_flag flags = static_cast<buffer_flag>(0);
 	};
 
 	/**
