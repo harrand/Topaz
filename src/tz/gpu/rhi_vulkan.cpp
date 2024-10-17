@@ -2114,7 +2114,7 @@ namespace tz::gpu
 				.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO,
 				.pNext = nullptr,
 				.imageView = rtv,
-				.imageLayout = VK_IMAGE_LAYOUT_GENERAL,
+				.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 				.resolveMode = VK_RESOLVE_MODE_NONE,
 				.resolveImageView = VK_NULL_HANDLE,
 				.resolveImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
