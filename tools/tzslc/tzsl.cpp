@@ -2,6 +2,7 @@
 #include "source_transform.hpp"
 #include <fstream>
 #include <sstream>
+#include <map>
 
 #include "stdlib.hpp"
 
@@ -24,7 +25,10 @@ namespace tzslc
 	void evaluate_user_imports(std::string&, std::filesystem::path);
 	void evaluate_keywords(std::string&, ShaderStage, GLSLDialect);
 	void evaluate_inout_blocks(std::string&, ShaderStage, GLSLDialect);
+	void evaluate_main_function(std::string&);
 	void collapse_namespaces(std::string&);
+
+	std::map<int, std::string> buffer_id_to_BDA_typename;
 
 //--------------------------------------------------------------------------------------------------
 
@@ -39,6 +43,8 @@ namespace tzslc
 		evaluate_keywords(shader_source, stage, dialect);
 		evaluate_inout_blocks(shader_source, stage, dialect);
 		collapse_namespaces(shader_source);
+		evaluate_main_function(shader_source);
+		buffer_id_to_BDA_typename.clear();
 	}
 
 //--------------------------------------------------------------------------------------------------
@@ -89,7 +95,7 @@ namespace tzslc
 		std::string ret = "/*tzslc header info*/\n#version 460 core\n";
 		if(dialect == GLSLDialect::Vulkan)
 		{
-			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n";
+			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n#extension GL_EXT_buffer_reference : require\n";
 		}
 		else if(dialect == GLSLDialect::OpenGL)
 		{
@@ -299,17 +305,22 @@ namespace tzslc
 
 		// Finally, resources.
 		// Start with buffer resources.
-		constexpr char buffer_resource_regex[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?buffer";
+		constexpr char buffer_resource_regex[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?buffer ([a-zA-Z_]+)";
 		tzslc::transform(shader_source, std::regex{buffer_resource_regex},
 		[](auto beg, auto end)
 		{
+			std::string id = *(beg);
+			auto id_val = std::stoi(id);
 			std::string flag = *(beg + 1);
+			std::string bda_name = *(beg + 2);
 			tzslc_assert(flag.empty() || (flag == "const"), "Detected unrecognised token `%s` in buffer resource specifier. Replace with nothing, or `const`.", flag.c_str());
 			if(flag == "const")
 			{
 				flag = "readonly";
 			}
-			return "layout(binding = " + *(beg) + ") " + flag + " buffer";
+			buffer_id_to_BDA_typename[id_val] = bda_name;
+			return "layout(std430, buffer_reference, buffer_reference_align = 8) " + flag + " buffer " + bda_name + "_t";
+			//return "layout(binding = " + id + ") " + flag + " buffer " + bda_name;
 		});
 
 		// And then texture resources.
@@ -440,6 +451,29 @@ namespace tzslc
 				tzslc_assert(false, "Detected invalid shader stage. Internal tzslc error. Please submit a bug report.");
 			break;
 		}
+	}
+
+//--------------------------------------------------------------------------------------------------
+
+	void evaluate_main_function(std::string& shader_source)
+	{
+		if(buffer_id_to_BDA_typename.empty())
+		{
+			return;
+		}
+		tzslc::transform(shader_source, std::regex{"void main"},
+		[](auto beg, auto end)
+		{
+			// sneak in our magic BDA meta buffer.
+			std::string prefix = "";
+			prefix = "layout(std430, set = 0, binding = 0) readonly buffer MetaBuffer{\n";
+			for(const auto& [id, bda_name] : buffer_id_to_BDA_typename)
+			{
+				prefix += bda_name + "_t " + bda_name + ";\n";
+			}
+			prefix += "};";
+			return prefix + "\nvoid main";
+		});
 	}
 
 //--------------------------------------------------------------------------------------------------

@@ -23,6 +23,15 @@ int main()
 		tz::gpu::window_resource,
 	};
 
+	int x = 2;
+	tz::gpu::resource_handle my_buffer = tz_must(tz::gpu::create_buffer
+	({
+		.access = tz::gpu::resource_access::static_access,
+		.type = tz::gpu::buffer_type::storage,
+		.data = std::as_bytes(std::span<const int>{&x, 1}),
+		.name = "my buffer resource :)"
+	}));
+
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
 		.graphics =
@@ -32,6 +41,7 @@ int main()
 			.depth_target = tz::gpu::window_resource
 		},
 		.shader = graphics,
+		.resources = {&my_buffer, 1}
 	}));
 
 	tz::gpu::graph_handle graph = tz_must(tz::gpu::graph_builder{}

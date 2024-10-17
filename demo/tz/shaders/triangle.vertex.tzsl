@@ -15,9 +15,18 @@ vec3 colours[3] = vec3[]
 );
 
 output(id = 0) vec3 frag_colour;
+resource(id = 0) const buffer meta_buffer
+{
+    uint x;
+};
+
+resource(id = 1) const buffer not_a_buffer
+{
+    uint x;
+};
 
 void main()
 {
     out::position = vec4(positions[in::vertex_id], 0.0, 1.0);
-    frag_colour = colours[in::vertex_id];
+    frag_colour = colours[meta_buffer.x];
 }

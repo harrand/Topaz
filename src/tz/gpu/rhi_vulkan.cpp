@@ -126,6 +126,8 @@ namespace tz::gpu
 		pass_info info;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
+		VkBuffer meta_buffer = VK_NULL_HANDLE;
+		VmaAllocation meta_buffer_mem = VK_NULL_HANDLE;
 		std::array<VkDescriptorSet, frame_overlap> descriptor_sets = {};
 		std::uint32_t viewport_width = 0;
 		std::uint32_t viewport_height = 0;
@@ -1005,11 +1007,40 @@ namespace tz::gpu
 			UNERR(tz::error_code::precondition_failure, "no shader program provided when creating pass. you must provide a valid shader program.");
 		}
 		std::size_t ret_id = passes.size();
+		auto& pass = passes.emplace_back();
+		std::size_t buffer_count = 0;
+		for(resource_handle resh : info.resources)
+		{
+			// todo: assert not widnow resouces or nullhand
+			const auto& res = resources[resh.peek()];
+			if(res.is_buffer())
+			{
+				buffer_count++;
+			}
+		}
+		// the meta buffer must always exist. if we have no buffer resources, then it just sits at a single byte.
+		VkBufferCreateInfo meta_create
+		{
+			.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = 0,
+			.size = buffer_count > 0 ? sizeof(VkDeviceAddress) * buffer_count : 1,
+			.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 1,
+			.pQueueFamilyIndices = &current_hardware.internals.i1,
+		};
+		VmaAllocationCreateInfo meta_alloc_create
+		{
+			.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE
+		};
+		VkResult meta_result = vmaCreateBuffer(alloc, &meta_create, &meta_alloc_create, &pass.meta_buffer, &pass.meta_buffer_mem, nullptr);
+		tz_assert(meta_result == VK_SUCCESS, "internal error - failed to create meta buffer.");
+
 		auto top_part = (info.shader.peek() >> 16) & 0xFFFFFFFF;
 		auto& shader1 = shaders[--top_part];
 		auto bottom_part = info.shader.peek() & 0x0000FFFF;
 
-		auto& pass = passes.emplace_back();
 		VkResult res = VK_SUCCESS;
 
 		if(shader1.ty == shader_type::compute)
@@ -1291,6 +1322,7 @@ namespace tz::gpu
 		auto i = pass.peek();
 		tz_assert(passes.size() > i, "Dodgy handle (value {}) passed to destroy_pass", i);
 		vkDestroyPipeline(current_device, passes[i].pipeline, nullptr);
+		vmaDestroyBuffer(alloc, passes[i].meta_buffer, passes[i].meta_buffer_mem);
 		passes[i] = {};
 	}
 
@@ -2010,6 +2042,7 @@ namespace tz::gpu
 		{
 			return;
 		}
+		std::vector<VkDeviceAddress> buffer_addresses = {};
 		for(const auto& resh : pass.info.resources)
 		{
 			const auto& res = resources[resh.peek()];	
@@ -2017,6 +2050,7 @@ namespace tz::gpu
 			{
 				const auto& buffer = std::get<buffer_info>(res.res);
 				impl_cmd_resource_write(scratch_cmds, resh, buffer.data, 0);
+				buffer_addresses.push_back(res.buffer_device_address);
 			}
 			else if(res.is_image())
 			{
@@ -2027,6 +2061,39 @@ namespace tz::gpu
 			{
 				tz_error("ruh roh");
 			}
+		}
+
+		if(buffer_addresses.size())
+		{
+			tz_assert(pass.meta_buffer != VK_NULL_HANDLE, "meta buffer wasnt detected when it should exist (coz we have {} buffers)", buffer_addresses.size());
+			scratchbuf_t& scratchbuf = scratch_buffers.emplace_back();
+			std::size_t meta_buffer_size = buffer_addresses.size() * sizeof(buffer_addresses[0]);
+			VkBufferCreateInfo create
+			{
+				.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+				.pNext = nullptr,
+				.flags = 0,
+				.size = meta_buffer_size,
+				.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+				.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+				.queueFamilyIndexCount = 1,
+				.pQueueFamilyIndices = &current_hardware.internals.i1
+			};
+			VmaAllocationCreateInfo alloc_create
+			{
+				.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+				.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST,
+			};
+			VmaAllocationInfo alloc_out;
+			vmaCreateBuffer(alloc, &create, &alloc_create, &scratchbuf.buf, &scratchbuf.mem, &alloc_out);
+			std::memcpy(alloc_out.pMappedData, buffer_addresses.data(), meta_buffer_size);
+			VkBufferCopy cpy
+			{
+				.srcOffset = 0,
+				.dstOffset = 0,
+				.size = meta_buffer_size
+			};
+			vkCmdCopyBuffer(scratch_cmds, scratchbuf.buf, pass.meta_buffer, 1, &cpy);
 		}
 
 		vkEndCommandBuffer(scratch_cmds);
@@ -2399,10 +2466,34 @@ namespace tz::gpu
 			impl_new_pool();
 			pool = descriptor_pools.back();
 		}
-		constexpr std::uint32_t image_array_descriptor_binding = 0;
+		constexpr std::uint32_t image_array_descriptor_binding = 1;
 		std::vector<VkDescriptorImageInfo> image_writes;
-		std::array<VkWriteDescriptorSet, frame_overlap> descriptor_writes;
-		image_writes.reserve(pass.info.resources.size());
+		VkDescriptorBufferInfo meta_buffer_write
+		{
+			.buffer = pass.meta_buffer,
+			.offset = 0,
+			.range = VK_WHOLE_SIZE
+		};
+		image_writes.reserve(pass.info.resources.size() * frame_overlap);
+		std::vector<VkWriteDescriptorSet> descriptor_writes;
+		// first do meta buffers so they're first in the list.
+		for(std::size_t j = 0; j < frame_overlap; j++)
+		{
+			descriptor_writes.push_back(VkWriteDescriptorSet
+			{
+				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				.pNext = nullptr,
+				.dstSet = pass.descriptor_sets[j],
+				.dstBinding = 0,
+				.dstArrayElement = 0,
+				.descriptorCount = 1,
+				.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+				.pImageInfo = nullptr,
+				.pBufferInfo = &meta_buffer_write,
+				.pTexelBufferView = nullptr
+			});
+		}
+
 		std::size_t image_count = 0;
 		for(std::size_t j = 0; j < frame_overlap; j++)
 		{
@@ -2424,7 +2515,11 @@ namespace tz::gpu
 					}
 				}
 			}
-			descriptor_writes[j] = VkWriteDescriptorSet
+			if(image_count == 0)
+			{
+				break;
+			}
+			descriptor_writes.push_back(VkWriteDescriptorSet
 			{
 				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 				.pNext = nullptr,
@@ -2436,27 +2531,33 @@ namespace tz::gpu
 				.pImageInfo = image_writes.data() + (j * image_count),
 				.pBufferInfo = nullptr,
 				.pTexelBufferView = nullptr
-			};
-		}
-		if(image_count == 0)
-		{
-			// no need to update anything if tere's no images at all.
-			return;
+			});
 		}
 		vkUpdateDescriptorSets(current_device, descriptor_writes.size(), descriptor_writes.data(), 0, nullptr);
 	}
 
 	VkPipelineLayout impl_create_layout()
 	{
-		VkDescriptorSetLayoutBinding images_binding
+		std::array<VkDescriptorSetLayoutBinding, 2> bindings{};
+		bindings[0] =
 		{
 			.binding = 0,
+			.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+			.descriptorCount = 1,
+			.stageFlags = VK_SHADER_STAGE_ALL,
+			.pImmutableSamplers = nullptr
+		};
+		bindings[1] = 
+		{
+			.binding = 1,
 			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			.descriptorCount = max_global_image_count,
 			.stageFlags = VK_SHADER_STAGE_ALL,
 			.pImmutableSamplers = nullptr
 		};
-		VkDescriptorBindingFlags flags =
+		std::array<VkDescriptorBindingFlags, 2> flags{};
+		flags[0] = 0;
+		flags[1] =
 			VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
 			VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT |
 			VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT |
@@ -2466,8 +2567,8 @@ namespace tz::gpu
 		{
 			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
 			.pNext = nullptr,
-			.bindingCount = 1,
-			.pBindingFlags = &flags
+			.bindingCount = flags.size(),
+			.pBindingFlags = flags.data()
 		};
 		VkDescriptorSetLayoutCreateInfo dlcreate
 		{
@@ -2475,8 +2576,8 @@ namespace tz::gpu
 			.pNext = &flags_create,
 			.flags =
 				VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT,
-			.bindingCount = 1,
-			.pBindings = &images_binding
+			.bindingCount = bindings.size(),
+			.pBindings = bindings.data()
 		};
 		for(std::size_t i = 0; i < frame_overlap; i++)
 		{
