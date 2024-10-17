@@ -142,12 +142,12 @@ namespace tz::gpu
 	};
 	std::vector<graph_data> graphs = {};
 
-	const char* validation_layers[] =
-	{
-		#if TOPAZ_DEBUG
-		"VK_LAYER_KHRONOS_validation"
-		#endif
-	};
+	#if TOPAZ_DEBUG
+	const char* validation_layers = "VK_LAYER_KHRONOS_validation";
+	#else
+	const char* validation_layers = nullptr;
+	#endif
+
 	const char* instance_extensions[] =
 	{
 		#if TOPAZ_DEBUG
@@ -208,8 +208,8 @@ namespace tz::gpu
 			.pNext = nullptr,
 			.flags = 0,
 			.pApplicationInfo = &vk_appinfo,
-			.enabledLayerCount = sizeof(validation_layers) / sizeof(validation_layers[0]),
-			.ppEnabledLayerNames = validation_layers,
+			.enabledLayerCount = validation_layers != nullptr ? 1u : 0u,
+			.ppEnabledLayerNames = validation_layers != nullptr ? &validation_layers : nullptr,
 			.enabledExtensionCount = sizeof(instance_extensions) / sizeof(instance_extensions[0]),
 			.ppEnabledExtensionNames = instance_extensions
 		};
