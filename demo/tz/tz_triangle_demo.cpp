@@ -23,29 +23,6 @@ int main()
 		tz::gpu::window_resource,
 	};
 
-	tz::v4f clear_colour = {1.0f, 1.0f, 0.5f, 1.0f};
-	std::array<std::uint32_t, 4> imgdata =
-	{
-		0xFFFFFFFF,
-		0xFFFFFF00,
-		0xFFFFFF00,
-		0xFFFFFFFF,
-	};
-	
-	tz::gpu::resource_handle resources[] =
-	{
-		tz_must(tz::gpu::create_buffer
-		({
-			.data = std::as_bytes(std::span<const tz::v4f>(&clear_colour, 1))
-		})),
-		tz_must(tz::gpu::create_image
-		({
-			.width = 2,
-			.height = 2,
-			.data = std::as_bytes(std::span<const std::uint32_t>(imgdata)),
-		}))
-	};
-
 	tz::gpu::pass_handle pass = tz_must(tz::gpu::create_pass
 	({
 		.graphics =
@@ -55,7 +32,6 @@ int main()
 			.depth_target = tz::gpu::window_resource
 		},
 		.shader = graphics,
-		.resources = resources
 	}));
 
 	tz::gpu::graph_handle graph = tz_must(tz::gpu::graph_builder{}
@@ -63,15 +39,10 @@ int main()
 		.add_pass(pass)
 		.build());
 
-	std::size_t counter = 0;
 	while(tz::os::window_is_open())
 	{
 		tz::os::window_update();
 		tz::gpu::execute(graph);
-		counter++;
-
-		clear_colour[0] = std::sin(counter * 0.01f);
-		tz::gpu::resource_write(resources[0], std::as_bytes(std::span<const tz::v4f>(&clear_colour, 1)));
 	}
 
 	tz::gpu::destroy_pass(pass);

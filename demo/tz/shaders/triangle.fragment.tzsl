@@ -1,19 +1,9 @@
 shader(type = fragment);
 
 input(id = 0) vec3 frag_colour;
-input(id = 1) vec2 uv;
 output(id = 0) vec4 output_colour;
-
-resource(id = 0) const buffer clear_colour
-{
-	vec4 data;
-};
-
-resource(id = 1) const texture textures[];
 
 void main()
 {
-	//output_colour = vec4(frag_colour, 1.0);
-	//output_colour = clear_colour.data;
-	output_colour = texture(textures[0], uv) * clear_colour.data;
+	output_colour = vec4(frag_colour, 1.0);
 }
