@@ -2046,16 +2046,7 @@ namespace tz::gpu
 		};
 		// todo: error checking.
 		vkBeginCommandBuffer(scratch_cmds, &create);
-		if(res.is_buffer())
-		{
-			const auto& buffer = std::get<buffer_info>(res.res);
-			impl_cmd_resource_write(scratch_cmds, resh, buffer.data, 0);
-		}
-		else if(res.is_image())
-		{
-			const auto& image = std::get<image_info>(res.res);
-			impl_cmd_resource_write(scratch_cmds, resh, image.data, 0);
-		}
+		impl_cmd_resource_write(scratch_cmds, resh, res.data, 0);
 
 		vkEndCommandBuffer(scratch_cmds);
 		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
