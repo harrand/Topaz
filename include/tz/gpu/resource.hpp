@@ -169,6 +169,22 @@ namespace tz::gpu
 	 **/
 	tz::error_code destroy_resource(resource_handle res);
 
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Write some new data to a resource. The thread will block until the changes are resident GPU-side.
+	 * @param res Resource whose data should be changed.
+	 * @param new_data Region containing new memory for the provided resource.
+	 * @pre new_data.size_bytes() < X, where X is the number of bytes comprising the image's underlying data. Otherwise, the behaviour is undefined.
+	 *
+	 * If the region of new data is smaller than the total size of the resource's underlying data, then all bytes beyond the new data region will be unchanged and keep their previous state.
+	 *
+	 * Regarding buffer resources:
+	 * - If the buffer is dynamic_access, the cost of the transfer should be in the same ballpark as a memcpy. In all other cases, a resource write is *much* slower.
+	 * Regarding image resources:
+	 * - The data should be in the format of a tightly-packed array containing rows of pixels.
+	 * 		- If the image was created with @ref image_type::rgba, then each pixel should be 4 bytes - one for each component (0-255).
+	 * 		- If the image was created with @ref image_type::depth or @ref image_type::floats, then each pixel should be 4 bytes - a single signed 32-bit float.
+	 */
 	void resource_write(resource_handle res, std::span<const std::byte> new_data);
 }
 
