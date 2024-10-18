@@ -36,12 +36,10 @@ int main()
 	{
 		tz_must(tz::gpu::create_buffer
 		({
-			.access = tz::gpu::resource_access::dynamic_access,
 			.data = std::as_bytes(std::span<const tz::v4f>(&clear_colour, 1))
 		})),
 		tz_must(tz::gpu::create_image
 		({
-			.access = tz::gpu::resource_access::dynamic_access,
 			.width = 2,
 			.height = 2,
 			.data = std::as_bytes(std::span<const std::uint32_t>(imgdata)),

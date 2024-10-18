@@ -11,7 +11,6 @@ int main()
 
 	tz::gpu::resource_handle img = tz_must(tz::gpu::create_image
 	({
-		.access = tz::gpu::resource_access::static_access,
 		.width = 80u,
 		.height = 80u,
 		.type = tz::gpu::image_type::rgba,
@@ -21,7 +20,6 @@ int main()
 	int data = 5;
 	tz::gpu::resource_handle buf = tz_must(tz::gpu::create_buffer
 	({
-		.access = tz::gpu::resource_access::dynamic_access,
 		.data = std::as_bytes(std::span<const int>(&data, 1))
 	}));
 

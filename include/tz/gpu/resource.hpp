@@ -15,24 +15,16 @@ namespace tz::gpu
 
 	/**
 	 * @ingroup tz_gpu_resource
-	 * @brief Describes how often you are expected to access (write) to the resource's data.
-	 *
-	 * Resources that are static-access are highly likely to be located in GPU memory, which is the fastest to read from during GPU work, but has a very high cost to write to.
-	 *
-	 * Resources that are dynamic-access, however, are always writable from the CPU with minimal latency. This will mostly be much slower to read from during GPU work, although there are some exceptions to this depending on your hardware (e.g nvidia REBAR, amd SAM)
+	 * @brief Specifies optional behaviours for a buffer.
 	 **/
-	enum class resource_access
-	{
-		/// Indicates you do not expect to write to the resource's data often, and are willing to incur a large stall when you do.
-		static_access,
-		/// Indicates that you intend to write to the resource's data very often, perhaps even on a per-frame basis.
-		dynamic_access
-	};
-
 	enum buffer_flag
 	{
+		/// Buffer can be used as an index buffer by a graphics pass.
 		index = 0b0001,
+		/// Buffer can be used as a draw buffer by a graphics pass.
 		draw = 0b0010,
+		/// Buffer data will be writable directly from the CPU. Resource writes targetting buffers that are dynamic_access will be extremely fast. On some hardware, dynamic_access buffers will be slower to read/write from a shader.
+		dynamic_access = 0b0100,
 	};
 
 	constexpr buffer_flag operator|(buffer_flag lhs, buffer_flag rhs)
@@ -53,8 +45,6 @@ namespace tz::gpu
 	 **/
 	struct buffer_info
 	{
-		/// Do you intend to write to my buffer data very rarely (static) or very often, perhaps even on a per-frame basis (dynamic)?
-		resource_access access;
 		/// What initial data shall I have? @warning This must not be empty -- zero-sized buffers are not supported.
 		std::span<const std::byte> data;
 		/// What name shall I have when you're looking at me in your graphics debugger of choice? If you don't specify one, I will be named "Resource 123B" (not necessarily 123)
@@ -79,9 +69,15 @@ namespace tz::gpu
 		floats,
 	};
 
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Specifies optional behaviours for a buffer.
+	 **/
 	enum image_flag
 	{
+		/// Image can be used as a colour target by a graphics pass.
 		colour_target = 0b0001,
+		/// Image can be used as a depth target by a graphics pass.
 		depth_target = 0b0010,
 	};
 
@@ -103,8 +99,6 @@ namespace tz::gpu
 	 **/
 	struct image_info
 	{
-		/// Do you intend to write to my buffer data very rarely (static) or very often, perhaps even on a per-frame basis (dynamic)?
-		resource_access access;
 		/// Width of the image, in pixels.
 		unsigned int width;
 		/// Height of the image, in pixels.

@@ -703,21 +703,20 @@ namespace tz::gpu
 			.pQueueFamilyIndices = &current_hardware.internals.i1
 		};
 		VmaAllocationCreateInfo alloc_info = {};
-		switch(info.access)
+		if(info.flags & buffer_flag::dynamic_access)
 		{
-			case tz::gpu::resource_access::static_access:
-				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-				// add transfer_dst because static resources will need a transfer command to set their data.
-				create.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-			break;
-			case tz::gpu::resource_access::dynamic_access:
-				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
-				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
-			break;
+			alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
+			alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
+		}
+		else
+		{
+			alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+			// add transfer_dst because static resources will need a transfer command to set their data.
+			create.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 		}
 		VmaAllocationInfo alloc_result;
 		VkResult ret = vmaCreateBuffer(alloc, &create, &alloc_info, &res.buf, &res.mem, &alloc_result);
-		if(info.access == tz::gpu::resource_access::dynamic_access)
+		if(info.flags & buffer_flag::dynamic_access)
 		{
 			res.buffer_mapped_address = alloc_result.pMappedData;
 		}
@@ -786,7 +785,7 @@ namespace tz::gpu
 			.mipLevels = 1,
 			.arrayLayers = 1,
 			.samples = VK_SAMPLE_COUNT_1_BIT,
-			.tiling = info.access == tz::gpu::resource_access::static_access ? VK_IMAGE_TILING_OPTIMAL : VK_IMAGE_TILING_LINEAR,
+			.tiling = VK_IMAGE_TILING_OPTIMAL,
 			.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 			.queueFamilyIndexCount = 1,
@@ -794,17 +793,8 @@ namespace tz::gpu
 			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
 		};
 		VmaAllocationCreateInfo alloc_info = {};
-		switch(info.access)
-		{
-			case tz::gpu::resource_access::static_access:
-				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
-				create.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-			break;
-			case tz::gpu::resource_access::dynamic_access:
-				alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_HOST;
-				alloc_info.flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT;
-			break;
-		}
+		alloc_info.usage = VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE;
+		create.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 		if(info.flags & image_flag::colour_target)
 		{
 			create.usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -816,10 +806,6 @@ namespace tz::gpu
 
 		VmaAllocationInfo alloc_result;
 		VkResult ret = vmaCreateImage(alloc, &create, &alloc_info, &res.img, &res.mem, &alloc_result);
-		if(info.access == tz::gpu::resource_access::dynamic_access)
-		{
-			res.buffer_mapped_address = alloc_result.pMappedData;
-		}
 		switch(ret)
 		{
 			case VK_SUCCESS: break;
@@ -1907,7 +1893,7 @@ namespace tz::gpu
 				RETERR(tz::error_code::precondition_failure, "attempt to write {} bytes into buffer {} at offset {}, which is only {} bytes large", newdata.size_bytes(), buffer.name, offset, buffer.data.size_bytes());
 			}
 
-			if(buffer.access == tz::gpu::resource_access::dynamic_access)
+			if(buffer.flags & buffer_flag::dynamic_access)
 			{
 				void* addr = res.buffer_mapped_address;
 				addr = ((char*)addr) + offset;
@@ -1951,18 +1937,6 @@ namespace tz::gpu
 			{
 				RETERR(tz::error_code::precondition_failure, "attempt to write {} bytes into image {} at offset {}, which is only {} bytes large", newdata.size_bytes(), image.name, offset, image.data.size_bytes());
 			}
-
-			// todo: get this working. for some reason this only seems to copy half the image data?
-			// for now resource writes to dynamic images are as slow as static ones :)
-			/*
-			if(image.access == tz::gpu::resource_access::dynamic_access)
-			{
-				void* addr = res.buffer_mapped_address;
-				addr = ((char*)addr) + offset;
-				std::memcpy(addr, res.data.data(), res.data.size());
-				return tz::error_code::success;
-			}
-			*/
 
 			scratchbuf_t& scratchbuf = scratch_buffers.emplace_back();
 			VkBufferCreateInfo create
@@ -2053,24 +2027,14 @@ namespace tz::gpu
 	void impl_write_single_resource(resource_handle resh)
 	{
 		const auto& res = resources[resh.peek()];	
-		bool is_dynamic_resource = false;
-		std::visit([&is_dynamic_resource, res](auto&& arg)
+		if(res.is_buffer())
 		{
-			if constexpr(!std::is_same_v<std::decay_t<decltype(arg)>, std::monostate>)
+			const auto& info = std::get<buffer_info>(res.res);
+			if(info.flags & buffer_flag::dynamic_access)
 			{
-				// is dynamic access.
-				// just write to the ptr.
-				is_dynamic_resource = arg.access == tz::gpu::resource_access::dynamic_access;
-				if(is_dynamic_resource)
-				{
-					tz_assert(res.buffer_mapped_address != nullptr, "dynamic resource does not have mapped address.");
-					std::memcpy(res.buffer_mapped_address, arg.data.data(), arg.data.size_bytes());
-				}
+				std::memcpy(res.buffer_mapped_address, res.data.data(), res.data.size());
+				return;
 			}
-		}, res.res);
-		if(is_dynamic_resource)
-		{
-			return;
 		}
 		
 		VkCommandBufferBeginInfo create
