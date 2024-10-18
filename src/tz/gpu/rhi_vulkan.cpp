@@ -904,6 +904,22 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
+	void resource_write(resource_handle resh, std::span<const std::byte> new_data)
+	{
+		auto& res = resources[resh.peek()];
+		res.data.resize(new_data.size_bytes());
+		std::copy(new_data.begin(), new_data.end(), res.data.begin());
+		for(std::size_t i = 0; i < passes.size(); i++)
+		{
+			const auto& pass = passes[i];
+			auto iter = std::find(pass.info.resources.begin(), pass.info.resources.end(), resh);
+			if(iter != pass.info.resources.end())
+			{
+				impl_write_all_resources(static_cast<tz::hanval>(i));
+			}
+		}
+	}
+
 	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string_view vertex_source, std::string_view fragment_source)
 	{
 		shaders.reserve(shaders.size() + 2);
@@ -2122,6 +2138,7 @@ namespace tz::gpu
 		// todo: check errors.
 		vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
 		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
+		vkResetFences(current_device, 1, &scratch_fence);
 	}
 
 	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);

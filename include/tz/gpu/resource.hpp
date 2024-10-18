@@ -174,6 +174,8 @@ namespace tz::gpu
 	 * 
 	 **/
 	tz::error_code destroy_resource(resource_handle res);
+
+	void resource_write(resource_handle res, std::span<const std::byte> new_data);
 }
 
 #endif // TOPAZ_GPU_RESOURCE_HPP

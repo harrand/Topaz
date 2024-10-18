@@ -3,7 +3,13 @@ shader(type = fragment);
 input(id = 0) vec3 frag_colour;
 output(id = 0) vec4 output_colour;
 
+resource(id = 0) const buffer clear_colour
+{
+	vec4 data;
+};
+
 void main()
 {
-	output_colour = vec4(frag_colour, 1.0);
+	//output_colour = vec4(frag_colour, 1.0);
+	output_colour = clear_colour.data;
 }
