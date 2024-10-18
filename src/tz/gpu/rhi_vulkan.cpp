@@ -184,6 +184,7 @@ namespace tz::gpu
 	tz::error_code impl_validate_colour_targets(tz::gpu::pass_info& pinfo, pass_data& data);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
+	void impl_write_single_resource(resource_handle resh);
 	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i, std::uint32_t swapchain_image_id);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
@@ -909,15 +910,7 @@ namespace tz::gpu
 		auto& res = resources[resh.peek()];
 		res.data.resize(new_data.size_bytes());
 		std::copy(new_data.begin(), new_data.end(), res.data.begin());
-		for(std::size_t i = 0; i < passes.size(); i++)
-		{
-			const auto& pass = passes[i];
-			auto iter = std::find(pass.info.resources.begin(), pass.info.resources.end(), resh);
-			if(iter != pass.info.resources.end())
-			{
-				impl_write_all_resources(static_cast<tz::hanval>(i));
-			}
-		}
+		impl_write_single_resource(resh);
 	}
 
 	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string_view vertex_source, std::string_view fragment_source)
@@ -2049,6 +2042,70 @@ namespace tz::gpu
 				return VK_FORMAT_UNDEFINED;
 			break;
 		}
+	}
+
+	void impl_write_single_resource(resource_handle resh)
+	{
+		const auto& res = resources[resh.peek()];	
+		bool is_dynamic_resource = false;
+		std::visit([&is_dynamic_resource, res](auto&& arg)
+		{
+			if constexpr(!std::is_same_v<std::decay_t<decltype(arg)>, std::monostate>)
+			{
+				// is dynamic access.
+				// just write to the ptr.
+				is_dynamic_resource = arg.access == tz::gpu::resource_access::dynamic_access;
+				if(is_dynamic_resource)
+				{
+					tz_assert(res.buffer_mapped_address != nullptr, "dynamic resource does not have mapped address.");
+					std::memcpy(res.buffer_mapped_address, arg.data.data(), arg.data.size_bytes());
+				}
+			}
+		}, res.res);
+		if(is_dynamic_resource)
+		{
+			return;
+		}
+		
+		VkCommandBufferBeginInfo create
+		{
+			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+			.pNext = nullptr,
+			.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+			.pInheritanceInfo = nullptr
+		};
+		// todo: error checking.
+		vkBeginCommandBuffer(scratch_cmds, &create);
+		if(res.is_buffer())
+		{
+			const auto& buffer = std::get<buffer_info>(res.res);
+			impl_cmd_resource_write(scratch_cmds, resh, buffer.data, 0);
+		}
+		else if(res.is_image())
+		{
+			const auto& image = std::get<image_info>(res.res);
+			impl_cmd_resource_write(scratch_cmds, resh, image.data, 0);
+		}
+
+		vkEndCommandBuffer(scratch_cmds);
+		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
+		VkSubmitInfo submit
+		{
+			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+			.pNext = nullptr,
+			.waitSemaphoreCount = 0,
+			.pWaitSemaphores = nullptr,
+			.pWaitDstStageMask = &stage_mask,
+			.commandBufferCount = 1,
+			.pCommandBuffers = &scratch_cmds,
+			.signalSemaphoreCount = 0,
+			.pSignalSemaphores = nullptr
+		};
+		// todo: check errors.
+		vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
+		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
+		vkResetFences(current_device, 1, &scratch_fence);
+		// no need to write anything to the meta buffer - metabuffer only changes if any of the buffers are *resized* coz the VkBuffer is different and the device address is also different.
 	}
 
 	void impl_write_all_resources(pass_handle passh)
