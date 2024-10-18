@@ -908,7 +908,7 @@ namespace tz::gpu
 	void resource_write(resource_handle resh, std::span<const std::byte> new_data)
 	{
 		auto& res = resources[resh.peek()];
-		res.data.resize(new_data.size_bytes());
+		tz_assert(new_data.size_bytes() == res.data.size(), "resource write data span is of wrong size.");
 		std::copy(new_data.begin(), new_data.end(), res.data.begin());
 		impl_write_single_resource(resh);
 	}
@@ -1952,13 +1952,17 @@ namespace tz::gpu
 				RETERR(tz::error_code::precondition_failure, "attempt to write {} bytes into image {} at offset {}, which is only {} bytes large", newdata.size_bytes(), image.name, offset, image.data.size_bytes());
 			}
 
+			// todo: get this working. for some reason this only seems to copy half the image data?
+			// for now resource writes to dynamic images are as slow as static ones :)
+			/*
 			if(image.access == tz::gpu::resource_access::dynamic_access)
 			{
 				void* addr = res.buffer_mapped_address;
 				addr = ((char*)addr) + offset;
-				std::memcpy(addr, newdata.data(), newdata.size_bytes());
+				std::memcpy(addr, res.data.data(), res.data.size());
 				return tz::error_code::success;
 			}
+			*/
 
 			scratchbuf_t& scratchbuf = scratch_buffers.emplace_back();
 			VkBufferCreateInfo create
@@ -1991,7 +1995,9 @@ namespace tz::gpu
 					.mipLevel = 0,
 					.baseArrayLayer = 0,
 					.layerCount = 1
-				}
+				},
+				.imageOffset = VkOffset3D{},
+				.imageExtent = VkExtent3D{.width = image.width, .height = image.height, .depth = 1}
 			};
 			VkImageMemoryBarrier barrier
 			{
@@ -2483,12 +2489,21 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
-	bool impl_try_allocate_descriptors(VkDescriptorPool pool, std::span<VkDescriptorSet> sets)
+	bool impl_try_allocate_descriptors(VkDescriptorPool pool, std::span<VkDescriptorSet> sets, std::size_t image_count)
 	{
+		std::array<std::uint32_t, frame_overlap> variable_counts;
+		std::fill(variable_counts.begin(), variable_counts.end(), image_count);
+		VkDescriptorSetVariableDescriptorCountAllocateInfo variable_alloc
+		{
+			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO,
+			.pNext = nullptr,
+			.descriptorSetCount = frame_overlap,
+			.pDescriptorCounts = variable_counts.data()
+		};
 		VkDescriptorSetAllocateInfo alloc
 		{
 			.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-			.pNext = nullptr,
+			.pNext = &variable_alloc,
 			.descriptorPool = pool,
 			.descriptorSetCount = frame_overlap,
 			.pSetLayouts = set_layouts.data()
@@ -2543,8 +2558,19 @@ namespace tz::gpu
 		{
 			impl_new_pool();
 		}
+		std::size_t image_count = 0;
+		for(resource_handle resh : pass.info.resources)
+		{
+			if(resh == tz::nullhand)
+			{
+			}
+			else if(resh == tz::gpu::window_resource || resources[resh.peek()].is_image())
+			{
+				image_count++;
+			}
+		}
 		VkDescriptorPool pool = descriptor_pools.back();
-		while(!impl_try_allocate_descriptors(pool, pass.descriptor_sets))
+		while(!impl_try_allocate_descriptors(pool, pass.descriptor_sets, image_count))
 		{
 			impl_new_pool();
 			pool = descriptor_pools.back();
@@ -2577,9 +2603,12 @@ namespace tz::gpu
 			});
 		}
 
-		std::size_t image_count = 0;
 		for(std::size_t j = 0; j < frame_overlap; j++)
 		{
+			if(image_count == 0)
+			{
+				break;
+			}
 			for(std::size_t i = 0; i < pass.info.resources.size(); i++)
 			{
 				tz::gpu::resource_handle resh = pass.info.resources[i];
@@ -2592,15 +2621,7 @@ namespace tz::gpu
 						.imageView = res.img_view, // todo: image view
 						.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 					});
-					if(j == 0)
-					{
-						image_count++;
-					}
 				}
-			}
-			if(image_count == 0)
-			{
-				break;
 			}
 			descriptor_writes.push_back(VkWriteDescriptorSet
 			{
