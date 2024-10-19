@@ -1332,6 +1332,16 @@ namespace tz::gpu
 		return ret;
 	}
 
+	void pass_set_triangle_count(pass_handle graphics_pass, std::size_t triangle_count)
+	{
+		passes[graphics_pass.peek()].info.graphics.triangle_count = triangle_count;
+	}
+
+	void pass_set_kernel(pass_handle compute_pass, tz::v3u kernel)
+	{
+		passes[compute_pass.peek()].info.compute.kernel = kernel;
+	}
+
 	void destroy_pass(pass_handle pass)
 	{
 		auto i = pass.peek();

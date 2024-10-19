@@ -106,8 +106,15 @@ namespace tz::gpu
 		std::size_t triangle_count = 0;
 	};
 
+	/**
+	 * @ingroup tz_gpu_pass
+	 * @brief Specifies creation flags for a new compute pass.
+	 *
+	 * See @ref tz::gpu::pass_info for usage.
+	 **/
 	struct pass_compute_state
 	{
+		/// Number of workgroups (XYZ) to dispatch every frame.
 		tz::v3u kernel = tz::v3u::zero();
 	};
 
@@ -153,6 +160,32 @@ namespace tz::gpu
 	 * @note If you never destroy a pass manually, it will automatically be destroyed for you when you call @ref tz::terminate.
 	 **/
 	std::expected<pass_handle, tz::error_code> create_pass(pass_info);
+
+	/**
+	 * @ingroup tz_gpu_pass
+	 * @brief Set the triangle count of an existing graphics pass.
+	 * @param pass Graphics pass to target. If you provide a compute pass, nothing interesting happens.
+	 * @param triangle_count New number of triangles to render every frame.
+	 *
+	 * When you created a graphics pass, you set an initial triangle count via @ref pass_graphics_state::triangle_count. This function will override that count, meaning the next time a pass submits GPU work, the new number of triangles will be rendered.
+	 *
+	 * There are no GPU-sync considerations involved when calling this function.
+	 * @warning If you fail to pass a valid @ref pass_handle to this function, the behaviour is undefined.
+	 */
+	void pass_set_triangle_count(pass_handle graphics_pass, std::size_t triangle_count);
+
+	/**
+	 * @ingroup tz_gpu_pass
+	 * @brief Set the compute kernel of an existing compute pass.
+	 * @param pass Compute pass to target. If you provide a graphics pass, nothing interesting happens.
+	 * @param kernel New workgroup dimensions to be dispatched every frame.
+	 *
+	 * When you created a compute pass, you set an initial kernel size via @ref pass_compute_state::kernel. This function will override those dimensions, meaning the next time a pass submits GPU work, the new workgroup dimensions will be dispatched.
+	 *
+	 * There are no GPU-sync considerations involved when calling this function.
+	 * @warning If you fail to pass a valid @ref pass_handle to this function, the behaviour is undefined.
+	 */
+	void pass_set_kernel(pass_handle compute_pass, tz::v3u kernel);
 
 	/**
 	 * @ingroup tz_gpu_pass
