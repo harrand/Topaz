@@ -233,18 +233,23 @@ namespace tzslc
 		tzslc::transform(shader_source, std::regex{shader_specifier_regex},
 		[&stage_specifier_count, stage](auto beg, auto end)
 		{
+			std::string ret;
 			std::string stage_define = "\n#define TZ_SHADER_STAGE " + std::to_string(static_cast<int>(stage)) + "\n";
 			stage_specifier_count++;
 			if(stage == ShaderStage::TessellationControl)
 			{
-				return std::string("#pragma shader_stage(tesscontrol)") + stage_define;
+				ret = std::string("#pragma shader_stage(tesscontrol)") + stage_define;
 			}
-			if(stage == ShaderStage::TessellationEvaluation)
+			else if(stage == ShaderStage::TessellationEvaluation)
 			{
 				// Tessellation Evaluation shaders hardcode to equally spaced triangles.
-				return "#pragma shader_stage(" + *beg + ")\nlayout(triangles) in;" + stage_define;
+				ret = "#pragma shader_stage(" + *beg + ")\nlayout(triangles) in;" + stage_define;
 			}
-			return "#pragma shader_stage(" + *beg + ")" + stage_define;
+			else
+			{
+				ret = "#pragma shader_stage(" + *beg + ")" + stage_define;
+			}
+			return ret + "\n" + "layout(binding = 1) uniform sampler2D tz_textures[];\n#define sample(id, uv) texture(tz_textures[id], uv)";
 		});
 
 		tzslc_assert(stage_specifier_count == 1, "Unexpected number of shader stage specifiers. Expected 1, got %zu", stage_specifier_count);
