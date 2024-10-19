@@ -29,7 +29,8 @@ int main()
 		{
 			.clear_colour = {0.0f, 0.0f, 0.0f, 1.0f},
 			.colour_targets = colour_targets,
-			.depth_target = tz::gpu::window_resource
+			.depth_target = tz::gpu::window_resource,
+			.triangle_count = 1
 		},
 		.shader = graphics,
 	}));

@@ -1013,6 +1013,14 @@ namespace tz::gpu
 		{
 			UNERR(tz::error_code::precondition_failure, "no shader program provided when creating pass. you must provide a valid shader program.");
 		}
+		if(info.graphics.index_buffer != tz::nullhand)
+		{
+			UNERR(tz::error_code::engine_bug, "support for index buffers is not yet implemented.");
+		}
+		if(info.graphics.draw_buffer != tz::nullhand)
+		{
+			UNERR(tz::error_code::engine_bug, "support for draw buffers is not yet implemented.");
+		}
 		std::size_t ret_id = passes.size();
 		auto& pass = passes.emplace_back();
 		std::size_t buffer_count = 0;
@@ -2386,7 +2394,7 @@ namespace tz::gpu
 		vkCmdSetScissor(frame.cmds, 0, 1, &sci);
 		// maybe bind index buffer
 		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
-		vkCmdDraw(frame.cmds, 3, 1, 0, 0); // todo: dont hardcode this IDIOT
+		vkCmdDraw(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0); // todo: dont hardcode this IDIOT
 		vkCmdEndRendering(frame.cmds);
 		if(render_into_system_image)
 		{

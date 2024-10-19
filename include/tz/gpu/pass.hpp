@@ -94,10 +94,16 @@ namespace tz::gpu
 		std::span<const resource_handle> colour_targets = {};
 		/// Optional depth target. This will act as the depth image when performing depth testing/writes.
 		resource_handle depth_target = tz::nullhand;
+		/// Buffer containing indices used for every frame.
+		resource_handle index_buffer = tz::nullhand;
+		/// Buffer containing an initial count and draw commands for every frame.
+		resource_handle draw_buffer = tz::nullhand;
 		/// Describe which faces will be culled during rendering.
 		cull culling = cull::back;
 		/// Specifies extra optional behaviour for the pass.
 		graphics_flag flags = static_cast<graphics_flag>(0);
+		/// Number of triangles to draw in a frame. @note This is ignored if you are using a draw buffer.
+		std::size_t triangle_count = 0;
 	};
 
 	struct pass_compute_state
