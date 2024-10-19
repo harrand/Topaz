@@ -2229,7 +2229,7 @@ namespace tz::gpu
 	{
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.pipeline);
 		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_COMPUTE, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
-		// dispatch
+		vkCmdDispatch(frame.cmds, pass.info.compute.kernel[0], pass.info.compute.kernel[1], pass.info.compute.kernel[2]);
 
 		return tz::error_code::success;
 	}
