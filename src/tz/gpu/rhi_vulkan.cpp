@@ -902,6 +902,29 @@ namespace tz::gpu
 		impl_write_single_resource(resh);
 	}
 
+	void index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices)
+	{
+		resource_write(index_buffer, std::as_bytes(indices));
+	}
+
+	void draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws)
+	{
+		std::vector<std::byte> mem(sizeof(std::uint32_t) + draws.size_bytes());
+		auto cursor = mem.data();
+		*reinterpret_cast<std::uint32_t*>(cursor) = count;
+		std::memcpy(cursor + sizeof(std::uint32_t), draws.data(), draws.size_bytes());
+		resource_write(draw_buffer, mem);
+	}
+
+	void draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws)
+	{
+		std::vector<std::byte> mem(sizeof(std::uint32_t) + draws.size_bytes());
+		auto cursor = mem.data();
+		*reinterpret_cast<std::uint32_t*>(cursor) = count;
+		std::memcpy(cursor + sizeof(std::uint32_t), draws.data(), draws.size_bytes());
+		resource_write(draw_buffer, mem);
+	}
+
 	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string_view vertex_source, std::string_view fragment_source)
 	{
 		shaders.reserve(shaders.size() + 2);

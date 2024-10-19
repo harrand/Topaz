@@ -169,6 +169,23 @@ namespace tz::gpu
 	 **/
 	tz::error_code destroy_resource(resource_handle res);
 
+	using index_t = std::uint32_t;
+	struct draw_t
+	{
+		std::uint32_t vertex_count = 0;
+		std::uint32_t instance_count = 0;
+		std::uint32_t first_vertex = 0;
+		std::uint32_t first_instance = 0;
+	};
+	struct draw_indexed_t
+	{
+		std::uint32_t index_count = 0;
+		std::uint32_t instance_count = 0;
+		std::uint32_t first_index = 0;
+		std::int32_t vertex_offset = 0;
+		std::uint32_t first_instance = 0;
+	};
+
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Write some new data to a resource. The thread will block until the changes are resident GPU-side.
@@ -186,6 +203,27 @@ namespace tz::gpu
 	 * 		- If the image was created with @ref image_type::depth or @ref image_type::floats, then each pixel should be 4 bytes - a single signed 32-bit float.
 	 */
 	void resource_write(resource_handle res, std::span<const std::byte> new_data);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Write indices into a buffer resource.
+	 *
+	 * This is a helper function which will call @ref resource_write under-the-hood.
+	 */
+	void index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Write draw-indirect-count + commands into a buffer resource.
+	 *
+	 * This is a helper function which will call @ref resource_write under-the-hood.
+	 */
+	void draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Write draw-indirect-count + indexed commands into a buffer resource.
+	 *
+	 * This is a helper function which will call @ref resource_write under-the-hood.
+	 */
+	void draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws);
 }
 
 #endif // TOPAZ_GPU_RESOURCE_HPP
