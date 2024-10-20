@@ -63,10 +63,10 @@ namespace tz
 		vector<T, N>& operator*=(const vector<T, N>& rhs);
 		vector<T, N>& operator/=(const vector<T, N>& rhs);
 
-		vector<T, N> operator+(const vector<T, N>& rhs){auto cpy = *this; return cpy += rhs;}
-		vector<T, N> operator-(const vector<T, N>& rhs){auto cpy = *this; return cpy -= rhs;}
-		vector<T, N> operator*(const vector<T, N>& rhs){auto cpy = *this; return cpy *= rhs;}
-		vector<T, N> operator/(const vector<T, N>& rhs){auto cpy = *this; return cpy /= rhs;}
+		vector<T, N> operator+(const vector<T, N>& rhs) const{auto cpy = *this; return cpy += rhs;}
+		vector<T, N> operator-(const vector<T, N>& rhs) const{auto cpy = *this; return cpy -= rhs;}
+		vector<T, N> operator*(const vector<T, N>& rhs) const{auto cpy = *this; return cpy *= rhs;}
+		vector<T, N> operator/(const vector<T, N>& rhs) const{auto cpy = *this; return cpy /= rhs;}
 
 		bool operator==(const vector<T, N>& rhs) const = default;
 	private:

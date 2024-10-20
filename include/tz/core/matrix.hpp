@@ -48,13 +48,17 @@ namespace tz
 
 		// matrix-scalar
 		matrix<T, N>& operator+=(T scalar);
+		matrix<T, N> operator+(T scalar) const{auto cpy = *this; return cpy += scalar;}
 		matrix<T, N>& operator-=(T scalar);
+		matrix<T, N> operator-(T scalar) const{auto cpy = *this; return cpy -= scalar;}
 		matrix<T, N>& operator*=(T scalar);
+		matrix<T, N> operator*(T scalar) const{auto cpy = *this; return cpy *= scalar;}
 		matrix<T, N>& operator/=(T scalar);
+		matrix<T, N> operator/(T scalar) const{auto cpy = *this; return cpy /= scalar;}
 
 		// matrix-matrix
 		matrix<T, N>& operator*=(const matrix<T, N>& rhs);
-		matrix<T, N> operator*(const matrix<T, N>& rhs){auto cpy = *this; return cpy *= rhs;}
+		matrix<T, N> operator*(const matrix<T, N>& rhs) const{auto cpy = *this; return cpy *= rhs;}
 
 		bool operator==(const matrix<T, N>& rhs) const = default;
 
