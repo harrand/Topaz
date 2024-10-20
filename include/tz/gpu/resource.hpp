@@ -205,6 +205,15 @@ namespace tz::gpu
 	void resource_write(resource_handle res, std::span<const std::byte> new_data);
 	/**
 	 * @ingroup tz_gpu_resource
+	 * @brief Retrieves the current data within a resource.
+	 *
+	 * You aren't allowed to read from @ref tz::gpu::window_resource.
+	 */
+	std::span<const std::byte> resource_read(resource_handle res);
+	void buffer_resize(resource_handle bufh, std::size_t new_size_bytes);
+	void image_resize(resource_handle imgh, unsigned int new_width, unsigned int new_height);
+	/**
+	 * @ingroup tz_gpu_resource
 	 * @brief Write indices into a buffer resource.
 	 *
 	 * This is a helper function which will call @ref resource_write under-the-hood.

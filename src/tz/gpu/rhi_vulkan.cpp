@@ -902,6 +902,26 @@ namespace tz::gpu
 		impl_write_single_resource(resh);
 	}
 
+	std::span<const std::byte> resource_read(resource_handle resh)
+	{
+		auto& res = resources[resh.peek()];
+		return res.data;
+	}
+
+	void buffer_resize(resource_handle bufh, std::size_t new_size_bytes)
+	{
+		(void)bufh;
+		(void)new_size_bytes;
+		tz_error("buffer resize NYI");
+	}
+
+	void image_resize(resource_handle imgh, unsigned int new_width, unsigned int new_height)
+	{
+		(void)imgh;
+		(void)new_width; (void)new_height;
+		tz_error("image resize NYI");
+	}
+
 	void index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices)
 	{
 		resource_write(index_buffer, std::as_bytes(indices));
