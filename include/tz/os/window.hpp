@@ -106,11 +106,68 @@ namespace tz::os
 	 **/
 	window_handle get_window_handle();
 
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Retrieve the width of the window, in pixels.
+	 * @note If a window is not open, nothing happens.
+	 *
+	 * @See @ref window_set_dimensions to programatically resize the window.
+	 */
 	unsigned int window_get_width();
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Retrieve the height of the window, in pixels.
+	 * @note If a window is not open, nothing happens.
+	 *
+	 * @See @ref window_set_dimensions to programatically resize the window.
+	 */
 	unsigned int window_get_height();
-
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Set a new width and height for the open window.
+	 * @note If a window is not open, nothing happens.
+	 */
+	void window_set_dimensions(unsigned int width, unsigned int height);
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Retrieve the title of the window.
+	 * @note If a window is not open, an empty string is returned.
+	 */
 	std::string window_get_title();
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Set a new title for the open window.
+	 * @note If a window is not open, nothing happens.
+	 */
 	void window_set_title(std::string_view title);
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Maximise the window, causing it to cover the whole screen.
+	 *
+	 * @note If a window is not open, nothing happens.
+	 */
+	void window_maximise();
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Minimise the window, causing it to no longer be visible until maximised/shown.
+	 *
+	 * @note If a window is not open, nothing happens.
+	 */
+	void window_minimise();
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Show the window as normal, even if it is currently maximised/minimised/fullscreen.
+	 *
+	 * @note If a window is not open, nothing happens.
+	 */
+	void window_show();
+	/**
+	 * @ingroup tz_os_window
+	 * @brief Display the window in proper fullscreen.
+	 *
+	 * @note If a window is not open, nothing happens.
+	 */
+	void window_fullscreen();
 }
 
 #endif // TOPAZ_OS_WINDOW_HPP

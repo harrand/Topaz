@@ -10,6 +10,7 @@ namespace tz::os
 {
 	LRESULT CALLBACK impl_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	std::pair<DWORD, DWORD> impl_get_window_dims();
+	WINDOWPLACEMENT window_placement_cache = { .length = sizeof(window_placement_cache) };
 
 	constexpr char wndclass_name[] = "Topaz Window";
 	auto hinst = GetModuleHandle(nullptr);
@@ -87,6 +88,7 @@ namespace tz::os
 			ShowWindow(wnd, winfo.flags & window_flags::maximised ? SW_SHOWMAXIMIZED : SW_SHOW);
 		}
 		window_open = true;
+		GetWindowPlacement(wnd, &window_placement_cache);
 		return ret;
 	}
 
@@ -141,8 +143,46 @@ namespace tz::os
 		return impl_get_window_dims().second;
 	}
 
+	void window_set_dimensions(unsigned int width, unsigned int height)
+	{
+		if(wnd == nullptr)
+		{
+			return;
+		}
+		// Get the current window rectangle (includes title bar, borders, etc.)
+		RECT window_rect;
+		GetWindowRect(wnd, &window_rect);
+
+		// Get the current client area dimensions
+		RECT client_rect;
+		GetClientRect(wnd, &client_rect);
+
+		// Calculate the difference between window size and client area size
+		int window_width = window_rect.right - window_rect.left;
+		int window_height = window_rect.bottom - window_rect.top;
+
+		int client_width = client_rect.right - client_rect.left;
+		int client_height = client_rect.bottom - client_rect.top;
+
+		int border_width = (window_width - client_width);
+		int border_height = (window_height - client_height);
+
+		// Set the new window size while keeping the position unchanged
+		SetWindowPos(
+			wnd, 
+			nullptr, 
+			0, 0,
+			width + border_width, height + border_height, 
+			SWP_NOZORDER | SWP_NOMOVE
+		);
+	}
+
 	std::string window_get_title()
 	{
+		if(wnd == nullptr)
+		{
+			return "";
+		}
 		std::string ret;
 		ret.resize(GetWindowTextLength(wnd));
 		GetWindowTextA(wnd, ret.data(), ret.size());
@@ -151,7 +191,66 @@ namespace tz::os
 
 	void window_set_title(std::string_view title)
 	{
+		if(wnd == nullptr)
+		{
+			return;
+		}
 		SetWindowTextA(wnd, title.data());
+	}
+
+	void window_maximise()
+	{
+		if(wnd == nullptr)
+		{
+			return;
+		}
+		ShowWindow(wnd, SW_MAXIMIZE);
+	}
+
+	void window_minimise()
+	{
+		if(wnd == nullptr)
+		{
+			return;
+		}
+		ShowWindow(wnd, SW_MINIMIZE);
+	}
+
+	void window_show()
+	{
+		if(wnd == nullptr)
+		{
+			return;
+		}
+		DWORD dwStyle = GetWindowLong(wnd, GWL_STYLE);
+		SetWindowLong(wnd, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
+		if(!(dwStyle & WS_OVERLAPPEDWINDOW))
+		{
+			SetWindowPlacement(wnd, &window_placement_cache);
+			SetWindowPos(wnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		}
+	}
+
+	void window_fullscreen()
+	{
+		if(wnd == nullptr)
+		{
+			return;
+		}
+		DWORD dwStyle = GetWindowLong(wnd, GWL_STYLE);
+		MONITORINFO mi 
+		{
+			.cbSize = sizeof(mi),
+		};
+		if(GetMonitorInfo(MonitorFromWindow(wnd, MONITOR_DEFAULTTOPRIMARY), &mi))
+		{
+			if(dwStyle & WS_OVERLAPPEDWINDOW)
+			{
+				GetWindowPlacement(wnd, &window_placement_cache);
+			}
+			SetWindowLong(wnd, GWL_STYLE, dwStyle & ~WS_OVERLAPPEDWINDOW);
+			SetWindowPos(wnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left, mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		}
 	}
 
 	tz::error_code install_char_typed_callback(char_type_callback callback)
@@ -164,8 +263,12 @@ namespace tz::os
 		return tz::error_code::success;
 	}
 
-	bool key_pressed(key k)
+	bool is_key_pressed(key k)
 	{
+		if(GetFocus() != wnd)
+		{
+			return false;
+		}
 		std::array<int, static_cast<int>(key::_count)> key_mappings
 		{
 			VK_BACK,
