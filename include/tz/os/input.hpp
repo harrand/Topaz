@@ -16,16 +16,64 @@ namespace tz::os
 	 **/
 	enum class key
 	{
-		// Letters
-		a, b, c, d, e, f, g,
-		h, i, j, k, l, m, n,
-		o, p, q, r, s, t, u,
-		v, w, x, y, z,
+		backspace,
+		tab,
+		enter,
 
-		// Numbers
-		num_0, num_1, num_2, num_3, num_4,
-		num_5, num_6, num_7, num_8, num_9,
-		undefined
+		left_shift,
+		left_control,
+		left_alt,
+
+		pause,
+		caps_lock,
+		escape,
+
+		spacebar,
+		page_down,
+		page_up,
+
+		end,
+		home,
+
+		left_arrow,
+		up_arrow,
+		right_arrow,
+		down_arrow,
+
+		select,
+		print,
+		printsc,
+		ins,
+		del,
+		n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,
+		a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,
+
+		left_winkey,
+		right_winkey,
+		apps,
+		sleep,
+
+		np0,np1,np2,np3,np4,np5,np6,np7,np8,np9,
+		npmul,npadd,npsep,npsub,npdec,npdiv,
+		f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22,f23,f24,
+		num_lock,
+		scroll_lock,
+
+		right_shift,
+		right_control,
+		right_alt,
+		semicol,
+		period,
+		plus,
+		minus,
+
+		obrack,
+		cbrack,
+		forward_slash,
+		back_slash,
+		apostrophe,
+		grave,
+		_count
 	};
 
 	using char_type_callback = void(*)(char);
@@ -36,6 +84,13 @@ namespace tz::os
 	 * @return - @ref error_code::precondition_failure if a window has not yet been opened.
 	 **/
 	tz::error_code install_char_typed_callback(char_type_callback callback);
+	/**
+	 * @ingroup tz_os_input
+	 * @brief Query as to whether a specific key is pressed right now.
+	 * @param k Keyboard key to query
+	 * @return True if the given key is currently pressed, otherwise false.
+	 */
+	bool is_key_pressed(key k);
 }
 
 #endif // TOPAZ_OS_INPUT_HPP
