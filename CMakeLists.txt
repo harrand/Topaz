@@ -37,6 +37,7 @@ topaz_add_library(
 		src/tz/core/error.cpp
 		src/tz/core/job.cpp
 		src/tz/core/vector.cpp
+		src/tz/core/matrix.cpp
 		src/tz/gpu/rhi_vulkan.cpp
 		src/tz/os/impl_win32.cpp
 )

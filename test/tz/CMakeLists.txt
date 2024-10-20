@@ -22,6 +22,12 @@ topaz_add_test(
 )
 
 topaz_add_test(
+  TARGET tz_matrix_test
+  SOURCES
+    matrix_test.cpp
+)
+
+topaz_add_test(
   TARGET tz_gpu_initialise_test
   SOURCES
     gpu_initialise.cpp
