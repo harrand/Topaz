@@ -1,6 +1,7 @@
 #include "tz/topaz.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/pass.hpp"
+#include "tz/gpu/graph.hpp"
 #include ImportedShaderHeader(noop, compute)
 
 int main()
@@ -17,6 +18,16 @@ int main()
 		.compute = {.kernel = {64u, 64u, 64u}},
 		.shader = shad
 	}));
+
+	tz::gpu::graph_handle graph = tz_must(tz::gpu::graph_builder{}
+		.add_pass(pass)
+		.build());
+
+	for(std::size_t i = 0; i < 64; i++)
+	{
+		tz::gpu::execute(graph);
+	}
+
 	tz::gpu::destroy_pass(pass);
 
 	tz::terminate();
