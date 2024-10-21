@@ -16,6 +16,17 @@ topaz_bundle_files(
 )
 
 topaz_add_test(
+  TARGET tz_io_image_test
+  SOURCES
+    io_image_test.cpp
+)
+topaz_bundle_files(
+  TARGET tz_io_image_test
+  FILES
+    files/img.png
+)
+
+topaz_add_test(
   TARGET tz_vector_test
   SOURCES
     vector_test.cpp
