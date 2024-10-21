@@ -1,3 +1,4 @@
+define_property(TARGET PROPERTY TOPAZ_BUNDLE_DEPENDENCIES)
 function(topaz_bundle_files)
 	cmake_parse_arguments(
 		TOPAZ_BUNDLE_FILES
@@ -9,6 +10,7 @@ function(topaz_bundle_files)
 
 	# source dir: CMAKE_CURRENT_SOURCE_DIR
 	# Loop over each file and replicate the directory structure in the binary directory
+    set_target_properties(${TOPAZ_BUNDLE_FILES_TARGET} PROPERTIES TOPAZ_BUNDLE_DEPENDENCIES "${TOPAZ_BUNDLE_FILES_FILES}")
     set(counter 0)
     foreach(file IN LISTS TOPAZ_BUNDLE_FILES_FILES)
         # Ensure the file exists

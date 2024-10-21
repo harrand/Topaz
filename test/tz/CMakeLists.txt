@@ -25,6 +25,7 @@ topaz_bundle_files(
   FILES
     files/img.png
 )
+topaz_define_package(TARGET tz_io_image_test)
 
 topaz_add_test(
   TARGET tz_vector_test
