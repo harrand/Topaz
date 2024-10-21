@@ -1,3 +1,6 @@
 add_subdirectory(concurrentqueue)
 add_subdirectory(VulkanMemoryAllocator)
 add_subdirectory(textc)
+
+add_library(stb_image INTERFACE)
+target_include_directories(stb_image INTERFACE stb)

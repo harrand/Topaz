@@ -42,10 +42,11 @@ topaz_add_library(
 		src/tz/core/trs.cpp
 		src/tz/gpu/rhi_vulkan.cpp
 		src/tz/os/impl_win32.cpp
+		src/tz/io/image.cpp
 )
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(topaz PRIVATE VulkanMemoryAllocator concurrentqueue)
+target_link_libraries(topaz PRIVATE VulkanMemoryAllocator concurrentqueue stb_image)
 target_link_libraries(topaz PUBLIC textc_lib)
 
 ######################

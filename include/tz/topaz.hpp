@@ -111,6 +111,15 @@ namespace tz
  * This library contains some pre-created high-level rendering systems used for common tasks, such as rendering 3D models, or user interface. These components are intended to be used in most Topaz games, with the goal of not needing to reinvent the wheel in every single game using the @ref tz_ren.
 **/
 
+/**
+ * @ingroup tz
+ * @defgroup tz_io IO Library
+ * @brief High-level library for wrangling files of various formats.
+ *
+ * This library contains support for a handful of common file formats, allowing you to import them without having to implement a parser yourself.
+**/
+
+
 #include "detail/debug.hpp"
 
 #endif // TOPAZ_HPP
