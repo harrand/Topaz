@@ -2,6 +2,7 @@
 #define TOPAZ_CORE_VECTOR_HPP
 #include <concepts>
 #include <array>
+#include <type_traits>
 
 namespace tz
 {
@@ -67,6 +68,10 @@ namespace tz
 		vector<T, N> operator-(const vector<T, N>& rhs) const{auto cpy = *this; return cpy -= rhs;}
 		vector<T, N> operator*(const vector<T, N>& rhs) const{auto cpy = *this; return cpy *= rhs;}
 		vector<T, N> operator/(const vector<T, N>& rhs) const{auto cpy = *this; return cpy /= rhs;}
+
+		T length() const;
+		T dot(const vector<T, N>& rhs) const;
+		vector<T, N> cross(const vector<T, N>& rhs) const requires(N == 3);
 
 		bool operator==(const vector<T, N>& rhs) const = default;
 	private:
