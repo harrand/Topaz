@@ -3,19 +3,36 @@
 
 namespace tz
 {
+	tz::m4f matrix_translate(tz::v3f translate)
+	{
+		auto m = tz::m4f::iden();
+		m(0, 3) = translate[0];
+		m(1, 3) = translate[1];
+		m(2, 3) = translate[2];
+		return m;
+	}
+
+	tz::m4f matrix_scale(tz::v3f scale)
+	{
+		auto m = tz::m4f::iden();
+		m(0, 0) = scale[0];
+		m(1, 1) = scale[1];
+		m(2, 2) = scale[2];
+		return m;
+	}
+
 	trs trs::lerp(const trs& rhs, float factor) const
 	{
 		trs ret;
 		ret.translate = this->translate + (rhs.translate - this->translate) * factor;
-		//ret.rotate = this->rotate.slerp(rhs.rotate, factor);
+		ret.rotate = this->rotate.slerp(rhs.rotate, factor);
 		ret.scale = this->scale + ((rhs.scale - this->scale) * factor);
 		return ret;
 	}
 
-	tz::m4u trs::matrix() const
+	tz::m4f trs::matrix() const
 	{
-		tz_error("trs -> matrix is NYI");
-		return {};
+		return matrix_translate(this->translate) * this->rotate.matrix() * matrix_scale(this->scale);
 	}
 
 	trs trs::from_matrix(tz::m4f mat)
@@ -47,7 +64,6 @@ namespace tz
 
 		// Construct the quaternion. This algo is copied from here:
 		// https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/christian.htm.
-		/*
 		ret.rotate[3] = std::max(0.0f, 1.0f + mat(0, 0) + mat(1, 1) + mat(2, 2));
 		ret.rotate[0] = std::max(0.0f, 1.0f + mat(0, 0) - mat(1, 1) - mat(2, 2));
 		ret.rotate[1] = std::max(0.0f, 1.0f - mat(0, 0) + mat(1, 1) - mat(2, 2));
@@ -59,7 +75,6 @@ namespace tz
 		ret.rotate[0] = std::copysignf(ret.rotate[0], mat(1, 2) - mat(2, 1));
 		ret.rotate[1] = std::copysignf(ret.rotate[1], mat(2, 0) - mat(0, 2));
 		ret.rotate[2] = std::copysignf(ret.rotate[2], mat(0, 1) - mat(1, 0));
-		*/
 		return ret;
 	}
 
