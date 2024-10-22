@@ -17,12 +17,10 @@ topaz_bundle_files(
 
 topaz_add_test(
   TARGET tz_io_image_test
+  DEFINE_PACKAGE
   SOURCES
     io_image_test.cpp
-)
-topaz_bundle_files(
-  TARGET tz_io_image_test
-  FILES
+  BUNDLE_FILES
     files/img.png
 )
 

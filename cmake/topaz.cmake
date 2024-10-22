@@ -3,9 +3,9 @@
 function(topaz_add_library)
 	cmake_parse_arguments(
 		TOPAZ_ADD_LIBRARY
-		""
+		"DEFINE_PACKAGE"
 		"TARGET"
-		"SOURCES;SHADERS;TEXT_FILES"
+		"SOURCES;SHADERS;TEXT_FILES;BUNDLE_FILES"
 		${ARGN}
 	)
 
@@ -23,14 +23,23 @@ function(topaz_add_library)
 		OUTPUT_DIR ${PROJECT_BINARY_DIR}
 		TEXT_FILES ${TOPAZ_ADD_LIBRARY_TEXT_FILES}
 	)
+	if(TOPAZ_ADD_LIBRARY_BUNDLE_FILES)
+		topaz_bundle_files(
+			TARGET ${TOPAZ_ADD_LIBRARY_TARGET}
+			FILES ${TOPAZ_ADD_LIBRARY_BUNDLE_FILES}
+		)
+	endif()
+	if(TOPAZ_ADD_LIBRARY_DEFINE_PACKAGE)
+		topaz_define_package(TARGET ${TOPAZ_ADD_LIBRARY_TARGET})
+	endif()
 endfunction()
 
 function(topaz_add_executable)
 	cmake_parse_arguments(
 		TOPAZ_ADD_EXECUTABLE
-		""
+		"DEFINE_PACKAGE"
 		"TARGET"
-		"SOURCES;SHADERS;TEXT_FILES"
+		"SOURCES;SHADERS;TEXT_FILES;BUNDLE_FILES"
 		${ARGN}
 	)
 
@@ -48,4 +57,13 @@ function(topaz_add_executable)
 		OUTPUT_DIR ${PROJECT_BINARY_DIR}
 		TEXT_FILES ${TOPAZ_ADD_EXECUTABLE_TEXT_FILES}
 	)
+	if(TOPAZ_ADD_EXECUTABLE_BUNDLE_FILES)
+		topaz_bundle_files(
+			TARGET ${TOPAZ_ADD_EXECUTABLE_TARGET}
+			FILES ${TOPAZ_ADD_EXECUTABLE_BUNDLE_FILES}
+		)
+	endif()
+	if(TOPAZ_ADD_EXECUTABLE_DEFINE_PACKAGE)
+		topaz_define_package(TARGET ${TOPAZ_ADD_EXECUTABLE_TARGET})
+	endif()
 endfunction()

@@ -25,6 +25,8 @@ include(cmake/topaz.cmake)
 add_subdirectory(lib)
 add_subdirectory(tools)
 include(cmake/shader.cmake)
+include(cmake/bundle.cmake)
+include(cmake/package.cmake)
 
 ####################
 ## TOPAZ - TARGET ##
@@ -63,8 +65,6 @@ include(cmake/platform.cmake)
 setup_platform()
 include(cmake/render_api.cmake)
 setup_render_api()
-include(cmake/bundle.cmake)
-include(cmake/package.cmake)
 
 ###################
 ## TOPAZ - TESTS ##

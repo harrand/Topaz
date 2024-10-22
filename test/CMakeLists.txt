@@ -1,9 +1,9 @@
 function(topaz_add_test)
 	cmake_parse_arguments(
 		TOPAZ_ADD_TEST
-		""
+		"DEFINE_PACKAGE"
 		"TARGET"
-		"SOURCES;SHADERS;TEXT_FILES"
+		"SOURCES;SHADERS;TEXT_FILES;BUNDLE_FILES"
 		${ARGN}
 	)	
 
@@ -15,7 +15,12 @@ function(topaz_add_test)
 			${TOPAZ_ADD_TEST_SHADERS}
 		TEXT_FILES
 			${TOPAZ_ADD_TEST_TEXT_FILES}
+		BUNDLE_FILES
+			${TOPAZ_ADD_TEST_BUNDLE_FILES}
 	)
+	if(TOPAZ_ADD_TEST_DEFINE_PACKAGE)
+		topaz_define_package(TARGET ${TOPAZ_ADD_TEST_TARGET})
+	endif()
 	# All tests link against topaz.
 	target_link_libraries(${TOPAZ_ADD_TEST_TARGET} PRIVATE topaz)
 	# Note: CTest only runs test executables, doesn't build them. This is of course unfathomably stupid - You have to use "fixtures" (see: https://crascit.com/2016/10/18/test-fixtures-with-cmake-ctest/)
