@@ -40,9 +40,13 @@ function(topaz_define_package)
 	# And finally, all dll dependencies
 	# why use -t here when its not used anywhere else?
 	# well TARGET_RUNTIME_DLLS could may well yield an empty list. copy without -t is malformed if you try to copy 0 things, but with -t its much better.
-	add_custom_command(TARGET ${TOPAZ_DEFINE_PACKAGE_TARGET}.package
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy -t "${package_dir}" $<TARGET_RUNTIME_DLLS:${TOPAZ_DEFINE_PACKAGE_TARGET}>
-		COMMAND_EXPAND_LISTS
-	)
+	# (note this only works for executable targets)
+	get_target_property(target_type ${TOPAZ_DEFINE_PACKAGE_TARGET} TYPE)
+	if(target_type STREQUAL "EXECUTABLE")
+		add_custom_command(TARGET ${TOPAZ_DEFINE_PACKAGE_TARGET}.package
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy -t "${package_dir}" $<TARGET_RUNTIME_DLLS:${TOPAZ_DEFINE_PACKAGE_TARGET}>
+			COMMAND_EXPAND_LISTS
+		)
+	endif()
 endfunction()

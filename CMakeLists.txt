@@ -45,6 +45,7 @@ topaz_add_library(
 		src/tz/gpu/rhi_vulkan.cpp
 		src/tz/os/impl_win32.cpp
 		src/tz/io/image.cpp
+	DEFINE_PACKAGE
 )
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
