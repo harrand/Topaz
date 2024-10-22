@@ -49,4 +49,7 @@ function(topaz_define_package)
 			COMMAND_EXPAND_LISTS
 		)
 	endif()
+
+	# make target-clean clear out the folder otherwise it sits there forever (annoying)
+	set_target_properties(${TOPAZ_DEFINE_PACKAGE_TARGET} PROPERTIES ADDITIONAL_CLEAN_FILES ${package_dir})
 endfunction()
