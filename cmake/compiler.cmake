@@ -12,6 +12,11 @@ endfunction()
 function(configure_msvc)
 	# TODO	
 	target_compile_definitions(topaz PRIVATE -D_CRT_SECURE_NO_WARNINGS)
+	if(${CMAKE_BUILD_TYPE} MATCHES "debug")
+		target_link_options(topaz PUBLIC /MTd)
+	else()
+		target_link_options(topaz PUBLIC /MT)
+	endif()
 endfunction()
 
 function(configure_gnu_like)
