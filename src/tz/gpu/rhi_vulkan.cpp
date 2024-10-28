@@ -128,6 +128,7 @@ namespace tz::gpu
 		VkPipeline pipeline = VK_NULL_HANDLE;
 		VkBuffer meta_buffer = VK_NULL_HANDLE;
 		VmaAllocation meta_buffer_mem = VK_NULL_HANDLE;
+		VkEvent on_finish = VK_NULL_HANDLE;
 		std::array<VkDescriptorSet, frame_overlap> descriptor_sets = {};
 		std::uint32_t viewport_width = 0;
 		std::uint32_t viewport_height = 0;
@@ -185,7 +186,7 @@ namespace tz::gpu
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
 	void impl_write_single_resource(resource_handle resh);
-	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i, std::uint32_t swapchain_image_id);
+	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i, std::uint32_t swapchain_image_id, std::span<const pass_handle> deps);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 	void impl_check_for_resize();
@@ -251,6 +252,11 @@ namespace tz::gpu
 		if(current_device != VK_NULL_HANDLE)
 		{
 			vkDeviceWaitIdle(current_device);
+		}
+
+		for(std::size_t i = 0; i < passes.size(); i++)
+		{
+			destroy_pass(static_cast<tz::hanval>(i));
 		}
 
 		for(std::size_t i = 0 ; i < resources.size(); i++)
@@ -1372,6 +1378,15 @@ namespace tz::gpu
 		pass_handle ret = static_cast<tz::hanval>(ret_id);
 		impl_write_all_resources(ret);
 		impl_populate_descriptors(ret);
+
+		VkEventCreateInfo evt_create
+		{
+			.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO,
+			.pNext = nullptr,
+			.flags = VK_EVENT_CREATE_DEVICE_ONLY_BIT
+		};
+		vkCreateEvent(current_device, &evt_create, nullptr, &pass.on_finish);
+
 		return ret;
 	}
 
@@ -1391,6 +1406,7 @@ namespace tz::gpu
 		tz_assert(passes.size() > i, "Dodgy handle (value {}) passed to destroy_pass", i);
 		vkDestroyPipeline(current_device, passes[i].pipeline, nullptr);
 		vmaDestroyBuffer(alloc, passes[i].meta_buffer, passes[i].meta_buffer_mem);
+		vkDestroyEvent(current_device, passes[i].on_finish, nullptr);
 		passes[i] = {};
 	}
 
@@ -1491,9 +1507,11 @@ namespace tz::gpu
 
 		// go through timeline and record all gpu work.
 		// any of these may or may not try to blit (transfer) an image into our current swapchain image.
-		for(pass_handle pass : graph.timeline)
+		for(std::size_t i = 0; i < graph.timeline.size(); i++)
 		{
-			tz_must(impl_record_gpu_work(pass, current_frame, image_index));
+			pass_handle pass = graph.timeline[i];
+			std::span<const pass_handle> deps = graph.dependencies[i];
+			tz_must(impl_record_gpu_work(pass, current_frame, image_index, deps));
 		}
 		if(will_present)
 		{
@@ -2226,7 +2244,7 @@ namespace tz::gpu
 	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
 	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id, std::uint32_t swapchain_image_id);
 
-	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i, std::uint32_t swapchain_image_id)
+	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i, std::uint32_t swapchain_image_id, std::span<const pass_handle> dependencies)
 	{
 		const auto& pass = passes[passh.peek()]; 
 		tz::error_code ret = tz::error_code::success;
@@ -2234,6 +2252,11 @@ namespace tz::gpu
 		// GPU work goes here.
 		auto top_part = (pass.info.shader.peek() >> 16) & 0xFFFFFFFF;
 		auto& shader1 = shaders[--top_part];
+		vkCmdResetEvent(frame.cmds, pass.on_finish, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+		for(pass_handle dep : dependencies)
+		{
+			vkCmdWaitEvents(frame.cmds, 1, &passes[dep.peek()].on_finish, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, nullptr, 0, nullptr, 0, nullptr);
+		}
 		if(shader1.ty == shader_type::compute)
 		{
 			ret = impl_record_compute_work(pass, frame, i);
@@ -2242,6 +2265,7 @@ namespace tz::gpu
 		{
 			ret = impl_record_graphics_work(pass, frame, i, swapchain_image_id);
 		}
+		vkCmdSetEvent(frame.cmds, pass.on_finish, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 		return ret;
 	}
 

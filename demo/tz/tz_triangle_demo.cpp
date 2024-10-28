@@ -46,7 +46,6 @@ int main()
 		tz::gpu::execute(graph);
 	}
 
-	tz::gpu::destroy_pass(pass);
 	tz::terminate();
 	return 0;
 }
