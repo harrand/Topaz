@@ -49,7 +49,7 @@ topaz_add_library(
 )
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(topaz PRIVATE VulkanMemoryAllocator concurrentqueue stb_image)
+target_link_libraries(topaz PRIVATE VulkanMemoryAllocator concurrentqueue stb_image lua)
 target_link_libraries(topaz PUBLIC textc_lib)
 
 ######################
