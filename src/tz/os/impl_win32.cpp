@@ -402,6 +402,43 @@ namespace tz::os
 		return GetAsyncKeyState(key_mappings[static_cast<int>(k)]) & 0x8000;
 	}
 
+	std::pair<unsigned int, unsigned int> get_mouse_position()
+	{
+		POINT p;
+		if(wnd != nullptr && GetCursorPos(&p))
+		{
+			if(ScreenToClient(wnd, &p))
+			{
+				if(std::cmp_greater(p.x, window_get_width()) || std::cmp_greater(p.y, window_get_height()))
+				{
+					return invalid_mouse_position;
+				}
+				p.x = std::clamp(static_cast<int>(p.x), 0, static_cast<int>(window_get_width()));
+				p.y = std::clamp(static_cast<int>(p.y), 0, static_cast<int>(window_get_height()));
+				return {p.x, p.y};
+			}
+		}
+		return invalid_mouse_position;
+	}
+
+	bool is_mouse_clicked(mouse_button b)
+	{
+		std::array<int, static_cast<int>(mouse_button::_count)> button_mappings
+		{
+			VK_LBUTTON,
+			VK_RBUTTON,
+			VK_MBUTTON
+		};
+		return GetAsyncKeyState(button_mappings[static_cast<int>(b)]) & 0x8000;
+	}
+
+	std::pair<unsigned int, unsigned int> last_mouse_click[static_cast<int>(mouse_button::_count)];
+
+	std::pair<unsigned int, unsigned int> get_mouse_click_position(mouse_button b)
+	{
+		return last_mouse_click[static_cast<int>(b)];
+	}
+
 	std::expected<std::string, tz::error_code> read_file(std::filesystem::path path)
 	{
 		HANDLE file = CreateFileA(path.string().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -472,6 +509,15 @@ namespace tz::os
 					}
 					kb_callback(wparam);
 				}
+			break;
+			case WM_RBUTTONDOWN:
+				last_mouse_click[static_cast<int>(mouse_button::right)] = get_mouse_position();
+			break;
+			case WM_LBUTTONDOWN:
+				last_mouse_click[static_cast<int>(mouse_button::left)] = get_mouse_position();
+			break;
+			case WM_MBUTTONDOWN:
+				last_mouse_click[static_cast<int>(mouse_button::middle)] = get_mouse_position();
 			break;
 		}
 		return DefWindowProcA(hwnd, msg, wparam, lparam);

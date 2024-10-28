@@ -1,6 +1,7 @@
 #ifndef TOPAZ_OS_INPUT_HPP
 #define TOPAZ_OS_INPUT_HPP
 #include "tz/core/error.hpp"
+#include <utility>
 
 namespace tz::os
 {
@@ -91,6 +92,27 @@ namespace tz::os
 	 * @return True if the given key is currently pressed, otherwise false.
 	 */
 	bool is_key_pressed(key k);
+	constexpr std::pair<unsigned int, unsigned int> invalid_mouse_position{-1u, -1u};
+	/**
+	 * @ingroup tz_os_input
+	 * @brief Retrieve the mouse cursor's current position, in pixels, relative to the top-left of the window.
+	 *
+	 * If for whatever reason the cursor pos cannot be retrieved, {-1, -1} is returned. Some reasons could include:
+	 * - You haven't opened a window via @ref open_window.
+	 * - The mouse currently lies outside of the window.
+	 */
+	std::pair<unsigned int, unsigned int> get_mouse_position();
+
+	enum class mouse_button
+	{
+		left,
+		right,
+		middle,
+		_count
+	};
+
+	bool is_mouse_clicked(mouse_button b);
+	std::pair<unsigned int, unsigned int> get_mouse_click_position(mouse_button b);
 }
 
 #endif // TOPAZ_OS_INPUT_HPP

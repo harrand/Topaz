@@ -13,9 +13,9 @@ function(configure_msvc)
 	# TODO	
 	target_compile_definitions(topaz PRIVATE -D_CRT_SECURE_NO_WARNINGS)
 	if(${CMAKE_BUILD_TYPE} MATCHES "debug")
-		target_link_options(topaz PUBLIC /MTd)
+		target_link_options(topaz PRIVATE "/MTd")
 	else()
-		target_link_options(topaz PUBLIC /MT)
+		target_link_options(topaz PRIVATE "/MT")
 	endif()
 endfunction()
 
@@ -31,7 +31,6 @@ function(configure_clang)
 	configure_gnu_like()
 	if(CMAKE_CXX_SIMULATE_ID MATCHES "MSVC")
 		# clang-cl (or clang against MSVC). Just pretend we're msvc.
-		configure_msvc()
 		return()
 	endif()
 	# Code below runs if we're clang proper.
