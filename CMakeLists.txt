@@ -38,6 +38,7 @@ topaz_add_library(
 		src/tz/topaz.cpp
 		src/tz/core/error.cpp
 		src/tz/core/job.cpp
+		src/tz/core/lua.cpp
 		src/tz/core/vector.cpp
 		src/tz/core/matrix.cpp
 		src/tz/core/quaternion.cpp

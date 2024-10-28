@@ -25,6 +25,12 @@ topaz_add_test(
 )
 
 topaz_add_test(
+  TARGET tz_lua_execute_test
+  SOURCES
+    lua_execute_test.cpp
+)
+
+topaz_add_test(
   TARGET tz_vector_test
   SOURCES
     vector_test.cpp

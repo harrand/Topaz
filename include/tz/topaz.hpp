@@ -44,6 +44,8 @@ namespace tz
 	{
 		void job_system_initialise();
 		void job_system_terminate();
+		void lua_initialise_local();
+		void lua_initialise_all_threads();
 	}
 	namespace gpu
 	{
