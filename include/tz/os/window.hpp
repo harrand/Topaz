@@ -25,7 +25,7 @@ namespace tz::os
 		maximised = 0b0010,
 		/// When a pixel of the window's framebuffer is never drawn to, instead of being a clamped colour it is instead fully transparent. Your mileage may vary, depending on your platform.
 		transparent = 0b0100,
-		/// When the window is opened, it is initially invisible and you must invoke @ref window_set_visible to see it.
+		/// When the window is "opened", it is completely invisible to the user. They won't see the window, nor will it be visible in the OS' taskbar.
 		invisible = 0b1000,
 	};
 
@@ -111,7 +111,7 @@ namespace tz::os
 	 * @brief Retrieve the width of the window, in pixels.
 	 * @note If a window is not open, nothing happens.
 	 *
-	 * @See @ref window_set_dimensions to programatically resize the window.
+	 * See @ref window_set_dimensions to programatically resize the window.
 	 */
 	unsigned int window_get_width();
 	/**
@@ -119,7 +119,7 @@ namespace tz::os
 	 * @brief Retrieve the height of the window, in pixels.
 	 * @note If a window is not open, nothing happens.
 	 *
-	 * @See @ref window_set_dimensions to programatically resize the window.
+	 * See @ref window_set_dimensions to programatically resize the window.
 	 */
 	unsigned int window_get_height();
 	/**

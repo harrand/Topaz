@@ -140,6 +140,10 @@ namespace tz::gpu
 		const char* name = "<untitled pass>";
 	};
 
+	/**
+	 * @ingroup tz_gpu_pass
+	 * @brief Corresponds to a previously-created pass.
+	 */
 	using pass_handle = tz::handle<pass_info>;
 
 	/**
@@ -149,7 +153,7 @@ namespace tz::gpu
 	 * @return @ref tz::error_code::precondition_failure If you fail to provide a valid shader program.
 	 * @return @ref tz::error_code::precondition_failure If you provide a malformed shader program. A shader program is only well-formed if it consists of only a compute shader, OR it consists of a single vertex and fragment shader.
 	 * @return @ref tz::error_code::precondition_failure For a graphics pass if you fail to provide at least one colour target.
-	 * @return @ref tz::error_code::precondition_failure For a graphics pass if you provide a colour target that is invalid. A valid colour target is either a.) the window resource (and you have opened a window), b.) an image resource created with @ref tz::gpu::image_flag::render_target
+	 * @return @ref tz::error_code::precondition_failure For a graphics pass if you provide a colour target that is invalid. A valid colour target is either a.) the window resource (and you have opened a window), b.) an image resource created with @ref tz::gpu::image_flag::colour_target
 	 * @return @ref tz::error_code::precondition_failure For a graphics pass if any colour target provided does not exactly match the dimensions of all other provided colour targets. All colour targets must be images with the same dimensions. This does mean that if you provide the window resource as a colour target, all other colour targets must have the same dimensions as the window.
 	 * @return @ref tz::error_code::oom If CPU memory is exhausted while trying to create the pass.
 	 * @return @ref tz::error_code::voom If GPU memory is exhausted while trying to create the pass.
@@ -164,7 +168,7 @@ namespace tz::gpu
 	/**
 	 * @ingroup tz_gpu_pass
 	 * @brief Set the triangle count of an existing graphics pass.
-	 * @param pass Graphics pass to target. If you provide a compute pass, nothing interesting happens.
+	 * @param graphics_pass Graphics pass to target. If you provide a compute pass, nothing interesting happens.
 	 * @param triangle_count New number of triangles to render every frame.
 	 *
 	 * When you created a graphics pass, you set an initial triangle count via @ref pass_graphics_state::triangle_count. This function will override that count, meaning the next time a pass submits GPU work, the new number of triangles will be rendered.
@@ -177,7 +181,7 @@ namespace tz::gpu
 	/**
 	 * @ingroup tz_gpu_pass
 	 * @brief Set the compute kernel of an existing compute pass.
-	 * @param pass Compute pass to target. If you provide a graphics pass, nothing interesting happens.
+	 * @param compute_pass Compute pass to target. If you provide a graphics pass, nothing interesting happens.
 	 * @param kernel New workgroup dimensions to be dispatched every frame.
 	 *
 	 * When you created a compute pass, you set an initial kernel size via @ref pass_compute_state::kernel. This function will override those dimensions, meaning the next time a pass submits GPU work, the new workgroup dimensions will be dispatched.

@@ -64,16 +64,18 @@ namespace tz::gpu
 //#elif TZ_OGL
 //#define TZ_MACROHACKERY_JOIN_SHADER(X, Y, Z) TZ_MACROHACKERY_JOIN4(X, Y, Z, _tzsl_glsl)
 #endif
+#if TOPAZ_VULKAN
 /**
  * @ingroup tz_gpu_shader
  * @fn ImportedShaderHeader(shader_name, shader_type)
  * @hideinitializer
- * Retrieves a file path which is intended to be #included in a application's main source file. Once included, the imported shader's source code can be retrieved as a constexpr string_view via @ref ImportedShaderSource
+ * Retrieves a file path which is intended to be \#included in a application's main source file. Once included, the imported shader's source code can be retrieved as a constexpr string_view via @ref ImportedShaderSource
  */
-#if TOPAZ_VULKAN
 #define ImportedShaderHeader(shader_name, shader_type) TZ_MACROHACKERY_STRINGIFY2(shader_name.shader_type.tzsl.spv.hpp)
 //#elif TZ_OGL
 //#define ImportedShaderHeader(shader_name, shader_type) TZ_MACROHACKERY_STRINGIFY2(shader_name.shader_type.tzsl.glsl.hpp)
+#else
+#define ImportedShaderHeader
 #endif
 
 /**

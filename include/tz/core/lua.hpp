@@ -99,7 +99,7 @@ namespace tz
 	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to a new string value.
 	 * @param varname Name of the variable to set.
-	 * @param v Value to set
+	 * @param str Value to set
 	 * @return @ref tz::error_code::unknown_error If an error occurred.
 	 */
 	tz::error_code lua_set_string(std::string_view varname, std::string str);
@@ -107,7 +107,7 @@ namespace tz
 	 * @ingroup tz_core_lua
 	 * @brief Define a new function in lua.
 	 * @param varname Name of the function when called in lua code.
-	 * @param v Pointer to an existing function to expose to lua.
+	 * @param fn Pointer to an existing function to expose to lua.
 	 * @return @ref tz::error_code::unknown_error If an error occurred.
 	 */
 	tz::error_code lua_define_function(std::string_view varname, lua_fn fn);
@@ -145,28 +145,28 @@ namespace tz
 	 * @ingroup tz_core_lua
 	 * @brief Retrieve a bool from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
-	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
+	 * @return @ref tz::error_code::precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<bool, tz::error_code> lua_stack_get_bool(std::size_t id);
 	/**
 	 * @ingroup tz_core_lua
 	 * @brief Retrieve a int from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
-	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
+	 * @return @ref tz::error_code::precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<std::int64_t, tz::error_code> lua_stack_get_int(std::size_t id);
 	/**
 	 * @ingroup tz_core_lua
 	 * @brief Retrieve a number from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
-	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
+	 * @return @ref tz::error_code::precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<double, tz::error_code> lua_stack_get_number(std::size_t id);
 	/**
 	 * @ingroup tz_core_lua
 	 * @brief Retrieve a string from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
-	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
+	 * @return @ref tz::error_code::precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<std::string, tz::error_code> lua_stack_get_string(std::size_t id);
 
