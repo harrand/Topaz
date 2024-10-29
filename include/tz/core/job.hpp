@@ -5,20 +5,25 @@
 
 namespace tz
 {
+	/**
+	 * @ingroup tz_core
+	 * @defgroup tz_core_job Job System
+	 * @brief Submit async jobs to an internal threadpool.
+	 */
 	namespace detail
 	{
 		struct job_tag_t{};
 	}
 	using job_handle = tz::handle<detail::job_tag_t>;
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Represents a function that will be executed on a job worker via @ref job_execute.
 	 */
 	using job_function = std::function<void()>;
 	using job_worker = std::size_t;
 
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Execute a function as a new job.
 	 *
 	 * This creates a new job which will be picked up by any worker thread as soon as possible. You can query the job's progress via @ref job_complete, or block the wait for it to finish via @ref job_wait.
@@ -30,7 +35,7 @@ namespace tz
 	 */
 	job_handle job_execute(job_function fn);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Execute a function as a new job - but can only be picked up by a specific worker.
 	 *
 	 * @note As a rule-of-thumb, prefer @ref job_execute in all situations unless you *must* run work on a specific thread.
@@ -44,24 +49,24 @@ namespace tz
 	 */
 	job_handle job_execute_on(job_function fn, job_worker worker);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Block the current thread until the job specified has been fully completed.
 	 */
 	void job_wait(job_handle job);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Query as to whether the specific job has been fully completed or not.
 	 */
 	bool job_complete(job_handle job);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Estimate the total number of jobs that have been created but not yet completed.
 	 *
 	 * You should assume the returned value to be an estimate -- a lower bound on the real number. It is also absolutely possible that many jobs are completed between the time of you calling this function and inspecting the result.
 	 */
 	std::size_t job_count();
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_job
 	 * @brief Retrieve the number of worker threads.
 	 *
 	 * The returned value is unaffected by whether these worker threads are currently carrying out work/are idle. You can assume this number will never change throughout your application's runtime.

@@ -9,6 +9,12 @@ namespace tz
 {
 	/**
 	 * @ingroup tz_core
+	 * @defgroup tz_core_lua Lua Scripting
+	 * @brief Execute lightweight lua code within the engine.
+	 */
+
+	/**
+	 * @ingroup tz_core_lua
 	 * @brief Represents the signature for a function that can be called from lua.
 	 *
 	 * You might be expecting `int(lua_State*)` if you're used to using Lua directly. However, lua headers are not available to you, so this is the only signature you will worry about.
@@ -35,7 +41,7 @@ namespace tz
 	using lua_fn = int(*)();
 	struct lua_nil{};
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Attempt to execute a local lua file on the current thread.
 	 * @param path Path to a local file containing lua code.
 	 *
@@ -44,7 +50,7 @@ namespace tz
 	 */
 	tz::error_code lua_execute_file(std::filesystem::path path);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Attempt to execute some lua code on the current thread.
 	 * @param lua_src String containing lua code to execute.
 	 *
@@ -52,21 +58,21 @@ namespace tz
 	 */
 	tz::error_code lua_execute(std::string_view lua_src);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to be nil.
 	 * @param varname Name of the variable to set.
 	 * @return @ref tz::error_code::unknown_error If an error occurred.
 	 */
 	tz::error_code lua_set_nil(std::string_view varname);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to be the empty table "{}"
 	 * @param varname Name of the variable to set.
 	 * @return @ref tz::error_code::unknown_error If an error occurred.
 	 */
 	tz::error_code lua_set_emptytable(std::string_view varname);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to a new bool value.
 	 * @param varname Name of the variable to set.
 	 * @param v Value to set
@@ -74,7 +80,7 @@ namespace tz
 	 */
 	tz::error_code lua_set_bool(std::string_view varname, bool v);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to a new int value.
 	 * @param varname Name of the variable to set.
 	 * @param v Value to set
@@ -82,7 +88,7 @@ namespace tz
 	 */
 	tz::error_code lua_set_int(std::string_view varname, std::int64_t v);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to a new number value.
 	 * @param varname Name of the variable to set.
 	 * @param v Value to set
@@ -90,7 +96,7 @@ namespace tz
 	 */
 	tz::error_code lua_set_number(std::string_view varname, double v);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Set a variable in lua to a new string value.
 	 * @param varname Name of the variable to set.
 	 * @param v Value to set
@@ -98,7 +104,7 @@ namespace tz
 	 */
 	tz::error_code lua_set_string(std::string_view varname, std::string str);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Define a new function in lua.
 	 * @param varname Name of the function when called in lua code.
 	 * @param v Pointer to an existing function to expose to lua.
@@ -107,28 +113,28 @@ namespace tz
 	tz::error_code lua_define_function(std::string_view varname, lua_fn fn);
 
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve the value of a bool variable.
 	 * @param varname Name of the variable to retrieve.
 	 * @return @ref tz::error_code::precondition_failure If such a variable does not exist, or does not match the type you requested.
 	 */
 	std::expected<bool, tz::error_code> lua_get_bool(std::string_view varname);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve the value of a int variable.
 	 * @param varname Name of the variable to retrieve.
 	 * @return @ref tz::error_code::precondition_failure If such a variable does not exist, or does not match the type you requested.
 	 */
 	std::expected<std::int64_t, tz::error_code> lua_get_int(std::string_view varname);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve the value of a number variable.
 	 * @param varname Name of the variable to retrieve.
 	 * @return @ref tz::error_code::precondition_failure If such a variable does not exist, or does not match the type you requested.
 	 */
 	std::expected<double, tz::error_code> lua_get_number(std::string_view varname);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve the value of a string variable.
 	 * @param varname Name of the variable to retrieve.
 	 * @return @ref tz::error_code::precondition_failure If such a variable does not exist, or does not match the type you requested.
@@ -136,28 +142,28 @@ namespace tz
 	std::expected<std::string, tz::error_code> lua_get_string(std::string_view varname);
 
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve a bool from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
 	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<bool, tz::error_code> lua_stack_get_bool(std::size_t id);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve a int from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
 	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<std::int64_t, tz::error_code> lua_stack_get_int(std::size_t id);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve a number from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
 	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
 	 */
 	std::expected<double, tz::error_code> lua_stack_get_number(std::size_t id);
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retrieve a string from the stack at the given index.
 	 * @param id Position on the stack to retrieve.
 	 * @return @ref tz::error_precondition_failure If the stack is too small, or the value at the position you specifies does not match the type you asked for.
@@ -165,14 +171,14 @@ namespace tz
 	std::expected<std::string, tz::error_code> lua_stack_get_string(std::size_t id);
 
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retreieve a string describing the lua callstack right now.
 	 *
 	 * This might be useful for debugging purposes.
 	 */
 	std::string lua_debug_callstack();
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retreieve a string describing the entire lua stack right now.
 	 *
 	 * This might be useful for debugging purposes.
@@ -210,7 +216,7 @@ namespace tz
 	inline constexpr static_for_t<F, L> static_for = {};
 
 	/**
-	 * @ingroup tz_core
+	 * @ingroup tz_core_lua
 	 * @brief Retreve a set of arguments from the stack.
 	 * @pre The values on the top of the stack must perfectly correspond to the type parameters you pass in, otherwise a runtime error will occur.
 	 * You are recommended to use this in your own @ref lua_fn functions that you expose to lua via @ref lua_define_function.
