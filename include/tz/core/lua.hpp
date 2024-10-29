@@ -24,7 +24,7 @@ namespace tz
 	 *		- Call @ref lua_parse_args to retrieve all the arguments of your function at once. This is recommended for most use-cases.
 	 *
 	 * Example: C function callable in lua:
-	 * ``` 
+	 * ```c
 	 * int fnimpl()
 	 * {
 	 * 		auto [arg1, arg2] = tz::lua_parse_args<int, std::string>();
@@ -34,7 +34,9 @@ namespace tz
 	 * }
 	 * // In your application initialisation code:
 	 * tz::lua_define_function("my_cool_function", fnimpl);
-	 * // In your lua code:
+	 * ``` 
+	 * In your lua code:
+	 * ```lua
 	 * ret1, ret2 = my_cool_function(123, "Bob" .. " Marley")
 	 * ``` 
 	 */
