@@ -64,4 +64,38 @@ namespace tz
 		}
 		return tz::error_code::success;
 	}
+
+	tz::error_code lua_set_nil(std::string_view varname)
+	{
+		return lua_execute(std::format("{} = nil", varname));
+	}
+
+	tz::error_code lua_set_emptytable(std::string_view varname)
+	{
+		return lua_execute(std::format("{} = {{}}", varname));
+	}
+
+	tz::error_code lua_set_bool(std::string_view varname, bool v)
+	{
+		return lua_execute(std::format("{} = {}", varname, v ? "true" : "false"));
+	}
+
+	tz::error_code lua_set_int(std::string_view varname, std::int64_t v)
+	{
+		return lua_execute(std::format("{} = {}", varname, v));
+	}
+
+	tz::error_code lua_set_number(std::string_view varname, double v)
+	{
+		return lua_execute(std::format("{} = {}", varname, v));
+	}
+
+	tz::error_code lua_define_function(std::string_view varname, lua_fn fn)
+	{
+		lua_pushcfunction(lua, reinterpret_cast<lua_CFunction>(fn));
+		std::string tmp = std::format("tmp_{}", varname);
+		lua_setglobal(lua, tmp.c_str());
+		lua_execute(std::format("{} = {}", varname, tmp));
+		return tz::error_code::success;
+	}
 }
