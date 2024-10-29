@@ -17,7 +17,7 @@ void do_work()
 
 
 	tz_must(tz::lua_execute("myvar = \"hello there\""));
-	std::string myvar = tz_must(tz::lua_get_string("myvr"));
+	std::string myvar = tz_must(tz::lua_get_string("myvar"));
 	tz_assert(myvar == "hello there", "string get failed");
 }
 
