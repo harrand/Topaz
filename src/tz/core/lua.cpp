@@ -129,6 +129,23 @@ namespace tz
 	GET_IMPL(number, double, LUA_TNUMBER, lua_tonumber)
 	GET_IMPL(string, std::string, LUA_TSTRING, lua_tostring)
 
+
+	#define STACK_GET_IMPL(api_typename, cpp_typename, lua_typeid, lua_convfn, lua_isfn) std::expected<cpp_typename, tz::error_code> lua_stack_get_##api_typename(std::size_t id){\
+		if(lua_isfn(lua, id))\
+		{\
+			return lua_convfn(lua, id);\
+		}\
+		else\
+		{\
+			UNERR(tz::error_code::precondition_failure, "lua stack entry {} was requested as type \"{}\", but is of type \"{}\"\n\tdetails:\n{}\n{}", id, lua_typename(lua, lua_typeid), lua_typename(lua, lua_type(lua, id)), lua_debug_stack(), lua_debug_callstack());\
+		}\
+	}
+
+	STACK_GET_IMPL(bool, bool, LUA_TBOOLEAN, lua_toboolean, lua_isboolean)
+	STACK_GET_IMPL(int, std::int64_t, LUA_TNUMBER, lua_tointeger, lua_isinteger)
+	STACK_GET_IMPL(number, double, LUA_TNUMBER, lua_tonumber, lua_isnumber)
+	STACK_GET_IMPL(string, std::string, LUA_TSTRING, lua_tostring, lua_isstring)
+
 	std::string lua_debug_callstack()
 	{
 		lua_execute("_tmp_traceback_data = debug.traceback()");

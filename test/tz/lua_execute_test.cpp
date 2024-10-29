@@ -3,9 +3,11 @@
 #include "tz/topaz.hpp"
 
 int value = 0;
-int increment(void* ctx)
+int increment()
 {
-	(void)ctx;
+	auto [val, str] = tz::lua_parse_args<int, std::string>();
+	tz_assert(val == 50, "lua function passing failed arg0");
+	tz_assert(str == "test", "lua function passing failed arg1");
 	value++;
 	return 0;
 }
@@ -13,7 +15,7 @@ int increment(void* ctx)
 void do_work()
 {
 	tz_must(tz::lua_define_function("foo", increment));
-	tz_must(tz::lua_execute("foo()"));
+	tz_must(tz::lua_execute("foo(50, \"test\")"));
 
 
 	tz_must(tz::lua_execute("myvar = \"hello there\""));
