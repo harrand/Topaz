@@ -2,6 +2,7 @@
 #define TOPAZ_LUA_HPP
 #include "tz/core/error.hpp"
 #include <filesystem>
+#include <expected>
 
 namespace tz
 {
@@ -29,7 +30,23 @@ namespace tz
 	tz::error_code lua_set_bool(std::string_view varname, bool v);
 	tz::error_code lua_set_int(std::string_view varname, std::int64_t v);
 	tz::error_code lua_set_number(std::string_view varname, double v);
+	tz::error_code lua_set_string(std::string_view varname, std::string str);
 	tz::error_code lua_define_function(std::string_view varname, lua_fn fn);
+
+	std::expected<bool, tz::error_code> lua_get_bool(std::string_view varname);
+	std::expected<std::int64_t, tz::error_code> lua_get_int(std::string_view varname);
+	std::expected<double, tz::error_code> lua_get_number(std::string_view varname);
+	std::expected<std::string, tz::error_code> lua_get_string(std::string_view varname);
+
+	std::expected<bool, tz::error_code> lua_stack_get_bool(std::size_t id);
+	std::expected<std::int64_t, tz::error_code> lua_stack_get_int(std::size_t id);
+	std::expected<double, tz::error_code> lua_stack_get_number(std::size_t id);
+	std::expected<std::string, tz::error_code> lua_stack_get_string(std::size_t id);
+	std::string lua_debug_callstack();
+	std::string lua_debug_stack();
+
+	template<typename... Ts>
+	std::tuple<Ts...> lua_parse_args(void* arg);
 }
 
 #endif // TOPAZ_LUA_HPP

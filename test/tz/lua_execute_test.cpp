@@ -14,6 +14,11 @@ void do_work()
 {
 	tz_must(tz::lua_define_function("foo", increment));
 	tz_must(tz::lua_execute("foo()"));
+
+
+	tz_must(tz::lua_execute("myvar = \"hello there\""));
+	std::string myvar = tz_must(tz::lua_get_string("myvr"));
+	tz_assert(myvar == "hello there", "string get failed");
 }
 
 int main()
@@ -34,6 +39,7 @@ int main()
 		}));
 	}
 	tz_assert(value == job_count + 1, "boo");
+
 	tz::terminate();
 	return 0;
 }

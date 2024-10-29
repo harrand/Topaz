@@ -2,6 +2,7 @@
 #include "tz/topaz.hpp"
 
 #include "tz/core/job.hpp"
+#include <any>
 
 extern "C"
 {
@@ -60,7 +61,7 @@ namespace tz
 		if(!ret)
 		{
 			std::string code_snippet{lua_src.data(), lua_src.data() + std::min(20uz, lua_src.size())};
-			RETERR(tz::error_code::unknown_error, "lua error while executing code \"{}...\": {}", code_snippet.c_str(), err != nullptr ? err : "<no error message>");
+			RETERR(tz::error_code::unknown_error, "lua error while executing code \"{}...\": {}\n\tdetails:\n{}\n{}", code_snippet.c_str(), err != nullptr ? err : "<no error message>", lua_debug_stack(), lua_debug_callstack());
 		}
 		return tz::error_code::success;
 	}
@@ -90,6 +91,11 @@ namespace tz
 		return lua_execute(std::format("{} = {}", varname, v));
 	}
 
+	tz::error_code lua_set_string(std::string_view varname, std::string v)
+	{
+		return lua_execute(std::format("{} = \"{}\"", varname, v));
+	}
+
 	tz::error_code lua_define_function(std::string_view varname, lua_fn fn)
 	{
 		lua_pushcfunction(lua, reinterpret_cast<lua_CFunction>(fn));
@@ -97,5 +103,103 @@ namespace tz
 		lua_setglobal(lua, tmp.c_str());
 		lua_execute(std::format("{} = {}", varname, tmp));
 		return tz::error_code::success;
+	}
+
+	int impl_lua_get_var(std::string_view varname, int& stack_sz);
+
+	#define GET_IMPL(api_typename, cpp_typename, lua_typeid, lua_convfn) std::expected<cpp_typename, tz::error_code> lua_get_##api_typename(std::string_view varname){\
+		int stack_usage = 0;\
+		auto innerfn = [&varname, &stack_usage]()->std::expected<cpp_typename, tz::error_code>{\
+			if(impl_lua_get_var(varname, stack_usage) == lua_typeid)\
+			{\
+				return static_cast<cpp_typename>(lua_convfn(lua, -1));\
+			}\
+			else\
+			{\
+				UNERR(tz::error_code::precondition_failure, "variable \"{}\" was requested as type \"{}\", but is of type \"{}\"\n\tdetails:\n{}\n{}", varname, lua_typename(lua, lua_typeid), lua_typename(lua, lua_type(lua, -1)), lua_debug_stack(), lua_debug_callstack());\
+			}\
+		};\
+		auto ret = innerfn();\
+		lua_pop(lua, stack_usage);\
+		return ret;\
+	}
+
+	GET_IMPL(bool, bool, LUA_TBOOLEAN, lua_toboolean)
+	GET_IMPL(int, std::int64_t, LUA_TNUMBER, lua_tointeger)
+	GET_IMPL(number, double, LUA_TNUMBER, lua_tonumber)
+	GET_IMPL(string, std::string, LUA_TSTRING, lua_tostring)
+
+	std::string lua_debug_callstack()
+	{
+		lua_execute("_tmp_traceback_data = debug.traceback()");
+		return lua_get_string("_tmp_traceback_data").value_or("<no callstack>");
+	}
+
+	std::string lua_debug_stack()
+	{
+		if(!lua_checkstack(lua, 3))
+		{
+			return "<cant collect stack - oom>";
+		}
+		std::string ret;
+
+		int top = lua_gettop(lua);
+		int bottom = 1;
+		ret = "=== stack (size: " + std::to_string(top - bottom + 1) + ") ===\n";
+		lua_getglobal(lua, "tostring");
+		for(int i = top; i >= bottom; i--)
+		{
+			lua_pushvalue(lua, -1);
+			lua_pushvalue(lua, i);
+			lua_pcall(lua, 1, 1, 0);
+			const char* str = lua_tostring(lua, -1);
+			ret += std::string(">") + std::to_string(i) + ": ";
+			if(str == nullptr)
+			{
+				ret += luaL_typename(lua, i) + std::string("\n");
+			}
+			else
+			{
+				ret += str + std::string("\n");
+			}
+			lua_pop(lua, 1);
+		}
+		lua_pop(lua, 1);
+		return ret + "=== end ===";
+	}
+
+	// impl
+
+	std::vector<std::string> impl_string_split(const std::string_view& str, const std::string& delim)
+	{
+		std::vector<std::string> result;
+		std::size_t start = 0;
+
+		for(std::size_t found = str.find(delim); found != std::string::npos; found = str.find(delim, start))
+		{
+			result.emplace_back(str.begin() + start, str.begin() + found);
+			start = found + delim.size();
+		}
+		if (start != str.size())
+			result.emplace_back(str.begin() + start, str.end());
+		return result;      
+	}
+
+	int impl_lua_get_var(std::string_view varname, int& stack_sz)
+	{
+		auto bits = impl_string_split(varname, ".");
+		int type = lua_getglobal(lua, bits.front().c_str());
+		bits.erase(bits.begin());
+		stack_sz++;
+		for(const std::string& bit : bits)
+		{
+			type = lua_getfield(lua, -1, bit.c_str());
+			stack_sz++;
+			if(type == LUA_TNIL)
+			{
+				break;
+			}
+		}
+		return type;
 	}
 }
