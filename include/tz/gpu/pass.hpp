@@ -193,6 +193,18 @@ namespace tz::gpu
 
 	/**
 	 * @ingroup tz_gpu_pass
+	 * @brief Add a new image resource to be used in the pass.
+	 * @return @ref tz::error_code::invalid_value If you fail to provide a valid image resource. Note that this excludes buffer resources, the window resource, and the null resource.
+	 * @return @ref tz::error_code::driver_hazard If there are too many images used by the pass already. Passes have an implementation-defined maximum image count that is guaranteed to be at least 1024.
+	 *
+	 * This will permanently increase the number of resources used in the pass. It is not possible to change the shader used by a pass, so the shader associated with the pass is expected to conditionally use the new image id anyway.
+	 *
+	 * All other resources used by the pass are unchanged. The index of this new image to be used in the shader will be equal to the previous number of images.
+	 */
+	tz::error_code pass_add_image_resource(pass_handle pass, resource_handle res);
+
+	/**
+	 * @ingroup tz_gpu_pass
 	 * @brief Manually destroy a pass.
 	 *
 	 * Passes can be quite heavy in the context of both CPU and GPU memory. This is due to internal components such as recorded command buffers, synchronisation primitives and compiled shader code.

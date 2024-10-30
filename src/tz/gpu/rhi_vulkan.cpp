@@ -125,6 +125,7 @@ namespace tz::gpu
 	{
 		pass_info info;
 		std::vector<resource_handle> colour_targets;
+		std::vector<resource_handle> resources;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
 		VkBuffer meta_buffer = VK_NULL_HANDLE;
@@ -766,6 +767,10 @@ namespace tz::gpu
 
 	std::expected<resource_handle, tz::error_code> create_image(image_info info)
 	{
+		if(info.data.size_bytes() == 0)
+		{
+			UNERR(tz::error_code::invalid_value, "image resource ({}x{}) was not provided any data", info.width, info.height);
+		}
 		auto hanval = resources.size();
 		resource_info& res = resources.emplace_back();
 		res.res = info;
@@ -1093,6 +1098,7 @@ namespace tz::gpu
 		std::size_t ret_id = passes.size();
 		auto& pass = passes.emplace_back();
 		std::size_t buffer_count = 0;
+		pass.resources.resize(info.resources.size());
 		for(resource_handle resh : info.resources)
 		{
 			// todo: assert not widnow resouces or nullhand
@@ -1101,7 +1107,9 @@ namespace tz::gpu
 			{
 				buffer_count++;
 			}
+			pass.resources.push_back(resh);
 		}
+		pass.info.resources = pass.resources;
 		// the meta buffer must always exist. if we have no buffer resources, then it just sits at a single byte.
 		VkBufferCreateInfo meta_create
 		{
@@ -1423,6 +1431,52 @@ namespace tz::gpu
 	void pass_set_kernel(pass_handle compute_pass, tz::v3u kernel)
 	{
 		passes[compute_pass.peek()].info.compute.kernel = kernel;
+	}
+
+	tz::error_code pass_add_image_resource(pass_handle pass, resource_handle res)
+	{
+		// wait for all shit to be done.
+		vkDeviceWaitIdle(current_device);
+
+		if(res == tz::nullhand || res == tz::gpu::window_resource)
+		{
+			RETERR(tz::error_code::invalid_value, "invalid resource handle ({}) passed to pass_add_image_resource. you can only add proper image resources to a pass.", res == tz::nullhand ? "null" : "window resource");
+		}
+		const auto& img = resources[res.peek()];
+		if(img.is_invalid())
+		{
+			RETERR(tz::error_code::invalid_value, "invalid resource handle passed to pass_add_image_resource. you can only add a valid image resource to a pass.");
+		}
+		else if(img.is_buffer())
+		{
+			RETERR(tz::error_code::invalid_value, "buffer resource passed to pass_add_image_resource. you can only add image resources to a pass, the buffer resources can never change unless you create a new pass.");
+		}
+
+		std::size_t image_count = 0;
+		auto& passdata = passes[pass.peek()];
+
+		for(resource_handle existing_res : passdata.info.resources)
+		{
+			if(existing_res != tz::window_resource && existing_res != tz::nullhand)
+			{
+				if(resources[existing_res.peek()].is_image())
+				{
+					image_count++;
+				}
+			}
+		}
+		if(image_count >= max_image_count_per_pass)
+		{
+			RETERR(tz::error_code::driver_hazard, "attempted to add a new image resource to pass {}, but that pass already has the maximum number of image resources possible ({})", pass.peek(), max_image_count_per_pass);
+		}
+
+		passdata.resources.push_back(res);
+		passdata.info.resources = passdata.resources;
+
+		// need to write a new descriptor image as it's there now.
+		impl_write_single_resource(res);
+		impl_populate_descriptors(pass);
+		return tz::error_code::success;
 	}
 
 	void destroy_pass(pass_handle pass)
@@ -2173,6 +2227,7 @@ namespace tz::gpu
 		vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
 		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
 		vkResetFences(current_device, 1, &scratch_fence);
+		vkResetCommandBuffer(scratch_cmds, 0);
 		// no need to write anything to the meta buffer - metabuffer only changes if any of the buffers are *resized* coz the VkBuffer is different and the device address is also different.
 	}
 
@@ -2186,12 +2241,12 @@ namespace tz::gpu
 			.pInheritanceInfo = nullptr
 		};
 		// todo: error checking.
-		vkBeginCommandBuffer(scratch_cmds, &create);
 		const auto& pass = passes[passh.peek()];
 		if(pass.info.resources.empty())
 		{
 			return;
 		}
+		vkBeginCommandBuffer(scratch_cmds, &create);
 		std::vector<VkDeviceAddress> buffer_addresses = {};
 		for(const auto& resh : pass.info.resources)
 		{
