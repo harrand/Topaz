@@ -46,6 +46,10 @@ topaz_add_library(
 		src/tz/gpu/rhi_vulkan.cpp
 		src/tz/os/impl_win32.cpp
 		src/tz/io/image.cpp
+		src/tz/ren/quad.cpp
+	SHADERS
+		src/tz/ren/quad.vertex.tzsl
+		src/tz/ren/quad.fragment.tzsl
 	DEFINE_PACKAGE
 )
 

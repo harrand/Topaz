@@ -80,3 +80,9 @@ topaz_add_test(
     test/tz/shaders/triangle.vertex.tzsl
     test/tz/shaders/triangle.fragment.tzsl
 )
+
+topaz_add_test(
+  TARGET tz_ren_quad_test
+  SOURCES
+    ren_quad_test.cpp
+)
