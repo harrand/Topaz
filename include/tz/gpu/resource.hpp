@@ -202,7 +202,7 @@ namespace tz::gpu
 	 * 		- If the image was created with @ref image_type::rgba, then each pixel should be 4 bytes - one for each component (0-255).
 	 * 		- If the image was created with @ref image_type::depth or @ref image_type::floats, then each pixel should be 4 bytes - a single signed 32-bit float.
 	 */
-	void resource_write(resource_handle res, std::span<const std::byte> new_data);
+	void resource_write(resource_handle res, std::span<const std::byte> new_data, std::size_t offset = 0);
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Retrieves the current data within a resource.

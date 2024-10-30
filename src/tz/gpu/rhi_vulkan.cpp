@@ -898,12 +898,12 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
-	void resource_write(resource_handle resh, std::span<const std::byte> new_data)
+	void resource_write(resource_handle resh, std::span<const std::byte> new_data, std::size_t offset)
 	{
 		auto& res = resources[resh.peek()];
 		// update the resource data cpu-side.
-		tz_assert(new_data.size_bytes() == res.data.size(), "resource write data span is of wrong size.");
-		std::copy(new_data.begin(), new_data.end(), res.data.begin());
+		tz_assert(offset + new_data.size_bytes() <= res.data.size(), "resource write data span is of wrong size.");
+		std::copy(new_data.begin(), new_data.end(), res.data.begin() + offset);
 		// make sure the change is resident GPU-side.
 		// definitely could cause gpu sync issues if commands are currently in-flight that are reading from it.
 		impl_write_single_resource(resh);
