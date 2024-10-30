@@ -159,12 +159,14 @@ namespace tz::gpu
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Manually destroy a resource.
+	 * @return @ref tz::error_code::invalid_value If the resource handle provided is invalid. This usually happens due to memory corruption or an accidental double-delete.
+	 * @return @ref tz::error_code::concurrent_usage If the resource is being used by at least one pass.
 	 *
 	 * If you know a resource uses alot of memory, or you're sure you're not going to use it anymore, you can destroy it here, causing all of its memory to be available for reuse.
 	 *
 	 * @note If you never destroy a resource manually, it will automatically be destroyed for you when you call @ref tz::terminate.
 	 *
-	 * @warning Be aware of GPU synchronisation! Ensure that you do not destroy a resource that is currently in-use by ongoing GPU work. Take care to ensure that renderers using the resource have finished their work before tearing it down.
+	 * @warning You must not delete a resource that has been registered for use by an existing pass, until you delete all such passes first.
 	 * 
 	 **/
 	tz::error_code destroy_resource(resource_handle res);

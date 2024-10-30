@@ -17,6 +17,8 @@ namespace tz
 		partial_success,
 		/// An error has occurred because some previously-required setup has not been complete. The most common cause of this is not initialising the engine via @ref tz::initialise
 		precondition_failure,
+		/// An error has occurred because an illegal/incorrect value has been detected.
+		invalid_value,
 		/// An error has occurred because the hardware currently being used is not suitable for the given task.
 		hardware_unsuitable,
 		/// An error has occurred due to an engine-side logic error, and you should submit a bug report.
@@ -29,6 +31,8 @@ namespace tz
 		oom,
 		/// An error has occurred due to lack of GPU memory.
 		voom,
+		/// An error has occurred due to an operation being invalid while a given resource is in use by something else.
+		concurrent_usage,
 		_count
 	};
 
@@ -39,12 +43,14 @@ namespace tz
 			"success",
 			"partial success",
 			"precondition failure error",
+			"invalid value error",
 			"hardware unsuitability error",
 			"engine bug error",
 			"driver hazard error",
 			"unknown error",
 			"out of CPU memory error",
 			"out of GPU memory error",
+			"concurrent usage error"
 		};
 	}
 

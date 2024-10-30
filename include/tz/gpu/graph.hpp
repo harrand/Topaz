@@ -91,6 +91,7 @@ namespace tz::gpu
 	/**
 	 * @ingroup tz_gpu_graph
 	 * @brief Create a new graph, which can be used for rendering a frame.
+	 * @return @ref tz::error_code::invalid_value If you define a number of sets of dependencies that is greater than the timeline size. That is - the number of sets of dependencies should be less than or equal to the total number of passes in the graph.
 	 */
 	std::expected<graph_handle, tz::error_code> create_graph(graph_info graph);
 	/**

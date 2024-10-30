@@ -879,9 +879,18 @@ namespace tz::gpu
 	tz::error_code destroy_resource(resource_handle res)
 	{
 		auto& info = resources[res.peek()];
+		for(std::size_t i = 0; i < passes.size(); i++)
+		{
+			const auto& pass = passes[i];
+			auto iter = std::find(pass.info.resources.begin(), pass.info.resources.end(), res);
+			if(iter != pass.info.resources.end())
+			{
+				RETERR(tz::error_code::concurrent_usage, "Deletion of resource {} requested, but this resource is used by pass {}", res.peek(), i);
+			}
+		}
 		if(info.is_invalid())
 		{
-			RETERR(tz::error_code::precondition_failure, "invalid resource handle - either the handle is garbage or you have already destroyed it.");
+			RETERR(tz::error_code::invalid_value, "invalid resource handle - either the handle is garbage or you have already destroyed it.");
 		}
 		else if(info.is_buffer())
 		{
@@ -1061,7 +1070,7 @@ namespace tz::gpu
 	{
 		if(info.shader == tz::nullhand)
 		{
-			UNERR(tz::error_code::precondition_failure, "no shader program provided when creating pass. you must provide a valid shader program.");
+			UNERR(tz::error_code::invalid_value, "no shader program provided when creating pass. you must provide a valid shader program.");
 		}
 		if(info.graphics.index_buffer != tz::nullhand)
 		{
@@ -1136,7 +1145,7 @@ namespace tz::gpu
 		{
 			if(bottom_part == 0x0)
 			{
-				UNERR(tz::error_code::precondition_failure, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader. a graphics shader program must be comprised of both a vertex shader and fragment shader");
+				UNERR(tz::error_code::invalid_value, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader. a graphics shader program must be comprised of both a vertex shader and fragment shader");
 			}
 			auto& shader2 = shaders[--bottom_part];
 
@@ -1166,7 +1175,7 @@ namespace tz::gpu
 
 			if(info.graphics.colour_targets.empty())
 			{
-				UNERR(tz::error_code::precondition_failure, "detected graphics pass with no colour targets. a graphics pass must have *at least* one colour target");
+				UNERR(tz::error_code::invalid_value, "detected graphics pass with no colour targets. a graphics pass must have *at least* one colour target");
 			}
 			tz::error_code colour_target_validity = impl_validate_colour_targets(info, pass);
 			if(colour_target_validity != tz::error_code::success)
@@ -1420,7 +1429,7 @@ namespace tz::gpu
 	{
 		if(info.dependencies.size() > info.timeline.size())
 		{
-			UNERR(tz::error_code::precondition_failure, "invalid graph - {} sets of dependencies but only {} passes in the timeline. the number of sets of dependencies should be less than or equal to the number of passes.", info.dependencies.size(), info.timeline.size());
+			UNERR(tz::error_code::invalid_value, "invalid graph - {} sets of dependencies but only {} passes in the timeline. the number of sets of dependencies should be less than or equal to the number of passes.", info.dependencies.size(), info.timeline.size());
 		}
 		std::size_t ret_id = graphs.size();
 		auto& graph = graphs.emplace_back();
@@ -2134,7 +2143,7 @@ namespace tz::gpu
 		};
 		// todo: error checking.
 		vkBeginCommandBuffer(scratch_cmds, &create);
-		impl_cmd_resource_write(scratch_cmds, resh, res.data, 0);
+		tz_must(impl_cmd_resource_write(scratch_cmds, resh, res.data, 0));
 
 		vkEndCommandBuffer(scratch_cmds);
 		VkPipelineStageFlags stage_mask = VK_PIPELINE_STAGE_NONE;
@@ -2180,7 +2189,7 @@ namespace tz::gpu
 			if(res.is_buffer())
 			{
 				const auto& buffer = std::get<buffer_info>(res.res);
-				impl_cmd_resource_write(scratch_cmds, resh, buffer.data, 0);
+				tz_must(impl_cmd_resource_write(scratch_cmds, resh, buffer.data, 0));
 				buffer_addresses.push_back(res.buffer_device_address);
 			}
 			else if(res.is_image())
@@ -2767,14 +2776,14 @@ namespace tz::gpu
 				const auto& res = resources[target.peek()];
 				if(!res.is_image())
 				{
-					RETERR(tz::error_code::precondition_failure, "colour target {} of pass \"{}\" is neither tz::gpu::window_resource nor a valid image resource. colour targets must consist of a valid image resource that is viable as a colour target, or the window resource.", i, pass.info.name);
+					RETERR(tz::error_code::invalid_value, "colour target {} of pass \"{}\" is neither tz::gpu::window_resource nor a valid image resource. colour targets must consist of a valid image resource that is viable as a colour target, or the window resource.", i, pass.info.name);
 				}
 				else
 				{
 					const auto& img = std::get<image_info>(res.res);
 					if(!(img.flags & image_flag::colour_target))
 					{
-						RETERR(tz::error_code::precondition_failure, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"colour_target\" flag.", i, pass.info.name);
+						RETERR(tz::error_code::invalid_value, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"colour_target\" flag.", i, pass.info.name);
 					}
 				}
 			}

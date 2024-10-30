@@ -150,10 +150,10 @@ namespace tz::gpu
 	 * @ingroup tz_gpu_pass
 	 * @brief Create a new pass.
 	 * @return On success: A @ref pass_handle corresponding to the newly created pass.
-	 * @return @ref tz::error_code::precondition_failure If you fail to provide a valid shader program.
-	 * @return @ref tz::error_code::precondition_failure If you provide a malformed shader program. A shader program is only well-formed if it consists of only a compute shader, OR it consists of a single vertex and fragment shader.
-	 * @return @ref tz::error_code::precondition_failure For a graphics pass if you fail to provide at least one colour target.
-	 * @return @ref tz::error_code::precondition_failure For a graphics pass if you provide a colour target that is invalid. A valid colour target is either a.) the window resource (and you have opened a window), b.) an image resource created with @ref tz::gpu::image_flag::colour_target
+	 * @return @ref tz::error_code::invalid_value If you fail to provide a valid shader program.
+	 * @return @ref tz::error_code::invalid_value If you provide a malformed shader program. A shader program is only well-formed if it consists of only a compute shader, OR it consists of a single vertex and fragment shader.
+	 * @return @ref tz::error_code::invalid_value For a graphics pass if you fail to provide at least one colour target.
+	 * @return @ref tz::error_code::invalid_value For a graphics pass if you provide a colour target that is invalid. A valid colour target is either a.) the window resource (and you have opened a window), b.) an image resource created with @ref tz::gpu::image_flag::colour_target
 	 * @return @ref tz::error_code::precondition_failure For a graphics pass if any colour target provided does not exactly match the dimensions of all other provided colour targets. All colour targets must be images with the same dimensions. This does mean that if you provide the window resource as a colour target, all other colour targets must have the same dimensions as the window.
 	 * @return @ref tz::error_code::oom If CPU memory is exhausted while trying to create the pass.
 	 * @return @ref tz::error_code::voom If GPU memory is exhausted while trying to create the pass.
