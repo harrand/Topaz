@@ -174,6 +174,38 @@ namespace tz
 
 	/**
 	 * @ingroup tz_core_lua
+	 * @brief Push a nil value onto the stack.
+	 */
+	void lua_push_nil();
+	/**
+	 * @ingroup tz_core_lua
+	 * @brief Push a bool value onto the stack.
+	 */
+	void lua_push_bool(bool v);
+	/**
+	 * @ingroup tz_core_lua
+	 * @brief Push an int value onto the stack.
+	 */
+	void lua_push_int(std::int64_t v);
+	/**
+	 * @ingroup tz_core_lua
+	 * @brief Push a number value onto the stack.
+	 */
+	void lua_push_number(double v);
+	/**
+	 * @ingroup tz_core_lua
+	 * @brief Push a string value onto the stack.
+	 */
+	void lua_push_string(std::string v);
+
+	/**
+	 * @ingroup tz_core_lua
+	 * @brief Retrieve the number of values on the stack currently.
+	 */
+	std::size_t lua_stack_size();
+
+	/**
+	 * @ingroup tz_core_lua
 	 * @brief Retreieve a string describing the lua callstack right now.
 	 *
 	 * This might be useful for debugging purposes.

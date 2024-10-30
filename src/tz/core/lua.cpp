@@ -146,6 +146,36 @@ namespace tz
 	STACK_GET_IMPL(number, double, LUA_TNUMBER, lua_tonumber, lua_isnumber)
 	STACK_GET_IMPL(string, std::string, LUA_TSTRING, lua_tostring, lua_isstring)
 
+	void lua_push_nil()
+	{
+		lua_pushnil(lua);
+	}
+
+	void lua_push_bool(bool v)
+	{
+		lua_pushboolean(lua, v);
+	}
+
+	void lua_push_int(std::int64_t v)
+	{
+		lua_pushinteger(lua, v);
+	}
+
+	void lua_push_number(double v)
+	{
+		lua_pushnumber(lua, v);
+	}
+
+	void lua_push_string(std::string v)
+	{
+		lua_pushstring(lua, v.c_str());
+	}
+
+	std::size_t lua_stack_size()
+	{
+		return lua_gettop(lua);
+	}
+
 	std::string lua_debug_callstack()
 	{
 		lua_execute("_tmp_traceback_data = debug.traceback()");
