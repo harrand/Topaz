@@ -907,15 +907,25 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
-	void resource_write(resource_handle resh, std::span<const std::byte> new_data, std::size_t offset)
+	tz::error_code resource_write(resource_handle resh, std::span<const std::byte> new_data, std::size_t offset)
 	{
 		auto& res = resources[resh.peek()];
 		// update the resource data cpu-side.
+		if(offset + new_data.size_bytes() > res.data.size())
+		{
+			RETERR(tz::error_code::invalid_value, "resource write at offset {} of size {} (total {}) is too large - the resource data is only of size {}", offset, new_data.size_bytes(), (offset + new_data.size_bytes()), res.data.size());
+		}
 		tz_assert(offset + new_data.size_bytes() <= res.data.size(), "resource write data span is of wrong size.");
 		std::copy(new_data.begin(), new_data.end(), res.data.begin() + offset);
 		// make sure the change is resident GPU-side.
 		// definitely could cause gpu sync issues if commands are currently in-flight that are reading from it.
 		impl_write_single_resource(resh);
+		return tz::error_code::success;
+	}
+
+	std::size_t resource_size(resource_handle resh)
+	{
+		return resources[resh.peek()].data.size();
 	}
 
 	std::span<const std::byte> resource_read(resource_handle resh)
@@ -938,27 +948,27 @@ namespace tz::gpu
 		tz_error("image resize NYI");
 	}
 
-	void index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices)
+	tz::error_code index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices)
 	{
-		resource_write(index_buffer, std::as_bytes(indices));
+		return resource_write(index_buffer, std::as_bytes(indices));
 	}
 
-	void draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws)
+	tz::error_code draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws)
 	{
 		std::vector<std::byte> mem(sizeof(std::uint32_t) + draws.size_bytes());
 		auto cursor = mem.data();
 		*reinterpret_cast<std::uint32_t*>(cursor) = count;
 		std::memcpy(cursor + sizeof(std::uint32_t), draws.data(), draws.size_bytes());
-		resource_write(draw_buffer, mem);
+		return resource_write(draw_buffer, mem);
 	}
 
-	void draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws)
+	tz::error_code draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws)
 	{
 		std::vector<std::byte> mem(sizeof(std::uint32_t) + draws.size_bytes());
 		auto cursor = mem.data();
 		*reinterpret_cast<std::uint32_t*>(cursor) = count;
 		std::memcpy(cursor + sizeof(std::uint32_t), draws.data(), draws.size_bytes());
-		resource_write(draw_buffer, mem);
+		return resource_write(draw_buffer, mem);
 	}
 
 	std::expected<shader_handle, tz::error_code> create_graphics_shader(std::string_view vertex_source, std::string_view fragment_source)

@@ -193,7 +193,7 @@ namespace tz::gpu
 	 * @brief Write some new data to a resource. The thread will block until the changes are resident GPU-side.
 	 * @param res Resource whose data should be changed.
 	 * @param new_data Region containing new memory for the provided resource.
-	 * @pre new_data.size_bytes() < X, where X is the number of bytes comprising the image's underlying data. Otherwise, the behaviour is undefined.
+	 * @return @ref tz::error_code::invalid_value If the write is too large. The size of the new data + offset must be less than or equal to the resource's size.
 	 *
 	 * If the region of new data is smaller than the total size of the resource's underlying data, then all bytes beyond the new data region will be unchanged and keep their previous state.
 	 *
@@ -204,7 +204,8 @@ namespace tz::gpu
 	 * 		- If the image was created with @ref image_type::rgba, then each pixel should be 4 bytes - one for each component (0-255).
 	 * 		- If the image was created with @ref image_type::depth or @ref image_type::floats, then each pixel should be 4 bytes - a single signed 32-bit float.
 	 */
-	void resource_write(resource_handle res, std::span<const std::byte> new_data, std::size_t offset = 0);
+	tz::error_code resource_write(resource_handle res, std::span<const std::byte> new_data, std::size_t offset = 0);
+	std::size_t resource_size(resource_handle res);
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Retrieves the current data within a resource.
@@ -220,21 +221,21 @@ namespace tz::gpu
 	 *
 	 * This is a helper function which will call @ref resource_write under-the-hood.
 	 */
-	void index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices);
+	tz::error_code index_buffer_write(resource_handle index_buffer, std::span<const index_t> indices);
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Write draw-indirect-count + commands into a buffer resource.
 	 *
 	 * This is a helper function which will call @ref resource_write under-the-hood.
 	 */
-	void draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws);
+	tz::error_code draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws);
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Write draw-indirect-count + indexed commands into a buffer resource.
 	 *
 	 * This is a helper function which will call @ref resource_write under-the-hood.
 	 */
-	void draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws);
+	tz::error_code draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws);
 }
 
 #endif // TOPAZ_GPU_RESOURCE_HPP
