@@ -47,7 +47,7 @@ namespace tz::gpu
 	VkQueue graphics_compute_queue = VK_NULL_HANDLE;
 	VkPipelineLayout default_layout = VK_NULL_HANDLE;
 	constexpr std::uint32_t max_global_image_count = 8192;
-	constexpr std::uint32_t max_image_count_per_pass = 1024;
+	constexpr std::uint32_t max_image_count_per_pass = 4096;
 
 	VkImage system_image = VK_NULL_HANDLE;
 	VmaAllocation system_image_mem = VK_NULL_HANDLE;
@@ -1457,7 +1457,7 @@ namespace tz::gpu
 
 		for(resource_handle existing_res : passdata.info.resources)
 		{
-			if(existing_res != tz::window_resource && existing_res != tz::nullhand)
+			if(existing_res != tz::gpu::window_resource && existing_res != tz::nullhand)
 			{
 				if(resources[existing_res.peek()].is_image())
 				{
