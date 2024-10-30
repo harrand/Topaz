@@ -1,6 +1,6 @@
 # Topaz Specific Ignores
 cpl/
-doc/*/
+docs/*/
 bin/
 extern/
 build/
