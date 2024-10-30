@@ -124,6 +124,7 @@ namespace tz::gpu
 	struct pass_data
 	{
 		pass_info info;
+		std::vector<resource_handle> colour_targets;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
 		VkBuffer meta_buffer = VK_NULL_HANDLE;
@@ -1374,6 +1375,11 @@ namespace tz::gpu
 		}
 
 		pass.info = info;
+		// store copy of colour targets as the span could go out of scope soon.
+		pass.colour_targets.resize(info.graphics.colour_targets.size());
+		std::copy(info.graphics.colour_targets.begin(), info.graphics.colour_targets.end(), pass.colour_targets.begin());
+		pass.info.graphics.colour_targets = pass.colour_targets;
+
 		pass.layout = default_layout;
 		pass_handle ret = static_cast<tz::hanval>(ret_id);
 		impl_write_all_resources(ret);
