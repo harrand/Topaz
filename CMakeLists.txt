@@ -58,7 +58,6 @@ target_link_libraries(topaz PUBLIC textc_lib)
 ######################
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-add_subdirectory(docs)
 include(cmake/build_config.cmake)
 setup_build_config()
 include(cmake/compiler.cmake)
