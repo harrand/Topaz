@@ -4,7 +4,8 @@
 #include "tz/gpu/graph.hpp"
 #include ImportedShaderHeader(noop, compute)
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	tz::initialise();
 

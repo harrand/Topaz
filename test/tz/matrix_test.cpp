@@ -82,7 +82,8 @@ void test_matrix_transpose()
     tz_assert(transposed == expected, "transpose() failed. Expected transposed matrix");
 }
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
     test_matrix_constructor<int, 2>();
     test_matrix_constructor<int, 3>();

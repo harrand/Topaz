@@ -102,7 +102,8 @@ void test_basic_operations()
               "Division failed. Expected: {{10.0f, 2.0f, 3.0f}}, got: {{{}, {}, {}}}", div_vec[0], div_vec[1], div_vec[2]);
 }
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	test_constructor<int, 2>();
 	test_constructor<int, 3>();

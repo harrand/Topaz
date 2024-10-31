@@ -13,7 +13,8 @@ void go()
 	tz::terminate();
 }
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	// go twice, to test that terminate -> initialise again works.
 	go();

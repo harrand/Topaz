@@ -23,7 +23,8 @@ void do_work()
 	tz_assert(myvar == "hello there", "string get failed");
 }
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	tz::initialise();
 	// initialise topaz

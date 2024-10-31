@@ -2,7 +2,8 @@
 #include "tz/os/file.hpp"
 #include "tz/io/image.hpp"
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	std::string imgdata = tz_must(tz::os::read_file("./files/img.png"));
 	std::span<const std::byte> span{reinterpret_cast<std::byte*>(imgdata.data()), imgdata.size()};

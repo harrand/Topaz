@@ -8,7 +8,8 @@
 #include ImportedShaderHeader(triangle, vertex)
 #include ImportedShaderHeader(triangle, fragment)
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	tz::initialise();
 	tz::os::open_window({.title = "tz_triangle_demo"});

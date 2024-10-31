@@ -3,7 +3,8 @@
 #include "tz/os/window.hpp"
 #include "tz/gpu/hardware.hpp"
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	tz::initialise();
 	tz::os::open_window({.flags = tz::os::window_flags::invisible});

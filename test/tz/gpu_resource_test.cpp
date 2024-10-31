@@ -2,7 +2,8 @@
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/resource.hpp"
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	tz::initialise();
 

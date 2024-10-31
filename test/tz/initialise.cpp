@@ -1,6 +1,7 @@
 #include "tz/topaz.hpp"
 
-int main()
+#include "tz/main.hpp"
+int tz_main()
 {
 	tz::initialise();
 	tz::terminate();
