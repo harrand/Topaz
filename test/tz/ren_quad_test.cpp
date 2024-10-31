@@ -13,12 +13,12 @@ int main()
 
 	tz::ren::quad_renderer_handle ren = tz_must(tz::ren::create_quad_renderer({}));
 
-	//tz_must(tz::ren::destroy_quad_renderer(ren));
 	while(tz::os::window_is_open())
 	{
 		tz::os::window_update();
 		tz::gpu::execute(tz::ren::quad_renderer_graph(ren));
 	}
 
+	tz_must(tz::ren::destroy_quad_renderer(ren));
 	tz::terminate();
 }

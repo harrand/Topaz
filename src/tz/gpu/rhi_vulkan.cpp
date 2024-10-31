@@ -883,6 +883,14 @@ namespace tz::gpu
 
 	tz::error_code destroy_resource(resource_handle res)
 	{
+		if(res == tz::nullhand)
+		{
+			RETERR(tz::error_code::invalid_value, "Attempt to destroy a null resource");
+		}
+		if(res == tz::gpu::window_resource)
+		{
+			RETERR(tz::error_code::invalid_value, "Attempt to destroy the window resource");
+		}
 		auto& info = resources[res.peek()];
 		for(std::size_t i = 0; i < passes.size(); i++)
 		{

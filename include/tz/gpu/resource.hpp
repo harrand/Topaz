@@ -159,6 +159,8 @@ namespace tz::gpu
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Manually destroy a resource.
+	 * @return @ref tz::error_code::invalid_value If you attempt to delete the null resource @ref tz::nullhand.
+	 * @return @ref tz::error_code::invalid_value If you attempt to delete the window resource @ref tz::gpu::window_resource.
 	 * @return @ref tz::error_code::invalid_value If the resource handle provided is invalid. This usually happens due to memory corruption or an accidental double-delete.
 	 * @return @ref tz::error_code::concurrent_usage If the resource is being used by at least one pass.
 	 *
