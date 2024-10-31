@@ -19,7 +19,7 @@ namespace tz
 			auto ret = matrix<T, N>::zero();
 			for(std::size_t i = 0; i < N; i++)
 			{
-				ret.mat[i * N] = T{1};
+				ret.mat[i * N + i] = T{1};
 			}
 			return ret;
 		}
