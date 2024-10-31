@@ -14,6 +14,11 @@ resource(id = 0) const buffer quad
 	quad_data data[];
 };
 
+resource(id = 1) const buffer camera
+{
+	mat4 projection;	
+};
+
 output(id = 0) vec3 out::tint;
 output(id = 1) vec2 out::uv;
 output(id = 2) uint out::texture_id;
@@ -36,7 +41,7 @@ void main()
 
 	vec2 position_worldspace = cur_quad.pos_scale.xy + (local_pos * cur_quad.pos_scale.zw);
 
-	out::position = vec4(position_worldspace, 0, 1);	
+	out::position = camera.projection * vec4(position_worldspace, 0, 1);	
 	out::tint = vec3(cur_quad.tint_red, cur_quad.tint_green, cur_quad.tint_blue);
 	out::uv = quad_texcoords[in::vertex_id % 6];
 	out::texture_id = cur_quad.texture_id;

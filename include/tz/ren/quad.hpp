@@ -47,6 +47,7 @@ namespace tz::ren
 	void set_quad_texture(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id);
 
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh);
+	void quad_renderer_update(quad_renderer_handle renh);
 }
 
 #endif // TOPAZ_REN_QUAD_HPP

@@ -1,4 +1,5 @@
 #include "tz/ren/quad.hpp"
+#include "tz/core/matrix.hpp"
 #include "tz/topaz.hpp"
 #include "tz/gpu/resource.hpp"
 #include "tz/gpu/pass.hpp"
@@ -14,6 +15,7 @@ namespace tz::ren
 	{
 		quad_renderer_info info = {};
 		tz::gpu::resource_handle data_buffer = tz::nullhand;
+		tz::gpu::resource_handle camera_buffer = tz::nullhand;
 		tz::gpu::pass_handle main_pass = tz::nullhand;
 		tz::gpu::graph_handle graph = tz::nullhand;
 		std::size_t quad_count = 0;
@@ -25,6 +27,11 @@ namespace tz::ren
 		tz::v4f pos_scale = {0.0f, 0.0f, 1.0f, 1.0f};
 		tz::v3f colour_tint = {1.0f, 1.0f, 1.0f};
 		std::uint32_t texture_id = -1;
+	};
+
+	struct camera_data
+	{
+		tz::m4f projection = tz::m4f::iden();
 	};
 
 	constexpr std::size_t initial_quad_capacity = 1024;
@@ -47,8 +54,15 @@ namespace tz::ren
 		ren.data_buffer = tz_must(tz::gpu::create_buffer
 		({
 			.data = std::as_bytes(std::span<const quad_data>(initial_quad_data)),
-			.name = "Quad Renderer Main Pass",
+			.name = "Quad Renderer Quad Buffer",
 			.flags = tz::gpu::buffer_flag::dynamic_access
+		}));
+
+		camera_data initial_camera_data;
+		ren.camera_buffer = tz_must(tz::gpu::create_buffer
+		({
+			.data = std::as_bytes(std::span<const camera_data>(&initial_camera_data, 1)),
+			.name = "Quad Renderer Camera Buffer"
 		}));
 
 		tz::gpu::resource_handle colour_targets[] = 
@@ -57,7 +71,8 @@ namespace tz::ren
 		};
 		tz::gpu::resource_handle resources[] =
 		{
-			ren.data_buffer
+			ren.data_buffer,
+			ren.camera_buffer
 		};
 		auto maybe_pass = tz::gpu::create_pass
 		({
@@ -91,6 +106,11 @@ namespace tz::ren
 		auto& ren = renderers[renh.peek()];
 		tz::gpu::destroy_pass(ren.main_pass);
 		auto ret = tz::gpu::destroy_resource(ren.data_buffer);
+		if(ret != tz::error_code::success)
+		{
+			return ret;
+		}
+		ret = tz::gpu::destroy_resource(ren.camera_buffer);
 		ren = {};
 		return ret;
 	}
@@ -194,5 +214,11 @@ namespace tz::ren
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh)
 	{
 		return renderers[renh.peek()].graph;
+	}
+
+	void quad_renderer_update(quad_renderer_handle renh)
+	{
+		auto& ren = renderers[renh.peek()];
+		(void)ren;
 	}
 }

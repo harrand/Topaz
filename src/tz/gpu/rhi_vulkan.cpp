@@ -2324,7 +2324,8 @@ namespace tz::gpu
 			.pSignalSemaphores = nullptr
 		};
 		// todo: check errors.
-		vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
+		VkResult res = vkQueueSubmit(graphics_compute_queue, 1, &submit, scratch_fence);	
+		tz_assert(res == VK_SUCCESS, "ruh roh");
 		vkWaitForFences(current_device, 1, &scratch_fence, VK_TRUE, std::numeric_limits<std::uint64_t>::max());
 		vkResetFences(current_device, 1, &scratch_fence);
 	}
