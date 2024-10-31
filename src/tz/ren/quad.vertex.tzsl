@@ -1,6 +1,32 @@
 shader(type = vertex);
 
+struct quad_data
+{
+	vec4 pos_scale;
+};
+
+resource(id = 0) const buffer quad
+{
+	quad_data data[];
+};
+
+vec2 quad_positions[6] = vec2[](
+	vec2(1.0, -1.0), vec2(1.0, 1.0), vec2(-1.0, -1.0),
+	vec2(1.0, 1.0), vec2(-1.0, 1.0), vec2(-1.0, -1.0)
+);
+
+vec2 quad_texcoords[6] = vec2[](
+	vec2(1.0, 1.0), vec2(1.0, 0.0), vec2(0.0, 1.0),
+	vec2(1.0, 0.0), vec2(0.0, 0.0), vec2(0.0, 1.0)
+);
+
 void main()
 {
-	
+	const uint quad_id = in::vertex_id / 6;
+	vec2 local_pos = quad_positions[in::vertex_id % 6];
+	quad_data cur_quad = quad.data[quad_id];
+
+	vec2 position_worldspace = cur_quad.pos_scale.xy + (local_pos * cur_quad.pos_scale.zw);
+
+	out::position = vec4(position_worldspace, 0, 1);	
 }

@@ -13,6 +13,9 @@ int main()
 
 	tz::ren::quad_renderer_handle ren = tz_must(tz::ren::create_quad_renderer({}));
 
+
+	tz::ren::quad_handle quad1 = tz_must(tz::ren::quad_renderer_create_quad(ren, {}));
+
 	while(tz::os::window_is_open())
 	{
 		tz::os::window_update();

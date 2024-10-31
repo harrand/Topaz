@@ -16,11 +16,12 @@ namespace tz::ren
 		tz::gpu::resource_handle data_buffer = tz::nullhand;
 		tz::gpu::pass_handle main_pass = tz::nullhand;
 		tz::gpu::graph_handle graph = tz::nullhand;
+		std::size_t quad_count = 0;
 	};
 
 	struct quad_data
 	{
-
+		tz::v4f pos_scale = {0.0f, 0.0f, 1.0f, 1.0f};
 	};
 
 	constexpr std::size_t initial_quad_capacity = 1024;
@@ -93,9 +94,15 @@ namespace tz::ren
 
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info)
 	{
-		(void)renh;
+		quad_data new_data;
+		new_data.pos_scale = {0.0f, 0.0f, 0.25f, 0.25f};
 		(void)info;
-		UNERR(tz::error_code::engine_bug, "create quad is NYI");
+
+		auto& ren = renderers[renh.peek()];
+		tz::gpu::pass_set_triangle_count(ren.main_pass, (ren.quad_count + 1) * 2);
+		tz_must(tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const quad_data>(&new_data, 1)), sizeof(quad_data) * ren.quad_count));
+
+		return static_cast<tz::hanval>(ren.quad_count++);
 	}
 
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh)
