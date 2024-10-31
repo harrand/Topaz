@@ -1106,7 +1106,7 @@ namespace tz::gpu
 		std::size_t ret_id = passes.size();
 		auto& pass = passes.emplace_back();
 		std::size_t buffer_count = 0;
-		pass.resources.resize(info.resources.size());
+		pass.resources.reserve(info.resources.size());
 		for(resource_handle resh : info.resources)
 		{
 			// todo: assert not widnow resouces or nullhand

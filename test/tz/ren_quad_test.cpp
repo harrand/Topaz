@@ -1,3 +1,4 @@
+
 #include "tz/topaz.hpp"
 #include "tz/ren/quad.hpp"
 #include "tz/os/window.hpp"
@@ -14,10 +15,9 @@ int main()
 
 	tz::ren::quad_renderer_handle ren = tz_must(tz::ren::create_quad_renderer({}));
 
+	tz::ren::quad_handle quad1 = tz_must(tz::ren::quad_renderer_create_quad(ren, {.position = tz::v2f::zero(), .scale = {0.2f, 0.2f}, .colour = {0.0f, 1.0f, 0.25f}}));
 
-	tz::ren::quad_handle quad1 = tz_must(tz::ren::quad_renderer_create_quad(ren, {.position = tz::v2f::zero(), .scale = {0.2f, 0.2f}}));
-
-	tz_must(tz::ren::quad_renderer_create_quad(ren, {.position = {-0.5f, -0.5f}, .scale = {0.15f, 0.15f}}));
+	tz_must(tz::ren::quad_renderer_create_quad(ren, {.position = {-0.5f, -0.5f}, .scale = {0.15f, 0.15f}, .colour = {0.5f, 0.1f, 0.85f}}));
 
 	while(tz::os::window_is_open())
 	{

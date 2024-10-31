@@ -26,14 +26,24 @@ namespace tz::ren
 		tz::v2f position = tz::v2f::zero();
 		float rotation = 0.0f;
 		tz::v2f scale = tz::v2f::filled(1.0f);
+		std::uint32_t texture_id = -1;
+		tz::v3f colour = tz::v3f::filled(1.0f);
 	};
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info);
+
+	std::expected<std::uint32_t, tz::error_code> quad_renderer_add_texture(quad_renderer_handle renh, tz::gpu::resource_handle image);
 
 	tz::v2f get_quad_position(quad_renderer_handle renh, quad_handle quad);
 	void set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position);
 
 	tz::v2f get_quad_scale(quad_renderer_handle renh, quad_handle quad);
 	void set_quad_scale(quad_renderer_handle renh, quad_handle quad, tz::v2f scale);
+
+	tz::v3f get_quad_colour(quad_renderer_handle renh, quad_handle quad);
+	void set_quad_colour(quad_renderer_handle renh, quad_handle quad, tz::v3f colour);
+
+	std::uint32_t get_quad_texture(quad_renderer_handle renh, quad_handle quad);
+	void set_quad_texture(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id);
 
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh);
 }
