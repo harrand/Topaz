@@ -2,10 +2,8 @@ shader(type = vertex);
 
 struct quad_data
 {
-	vec4 pos_scale;
-	float tint_red;
-	float tint_green;
-	float tint_blue;
+	mat4 model;
+	vec3 colour;
 	uint texture_id;
 };
 
@@ -39,10 +37,8 @@ void main()
 	vec2 local_pos = quad_positions[in::vertex_id % 6];
 	quad_data cur_quad = quad.data[quad_id];
 
-	vec2 position_worldspace = cur_quad.pos_scale.xy + (local_pos * cur_quad.pos_scale.zw);
-
-	out::position = camera.projection * vec4(position_worldspace, 0, 1);	
-	out::tint = vec3(cur_quad.tint_red, cur_quad.tint_green, cur_quad.tint_blue);
+	out::position = camera.projection * cur_quad.model * vec4(local_pos, 0, 1);	
+	out::tint = vec3(cur_quad.colour);
 	out::uv = quad_texcoords[in::vertex_id % 6];
 	out::texture_id = cur_quad.texture_id;
 }
