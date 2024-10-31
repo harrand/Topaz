@@ -1,4 +1,3 @@
-set(TOPAZ_PACKAGE_BASE_DIR "${PROJECT_BINARY_DIR}/packages")
 function(topaz_define_package)
 	cmake_parse_arguments(
 		TOPAZ_DEFINE_PACKAGE
@@ -8,8 +7,10 @@ function(topaz_define_package)
 		${ARGN}
 	)
 
+	set(TOPAZ_PACKAGE_BASE_DIR "${PROJECT_BINARY_DIR}/packages")
 	set(dependency_list "")
 	set(package_dir ${TOPAZ_PACKAGE_BASE_DIR}/${TOPAZ_DEFINE_PACKAGE_TARGET}.package)
+	message(ERROR "package dir: ${package_dir}")
 
 	get_target_property(bundle_deps ${TOPAZ_DEFINE_PACKAGE_TARGET} TOPAZ_BUNDLE_DEPENDENCIES)
 	# Create commands to copy all the bundled files to the package dir.
