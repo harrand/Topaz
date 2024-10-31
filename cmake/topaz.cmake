@@ -43,7 +43,7 @@ function(topaz_add_executable)
 		${ARGN}
 	)
 
-	add_executable(${TOPAZ_ADD_EXECUTABLE_TARGET}
+	add_executable(${TOPAZ_ADD_EXECUTABLE_TARGET} WIN32
 		${TOPAZ_ADD_EXECUTABLE_SOURCES}
 	)
 	topaz_add_shader(
