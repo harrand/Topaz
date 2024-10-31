@@ -21,9 +21,9 @@ void test_constructor()
 	tz_assert(zero_vec == vec_t(arr0), "zero() failed. Expected: {{0.0f, ...}}");
 
     // Test constructor with variadic arguments
-    vec_t variadic_vec(static_cast<T>(1.5f));
-    tz_assert((variadic_vec == vec_t{static_cast<T>(1.5f)}),
-              "variadic constructor failed. Expected: {{1.5f}}");
+    vec_t variadic_vec(static_cast<T>(1.5f), static_cast<T>(1.0f));
+    tz_assert((variadic_vec == vec_t{static_cast<T>(1.5f), static_cast<T>(1.0f)}),
+              "variadic constructor failed. Expected: {{1.5f, 1.0f}}");
 
     // Test array constructor
 	std::array<T, N> arr;

@@ -10,12 +10,13 @@ int tz_main()
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));
 
+	std::array<std::byte, 80u * 80u * 4> empty_imgdata;
 	tz::gpu::resource_handle img = tz_must(tz::gpu::create_image
 	({
 		.width = 80u,
 		.height = 80u,
 		.type = tz::gpu::image_type::rgba,
-		.data = {}
+		.data = empty_imgdata
 	}));
 
 	int data = 5;

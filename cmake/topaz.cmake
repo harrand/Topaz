@@ -43,9 +43,15 @@ function(topaz_add_executable)
 		${ARGN}
 	)
 
+	if(${CMAKE_BUILD_TYPE} MATCHES "release")
 	add_executable(${TOPAZ_ADD_EXECUTABLE_TARGET} WIN32
 		${TOPAZ_ADD_EXECUTABLE_SOURCES}
 	)
+	else()
+	add_executable(${TOPAZ_ADD_EXECUTABLE_TARGET}
+		${TOPAZ_ADD_EXECUTABLE_SOURCES}
+	)
+	endif()
 	topaz_add_shader(
 		TARGET ${TOPAZ_ADD_EXECUTABLE_TARGET}
 		SHADERS
