@@ -5,6 +5,7 @@
 #include "tz/gpu/pass.hpp"
 #include "tz/gpu/graph.hpp"
 #include "tz/gpu/shader.hpp"
+#include "tz/os/window.hpp"
 
 #include ImportedShaderHeader(quad, vertex)
 #include ImportedShaderHeader(quad, fragment)
@@ -20,6 +21,8 @@ namespace tz::ren
 		tz::gpu::graph_handle graph = tz::nullhand;
 		std::size_t quad_count = 0;
 		std::size_t texture_count = 0;
+		unsigned int window_width_cache;
+		unsigned int window_height_cache;
 	};
 
 	struct quad_data
@@ -97,6 +100,9 @@ namespace tz::ren
 			.set_flags(tz::gpu::graph_flag::present_after)
 			.add_pass(ren.main_pass)
 			.build());
+
+		ren.window_width_cache = tz::os::window_get_width();
+		ren.window_height_cache = tz::os::window_get_height();
 
 		return static_cast<tz::hanval>(id);
 	}
@@ -219,6 +225,16 @@ namespace tz::ren
 	void quad_renderer_update(quad_renderer_handle renh)
 	{
 		auto& ren = renderers[renh.peek()];
-		(void)ren;
+
+		auto w = tz::os::window_get_width();
+		auto h = tz::os::window_get_height();
+		if((w != 0 && h != 0) && (ren.window_width_cache != w || ren.window_height_cache != h))
+		{
+			// window has resized
+			ren.window_width_cache = w;
+			ren.window_height_cache = h;
+			// todo: regenerate projection matrix.
+
+		}
 	}
 }
