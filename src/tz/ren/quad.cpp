@@ -22,6 +22,8 @@ namespace tz::ren
 	struct quad_data
 	{
 		tz::v4f pos_scale = {0.0f, 0.0f, 1.0f, 1.0f};
+		tz::v3f colour_tint = {1.0f, 1.0f, 1.0f};
+		std::uint32_t texture_id = -1;
 	};
 
 	constexpr std::size_t initial_quad_capacity = 1024;
@@ -95,7 +97,7 @@ namespace tz::ren
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info)
 	{
 		quad_data new_data;
-		new_data.pos_scale = {0.0f, 0.0f, 0.25f, 0.25f};
+		new_data.pos_scale = {info.position[0], info.position[1], info.scale[0], info.scale[1]};
 		(void)info;
 
 		auto& ren = renderers[renh.peek()];
@@ -103,6 +105,22 @@ namespace tz::ren
 		tz_must(tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const quad_data>(&new_data, 1)), sizeof(quad_data) * ren.quad_count));
 
 		return static_cast<tz::hanval>(ren.quad_count++);
+	}
+
+	tz::v2f quad_renderer_get_quad_position(quad_renderer_handle renh, quad_handle quad)
+	{
+		const auto& ren = renderers[renh.peek()];
+		auto quad_data_array = tz::gpu::resource_read(ren.data_buffer);
+		tz::v4f pos_scale = *reinterpret_cast<const tz::v4f*>(quad_data_array.data() + (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, pos_scale));
+		return {pos_scale[0], pos_scale[1]};
+	}
+
+	void quad_renderer_set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position)
+	{
+		auto& ren = renderers[renh.peek()];
+		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, pos_scale);
+
+		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::v2f>(&position, 1)), offset);
 	}
 
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh)

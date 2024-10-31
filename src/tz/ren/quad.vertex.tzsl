@@ -3,12 +3,19 @@ shader(type = vertex);
 struct quad_data
 {
 	vec4 pos_scale;
+	float tint_red;
+	float tint_green;
+	float tint_blue;
+	uint texture_id;
 };
 
 resource(id = 0) const buffer quad
 {
 	quad_data data[];
 };
+
+output(id = 0) vec3 out::tint;
+output(id = 1) uint out::texture_id;
 
 vec2 quad_positions[6] = vec2[](
 	vec2(1.0, -1.0), vec2(1.0, 1.0), vec2(-1.0, -1.0),
@@ -29,4 +36,6 @@ void main()
 	vec2 position_worldspace = cur_quad.pos_scale.xy + (local_pos * cur_quad.pos_scale.zw);
 
 	out::position = vec4(position_worldspace, 0, 1);	
+	out::tint = vec3(cur_quad.tint_red, cur_quad.tint_green, cur_quad.tint_blue);
+	out::texture_id = cur_quad.texture_id;
 }
