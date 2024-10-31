@@ -29,8 +29,11 @@ namespace tz::ren
 	};
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info);
 
-	tz::v2f quad_renderer_get_quad_position(quad_renderer_handle renh, quad_handle quad);
-	void quad_renderer_set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position);
+	tz::v2f get_quad_position(quad_renderer_handle renh, quad_handle quad);
+	void set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position);
+
+	tz::v2f get_quad_scale(quad_renderer_handle renh, quad_handle quad);
+	void set_quad_scale(quad_renderer_handle renh, quad_handle quad, tz::v2f scale);
 
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh);
 }

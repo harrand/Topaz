@@ -42,7 +42,7 @@ namespace tz
 		template<typename... Ts>
 		requires(
 			sizeof...(Ts) <= N
-			&& sizeof...(Ts) > 0
+			&& sizeof...(Ts) > 1
 			&& std::is_convertible_v<std::tuple_element_t<0, std::tuple<Ts...>>, T>)
 		constexpr vector(Ts&&... ts) :
 		arr({ std::forward<Ts>(ts)... }) {}
@@ -71,6 +71,12 @@ namespace tz
 		 * @return The value at the given index.
 		 */
 		T& operator[](std::size_t idx);
+
+		// Multiply vector by scalar
+		vector<T, N>& operator*=(T scalar);
+		vector<T, N>& operator/=(T scalar);
+		vector<T, N> operator*(T scalar) const{auto cpy = *this; return cpy *= scalar;}
+		vector<T, N> operator/(T scalar) const{auto cpy = *this; return cpy /= scalar;}
 
 		/// Add one vector to another.
 		vector<T, N>& operator+=(const vector<T, N>& rhs);

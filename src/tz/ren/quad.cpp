@@ -107,7 +107,7 @@ namespace tz::ren
 		return static_cast<tz::hanval>(ren.quad_count++);
 	}
 
-	tz::v2f quad_renderer_get_quad_position(quad_renderer_handle renh, quad_handle quad)
+	tz::v2f get_quad_position(quad_renderer_handle renh, quad_handle quad)
 	{
 		const auto& ren = renderers[renh.peek()];
 		auto quad_data_array = tz::gpu::resource_read(ren.data_buffer);
@@ -115,12 +115,28 @@ namespace tz::ren
 		return {pos_scale[0], pos_scale[1]};
 	}
 
-	void quad_renderer_set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position)
+	void set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position)
 	{
 		auto& ren = renderers[renh.peek()];
 		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, pos_scale);
 
 		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::v2f>(&position, 1)), offset);
+	}
+
+	tz::v2f get_quad_scale(quad_renderer_handle renh, quad_handle quad)
+	{
+		const auto& ren = renderers[renh.peek()];
+		auto quad_data_array = tz::gpu::resource_read(ren.data_buffer);
+		tz::v4f pos_scale = *reinterpret_cast<const tz::v4f*>(quad_data_array.data() + (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, pos_scale));
+		return {pos_scale[2], pos_scale[3]};
+	}
+
+	void set_quad_scale(quad_renderer_handle renh, quad_handle quad, tz::v2f scale)
+	{
+		auto& ren = renderers[renh.peek()];
+		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, pos_scale) + sizeof(tz::v2f);
+
+		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::v2f>(&scale, 1)), offset);
 	}
 
 	tz::gpu::graph_handle quad_renderer_graph(quad_renderer_handle renh)

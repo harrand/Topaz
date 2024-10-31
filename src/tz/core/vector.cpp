@@ -20,6 +20,26 @@ namespace tz
 	}
 
 	VECTOR_TEMPLATE_IMPL
+	vector<T, N>& vector<T, N>::operator*=(T scalar)
+	{
+		for(std::size_t i = 0; i < N; i++)
+		{
+			this->arr[i] *= scalar;
+		}
+		return *this;
+	}
+
+	VECTOR_TEMPLATE_IMPL
+	vector<T, N>& vector<T, N>::operator/=(T scalar)
+	{
+		for(std::size_t i = 0; i < N; i++)
+		{
+			this->arr[i] /= scalar;
+		}
+		return *this;
+	}
+
+	VECTOR_TEMPLATE_IMPL
 	vector<T, N>& vector<T, N>::operator+=(const vector<T, N>& rhs)
 	{
 		for(std::size_t i = 0; i < N; i++)
