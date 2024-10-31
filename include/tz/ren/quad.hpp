@@ -1,6 +1,7 @@
 #ifndef TOPAZ_REN_QUAD_HPP
 #define TOPAZ_REN_QUAD_HPP
 #include "tz/core/handle.hpp"
+#include "tz/core/vector.hpp"
 #include "tz/gpu/graph.hpp"
 
 namespace tz::ren
