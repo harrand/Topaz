@@ -208,6 +208,8 @@ namespace tz::gpu
 	 */
 	tz::error_code resource_write(resource_handle res, std::span<const std::byte> new_data, std::size_t offset = 0);
 	std::size_t resource_size(resource_handle res);
+	unsigned int image_get_width(resource_handle res);
+	unsigned int image_get_height(resource_handle res);
 	/**
 	 * @ingroup tz_gpu_resource
 	 * @brief Retrieves the current data within a resource.

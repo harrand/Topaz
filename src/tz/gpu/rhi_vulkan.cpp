@@ -941,6 +941,42 @@ namespace tz::gpu
 		return resources[resh.peek()].data.size();
 	}
 
+	unsigned int image_get_width(resource_handle res)
+	{
+		if(res == tz::nullhand)
+		{
+			return 0u;
+		}
+		if(res == tz::gpu::window_resource)
+		{
+			return swapchain_width;
+		}
+		const auto& resource = resources[res.peek()];
+		if(!resource.is_image())
+		{
+			return 0u;
+		}
+		return std::get<image_info>(resource.res).width;
+	}
+
+	unsigned int image_get_height(resource_handle res)
+	{
+		if(res == tz::nullhand)
+		{
+			return 0u;
+		}
+		if(res == tz::gpu::window_resource)
+		{
+			return swapchain_height;
+		}
+		const auto& resource = resources[res.peek()];
+		if(!resource.is_image())
+		{
+			return 0u;
+		}
+		return std::get<image_info>(resource.res).height;
+	}
+
 	std::span<const std::byte> resource_read(resource_handle resh)
 	{
 		auto& res = resources[resh.peek()];

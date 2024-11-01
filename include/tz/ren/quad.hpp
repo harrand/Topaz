@@ -33,6 +33,7 @@ namespace tz::ren
 	{
 		tz::v4f clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		quad_renderer_flag flags = static_cast<quad_renderer_flag>(0);
+		tz::gpu::resource_handle colour_target = tz::gpu::window_resource;
 	};
 	
 	std::expected<quad_renderer_handle, tz::error_code> create_quad_renderer(quad_renderer_info info);

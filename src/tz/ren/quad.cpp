@@ -85,7 +85,7 @@ namespace tz::ren
 
 		tz::gpu::resource_handle colour_targets[] = 
 		{
-			tz::gpu::window_resource
+			info.colour_target
 		};
 		tz::gpu::resource_handle resources[] =
 		{
@@ -253,8 +253,8 @@ namespace tz::ren
 	{
 		auto& ren = renderers[renh.peek()];
 
-		auto w = tz::os::window_get_width();
-		auto h = tz::os::window_get_height();
+		auto w = tz::gpu::image_get_width(ren.info.colour_target);
+		auto h = tz::gpu::image_get_height(ren.info.colour_target);
 		if((w != 0 && h != 0) && (ren.window_width_cache != w || ren.window_height_cache != h))
 		{
 			// window has resized
