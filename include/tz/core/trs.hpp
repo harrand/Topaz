@@ -9,6 +9,8 @@ namespace tz
 	tz::m4f matrix_translate(tz::v3f translate);
 	tz::m4f matrix_scale(tz::v3f scale);
 	tz::m4f matrix_ortho(float left, float right, float top, float bottom, float near, float far);
+	tz::m4f matrix_persp(float fov, float aspect_ratio, float near, float far);
+	tz::m4f matrix_persp_nofar(float fov, float aspect_ratio, float near);
 
 	struct trs
 	{

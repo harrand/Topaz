@@ -34,6 +34,33 @@ namespace tz
 		return ret;
 	}
 
+	tz::m4f matrix_persp(float fov, float aspect_ratio, float near, float far)
+	{
+		tz::m4f ret = tz::m4f::iden();
+		const float thf = std::tan(fov / 2.0f);
+		ret(0, 0) = 1.0f / (aspect_ratio * thf);
+		ret(1, 1) = 1.0f / thf;
+		
+		ret(2, 2) = (far + near) / (near - far);
+		ret(2, 3) = -1.0f;
+
+		ret(3, 2) = (2.0f * far * near) / (near - far);
+		ret(3, 3) = 0.0f;
+		return ret;
+	}
+
+	tz::m4f matrix_persp_nofar(float fov, float aspect_ratio, float near)
+	{
+		tz::m4f ret = tz::m4f::iden();
+		ret(0, 0) = fov / aspect_ratio;
+		ret(1, 1) = fov;
+		ret(2, 2) = 0.0f;
+		ret(3, 2) = -near;
+		ret(2, 3) = -1.0f;
+		ret(3, 3) = 0.0f;
+		return ret;
+	}
+
 	trs trs::lerp(const trs& rhs, float factor) const
 	{
 		trs ret;
