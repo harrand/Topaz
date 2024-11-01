@@ -21,6 +21,19 @@ namespace tz
 		return m;
 	}
 
+	tz::m4f matrix_ortho(float left, float right, float top, float bottom, float near, float far)
+	{
+		tz::m4f ret = tz::m4f::iden();
+		ret(0, 0) = 2.0f / (right - left);
+		ret(1, 1) = 2.0f / (top - bottom);
+		ret(2, 2) = -2.0f / (far - near);
+
+		ret(0, 3) = -(right + left) / (right - left);
+		ret(1, 3) = -(top + bottom) / (top - bottom);
+		ret(2, 3) = -(far + near) / (far - near);
+		return ret;
+	}
+
 	trs trs::lerp(const trs& rhs, float factor) const
 	{
 		trs ret;

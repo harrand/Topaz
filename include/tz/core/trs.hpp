@@ -8,6 +8,7 @@ namespace tz
 {
 	tz::m4f matrix_translate(tz::v3f translate);
 	tz::m4f matrix_scale(tz::v3f scale);
+	tz::m4f matrix_ortho(float left, float right, float top, float bottom, float near, float far);
 
 	struct trs
 	{

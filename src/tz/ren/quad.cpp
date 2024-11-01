@@ -108,8 +108,8 @@ namespace tz::ren
 			.add_pass(ren.main_pass)
 			.build());
 
-		ren.window_width_cache = tz::os::window_get_width();
-		ren.window_height_cache = tz::os::window_get_height();
+		ren.window_width_cache = 0;
+		ren.window_height_cache = 0;
 
 		return static_cast<tz::hanval>(id);
 	}
@@ -251,7 +251,9 @@ namespace tz::ren
 			ren.window_width_cache = w;
 			ren.window_height_cache = h;
 			// todo: regenerate projection matrix.
-
+			auto aspect_ratio = static_cast<float>(w) / h;
+			tz::m4f projection = tz::matrix_ortho(-1 * aspect_ratio, 1 * aspect_ratio, 1, -1, -1, 1);
+			tz::gpu::resource_write(ren.camera_buffer, std::as_bytes(std::span<const tz::m4f>(&projection, 1)), offsetof(camera_data, projection));
 		}
 	}
 }
