@@ -23,6 +23,7 @@ namespace tz::ren
 		quad_renderer_info info = {};
 		tz::gpu::resource_handle data_buffer = tz::nullhand;
 		tz::gpu::resource_handle camera_buffer = tz::nullhand;
+		tz::gpu::resource_handle settings_buffer = tz::nullhand;
 		tz::gpu::pass_handle main_pass = tz::nullhand;
 		tz::gpu::graph_handle graph = tz::nullhand;
 		std::vector<quad_internal_data> internals = {};
@@ -75,6 +76,13 @@ namespace tz::ren
 			.name = "Quad Renderer Camera Buffer"
 		}));
 
+		auto settings_val = static_cast<std::uint32_t>(info.flags);
+		ren.settings_buffer = tz_must(tz::gpu::create_buffer
+		({
+			.data = std::as_bytes(std::span<const std::uint32_t>(&settings_val, 1)),
+			.name = "Quad Renderer Settings Buffer"
+		}));
+
 		tz::gpu::resource_handle colour_targets[] = 
 		{
 			tz::gpu::window_resource
@@ -82,12 +90,14 @@ namespace tz::ren
 		tz::gpu::resource_handle resources[] =
 		{
 			ren.data_buffer,
-			ren.camera_buffer
+			ren.camera_buffer,
+			ren.settings_buffer
 		};
 		auto maybe_pass = tz::gpu::create_pass
 		({
 			.graphics = 
 			{
+				.clear_colour = info.clear_colour,
 				.colour_targets = colour_targets,
 				.flags = tz::gpu::graphics_flag::no_depth_test
 			},

@@ -14,9 +14,25 @@ namespace tz::ren
 	using quad_handle = tz::handle<detail::quad_t>;
 	using quad_renderer_handle = tz::handle<detail::quadren_t>;
 
+	enum quad_renderer_flag
+	{
+		alpha_clipping = 0b0001,
+	};
+
+	constexpr quad_renderer_flag operator|(quad_renderer_flag lhs, quad_renderer_flag rhs)
+	{
+		return static_cast<quad_renderer_flag>(static_cast<int>(lhs) | static_cast<int>(rhs));
+	}
+
+	constexpr bool operator&(quad_renderer_flag lhs, quad_renderer_flag& rhs)
+	{
+		return static_cast<int>(lhs) & static_cast<int>(rhs);
+	}
+
 	struct quad_renderer_info
 	{
-
+		tz::v4f clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
+		quad_renderer_flag flags = static_cast<quad_renderer_flag>(0);
 	};
 	
 	std::expected<quad_renderer_handle, tz::error_code> create_quad_renderer(quad_renderer_info info);
