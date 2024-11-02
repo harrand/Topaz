@@ -1685,6 +1685,11 @@ namespace tz::gpu
 		current_frame = (current_frame + 1) % frame_overlap;
 	}
 
+	bool settings_get_vsync()
+	{
+		return settings.vsync_enabled;
+	}
+
 	void settings_set_vsync(bool enabled)
 	{
 		if(settings.vsync_enabled == enabled)
