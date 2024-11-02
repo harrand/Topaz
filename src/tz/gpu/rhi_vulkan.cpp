@@ -33,6 +33,11 @@
 
 namespace tz::gpu
 {
+	struct settings_t
+	{
+		bool vsync_enabled = false;
+	} settings;
+
 	VkInstance current_instance = VK_NULL_HANDLE;
 	VkDevice current_device = VK_NULL_HANDLE;
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
@@ -184,6 +189,7 @@ namespace tz::gpu
 	// returns unknown_error if some undocumented vulkan error occurred.
 	std::pair<std::uint32_t, std::uint32_t> impl_get_image_dimensions(tz::gpu::resource_handle imagey_resource);
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
+	void impl_force_new_swapchain();
 	VkFormat impl_get_format_from_image_type(tz::gpu::image_type type);
 	tz::error_code impl_validate_colour_targets(tz::gpu::pass_info& pinfo, pass_data& data);
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
@@ -1679,6 +1685,16 @@ namespace tz::gpu
 		current_frame = (current_frame + 1) % frame_overlap;
 	}
 
+	void settings_set_vsync(bool enabled)
+	{
+		if(settings.vsync_enabled == enabled)
+		{
+			return;
+		}
+		settings.vsync_enabled = enabled;
+		impl_force_new_swapchain();
+	}
+
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
@@ -1957,7 +1973,7 @@ namespace tz::gpu
 			.pQueueFamilyIndices = &current_hardware.internals.i1,
 			.preTransform = surface_caps.currentTransform,
 			.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-			.presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR,
+			.presentMode = settings.vsync_enabled ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR,
 			.clipped = VK_FALSE,
 			.oldSwapchain = swapchain
 		};
@@ -2080,6 +2096,15 @@ namespace tz::gpu
 		vkCreateImageView(current_device, &view_create, nullptr, &system_depth_image_view);
 
 		return tz::error_code::partial_success;
+	}
+
+	void impl_force_new_swapchain()
+	{
+		auto w = swapchain_width;
+		auto h = swapchain_height;
+		swapchain_width = 0;
+		swapchain_height = 0;
+		impl_need_swapchain(w, h);
 	}
 
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset)
