@@ -13,7 +13,7 @@ function(topaz_define_package)
 
 	get_target_property(bundle_deps ${TOPAZ_DEFINE_PACKAGE_TARGET} TOPAZ_BUNDLE_DEPENDENCIES)
 	# Create commands to copy all the bundled files to the package dir.
-	if(NOT ${bundle_deps} STREQUAL "bundle_deps-NOTFOUND")
+	if(NOT "${bundle_deps}" STREQUAL "bundle_deps-NOTFOUND")
 		foreach(bundle_file IN LISTS bundle_deps)
 			set(bundle_file_path $<TARGET_FILE_DIR:${TOPAZ_DEFINE_PACKAGE_TARGET}>/${bundle_file})
 			add_custom_command(

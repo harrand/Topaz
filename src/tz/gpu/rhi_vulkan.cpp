@@ -126,6 +126,7 @@ namespace tz::gpu
 		pass_info info;
 		std::vector<resource_handle> colour_targets;
 		std::vector<resource_handle> resources;
+		std::size_t image_count = 0;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
 		VkBuffer meta_buffer = VK_NULL_HANDLE;
@@ -1151,6 +1152,10 @@ namespace tz::gpu
 			{
 				buffer_count++;
 			}
+			else if(res.is_image())
+			{
+				pass.image_count++;
+			}
 			pass.resources.push_back(resh);
 		}
 		pass.info.resources = pass.resources;
@@ -1496,26 +1501,16 @@ namespace tz::gpu
 			RETERR(tz::error_code::invalid_value, "buffer resource passed to pass_add_image_resource. you can only add image resources to a pass, the buffer resources can never change unless you create a new pass.");
 		}
 
-		std::size_t image_count = 0;
 		auto& passdata = passes[pass.peek()];
 
-		for(resource_handle existing_res : passdata.info.resources)
-		{
-			if(existing_res != tz::gpu::window_resource && existing_res != tz::nullhand)
-			{
-				if(resources[existing_res.peek()].is_image())
-				{
-					image_count++;
-				}
-			}
-		}
-		if(image_count >= max_image_count_per_pass)
+		if(passdata.image_count >= max_image_count_per_pass)
 		{
 			RETERR(tz::error_code::driver_hazard, "attempted to add a new image resource to pass {}, but that pass already has the maximum number of image resources possible ({})", pass.peek(), max_image_count_per_pass);
 		}
 
 		passdata.resources.push_back(res);
 		passdata.info.resources = passdata.resources;
+		passdata.image_count++;
 
 		// need to write a new descriptor image as it's there now.
 		impl_write_single_resource(res);
