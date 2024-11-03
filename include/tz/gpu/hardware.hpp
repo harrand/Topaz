@@ -87,6 +87,16 @@ namespace tz::gpu
 			hardware_handle i0;
 			std::uint32_t i1;
 		} internals;
+
+		bool operator==(const hardware& rhs) const
+		{
+			return this->internals.i0 == rhs.internals.i0;
+		}
+
+		bool operator!=(const hardware& rhs) const
+		{
+			return this->internals.i0 != rhs.internals.i0;
+		}
 	};
 
 	/**
