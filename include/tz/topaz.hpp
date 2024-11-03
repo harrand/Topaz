@@ -4,6 +4,7 @@
 
 /**
  * @defgroup tz API Reference
+ * @brief C++ API for the Topaz Engine
 **/
 namespace tz
 {
