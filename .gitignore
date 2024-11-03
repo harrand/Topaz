@@ -1,6 +1,7 @@
 # Topaz Specific Ignores
 cpl/
 docs/*/
+!docs/images
 bin/
 extern/
 build/
