@@ -19,8 +19,8 @@ namespace tz
 		precondition_failure,
 		/// An error has occurred because an illegal/incorrect value has been detected.
 		invalid_value,
-		/// An error has occurred because the hardware currently being used is not suitable for the given task.
-		hardware_unsuitable,
+		/// An error has occurred because the currently running machine does not support the given operation.
+		machine_unsuitable,
 		/// An error has occurred due to an engine-side logic error, and you should submit a bug report.
 		engine_bug,
 		/// An error has occurred due to a serious hazard relating to the driver/hardware. This most likely means a graphics driver crash/hardware-lost.
@@ -44,7 +44,7 @@ namespace tz
 			"partial success",
 			"precondition failure error",
 			"invalid value error",
-			"hardware unsuitability error",
+			"machine unsuitability error",
 			"engine bug error",
 			"driver hazard error",
 			"unknown error",

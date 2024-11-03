@@ -465,7 +465,7 @@ namespace tz::gpu
 		if(hw.caps != hardware_capabilities::graphics_compute)
 		{
 			// incompatible hardware.
-			return error_code::hardware_unsuitable;
+			RETERR(error_code::machine_unsuitable, "Graphics hardware {} is not suitable because it does not have a graphics-compute queue.", hw.name);
 		}
 		auto pdev = reinterpret_cast<VkPhysicalDevice>(static_cast<std::uintptr_t>(hw.internals.i0.peek()));
 
@@ -532,7 +532,7 @@ namespace tz::gpu
 				RETERR(tz::error_code::voom, "ran out of GPU memory while trying to create vulkan device");
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				RETERR(tz::error_code::hardware_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan extension");
+				RETERR(tz::error_code::machine_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan extension");
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
 				switch(hw.features)
@@ -541,7 +541,7 @@ namespace tz::gpu
 						RETERR(tz::error_code::engine_bug, "vulkan driver says not all features were available for the device, even though the engine said it was suitable. please submit a bug report.");
 					break;
 					default:
-						RETERR(tz::error_code::hardware_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan feature");
+						RETERR(tz::error_code::machine_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan feature");
 					break;
 				}
 			break;
@@ -2007,7 +2007,7 @@ namespace tz::gpu
 				return tz::error_code::precondition_failure;
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				return tz::error_code::hardware_unsuitable;
+				return tz::error_code::machine_unsuitable;
 			break;
 			default:
 				return tz::error_code::unknown_error;
