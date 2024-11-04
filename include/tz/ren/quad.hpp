@@ -48,6 +48,7 @@ namespace tz::ren
 		tz::v3f colour = tz::v3f::filled(1.0f);
 	};
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info);
+	tz::error_code quad_renderer_destroy_quad(quad_renderer_handle renh, quad_handle quad);
 
 	std::expected<std::uint32_t, tz::error_code> quad_renderer_add_texture(quad_renderer_handle renh, tz::gpu::resource_handle image);
 

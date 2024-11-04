@@ -16,6 +16,7 @@ namespace tz::ren
 	struct quad_internal_data
 	{
 		tz::trs transform;
+		bool garbage = false;
 	};
 
 	struct quad_renderer_data
@@ -31,6 +32,7 @@ namespace tz::ren
 		std::size_t texture_count = 0;
 		unsigned int window_width_cache;
 		unsigned int window_height_cache;
+		std::vector<std::size_t> free_list = {};
 	};
 
 	struct quad_data
@@ -141,8 +143,21 @@ namespace tz::ren
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info)
 	{
 		auto& ren = renderers[renh.peek()];
-
-		quad_internal_data& internal = ren.internals.emplace_back();
+		std::size_t id = ren.quad_count;
+		bool recycled = false;
+		if(ren.free_list.size())
+		{
+			recycled = true;
+			id = ren.free_list.back();
+			ren.free_list.pop_back();
+		}
+		else
+		{
+			ren.internals.push_back({});
+			ren.quad_count++;
+		}
+		quad_internal_data& internal = ren.internals[id];
+		internal = {};
 		internal.transform =
 		{
 			.translate = {info.position[0], info.position[1], 0.0f},
@@ -163,10 +178,32 @@ namespace tz::ren
 			}
 		}
 
-		tz::gpu::pass_set_triangle_count(ren.main_pass, (ren.quad_count + 1) * 2);
-		tz_must(tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const quad_data>(&new_data, 1)), sizeof(quad_data) * ren.quad_count));
+		if(!recycled)
+		{
+			tz::gpu::pass_set_triangle_count(ren.main_pass, ren.quad_count * 2);
+		}
+		tz_must(tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const quad_data>(&new_data, 1)), sizeof(quad_data) * id));
 
-		return static_cast<tz::hanval>(ren.quad_count++);
+		return static_cast<tz::hanval>(id);
+	}
+
+	tz::error_code quad_renderer_destroy_quad(quad_renderer_handle renh, quad_handle quad)
+	{
+		// quad destruction works as follows:
+		// set the internal quad data to indicate that the quad is garbage.
+		// set the scale to zero (the draw is unchanged but the data makes it invisible)
+		// add to the free list, the next time a quad is created this handle can be re-used.
+		auto& ren = renderers[renh.peek()];
+		auto& q = ren.internals[quad.peek()];
+		if(q.garbage)
+		{
+			RETERR(tz::error_code::precondition_failure, "attempt to destroy quad {} but it was already destroyed. double delete.", quad.peek());
+		}
+		q = {};
+		q.garbage = true;
+		set_quad_scale(renh, quad, tz::v2f::zero());
+		ren.free_list.push_back(quad.peek());
+		return tz::error_code::success;
 	}
 
 	std::expected<std::uint32_t, tz::error_code> quad_renderer_add_texture(quad_renderer_handle renh, tz::gpu::resource_handle image)
