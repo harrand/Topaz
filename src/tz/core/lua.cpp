@@ -236,6 +236,10 @@ namespace tz
 	{
 		auto bits = impl_string_split(varname, ".");
 		int type = lua_getglobal(lua, bits.front().c_str());
+		if(type == LUA_TNIL)
+		{
+			return type;
+		}
 		bits.erase(bits.begin());
 		stack_sz++;
 		for(const std::string& bit : bits)
