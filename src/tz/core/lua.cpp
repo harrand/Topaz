@@ -49,7 +49,7 @@ namespace tz
 		const char* err = lua_tostring(lua, -1);
 		if(err != nullptr)
 		{
-			RETERR(tz::error_code::unknown_error, "lua error while executing file {}: ", path.filename().string(), err);
+			RETERR(tz::error_code::unknown_error, "lua error while executing file {}: {}", path.filename().string(), err);
 		}
 		return tz::error_code::success;
 	}
