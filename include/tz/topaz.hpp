@@ -3,7 +3,8 @@
 #include "textc/imported_text.hpp"
 
 /**
- * @defgroup tz Topaz API Reference
+ * @defgroup tz API Reference
+ * @brief C++ API for the Topaz Engine
 **/
 namespace tz
 {

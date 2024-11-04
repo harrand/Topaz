@@ -11,6 +11,10 @@ namespace tz::gpu
 	 * @brief Documentation for render graphs - describes the execution of @ref tz_gpu_pass.
 	 */
 
+	/**
+	 * @ingroup tz_gpu_graph
+	 * @brief Specifies optional, extra functionality for a graph.
+	 */
 	enum graph_flag
 	{
 		/// After the graph has completed execution, present the system image to the window.

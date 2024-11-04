@@ -155,6 +155,7 @@ namespace tz::gpu
 	 * @return @ref tz::error_code::invalid_value For a graphics pass if you fail to provide at least one colour target.
 	 * @return @ref tz::error_code::invalid_value For a graphics pass if you provide a colour target that is invalid. A valid colour target is either a.) the window resource (and you have opened a window), b.) an image resource created with @ref tz::gpu::image_flag::colour_target
 	 * @return @ref tz::error_code::precondition_failure For a graphics pass if any colour target provided does not exactly match the dimensions of all other provided colour targets. All colour targets must be images with the same dimensions. This does mean that if you provide the window resource as a colour target, all other colour targets must have the same dimensions as the window.
+	 * @return @ref tz::error_code::machine_unsuitable If the currently-used hardware does not support the pass you're attempting to create, for example if you attempt to create a graphics pass but your hardware has @ref hardware_capabilities::compute_only.
 	 * @return @ref tz::error_code::oom If CPU memory is exhausted while trying to create the pass.
 	 * @return @ref tz::error_code::voom If GPU memory is exhausted while trying to create the pass.
 	 *

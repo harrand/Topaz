@@ -207,8 +207,26 @@ namespace tz::gpu
 	 * 		- If the image was created with @ref image_type::depth or @ref image_type::floats, then each pixel should be 4 bytes - a single signed 32-bit float.
 	 */
 	tz::error_code resource_write(resource_handle res, std::span<const std::byte> new_data, std::size_t offset = 0);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Retrieve the size of a resource's data, in bytes.
+	 */
 	std::size_t resource_size(resource_handle res);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Retrieve the width of an image resource.
+	 *
+	 * - It is valid to pass @ref tz::gpu::window_resource, in which case the width of the window image will be returned.
+	 * - If you do not pass a valid image resource (e.g a buffer resource, or the null handle), then 0 is returned.
+	 */
 	unsigned int image_get_width(resource_handle res);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Retrieve the height of an image resource.
+	 *
+	 * - It is valid to pass @ref tz::gpu::window_resource, in which case the height of the window image will be returned.
+	 * - If you do not pass a valid image resource (e.g a buffer resource, or the null handle), then 0 is returned.
+	 */
 	unsigned int image_get_height(resource_handle res);
 	/**
 	 * @ingroup tz_gpu_resource
@@ -217,7 +235,21 @@ namespace tz::gpu
 	 * You aren't allowed to read from @ref tz::gpu::window_resource.
 	 */
 	std::span<const std::byte> resource_read(resource_handle res);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Resize a buffer resource.
+	 *
+	 * - If the size of the buffer increases, the new memory at the end will be of unspecified value.
+	 * - Any data within the buffer that you have previously written to will be preserved.
+	 */
 	void buffer_resize(resource_handle bufh, std::size_t new_size_bytes);
+	/**
+	 * @ingroup tz_gpu_resource
+	 * @brief Resize an image resource.
+	 *
+	 * - If the size of the image increases, the new rows/columns of the image will be of unspecified value.
+	 * - Any data within the image that you have previously written to will be preserved.
+	 */
 	void image_resize(resource_handle imgh, unsigned int new_width, unsigned int new_height);
 	/**
 	 * @ingroup tz_gpu_resource

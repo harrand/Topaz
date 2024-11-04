@@ -45,7 +45,7 @@ namespace tz::gpu
 	unsigned int swapchain_width = -1; unsigned int swapchain_height = -1;
 	std::vector<VkImage> swapchain_images = {};
 	std::vector<VkImageView> swapchain_views = {};
-	hardware current_hardware;
+	hardware current_hardware = {};
 	#define VULKAN_API_VERSION_USED VK_API_VERSION_1_3
 	constexpr VkFormat swapchain_format = VK_FORMAT_B8G8R8A8_UNORM;
 	VmaAllocator alloc = VK_NULL_HANDLE;
@@ -462,10 +462,18 @@ namespace tz::gpu
 
 	error_code use_hardware(hardware hw)
 	{
-		if(hw.caps != hardware_capabilities::graphics_compute)
+		if(current_hardware == hw)
+		{
+			return tz::error_code::success;
+		}
+		if(current_hardware != hardware{})
+		{
+			RETERR(tz::error_code::engine_bug, "I have not yet implemented the ability to select hardware twice for two different pieces of hardware. You previously selected \"{}\" but now want \"{}\"", current_hardware.name, hw.name);
+		}
+		if(hw.caps == hardware_capabilities::neither)
 		{
 			// incompatible hardware.
-			return error_code::hardware_unsuitable;
+			RETERR(error_code::machine_unsuitable, "Graphics hardware {} is not suitable because it supports neither graphics nor compute operations.", hw.name);
 		}
 		auto pdev = reinterpret_cast<VkPhysicalDevice>(static_cast<std::uintptr_t>(hw.internals.i0.peek()));
 
@@ -532,7 +540,7 @@ namespace tz::gpu
 				RETERR(tz::error_code::voom, "ran out of GPU memory while trying to create vulkan device");
 			break;
 			case VK_ERROR_EXTENSION_NOT_PRESENT:
-				RETERR(tz::error_code::hardware_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan extension");
+				RETERR(tz::error_code::machine_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan extension");
 			break;
 			case VK_ERROR_FEATURE_NOT_PRESENT:
 				switch(hw.features)
@@ -541,7 +549,7 @@ namespace tz::gpu
 						RETERR(tz::error_code::engine_bug, "vulkan driver says not all features were available for the device, even though the engine said it was suitable. please submit a bug report.");
 					break;
 					default:
-						RETERR(tz::error_code::hardware_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan feature");
+						RETERR(tz::error_code::machine_unsuitable, "the hardware requested for use is not suitable due to a missing vulkan feature");
 					break;
 				}
 			break;
@@ -1192,6 +1200,10 @@ namespace tz::gpu
 
 		if(shader1.ty == shader_type::compute)
 		{
+			if(current_hardware.caps == hardware_capabilities::graphics_only || current_hardware.caps == hardware_capabilities::neither)
+			{
+				UNERR(tz::error_code::machine_unsuitable, "Attempt to create compute pass using hardware {} which does not support compute operations.", current_hardware.name);
+			}
 			VkComputePipelineCreateInfo create
 			{
 				.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
@@ -1221,6 +1233,11 @@ namespace tz::gpu
 				UNERR(tz::error_code::invalid_value, "provided a shader program consisting of only 1 shader, and that shader is not a compute shader. a graphics shader program must be comprised of both a vertex shader and fragment shader");
 			}
 			auto& shader2 = shaders[--bottom_part];
+
+			if(current_hardware.caps == hardware_capabilities::compute_only || current_hardware.caps == hardware_capabilities::neither)
+			{
+				UNERR(tz::error_code::machine_unsuitable, "Attempt to create graphics pass using hardware {} which does not support graphics operations.", current_hardware.name);
+			}
 
 			std::array<VkPipelineShaderStageCreateInfo, 2> shader_creates
 			{
@@ -2007,7 +2024,7 @@ namespace tz::gpu
 				return tz::error_code::precondition_failure;
 			break;
 			case VK_ERROR_INITIALIZATION_FAILED:
-				return tz::error_code::hardware_unsuitable;
+				return tz::error_code::machine_unsuitable;
 			break;
 			default:
 				return tz::error_code::unknown_error;
