@@ -44,6 +44,8 @@ namespace tz::ren
 		alpha_clipping = 0b0001,
 		/// Sets @ref tz::gpu::graph_flag::present_after on the graph representing the quad renderer.
 		graph_present_after = 0b0010,
+		/// Normally if a quad has a negative scale in any dimension, the triangles are no longer in the correct winding order and will thus be invisible. Setting this flags disables face culling, meaning triangles scaled negatively (and thus in the wrong winding order) will still display as normal.
+		allow_negative_scale = 0b0100,
 	};
 
 	constexpr quad_renderer_flag operator|(quad_renderer_flag lhs, quad_renderer_flag rhs)

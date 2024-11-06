@@ -101,10 +101,11 @@ namespace tz::ren
 			{
 				.clear_colour = info.clear_colour,
 				.colour_targets = colour_targets,
+				.culling = (info.flags & quad_renderer_flag::allow_negative_scale) ? tz::gpu::cull::none : tz::gpu::cull::back,
 				.flags = tz::gpu::graphics_flag::no_depth_test
 			},
 			.shader = main_pass_shader,
-			.resources = resources
+			.resources = resources,
 		});
 		if(maybe_pass.has_value())
 		{
@@ -115,10 +116,13 @@ namespace tz::ren
 			return std::unexpected(maybe_pass.error());
 		}
 
-		ren.graph = tz_must(tz::gpu::graph_builder{}
-			.set_flags(tz::gpu::graph_flag::present_after)
-			.add_pass(ren.main_pass)
-			.build());
+		auto builder = tz::gpu::graph_builder{}
+		.add_pass(ren.main_pass);
+		if(info.flags & quad_renderer_flag::graph_present_after)
+		{
+			builder.set_flags(tz::gpu::graph_flag::present_after);
+		}
+		ren.graph = tz_must(builder.build());
 
 		ren.window_width_cache = 0;
 		ren.window_height_cache = 0;
