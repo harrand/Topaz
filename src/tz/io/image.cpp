@@ -3,6 +3,8 @@
 #define STBI_FAILURE_USERMSG
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <vector>
+#include <algorithm>
 
 namespace tz::io
 {
@@ -12,7 +14,11 @@ namespace tz::io
 		int ok = stbi_info_from_memory(reinterpret_cast<const stbi_uc*>(img_file_data.data()), img_file_data.size_bytes(), &w, &h, &channels);
 		if(ok != 1)
 		{
-			UNERR(tz::error_code::precondition_failure, "bad image file data: {}", stbi_failure_reason());
+			std::vector<char> initial_snippet;
+			initial_snippet.resize(std::min(static_cast<std::size_t>(20), img_file_data.size_bytes()));
+			std::transform(img_file_data.begin(), img_file_data.begin() + initial_snippet.size(), initial_snippet.begin(), [](std::byte ch)->char{return static_cast<char>(ch);});
+
+			UNERR(tz::error_code::precondition_failure, "bad image file data. reason: {}\ndata snippet ({}): \"{}\"", stbi_failure_reason(), initial_snippet.size(), reinterpret_cast<char*>(initial_snippet.data()));
 		}
 
 		return image_header
