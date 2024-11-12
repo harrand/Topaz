@@ -2617,6 +2617,15 @@ namespace tz::gpu
 		// first: transition swapchain image layout from undefined (trashes data) to colour attachment (if we're rendering directly into the window and we're the first pass in the timeline) OR general
 		vkCmdBeginRendering(frame.cmds, &render);
 		vkCmdBindPipeline(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.pipeline);
+		if(pass.info.graphics.index_buffer != tz::nullhand)
+		{
+			const auto& indices = resources[pass.info.graphics.index_buffer.peek()];
+			if(indices.is_invalid())
+			{
+				RETERR(tz::error_code::invalid_value, "Graphics pass \"{}\" uses index buffer handle {}, which is an invalid resource.", pass.info.name, pass.info.graphics.index_buffer.peek());
+			}
+			vkCmdBindIndexBuffer(frame.cmds, indices.buf, 0, VK_INDEX_TYPE_UINT32);
+		}
 		vkCmdBindDescriptorSets(frame.cmds, VK_PIPELINE_BIND_POINT_GRAPHICS, pass.layout, 0u, 1, pass.descriptor_sets.data() + id, 0, nullptr);
 
 		VkViewport vp
@@ -2646,9 +2655,14 @@ namespace tz::gpu
 
 		vkCmdSetViewport(frame.cmds, 0, 1, &vp);
 		vkCmdSetScissor(frame.cmds, 0, 1, &sci);
-		// maybe bind index buffer
-		// draw[_indexed]/draw_[indexed_]indirect/draw_[indexed_]indirect_count
-		vkCmdDraw(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0); // todo: dont hardcode this IDIOT
+		if(pass.info.graphics.index_buffer != tz::nullhand)
+		{
+			vkCmdDrawIndexed(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0, 0);
+		}
+		else
+		{
+			vkCmdDraw(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0);
+		}
 		vkCmdEndRendering(frame.cmds);
 		if(render_into_system_image)
 		{
