@@ -1017,6 +1017,7 @@ namespace tz::gpu
 		return resource_write(index_buffer, std::as_bytes(indices));
 	}
 
+	static_assert(sizeof(draw_t) == sizeof(VkDrawIndirectCommand));
 	tz::error_code draw_buffer_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_t> draws)
 	{
 		std::vector<std::byte> mem(sizeof(std::uint32_t) + draws.size_bytes());
@@ -1026,6 +1027,7 @@ namespace tz::gpu
 		return resource_write(draw_buffer, mem);
 	}
 
+	static_assert(sizeof(draw_indexed_t) == sizeof(VkDrawIndexedIndirectCommand));
 	tz::error_code draw_buffer_indexed_write(resource_handle draw_buffer, std::uint32_t count, std::span<const draw_indexed_t> draws)
 	{
 		std::vector<std::byte> mem(sizeof(std::uint32_t) + draws.size_bytes());
