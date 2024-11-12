@@ -2655,13 +2655,38 @@ namespace tz::gpu
 
 		vkCmdSetViewport(frame.cmds, 0, 1, &vp);
 		vkCmdSetScissor(frame.cmds, 0, 1, &sci);
+
+		// draw logic
+		VkBuffer draw_buf = VK_NULL_HANDLE;
+		std::size_t draw_buf_max_size_indexed = 0;
+		std::size_t draw_buf_max_size_unindexed = 0;
+		if(pass.info.graphics.draw_buffer != tz::nullhand)
+		{
+			draw_buf = resources[pass.info.graphics.draw_buffer.peek()].buf;
+			draw_buf_max_size_unindexed = (std::get<buffer_info>(resources[pass.info.graphics.draw_buffer.peek()].res).data.size_bytes() - sizeof(std::uint32_t)) / sizeof(VkDrawIndirectCommand);
+			draw_buf_max_size_indexed = (std::get<buffer_info>(resources[pass.info.graphics.draw_buffer.peek()].res).data.size_bytes() - sizeof(std::uint32_t)) / sizeof(VkDrawIndexedIndirectCommand);
+		}
 		if(pass.info.graphics.index_buffer != tz::nullhand)
 		{
-			vkCmdDrawIndexed(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0, 0);
+			if(draw_buf != VK_NULL_HANDLE)
+			{
+				vkCmdDrawIndexedIndirectCount(frame.cmds, draw_buf, sizeof(std::uint32_t), draw_buf, 0, draw_buf_max_size_indexed, sizeof(VkDrawIndexedIndirectCommand));
+			}
+			else
+			{
+				vkCmdDrawIndexed(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0, 0);
+			}
 		}
 		else
 		{
-			vkCmdDraw(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0);
+			if(draw_buf != VK_NULL_HANDLE)
+			{
+				vkCmdDrawIndirectCount(frame.cmds, draw_buf, sizeof(std::uint32_t), draw_buf, 0, draw_buf_max_size_unindexed, sizeof(VkDrawIndirectCommand));
+			}
+			else
+			{
+				vkCmdDraw(frame.cmds, pass.info.graphics.triangle_count * 3, 1, 0, 0);
+			}
 		}
 		vkCmdEndRendering(frame.cmds);
 		if(render_into_system_image)
