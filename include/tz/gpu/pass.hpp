@@ -90,7 +90,9 @@ namespace tz::gpu
 	{
 		/// When a colour target is cleared, what colour (RGBA normalised floats) should it be cleared to?
 		tz::v4f clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
-		/// List of all colour targets. The n'th colour target specified here will be the n'th output of the fragment shader. If you want the window itself to be a colour target, pass @ref tz::gpu::window_resource.
+		/// Scissor rectangle, components represent `{offsetx, offsety, extentx, extenty}` in pixels. If all values are -1, the scissor offset will be `{0, 0}` and the extent equal to the dimensions of the @ref colour_targets you have provided.
+		tz::v4u scissor = tz::v4u::filled(-1);
+		/// List of all colour targets. The n'th colour target specified here will be the n'th output of the fragment shader. If you want the window itself to be a colour target, pass @ref tz::gpu::window_resource. You must provide at least one colour target, and all colour targets must have the same dimensions.
 		std::span<const resource_handle> colour_targets = {};
 		/// Optional depth target. This will act as the depth image when performing depth testing/writes.
 		resource_handle depth_target = tz::nullhand;
@@ -191,6 +193,19 @@ namespace tz::gpu
 	 * @warning If you fail to pass a valid @ref pass_handle to this function, the behaviour is undefined.
 	 */
 	void pass_set_kernel(pass_handle compute_pass, tz::v3u kernel);
+
+	/**
+	 * @ingroup tz_gpu_pass
+	 * @brief Set the scissor rectangle of an existing graphics pass.
+	 * @param graphics_pass Graphics pass to target. If you provide a graphics pass, nothing interesting happens.
+	 * @param scissor Scissor rectangle, see @ref pass_graphics_state::scissor for further details.
+	 *
+	 * When you created a graphics pass, you may or may not have explicitly set an initial scissor rectangle via @ref pass_graphics_state::scissor. This function will override those dimensions, meaning the next time a pass submits GPU work, the new scissor rectangle will be used.
+	 *
+	 * There are no GPU-sync considerations involved when calling this function.
+	 * @warning If you fail to pass a valid @ref pass_handle to this function, the behaviour is undefined.
+	 */
+	void pass_set_scissor(pass_handle graphics_pass, tz::v4u scissor);
 
 	/**
 	 * @ingroup tz_gpu_pass

@@ -1505,6 +1505,11 @@ namespace tz::gpu
 		passes[compute_pass.peek()].info.compute.kernel = kernel;
 	}
 
+	void pass_set_scissor(pass_handle graphics_pass, tz::v4u scissor)
+	{
+		passes[graphics_pass.peek()].info.graphics.scissor = scissor;
+	}
+
 	tz::error_code pass_add_image_resource(pass_handle pass, resource_handle res)
 	{
 		// wait for all shit to be done.
@@ -2633,6 +2638,11 @@ namespace tz::gpu
 				.height = pass.viewport_height
 			}
 		};
+		if(pass.info.graphics.scissor != tz::v4u::filled(-1))
+		{
+			sci.offset = {static_cast<std::int32_t>(pass.info.graphics.scissor[0]), static_cast<std::int32_t>(pass.info.graphics.scissor[1])};
+			sci.extent = {static_cast<std::uint32_t>(pass.info.graphics.scissor[2]), static_cast<std::uint32_t>(pass.info.graphics.scissor[3])};
+		}
 
 		vkCmdSetViewport(frame.cmds, 0, 1, &vp);
 		vkCmdSetScissor(frame.cmds, 0, 1, &sci);
