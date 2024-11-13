@@ -122,7 +122,6 @@ namespace tz
  * This library contains support for a handful of common file formats, allowing you to import them without having to implement a parser yourself.
 **/
 
-
 #include "detail/debug.hpp"
 
 #endif // TOPAZ_HPP
