@@ -376,6 +376,7 @@ namespace tz::gpu
 		}
 		tz_assert(current_instance != VK_NULL_HANDLE, "Requested to terminate tz::gpu (vulkan) when the vulkan instance was null, implying we had never initialised. This is a game-side logic error.");
 		vkDestroyInstance(current_instance, nullptr);
+		current_hardware = {};
 		current_instance = VK_NULL_HANDLE;
 	}
 
@@ -1570,6 +1571,19 @@ namespace tz::gpu
 		// copy over timeline and dependencies
 		graph.timeline.resize(info.timeline.size());
 		std::copy(info.timeline.begin(), info.timeline.end(), graph.timeline.begin());
+		auto present_pass_count = std::count(info.timeline.begin(), info.timeline.end(), tz::gpu::present_pass);
+		if(present_pass_count > 1)
+		{
+			UNERR(tz::error_code::invalid_value, "The present pass can only appear a single time in a graph, your graph contains {} present passes.", present_pass_count);
+		}
+		else if(present_pass_count == 1)
+		{
+			auto iter = std::find(info.timeline.begin(), info.timeline.end(), tz::gpu::present_pass);
+			if(iter != info.timeline.begin() + info.timeline.size() - 1)
+			{
+				UNERR(tz::error_code::invalid_value, "If the present pass is present within a graph, it must be the very last pass in the timeline.");
+			}
+		}
 		
 		graph.dependencies.resize(info.dependencies.size());
 		for(std::size_t i = 0; i < info.dependencies.size(); i++)
@@ -1594,7 +1608,9 @@ namespace tz::gpu
 		}
 		const auto& frame = frames[current_frame];
 		const auto& graph = graphs[graphh.peek()];
-		const bool will_present = graph.info.flags & graph_flag::present_after;
+		auto present_pass_iter = std::find(graph.timeline.begin(), graph.timeline.end(), tz::gpu::present_pass);
+		const bool will_present = present_pass_iter != graph.timeline.end();
+		
 
 		std::uint32_t image_index;
 		if(will_present)
@@ -1658,6 +1674,11 @@ namespace tz::gpu
 		for(std::size_t i = 0; i < graph.timeline.size(); i++)
 		{
 			pass_handle pass = graph.timeline[i];
+			if(pass == tz::gpu::present_pass)
+			{
+				tz_assert(i == graph.timeline.size() - 1, "Present pass detected in a graph but it wasn't at the end. create_graph should've failed to create such a graph. Fatal engine error.");
+				continue;
+			}
 			std::span<const pass_handle> deps = graph.dependencies[i];
 			tz_must(impl_record_gpu_work(pass, current_frame, image_index, deps));
 		}

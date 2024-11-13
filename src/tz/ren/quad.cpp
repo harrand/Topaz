@@ -120,7 +120,7 @@ namespace tz::ren
 		.add_pass(ren.main_pass);
 		if(info.flags & quad_renderer_flag::graph_present_after)
 		{
-			builder.set_flags(tz::gpu::graph_flag::present_after);
+			builder.add_pass(tz::gpu::present_pass);
 		}
 		ren.graph = tz_must(builder.build());
 

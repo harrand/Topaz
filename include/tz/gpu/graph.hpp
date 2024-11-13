@@ -17,8 +17,6 @@ namespace tz::gpu
 	 */
 	enum graph_flag
 	{
-		/// After the graph has completed execution, present the system image to the window.
-		present_after = 0b0001
 	};
 
 	constexpr graph_flag operator|(graph_flag lhs, graph_flag rhs)

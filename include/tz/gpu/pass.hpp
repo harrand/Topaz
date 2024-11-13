@@ -192,6 +192,12 @@ namespace tz::gpu
 
 	/**
 	 * @ingroup tz_gpu_pass
+	 * @brief Meta-pass that acts as an action to present the system image to the screen.
+	 */
+	constexpr auto present_pass = static_cast<tz::hanval>(std::numeric_limits<std::underlying_type_t<tz::hanval>>::max() - 1);
+
+	/**
+	 * @ingroup tz_gpu_pass
 	 * @brief Create a new pass.
 	 * @return On success: A @ref pass_handle corresponding to the newly created pass.
 	 * @return @ref tz::error_code::invalid_value If you fail to provide a valid shader program.

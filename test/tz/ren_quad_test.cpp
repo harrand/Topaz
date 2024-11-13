@@ -12,7 +12,7 @@ int tz_main()
 	tz::gpu::hardware gpu = tz::gpu::find_best_hardware();
 	tz_must(tz::gpu::use_hardware(gpu));
 
-	tz::ren::quad_renderer_handle ren = tz_must(tz::ren::create_quad_renderer({}));
+	tz::ren::quad_renderer_handle ren = tz_must(tz::ren::create_quad_renderer({.flags = tz::ren::quad_renderer_flag::graph_present_after}));
 
 	tz::ren::quad_handle quad1 = tz_must(tz::ren::quad_renderer_create_quad(ren, {.position = tz::v2f::zero(), .scale = {0.2f, 0.2f}, .colour = {0.0f, 1.0f, 0.25f}}));
 

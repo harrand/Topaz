@@ -37,8 +37,8 @@ int tz_main()
 	}));
 
 	tz::gpu::graph_handle graph = tz_must(tz::gpu::graph_builder{}
-		.set_flags(tz::gpu::graph_flag::present_after)
 		.add_pass(pass)
+		.add_pass(tz::gpu::present_pass)
 		.build());
 
 	while(tz::os::window_is_open())
