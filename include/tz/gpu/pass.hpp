@@ -96,15 +96,43 @@ namespace tz::gpu
 		std::span<const resource_handle> colour_targets = {};
 		/// Optional depth target. This will act as the depth image when performing depth testing/writes.
 		resource_handle depth_target = tz::nullhand;
-		/// Buffer containing indices used for every frame.
+		/**
+		 * @brief Buffer containing indices drawn in a single invocation of the pass.
+		 *
+		 * The memory contents of the index buffer are expected to be:
+		 *
+		 * `{indices...}`
+		 *
+		 * Where a single index is equal to a @ref index_t.
+		 * - The number of indices in the buffer does not affect how many vertices ultimately get drawn. That is always controlled by the @ref draw_buffer, or @ref triangle_count if no draw buffer is used.
+		 */
 		resource_handle index_buffer = tz::nullhand;
-		/// Buffer containing an initial count and draw commands for every frame.
+		/**
+		 * @brief Buffer containing an initial count and draw commands which may or may not be used in a single invocation of the pass.
+		 *
+		 * The memory contents of the draw buffer are expected to be:
+		 * 
+		 * `{drawcount, draws...}`
+		 *
+		 * Where `drawcount` is a unsigned 32-bit integer representing the number of proceeding draws which will occur in a single invocation of the pass.
+		 * Following the draw count, the buffer should contain a tightly-packed array of draw commands.
+		 * - If an index buffer has been provided (i.e @ref index_buffer is not null), then a draw command should be a @ref draw_indexed_t. Otherwise, a draw command should be a @ref draw_t.
+		 * - The drawcount does not have to match the number of draw commands proceeding it in the buffer. If the drawcount is less than the number of draw commands, than the excess commands will not occur. If the drawcount is greater than the number of draw commands, then the entire array of draw commands will safely be used without any buffer overreads.
+		 */
 		resource_handle draw_buffer = tz::nullhand;
 		/// Describe which faces will be culled during rendering.
 		cull culling = cull::back;
 		/// Specifies extra optional behaviour for the pass.
 		graphics_flag flags = static_cast<graphics_flag>(0);
-		/// Number of triangles to draw in a frame. @note This is ignored if you are using a draw buffer.
+		/**
+		 * @brief Number of triangles to draw in a single invocation of the pass.
+		 *
+		 * The count you specify affects how many vertices are drawn every frame. You can change this count later on via @ref pass_set_triangle_count.
+		 *
+		 * If you have specified an @ref index_buffer, then `3*triangle_count` indices will be drawn, sourced from the start of the index buffer.
+		 *
+		 * If you have specified a @ref draw_buffer, then this field is entirely ignored and the draw buffer becomes the only source of truth.
+		 */
 		std::size_t triangle_count = 0;
 	};
 
@@ -134,7 +162,21 @@ namespace tz::gpu
 		pass_compute_state compute = {};
 		/// Corresponds to the shader that will run during execution. This must refer to a valid shader program created via @ref create_graphics_shader or @ref create_compute_shader.
 		shader_handle shader = tz::nullhand;
-		/// List of all resources used in the shader. The n'th resource specified here will be the resource available at binding 'n' within all stages of the provided shader program.
+		/**
+		 * @brief List of all resources used in the shader program.
+		 * 
+		 * There are several restrictions you must adhere to when defining a set of resources:
+		 * - You must not pass @ref tz::nullhand or @ref tz::gpu::window_resource.
+		 * - You must pass a valid image or buffer resource, that is, the result of a previous call to @ref create_buffer or @ref create_image that you have not since destroyed via @ref destroy_resource.
+		 *
+		 * The order in which you provide the list of resources may affect the buffer resource index you need to use in the shader.
+		 * - The id of the buffer is unaffected by any preceding images, and the id of the image is unaffected by any preceding buffers. This means you are free to intersperse as many images between buffers as you want (and vice-versa), without affecting the buffer ids.
+		 * For example:
+		 * `.resources = {myimage0, mybuffer0, myimage1, mybuffer1, myimage2, myimage3, mybuffer2}`
+		 * Note that the number at the end of each resource name in the above example represents its buffer/image id used in the shader, i.e:
+		 * `resource(id = 1) const buffer mybuffer1{...};`
+		 * `vec4 myimage1_colour = sample(1, some_uv);`
+		 */
 		std::span<const resource_handle> resources = {};
 		/// Specifies extra optional behaviour for the pass.
 		pass_flag flags = static_cast<pass_flag>(0);

@@ -120,7 +120,7 @@ namespace tz::gpu
 	using resource_handle = tz::handle<buffer_info>;
 	/**
 	 * @ingroup tz_gpu_resource
-	 * @brief Corresponds to either the window image (as a colour target) or the system depth image (as a depth target).
+	 * @brief Corresponds to either the window image (as a colour target) or the system depth image (as a depth target). Note that it is invalid to use this value for anything other than @ref pass_graphics_state::colour_targets or @ref pass_graphics_state::depth_target.
 	 */
 	constexpr auto window_resource = static_cast<tz::hanval>(std::numeric_limits<std::underlying_type_t<tz::hanval>>::max() - 1);
 
@@ -173,20 +173,45 @@ namespace tz::gpu
 	 **/
 	tz::error_code destroy_resource(resource_handle res);
 
+	/**
+	 * @ingroup tz_gpu
+	 * @brief Represents a single index. Indices are always 32-bit unsigned integers.
+	 */
 	using index_t = std::uint32_t;
+	/**
+	 * @ingroup tz_gpu
+	 * @brief Represents a single unindexed draw-call.
+	 *
+	 * See @ref pass_graphics_state::draw_buffer for details.
+	 */
 	struct draw_t
 	{
+		/// Number of vertices to draw.
 		std::uint32_t vertex_count = 0;
-		std::uint32_t instance_count = 0;
+		/// Number of instances to draw. If you're not doing GPU instancing, you probably want this to be 1.
+		std::uint32_t instance_count = 1;
+		/// Index of the first vertex to draw. Essentially offsets gl_VertexIndex. (TODO: confirm that this is true)
 		std::uint32_t first_vertex = 0;
+		/// Instance ID of the first instance to draw.
 		std::uint32_t first_instance = 0;
 	};
+	/**
+	 * @ingroup tz_gpu
+	 * @brief Represents a single indexed draw-call.
+	 * 
+	 * See @ref pass_graphics_state::draw_buffer for details.
+	 */
 	struct draw_indexed_t
 	{
+		/// Number of indices (vertices) to draw.
 		std::uint32_t index_count = 0;
-		std::uint32_t instance_count = 0;
+		/// Number of instances to draw. If you're not doing GPU instancing, you probably want this to be 1.
+		std::uint32_t instance_count = 1;
+		/// Index of the first index to draw (within the index buffer).
 		std::uint32_t first_index = 0;
+		/// An offset added to each index value before indexing into the vertex buffer.
 		std::int32_t vertex_offset = 0;
+		/// Instance ID of the first instance to draw.
 		std::uint32_t first_instance = 0;
 	};
 
