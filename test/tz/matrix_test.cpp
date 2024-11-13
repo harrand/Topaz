@@ -17,7 +17,7 @@ void test_matrix_constructor()
         auto iden_matrix = matrix_t::iden();
         matrix_t expected_identity = matrix_t::zero();
         for (std::size_t i = 0; i < N; ++i)
-            expected_identity[i * N] = T{1};  // Diagonal elements = 1
+            expected_identity[i * N + i] = T{1};  // Diagonal elements = 1
         tz_assert(iden_matrix == expected_identity, "iden() failed. Expected identity matrix");
     }
 
