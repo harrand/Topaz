@@ -1614,16 +1614,20 @@ namespace tz::gpu
 
 	void execute(graph_handle graphh)
 	{
+		const auto& graph = graphs[graphh.peek()];
+		if(graph.info.on_execute != nullptr)
+		{
+			graph.info.on_execute(graphh);
+		}
+
 		impl_check_for_resize();
 		if(swapchain_width == 0 || swapchain_height == 0)
 		{
 			return;
 		}
 		const auto& frame = frames[current_frame];
-		const auto& graph = graphs[graphh.peek()];
 		auto present_pass_iter = std::find(graph.timeline.begin(), graph.timeline.end(), tz::gpu::present_pass);
 		const bool will_present = present_pass_iter != graph.timeline.end();
-		
 
 		std::uint32_t image_index;
 		if(will_present)

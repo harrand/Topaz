@@ -24,10 +24,12 @@ namespace tz::detail
 		tz::gpu::shader_handle shader = tz::nullhand;
 
 		std::vector<tz::gpu::pass_handle> passes = {};
+		tz::gpu::graph_handle graph = tz::nullhand;
 	} render;
 
 	void impl_write_vertices_and_indices(ImDrawData* draw);
 	void impl_add_new_pass();
+	void impl_on_render(tz::gpu::graph_handle graph);
 
 	void imgui_initialise()
 	{
@@ -76,6 +78,8 @@ namespace tz::detail
 			ImportedShaderSource(imgui, fragment)
 		));
 
+		// empty graph for now, because we dont know what imgui wants to draw until we end the frame.
+		render.graph = tz_must(tz::gpu::create_graph(tz::gpu::graph_info{.on_execute = impl_on_render}));
 	}
 
 	void imgui_terminate()
@@ -90,8 +94,21 @@ namespace tz::detail
 		tz::gpu::destroy_shader(render.shader);
 		ImGui::DestroyContext();
 	}
+
+	tz::gpu::graph_handle imgui_render_graph()
+	{
+		return render.graph;
+	}
 	
 	// impl bits
+
+	void impl_on_render(gpu::graph_handle graph)
+	{
+		(void)graph;
+		// we have a graph that could be completely wrong.
+		ImDrawData* draws = ImGui::GetDrawData();
+		(void)draws;
+	}
 
 	void impl_write_vertices_and_indices(ImDrawData* draw)
 	{

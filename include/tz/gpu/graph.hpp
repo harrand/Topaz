@@ -29,6 +29,7 @@ namespace tz::gpu
 		return static_cast<int>(lhs) & static_cast<int>(rhs);
 	}
 
+	using graph_handle = tz::handle<pass_handle>;
 
 	/**
 	 * @ingroup tz_gpu_graph
@@ -45,9 +46,10 @@ namespace tz::gpu
 		std::span<std::span<const pass_handle>> dependencies = {};
 		/// Specifies extra optional behaviour for the graph.
 		graph_flag flags = static_cast<graph_flag>(0);
+		/// Optional. Executed when the graph is executed.
+		void(*on_execute)(graph_handle graph) = nullptr;
 	};
 
-	using graph_handle = tz::handle<pass_handle>;
 	/**
 	 * @ingroup tz_gpu_graph
 	 * @brief Helper struct for creating a new graph. Follows the builder pattern.
