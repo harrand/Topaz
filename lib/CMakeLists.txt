@@ -48,7 +48,7 @@ add_library(imgui STATIC
 	imgui/misc/cpp/imgui_stdlib.cpp
 )
 target_include_directories(imgui PUBLIC "${PROJECT_SOURCE_DIR}/lib/imgui")
-target_compile_definitions(imgui PRIVATE "-DIMGUI_USER_CONFIG=\"${PROJECT_SOURCE_DIR}/lib/topaz_imgui_config.hpp\"")
+target_compile_definitions(imgui PUBLIC "-DIMGUI_USER_CONFIG=\"${PROJECT_SOURCE_DIR}/lib/topaz_imgui_config.hpp\"")
 
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE stb)

@@ -1168,6 +1168,14 @@ namespace tz::gpu
 		pass.resources.reserve(info.resources.size());
 		for(resource_handle resh : info.resources)
 		{
+			if(resh == tz::nullhand)
+			{
+				UNERR(tz::error_code::invalid_value, "One of the resources passed into creation of pass {} was the null resource. You cannot use the null resource within a pass.", info.name);
+			}
+			if(resh == tz::gpu::window_resource)
+			{
+				UNERR(tz::error_code::invalid_value, "One of the resources passed into creation of pass {} was the window resource. You cannot use the window resource within a pass.", info.name);
+			}
 			// todo: assert not widnow resouces or nullhand
 			const auto& res = resources[resh.peek()];
 			if(res.is_buffer())

@@ -50,6 +50,8 @@ topaz_add_library(
 		src/tz/io/image.cpp
 		src/tz/ren/quad.cpp
 	SHADERS
+		src/tz/imgui.vertex.tzsl
+		src/tz/imgui.fragment.tzsl
 		src/tz/ren/quad.vertex.tzsl
 		src/tz/ren/quad.fragment.tzsl
 	DEFINE_PACKAGE
