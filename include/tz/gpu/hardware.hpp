@@ -143,6 +143,7 @@ namespace tz::gpu
 	 * This will return the hardware selected in a previous call to @ref use_hardware. If you have never selected a hardware component by calling this previous function, this function will emit a @ref tz_error.
 	 **/
 	hardware get_used_hardware();
+	bool hardware_in_use();
 }
 
 #endif // TZ_GPU_HARDWARE_HPP

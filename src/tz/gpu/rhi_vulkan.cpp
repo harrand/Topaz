@@ -691,8 +691,13 @@ namespace tz::gpu
 
 	hardware get_used_hardware()
 	{
-		tz_assert(current_device != VK_NULL_HANDLE, "A call to get_used_hardware() was invalid because a piece of hardware has seemingly not yet been selected in a previous call to use_hardware(...). Did you forget to use a specific hardware component?");
+		tz_assert(hardware_in_use(), "A call to get_used_hardware() was invalid because a piece of hardware has seemingly not yet been selected in a previous call to use_hardware(...). Did you forget to use a specific hardware component?");
 		return current_hardware;
+	}
+
+	bool hardware_in_use()
+	{
+		return current_device != VK_NULL_HANDLE;
 	}
 
 	std::expected<resource_handle, tz::error_code> create_buffer(buffer_info info)
