@@ -7,6 +7,7 @@
 #include "tz/gpu/pass.hpp"
 #include <span>
 #include <array>
+#include <vector>
 
 #include ImportedShaderHeader(imgui, vertex)
 #include ImportedShaderHeader(imgui, fragment)
@@ -22,10 +23,11 @@ namespace tz::detail
 		tz::gpu::resource_handle font_image = tz::nullhand;
 		tz::gpu::shader_handle shader = tz::nullhand;
 
-		tz::gpu::pass_handle pass = tz::nullhand;
+		std::vector<tz::gpu::pass_handle> passes = {};
 	} render;
 
 	void impl_write_vertices_and_indices(ImDrawData* draw);
+	void impl_add_new_pass();
 
 	void imgui_initialise()
 	{
@@ -51,12 +53,14 @@ namespace tz::detail
 		std::array<ImDrawVert, 1024> initial_vertices;
 		render.vertex_buffer = tz_must(tz::gpu::create_buffer({
 			.data = tz::view_bytes(initial_vertices),
-			.name = "ImGui Vertex Buffer"
+			.name = "ImGui Vertex Buffer",
+			.flags = tz::gpu::buffer_flag::dynamic_access
 		}));
 
 		render.index_buffer = tz_must(tz::gpu::create_buffer({
 			.data = tz::view_bytes(initial_indices),
-			.name = "ImGui Index Buffer"
+			.name = "ImGui Index Buffer",
+			.flags = tz::gpu::buffer_flag::dynamic_access
 		}));
 
 		render.font_image = tz_must(tz::gpu::create_image
@@ -72,6 +76,57 @@ namespace tz::detail
 			ImportedShaderSource(imgui, fragment)
 		));
 
+	}
+
+	void imgui_terminate()
+	{
+		for(tz::gpu::pass_handle pass : render.passes)
+		{
+			tz::gpu::destroy_pass(pass);
+		}
+		tz_must(tz::gpu::destroy_resource(render.font_image));
+		tz_must(tz::gpu::destroy_resource(render.index_buffer));
+		tz_must(tz::gpu::destroy_resource(render.vertex_buffer));
+		tz::gpu::destroy_shader(render.shader);
+		ImGui::DestroyContext();
+	}
+	
+	// impl bits
+
+	void impl_write_vertices_and_indices(ImDrawData* draw)
+	{
+		const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
+		const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
+
+		if(tz::gpu::resource_size(render.vertex_buffer) < req_vtx_size)
+		{
+			tz::gpu::buffer_resize(render.vertex_buffer, req_vtx_size);
+		}
+		if(tz::gpu::resource_size(render.index_buffer) < req_idx_size)
+		{
+			tz::gpu::buffer_resize(render.index_buffer, req_idx_size);
+		}
+		std::size_t vtx_cursor = 0;
+		std::size_t idx_cursor = 0;
+
+		std::vector<ImDrawVert> new_vertices(draw->TotalVtxCount);
+		std::vector<ImDrawIdx> new_indices(draw->TotalIdxCount);
+		for(std::size_t i = 0; std::cmp_less(i, draw->CmdListsCount); i++)
+		{
+			const ImDrawList* cmd = draw->CmdLists[i];
+			std::copy(cmd->VtxBuffer.Data, cmd->VtxBuffer.Data + cmd->VtxBuffer.Size, new_vertices.data() + vtx_cursor);
+			vtx_cursor += cmd->VtxBuffer.Size;
+
+			std::copy(cmd->IdxBuffer.Data, cmd->IdxBuffer.Data + cmd->IdxBuffer.Size, new_indices.data() + idx_cursor);
+			idx_cursor += cmd->IdxBuffer.Size;
+		}
+
+		tz::gpu::resource_write(render.vertex_buffer, tz::view_bytes(new_vertices));
+		tz::gpu::resource_write(render.index_buffer, tz::view_bytes(new_indices));
+	}
+
+	void impl_add_new_pass()
+	{
 		tz::gpu::resource_handle resources[] =
 		{
 			render.vertex_buffer,
@@ -84,7 +139,9 @@ namespace tz::detail
 			tz::gpu::window_resource
 		};
 
-		render.pass = tz_must(tz::gpu::create_pass({
+		std::string pass_name = std::format("ImGui Pass {}", render.passes.size());
+
+		render.passes.push_back(tz_must(tz::gpu::create_pass({
 			.graphics =
 			{
 				.colour_targets = colour_targets,
@@ -92,23 +149,7 @@ namespace tz::detail
 			},
 			.shader = render.shader,
 			.resources = resources,
-		}));
-	}
-
-	void imgui_terminate()
-	{
-		tz::gpu::destroy_pass(render.pass);
-		tz_must(tz::gpu::destroy_resource(render.font_image));
-		tz_must(tz::gpu::destroy_resource(render.index_buffer));
-		tz_must(tz::gpu::destroy_resource(render.vertex_buffer));
-		tz::gpu::destroy_shader(render.shader);
-		ImGui::DestroyContext();
-	}
-	
-	// impl bits
-
-	void impl_write_vertices_and_indices(ImDrawData* draw)
-	{
-		(void)draw;
+			.name = pass_name.c_str()
+		})));
 	}
 }
