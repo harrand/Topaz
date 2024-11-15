@@ -200,6 +200,7 @@ namespace tz::gpu
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 	void impl_check_for_resize();
+	bool impl_graph_will_present(graph_handle graphh);
 	void impl_execute_subgraph(graph_handle graphh, std::size_t image_index);
 
 	/////////////////// tz::gpu api ///////////////////
@@ -1581,29 +1582,6 @@ namespace tz::gpu
 		return static_cast<tz::hanval>(ret_id);
 	}
 	
-	bool impl_graph_will_present(graph_handle graphh)
-	{
-		const auto& graph = graphs[graphh.peek()];
-		for(const graph_data::entry& entry : graph.timeline)
-		{
-			if(entry.is_graph)
-			{
-				if(impl_graph_will_present(entry.han))
-				{
-					return true;
-				}	
-			}
-			else
-			{
-				if(entry.han == tz::gpu::present_pass)
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	void execute(graph_handle graphh)
 	{
 		impl_check_for_resize();
@@ -3065,6 +3043,30 @@ namespace tz::gpu
 			}
 		}
 	}
+
+	bool impl_graph_will_present(graph_handle graphh)
+	{
+		const auto& graph = graphs[graphh.peek()];
+		for(const graph_data::entry& entry : graph.timeline)
+		{
+			if(entry.is_graph)
+			{
+				if(impl_graph_will_present(entry.han))
+				{
+					return true;
+				}	
+			}
+			else
+			{
+				if(entry.han == tz::gpu::present_pass)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 
 	void impl_execute_subgraph(graph_handle graphh, std::size_t image_index)
 	{
