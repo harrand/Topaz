@@ -1581,6 +1581,22 @@ namespace tz::gpu
 		graphs.emplace_back();
 		return static_cast<tz::hanval>(ret_id);
 	}
+
+	void graph_add_pass(graph_handle graphh, pass_handle pass, std::span<const pass_handle> dependencies)
+	{
+		auto& graph = graphs[graphh.peek()];
+		graph.timeline.push_back({.han = static_cast<tz::hanval>(pass), .is_graph = false});
+		auto& deps = graph.dependencies.emplace_back();
+		deps.resize(dependencies.size());
+		std::transform(dependencies.begin(), dependencies.end(), deps.begin(), [](pass_handle h)->graph_data::entry{return {.han = static_cast<tz::hanval>(h), .is_graph = false}});
+	}
+
+	void graph_add_subgraph(graph_handle graphh, graph_handle subgraph)
+	{
+		auto& graph = graphs[graphh.peek()];
+		graph.timeline.push_back({.han = static_cast<tz::hanval>(subgraph), .is_graph = true});
+		graph.dependencies.push_back({});
+	}
 	
 	void execute(graph_handle graphh)
 	{

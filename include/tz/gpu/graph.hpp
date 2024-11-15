@@ -36,8 +36,8 @@ namespace tz::gpu
 	 * @brief Create a new graph, which can be used for rendering a frame.
 	 */
 	graph_handle create_graph();
-	void graph_add_pass(pass_handle pass);
-	void graph_add_subgraph(graph_handle subgraph);
+	void graph_add_pass(graph_handle graph, pass_handle pass, std::span<const pass_handle> dependencies = {});
+	void graph_add_subgraph(graph_handle graph, graph_handle subgraph);
 	/**
 	 * @ingroup tz_gpu_graph
 	 * @brief Execute the graph - invoking all passes contained a single time.
