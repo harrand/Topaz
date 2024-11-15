@@ -104,8 +104,14 @@ namespace tz
 		{
 			(void)graph;
 			// we have a graph that could be completely wrong.
+			ImGui::Render();
 			ImDrawData* draws = ImGui::GetDrawData();
-			(void)draws;
+			if(draws == nullptr)
+			{
+				return;
+			}
+
+			impl_write_vertices_and_indices(draws);
 		}
 
 		void impl_write_vertices_and_indices(ImDrawData* draw)

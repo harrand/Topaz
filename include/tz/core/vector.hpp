@@ -3,6 +3,7 @@
 #include <concepts>
 #include <array>
 #include <type_traits>
+#include <algorithm>
 
 namespace tz
 {
@@ -95,6 +96,14 @@ namespace tz
 		vector<T, N> operator*(const vector<T, N>& rhs) const{auto cpy = *this; return cpy *= rhs;}
 		/// Divide one vector by another.
 		vector<T, N> operator/(const vector<T, N>& rhs) const{auto cpy = *this; return cpy /= rhs;}
+
+		template<typename C>
+		operator vector<C, N>() const requires(std::is_convertible_v<T, C>)
+		{
+			std::array<C, N> arr;
+			std::transform(this->arr.begin(), this->arr.end(), arr.begin(), [](const T& t)->C{return static_cast<C>(t);});
+			return {arr};
+		}
 
 		/// Retrieve the magnitude of the vector.
 		T length() const;

@@ -47,6 +47,13 @@ int tz_main()
 	while(tz::os::window_is_open())
 	{
 		tz::os::window_update();
+		auto windims = static_cast<tz::v2f>(tz::v2u{tz::os::window_get_width(), tz::os::window_get_height()});
+		ImGui::GetIO().DisplaySize = {windims[0], windims[1]};
+		ImGui::NewFrame();
+		ImGui::Begin("123");
+		ImGui::Text("hello world");
+		ImGui::End();
+		ImGui::EndFrame();
 		tz::gpu::execute(graph);
 	}
 
