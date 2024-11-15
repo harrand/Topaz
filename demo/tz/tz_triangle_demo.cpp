@@ -40,13 +40,13 @@ int tz_main()
 
 	tz::gpu::graph_handle graph = tz::gpu::create_graph();
 	tz::gpu::graph_add_pass(graph, pass);
+	tz::gpu::graph_add_subgraph(graph, tz::imgui_render_graph());
 	tz::gpu::graph_add_pass(graph, tz::gpu::present_pass);
 
 	while(tz::os::window_is_open())
 	{
 		tz::os::window_update();
 		tz::gpu::execute(graph);
-		//tz::gpu::execute(tz::imgui_render_graph());
 	}
 
 	tz::terminate();
