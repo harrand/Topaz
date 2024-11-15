@@ -149,6 +149,7 @@ namespace tz::gpu
 		std::vector<entry> timeline = {};
 		std::vector<std::vector<entry>> dependencies = {};
 		void(*on_execute)(graph_handle) = nullptr;
+		std::string name;
 	};
 	std::vector<graph_data> graphs = {};
 
@@ -174,6 +175,10 @@ namespace tz::gpu
 	{
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
+
+	PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT;
+	PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT;
+	PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT;
 
 	/////////////////// chunky impl predecls ///////////////////
 	#define ERROR_UNLESS_INIT if(current_instance == VK_NULL_HANDLE) return tz::error_code::precondition_failure;
@@ -257,6 +262,12 @@ namespace tz::gpu
 		}
 		passes.reserve(256);
 		shaders.reserve(256);
+
+		#if TOPAZ_DEBUG
+			vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(current_instance, "vkSetDebugUtilsObjectNameEXT"));
+			vkCmdBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(current_instance, "vkCmdBeginDebugUtilsLabelEXT"));
+			vkCmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(current_instance, "vkCmdEndDebugUtilsLabelEXT"));
+		#endif
 	}
 
 	void terminate()
@@ -565,6 +576,31 @@ namespace tz::gpu
 			break;
 		}
 
+		#if TOPAZ_DEBUG
+			std::string hardware_name = std::format("Hardware: {}", hw.name);
+			VkDebugUtilsObjectNameInfoEXT name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_PHYSICAL_DEVICE,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(pdev)),
+				.pObjectName = hardware_name.c_str()
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &name);
+
+			std::string device_name = std::format("Logical Device: {}", hw.name);
+			VkDebugUtilsObjectNameInfoEXT device_name_info
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_DEVICE,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(current_device)),
+				.pObjectName = device_name.c_str()
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &device_name_info);
+		#endif
+
+
 		vkGetDeviceQueue(current_device, current_hardware.internals.i1, 0, &graphics_compute_queue);
 
 		VmaVulkanFunctions vk_funcs = {};
@@ -786,6 +822,18 @@ namespace tz::gpu
 		res.data.resize(info.data.size());
 		std::copy(info.data.begin(), info.data.end(), res.data.begin());
 
+		#if TOPAZ_DEBUG
+			VkDebugUtilsObjectNameInfoEXT debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_BUFFER,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(res.buf)),
+				.pObjectName = info.name
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &debug_name);
+		#endif
+
 		return static_cast<tz::hanval>(hanval);
 	}
 
@@ -901,6 +949,40 @@ namespace tz::gpu
 
 		res.data.resize(info.data.size());
 		std::copy(info.data.begin(), info.data.end(), res.data.begin());
+
+		#if TOPAZ_DEBUG
+			VkDebugUtilsObjectNameInfoEXT image_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(res.img)),
+				.pObjectName = info.name
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &image_debug_name);
+
+			std::string view_name = std::format("Image View: {}", info.name);
+			VkDebugUtilsObjectNameInfoEXT view_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE_VIEW,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(res.img_view)),
+				.pObjectName = view_name.c_str()
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &view_debug_name);
+
+			std::string sampler_name = std::format("Sampler: {}", info.name);
+			VkDebugUtilsObjectNameInfoEXT sampler_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_SAMPLER,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(res.img_sampler)),
+				.pObjectName = sampler_name.c_str()
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &sampler_debug_name);
+		#endif
 
 		return static_cast<tz::hanval>(hanval);
 	}
@@ -1575,10 +1657,11 @@ namespace tz::gpu
 		passes[i] = {};
 	}
 
-	graph_handle create_graph(/*graph_info info*/)
+	graph_handle create_graph(const char* name)
 	{
 		std::size_t ret_id = graphs.size();
-		graphs.emplace_back();
+		auto& graph = graphs.emplace_back();
+		graph.name = name;
 		return static_cast<tz::hanval>(ret_id);
 	}
 
@@ -2081,12 +2164,26 @@ namespace tz::gpu
 				.layerCount = 1
 			}
 		};
-		for(VkImage swapchain_img : swapchain_images)
+		for(std::size_t i = 0; i < swapchain_images.size(); i++)
 		{
+			VkImage swapchain_img = swapchain_images[i];
 			// make copy and point to swapchain image.
 			view_create.image = swapchain_img;
 			VkImageView& view = swapchain_views.emplace_back();
 			vkCreateImageView(current_device, &view_create, nullptr, &view);
+
+			#if TOPAZ_DEBUG
+				std::string view_name = std::format("Image View: Swapchain Image {}", i);
+				VkDebugUtilsObjectNameInfoEXT debug_name
+				{
+					.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+					.pNext = nullptr,
+					.objectType = VK_OBJECT_TYPE_IMAGE_VIEW,
+					.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(view)),
+					.pObjectName = view_name.c_str()
+				};
+				vkSetDebugUtilsObjectNameEXT(current_device, &debug_name);
+			#endif
 		}
 
 		// create system image and depth image (an internal image that is rendered into when the user wants to render "into the window". it is blitted to a swapchain image, saves us having to worry about the swapchain image being in a different format.)
@@ -2135,6 +2232,48 @@ namespace tz::gpu
 		view_create.format = system_image_create.format;
 		view_create.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
 		vkCreateImageView(current_device, &view_create, nullptr, &system_depth_image_view);
+
+		#if TOPAZ_DEBUG
+			VkDebugUtilsObjectNameInfoEXT sys_image_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(system_image)),
+				.pObjectName = "System Image"
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &sys_image_debug_name);
+
+			VkDebugUtilsObjectNameInfoEXT sys_view_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE_VIEW,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(system_image_view)),
+				.pObjectName = "System Image View"
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &sys_view_debug_name);
+
+			VkDebugUtilsObjectNameInfoEXT sys_depth_image_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(system_depth_image)),
+				.pObjectName = "System Depth Image"
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &sys_depth_image_debug_name);
+
+			VkDebugUtilsObjectNameInfoEXT sys_depth_view_debug_name
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,
+				.pNext = nullptr,
+				.objectType = VK_OBJECT_TYPE_IMAGE_VIEW,
+				.objectHandle = static_cast<std::uint64_t>(reinterpret_cast<std::uintptr_t>(system_depth_image_view)),
+				.pObjectName = "System Depth Image View"
+			};
+			vkSetDebugUtilsObjectNameEXT(current_device, &sys_depth_view_debug_name);
+		#endif
 
 		return tz::error_code::partial_success;
 	}
@@ -2443,6 +2582,17 @@ namespace tz::gpu
 		{
 			vkCmdWaitEvents(frame.cmds, 1, &passes[dep.peek()].on_finish, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, nullptr, 0, nullptr, 0, nullptr);
 		}
+		
+		#if TOPAZ_DEBUG
+			std::string pass_label_name = std::format("Pass: {}", pass.info.name);
+			VkDebugUtilsLabelEXT pass_label
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				.pNext = nullptr,
+				.pLabelName = pass_label_name.c_str()
+			};
+			vkCmdBeginDebugUtilsLabelEXT(frame.cmds, &pass_label);
+		#endif
 		if(shader1.ty == shader_type::compute)
 		{
 			ret = impl_record_compute_work(pass, frame, i);
@@ -2451,6 +2601,9 @@ namespace tz::gpu
 		{
 			ret = impl_record_graphics_work(pass, frame, i, swapchain_image_id);
 		}
+		#if TOPAZ_DEBUG
+			vkCmdEndDebugUtilsLabelEXT(frame.cmds);
+		#endif
 		vkCmdSetEvent(frame.cmds, pass.on_finish, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 		return ret;
 	}
@@ -3097,6 +3250,17 @@ namespace tz::gpu
 			graph.on_execute(graphh);
 		}
 
+		#if TOPAZ_DEBUG
+			std::string graph_label_name = std::format("Graph: {}", graph.name);
+			VkDebugUtilsLabelEXT graph_label
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
+				.pNext = nullptr,
+				.pLabelName = graph_label_name.c_str()
+			};
+			vkCmdBeginDebugUtilsLabelEXT(frames[current_frame].cmds, &graph_label);
+		#endif
+
 		// go through timeline and record all gpu work.
 		// any of these may or may not try to blit (transfer) an image into our current swapchain image.
 		for(std::size_t i = 0; i < graph.timeline.size(); i++)
@@ -3119,6 +3283,10 @@ namespace tz::gpu
 				tz_must(impl_record_gpu_work(entry.han, current_frame, image_index, dep_passes));
 			}
 		}
+
+		#if TOPAZ_DEBUG
+			vkCmdEndDebugUtilsLabelEXT(frames[current_frame].cmds);
+		#endif
 
 	}
 }

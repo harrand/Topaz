@@ -36,9 +36,10 @@ int tz_main()
 			.triangle_count = 1
 		},
 		.shader = graphics,
+		.name = "Render Triangle"
 	}));
 
-	tz::gpu::graph_handle graph = tz::gpu::create_graph();
+	tz::gpu::graph_handle graph = tz::gpu::create_graph("Main Graph");
 	tz::gpu::graph_add_pass(graph, pass);
 	tz::gpu::graph_add_subgraph(graph, tz::imgui_render_graph());
 	tz::gpu::graph_add_pass(graph, tz::gpu::present_pass);

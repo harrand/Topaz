@@ -81,7 +81,7 @@ namespace tz
 			));
 
 			// empty graph for now, because we dont know what imgui wants to draw until we end the frame.
-			render.graph = tz::gpu::create_graph();
+			render.graph = tz::gpu::create_graph("ImGui Render Graph");
 			tz::gpu::graph_set_execute_callback(render.graph, impl_on_render);
 		}
 
