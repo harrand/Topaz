@@ -145,9 +145,10 @@ namespace tz::gpu
 
 	struct graph_data
 	{
-		graph_info info;
-		std::vector<pass_handle> timeline = {};
-		std::vector<std::vector<pass_handle>> dependencies = {};
+		struct entry{tz::hanval han; bool is_graph = false;};
+		std::vector<entry> timeline = {};
+		std::vector<std::vector<entry>> dependencies = {};
+		void(*on_execute)(graph_handle) = nullptr;
 	};
 	std::vector<graph_data> graphs = {};
 
@@ -199,6 +200,7 @@ namespace tz::gpu
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 	void impl_check_for_resize();
+	void impl_execute_subgraph(graph_handle graphh, std::size_t image_index);
 
 	/////////////////// tz::gpu api ///////////////////
 	void initialise(tz::appinfo info)
@@ -1572,64 +1574,47 @@ namespace tz::gpu
 		passes[i] = {};
 	}
 
-	std::expected<graph_handle, tz::error_code> create_graph(graph_info info)
+	graph_handle create_graph(/*graph_info info*/)
 	{
-		if(info.dependencies.size() > info.timeline.size())
-		{
-			UNERR(tz::error_code::invalid_value, "invalid graph - {} sets of dependencies but only {} passes in the timeline. the number of sets of dependencies should be less than or equal to the number of passes.", info.dependencies.size(), info.timeline.size());
-		}
 		std::size_t ret_id = graphs.size();
-		auto& graph = graphs.emplace_back();
-		graph.info = info;
-		// copy over timeline and dependencies
-		graph.timeline.resize(info.timeline.size());
-		std::copy(info.timeline.begin(), info.timeline.end(), graph.timeline.begin());
-		auto present_pass_count = std::count(info.timeline.begin(), info.timeline.end(), tz::gpu::present_pass);
-		if(present_pass_count > 1)
+		graphs.emplace_back();
+		return static_cast<tz::hanval>(ret_id);
+	}
+	
+	bool impl_graph_will_present(graph_handle graphh)
+	{
+		const auto& graph = graphs[graphh.peek()];
+		for(const graph_data::entry& entry : graph.timeline)
 		{
-			UNERR(tz::error_code::invalid_value, "The present pass can only appear a single time in a graph, your graph contains {} present passes.", present_pass_count);
-		}
-		else if(present_pass_count == 1)
-		{
-			auto iter = std::find(info.timeline.begin(), info.timeline.end(), tz::gpu::present_pass);
-			if(iter != info.timeline.begin() + info.timeline.size() - 1)
+			if(entry.is_graph)
 			{
-				UNERR(tz::error_code::invalid_value, "If the present pass is present within a graph, it must be the very last pass in the timeline.");
+				if(impl_graph_will_present(entry.han))
+				{
+					return true;
+				}	
+			}
+			else
+			{
+				if(entry.han == tz::gpu::present_pass)
+				{
+					return true;
+				}
 			}
 		}
-		
-		graph.dependencies.resize(info.dependencies.size());
-		for(std::size_t i = 0; i < info.dependencies.size(); i++)
-		{
-			const auto& deps = info.dependencies[i];
-			for(pass_handle dep : deps)
-			{
-				graph.dependencies[i].push_back(dep);
-			}
-		}
-
-		graph_handle ret = static_cast<tz::hanval>(ret_id);
-		return ret;
+		return false;
 	}
 
 	void execute(graph_handle graphh)
 	{
-		const auto& graph = graphs[graphh.peek()];
-		if(graph.info.on_execute != nullptr)
-		{
-			graph.info.on_execute(graphh);
-		}
-
 		impl_check_for_resize();
 		if(swapchain_width == 0 || swapchain_height == 0)
 		{
 			return;
 		}
 		const auto& frame = frames[current_frame];
-		auto present_pass_iter = std::find(graph.timeline.begin(), graph.timeline.end(), tz::gpu::present_pass);
-		const bool will_present = present_pass_iter != graph.timeline.end();
+		bool will_present = impl_graph_will_present(graphh);
 
-		std::uint32_t image_index;
+		std::uint32_t image_index = -1u;
 		if(will_present)
 		{
 			vkAcquireNextImageKHR(current_device, swapchain, std::numeric_limits<std::uint64_t>::max(), VK_NULL_HANDLE, frame.swapchain_fence, &image_index);
@@ -1686,19 +1671,9 @@ namespace tz::gpu
 			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 		}
 
-		// go through timeline and record all gpu work.
-		// any of these may or may not try to blit (transfer) an image into our current swapchain image.
-		for(std::size_t i = 0; i < graph.timeline.size(); i++)
-		{
-			pass_handle pass = graph.timeline[i];
-			if(pass == tz::gpu::present_pass)
-			{
-				tz_assert(i == graph.timeline.size() - 1, "Present pass detected in a graph but it wasn't at the end. create_graph should've failed to create such a graph. Fatal engine error.");
-				continue;
-			}
-			std::span<const pass_handle> deps = graph.dependencies[i];
-			tz_must(impl_record_gpu_work(pass, current_frame, image_index, deps));
-		}
+		// do stuff
+		impl_execute_subgraph(graphh, image_index);
+
 		if(will_present)
 		{
 			// transition swapchain image to PRESENT
@@ -2731,6 +2706,7 @@ namespace tz::gpu
 		vkCmdEndRendering(frame.cmds);
 		if(render_into_system_image)
 		{
+			tz_assert(swapchain_image_id != -1u, "graphics pass targets system image but swapchain image was not acquired.");
 			VkImageBlit blit
 			{
 				.srcSubresource = VkImageSubresourceLayers
@@ -3088,6 +3064,39 @@ namespace tz::gpu
 				tz_must(impl_validate_colour_targets(pass.info, pass));
 			}
 		}
+	}
+
+	void impl_execute_subgraph(graph_handle graphh, std::size_t image_index)
+	{
+		auto& graph = graphs[graphh.peek()];
+		if(graph.on_execute != nullptr)
+		{
+			graph.on_execute(graphh);
+		}
+
+		// go through timeline and record all gpu work.
+		// any of these may or may not try to blit (transfer) an image into our current swapchain image.
+		for(std::size_t i = 0; i < graph.timeline.size(); i++)
+		{
+			const auto& entry = graph.timeline[i];
+			if(entry.is_graph)
+			{
+				impl_execute_subgraph(entry.han, image_index);
+			}
+			else
+			{
+				std::span<const graph_data::entry> deps = graph.dependencies[i];
+				std::vector<pass_handle> dep_passes;
+				dep_passes.reserve(deps.size());
+				for(auto& dep_entry : deps)
+				{
+					tz_assert(!dep_entry.is_graph, "a subgraph cannot be a dependency - only a pass can be a dependency");
+					dep_passes.push_back(dep_entry.han);
+				}
+				tz_must(impl_record_gpu_work(entry.han, current_frame, image_index, dep_passes));
+			}
+		}
+
 	}
 }
 #endif
