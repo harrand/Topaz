@@ -1588,7 +1588,7 @@ namespace tz::gpu
 		graph.timeline.push_back({.han = static_cast<tz::hanval>(pass), .is_graph = false});
 		auto& deps = graph.dependencies.emplace_back();
 		deps.resize(dependencies.size());
-		std::transform(dependencies.begin(), dependencies.end(), deps.begin(), [](pass_handle h)->graph_data::entry{return {.han = static_cast<tz::hanval>(h), .is_graph = false}});
+		std::transform(dependencies.begin(), dependencies.end(), deps.begin(), [](pass_handle h)->graph_data::entry{return {.han = static_cast<tz::hanval>(h), .is_graph = false};});
 	}
 
 	void graph_add_subgraph(graph_handle graphh, graph_handle subgraph)
@@ -1596,6 +1596,11 @@ namespace tz::gpu
 		auto& graph = graphs[graphh.peek()];
 		graph.timeline.push_back({.han = static_cast<tz::hanval>(subgraph), .is_graph = true});
 		graph.dependencies.push_back({});
+	}
+
+	void graph_set_execute_callback(graph_handle graphh, void(*on_execute)(graph_handle))
+	{
+		graphs[graphh.peek()].on_execute = on_execute;
 	}
 	
 	void execute(graph_handle graphh)
@@ -3101,7 +3106,7 @@ namespace tz::gpu
 			{
 				impl_execute_subgraph(entry.han, image_index);
 			}
-			else
+			else if(entry.han != tz::gpu::present_pass)
 			{
 				std::span<const graph_data::entry> deps = graph.dependencies[i];
 				std::vector<pass_handle> dep_passes;

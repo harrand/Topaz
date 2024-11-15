@@ -38,6 +38,7 @@ namespace tz::gpu
 	graph_handle create_graph();
 	void graph_add_pass(graph_handle graph, pass_handle pass, std::span<const pass_handle> dependencies = {});
 	void graph_add_subgraph(graph_handle graph, graph_handle subgraph);
+	void graph_set_execute_callback(graph_handle graph, void(*on_execute)(graph_handle));
 	/**
 	 * @ingroup tz_gpu_graph
 	 * @brief Execute the graph - invoking all passes contained a single time.

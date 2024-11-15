@@ -116,13 +116,12 @@ namespace tz::ren
 			return std::unexpected(maybe_pass.error());
 		}
 
-		auto builder = tz::gpu::graph_builder{}
-		.add_pass(ren.main_pass);
+		ren.graph = tz::gpu::create_graph();
+		tz::gpu::graph_add_pass(ren.graph, ren.main_pass);
 		if(info.flags & quad_renderer_flag::graph_present_after)
 		{
-			builder.add_pass(tz::gpu::present_pass);
+			tz::gpu::graph_add_pass(ren.graph, tz::gpu::present_pass);
 		}
-		ren.graph = tz_must(builder.build());
 
 		ren.window_width_cache = 0;
 		ren.window_height_cache = 0;

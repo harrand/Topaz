@@ -38,16 +38,15 @@ int tz_main()
 		.shader = graphics,
 	}));
 
-	tz::gpu::graph_handle graph = tz_must(tz::gpu::graph_builder{}
-		.add_pass(pass)
-		.add_pass(tz::gpu::present_pass)
-		.build());
+	tz::gpu::graph_handle graph = tz::gpu::create_graph();
+	tz::gpu::graph_add_pass(graph, pass);
+	tz::gpu::graph_add_pass(graph, tz::gpu::present_pass);
 
 	while(tz::os::window_is_open())
 	{
 		tz::os::window_update();
 		tz::gpu::execute(graph);
-		tz::gpu::execute(tz::imgui_render_graph());
+		//tz::gpu::execute(tz::imgui_render_graph());
 	}
 
 	tz::terminate();

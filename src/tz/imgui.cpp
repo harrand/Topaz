@@ -81,7 +81,8 @@ namespace tz
 			));
 
 			// empty graph for now, because we dont know what imgui wants to draw until we end the frame.
-			render.graph = tz_must(tz::gpu::create_graph(tz::gpu::graph_info{.on_execute = impl_on_render}));
+			render.graph = tz::gpu::create_graph();
+			tz::gpu::graph_set_execute_callback(render.graph, impl_on_render);
 		}
 
 		void imgui_terminate()
