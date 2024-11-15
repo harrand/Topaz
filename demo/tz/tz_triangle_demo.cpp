@@ -5,6 +5,8 @@
 #include "tz/gpu/graph.hpp"
 #include "tz/gpu/shader.hpp"
 
+#include "tz/imgui.hpp"
+
 #include ImportedShaderHeader(triangle, vertex)
 #include ImportedShaderHeader(triangle, fragment)
 
@@ -45,6 +47,7 @@ int tz_main()
 	{
 		tz::os::window_update();
 		tz::gpu::execute(graph);
+		tz::gpu::execute(tz::imgui_render_graph());
 	}
 
 	tz::terminate();
