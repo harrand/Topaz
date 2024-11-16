@@ -30,7 +30,8 @@ namespace tz
 		} render;
 
 		void impl_write_vertices_and_indices(ImDrawData* draw);
-		void impl_add_new_pass();
+		void impl_push_pass();
+		void impl_pop_pass();
 		void impl_on_render(tz::gpu::graph_handle graph);
 
 		void imgui_initialise()
@@ -112,6 +113,14 @@ namespace tz
 			}
 
 			impl_write_vertices_and_indices(draws);
+			while(std::cmp_greater(draws->CmdListsCount, render.passes.size()))
+			{
+				impl_push_pass();
+			}
+			while(std::cmp_less(draws->CmdListsCount, render.passes.size()))
+			{
+				impl_pop_pass();
+			}
 		}
 
 		void impl_write_vertices_and_indices(ImDrawData* draw)
@@ -146,7 +155,7 @@ namespace tz
 			tz::gpu::resource_write(render.index_buffer, tz::view_bytes(new_indices));
 		}
 
-		void impl_add_new_pass()
+		void impl_push_pass()
 		{
 			tz::gpu::resource_handle resources[] =
 			{
@@ -172,6 +181,22 @@ namespace tz
 				.resources = resources,
 				.name = pass_name.c_str()
 			})));
+			
+			auto sz = render.passes.size();
+			std::vector<tz::gpu::pass_handle> deps;
+			deps.reserve(1);
+			if(sz >= 2)
+			{
+				deps.push_back(render.passes[sz - 2]);
+			}
+			tz::gpu::graph_add_pass(render.graph, render.passes[sz - 1], deps);
+		}
+
+		void impl_pop_pass()
+		{
+			tz::gpu::destroy_pass(render.passes.back());
+			render.passes.pop_back();
+			tz_error("todo: implement graph remove pass");
 		}
 	}
 
