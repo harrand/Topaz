@@ -39,6 +39,7 @@ namespace tz::gpu
 	} settings;
 
 	VkInstance current_instance = VK_NULL_HANDLE;
+	VkDebugUtilsMessengerEXT debug_messenger = VK_NULL_HANDLE;
 	VkDevice current_device = VK_NULL_HANDLE;
 	VkSurfaceKHR surface = VK_NULL_HANDLE;
 	VkSwapchainKHR swapchain = VK_NULL_HANDLE;
@@ -180,6 +181,9 @@ namespace tz::gpu
 	PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT;
 	PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT;
 
+	PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT;
+	PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
+
 	/////////////////// chunky impl predecls ///////////////////
 	#define ERROR_UNLESS_INIT if(current_instance == VK_NULL_HANDLE) return tz::error_code::precondition_failure;
 	#define ASSERT_INIT tz_assert(current_instance != VK_NULL_HANDLE, "Topaz has not been initialised.");
@@ -193,6 +197,7 @@ namespace tz::gpu
 	// returns partial_success if the swapchain previously existed, but has been recreated for some important reason (you will maybe need to rerecord commands)
 	// returns oom if oom, voom if voom
 	// returns unknown_error if some undocumented vulkan error occurred.
+	VKAPI_PTR VkBool32 impl_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT*, void*);
 	std::pair<std::uint32_t, std::uint32_t> impl_get_image_dimensions(tz::gpu::resource_handle imagey_resource);
 	tz::error_code impl_need_swapchain(std::uint32_t w, std::uint32_t h);
 	void impl_force_new_swapchain();
@@ -267,6 +272,21 @@ namespace tz::gpu
 			vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(current_instance, "vkSetDebugUtilsObjectNameEXT"));
 			vkCmdBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(current_instance, "vkCmdBeginDebugUtilsLabelEXT"));
 			vkCmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(current_instance, "vkCmdEndDebugUtilsLabelEXT"));
+
+			vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(current_instance, "vkCreateDebugUtilsMessengerEXT"));
+			vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(current_instance, "vkDestroyDebugUtilsMessengerEXT"));
+
+			VkDebugUtilsMessengerCreateInfoEXT debug_create
+			{
+				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+				.pNext = nullptr,
+				.flags = 0,
+				.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT,
+				.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT,
+				.pfnUserCallback = impl_debug_callback,
+				.pUserData = nullptr
+			};
+			vkCreateDebugUtilsMessengerEXT(current_instance, &debug_create, nullptr, &debug_messenger);
 		#endif
 	}
 
@@ -389,6 +409,13 @@ namespace tz::gpu
 			surface = VK_NULL_HANDLE;
 		}
 		tz_assert(current_instance != VK_NULL_HANDLE, "Requested to terminate tz::gpu (vulkan) when the vulkan instance was null, implying we had never initialised. This is a game-side logic error.");
+		#if TOPAZ_DEBUG
+			if(debug_messenger != VK_NULL_HANDLE)
+			{
+				vkDestroyDebugUtilsMessengerEXT(current_instance, debug_messenger, nullptr);
+				debug_messenger = VK_NULL_HANDLE;
+			}
+		#endif
 		vkDestroyInstance(current_instance, nullptr);
 		current_hardware = {};
 		current_instance = VK_NULL_HANDLE;
@@ -1820,6 +1847,21 @@ namespace tz::gpu
 	}
 
 	/////////////////// chunky impl IMPLEMENTATION ///////////////////
+
+	VKAPI_PTR VkBool32 impl_debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity, VkDebugUtilsMessageTypeFlagsEXT type, const VkDebugUtilsMessengerCallbackDataEXT* callback, void* usrdata)
+	{
+		(void)type;
+		(void)usrdata;
+		if(severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+		{
+			tz_error("[Vulkan Error Callback]: {}\n", callback->pMessage);
+		}
+		else if(severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+		{
+			tz_error("[Vulkan Warning Callback]: {}\n", callback->pMessage);
+		}		
+		return VK_FALSE;
+	}
 
 	void impl_retrieve_physical_device_info(VkPhysicalDevice from, hardware& to)
 	{
