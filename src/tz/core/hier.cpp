@@ -20,15 +20,30 @@ namespace tz
 	};
 
 	std::vector<hier_data> hiers = {};
+	std::vector<hier_handle> free_list = {};
 
 	hier_handle create_hier()
 	{
 		std::size_t ret = hiers.size();
-		hier_data& hier = hiers.emplace_back();
-
+		if(free_list.size())
+		{
+			ret = free_list.back().peek();
+			free_list.pop_back();
+		}
+		else
+		{
+			hiers.push_back({});
+		}
+		hier_data& hier = hiers[ret];
 		(void)hier;
 
 		return static_cast<tz::hanval>(ret);
+	}
+
+	void destroy_hier(hier_handle hier)
+	{
+		hiers[hier.peek()] = {};
+		free_list.push_back(hier);
 	}
 
 	std::expected<node_handle, tz::error_code> hier_create_node(hier_handle hierh, tz::trs transform, node_handle parent, void* userdata)
@@ -81,7 +96,7 @@ namespace tz
 		auto iter = std::find(hier.free_list.begin(), hier.free_list.end(), node);
 		if(iter != hier.free_list.end())
 		{
-			RETERR(tz::error_code::precondition_failure, "double destroy of node {}", node.peek());
+			RETERR(tz::error_code::invalid_value, "double destroy of node {}", node.peek());
 		}
 		hier.free_list.push_back(node);
 		hier.nodes[node.peek()] = {};
@@ -118,7 +133,7 @@ namespace tz
 		auto iter = std::find(hier.free_list.begin(), hier.free_list.end(), node);
 		if(iter != hier.free_list.end())
 		{
-			UNERR(tz::error_code::precondition_failure, "attempt to retrieve local transform within hierarchy of previously-deleted node {}", hierh.peek(), node.peek());
+			UNERR(tz::error_code::invalid_value, "attempt to retrieve local transform within hierarchy of previously-deleted node {}", hierh.peek(), node.peek());
 		}
 		return hier.nodes[node.peek()].local_transform;
 	}
@@ -138,7 +153,7 @@ namespace tz
 		auto iter = std::find(hier.free_list.begin(), hier.free_list.end(), node);
 		if(iter != hier.free_list.end())
 		{
-			UNERR(tz::error_code::precondition_failure, "attempt to retrieve global transform within hierarchy of previously-deleted node {}", hierh.peek(), node.peek());
+			UNERR(tz::error_code::invalid_value, "attempt to retrieve global transform within hierarchy of previously-deleted node {}", hierh.peek(), node.peek());
 		}
 		if(hier.nodes[node.peek()].parent != tz::nullhand)
 		{
