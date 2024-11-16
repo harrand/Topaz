@@ -310,7 +310,7 @@ namespace tzslc
 
 		// Finally, resources.
 		// Start with buffer resources.
-		constexpr char buffer_resource_regex[] = "resource\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?buffer ([a-zA-Z_]+)";
+		constexpr char buffer_resource_regex[] = "buffer\\(id ?= ?([0-9]+)\\) ?([a-zA-Z]*) ?([a-zA-Z_]+)";
 		tzslc::transform(shader_source, std::regex{buffer_resource_regex},
 		[](auto beg, auto end)
 		{

@@ -7,17 +7,17 @@ struct ImGuiVertex
 	uint col;
 };
 
-resource(id = 0) const buffer vertex
+buffer(id = 0) const vertex
 {
 	ImGuiVertex data[];
 };
 
-resource(id = 1) const buffer index
+buffer(id = 1) const index
 {
 	uint data[];
 };
 
-resource(id = 2) const buffer render
+buffer(id = 2) const render
 {
 	mat4 vp;
 	uint index_offset;

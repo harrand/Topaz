@@ -7,17 +7,17 @@ struct quad_data
 	uint texture_id;
 };
 
-resource(id = 0) const buffer quad
+buffer(id = 0) const quad
 {
 	quad_data data[];
 };
 
-resource(id = 1) const buffer camera
+buffer(id = 1) const camera
 {
 	mat4 projection;	
 };
 
-resource(id = 2) const buffer settings
+buffer(id = 2) const settings
 {
 	uint value;
 };
