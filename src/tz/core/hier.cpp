@@ -81,7 +81,7 @@ namespace tz
 		auto iter = std::find(hier.free_list.begin(), hier.free_list.end(), node);
 		if(iter != hier.free_list.end())
 		{
-			RETERR(tz::error_code::invalid_value, "double destroy of node {}", node.peek());
+			RETERR(tz::error_code::precondition_failure, "double destroy of node {}", node.peek());
 		}
 		hier.free_list.push_back(node);
 		hier.nodes[node.peek()] = {};
@@ -97,5 +97,72 @@ namespace tz
 		}
 
 		return tz::error_code::success;
+	}
+
+	void hier_node_set_local_transform(hier_handle hier, node_handle node, tz::trs transform)
+	{
+		hiers[hier.peek()].nodes[node.peek()].local_transform = transform;
+	}
+
+	std::expected<tz::trs, tz::error_code> hier_node_get_local_transform(hier_handle hierh, node_handle node)
+	{
+		if(hiers.size() <= hierh.peek())
+		{
+			UNERR(tz::error_code::invalid_value, "invalid hierarchy {} when retrieving local transform of node {}", hierh.peek(), node.peek());
+		}
+		const auto& hier = hiers[hierh.peek()];
+		if(hier.nodes.size() <= node.peek())
+		{
+			UNERR(tz::error_code::invalid_value, "attempt to retrieve local transform within hierarchy {} of invalid node {}", hierh.peek(), node.peek());
+		}
+		auto iter = std::find(hier.free_list.begin(), hier.free_list.end(), node);
+		if(iter != hier.free_list.end())
+		{
+			UNERR(tz::error_code::precondition_failure, "attempt to retrieve local transform within hierarchy of previously-deleted node {}", hierh.peek(), node.peek());
+		}
+		return hier.nodes[node.peek()].local_transform;
+	}
+
+	std::expected<tz::trs, tz::error_code> hier_node_get_global_transform(hier_handle hierh, node_handle node)
+	{
+		tz::trs parent_transform = {};
+		if(hiers.size() <= hierh.peek())
+		{
+			UNERR(tz::error_code::invalid_value, "invalid hierarchy {} when retrieving global transform of node {}", hierh.peek(), node.peek());
+		}
+		const auto& hier = hiers[hierh.peek()];
+		if(hier.nodes.size() <= node.peek())
+		{
+			UNERR(tz::error_code::invalid_value, "attempt to retrieve global transform within hierarchy {} of invalid node {}", hierh.peek(), node.peek());
+		}
+		auto iter = std::find(hier.free_list.begin(), hier.free_list.end(), node);
+		if(iter != hier.free_list.end())
+		{
+			UNERR(tz::error_code::precondition_failure, "attempt to retrieve global transform within hierarchy of previously-deleted node {}", hierh.peek(), node.peek());
+		}
+		if(hier.nodes[node.peek()].parent != tz::nullhand)
+		{
+			auto maybe_parent_transform = hier_node_get_global_transform(hierh, hier.nodes[node.peek()].parent);
+			if(maybe_parent_transform.has_value())
+			{
+				parent_transform = maybe_parent_transform.value();
+			}
+			else
+			{
+				UNERR(tz::error_code::unknown_error, "error occurred when getting global transform of node {} - {} occurred while getting global transform of parent node", node.peek(), tz::error_code_name(maybe_parent_transform.error()));
+			}
+		}
+		return parent_transform.combine(hier.nodes[node.peek()].local_transform);
+	}
+
+	void hier_node_set_global_transform(hier_handle hier, node_handle node, tz:: trs transform)
+	{
+		node_handle parent = hiers[hier.peek()].nodes[node.peek()].parent;
+		tz::trs parent_global = {};
+		if(parent != tz::nullhand)
+		{
+			parent_global = tz_must(hier_node_get_global_transform(hier, parent));
+		}
+		hier_node_set_local_transform(hier, node, transform.combine(parent_global.inverse()));
 	}
 }

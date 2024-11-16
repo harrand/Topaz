@@ -34,6 +34,11 @@ namespace tz
 	hier_handle create_hier();
 	std::expected<node_handle, tz::error_code> hier_create_node(hier_handle hier, tz::trs transform = {}, node_handle parent = tz::nullhand, void* userdata = nullptr);
 	tz::error_code hier_destroy_node(hier_handle hier, node_handle node);
+	
+	std::expected<tz::trs, tz::error_code> hier_node_get_local_transform(hier_handle hier, node_handle node);
+	void hier_node_set_local_transform(hier_handle hier, node_handle node, tz::trs transform);
+	std::expected<tz::trs, tz::error_code> hier_node_get_global_transform(hier_handle hier, node_handle node);
+	void hier_node_set_global_transform(hier_handle hier, node_handle node, tz::trs transform);
 }
 
 #endif // TOPAZ_CORE_HIER_HPP
