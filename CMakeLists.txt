@@ -36,7 +36,6 @@ topaz_add_library(
 	TARGET topaz
 	SOURCES	
 		src/tz/topaz.cpp
-		src/tz/imgui.cpp
 		src/tz/core/error.cpp
 		src/tz/core/job.cpp
 		src/tz/core/lua.cpp
@@ -50,8 +49,6 @@ topaz_add_library(
 		src/tz/io/image.cpp
 		src/tz/ren/quad.cpp
 	SHADERS
-		src/tz/imgui.vertex.tzsl
-		src/tz/imgui.fragment.tzsl
 		src/tz/ren/quad.vertex.tzsl
 		src/tz/ren/quad.fragment.tzsl
 	DEFINE_PACKAGE
@@ -59,7 +56,7 @@ topaz_add_library(
 
 target_include_directories(topaz PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(topaz PRIVATE VulkanMemoryAllocator concurrentqueue stb_image lua)
-target_link_libraries(topaz PUBLIC textc_lib imgui)
+target_link_libraries(topaz PUBLIC textc_lib)
 
 ######################
 ## TOPAZ - SETTINGS ##

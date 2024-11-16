@@ -3337,7 +3337,6 @@ namespace tz::gpu
 		#endif
 
 		// go through timeline and record all gpu work.
-		// any of these may or may not try to blit (transfer) an image into our current swapchain image.
 		for(std::size_t i = 0; i < graph.timeline.size(); i++)
 		{
 			const auto& entry = graph.timeline[i];

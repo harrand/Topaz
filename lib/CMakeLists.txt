@@ -38,17 +38,5 @@ add_library(lua STATIC
 	)
 target_include_directories(lua PUBLIC "${PROJECT_SOURCE_DIR}/lib/lua")
 
-add_library(imgui STATIC
-	imgui/imgui.cpp
-	imgui/imgui_demo.cpp
-	imgui/imgui_draw.cpp
-	imgui/imgui_tables.cpp
-	imgui/imgui_widgets.cpp
-
-	imgui/misc/cpp/imgui_stdlib.cpp
-)
-target_include_directories(imgui PUBLIC "${PROJECT_SOURCE_DIR}/lib/imgui")
-target_compile_definitions(imgui PUBLIC "-DIMGUI_USER_CONFIG=\"${PROJECT_SOURCE_DIR}/lib/topaz_imgui_config.hpp\"")
-
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE stb)

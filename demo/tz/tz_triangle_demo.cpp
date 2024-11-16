@@ -5,8 +5,6 @@
 #include "tz/gpu/graph.hpp"
 #include "tz/gpu/shader.hpp"
 
-#include "tz/imgui.hpp"
-
 #include ImportedShaderHeader(triangle, vertex)
 #include ImportedShaderHeader(triangle, fragment)
 
@@ -41,7 +39,6 @@ int tz_main()
 
 	tz::gpu::graph_handle graph = tz::gpu::create_graph("Main Graph");
 	tz::gpu::graph_add_pass(graph, pass);
-	//tz::gpu::graph_add_subgraph(graph, tz::imgui_render_graph());
 	tz::gpu::graph_add_pass(graph, tz::gpu::present_pass);
 
 	while(tz::os::window_is_open())
