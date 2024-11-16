@@ -44,6 +44,7 @@ topaz_add_library(
 		src/tz/core/matrix.cpp
 		src/tz/core/quaternion.cpp
 		src/tz/core/trs.cpp
+		src/tz/core/hier.cpp
 		src/tz/gpu/rhi_vulkan.cpp
 		src/tz/os/impl_win32.cpp
 		src/tz/io/image.cpp
