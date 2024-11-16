@@ -206,11 +206,12 @@ namespace tz::gpu
 	tz::error_code impl_cmd_resource_write(VkCommandBuffer cmds, resource_handle resource, std::span<const std::byte> newdata, std::size_t offset = 0);
 	void impl_write_all_resources(pass_handle pass);
 	void impl_write_single_resource(resource_handle resh);
-	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i, std::uint32_t swapchain_image_id, std::span<const pass_handle> deps);
+	tz::error_code impl_record_gpu_work(pass_handle pass, std::size_t i, std::span<const pass_handle> deps);
 	void impl_pass_go(pass_handle pass);
 	void impl_destroy_system_images();
 	void impl_check_for_resize();
 	bool impl_graph_will_present(graph_handle graphh);
+	bool impl_graph_writes_to_system_image(graph_handle graphh);
 	void impl_execute_subgraph(graph_handle graphh, std::size_t image_index);
 
 	/////////////////// tz::gpu api ///////////////////
@@ -1721,7 +1722,8 @@ namespace tz::gpu
 			return;
 		}
 		const auto& frame = frames[current_frame];
-		bool will_present = impl_graph_will_present(graphh);
+		const bool will_present = impl_graph_will_present(graphh);
+		const bool writes_to_system_image = impl_graph_writes_to_system_image(graphh);
 
 		std::uint32_t image_index = -1u;
 		if(will_present)
@@ -1782,6 +1784,64 @@ namespace tz::gpu
 
 		// do stuff
 		impl_execute_subgraph(graphh, image_index);
+
+		if(writes_to_system_image)
+		{
+			tz_assert(image_index != -1u, "ruh roh");
+			VkImageBlit blit
+			{
+				.srcSubresource = VkImageSubresourceLayers
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.mipLevel = 0,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				},
+				.srcOffsets =
+				{
+					VkOffset3D{0, 0, 0},
+					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
+				},
+				.dstSubresource = VkImageSubresourceLayers
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.mipLevel = 0,
+					.baseArrayLayer = 0,
+					.layerCount = 1
+				},
+				.dstOffsets =
+				{
+					VkOffset3D{0, 0, 0},
+					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
+				},
+			};
+			// we're about to blit the system image into the swapchain image.
+			// however we've just rendered into the system image, so its layout must be color_attachment.
+			// to do the transfer we must first transition the system image to transfer_src.
+			// we can assume the swapchain image is already in transfer_dst.
+			VkImageMemoryBarrier system_image_transfer
+			{
+				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+				.pNext = nullptr,
+				.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+				.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
+				.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+				.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+				.image = system_image,
+				.subresourceRange = VkImageSubresourceRange
+				{
+					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+					.baseMipLevel = 0,
+					.levelCount = 1,
+					.baseArrayLayer = 0,
+					.layerCount = 1,
+				}
+			};
+			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &system_image_transfer);
+			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, swapchain_images[image_index], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
+		}
 
 		if(will_present)
 		{
@@ -2609,9 +2669,9 @@ namespace tz::gpu
 	}
 
 	tz::error_code impl_record_compute_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
-	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id, std::uint32_t swapchain_image_id);
+	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id);
 
-	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i, std::uint32_t swapchain_image_id, std::span<const pass_handle> dependencies)
+	tz::error_code impl_record_gpu_work(pass_handle passh, std::size_t i, std::span<const pass_handle> dependencies)
 	{
 		const auto& pass = passes[passh.peek()]; 
 		tz::error_code ret = tz::error_code::success;
@@ -2641,7 +2701,7 @@ namespace tz::gpu
 		}
 		else
 		{
-			ret = impl_record_graphics_work(pass, frame, i, swapchain_image_id);
+			ret = impl_record_graphics_work(pass, frame, i);
 		}
 		#if TOPAZ_DEBUG
 			vkCmdEndDebugUtilsLabelEXT(frame.cmds);
@@ -2659,13 +2719,12 @@ namespace tz::gpu
 		return tz::error_code::success;
 	}
 
-	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id, std::uint32_t swapchain_image_id)
+	tz::error_code impl_record_graphics_work(const pass_data& pass, const frame_data_t& frame, std::uint32_t id)
 	{
 		std::vector<VkRenderingAttachmentInfo> colour_attachments;
 		std::vector<VkImageMemoryBarrier> colour_transitions;
 		colour_attachments.reserve(pass.info.graphics.colour_targets.size());
 		colour_transitions.reserve(pass.info.graphics.colour_targets.size());
-		bool render_into_system_image = false;
 		VkClearColorValue clear_colour{.float32 = {}};
 		// BGRA
 		clear_colour.float32[0] = pass.info.graphics.clear_colour[0];
@@ -2681,7 +2740,6 @@ namespace tz::gpu
 			{
 				rt = system_image;
 				rtv = system_image_view;
-				render_into_system_image = true;
 			}
 			else
 			{
@@ -2898,63 +2956,6 @@ namespace tz::gpu
 			}
 		}
 		vkCmdEndRendering(frame.cmds);
-		if(render_into_system_image)
-		{
-			tz_assert(swapchain_image_id != -1u, "graphics pass targets system image but swapchain image was not acquired.");
-			VkImageBlit blit
-			{
-				.srcSubresource = VkImageSubresourceLayers
-				{
-					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-					.mipLevel = 0,
-					.baseArrayLayer = 0,
-					.layerCount = 1
-				},
-				.srcOffsets =
-				{
-					VkOffset3D{0, 0, 0},
-					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
-				},
-				.dstSubresource = VkImageSubresourceLayers
-				{
-					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-					.mipLevel = 0,
-					.baseArrayLayer = 0,
-					.layerCount = 1
-				},
-				.dstOffsets =
-				{
-					VkOffset3D{0, 0, 0},
-					VkOffset3D{static_cast<std::int32_t>(swapchain_width), static_cast<std::int32_t>(swapchain_height), 1},
-				},
-			};
-			// we're about to blit the system image into the swapchain image.
-			// however we've just rendered into the system image, so its layout must be color_attachment.
-			// to do the transfer we must first transition the system image to transfer_src.
-			// we can assume the swapchain image is already in transfer_dst.
-			VkImageMemoryBarrier system_image_transfer
-			{
-				.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-				.pNext = nullptr,
-				.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-				.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT,
-				.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-				.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-				.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
-				.image = system_image,
-				.subresourceRange = VkImageSubresourceRange
-				{
-					.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-					.baseMipLevel = 0,
-					.levelCount = 1,
-					.baseArrayLayer = 0,
-					.layerCount = 1,
-				}
-			};
-			vkCmdPipelineBarrier(frame.cmds, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &system_image_transfer);
-			vkCmdBlitImage(frame.cmds, system_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, swapchain_images[swapchain_image_id], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &blit, VK_FILTER_NEAREST);
-		}
 		return tz::error_code::success;
 	}
 
@@ -3283,6 +3284,36 @@ namespace tz::gpu
 		return false;
 	}
 
+	bool impl_graph_writes_to_system_image(graph_handle graphh)
+	{
+		const auto& graph = graphs[graphh.peek()];
+		for(const graph_data::entry& entry : graph.timeline)
+		{
+			if(entry.is_graph)
+			{
+				if(impl_graph_writes_to_system_image(entry.han))
+				{
+					return true;
+				}	
+			}
+			else
+			{
+				if(entry.han == tz::gpu::present_pass)
+				{
+					continue;
+				}
+				const auto& pass = passes[static_cast<std::size_t>(entry.han)];
+				for(resource_handle colour_target : pass.colour_targets)
+				{
+					if(colour_target == tz::gpu::window_resource)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 	void impl_execute_subgraph(graph_handle graphh, std::size_t image_index)
 	{
@@ -3322,14 +3353,13 @@ namespace tz::gpu
 					tz_assert(!dep_entry.is_graph, "a subgraph cannot be a dependency - only a pass can be a dependency");
 					dep_passes.push_back(dep_entry.han);
 				}
-				tz_must(impl_record_gpu_work(entry.han, current_frame, image_index, dep_passes));
+				tz_must(impl_record_gpu_work(entry.han, current_frame, dep_passes));
 			}
 		}
 
 		#if TOPAZ_DEBUG
 			vkCmdEndDebugUtilsLabelEXT(frames[current_frame].cmds);
 		#endif
-
 	}
 }
 #endif
