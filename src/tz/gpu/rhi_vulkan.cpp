@@ -132,6 +132,7 @@ namespace tz::gpu
 		pass_info info;
 		std::vector<resource_handle> colour_targets;
 		std::vector<resource_handle> resources;
+		std::string name;
 		std::size_t image_count = 0;
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipeline pipeline = VK_NULL_HANDLE;
@@ -1277,6 +1278,7 @@ namespace tz::gpu
 		}
 		std::size_t ret_id = passes.size();
 		auto& pass = passes.emplace_back();
+		pass.name = info.name;
 		std::size_t buffer_count = 0;
 		pass.resources.reserve(info.resources.size());
 		for(resource_handle resh : info.resources)
@@ -2686,7 +2688,7 @@ namespace tz::gpu
 		}
 		
 		#if TOPAZ_DEBUG
-			std::string pass_label_name = std::format("Pass: {}", pass.info.name);
+			std::string pass_label_name = std::format("Pass: {}", pass.name);
 			VkDebugUtilsLabelEXT pass_label
 			{
 				.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
@@ -2801,17 +2803,17 @@ namespace tz::gpu
 				const auto& depth_image_resource = resources[pass.info.graphics.depth_target.peek()];
 				if(depth_image_resource.is_invalid())
 				{
-					RETERR(tz::error_code::precondition_failure, "invalid resource handle provided as depth target to pass \"{}\"", pass.info.name);
+					RETERR(tz::error_code::precondition_failure, "invalid resource handle provided as depth target to pass \"{}\"", pass.name);
 				}
 				else if(depth_image_resource.is_buffer())
 				{
-					RETERR(tz::error_code::precondition_failure, "resource provided as depth target to pass \"{}\" was not an image, but infact a buffer", pass.info.name);
+					RETERR(tz::error_code::precondition_failure, "resource provided as depth target to pass \"{}\" was not an image, but infact a buffer", pass.name);
 				}
 				tz_assert(depth_image_resource.is_image(), "non-image passed a depth target");
 				const auto& depth_res = std::get<tz::gpu::image_info>(depth_image_resource.res);
 				if(!(depth_res.flags & tz::gpu::image_flag::depth_target))
 				{
-					RETERR(tz::error_code::precondition_failure, "image resource \"{}\" provided as depth target to pass \"{}\", but the image does not have the \"depth_target\" flag.", depth_res.name, pass.info.name);
+					RETERR(tz::error_code::precondition_failure, "image resource \"{}\" provided as depth target to pass \"{}\", but the image does not have the \"depth_target\" flag.", depth_res.name, pass.name);
 				}
 				depth_rt = depth_image_resource.img;
 				depth_rtv = depth_image_resource.img_view;
@@ -2843,7 +2845,7 @@ namespace tz::gpu
 		{
 			if(!(pass.info.graphics.flags & graphics_flag::no_depth_test))
 			{
-				RETERR(tz::error_code::precondition_failure, "no depth target was provided for pass \"{}\". you either need to pass \"graphics_flag::no_depth_test\" to disable depth testing entirely, or pass a valid depth target.", pass.info.name);
+				RETERR(tz::error_code::precondition_failure, "no depth target was provided for pass \"{}\". you either need to pass \"graphics_flag::no_depth_test\" to disable depth testing entirely, or pass a valid depth target.", pass.name);
 			}
 		}
 		VkRenderingAttachmentInfo maybe_depth
@@ -2889,7 +2891,7 @@ namespace tz::gpu
 			const auto& indices = resources[pass.info.graphics.index_buffer.peek()];
 			if(indices.is_invalid())
 			{
-				RETERR(tz::error_code::invalid_value, "Graphics pass \"{}\" uses index buffer handle {}, which is an invalid resource.", pass.info.name, pass.info.graphics.index_buffer.peek());
+				RETERR(tz::error_code::invalid_value, "Graphics pass \"{}\" uses index buffer handle {}, which is an invalid resource.", pass.name, pass.info.graphics.index_buffer.peek());
 			}
 			vkCmdBindIndexBuffer(frame.cmds, indices.buf, 0, VK_INDEX_TYPE_UINT32);
 		}
@@ -3188,14 +3190,14 @@ namespace tz::gpu
 				const auto& res = resources[target.peek()];
 				if(!res.is_image())
 				{
-					RETERR(tz::error_code::invalid_value, "colour target {} of pass \"{}\" is neither tz::gpu::window_resource nor a valid image resource. colour targets must consist of a valid image resource that is viable as a colour target, or the window resource.", i, pass.info.name);
+					RETERR(tz::error_code::invalid_value, "colour target {} of pass \"{}\" is neither tz::gpu::window_resource nor a valid image resource. colour targets must consist of a valid image resource that is viable as a colour target, or the window resource.", i, pass.name);
 				}
 				else
 				{
 					const auto& img = std::get<image_info>(res.res);
 					if(!(img.flags & image_flag::colour_target))
 					{
-						RETERR(tz::error_code::invalid_value, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"colour_target\" flag.", i, pass.info.name);
+						RETERR(tz::error_code::invalid_value, "while colour target {} of pass \"{}\" is a valid image resource, specifying it as a colour target is invalid as it was not created with the \"colour_target\" flag.", i, pass.name);
 					}
 				}
 			}
