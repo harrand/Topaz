@@ -2708,7 +2708,7 @@ namespace tz::gpu
 		#if TOPAZ_DEBUG
 			vkCmdEndDebugUtilsLabelEXT(frame.cmds);
 		#endif
-		vkCmdSetEvent(frame.cmds, pass.on_finish, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+		vkCmdSetEvent(frame.cmds, pass.on_finish, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT);
 		return ret;
 	}
 

@@ -1,6 +1,8 @@
 #include "tz/imgui.hpp"
+#include "tz/core/trs.hpp"
 #include "tz/topaz.hpp"
 #include "tz/core/memory.hpp"
+#include "tz/core/matrix.hpp"
 #include "tz/gpu/hardware.hpp"
 #include "tz/gpu/resource.hpp"
 #include "tz/gpu/shader.hpp"
@@ -16,6 +18,13 @@ namespace tz
 {
 	namespace detail
 	{
+		struct shader_data
+		{
+			tz::m4f vp = tz::m4f::iden();
+			std::uint32_t index_offset = 0;
+			std::uint32_t vertex_offset = 0;
+			std::uint32_t texture_id = 0;
+		};
 		// imgui backend initialise.
 		struct render_data
 		{
@@ -24,6 +33,8 @@ namespace tz
 
 			tz::gpu::resource_handle font_image = tz::nullhand;
 			tz::gpu::shader_handle shader = tz::nullhand;
+
+			std::vector<tz::gpu::resource_handle> data_buffers = {};
 
 			std::vector<tz::gpu::pass_handle> passes = {};
 			tz::gpu::graph_handle graph = tz::nullhand;
@@ -112,7 +123,6 @@ namespace tz
 				return;
 			}
 
-			impl_write_vertices_and_indices(draws);
 			while(std::cmp_greater(draws->CmdListsCount, render.passes.size()))
 			{
 				impl_push_pass();
@@ -121,10 +131,13 @@ namespace tz
 			{
 				impl_pop_pass();
 			}
+			impl_write_vertices_and_indices(draws);
 		}
 
 		void impl_write_vertices_and_indices(ImDrawData* draw)
 		{
+			ImGuiIO io = ImGui::GetIO();
+
 			const auto req_idx_size = static_cast<std::size_t>(draw->TotalIdxCount) * sizeof(ImDrawIdx);
 			const auto req_vtx_size = static_cast<std::size_t>(draw->TotalVtxCount) * sizeof(ImDrawVert);
 
@@ -144,11 +157,27 @@ namespace tz
 			for(std::size_t i = 0; std::cmp_less(i, draw->CmdListsCount); i++)
 			{
 				const ImDrawList* cmd = draw->CmdLists[i];
+
+				auto data = *reinterpret_cast<const shader_data*>(tz::gpu::resource_read(render.data_buffers[i]).data());
+				data.vertex_offset = vtx_cursor;
+				data.index_offset = idx_cursor;
+				data.vp = tz::matrix_ortho(
+					-io.DisplaySize.x * 0.5f,
+					io.DisplaySize.x * 0.5f,
+					-io.DisplaySize.y * 0.5f,
+					io.DisplaySize.y * 0.5f,
+					-0.1f,
+					0.1f
+				);
+				tz::gpu::resource_write(render.data_buffers[i], std::as_bytes(std::span<const shader_data>(&data, 1)));
+
 				std::copy(cmd->VtxBuffer.Data, cmd->VtxBuffer.Data + cmd->VtxBuffer.Size, new_vertices.data() + vtx_cursor);
 				vtx_cursor += cmd->VtxBuffer.Size;
 
 				std::copy(cmd->IdxBuffer.Data, cmd->IdxBuffer.Data + cmd->IdxBuffer.Size, new_indices.data() + idx_cursor);
 				idx_cursor += cmd->IdxBuffer.Size;
+
+				tz::gpu::pass_set_triangle_count(render.passes[i], cmd->IdxBuffer.Size / 3);
 			}
 
 			tz::gpu::resource_write(render.vertex_buffer, tz::view_bytes(new_vertices));
@@ -157,10 +186,20 @@ namespace tz
 
 		void impl_push_pass()
 		{
+			shader_data data;
+			std::span<const shader_data> span(&data, 1);
+			std::string data_buf_name = std::format("ImGui Data Buffer {}", render.data_buffers.size());
+			render.data_buffers.push_back(tz_must(tz::gpu::create_buffer
+			({
+				.data = std::as_bytes(span),
+				.name = data_buf_name.c_str(),
+				.flags = tz::gpu::buffer_flag::dynamic_access,
+			})));
 			tz::gpu::resource_handle resources[] =
 			{
 				render.vertex_buffer,
 				render.index_buffer,
+				render.data_buffers[render.passes.size()],
 				render.font_image
 			};
 
@@ -175,6 +214,7 @@ namespace tz
 				.graphics =
 				{
 					.colour_targets = colour_targets,
+					.culling = tz::gpu::cull::none,
 					.flags = tz::gpu::graphics_flag::dont_clear | tz::gpu::graphics_flag::no_depth_test,
 				},
 				.shader = render.shader,
@@ -194,6 +234,8 @@ namespace tz
 
 		void impl_pop_pass()
 		{
+			tz::gpu::destroy_resource(render.data_buffers.back());
+			render.data_buffers.pop_back();
 			tz::gpu::destroy_pass(render.passes.back());
 			render.passes.pop_back();
 			tz_error("todo: implement graph remove pass");

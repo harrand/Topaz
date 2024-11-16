@@ -1,6 +1,17 @@
 shader(type = fragment);
 
+input(id = 0) vec2 uv;
+input(id = 1) vec4 col;
+input(id = 2, flat) uint texid;
+
+output(id = 0) vec4 out::colour;
+
 void main()
 {
-	
+	float texa = sample(texid, uv).a;
+	out::colour = col.rgba * texa;
+	if(texa < 0.1f)
+	{
+		discard;
+	}
 }
