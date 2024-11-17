@@ -4,8 +4,8 @@
 
 namespace tz
 {
-	std::uint64_t system_millis();
-	std::uint64_t system_nanos();
+	std::uint64_t time_millis();
+	std::uint64_t time_nanos();
 }
 
 #endif // TOPAZ_CORE_TIME_HPP
