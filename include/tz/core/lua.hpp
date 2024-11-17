@@ -267,7 +267,7 @@ namespace tz
 			{
 				v = tz_must(lua_stack_get_bool(i.value + 1));
 			}
-			else if constexpr(std::is_same_v<T, float>)
+			else if constexpr(std::is_same_v<T, float> || std::is_same_v<T, double>)
 			{
 				v = tz_must(lua_stack_get_number(i.value + 1));
 			}
