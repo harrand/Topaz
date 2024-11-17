@@ -5,15 +5,22 @@
 
 namespace tz
 {
+	/**
+	 * @ingroup tz_core_math
+	 * @brief Represents the generic matrix.
+	 * @internal
+	 */
 	template<typename T, int N>
 	requires std::integral<T> || std::floating_point<T>
 	struct matrix
 	{
+		/// Retrieve a matrix filled with zeroes.
 		static constexpr matrix<T, N> zero()
 		{
 			return matrix<T, N>::filled(T{0});
 		}
 
+		/// Retrieve an identity matrix that represents no transform.
 		static constexpr matrix<T, N> iden()
 		{
 			auto ret = matrix<T, N>::zero();
@@ -23,7 +30,8 @@ namespace tz
 			}
 			return ret;
 		}
-
+	
+		/// Retrieve a matrix filled with the given value.
 		static constexpr matrix<T, N> filled(T t)
 		{
 			matrix<T, N> ret;
@@ -43,7 +51,9 @@ namespace tz
 		const T& operator()(std::size_t x, std::size_t y) const;
 		T& operator()(std::size_t x, std::size_t y);
 
+		/// Create a matrix that causes the inverse transformation. Such that the product of this and the result are the identity matrix.
 		matrix<T, N> inverse() const;
+		/// Retrieve a copy of this matrix but with its rows and columns swapped.
 		matrix<T, N> transpose() const;
 
 		// matrix-scalar
