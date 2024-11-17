@@ -37,6 +37,8 @@ namespace tz::os
 
 	// API
 
+	std::string appname;
+
 	void initialise(appinfo info)
 	{
 		// custom icon support
@@ -46,6 +48,7 @@ namespace tz::os
 			wndclass.hIcon = icon;
 			wndclass.hIconSm = icon;
 		}
+		appname = info.name;
 		tz_assert(RegisterClassExA(&wndclass), "Window class registration failed: winapi system error code {}", GetLastError());
 		initialised = true;
 	}
@@ -66,6 +69,10 @@ namespace tz::os
 		if(wnd != nullptr)
 		{
 			close_window();
+		}
+		if(winfo.title.empty())
+		{
+			winfo.title = appname;
 		}
 
 		bool centrered = winfo.flags & window_flags::centered_window;

@@ -45,8 +45,8 @@ namespace tz::os
 	 **/
 	struct window_info
 	{
-		/// Title of the window.
-		std::string title = "Untitled";
+		/// Title of the window. If you don't provide one, the name of the application specified in @ref tz::initialise will be used instead.
+		std::string title = "";
 		/// x-position of the window, in pixels.
 		unsigned int x = 0;
 		/// y-position of the window, in pixels.
@@ -70,7 +70,7 @@ namespace tz::os
 	 *
 	 * Only one window can be open at a time - If you have called this function before but have not since closed the previous window, it will automatically be closed.
 	 **/
-	tz::error_code open_window(window_info winfo);
+	tz::error_code open_window(window_info winfo = {});
 	/**
 	 * @ingroup tz_os_window
 	 * @brief Close a previously-opened window.
