@@ -4,9 +4,16 @@ function(topaz_bundle_files)
 		TOPAZ_BUNDLE_FILES
 		""
 		"TARGET"
-		"FILES"
+		"FILES;DIRECTORIES"
 		${ARGN}
 	)
+
+    # for each bundle directory, glob recursively and add everything as files.
+    # if a new thing was added in the directory, will reconfigure thanks to CONFIGURE_DEPENDS
+    foreach(dir IN LISTS TOPAZ_BUNDLE_FILES_DIRECTORIES)
+        file(GLOB_RECURSE local_files CONFIGURE_DEPENDS RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/${dir}/*)
+        list(APPEND TOPAZ_BUNDLE_FILES_FILES ${local_files})
+    endforeach()
 
 	# source dir: CMAKE_CURRENT_SOURCE_DIR
 	# Loop over each file and replicate the directory structure in the binary directory
