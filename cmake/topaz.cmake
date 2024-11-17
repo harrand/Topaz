@@ -78,11 +78,15 @@ function(topaz_add_executable)
 			set(rc_name "${CMAKE_BINARY_DIR}/temp/favicon_${TOPAZ_ADD_EXECUTABLE_TARGET}.rc")
 			file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/temp")
 			file(RELATIVE_PATH REL_FAVICON_PATH ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/${TOPAZ_ADD_EXECUTABLE_FAVICON})
+			set(ICON_ID 101)
 			add_custom_command(
 				OUTPUT ${rc_name}
-				COMMAND ${CMAKE_COMMAND} -E echo "\"IDI_ICON1               ICON        DISCARDABLE            ${REL_FAVICON_PATH}\"" > ${rc_name}
+				COMMAND ${CMAKE_COMMAND} -E echo "#define IDI_ICON1 ${ICON_ID}" > ${rc_name}
+				COMMAND ${CMAKE_COMMAND} -E echo "IDI_ICON1 ICON DISCARDABLE \"${REL_FAVICON_PATH}\"" >> ${rc_name}
+				DEPENDS ${TOPAZ_ADD_EXECUTABLE_FAVICON}
 			)
 			target_sources(${TOPAZ_ADD_EXECUTABLE_TARGET} PUBLIC ${rc_name})
+			target_compile_definitions(${TOPAZ_ADD_EXECUTABLE_TARGET} PRIVATE "-DTZ_CUSTOM_ICON_ID=${ICON_ID}")
 		endif()
 	endif()
 endfunction()

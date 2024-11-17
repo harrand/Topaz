@@ -20,6 +20,16 @@ namespace tz
 		unsigned int major = 1u;
 		/// Minor version of the application.
 		unsigned int minor = 0u;
+
+		// internal evil hackery
+		// if the user opts for a executable icon, TZ_CUSTOM_ICON_ID will be defined by something needed by tz::os internals.
+		// however TZ_CUSTOM_ICON_ID will be defined on the game target, not engine. so when the game includes this header it will correctly resolve. cheeky
+		std::int64_t internal_icon_id =
+		#ifdef TZ_CUSTOM_ICON_ID
+			TZ_CUSTOM_ICON_ID;
+		#else
+			-1;
+		#endif
 	};
 	/**
 	 * @ingroup tz
@@ -55,7 +65,7 @@ namespace tz
 	}
 	namespace os
 	{
-		void initialise();
+		void initialise(appinfo info);
 		void terminate();
 	}
 }

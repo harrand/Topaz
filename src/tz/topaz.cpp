@@ -6,7 +6,7 @@ namespace tz
 	{
 		detail::job_system_initialise();
 		detail::lua_initialise_all_threads();
-		os::initialise();
+		os::initialise(info);
 		gpu::initialise(info);
 	}
 

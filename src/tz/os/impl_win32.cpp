@@ -37,8 +37,15 @@ namespace tz::os
 
 	// API
 
-	void initialise()
+	void initialise(appinfo info)
 	{
+		// custom icon support
+		if(info.internal_icon_id != -1)
+		{
+			auto icon = static_cast<HICON>(LoadImageA(GetModuleHandleA(nullptr), MAKEINTRESOURCE(info.internal_icon_id), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR));
+			wndclass.hIcon = icon;
+			wndclass.hIconSm = icon;
+		}
 		tz_assert(RegisterClassExA(&wndclass), "Window class registration failed: winapi system error code {}", GetLastError());
 		initialised = true;
 	}
