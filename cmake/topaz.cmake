@@ -38,7 +38,7 @@ function(topaz_add_executable)
 	cmake_parse_arguments(
 		TOPAZ_ADD_EXECUTABLE
 		"DEFINE_PACKAGE"
-		"TARGET"
+		"TARGET;FAVICON"
 		"SOURCES;SHADERS;TEXT_FILES;BUNDLE_FILES"
 		${ARGN}
 	)
@@ -71,5 +71,18 @@ function(topaz_add_executable)
 	endif()
 	if(TOPAZ_ADD_EXECUTABLE_DEFINE_PACKAGE)
 		topaz_define_package(TARGET ${TOPAZ_ADD_EXECUTABLE_TARGET})
+	endif()
+
+	if(TOPAZ_ADD_EXECUTABLE_FAVICON)
+		if(WIN32)
+			set(rc_name "${CMAKE_BINARY_DIR}/temp/favicon_${TOPAZ_ADD_EXECUTABLE_TARGET}.rc")
+			file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/temp")
+			file(RELATIVE_PATH REL_FAVICON_PATH ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/${TOPAZ_ADD_EXECUTABLE_FAVICON})
+			add_custom_command(
+				OUTPUT ${rc_name}
+				COMMAND ${CMAKE_COMMAND} -E echo "\"IDI_ICON1               ICON        DISCARDABLE            ${REL_FAVICON_PATH}\"" > ${rc_name}
+			)
+			target_sources(${TOPAZ_ADD_EXECUTABLE_TARGET} PUBLIC ${rc_name})
+		endif()
 	endif()
 endfunction()
