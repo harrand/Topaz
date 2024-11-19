@@ -53,6 +53,12 @@ void main()
 		zcoord = -1.0 + ((cur_quad.layer + 100) / 200.0);
 	}
 	out::position = camera.projection * cur_quad.model * vec4(local_pos, zcoord, 1);	
+
+	// slightly increase the z coordinate based on the y coordinate of the bottom of the quad.
+	// this means that quads with a greater y coord will display behind quads with a lower y coord. this makes for a more convincing 2d depth affect. TODO: make this optional.
+	float miny = cur_quad.model[3][1] - cur_quad.model[1][1];
+	out::position.z += miny * 0.01f;
+
 	out::tint = vec3(cur_quad.colour);
 	out::uv = quad_texcoords[in::vertex_id % 6];
 	out::texture_id = cur_quad.texture_id;
