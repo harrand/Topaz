@@ -46,6 +46,8 @@ namespace tz::ren
 		graph_present_after = 0b0010,
 		/// Normally if a quad has a negative scale in any dimension, the triangles are no longer in the correct winding order and will thus be invisible. Setting this flags disables face culling, meaning triangles scaled negatively (and thus in the wrong winding order) will still display as normal.
 		allow_negative_scale = 0b0100,
+		/// Enables the use of the layer property of a quad. By default, everything is on layer 0. Layer values are between -100 and 100. A quad with a higher layer will be drawn over a quad with a lower layer.
+		enable_layering = 0b1000,
 	};
 
 	constexpr quad_renderer_flag operator|(quad_renderer_flag lhs, quad_renderer_flag rhs)
@@ -104,6 +106,8 @@ namespace tz::ren
 		std::uint32_t texture_id = -1;
 		/// Colour of the quad. If the quad has no texture, this will be the exact colour of the whole quad. If the quad *does* have a texture, then the sampled texture colour will be multiplied by this value (in which case you will often want to provide {1, 1, 1}). You can change this later via @ref set_quad_colour.
 		tz::v3f colour = tz::v3f::filled(1.0f);
+		/// Layer value. Has no effect if layering is not enabled (see @ref quad_renderer_flag::enable_layering for more details).
+		short layer = 0;
 	};
 	
 	/**
@@ -137,6 +141,23 @@ namespace tz::ren
 	void set_quad_position(quad_renderer_handle renh, quad_handle quad, tz::v2f position);
 
 	/**
+	 * @ingroup tz_ren_quad
+	 * @brief Get the layer value of a given quad.
+	 *
+	 * Note that layer values only have an effect if layering (see @ref quad_renderer_flag::enable_layering) is enabled.
+	 */
+	short get_quad_layer(quad_renderer_handle renh, quad_handle quad);
+	/**
+	 * @ingroup tz_ren_quad
+	 * @brief Set the layer value of a given quad.
+	 * @param layer New layer value. Should be between -100 and 100.
+	 *
+	 * Note that layer values only have an effect if layering (see @ref quad_renderer_flag::enable_layering) is enabled.
+	 */
+	void set_quad_layer(quad_renderer_handle renh, quad_handle quad, short layer);
+
+	/**
+
 	 * @ingroup tz_ren_quad
 	 * @brief Retrieve the scale factor of a quad, in both dimensions.
 	 */

@@ -5,6 +5,8 @@ struct quad_data
 	mat4 model;
 	vec3 colour;
 	uint texture_id;
+	int layer;
+	uint unused[3];
 };
 
 buffer(id = 0) const quad
@@ -43,7 +45,14 @@ void main()
 	vec2 local_pos = quad_positions[in::vertex_id % 6];
 	quad_data cur_quad = quad.data[quad_id];
 
-	out::position = camera.projection * cur_quad.model * vec4(local_pos, 0, 1);	
+	uint layering_enabled = settings.value & 0x08;
+
+	float zcoord = 0.0;
+	if(layering_enabled > 0)
+	{
+		zcoord = -1.0 + ((cur_quad.layer + 100) / 200.0);
+	}
+	out::position = camera.projection * cur_quad.model * vec4(local_pos, zcoord, 1);	
 	out::tint = vec3(cur_quad.colour);
 	out::uv = quad_texcoords[in::vertex_id % 6];
 	out::texture_id = cur_quad.texture_id;

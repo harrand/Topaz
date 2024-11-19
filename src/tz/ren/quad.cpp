@@ -40,6 +40,8 @@ namespace tz::ren
 		tz::m4f model = tz::m4f::iden();
 		tz::v3f colour = {1.0f, 1.0f, 1.0f};
 		std::uint32_t texture_id = -1;
+		std::int32_t layer = 0;
+		std::uint32_t unused[3];
 	};
 
 	struct camera_data
@@ -95,14 +97,20 @@ namespace tz::ren
 			ren.camera_buffer,
 			ren.settings_buffer
 		};
+		tz::gpu::resource_handle depth_target = tz::nullhand;
+		if(info.flags & quad_renderer_flag::enable_layering)
+		{
+			depth_target = tz::gpu::window_resource;
+		}
 		auto maybe_pass = tz::gpu::create_pass
 		({
 			.graphics = 
 			{
 				.clear_colour = info.clear_colour,
 				.colour_targets = colour_targets,
+				.depth_target = depth_target,
 				.culling = (info.flags & quad_renderer_flag::allow_negative_scale) ? tz::gpu::cull::none : tz::gpu::cull::back,
-				.flags = tz::gpu::graphics_flag::no_depth_test
+				.flags = (info.flags & quad_renderer_flag::enable_layering) ? static_cast<tz::gpu::graphics_flag>(0) : tz::gpu::graphics_flag::no_depth_test
 			},
 			.shader = main_pass_shader,
 			.resources = resources,
@@ -172,6 +180,7 @@ namespace tz::ren
 		new_data.model = internal.transform.matrix();
 		new_data.colour = info.colour;
 		new_data.texture_id = info.texture_id;
+		new_data.layer = info.layer;
 
 		if(info.texture_id != static_cast<unsigned int>(-1))
 		{
@@ -237,6 +246,22 @@ namespace tz::ren
 		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::m4f>(&model, 1)), sizeof(quad_data) * quad.peek() + offsetof(quad_data, model));
 	}
 
+	short get_quad_layer(quad_renderer_handle renh, quad_handle quad)
+	{
+		const auto& ren = renderers[renh.peek()];
+		auto quad_data_array = tz::gpu::resource_read(ren.data_buffer);
+		return *reinterpret_cast<const std::int32_t*>(quad_data_array.data() + (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, layer));
+	}
+
+	void set_quad_layer(quad_renderer_handle renh, quad_handle quad, short layer)
+	{
+		std::int32_t layer_value = std::clamp(static_cast<std::int32_t>(layer), -100, 100);
+		auto& ren = renderers[renh.peek()];
+		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, layer);
+
+		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const std::int32_t>(&layer_value, 1)), offset);
+	}
+
 	tz::v2f get_quad_scale(quad_renderer_handle renh, quad_handle quad)
 	{
 		const auto& ren = renderers[renh.peek()];
@@ -248,7 +273,7 @@ namespace tz::ren
 	{
 		auto& ren = renderers[renh.peek()];
 		auto& internal = ren.internals[quad.peek()];
-		internal.transform.scale = {scale[0], scale[1]};
+		internal.transform.scale = {scale[0], scale[1], 1.0f};
 
 		tz::m4f model = internal.transform.matrix();
 		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::m4f>(&model, 1)), sizeof(quad_data) * quad.peek() + offsetof(quad_data, model));
