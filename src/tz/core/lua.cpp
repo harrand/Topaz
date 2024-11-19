@@ -196,6 +196,7 @@ namespace tz
 		lua_getglobal(lua, "tostring");
 		for(int i = top; i >= bottom; i--)
 		{
+			const char* type_name = luaL_typename(lua, i);
 			lua_pushvalue(lua, -1);
 			lua_pushvalue(lua, i);
 			lua_pcall(lua, 1, 1, 0);
@@ -203,11 +204,11 @@ namespace tz
 			ret += std::string(">") + std::to_string(i) + ": ";
 			if(str == nullptr)
 			{
-				ret += luaL_typename(lua, i) + std::string("\n");
+				ret += std::format("<unprintable> ({})\n", type_name);
 			}
 			else
 			{
-				ret += str + std::string("\n");
+				ret += std::format("{} ({})\n", str, type_name);
 			}
 			lua_pop(lua, 1);
 		}
