@@ -72,7 +72,7 @@ namespace tz
 
 	tz::m4f trs::matrix() const
 	{
-		return matrix_scale(this->scale) * matrix_translate(this->translate) * this->rotate.matrix();
+		return matrix_scale(this->scale) * this->rotate.matrix() * matrix_translate(this->translate);
 	}
 
 	trs trs::from_matrix(tz::m4f mat)

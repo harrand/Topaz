@@ -262,6 +262,24 @@ namespace tz::ren
 		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const std::int32_t>(&layer_value, 1)), offset);
 	}
 
+	float get_quad_rotation(quad_renderer_handle renh, quad_handle quad)
+	{
+		const auto& ren = renderers[renh.peek()];
+		tz::quat rot = ren.internals[quad.peek()].transform.rotate;
+		// assume rot is axis angle {0, 0, 1} and some angle (so acos(w) * 2)
+		return std::acos(rot[3]) * 2.0f;
+	}
+
+	void set_quad_rotation(quad_renderer_handle renh, quad_handle quad, float rotation)
+	{
+		auto& ren = renderers[renh.peek()];
+		auto& internal = ren.internals[quad.peek()];
+		internal.transform.rotate = tz::quat::from_axis_angle({0.0f, 0.0f, 1.0f}, rotation);
+		tz::m4f model = internal.transform.matrix();
+
+		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::m4f>(&model, 1)), sizeof(quad_data) * quad.peek() + offsetof(quad_data, model));
+	}
+
 	tz::v2f get_quad_scale(quad_renderer_handle renh, quad_handle quad)
 	{
 		const auto& ren = renderers[renh.peek()];

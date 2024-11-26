@@ -156,6 +156,9 @@ namespace tz::ren
 	 */
 	void set_quad_layer(quad_renderer_handle renh, quad_handle quad, short layer);
 
+	float get_quad_rotation(quad_renderer_handle renh, quad_handle quad);
+	void set_quad_rotation(quad_renderer_handle renh, quad_handle quad, float rotation);
+
 	/**
 
 	 * @ingroup tz_ren_quad
