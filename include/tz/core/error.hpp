@@ -1,6 +1,7 @@
 #ifndef TOPAZ_CORE_ERROR_HPP
 #define TOPAZ_CORE_ERROR_HPP
 #include <string_view>
+#include <string>
 #include <array>
 
 namespace tz

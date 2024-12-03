@@ -98,7 +98,8 @@ namespace tz
 
 	tz::error_code lua_define_function(std::string_view varname, lua_fn fn)
 	{
-		lua_pushcfunction(lua, reinterpret_cast<lua_CFunction>(fn));
+		// note: this is undefined behaviour
+		lua_pushcfunction(lua, reinterpret_cast<lua_CFunction>(reinterpret_cast<std::uintptr_t>(fn)));
 		std::string tmp = std::format("tmp_{}", varname);
 		lua_setglobal(lua, tmp.c_str());
 		lua_execute(std::format("{} = {}", varname, tmp));

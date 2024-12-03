@@ -22,7 +22,7 @@ endfunction()
 function(configure_gnu_like)
 	# GNU-like compiler. i.e gcc + clang, but not msvc or clang-cl.
 	# TODO	
-	target_compile_options(topaz PRIVATE -Wall -Wextra -Werror -pedantic-errors)
+	target_compile_options(topaz PRIVATE -Wall -Wextra -Werror -pedantic-errors -Wno-missing-field-initializers)
 endfunction()
 
 function(configure_clang)
