@@ -145,6 +145,10 @@ namespace tz::ren
 
 		ren.graph = tz::gpu::create_graph();
 		tz::gpu::graph_add_pass(ren.graph, ren.main_pass);
+		if(info.post_render != tz::nullhand)
+		{
+			tz::gpu::graph_add_subgraph(ren.graph, info.post_render);
+		}
 		if(info.flags & quad_renderer_flag::graph_present_after)
 		{
 			tz::gpu::graph_add_pass(ren.graph, tz::gpu::present_pass);

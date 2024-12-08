@@ -249,7 +249,7 @@ namespace tzslc
 			{
 				ret = "#pragma shader_stage(" + *beg + ")" + stage_define;
 			}
-			return ret + "\n" + "layout(binding = 1) uniform sampler2D tz_textures[];\n#define sample(id, uv) texture(tz_textures[id], uv)";
+			return ret + "\n" + "layout(binding = 1) uniform sampler2D tz_textures[];\n#define sample(id, uv) texture(tz_textures[id], uv)\n#define texsize(id) textureSize(tz_textures[id], 0)\n";
 		});
 
 		tzslc_assert(stage_specifier_count == 1, "Unexpected number of shader stage specifiers. Expected 1, got %zu", stage_specifier_count);

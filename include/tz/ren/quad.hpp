@@ -81,6 +81,7 @@ namespace tz::ren
 				return {std::begin(default_targets), std::end(default_targets)};
 			}();
 		std::span<const tz::gpu::resource_handle> extra_resources = {};
+		tz::gpu::graph_handle post_render = tz::nullhand;
 		/// Any extra optional flags to specify?
 		quad_renderer_flag flags = static_cast<quad_renderer_flag>(0);
 		/// Custom fragment shader. Unless @ref quad_renderer_flag::custom_fragment_shader is specified, this value is ignored and a default fragment shader is used.
