@@ -8,17 +8,17 @@ output(id = 0) vec4 colour;
 
 void main()
 {
-	//colour = vec4(1.0f, 0.0f, 1.0f, 1.0f);
-	vec3 frag_colour = tint;
+	vec4 frag_colour = vec4(tint, 0.0f);
 	if(texture_id != -1)
 	{
 		vec4 texcol = sample(texture_id, uv);
+		frag_colour.a = texcol.a;
 		if(alpha_clipping > 0 && texcol.a < 0.05f)
 		{
 			discard;
 		}
-		frag_colour *= texcol.xyz;
+		frag_colour.xyz *= texcol.xyz;
 	}
 
-	colour = vec4(frag_colour, 1.0f);
+	colour = frag_colour;
 }

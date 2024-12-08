@@ -58,7 +58,12 @@ namespace tz::ren
 	{
 		if(main_pass_shader == tz::nullhand)
 		{
-			main_pass_shader = tz_must(tz::gpu::create_graphics_shader(ImportedShaderSource(quad, vertex), ImportedShaderSource(quad, fragment)));
+			std::string_view fragment_source = ImportedShaderSource(quad, fragment);
+			if(info.flags & quad_renderer_flag::custom_fragment_shader)
+			{
+				fragment_source = info.custom_fragment_shader;
+			}
+			main_pass_shader = tz_must(tz::gpu::create_graphics_shader(ImportedShaderSource(quad, vertex), fragment_source));
 		}
 
 		std::size_t id = renderers.size();

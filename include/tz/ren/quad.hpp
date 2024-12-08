@@ -41,13 +41,15 @@ namespace tz::ren
 	enum quad_renderer_flag : std::int64_t
 	{
 		/// If the alpha-component of any fragment in a quad (after texture sampling) is very low (<0.05f), then that fragment will be discarded.
-		alpha_clipping = 0b0001,
+		alpha_clipping = 0b00000001,
 		/// Sets @ref tz::gpu::graph_flag::present_after on the graph representing the quad renderer.
-		graph_present_after = 0b0010,
+		graph_present_after = 0b00000010,
 		/// Normally if a quad has a negative scale in any dimension, the triangles are no longer in the correct winding order and will thus be invisible. Setting this flags disables face culling, meaning triangles scaled negatively (and thus in the wrong winding order) will still display as normal.
-		allow_negative_scale = 0b0100,
+		allow_negative_scale = 0b00000100,
 		/// Enables the use of the layer property of a quad. By default, everything is on layer 0. Layer values are between -100 and 100. A quad with a higher layer will be drawn over a quad with a lower layer.
-		enable_layering = 0b1000,
+		enable_layering = 0b00001000,
+		/// Enables the use of @ref quad_renderer_info::custom_fragment_shader.
+		custom_fragment_shader = 0b00010000,
 	};
 
 	constexpr quad_renderer_flag operator|(quad_renderer_flag lhs, quad_renderer_flag rhs)
@@ -74,6 +76,8 @@ namespace tz::ren
 		tz::gpu::resource_handle colour_target = tz::gpu::window_resource;
 		/// Any extra optional flags to specify?
 		quad_renderer_flag flags = static_cast<quad_renderer_flag>(0);
+		/// Custom fragment shader.
+		std::string custom_fragment_shader = {};
 	};
 	
 	/**
