@@ -27,6 +27,7 @@ namespace tz::ren
 		tz::gpu::resource_handle settings_buffer = tz::nullhand;
 		tz::gpu::pass_handle main_pass = tz::nullhand;
 		tz::gpu::graph_handle graph = tz::nullhand;
+		std::vector<tz::gpu::resource_handle> colour_targets = {};
 		std::vector<quad_internal_data> internals = {};
 		std::size_t quad_count = 0;
 		std::size_t texture_count = 0;
@@ -69,6 +70,11 @@ namespace tz::ren
 		std::size_t id = renderers.size();
 		auto& ren = renderers.emplace_back();
 		ren.info = info;
+		// as always, the view of colour targets could go out of scope after this call, so we store a copy of it for each quad renderer
+		ren.colour_targets.resize(info.colour_targets.size());
+		std::copy(info.colour_targets.begin(), info.colour_targets.end(), ren.colour_targets.begin());
+		// redirect the info span ptr to the internal cpy so it can be used.
+		ren.info.colour_targets = ren.colour_targets;
 
 		std::array<quad_data, initial_quad_capacity> initial_quad_data;
 		ren.data_buffer = tz_must(tz::gpu::create_buffer
@@ -92,10 +98,6 @@ namespace tz::ren
 			.name = "Quad Renderer Settings Buffer"
 		}));
 
-		tz::gpu::resource_handle colour_targets[] = 
-		{
-			info.colour_target
-		};
 		tz::gpu::resource_handle resources[] =
 		{
 			ren.data_buffer,
@@ -112,7 +114,7 @@ namespace tz::ren
 			.graphics = 
 			{
 				.clear_colour = info.clear_colour,
-				.colour_targets = colour_targets,
+				.colour_targets = info.colour_targets,
 				.depth_target = depth_target,
 				.culling = (info.flags & quad_renderer_flag::allow_negative_scale) ? tz::gpu::cull::none : tz::gpu::cull::back,
 				.flags = (info.flags & quad_renderer_flag::enable_layering) ? static_cast<tz::gpu::graphics_flag>(0) : tz::gpu::graphics_flag::no_depth_test
@@ -341,8 +343,8 @@ namespace tz::ren
 	{
 		auto& ren = renderers[renh.peek()];
 
-		auto w = tz::gpu::image_get_width(ren.info.colour_target);
-		auto h = tz::gpu::image_get_height(ren.info.colour_target);
+		auto w = tz::gpu::image_get_width(ren.info.colour_targets.front());
+		auto h = tz::gpu::image_get_height(ren.info.colour_targets.front());
 		if((w != 0 && h != 0) && (ren.window_width_cache != w || ren.window_height_cache != h))
 		{
 			// window has resized

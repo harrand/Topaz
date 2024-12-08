@@ -73,11 +73,17 @@ namespace tz::ren
 		/// When the main pass is executed, the colour target will be cleared to this colour value.
 		tz::v4f clear_colour = {0.0f, 0.0f, 0.0f, 1.0f};
 		/// Specifies the colour target to render into. By default, this is the window resource (i.e the quad renderer will draw to the window unless you specify a different colour target).
-		tz::gpu::resource_handle colour_target = tz::gpu::window_resource;
+		std::span<const tz::gpu::resource_handle> colour_targets =
+			[]()->std::span<const tz::gpu::resource_handle>
+			{
+				static tz::gpu::resource_handle default_targets[1];
+				default_targets[0] = tz::gpu::window_resource;
+				return {std::begin(default_targets), std::end(default_targets)};
+			}();
 		/// Any extra optional flags to specify?
 		quad_renderer_flag flags = static_cast<quad_renderer_flag>(0);
-		/// Custom fragment shader.
-		std::string custom_fragment_shader = {};
+		/// Custom fragment shader. Unless @ref quad_renderer_flag::custom_fragment_shader is specified, this value is ignored and a default fragment shader is used.
+		std::string_view custom_fragment_shader = {};
 	};
 	
 	/**
