@@ -21,7 +21,7 @@ buffer(id = 1) const camera
 
 buffer(id = 2) const settings
 {
-	uint value;
+	uint64_t value;
 };
 
 output(id = 0) vec3 out::tint;
@@ -45,7 +45,7 @@ void main()
 	vec2 local_pos = quad_positions[in::vertex_id % 6];
 	quad_data cur_quad = quad.data[quad_id];
 
-	uint layering_enabled = settings.value & 0x08;
+	uint layering_enabled = uint(settings.value & 0x08);
 
 	float zcoord = 0.0;
 	if(layering_enabled > 0)
@@ -62,5 +62,5 @@ void main()
 	out::tint = vec3(cur_quad.colour);
 	out::uv = quad_texcoords[in::vertex_id % 6];
 	out::texture_id = cur_quad.texture_id;
-	out::alpha_clipping = settings.value & 0x01;
+	out::alpha_clipping = uint(settings.value & 0x01);
 }

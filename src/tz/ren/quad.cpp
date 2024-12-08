@@ -80,10 +80,10 @@ namespace tz::ren
 			.name = "Quad Renderer Camera Buffer"
 		}));
 
-		auto settings_val = static_cast<std::uint32_t>(info.flags);
+		auto settings_val = static_cast<std::int64_t>(info.flags);
 		ren.settings_buffer = tz_must(tz::gpu::create_buffer
 		({
-			.data = std::as_bytes(std::span<const std::uint32_t>(&settings_val, 1)),
+			.data = std::as_bytes(std::span<const std::int64_t>(&settings_val, 1)),
 			.name = "Quad Renderer Settings Buffer"
 		}));
 

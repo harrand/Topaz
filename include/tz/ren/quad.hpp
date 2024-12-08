@@ -38,7 +38,7 @@ namespace tz::ren
 	 * @ingroup tz_ren_quad
 	 * @brief Specifies optional, extra functionality for a quad renderer.
 	 */
-	enum quad_renderer_flag
+	enum quad_renderer_flag : std::int64_t
 	{
 		/// If the alpha-component of any fragment in a quad (after texture sampling) is very low (<0.05f), then that fragment will be discarded.
 		alpha_clipping = 0b0001,

@@ -95,7 +95,7 @@ namespace tzslc
 		std::string ret = "/*tzslc header info*/\n#version 460 core\n";
 		if(dialect == GLSLDialect::Vulkan)
 		{
-			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n#extension GL_EXT_buffer_reference : require\n";
+			ret += "#define TZ_OGL 0\n#define TZ_VULKAN 1\n#extension GL_EXT_debug_printf : enable\n#extension GL_EXT_shader_explicit_arithmetic_types_int64 : enable\n#extension GL_EXT_nonuniform_qualifier : enable\n#extension GL_EXT_buffer_reference : require\n";
 		}
 		else if(dialect == GLSLDialect::OpenGL)
 		{

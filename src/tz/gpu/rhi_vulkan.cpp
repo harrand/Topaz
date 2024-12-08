@@ -555,6 +555,10 @@ namespace tz::gpu
 		{
 			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
 			.pNext = &features12,
+			.features =
+			{
+				.shaderInt64 = VK_TRUE
+			}
 		};
 
 		VkDeviceCreateInfo create
@@ -1957,6 +1961,10 @@ namespace tz::gpu
 
 		std::size_t missing_features = 0;
 		if(!base_features.features.multiDrawIndirect)
+		{
+			missing_features++;
+		}
+		if(base_features.features.shaderInt64)
 		{
 			missing_features++;
 		}
