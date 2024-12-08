@@ -25,6 +25,7 @@ namespace tz::ren
 		tz::gpu::resource_handle data_buffer = tz::nullhand;
 		tz::gpu::resource_handle camera_buffer = tz::nullhand;
 		tz::gpu::resource_handle settings_buffer = tz::nullhand;
+		tz::gpu::resource_handle extra_data_buffer = tz::nullhand;
 		tz::gpu::pass_handle main_pass = tz::nullhand;
 		tz::gpu::graph_handle graph = tz::nullhand;
 		std::vector<tz::gpu::resource_handle> colour_targets = {};
@@ -98,12 +99,23 @@ namespace tz::ren
 			.name = "Quad Renderer Settings Buffer"
 		}));
 
-		tz::gpu::resource_handle resources[] =
+		std::vector<std::byte> extra_data_buffer_initial_data;
+		extra_data_buffer_initial_data.resize(initial_quad_capacity * info.extra_data_per_quad);
+		ren.extra_data_buffer = tz_must(tz::gpu::create_buffer
+		({
+			.data = std::as_bytes(std::span<const std::byte>(extra_data_buffer_initial_data)),
+			.name = "Extra Data Buffer"
+		}));
+
+		std::vector<tz::gpu::resource_handle> resources =
 		{
 			ren.data_buffer,
 			ren.camera_buffer,
-			ren.settings_buffer
+			ren.settings_buffer,
+			ren.extra_data_buffer,
 		};
+		std::copy(info.extra_resources.begin(), info.extra_resources.end(), std::back_inserter(resources));
+
 		tz::gpu::resource_handle depth_target = tz::nullhand;
 		if(info.flags & quad_renderer_flag::enable_layering)
 		{
@@ -223,6 +235,12 @@ namespace tz::ren
 		set_quad_scale(renh, quad, tz::v2f::zero());
 		ren.free_list.push_back(quad.peek());
 		return tz::error_code::success;
+	}
+
+	void quad_renderer_set_quad_extra_data(quad_renderer_handle renh, quad_handle quad, std::span<const std::byte> data)
+	{
+		auto& ren = renderers[renh.peek()];
+		tz_must(tz::gpu::resource_write(ren.extra_data_buffer, data, ren.info.extra_data_per_quad * quad.peek()));
 	}
 
 	std::expected<std::uint32_t, tz::error_code> quad_renderer_add_texture(quad_renderer_handle renh, tz::gpu::resource_handle image)

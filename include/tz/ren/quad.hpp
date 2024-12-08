@@ -80,10 +80,13 @@ namespace tz::ren
 				default_targets[0] = tz::gpu::window_resource;
 				return {std::begin(default_targets), std::end(default_targets)};
 			}();
+		std::span<const tz::gpu::resource_handle> extra_resources = {};
 		/// Any extra optional flags to specify?
 		quad_renderer_flag flags = static_cast<quad_renderer_flag>(0);
 		/// Custom fragment shader. Unless @ref quad_renderer_flag::custom_fragment_shader is specified, this value is ignored and a default fragment shader is used.
 		std::string_view custom_fragment_shader = {};
+		/// How much extraneous GPU memory should be allocated per quad? If you want to store extra data per quad, you should put the size of that data here.
+		std::size_t extra_data_per_quad = 0;
 	};
 	
 	/**
@@ -130,6 +133,8 @@ namespace tz::ren
 	 */
 	std::expected<quad_handle, tz::error_code> quad_renderer_create_quad(quad_renderer_handle renh, quad_info info);
 	tz::error_code quad_renderer_destroy_quad(quad_renderer_handle renh, quad_handle quad);
+
+	void quad_renderer_set_quad_extra_data(quad_renderer_handle renh, quad_handle quad, std::span<const std::byte> data);
 
 	/**
 	 * @ingroup tz_ren_quad

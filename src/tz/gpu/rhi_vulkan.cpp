@@ -878,6 +878,11 @@ namespace tz::gpu
 		}
 		auto hanval = resources.size();
 		resource_info& res = resources.emplace_back();
+		if(info.flags & image_flag::resize_to_match_window_resource)
+		{
+			info.width = swapchain_width;
+			info.height = swapchain_height;
+		}
 		res.res = info;
 		std::string_view name = info.name;
 		if(name.empty())
@@ -3264,6 +3269,21 @@ namespace tz::gpu
 			{
 				tz_must(res);
 			}
+
+			// go through all resources.
+			for(std::size_t i = 0; i < resources.size(); i++)
+			{
+				const auto& res = resources[i];
+				if(res.is_image())
+				{
+					if(std::get<image_info>(res.res).flags & image_flag::resize_to_match_window_resource)
+					{
+						image_resize(static_cast<tz::hanval>(i), swapchain_width, swapchain_height);
+					}
+				}
+			}
+
+			// sanity check all passes
 			for(auto& pass : passes)
 			{
 				tz_must(impl_validate_colour_targets(pass.info, pass));

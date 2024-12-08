@@ -79,6 +79,8 @@ namespace tz::gpu
 		colour_target = 0b0001,
 		/// Image can be used as a depth target by a graphics pass.
 		depth_target = 0b0010,
+		/// Image will be automatically resized to match the dimensions of the window. In addition, @ref tz::gpu::image_info::width and @ref tz::gpu::image_info::height are ignored.
+		resize_to_match_window_resource = 0b0100,
 	};
 
 	constexpr image_flag operator|(image_flag lhs, image_flag rhs)
