@@ -41,9 +41,10 @@ namespace tz::ren
 	{
 		tz::m4f model = tz::m4f::iden();
 		tz::v3f colour = {1.0f, 1.0f, 1.0f};
-		std::uint32_t texture_id = -1;
+		std::uint32_t texture_id0 = -1;
+		std::uint32_t texture_id1 = -1;
 		std::int32_t layer = 0;
-		std::uint32_t unused[3];
+		std::uint32_t unused[2];
 	};
 
 	struct camera_data
@@ -202,14 +203,23 @@ namespace tz::ren
 		quad_data new_data;
 		new_data.model = internal.transform.matrix();
 		new_data.colour = info.colour;
-		new_data.texture_id = info.texture_id;
+		new_data.texture_id0 = info.texture_id0;
+		new_data.texture_id1 = info.texture_id1;
 		new_data.layer = info.layer;
 
-		if(info.texture_id != static_cast<unsigned int>(-1))
+		if(info.texture_id0 != static_cast<unsigned int>(-1))
 		{
-			if(info.texture_id >= ren.texture_count)
+			if(info.texture_id0 >= ren.texture_count)
 			{
-				UNERR(tz::error_code::invalid_value, "attempt to create quad with texture-id {}, but this is not a valid texture -- the quad renderer only has {} registered textures", info.texture_id, ren.texture_count);
+				UNERR(tz::error_code::invalid_value, "attempt to create quad with texture-id {}, but this is not a valid texture -- the quad renderer only has {} registered textures", info.texture_id0, ren.texture_count);
+			}
+		}
+
+		if(info.texture_id1 != static_cast<unsigned int>(-1))
+		{
+			if(info.texture_id1 >= ren.texture_count)
+			{
+				UNERR(tz::error_code::invalid_value, "attempt to create quad with texture-id {}, but this is not a valid texture -- the quad renderer only has {} registered textures", info.texture_id1, ren.texture_count);
 			}
 		}
 
@@ -341,17 +351,32 @@ namespace tz::ren
 		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const tz::v3f>(&colour, 1)), offset);
 	}
 
-	std::uint32_t get_quad_texture(quad_renderer_handle renh, quad_handle quad)
+	std::uint32_t get_quad_texture0(quad_renderer_handle renh, quad_handle quad)
 	{
 		const auto& ren = renderers[renh.peek()];
 		auto quad_data_array = tz::gpu::resource_read(ren.data_buffer);
-		return *reinterpret_cast<const std::uint32_t*>(quad_data_array.data() + (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, texture_id));
+		return *reinterpret_cast<const std::uint32_t*>(quad_data_array.data() + (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, texture_id0));
 	}
 
-	void set_quad_texture(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id)
+	std::uint32_t get_quad_texture1(quad_renderer_handle renh, quad_handle quad)
+	{
+		const auto& ren = renderers[renh.peek()];
+		auto quad_data_array = tz::gpu::resource_read(ren.data_buffer);
+		return *reinterpret_cast<const std::uint32_t*>(quad_data_array.data() + (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, texture_id1));
+	}
+
+	void set_quad_texture0(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id)
 	{
 		auto& ren = renderers[renh.peek()];
-		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, texture_id);
+		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, texture_id0);
+
+		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const std::uint32_t>(&texture_id, 1)), offset);
+	}
+
+	void set_quad_texture1(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id)
+	{
+		auto& ren = renderers[renh.peek()];
+		std::size_t offset = (sizeof(quad_data) * quad.peek()) + offsetof(quad_data, texture_id1);
 
 		tz::gpu::resource_write(ren.data_buffer, std::as_bytes(std::span<const std::uint32_t>(&texture_id, 1)), offset);
 	}

@@ -116,8 +116,10 @@ namespace tz::ren
 		float rotation = 0.0f;
 		/// Scale factors of the quad, in both dimensions. You can change this later via @ref set_quad_scale.
 		tz::v2f scale = tz::v2f::filled(1.0f);
-		/// Texture to display on the quad. Defaults to -1 (no texture). If no texture is used, then the quad will have a solid colour corresponding to @ref colour. You can change this later via @ref set_quad_texture.
-		std::uint32_t texture_id = -1;
+		/// First texture to display on the quad. Defaults to -1 (no texture). If no texture is used, then the quad will have a solid colour corresponding to @ref colour. You can change this later via @ref set_quad_texture0.
+		std::uint32_t texture_id0 = -1;
+		/// First texture to display on the quad. Defaults to -1 (no texture). If no texture is used, then the quad will have a solid colour corresponding to @ref colour. You can change this later via @ref set_quad_texture1.
+		std::uint32_t texture_id1 = -1;
 		/// Colour of the quad. If the quad has no texture, this will be the exact colour of the whole quad. If the quad *does* have a texture, then the sampled texture colour will be multiplied by this value (in which case you will often want to provide {1, 1, 1}). You can change this later via @ref set_quad_colour.
 		tz::v3f colour = tz::v3f::filled(1.0f);
 		/// Layer value. Has no effect if layering is not enabled (see @ref quad_renderer_flag::enable_layering for more details).
@@ -204,17 +206,30 @@ namespace tz::ren
 
 	/**
 	 * @ingroup tz_ren_quad
-	 * @brief Retrieve the texture-id currently being used by a quad.
+	 * @brief Retrieve the first texture-id currently being used by a quad.
 	 * @return (-1) If the quad was not using a texture.
 	 */
-	std::uint32_t get_quad_texture(quad_renderer_handle renh, quad_handle quad);
+	std::uint32_t get_quad_texture0(quad_renderer_handle renh, quad_handle quad);
 	/**
 	 * @ingroup tz_ren_quad
-	 * @brief Set a new texture-id to be used by a quad.
+	 * @brief Retrieve the second texture-id currently being used by a quad.
+	 * @return (-1) If the quad was not using a texture.
+	 */
+	std::uint32_t get_quad_texture1(quad_renderer_handle renh, quad_handle quad);
+	/**
+	 * @ingroup tz_ren_quad
+	 * @brief Set a new first texture-id to be used by a quad.
 	 *
 	 * Note: Passing -1 as the texture-id will cause the quad to no longer sample from a texture.
 	 */
-	void set_quad_texture(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id);
+	void set_quad_texture0(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id);
+	/**
+	 * @ingroup tz_ren_quad
+	 * @brief Set a new second texture-id to be used by a quad.
+	 *
+	 * Note: Passing -1 as the texture-id will cause the quad to no longer sample from a texture.
+	 */
+	void set_quad_texture1(quad_renderer_handle renh, quad_handle quad, std::uint32_t texture_id);
 
 	/**
 	 * @ingroup tz_ren_quad
