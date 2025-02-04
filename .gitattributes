@@ -6,3 +6,4 @@ test/** linguist-vendored=false
 tools/** linguist-vendored=false
 *.tzsl linguist-language=GLSL
 *.cppm linguist-language=C++
+*.psy linguist-language=Jai
