@@ -1,0 +1,22 @@
+main ::= func() -> s32
+{
+	register_wndclass();
+	defer unregister_wndclass();
+
+	wnd : u64 mut := open_window(800, 600, "Topaz Test");
+	defer DestroyWindow(wnd);
+	while(window_is_open)
+	{
+		window_update();
+	}
+	return 0;
+};
+
+== build ==
+{
+	add_source_file("src/wnd.psy");
+
+	set_output_directory("build");
+	set_executable("tz");
+	set_optimisation(0);
+}
