@@ -18,3 +18,8 @@ vec2_sqlength ::= func(v : vec2) -> f32
 {
 	return (v.x * v.x) + (v.y * v.y);
 };
+
+vec2_length ::= func(v : vec2) -> f32
+{
+	return __sqrt(vec2_sqlength(v));
+};
