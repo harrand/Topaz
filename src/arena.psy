@@ -20,12 +20,38 @@ arena_create ::= func(initial_capacity : u64) -> arena
 	return arena{.ptr := ptr; .cap := initial_capacity; .cursor := 0;};
 };
 
+arena_push ::= func(a : arena mut&, bytes : u64) -> v0& weak
+{
+	while((a->cursor) > (a->cap + bytes))
+	{
+		// need to increase size. let's double the cap.
+		offset ::= ((a->ptr)@u64)@v0&;
+		VirtualAlloc(offset, a->cap, MEM_COMMIT, PAGE_READWRITE);
+		(a->cap) = (a->cap) * 2;
+	}
+	addr : u64 mut := (a->ptr)@u64;
+	addr = addr + (a->cursor);
+	(a->cursor) = (a->cursor) + bytes;
+
+	return addr@v0&;
+};
+
+arena_pop ::= func(a : arena mut&, bytes : u64) -> v0
+{
+	if((a->cursor) < bytes)
+	{
+		__debugbreak();
+	}
+	(a->cursor) = (a->cursor) - bytes;
+};
+
 arena_destroy ::= func(a : arena) -> v0
 {
 	VirtualFree(a.ptr, 0, MEM_RELEASE);
 };
 
-permanent_arena : arena mut := arena{};
+permanent_arena_val : arena mut := arena{};
+permanent_arena : arena mut& := ref permanent_arena_val;
 
 == build ==
 {

@@ -1,7 +1,12 @@
 main ::= func() -> s32
 {
-	permanent_arena = arena_create(4096 * 1024);
-	defer permanent_arena.arena_destroy();
+	permanent_arena_val = arena_create(4096 * 1024);
+	defer permanent_arena_val.arena_destroy();
+
+	myvec ::= vec2{.x := 69.0; .y := 1.0;};
+
+	ptr : f32 mut& := arena_push(permanent_arena, __sizeof(f32));
+	(deref ptr) = (myvec.vec2_length());
 
 	register_wndclass();
 	defer unregister_wndclass();
