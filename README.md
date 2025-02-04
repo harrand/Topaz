@@ -1,18 +1,11 @@
 # Topaz Engine
 
-[![OGL Debug](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_debug.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_debug.yml)
-[![OGL Release](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_release.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_opengl_release.yml)
-[![VK Debug](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_debug.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_debug.yml)
-[![VK Release](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_release.yml/badge.svg)](https://github.com/Harrand/Topaz/actions/workflows/codebuild_vulkan_release.yml)
-
-![Documentation](https://github.com/Harrand/Topaz/actions/workflows/documentation.yml/badge.svg)
-
 ## About
 
  Topaz is a 3D graphics engine.
- * C++23 (no modules)
+ * You are on the experimental Psy branch. This version is written in the experimental Psy programming language, not C++.
  * Very low-level declarative graphics API.
- * Supports Windows/Linux and Clang/GCC/MSVC (See requirements section below for required versions)
+ * Supports Windows only.
  
  [Topaz 4.2.0](https://github.com/Harrand/Topaz/tree/Topaz4.2) is the most recent release of the Topaz Engine. The next version is Topaz 5.0, currently in early development on the master branch.
 
@@ -63,29 +56,5 @@ Each major version is a total rewrite and thus completely different from the pre
 </details>
 
 ## Build Instructions
-1. Checkout the repository resursively.
-2. Configure CMake. It is recommended you use a preset.
-	
-	Example:  `cmake --preset host_vulkan_debug`
-3. Build the `topaz` target to build the engine. Run the `tztest` target to build and run all unit-tests.
-
-## Dependencies
-The table below shows all the engine's dependencies.
-
-| Dependency                                                                                |  Render API | Build Config  | Dependency Type         |
-|-------------------------------------------------------------------------------------------|:-----------:|:-------------:|-------------------------|
-|[Vulkan SDK](https://www.lunarg.com/vulkan-sdk/)											| Vulkan	  | All			  | Needs pre-installation	|
-
-## Requirements
-The following requirements apply for all possible build configurations:
-* A C++23-compliant compiler. GCC, MSVC and Clang are all tested so you can be confident using these. If you're not using any of these compilers, your mileage may vary.
-* CMake 3.21 or later is required to build.
-#### Vulkan Build
-* Windows or Linux.
-	* macOS may be theoretically possible down-the-line via MoltenVK, but no work at all has been done or planned to provide support for it.
-* Vulkan SDK 1.3 or later must be installed.
-
-* Your graphics card must support Vulkan 1.3. [Check your graphics card here](https://vulkan.gpuinfo.org/).
-	* It must also support the following vulkan extension(s):
-		- VK_KHR_swapchain
-		- VK_KHR_shader_non_semantic_info (debug builds only)
+1. Run `psyc topaz.psy`
+2. Execute `build/tz` for now.
