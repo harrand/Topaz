@@ -1,0 +1,20 @@
+vec2 ::= struct
+{
+	x : f32;
+	y : f32;
+};
+
+vec2_zero ::= func() -> vec2
+{
+	return vec2{.x := 0.0; .y := 0.0;};
+};
+
+vec2_filled ::= func(val : f32) -> vec2
+{
+	return vec2{.x := val; .y := val;};
+};
+
+vec2_sqlength ::= func(v : vec2) -> f32
+{
+	return (v.x * v.x) + (v.y * v.y);
+};

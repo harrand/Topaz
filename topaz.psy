@@ -3,20 +3,25 @@ main ::= func() -> s32
 	register_wndclass();
 	defer unregister_wndclass();
 
+	z ::= vec2_filled(69.0);
+	val ::= (z.vec2_sqlength());
+
 	wnd : u64 mut := open_window(800, 600, "Topaz Test2");
 	defer wnd.close_window();
 	while(wnd.window_is_open())
 	{
 		window_update();
 	}
+
 	return 0;
 };
 
 == build ==
 {
 	add_source_file("src/wnd.psy");
+	add_source_file("src/vec.psy");
 
 	set_output_directory("build");
 	set_executable("tz");
-	set_optimisation(0);
+	set_optimisation(3);
 }
