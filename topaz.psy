@@ -3,9 +3,9 @@ main ::= func() -> s32
 	register_wndclass();
 	defer unregister_wndclass();
 
-	wnd : u64 mut := open_window(800, 600, "Topaz Test");
-	defer DestroyWindow(wnd);
-	while(window_is_open)
+	wnd : u64 mut := open_window(800, 600, "Topaz Test2");
+	defer wnd.close_window();
+	while(wnd.window_is_open())
 	{
 		window_update();
 	}

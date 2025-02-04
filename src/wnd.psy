@@ -121,6 +121,17 @@ open_window ::= func(w : u32 weak, h : u32 weak, title : u8&) -> u64
 	return ret;
 };
 
+close_window ::= func(wnd : u64) -> v0
+{
+	window_is_open = false;
+	DestroyWindow(wnd);
+};
+
+window_is_open ::= func(wnd : u64) -> bool
+{
+	return window_is_open;
+};
+
 window_update ::= func() -> v0
 {
 	PeekMessageA ::= func(lpMsg : WINMSG mut&, hwnd : u64, wMsgFilterMin : u32, wMsgFilterMax : u32, wRemoveMsg : u32) -> s32 := extern;
@@ -135,22 +146,6 @@ window_update ::= func() -> v0
 		DispatchMessageA(ref msg);
 	}
 };
-
-/*
-main ::= func() -> s32 weak
-{
-	register_wndclass();
-	defer unregister_wndclass();
-
-	wnd : u64 mut := open_window(800, 600, "my cool window");
-	defer DestroyWindow(wnd);
-	while(window_is_open)
-	{
-		window_update();
-	}
-	return 0;
-};
-*/
 
 == build ==
 {
