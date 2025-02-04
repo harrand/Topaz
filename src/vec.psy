@@ -1,3 +1,4 @@
+// vec2
 vec2 ::= struct
 {
 	x : f32;
@@ -22,4 +23,112 @@ vec2_sqlength ::= func(v : vec2) -> f32
 vec2_length ::= func(v : vec2) -> f32
 {
 	return __sqrt(vec2_sqlength(v));
+};
+
+vec2_normalised ::= func(v : vec2) -> vec2
+{
+	len ::= vec2_length(v);
+	v.x = v.x / len;
+	v.y = v.y / len;
+	return v;
+};
+
+vec2_dot ::= func(lhs : vec2, rhs : vec2) -> f32
+{
+	return (lhs.x * rhs.x) + (lhs.y * rhs.y);
+};
+
+// vec3
+vec3 ::= struct
+{
+	x : f32;
+	y : f32;
+	z : f32;
+};
+
+vec3_zero ::= func() -> vec3
+{
+	return vec3{.x := 0.0; .y := 0.0; .z := 0.0;};
+};
+
+vec3_filled ::= func(val : f32) -> vec3
+{
+	return vec3{.x := val; .y := val; .z := val;};
+};
+
+vec3_sqlength ::= func(v : vec3) -> f32
+{
+	return (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+};
+
+vec3_length ::= func(v : vec3) -> f32
+{
+	return __sqrt(vec3_sqlength(v));
+};
+
+vec3_normalised ::= func(v : vec3) -> vec3
+{
+	len ::= vec3_length(v);
+	v.x = v.x / len;
+	v.y = v.y / len;
+	v.z = v.z / len;
+	return v;
+};
+
+vec3_dot ::= func(lhs : vec3, rhs : vec3) -> f32
+{
+	return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
+};
+
+vec3_cross ::= func(lhs : vec3, rhs : vec3) -> vec3
+{
+	result : vec3 mut := vec3{};
+	result.x = (lhs.y * rhs.z) - (lhs.z * rhs.y);
+	result.y = (lhs.z * rhs.x) - (lhs.x * rhs.z);
+	result.z = (lhs.x * rhs.y) - (lhs.y * rhs.x);
+	return result;
+};
+
+// vec4
+vec4 ::= struct
+{
+	x : f32;
+	y : f32;
+	z : f32;
+	w : f32;
+};
+
+vec4_zero ::= func() -> vec4
+{
+	return vec4{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
+};
+
+vec4_filled ::= func(val : f32) -> vec4
+{
+	return vec4{.x := val; .y := val; .z := val; .w := val;};
+};
+
+vec4_sqlength ::= func(v : vec4) -> f32
+{
+	return (v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w);
+};
+
+vec4_length ::= func(v : vec4) -> f32
+{
+	return __sqrt(vec4_sqlength(v));
+};
+
+vec4_normalised ::= func(v : vec4) -> vec4
+{
+	len ::= vec4_length(v);
+	v.x = v.x / len;
+	v.y = v.y / len;
+	v.z = v.z / len;
+	v.w = v.w / len;
+	return v;
+};
+
+vec4_dot ::= func(lhs : vec4, rhs : vec4) -> f32
+{
+	return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z) + (lhs.w * rhs.w);
 };
