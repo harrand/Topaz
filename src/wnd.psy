@@ -149,6 +149,7 @@ window_update ::= func() -> v0
 
 == build ==
 {
+	add_source_file("src/string.psy");
 	add_link_library("User32.lib");
 	add_link_library("Kernel32.lib");
 }

@@ -26,11 +26,14 @@ main ::= func() -> s32
 		}
 	}
 
+	mystr ::= to_tzstring("hello there!");
+	mystr.print_string();
 	return 0;
 };
 
 == build ==
 {
+	add_source_file("src/string.psy");
 	add_source_file("src/arena.psy");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/vec.psy");

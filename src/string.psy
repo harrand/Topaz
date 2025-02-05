@@ -1,0 +1,81 @@
+tzstring ::= struct
+{
+	ptr : u8 mut&;
+	len : u64;
+};
+
+cstrlen ::= func(cstr : u8& mut) -> u64
+{
+	c : u64 mut := 0;
+	if(cstr == null)
+	{
+		return c;
+	}
+	while((deref cstr) != 0)
+	{
+		c = c + 1;
+		cstr = ((cstr@u64) + 1)@u8&;
+	}
+	return c;
+};
+
+to_tzstring ::= func(cstr : u8 mut&) -> tzstring
+{
+	return tzstring
+	{
+		.ptr := cstr;
+		.len := cstrlen(cstr);
+	};
+};
+
+strcpy ::= func(dst : u8 mut& mut, src : u8& mut, count : u64) -> v0
+{
+	i : u64 mut := 0;
+	while(i < count)
+	{
+		(deref dst) = (deref src);
+		dst = ((dst@u64) + 1)@u8 mut& mut;
+		src = ((src@u64) + 1)@u8& mut;
+		i = i + 1;
+	}
+};
+
+to_zstring ::= func(str : tzstring, a : arena mut&) -> u8&
+{
+	ptr ::= (a.arena_push(str.len + 1));
+	strcpy(ptr, str.ptr, str.len);
+	deref (((ptr@u64) + str.len)@u8 mut&) = 0;
+	return ptr;
+};
+
+create_string ::= func(size : u64, a : arena mut&) -> tzstring
+{
+	return tzstring
+	{
+		.ptr := a.arena_push(size);
+		.len := size;
+	};
+};
+
+string_copy ::=  func(str : tzstring, a : arena mut&) -> tzstring
+{
+	return create_string(str.len, a);
+};
+
+print_string ::= func(str : tzstring) -> v0
+{
+	i : u64 mut := 0;
+	ptr : u8& mut;
+	while(i < (str.len))
+	{
+		ptr = ((str.ptr)@u64 + i)@u8&;
+		putchar(deref ptr);
+		i = i + 1;
+	}
+};
+
+== build ==
+{
+	add_source_file("src/arena.psy");
+	add_source_file("src/io.psy");
+}

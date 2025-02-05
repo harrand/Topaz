@@ -1,0 +1,13 @@
+GetStdHandle ::= func(handle : u32) -> u64 := extern;
+WriteConsoleA ::= func(hConsoleOutput : u64, lpBuffer : u8&, write_count : u32, chars_written : u32 mut& weak, reserved : v0&) -> s32 := extern;
+
+putchar ::= func(chr : u8) -> v0
+{
+	handle ::= GetStdHandle(4294967285@u32);
+	WriteConsoleA(handle, ref chr, 1@u32, null, null);
+};
+
+== build ==
+{
+	add_link_library("Kernel32.lib");
+}
