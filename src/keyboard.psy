@@ -135,3 +135,8 @@ is_key_down ::= func(k : key) -> bool
 	unsigned = (unsigned / 32768) * 32768;
 	return unsigned != 0;
 };
+
+== build ==
+{
+	add_link_library("User32.lib");
+}

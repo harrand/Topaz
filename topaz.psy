@@ -3,6 +3,9 @@ main ::= func() -> s32
 	permanent_arena_val = arena_create(4096 * 1024);
 	defer permanent_arena_val.arena_destroy();
 
+	frame_arena_val = arena_create(4096 * 1024);
+	defer frame_arena_val.arena_destroy();
+
 	myvec ::= vec2{.x := 69.0; .y := 1.0;};
 
 	ptr : f32 mut& := arena_push(permanent_arena, __sizeof(f32));
@@ -15,6 +18,7 @@ main ::= func() -> s32
 	defer wnd.close_window();
 	while(wnd.window_is_open())
 	{
+		frame_arena.arena_clear();
 		window_update();
 		if(is_key_down(key.w))
 		{
