@@ -1,0 +1,25 @@
+/*
+	strap the fuck in.
+*/
+
+GetDC ::= func(wnd : u64) -> u64 := extern;
+
+opengl_init ::= func(wnd : u64) -> v0
+{
+	hdc ::= GetDC(wnd);
+	if(hdc == 0)
+	{
+		__debugbreak();
+	}
+};
+
+opengl_terminate ::= func() -> v0
+{
+};
+
+
+== build ==
+{
+	add_link_library("OpenGL32.lib");
+	add_link_library("User32.lib");
+}

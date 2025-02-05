@@ -15,7 +15,9 @@ main ::= func() -> s32
 	defer unregister_wndclass();
 
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
+	opengl_init(wnd);
 	defer wnd.close_window();
+	defer opengl_terminate();
 	while(wnd.window_is_open())
 	{
 		frame_arena.arena_clear();
@@ -33,6 +35,7 @@ main ::= func() -> s32
 
 == build ==
 {
+	add_source_file("src/opengl.psy");
 	add_source_file("src/string.psy");
 	add_source_file("src/arena.psy");
 	add_source_file("src/wnd.psy");
