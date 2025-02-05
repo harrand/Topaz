@@ -16,6 +16,10 @@ main ::= func() -> s32
 	while(wnd.window_is_open())
 	{
 		window_update();
+		if(is_key_down(key.w))
+		{
+			__debugbreak();
+		}
 	}
 
 	return 0;
@@ -26,6 +30,7 @@ main ::= func() -> s32
 	add_source_file("src/arena.psy");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/vec.psy");
+	add_source_file("src/keyboard.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

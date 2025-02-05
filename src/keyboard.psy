@@ -1,0 +1,137 @@
+[[public_linkage]]
+key ::= enum
+{
+	.backspace := 8;
+	.tab := 9;
+	.enter := 13;
+	.left_shift := 160;
+	.left_ctrl := 162;
+	.left_alt := 164;
+	.pause := 19;
+	.caps_lock := 20;
+	.escape := 27;
+	.spacebar := 32;
+	.page_down := 34;
+	.page_up := 33;
+	.end := 35;
+	.home := 36;
+	.arrow_left := 37;
+	.arrow_up := 38;
+	.arrow_right := 39;
+	.arrow_down := 40;
+	.select := 41;
+	.print := 42;
+	.print_screen := 44;
+	.insert := 45;
+	.delete := 46;
+	.num0 := 48;
+	.num1 := 49;
+	.num2 := 50;
+	.num3 := 51;
+	.num4 := 52;
+	.num5 := 53;
+	.num6 := 54;
+	.num7 := 55;
+	.num8 := 56;
+	.num9 := 57;
+	.a := 65;
+	.b := 66;
+	.c := 67;
+	.d := 68;
+	.e := 69;
+	.f := 70;
+	.g := 71;
+	.h := 72;
+	.i := 73;
+	.j := 74;
+	.k := 75;
+	.l := 76;
+	.m := 77;
+	.n := 78;
+	.o := 79;
+	.p := 80;
+	.q := 81;
+	.r := 82;
+	.s := 83;
+	.t := 84;
+	.u := 85;
+	.v := 86;
+	.w := 87;
+	.x := 88;
+	.y := 89;
+	.z := 90;
+	.winkey_left := 91;
+	.winkey_right := 92;
+	.apps := 93;
+	.sleep := 95;
+	.numpad0 := 96;
+	.numpad1 := 97;
+	.numpad2 := 98;
+	.numpad3 := 99;
+	.numpad4 := 100;
+	.numpad5 := 101;
+	.numpad6 := 102;
+	.numpad7 := 103;
+	.numpad8 := 104;
+	.numpad9 := 105;
+	.numpad_mul := 106;
+	.numpad_add := 107;
+	.numpad_separator := 108;
+	.numpad_subtract := 109;
+	.numpad_decimal := 110;
+	.numpad_divide := 111;
+	.f1 := 112;
+	.f2 := 113;
+	.f3 := 114;
+	.f4 := 115;
+	.f5 := 116;
+	.f6 := 117;
+	.f7 := 118;
+	.f8 := 119;
+	.f9 := 120;
+	.f10 := 121;
+	.f11 := 122;
+	.f12 := 123;
+	.f13 := 124;
+	.f14 := 125;
+	.f15 := 126;
+	.f16 := 127;
+	.f17 := 128;
+	.f18 := 129;
+	.f19 := 130;
+	.f20 := 131;
+	.f21 := 132;
+	.f22 := 133;
+	.f23 := 134;
+	.f24 := 135;
+	.num_lock := 144;
+	.scroll_lock := 145;
+	.right_shift := 161;
+	.right_ctrl := 163;
+	.right_alt := 165;
+	.semicol := 186;
+	.period := 190;
+	.plus := 187;
+	.minus := 189;
+	.obrack := 219;
+	.cbrack := 221;
+	.fslash := 191;
+	.bslash := 220;
+	.apostrophe := 222;
+	.grave := 192;
+};
+
+GetAsyncKeyState ::= func(vkey : s32) -> s16 := extern;
+
+is_key_down ::= func(k : key) -> bool
+{
+	downval ::= GetAsyncKeyState((k@s64)@s32);
+	// need the equivalent of a & 0x8000
+	// doesnt exist in the language yet
+	// todo: bitwise and.
+	// crazy magic to do it now.
+	unsigned : u32 mut := (downval@u32);
+	// 0x8000 = 32768
+	unsigned = (unsigned / 32768) * 32768;
+	return unsigned != 0;
+};
