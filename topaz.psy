@@ -15,6 +15,9 @@ main ::= func() -> s32
 	defer unregister_wndclass();
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
 	defer wnd.close_window();
+
+	vulkan_initialise(VkApplicationInfo{}, VkInstanceCreateInfo{});
+
 	while(wnd.window_is_open())
 	{
 		frame_arena.arena_clear();
@@ -34,6 +37,7 @@ main ::= func() -> s32
 	add_source_file("src/wnd.psy");
 	add_source_file("src/vec.psy");
 	add_source_file("src/keyboard.psy");
+	add_source_file("src/vulkan.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

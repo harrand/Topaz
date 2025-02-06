@@ -1,0 +1,69 @@
+LoadLibraryA ::= func(lpLibFileName : u8&) -> u64 := extern;
+FreeLibrary ::= func(hLibModule : u64) -> s32 := extern;
+GetProcAddress ::= func(module : u64, lpProcName : u8&) -> u64 weak := extern;
+
+// VkResult = s32 weak
+VkApplicationInfo ::= struct
+{
+	sType : s32 weak;
+	pNext : v0& weak;
+	pApplicationName : u8&;
+	applicationVersion : u32;
+	pEngineName : u8&;
+	engineVersion : u32;
+	apiVersion : u32;
+};
+
+VkInstanceCreateInfo ::= struct
+{
+	sType : s32 weak;
+	pNext : v0& weak;
+	flags : s32 weak;
+	pApplicationInfo : VkApplicationInfo&;
+	enabledLayerCount : u32;
+	ppEnabledLayerNames : u8&&;
+	enabledExtensionCount : u32;
+	ppEnabledExtensionNames : u8&&;
+};
+
+vulkan_driver : u64 weak mut := -1;
+vulkan_driver_initialised : bool mut := false;
+
+vulkan_initialise ::= func(appinfo : VkApplicationInfo, instance_create : VkInstanceCreateInfo mut) -> v0
+{
+	if(vulkan_driver_initialised == false)
+	{
+		putchar('E');
+		vulkan_driver = LoadLibraryA("vulkan-1.dll");
+		if(vulkan_driver == 0)
+		{
+			putchar('S');
+			__debugbreak();
+		}
+		vulkan_driver_initialised = true;
+	}
+	instance_create.pApplicationInfo = ref appinfo;
+
+	vkCreateInstance : func(pCreateInfo : VkInstanceCreateInfo&, pAllocator : u64, pInstance : u64 mut&) -> s32 weak := GetProcAddress(vulkan_driver, "vkCreateInstance");
+	if(vkCreateInstance == null)
+	{
+		__debugbreak();
+	}
+
+	vkDestroyInstance : func(instance : u64, pAllocator : u64) -> v0 := GetProcAddress(vulkan_driver, "vkDestroyInstance");
+
+	vulkan_instance : u64 mut;
+	result ::= vkCreateInstance(ref instance_create, 0, ref vulkan_instance);
+	if(result != 0)
+	{
+		putchar('x');
+		__debugbreak();
+	}
+	vkDestroyInstance(vulkan_instance, 0);
+	FreeLibrary(vulkan_driver);
+};
+
+== build ==
+{
+	add_link_library("Kernel32.lib");
+}

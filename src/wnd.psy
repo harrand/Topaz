@@ -3,7 +3,7 @@ WNDCLASSEXA ::= struct
 {
 	cbSize : u32;
 	style : u32;
-	wndproc : u64;
+	wndproc : func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64;
 	cbClsExtra : s32;
 	cbWndExtra : s32;
 	hInstance : u64;
@@ -92,14 +92,13 @@ wndclass_registered : bool mut := false;
 register_wndclass ::= func() -> v0
 {
 	hinst ::= GetModuleHandleA(null);
-	proc : u64 := wndproc;
 	magic_int_resource ::= (32512@u64)@u8&;
 	COLOR_WINDOW ::= 5;
 	window_class ::= WNDCLASSEXA
 	{
 		.cbSize := __sizeof(WNDCLASSEXA);
 		.style := 43;
-		.wndproc := proc;
+		.wndproc := wndproc;
 		.cbClsExtra := __sizeof(u64);
 		.cbWndExtra := 0;
 		.hInstance := hinst;
