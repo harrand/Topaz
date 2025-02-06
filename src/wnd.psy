@@ -20,6 +20,7 @@ if static(__is_linux)
 	__error("wnd.psy is not yet supported on linux");
 }
 
+main_window : u64 mut := 0;
 window_is_open : bool mut := false;
 
 DefWindowProcA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64 := extern;
@@ -44,13 +45,20 @@ CreateWindowExA ::= func
 ShowWindow ::= func(hwnd : u64, nCmdShow : s32) -> s32 := extern;
 
 DestroyWindow ::= func(hwnd : u64) -> s32 := extern;
+PostQuitMessage ::= func(nExitCode : s32) -> v0 := extern;
 
 wndproc ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64
 {
-	if(msg == 0x0010)
+	/*
+	if(msg == 16) // WM_DESTROY
 	{
-		window_is_open = false;
+		PostQuitMessage(0);
+		if(hwnd == main_window)
+		{
+			window_is_open = false;
+		}
 	}
+	*/
 	return DefWindowProcA(hwnd, msg, wparam, lparam);
 };
 
@@ -105,11 +113,11 @@ unregister_wndclass ::= func() -> v0
 {
 	wndclass_registered = false;
 };
+CW_USEDEFAULT ::= -2147483648;
 
 open_window ::= func(w : u32 weak, h : u32 weak, title : u8&) -> u64
 {
 	hinst ::= GetModuleHandleA(null);
-	CW_USEDEFAULT ::= -2147483648;
 	ret ::= CreateWindowExA(768, window_classname, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w, h, 0, 0, hinst, null);
 	if(ret == 0)
 	{
@@ -118,6 +126,7 @@ open_window ::= func(w : u32 weak, h : u32 weak, title : u8&) -> u64
 
 	ShowWindow(ret, 5);
 	window_is_open = true;
+	main_window = ret;
 	return ret;
 };
 

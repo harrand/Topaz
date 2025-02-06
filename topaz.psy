@@ -12,10 +12,10 @@ main ::= func() -> s32
 	(deref ptr) = (myvec.vec2_length());
 
 	register_wndclass();
+	load_wgl_functions();
 	defer unregister_wndclass();
-
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
-	opengl_init(wnd);
+	opengl_init();
 	defer wnd.close_window();
 	defer opengl_terminate();
 	while(wnd.window_is_open())
@@ -27,9 +27,6 @@ main ::= func() -> s32
 			__debugbreak();
 		}
 	}
-
-	mystr ::= to_tzstring("hello there!");
-	mystr.print_string();
 	return 0;
 };
 
