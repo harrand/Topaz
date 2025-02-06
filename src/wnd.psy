@@ -23,6 +23,7 @@ if static(__is_linux)
 main_window : u64 mut := 0;
 window_is_open : bool mut := false;
 
+PostMessageA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s32 := extern;
 DefWindowProcA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64 := extern;
 LoadIconA ::= func(hinstance : u64, lpIconName : u8&) -> u64 := extern;
 LoadCursorA ::= func(hinstance : u64, lpIconName : u8&) -> u64 := extern;
@@ -49,16 +50,20 @@ PostQuitMessage ::= func(nExitCode : s32) -> v0 := extern;
 
 wndproc ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64
 {
-	/*
-	if(msg == 16) // WM_DESTROY
+	if(msg == 16) // WM_CLOSE
 	{
-		PostQuitMessage(0);
+		DestroyWindow(hwnd);
 		if(hwnd == main_window)
 		{
 			window_is_open = false;
 		}
+		return 0;
 	}
-	*/
+	if(msg == 2) // WM_DESTROY
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
 	return DefWindowProcA(hwnd, msg, wparam, lparam);
 };
 
