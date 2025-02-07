@@ -3,6 +3,7 @@
 */
 
 GetDC ::= func(wnd : u64) -> u64 := extern;
+GetLastError ::= func() -> u32 := extern;
 
 PIXELFORMATDESCRIPTOR ::= struct
 {
@@ -40,6 +41,8 @@ SetPixelFormat ::= func(hdc : u64, fmt : s32, ppfd : PIXELFORMATDESCRIPTOR&) -> 
 wglCreateContext ::= func(unnamedParam1 : u64) -> u64 := extern;
 wglMakeCurrent ::= func(unnamedParam1 : u64, unnamedParam2 : u64) -> s32 := extern;
 wglDeleteContext ::= func(unnamedParam1 : u64) -> s32 := extern;
+
+wglGetProcAddress ::= func(unnamedParam1 : u8&) -> u64 weak := extern;
 
 load_wgl_functions ::= func() -> v0
 {
@@ -94,6 +97,23 @@ load_wgl_functions ::= func() -> v0
 	{
 		__debugbreak();
 	}
+
+	// get wgl functions here.
+	wglGetExtensionsStringARB : func(hglrc : u64) -> u8 mut& := wglGetProcAddress("wglGetExtensionsStringARB");
+	if(wglGetExtensionsStringARB == null)
+	{
+		putchar('O');
+		__debugbreak();
+	}
+	ext ::= wglGetExtensionsStringARB(hdc);
+	if(ext == null)
+	{
+		err ::= GetLastError();
+		putuint(err);
+		__debugbreak();
+	}
+	extstr ::= to_tzstring(ext);
+	extstr.print_string();
 
 	wglMakeCurrent(0, 0);
 	wglDeleteContext(hglrc);
