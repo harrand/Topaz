@@ -18,6 +18,7 @@ main ::= func() -> s32
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
 	defer wnd.close_window();
 
+	/*
 	inst_create ::= VkInstanceCreateInfo
 	{
 		.sType := 1;
@@ -40,6 +41,8 @@ main ::= func() -> s32
 	};
 
 	vulkan_initialise(appinfo, inst_create);
+	*/
+	load_wgl_functions();
 
 	while(wnd.window_is_open())
 	{
@@ -56,12 +59,13 @@ main ::= func() -> s32
 
 == build ==
 {
+	add_source_file("src/opengl.psy");
 	add_source_file("src/string.psy");
 	add_source_file("src/arena.psy");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/vec.psy");
 	add_source_file("src/keyboard.psy");
-	add_source_file("src/vulkan.psy");
+	//add_source_file("src/vulkan.psy");
 
 	set_output_directory("build");
 	set_executable("tz");
