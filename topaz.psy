@@ -1,3 +1,5 @@
+ExitProcess ::= func(uExitCode : u32) -> v0 := extern;
+
 main ::= func() -> s32
 {
 	permanent_arena_val = arena_create(4096 * 1024);
@@ -16,7 +18,28 @@ main ::= func() -> s32
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
 	defer wnd.close_window();
 
-	vulkan_initialise(VkApplicationInfo{}, VkInstanceCreateInfo{});
+	inst_create ::= VkInstanceCreateInfo
+	{
+		.sType := 1;
+		.pNext := null;
+		.enabledLayerCount := 0;
+		.ppEnabledLayerNames := null;
+		.enabledExtensionCount := 0;
+		.ppEnabledExtensionNames := null;
+	};
+
+	appinfo ::= VkApplicationInfo
+	{
+		.sType := 0;
+		.pNext := null;
+		.pApplicationName := "Topaz Test";
+		.applicationVersion := 0;
+		.pEngineName := "Psypaz";
+		.engineVersion := 0;
+		.apiVersion := 4210688;
+	};
+
+	vulkan_initialise(appinfo, inst_create);
 
 	while(wnd.window_is_open())
 	{
@@ -27,6 +50,7 @@ main ::= func() -> s32
 			__debugbreak();
 		}
 	}
+	ExitProcess(0);
 	return 0;
 };
 
