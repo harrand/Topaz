@@ -44,6 +44,16 @@ wglDeleteContext ::= func(unnamedParam1 : u64) -> s32 := extern;
 
 wglGetProcAddress ::= func(unnamedParam1 : u8&) -> u64 weak := extern;
 
+wgl_functions_t ::= struct
+{
+	wglChoosePixelFormatARB : func(hdc : u64, piAttribIList : s32&, pfAttribFList : f32&, nMaxFormats : u32, piFormats : s32 mut&, nNumFormats : u32 mut&) -> s32;
+	wglCreateContextAttribsARB : func(hdc : u64, hShareContext : u64, attribList : s32&) -> u64;
+	wglSwapIntervalEXT : func(interval : s32) -> s32;
+	wglGetSwapIntervalEXT : func() -> s32;
+};
+
+wgl_functions : wgl_functions_t mut := wgl_functions_t{};
+
 load_wgl_functions ::= func() -> v0
 {
 	dummy ::= CreateWindowExA(0, "STATIC", "Dummy Window", 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, 0, null);
@@ -112,8 +122,16 @@ load_wgl_functions ::= func() -> v0
 		putuint(err);
 		__debugbreak();
 	}
+	/*
 	extstr ::= to_tzstring(ext);
 	extstr.print_string();
+	*/
+	// todo: confirm ext contains the extensions we need.
+	// right now i'm just assuming this is the case.
+	wgl_functions.wglChoosePixelFormatARB = wglGetProcAddress("wglChoosePixelFormatARB");
+	wgl_functions.wglCreateContextAttribsARB = wglGetProcAddress("wglCreateContextAttribsARB");
+	wgl_functions.wglSwapIntervalEXT = wglGetProcAddress("wglSwapIntervalEXT");
+	wgl_functions.wglGetSwapIntervalEXT = wglGetProcAddress("wglGetSwapIntervalEXT");
 
 	wglMakeCurrent(0, 0);
 	wglDeleteContext(hglrc);
@@ -121,21 +139,120 @@ load_wgl_functions ::= func() -> v0
 	DestroyWindow(dummy);
 };
 
-opengl_init ::= func() -> v0
+DescribePixelFormat ::= func(hdc : u64, iPixelFormat : s32, nBytes : u32, ppfd : PIXELFORMATDESCRIPTOR mut&) -> s32 := extern; 
+
+opengl_wgl_init ::= func(wnd : u64) -> v0
 {
-	/*
-	hdc ::= GetDC(wnd);
-	if(hdc == 0)
+	if(wgl_functions.wglChoosePixelFormatARB == null)
 	{
 		__debugbreak();
 	}
-	*/
+	if(wgl_functions.wglCreateContextAttribsARB == null)
+	{
+		__debugbreak();
+	}
+	if(wgl_functions.wglSwapIntervalEXT == null)
+	{
+		__debugbreak();
+	}
+	if(wgl_functions.wglGetSwapIntervalEXT == null)
+	{
+		__debugbreak();
+	}
+
+	// ready for pain?
+	// step 1: set proper correct pixel format
+
+	hdc ::= GetDC(wnd);
+	attrib_ptr ::= __array(s32 mut, 23);
+	attrib_array_addr : u64 := attrib_ptr@_;
+	plus ::= __sizeof(s32);
+	deref ((attrib_array_addr + (plus * 0))@u64@s32 mut&) = 8193;
+	deref ((attrib_array_addr + (plus * 1))@u64@s32 mut&) = 1;
+
+	deref ((attrib_array_addr + (plus * 2))@u64@s32 mut&) = 8208;
+	deref ((attrib_array_addr + (plus * 3))@u64@s32 mut&) = 1;
+
+	deref ((attrib_array_addr + (plus * 4))@u64@s32 mut&) = 8195;
+	deref ((attrib_array_addr + (plus * 5))@u64@s32 mut&) = 8231;
+
+	deref ((attrib_array_addr + (plus * 6))@u64@s32 mut&) = 8209;
+	deref ((attrib_array_addr + (plus * 7))@u64@s32 mut&) = 1;
+
+	deref ((attrib_array_addr + (plus * 8))@u64@s32 mut&) = 8211;
+	deref ((attrib_array_addr + (plus * 9))@u64@s32 mut&) = 8235;
+
+	deref ((attrib_array_addr + (plus * 10))@u64@s32 mut&) = 8202;
+	deref ((attrib_array_addr + (plus * 11))@u64@s32 mut&) = 1;
+
+	deref ((attrib_array_addr + (plus * 12))@u64@s32 mut&) = 8212;
+	deref ((attrib_array_addr + (plus * 13))@u64@s32 mut&) = 24;
+
+	deref ((attrib_array_addr + (plus * 14))@u64@s32 mut&) = 8219;
+	deref ((attrib_array_addr + (plus * 15))@u64@s32 mut&) = 8;
+
+	deref ((attrib_array_addr + (plus * 16))@u64@s32 mut&) = 8226;
+	deref ((attrib_array_addr + (plus * 17))@u64@s32 mut&) = 24;
+
+	deref ((attrib_array_addr + (plus * 18))@u64@s32 mut&) = 8227;
+	deref ((attrib_array_addr + (plus * 19))@u64@s32 mut&) = 8;
+
+	deref ((attrib_array_addr + (plus * 20))@u64@s32 mut&) = 8361;
+	deref ((attrib_array_addr + (plus * 21))@u64@s32 mut&) = 1;
+
+	deref ((attrib_array_addr + (plus * 22))@u64@s32 mut&) = 0;
+
+	fmt : s32 mut;
+	fmts : u32 mut;
+	wglChoosePixelFormatARB ::= wgl_functions.wglChoosePixelFormatARB;
+	if(wglChoosePixelFormatARB(hdc, attrib_ptr, null, 1, ref fmt, ref fmts) == 0)
+	{
+		__debugbreak();
+	}
+
+	dsc : PIXELFORMATDESCRIPTOR mut;
+	dsc.nSize = __sizeof(PIXELFORMATDESCRIPTOR);
+	if(DescribePixelFormat(hdc, fmt, __sizeof(PIXELFORMATDESCRIPTOR), ref dsc) == 0)
+	{
+		__debugbreak();
+	}
+	if(SetPixelFormat(hdc, fmt, ref dsc) == 0) 
+	{
+		__debugbreak();
+	}
+
+	// step 2: create modern opengl context.
+	// that means its time for another "int array" aka wall of nightmares.
+	ctx_ptr ::= __array(s32 mut, 9);
+	ctx_array_addr : u64 := ctx_ptr@_;
+	deref ((ctx_array_addr + (plus * 0))@u64@s32 mut&) = 8337;
+	deref ((ctx_array_addr + (plus * 1))@u64@s32 mut&) = 4;
+
+	deref ((ctx_array_addr + (plus * 2))@u64@s32 mut&) = 8338;
+	deref ((ctx_array_addr + (plus * 3))@u64@s32 mut&) = 6;
+
+	deref ((ctx_array_addr + (plus * 4))@u64@s32 mut&) = 37158;
+	deref ((ctx_array_addr + (plus * 5))@u64@s32 mut&) = 1;
+
+	deref ((ctx_array_addr + (plus * 6))@u64@s32 mut&) = 8340;
+	deref ((ctx_array_addr + (plus * 7))@u64@s32 mut&) = 1;
+
+	deref ((ctx_array_addr + (plus * 8))@u64@s32 mut&) = 0;
+
+	wglCreateContextAttribsARB ::= wgl_functions.wglCreateContextAttribsARB;
+	magic_hglrc ::= wglCreateContextAttribsARB(hdc, null, ctx_ptr);
+	if(magic_hglrc == 0)
+	{
+		__debugbreak();
+	}
+	wglMakeCurrent(hdc, magic_hglrc);
+	wglSwapIntervalEXT ::= wgl_functions.wglSwapIntervalEXT;
+	wglSwapIntervalEXT(0);
 };
 
-opengl_terminate ::= func() -> v0
-{
-};
-
+glClear ::= func(mask : s32) -> v0 := extern;
+glClearColor ::= func(r : f32, g : f32, b : f32, a : f32) -> v0 := extern;
+SwapBuffers ::= func(hdc : u64) -> s32 := extern;
 
 == build ==
 {
