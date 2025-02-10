@@ -164,48 +164,47 @@ opengl_wgl_init ::= func(wnd : u64) -> v0
 	// step 1: set proper correct pixel format
 
 	hdc ::= GetDC(wnd);
-	attrib_ptr ::= __array(s32 mut, 23);
-	attrib_array_addr : u64 := attrib_ptr@_;
-	plus ::= __sizeof(s32);
-	deref ((attrib_array_addr + (plus * 0))@u64@s32 mut&) = 8193;
-	deref ((attrib_array_addr + (plus * 1))@u64@s32 mut&) = 1;
 
-	deref ((attrib_array_addr + (plus * 2))@u64@s32 mut&) = 8208;
-	deref ((attrib_array_addr + (plus * 3))@u64@s32 mut&) = 1;
+	attribs : s32 mut#23;
+	deref (attribs at 0) = 8193;
+	deref (attribs at 1) = 1;
 
-	deref ((attrib_array_addr + (plus * 4))@u64@s32 mut&) = 8195;
-	deref ((attrib_array_addr + (plus * 5))@u64@s32 mut&) = 8231;
+	deref (attribs at 2) = 8208;
+	deref (attribs at 3) = 1;
 
-	deref ((attrib_array_addr + (plus * 6))@u64@s32 mut&) = 8209;
-	deref ((attrib_array_addr + (plus * 7))@u64@s32 mut&) = 1;
+	deref (attribs at 4) = 8195;
+	deref (attribs at 5) = 8231;
 
-	deref ((attrib_array_addr + (plus * 8))@u64@s32 mut&) = 8211;
-	deref ((attrib_array_addr + (plus * 9))@u64@s32 mut&) = 8235;
+	deref (attribs at 6) = 8209;
+	deref (attribs at 7) = 1;
 
-	deref ((attrib_array_addr + (plus * 10))@u64@s32 mut&) = 8202;
-	deref ((attrib_array_addr + (plus * 11))@u64@s32 mut&) = 1;
+	deref (attribs at 8) = 8211;
+	deref (attribs at 9) = 8235;
 
-	deref ((attrib_array_addr + (plus * 12))@u64@s32 mut&) = 8212;
-	deref ((attrib_array_addr + (plus * 13))@u64@s32 mut&) = 24;
+	deref (attribs at 10) = 8202;
+	deref (attribs at 11) = 1;
 
-	deref ((attrib_array_addr + (plus * 14))@u64@s32 mut&) = 8219;
-	deref ((attrib_array_addr + (plus * 15))@u64@s32 mut&) = 8;
+	deref (attribs at 12) = 8212;
+	deref (attribs at 13) = 24;
 
-	deref ((attrib_array_addr + (plus * 16))@u64@s32 mut&) = 8226;
-	deref ((attrib_array_addr + (plus * 17))@u64@s32 mut&) = 24;
+	deref (attribs at 14) = 8219;
+	deref (attribs at 15) = 8;
 
-	deref ((attrib_array_addr + (plus * 18))@u64@s32 mut&) = 8227;
-	deref ((attrib_array_addr + (plus * 19))@u64@s32 mut&) = 8;
+	deref (attribs at 16) = 8226;
+	deref (attribs at 17) = 24;
 
-	deref ((attrib_array_addr + (plus * 20))@u64@s32 mut&) = 8361;
-	deref ((attrib_array_addr + (plus * 21))@u64@s32 mut&) = 1;
+	deref (attribs at 18) = 8227;
+	deref (attribs at 19) = 8;
 
-	deref ((attrib_array_addr + (plus * 22))@u64@s32 mut&) = 0;
+	deref (attribs at 20) = 8361;
+	deref (attribs at 21) = 1;
+
+	deref (attribs at 22) = 0;
 
 	fmt : s32 mut;
 	fmts : u32 mut;
 	wglChoosePixelFormatARB ::= wgl_functions.wglChoosePixelFormatARB;
-	if(wglChoosePixelFormatARB(hdc, attrib_ptr, null, 1, ref fmt, ref fmts) == 0)
+	if(wglChoosePixelFormatARB(hdc, attribs at 0, null, 1, ref fmt, ref fmts) == 0)
 	{
 		__debugbreak();
 	}
@@ -223,24 +222,23 @@ opengl_wgl_init ::= func(wnd : u64) -> v0
 
 	// step 2: create modern opengl context.
 	// that means its time for another "int array" aka wall of nightmares.
-	ctx_ptr ::= __array(s32 mut, 9);
-	ctx_array_addr : u64 := ctx_ptr@_;
-	deref ((ctx_array_addr + (plus * 0))@u64@s32 mut&) = 8337;
-	deref ((ctx_array_addr + (plus * 1))@u64@s32 mut&) = 4;
+	ctx_attribs : s32 mut#9;
+	deref (ctx_attribs at 0) = 8337;
+	deref (ctx_attribs at 1) = 4;
 
-	deref ((ctx_array_addr + (plus * 2))@u64@s32 mut&) = 8338;
-	deref ((ctx_array_addr + (plus * 3))@u64@s32 mut&) = 6;
+	deref (ctx_attribs at 2) = 8338;
+	deref (ctx_attribs at 3) = 6;
 
-	deref ((ctx_array_addr + (plus * 4))@u64@s32 mut&) = 37158;
-	deref ((ctx_array_addr + (plus * 5))@u64@s32 mut&) = 1;
+	deref (ctx_attribs at 4) = 37158;
+	deref (ctx_attribs at 5) = 1;
 
-	deref ((ctx_array_addr + (plus * 6))@u64@s32 mut&) = 8340;
-	deref ((ctx_array_addr + (plus * 7))@u64@s32 mut&) = 1;
+	deref (ctx_attribs at 6) = 8340;
+	deref (ctx_attribs at 7) = 1;
 
-	deref ((ctx_array_addr + (plus * 8))@u64@s32 mut&) = 0;
+	deref (ctx_attribs at 8) = 0;
 
 	wglCreateContextAttribsARB ::= wgl_functions.wglCreateContextAttribsARB;
-	magic_hglrc ::= wglCreateContextAttribsARB(hdc, null, ctx_ptr);
+	magic_hglrc ::= wglCreateContextAttribsARB(hdc, null, ctx_attribs at 0);
 	if(magic_hglrc == 0)
 	{
 		__debugbreak();
