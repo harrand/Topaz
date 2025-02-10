@@ -2,6 +2,7 @@ ogl_debug_callback ::= func(source : s32, type : s32, id : u32, severity : s32, 
 {
 	tzmsg ::= to_tzstring(msg);
 	print_string(tzmsg);
+	__debugbreak();
 };
 
 main ::= func() -> s32
@@ -33,11 +34,65 @@ main ::= func() -> s32
 	glEnable(33346);
 	opengl.glDebugMessageCallback(ogl_debug_callback, null);
 
+	vao : u32 mut;
+	opengl.glCreateVertexArrays(1, ref vao);
+	opengl.glBindVertexArray(vao);
+
+	vertex_shader ::= opengl.glCreateShader(35633);
+	fragment_shader ::= opengl.glCreateShader(35632);
+	defer opengl.glDeleteShader(vertex_shader);
+	defer opengl.glDeleteShader(fragment_shader);
+
+	vertex_src ::= "#version 430\nvec2 positions[3] = vec2[](vec2(0.0, 0.5), vec2(0.5, -0.5), vec2(-0.5, -0.5));   void main(){gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);}";
+	fragment_src ::= "#version 430\nlayout(location = 0) out vec4 fcol;\nvoid main(){fcol = vec4(1.0, 0.0, 0.0, 1.0);}";
+	opengl.glShaderSource(vertex_shader, 1, ref vertex_src, null);
+	opengl.glShaderSource(fragment_shader, 1, ref fragment_src, null);
+
+	opengl.glCompileShader(vertex_shader);
+	opengl.glCompileShader(fragment_shader);
+
+	GL_COMPILE_STATUS ::= 35713;
+	GL_LINK_STATUS ::= 35714;
+
+	vertex_cpl : s32 mut;
+	opengl.glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, ref vertex_cpl);
+	if(vertex_cpl == 0)
+	{
+		putchar('a');
+		__debugbreak();
+	}
+
+	fragment_cpl : s32 mut;
+	opengl.glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, ref fragment_cpl);
+	if(fragment_cpl == 0)
+	{
+		putchar('b');
+		__debugbreak();
+	}
+
+	// create program
+	prog ::= opengl.glCreateProgram();
+	opengl.glAttachShader(prog, vertex_shader);
+	opengl.glAttachShader(prog, fragment_shader);
+	
+	opengl.glLinkProgram(prog);
+	shader_lnk : s32 mut;
+	opengl.glGetProgramiv(prog, GL_LINK_STATUS, ref shader_lnk);
+	if(shader_lnk == 0)
+	{
+		putchar('l');
+		__debugbreak();
+	}
+
+	GL_TRIANGLES ::= 4;
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
 		window_update();
 		glClear(16384);
+
+		opengl.glUseProgram(prog);
+		opengl.glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		SwapBuffers(hacky_hdc);
 		if(is_key_down(key.w))
