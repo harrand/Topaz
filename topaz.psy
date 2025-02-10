@@ -1,5 +1,11 @@
 ExitProcess ::= func(uExitCode : u32) -> v0 := extern;
 
+ogl_debug_callback ::= func(source : s32, type : s32, id : u32, severity : s32, length : u32, msg : u8 mut&) -> v0
+{
+	tzmsg ::= to_tzstring(msg);
+	print_string(tzmsg);
+};
+
 main ::= func() -> s32
 {
 	permanent_arena_val = arena_create(4096 * 1024);
@@ -22,6 +28,12 @@ main ::= func() -> s32
 	opengl_wgl_init(wnd);
 	glClearColor(0.5, 0.0, 1.0, 1.0);
 	hacky_hdc ::= GetDC(wnd);
+
+	// GL_DEBUG_OUTPUT
+	glEnable(37600);
+	// GL_DEBUG_OUTPUT_SYNCHRONOUS
+	glEnable(33346);
+	opengl.glDebugMessageCallback(ogl_debug_callback, null);
 
 	while(window_is_open(wnd))
 	{
