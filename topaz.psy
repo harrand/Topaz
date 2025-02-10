@@ -3,29 +3,29 @@ ExitProcess ::= func(uExitCode : u32) -> v0 := extern;
 main ::= func() -> s32
 {
 	permanent_arena_val = arena_create(4096 * 1024);
-	defer permanent_arena_val.arena_destroy();
+	defer arena_destroy(permanent_arena_val);
 
 	frame_arena_val = arena_create(4096 * 1024);
-	defer frame_arena_val.arena_destroy();
+	defer arena_destroy(frame_arena_val);
 
 	myvec ::= vec2{.x := 69.0; .y := 1.0;};
 
 	ptr : f32 mut& := arena_push(permanent_arena, __sizeof(f32));
-	(deref ptr) = (myvec.vec2_length());
+	(deref ptr) = vec2_length(myvec);
 
 	register_wndclass();
 	defer unregister_wndclass();
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
-	defer wnd.close_window();
+	defer close_window(wnd);
 
 	load_wgl_functions();
 	opengl_wgl_init(wnd);
 	glClearColor(0.5, 0.0, 1.0, 1.0);
 	hacky_hdc ::= GetDC(wnd);
 
-	while(wnd.window_is_open())
+	while(window_is_open(wnd))
 	{
-		frame_arena.arena_clear();
+		arena_clear(frame_arena);
 		window_update();
 		glClear(16384);
 

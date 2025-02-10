@@ -42,7 +42,7 @@ strcpy ::= func(dst : u8 mut& mut, src : u8& mut, count : u64) -> v0
 
 to_zstring ::= func(str : tzstring, a : arena mut&) -> u8&
 {
-	ptr ::= (a.arena_push(str.len + 1));
+	ptr ::= arena_push(a, str.len + 1);
 	strcpy(ptr, str.ptr, str.len);
 	deref (((ptr@u64) + str.len)@u8 mut&) = 0;
 	return ptr;
@@ -52,7 +52,7 @@ create_string ::= func(size : u64, a : arena mut&) -> tzstring
 {
 	return tzstring
 	{
-		.ptr := a.arena_push(size);
+		.ptr := arena_push(a, size);
 		.len := size;
 	};
 };

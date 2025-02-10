@@ -32,7 +32,7 @@ arena_push ::= func(a : arena mut&, bytes : u64) -> v0& weak
 {
 	while((a->cursor) > (a->cap + bytes))
 	{
-		a._arena_double_capacity();
+		_arena_double_capacity(a);
 	}
 	addr : u64 mut := (a->ptr)@u64;
 	addr = addr + (a->cursor);
