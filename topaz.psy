@@ -34,7 +34,7 @@ main ::= func() -> s32
 	glEnable(33346);
 	opengl.glDebugMessageCallback(ogl_debug_callback, null);
 
-	vao : u32 mut;
+vao : u32 mut;
 	opengl.glCreateVertexArrays(1, ref vao);
 	opengl.glBindVertexArray(vao);
 
@@ -43,8 +43,8 @@ main ::= func() -> s32
 	defer opengl.glDeleteShader(vertex_shader);
 	defer opengl.glDeleteShader(fragment_shader);
 
-	vertex_src ::= "#version 430\nvec2 positions[3] = vec2[](vec2(0.0, 0.5), vec2(0.5, -0.5), vec2(-0.5, -0.5));   void main(){gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);}";
-	fragment_src ::= "#version 430\nlayout(location = 0) out vec4 fcol;\nvoid main(){fcol = vec4(1.0, 0.0, 0.0, 1.0);}";
+	vertex_src ::= __embed("src/vertex.glsl");
+	fragment_src ::= __embed("src/fragment.glsl");
 	opengl.glShaderSource(vertex_shader, 1, ref vertex_src, null);
 	opengl.glShaderSource(fragment_shader, 1, ref fragment_src, null);
 
@@ -85,11 +85,31 @@ main ::= func() -> s32
 	}
 
 	GL_TRIANGLES ::= 4;
+	col : f32 mut#3;
+	(deref (col at 0)) = 0.0;
+	(deref (col at 1)) = 0.0;
+	(deref (col at 2)) = 0.0;
+	r : f32 mut;
+	factor : f32 mut := 0.0001;
+
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
 		window_update();
+		glClearColor(deref(col at 0), deref(col at 1), deref(col at 2), 1.0);
 		glClear(16384);
+
+		r = deref(col at 2);
+		if(r > 0.8)
+		{
+			factor = -0.0001;
+		}
+		if(r < 0.0)
+		{
+			factor = 0.0001;
+		}
+
+		(deref (col at 2)) = (r + factor);
 
 		opengl.glUseProgram(prog);
 		opengl.glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -112,6 +132,8 @@ main ::= func() -> s32
 	add_source_file("src/vec.psy");
 	add_source_file("src/keyboard.psy");
 	//add_source_file("src/vulkan.psy");
+
+	add_source_file("src/file.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

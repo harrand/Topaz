@@ -1,0 +1,120 @@
+if static(__is_windows)
+{
+	GetFileAttributesA ::= func(lpFileName : u8&) -> u32 := extern;
+	CreateFileA ::= func(
+		lpFileName : u8&,
+		dwDesiredAccess : u32,
+		dwShareMode : u32,
+		lpSecurityAttributes : u64,
+		dwCreationDisposition : u32,
+		dwFlagsAndAttributes : u32,
+		hTemplateFile : u64) -> u64 := extern;
+	GetFileSizeEx ::= func(hFile : u64, lpFileSize : s64 mut&) -> s32 := extern;
+	CloseHandle ::= func(hObject : u64) -> s32 := extern;
+	ReadFile ::= func(
+		hFile : u64,
+		lpBuffer : u8 mut&,
+		nNumberOfBytesToRead : u32,
+		lpNumberOfBytesRead : u32 mut&,
+		lpOverlapped : u64) -> s32 := extern;
+	DeleteFileA ::= func(lpFileName : u8&) -> s32 := extern;
+}
+
+file_exists ::= func(path : u8&) -> bool
+{
+	if static(__is_windows)
+	{
+		attribs ::= GetFileAttributesA(path);
+		return attribs != 0xFFFFFFFF;
+	}
+	if static(__is_linux)
+	{
+		__error("file_exists linux support NYI");
+	}
+};
+
+file_size_bytes ::= func(path : u8&) -> u64
+{
+	if static(__is_windows)
+	{
+		// CreateFile in this context is cheap, don't worry.
+		handle ::= CreateFileA(path, 0x80000000, 3, 0, 3, 128, 0);
+		if(handle == (-1@u64)@_)
+		{
+			// probably file didnt exist.
+			return 0;
+		}
+		defer CloseHandle(handle);
+
+		size : s64 mut;
+		if(GetFileSizeEx(handle, ref size) == 0)
+		{
+			// failed for some reason.
+			CloseHandle(handle);
+			return 0;
+		}
+		return size@_;
+	}
+	if static(__is_linux)
+	{
+		__error("file_size_bytes linux support NYI");
+	}
+};
+
+file_read ::= func(path : u8&, buf : u8 mut&, buflen : u64) -> v0
+{
+	if static(__is_windows)
+	{
+		handle ::= CreateFileA(path, 0x80000000, 3, 0, 3, 128, 0);
+		if(handle == (-1@u64)@_)
+		{
+			return;
+		}
+		defer CloseHandle(handle);
+
+		bytes_read : u32 weak mut;
+		ReadFile(handle, buf, buflen@_, ref bytes_read, 0);
+	}
+	if static(__is_linux)
+	{
+		__error("file_read linux support NYI");
+	}
+};
+
+file_create ::= func(path : u8&) -> bool
+{
+	if static(__is_windows)
+	{
+		handle ::= CreateFileA(path, 0xC0000000, 3, 0, 1, 128, 0);
+		if(handle == (-1@u64)@_)
+		{
+			return false;
+		}
+		CloseHandle(handle);
+		return true;
+	}
+	if static(__is_linux)
+	{
+		__error("file_create linux support NYI");
+	}
+};
+
+file_delete ::= func(path : u8&) -> bool
+{
+	if static(__is_windows)
+	{
+		return DeleteFileA(path) != 0;
+	}
+	if static(__is_linux)
+	{
+		__error("file_delete linux support NYI");
+	}
+};
+
+== build ==
+{
+	if static(__is_windows)
+	{
+		add_link_library("Kernel32.lib");
+	}
+}

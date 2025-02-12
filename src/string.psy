@@ -74,6 +74,19 @@ print_string ::= func(str : tzstring) -> v0
 	}
 };
 
+puts ::= func(str : u8&) -> v0
+{
+	i : u64 mut := 0;
+	len ::= cstrlen(str);
+	chr : u8& mut := null;
+	while(i < len)
+	{
+		chr = (str at i);
+		putchar(deref chr);
+		i = i + 1;
+	}
+};
+
 == build ==
 {
 	add_source_file("src/arena.psy");
