@@ -92,6 +92,36 @@ vao : u32 mut;
 	r : f32 mut;
 	factor : f32 mut := 0.0001;
 
+	filename ::= "temp.txt";
+	exists ::= file_exists(filename);
+	if(exists == true)
+	{
+		defer file_delete(filename);
+		size ::= file_size_bytes(filename);
+		putuint(size);
+		contents ::= arena_push(frame_arena, size);
+		defer arena_pop(frame_arena, size);
+
+		file_read(filename, contents, size);
+		puts("contents:");
+		putchar(10);
+		puts(contents);
+	}
+	if(exists == false)
+	{
+		file_create(filename);
+		contents ::= "hello this is some different data";
+		file_write(filename, contents, cstrlen(contents));
+	}
+
+	dirname ::= "tempdir";
+	directory_create(dirname);
+	defer putsint(directory_delete(dirname)@_);
+	nestedfilename ::= __concat(dirname, "/foo.txt");
+
+	file_create(nestedfilename);
+	defer file_delete(nestedfilename);
+
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
@@ -125,6 +155,7 @@ vao : u32 mut;
 
 == build ==
 {
+	add_source_file("src/file.psy");
 	add_source_file("src/opengl.psy");
 	add_source_file("src/string.psy");
 	add_source_file("src/arena.psy");
@@ -133,7 +164,6 @@ vao : u32 mut;
 	add_source_file("src/keyboard.psy");
 	//add_source_file("src/vulkan.psy");
 
-	add_source_file("src/file.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

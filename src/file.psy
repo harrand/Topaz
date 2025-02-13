@@ -24,6 +24,21 @@ if static(__is_windows)
 		lpNumberOfBytesWritten : u32 mut&,
 		lpOverlapped : u64) -> s32 := extern;
 	DeleteFileA ::= func(lpFileName : u8&) -> s32 := extern;
+	CreateDirectoryA ::= func(lpPathName : u8&, lpSecurityAttributes : u64) -> s32 := extern;
+
+	SHFILEOPSTRUCTA ::= struct
+	{
+		hwnd : u64;
+		wFunc : u32;
+		pFrom : u8&;
+		pTo : u8&;
+		fFlags : s32;
+		fAnyOperationsAborted : s32;
+		hNameMappings : v0&;
+		lpszProgressTitle : u8&;
+	};
+
+	SHFileOperationA ::= func(lpFileOp : SHFILEOPSTRUCTA&) -> s32 := extern;
 }
 
 file_exists ::= func(path : u8&) -> bool
@@ -135,10 +150,56 @@ file_delete ::= func(path : u8&) -> bool
 	}
 };
 
+directory_create ::= func(path : u8&) -> bool
+{
+	if static(__is_windows)
+	{
+		winbool ::= CreateDirectoryA(path, 0);
+		return winbool != 0;
+	}
+	if static(__is_linux)
+	{
+		__error("directory_create linux support NYI");
+	}
+};
+
+directory_delete ::= func(path : u8&) -> bool
+{
+	if static(__is_windows)
+	{
+		// note: pFrom must be *double* null terminated.
+		// pain.
+		strlen ::= cstrlen(path);
+		pathbuf : u8 mut& := arena_push(frame_arena, strlen + 2);
+		strcpy(pathbuf, path, strlen);
+		deref(pathbuf at strlen) = 0;
+		deref(pathbuf at (strlen + 1)) = 0;
+
+		file_op ::= SHFILEOPSTRUCTA
+		{
+			.hwnd := 0;
+			.wFunc := 3;
+			.pFrom := pathbuf;
+			.pTo := "";
+			.fFlags := 0x0414;
+			.fAnyOperationsAborted := 0;
+			.hNameMappings := null;
+			.lpszProgressTitle := "";
+
+		};
+		return SHFileOperationA(ref file_op) == 0;
+	}
+	if static(__is_linux)
+	{
+		__error("directory_delete linux support NYI");
+	}
+};
+
 == build ==
 {
 	if static(__is_windows)
 	{
 		add_link_library("Kernel32.lib");
+		add_link_library("Shell32.lib");
 	}
 }

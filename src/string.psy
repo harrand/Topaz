@@ -28,14 +28,16 @@ to_tzstring ::= func(cstr : u8 mut&) -> tzstring
 	};
 };
 
-strcpy ::= func(dst : u8 mut& mut, src : u8& mut, count : u64) -> v0
+strcpy ::= func(dst : u8 mut&, src : u8&, count : u64) -> v0
 {
 	i : u64 mut := 0;
+	dstcpy : u8 mut& mut := dst;
+	srccpy : u8& mut := src;
 	while(i < count)
 	{
-		(deref dst) = (deref src);
-		dst = ((dst@u64) + 1)@u8 mut& mut;
-		src = ((src@u64) + 1)@u8& mut;
+		(deref dstcpy) = (deref srccpy);
+		dstcpy = ((dstcpy@u64) + 1)@u8 mut& mut;
+		srccpy = ((srccpy@u64) + 1)@u8& mut;
 		i = i + 1;
 	}
 };
