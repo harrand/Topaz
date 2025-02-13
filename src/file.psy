@@ -17,6 +17,12 @@ if static(__is_windows)
 		nNumberOfBytesToRead : u32,
 		lpNumberOfBytesRead : u32 mut&,
 		lpOverlapped : u64) -> s32 := extern;
+	WriteFile ::= func(
+		hFile : u64,
+		lpBuffer : u8&,
+		nNumberOfBytesToWrite : u32,
+		lpNumberOfBytesWritten : u32 mut&,
+		lpOverlapped : u64) -> s32 := extern;
 	DeleteFileA ::= func(lpFileName : u8&) -> s32 := extern;
 }
 
@@ -39,12 +45,12 @@ file_size_bytes ::= func(path : u8&) -> u64
 	{
 		// CreateFile in this context is cheap, don't worry.
 		handle ::= CreateFileA(path, 0x80000000, 3, 0, 3, 128, 0);
-		if(handle == (-1@u64)@_)
+		defer CloseHandle(handle);
+		if(handle == -1)
 		{
 			// probably file didnt exist.
 			return 0;
 		}
-		defer CloseHandle(handle);
 
 		size : s64 mut;
 		if(GetFileSizeEx(handle, ref size) == 0)
@@ -66,14 +72,32 @@ file_read ::= func(path : u8&, buf : u8 mut&, buflen : u64) -> v0
 	if static(__is_windows)
 	{
 		handle ::= CreateFileA(path, 0x80000000, 3, 0, 3, 128, 0);
+		defer CloseHandle(handle);
 		if(handle == (-1@u64)@_)
 		{
 			return;
 		}
-		defer CloseHandle(handle);
 
-		bytes_read : u32 weak mut;
-		ReadFile(handle, buf, buflen@_, ref bytes_read, 0);
+		ReadFile(handle, buf, buflen@_, null, 0);
+	}
+	if static(__is_linux)
+	{
+		__error("file_read linux support NYI");
+	}
+};
+
+file_write ::= func(path : u8&, buf : u8&, buflen : u64) -> v0
+{
+	if static(__is_windows)
+	{
+		handle ::= CreateFileA(path, 0x40000000, 3, 0, 3, 128, 0);
+		defer CloseHandle(handle);
+		if(handle == (-1@u64)@_)
+		{
+			return;
+		}
+
+		WriteFile(handle, buf, buflen@_, null, 0);
 	}
 	if static(__is_linux)
 	{
@@ -85,12 +109,12 @@ file_create ::= func(path : u8&) -> bool
 {
 	if static(__is_windows)
 	{
-		handle ::= CreateFileA(path, 0xC0000000, 3, 0, 1, 128, 0);
+		handle ::= CreateFileA(path, 0x40000000, 3, 0, 1, 128, 0);
+		defer CloseHandle(handle);
 		if(handle == (-1@u64)@_)
 		{
 			return false;
 		}
-		CloseHandle(handle);
 		return true;
 	}
 	if static(__is_linux)
