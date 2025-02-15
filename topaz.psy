@@ -23,8 +23,7 @@ main ::= func() -> s32
 	wnd : u64 mut := open_window(800, 600, "Topaz Test");
 	defer close_window(wnd);
 
-	load_wgl_functions();
-	opengl_wgl_init(wnd);
+	opengl_init_context(wnd);
 	gl.clear_colour(0.5, 0.0, 1.0, 1.0);
 	hacky_hdc ::= GetDC(wnd);
 
@@ -92,12 +91,20 @@ main ::= func() -> s32
 	r : f32 mut;
 	factor : f32 mut := 0.0001;
 
+	// wireframes
+	//gl.polygon_mode(0x0408, 0x1B01);
+	// points
+	//gl.polygon_mode(0x0408, 0x1B00);
+	// filled
+	gl.polygon_mode(0x0408, 0x1B02);
+
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
 		window_update();
 		gl.clear_colour(deref(col at 0), deref(col at 1), deref(col at 2), 1.0);
 		gl.clear(16384);
+		gl.viewport(0, 0, 800, 600);
 
 		r = deref(col at 2);
 		if(r > 0.8)

@@ -50,9 +50,10 @@ wgl_functions_t ::= struct
 	wglCreateContextAttribsARB : func(hdc : u64, hShareContext : u64, attribList : s32&) -> u64;
 	wglSwapIntervalEXT : func(interval : s32) -> s32;
 	wglGetSwapIntervalEXT : func() -> s32;
+	loaded : bool mut;
 };
 
-wgl_functions : wgl_functions_t mut := wgl_functions_t{};
+wgl_functions : wgl_functions_t mut := wgl_functions_t{.loaded := false;};
 
 opengl_functions_t ::= struct
 {
@@ -60,6 +61,8 @@ opengl_functions_t ::= struct
 	clear_colour : func(r : f32, g : f32, b : f32, a : f32) -> v0;
 	enable : func(cap : s32) -> v0;
 	disable : func(cap : s32) -> v0;
+	viewport : func(x : s32, y : s32, width : u32, height : u32) -> v0;
+	polygon_mode : func(face : s32, mode : s32) -> v0;
 
 	create_vertex_arrays : func(n : u32, arrays : u32 mut&) -> v0;
 	bind_vertex_array : func(vao : u32) -> v0;
@@ -160,6 +163,7 @@ load_wgl_functions ::= func() -> v0
 	wgl_functions.wglCreateContextAttribsARB = load_ogl_function("wglCreateContextAttribsARB");
 	wgl_functions.wglSwapIntervalEXT = load_ogl_function("wglSwapIntervalEXT");
 	wgl_functions.wglGetSwapIntervalEXT = load_ogl_function("wglGetSwapIntervalEXT");
+	wgl_functions.loaded = true;
 
 	wglMakeCurrent(0, 0);
 	wglDeleteContext(hglrc);
@@ -179,11 +183,17 @@ glEnable ::= func(cap : s32) -> v0 := extern;
 glDisable ::= func(cap : s32) -> v0 := extern;
 [[private]]
 glViewport ::= func(x : s32, y : s32, width : u32, height : u32) -> v0 := extern;
+[[private]]
+glPolygonMode ::= func(face : s32, mode : s32) -> v0 := extern;
 
 SwapBuffers ::= func(hdc : u64) -> s32 := extern;
 
-opengl_wgl_init ::= func(wnd : u64) -> v0
+opengl_init_context ::= func(wnd : u64) -> v0
 {
+	if(wgl_functions.loaded == false)
+	{
+		load_wgl_functions();
+	}
 	if(wgl_functions.wglChoosePixelFormatARB == null)
 	{
 		__debugbreak();
@@ -289,6 +299,8 @@ opengl_wgl_init ::= func(wnd : u64) -> v0
 	gl.clear_colour = glClearColor;
 	gl.enable = glEnable;
 	gl.disable = glDisable;
+	gl.viewport = glViewport;
+	gl.polygon_mode = glPolygonMode;
 
 	gl.create_vertex_arrays = load_ogl_function("glCreateVertexArrays");
 	gl.bind_vertex_array = load_ogl_function("glBindVertexArray");
