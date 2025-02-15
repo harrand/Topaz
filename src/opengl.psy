@@ -56,25 +56,30 @@ wgl_functions : wgl_functions_t mut := wgl_functions_t{};
 
 opengl_functions_t ::= struct
 {
-	glCreateVertexArrays : func(n : u32, arrays : u32 mut&) -> v0;
-	glBindVertexArray : func(vao : u32) -> v0;
-	glCreateShader : func(shaderType : s32) -> u32;
-	glDeleteShader : func(shader : u32) -> v0;
-	glShaderSource : func(shader : u32, count : u32, string : u8&&, len : s32&) -> v0;
-	glCompileShader : func(shader : u32) -> v0;
-	glGetShaderiv : func(shader : u32, pname : s32, params : s32 mut&) -> v0;
-	glGetProgramiv : func(program : u32, pname : s32, params : s32 mut&) -> v0;
-	glCreateProgram : func() -> u32;
-	glAttachShader : func(program : u32, shader : u32) -> v0;
-	glLinkProgram : func(program : u32) -> v0;
-	glUseProgram : func(program : u32) -> v0;
-	glDrawArrays : func(mode : s32, first : s32, count : u32) -> v0;
+	clear : func(mask : s32) -> v0;
+	clear_colour : func(r : f32, g : f32, b : f32, a : f32) -> v0;
+	enable : func(cap : s32) -> v0;
+	disable : func(cap : s32) -> v0;
 
-	glDebugMessageCallback : func(callback : u64 weak, userparam : v0&) -> v0;
-	glDebugMessageInsert : func(source : s32, type : s32, id : u32, severity : s32, length : u32, msg : u8&) -> v0;
+	create_vertex_arrays : func(n : u32, arrays : u32 mut&) -> v0;
+	bind_vertex_array : func(vao : u32) -> v0;
+	create_shader : func(shaderType : s32) -> u32;
+	delete_shader : func(shader : u32) -> v0;
+	shader_source : func(shader : u32, count : u32, string : u8&&, len : s32&) -> v0;
+	compile_shader : func(shader : u32) -> v0;
+	get_shader_iv : func(shader : u32, pname : s32, params : s32 mut&) -> v0;
+	get_program_iv : func(program : u32, pname : s32, params : s32 mut&) -> v0;
+	create_program : func() -> u32;
+	attach_shader : func(program : u32, shader : u32) -> v0;
+	link_program : func(program : u32) -> v0;
+	use_program : func(program : u32) -> v0;
+	draw_arrays : func(mode : s32, first : s32, count : u32) -> v0;
+
+	debug_message_callback : func(callback : u64 weak, userparam : v0&) -> v0;
+	debug_message_insert : func(source : s32, type : s32, id : u32, severity : s32, length : u32, msg : u8&) -> v0;
 };
 
-opengl : opengl_functions_t mut;
+gl : opengl_functions_t mut;
 
 load_ogl_function ::= func(funcname : u8&) -> u64 weak
 {
@@ -163,6 +168,19 @@ load_wgl_functions ::= func() -> v0
 };
 
 DescribePixelFormat ::= func(hdc : u64, iPixelFormat : s32, nBytes : u32, ppfd : PIXELFORMATDESCRIPTOR mut&) -> s32 := extern; 
+
+[[private]]
+glClear ::= func(mask : s32) -> v0 := extern;
+[[private]]
+glClearColor ::= func(r : f32, g : f32, b : f32, a : f32) -> v0 := extern;
+[[private]]
+glEnable ::= func(cap : s32) -> v0 := extern;
+[[private]]
+glDisable ::= func(cap : s32) -> v0 := extern;
+[[private]]
+glViewport ::= func(x : s32, y : s32, width : u32, height : u32) -> v0 := extern;
+
+SwapBuffers ::= func(hdc : u64) -> s32 := extern;
 
 opengl_wgl_init ::= func(wnd : u64) -> v0
 {
@@ -267,29 +285,28 @@ opengl_wgl_init ::= func(wnd : u64) -> v0
 	wglMakeCurrent(hdc, magic_hglrc);
 	wgl_functions.wglSwapIntervalEXT(0);
 
-	opengl.glCreateVertexArrays = load_ogl_function("glCreateVertexArrays");
-	opengl.glBindVertexArray = load_ogl_function("glBindVertexArray");
-	opengl.glCreateShader = load_ogl_function("glCreateShader");
-	opengl.glDeleteShader = load_ogl_function("glDeleteShader");
-	opengl.glShaderSource = load_ogl_function("glShaderSource");
-	opengl.glCompileShader = load_ogl_function("glCompileShader");
-	opengl.glGetShaderiv = load_ogl_function("glGetShaderiv");
-	opengl.glGetProgramiv = load_ogl_function("glGetProgramiv");
-	opengl.glCreateProgram = load_ogl_function("glCreateProgram");
-	opengl.glAttachShader = load_ogl_function("glAttachShader");
-	opengl.glLinkProgram = load_ogl_function("glLinkProgram");
-	opengl.glUseProgram = load_ogl_function("glUseProgram");
-	opengl.glDrawArrays = load_ogl_function("glDrawArrays");
+	gl.clear = glClear;
+	gl.clear_colour = glClearColor;
+	gl.enable = glEnable;
+	gl.disable = glDisable;
 
-	opengl.glDebugMessageCallback = load_ogl_function("glDebugMessageCallback");
-	opengl.glDebugMessageInsert = load_ogl_function("glDebugMessageInsert");
+	gl.create_vertex_arrays = load_ogl_function("glCreateVertexArrays");
+	gl.bind_vertex_array = load_ogl_function("glBindVertexArray");
+	gl.create_shader = load_ogl_function("glCreateShader");
+	gl.delete_shader = load_ogl_function("glDeleteShader");
+	gl.shader_source = load_ogl_function("glShaderSource");
+	gl.compile_shader = load_ogl_function("glCompileShader");
+	gl.get_shader_iv = load_ogl_function("glGetShaderiv");
+	gl.get_program_iv = load_ogl_function("glGetProgramiv");
+	gl.create_program = load_ogl_function("glCreateProgram");
+	gl.attach_shader = load_ogl_function("glAttachShader");
+	gl.link_program = load_ogl_function("glLinkProgram");
+	gl.use_program = load_ogl_function("glUseProgram");
+	gl.draw_arrays = load_ogl_function("glDrawArrays");
+
+	gl.debug_message_callback = load_ogl_function("glDebugMessageCallback");
+	gl.debug_message_insert = load_ogl_function("glDebugMessageInsert");
 };
-
-glClear ::= func(mask : s32) -> v0 := extern;
-glClearColor ::= func(r : f32, g : f32, b : f32, a : f32) -> v0 := extern;
-glEnable ::= func(cap : s32) -> v0 := extern;
-glDnable ::= func(cap : s32) -> v0 := extern;
-SwapBuffers ::= func(hdc : u64) -> s32 := extern;
 
 == build ==
 {

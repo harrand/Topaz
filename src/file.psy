@@ -39,6 +39,33 @@ if static(__is_windows)
 	};
 
 	SHFileOperationA ::= func(lpFileOp : SHFILEOPSTRUCTA&) -> s32 := extern;
+
+	FILETIME ::= struct
+	{
+		dwLowDateTime : u32;
+		dwHighDateTime : u32;
+	};
+
+	WIN32_FIND_DATAA ::= struct
+	{
+		dwFileAttributes : u32;
+		ftCreationTime : FILETIME;
+		ftLastAccessTime : FILETIME;
+		ftLastWriteTime : FILETIME;
+		nFileSizeHigh : u32;
+		nFileSizeLow : u32;
+		dwReserved0 : u32;
+		dwReserved1 : u32;
+		cFileName : u8#260;
+		cAlternateFileName : u8#14;
+		dwFileType : u32;
+		dwCreatorType : u32;
+		wFinderFlags : u32;
+	};
+
+	FindFirstFileA ::= func(lpFileName : u8&, lpFindFileData : WIN32_FIND_DATAA mut&) -> u64 := extern;
+	FindNextFileA ::= func(hFindFile : u64, lpFindFileData : WIN32_FIND_DATAA mut&) -> s32 := extern;
+	FindClose ::= func(hFindFile : u64) -> s32 := extern;
 }
 
 file_exists ::= func(path : u8&) -> bool
@@ -193,6 +220,43 @@ directory_delete ::= func(path : u8&) -> bool
 	{
 		__error("directory_delete linux support NYI");
 	}
+};
+
+[[private]]
+private_dir_iter ::= func(find : WIN32_FIND_DATAA mut&, callback : func(path : u8&) -> v0) -> v0
+{
+	if(cstreql(find->cFileName at 0, ".") == false)
+	{
+		if(cstreql(find->cFileName at 0, "..") == false)
+		{
+			callback(find->cFileName at 0);
+		}
+	}
+};
+
+directory_iterate ::= func(path : u8&, callback : func(path : u8&) -> v0) -> v0
+{
+	// we're given a directory name
+	// we want to search dirname/*
+	bufsize ::= cstrlen(path) + 2;
+	buf : u8 mut& := arena_push(frame_arena, bufsize);
+	defer arena_pop(frame_arena, bufsize);
+	strcpy(buf, path, bufsize - 2);
+	deref(buf at (bufsize - 2)) = '/';
+	deref(buf at (bufsize - 1)) = '*';
+
+	find : WIN32_FIND_DATAA mut;
+	handle ::= FindFirstFileA(buf, ref find);
+	if(handle == -1)
+	{
+		return;
+	}
+	private_dir_iter(ref find, callback);
+	while(FindNextFileA(handle, ref find) != 0)
+	{
+		private_dir_iter(ref find, callback);
+	}
+	FindClose(handle);
 };
 
 == build ==

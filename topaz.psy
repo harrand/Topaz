@@ -25,37 +25,37 @@ main ::= func() -> s32
 
 	load_wgl_functions();
 	opengl_wgl_init(wnd);
-	glClearColor(0.5, 0.0, 1.0, 1.0);
+	gl.clear_colour(0.5, 0.0, 1.0, 1.0);
 	hacky_hdc ::= GetDC(wnd);
 
 	// GL_DEBUG_OUTPUT
-	glEnable(37600);
+	gl.enable(37600);
 	// GL_DEBUG_OUTPUT_SYNCHRONOUS
-	glEnable(33346);
-	opengl.glDebugMessageCallback(ogl_debug_callback, null);
+	gl.enable(33346);
+	gl.debug_message_callback(ogl_debug_callback, null);
 
-vao : u32 mut;
-	opengl.glCreateVertexArrays(1, ref vao);
-	opengl.glBindVertexArray(vao);
+	vao : u32 mut;
+	gl.create_vertex_arrays(1, ref vao);
+	gl.bind_vertex_array(vao);
 
-	vertex_shader ::= opengl.glCreateShader(35633);
-	fragment_shader ::= opengl.glCreateShader(35632);
-	defer opengl.glDeleteShader(vertex_shader);
-	defer opengl.glDeleteShader(fragment_shader);
+	vertex_shader ::= gl.create_shader(35633);
+	fragment_shader ::= gl.create_shader(35632);
+	defer gl.delete_shader(vertex_shader);
+	defer gl.delete_shader(fragment_shader);
 
 	vertex_src ::= __embed("src/vertex.glsl");
 	fragment_src ::= __embed("src/fragment.glsl");
-	opengl.glShaderSource(vertex_shader, 1, ref vertex_src, null);
-	opengl.glShaderSource(fragment_shader, 1, ref fragment_src, null);
+	gl.shader_source(vertex_shader, 1, ref vertex_src, null);
+	gl.shader_source(fragment_shader, 1, ref fragment_src, null);
 
-	opengl.glCompileShader(vertex_shader);
-	opengl.glCompileShader(fragment_shader);
+	gl.compile_shader(vertex_shader);
+	gl.compile_shader(fragment_shader);
 
 	GL_COMPILE_STATUS ::= 35713;
 	GL_LINK_STATUS ::= 35714;
 
 	vertex_cpl : s32 mut;
-	opengl.glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, ref vertex_cpl);
+	gl.get_shader_iv(vertex_shader, GL_COMPILE_STATUS, ref vertex_cpl);
 	if(vertex_cpl == 0)
 	{
 		putchar('a');
@@ -63,7 +63,7 @@ vao : u32 mut;
 	}
 
 	fragment_cpl : s32 mut;
-	opengl.glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, ref fragment_cpl);
+	gl.get_shader_iv(fragment_shader, GL_COMPILE_STATUS, ref fragment_cpl);
 	if(fragment_cpl == 0)
 	{
 		putchar('b');
@@ -71,13 +71,13 @@ vao : u32 mut;
 	}
 
 	// create program
-	prog ::= opengl.glCreateProgram();
-	opengl.glAttachShader(prog, vertex_shader);
-	opengl.glAttachShader(prog, fragment_shader);
+	prog ::= gl.create_program();
+	gl.attach_shader(prog, vertex_shader);
+	gl.attach_shader(prog, fragment_shader);
 	
-	opengl.glLinkProgram(prog);
+	gl.link_program(prog);
 	shader_lnk : s32 mut;
-	opengl.glGetProgramiv(prog, GL_LINK_STATUS, ref shader_lnk);
+	gl.get_program_iv(prog, GL_LINK_STATUS, ref shader_lnk);
 	if(shader_lnk == 0)
 	{
 		putchar('l');
@@ -92,42 +92,12 @@ vao : u32 mut;
 	r : f32 mut;
 	factor : f32 mut := 0.0001;
 
-	filename ::= "temp.txt";
-	exists ::= file_exists(filename);
-	if(exists == true)
-	{
-		defer file_delete(filename);
-		size ::= file_size_bytes(filename);
-		putuint(size);
-		contents ::= arena_push(frame_arena, size);
-		defer arena_pop(frame_arena, size);
-
-		file_read(filename, contents, size);
-		puts("contents:");
-		putchar(10);
-		puts(contents);
-	}
-	if(exists == false)
-	{
-		file_create(filename);
-		contents ::= "hello this is some different data";
-		file_write(filename, contents, cstrlen(contents));
-	}
-
-	dirname ::= "tempdir";
-	directory_create(dirname);
-	defer putsint(directory_delete(dirname)@_);
-	nestedfilename ::= __concat(dirname, "/foo.txt");
-
-	file_create(nestedfilename);
-	defer file_delete(nestedfilename);
-
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
 		window_update();
-		glClearColor(deref(col at 0), deref(col at 1), deref(col at 2), 1.0);
-		glClear(16384);
+		gl.clear_colour(deref(col at 0), deref(col at 1), deref(col at 2), 1.0);
+		gl.clear(16384);
 
 		r = deref(col at 2);
 		if(r > 0.8)
@@ -141,8 +111,8 @@ vao : u32 mut;
 
 		(deref (col at 2)) = (r + factor);
 
-		opengl.glUseProgram(prog);
-		opengl.glDrawArrays(GL_TRIANGLES, 0, 3);
+		gl.use_program(prog);
+		gl.draw_arrays(GL_TRIANGLES, 0, 3);
 
 		SwapBuffers(hacky_hdc);
 		if(is_key_down(key.w))
@@ -167,5 +137,5 @@ vao : u32 mut;
 
 	set_output_directory("build");
 	set_executable("tz");
-	set_optimisation(0);
+	set_optimisation(3);
 }

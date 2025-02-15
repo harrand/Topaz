@@ -4,19 +4,47 @@ tzstring ::= struct
 	len : u64;
 };
 
-cstrlen ::= func(cstr : u8& mut) -> u64
+cstrlen ::= func(cstr : u8&) -> u64
 {
 	c : u64 mut := 0;
 	if(cstr == null)
 	{
 		return c;
 	}
-	while((deref cstr) != 0)
+	while((deref (cstr at c)) != 0)
 	{
 		c = c + 1;
-		cstr = ((cstr@u64) + 1)@u8&;
 	}
 	return c;
+};
+
+cstreql ::= func(lhs : u8&, rhs : u8&) -> bool
+{
+	llen ::= cstrlen(lhs);
+	rlen ::= cstrlen(rhs);
+	if(llen != rlen)
+	{
+		return false;
+	}
+	min : u64 mut := rlen;
+	if(llen < rlen)
+	{
+		min = llen;
+	}
+	i : u64 mut := 0;
+	lchr : u8 mut;
+	rchr : u8 mut;
+	while(i < min)
+	{
+		lchr = deref(lhs at i);
+		rchr = deref(rhs at i);
+		if(lchr != rchr)
+		{
+			return false;
+		}
+		i = i + 1;
+	}
+	return true;
 };
 
 to_tzstring ::= func(cstr : u8 mut&) -> tzstring
