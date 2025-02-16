@@ -1,31 +1,48 @@
 ogl_debug_callback ::= func(source : s32, type : s32, id : u32, severity : s32, length : u32, msg : u8 mut&) -> v0
 {
-	tzmsg ::= to_tzstring(msg);
-	print_string(tzmsg);
+	puts(msg);
 	__debugbreak();
 };
 
-main ::= func() -> s32
+wrangle_window_class ::= macro() -> v0
+{
+	register_wndclass();
+	defer unregister_wndclass();
+};
+
+setup_arenas ::= macro() -> v0
 {
 	permanent_arena_val = arena_create(4096 * 1024);
 	defer arena_destroy(permanent_arena_val);
 
 	frame_arena_val = arena_create(4096 * 1024);
 	defer arena_destroy(frame_arena_val);
+};
+
+main ::= func() -> s32
+{
+	wrangle_window_class();
+	setup_arenas();
+
+	str1 ::= create_string("hello there!", frame_arena);
+	str2 ::= string_duplicate(ref str1, frame_arena);
+	deref string_at(ref str1, 1) = 'u';
+	print_string(ref str1);
+	putchar(10);
+	print_string(ref str2);
 
 	myvec ::= vec2{.x := 69.0; .y := 1.0;};
 
 	ptr : f32 mut& := arena_push(permanent_arena, __sizeof(f32));
 	(deref ptr) = vec2_length(myvec);
 
-	register_wndclass();
-	defer unregister_wndclass();
-	wnd : u64 mut := open_window(800, 600, "Topaz Test");
+	wnd ::= open_window(800, 600, "Topaz Test");
 	defer close_window(wnd);
+	wndval ::= wnd@s64@u64;
 
-	opengl_init_context(wnd);
+	opengl_init_context(wndval);
 	gl.clear_colour(0.5, 0.0, 1.0, 1.0);
-	hacky_hdc ::= GetDC(wnd);
+	hacky_hdc ::= GetDC(wndval);
 
 	// GL_DEBUG_OUTPUT
 	gl.enable(37600);
@@ -144,5 +161,5 @@ main ::= func() -> s32
 
 	set_output_directory("build");
 	set_executable("tz");
-	set_optimisation(3);
+	set_optimisation(0);
 }

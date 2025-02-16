@@ -1,9 +1,3 @@
-tzstring ::= struct
-{
-	ptr : u8 mut&;
-	len : u64;
-};
-
 cstrlen ::= func(cstr : u8&) -> u64
 {
 	c : u64 mut := 0;
@@ -16,6 +10,19 @@ cstrlen ::= func(cstr : u8&) -> u64
 		c = c + 1;
 	}
 	return c;
+};
+
+puts ::= func(str : u8&) -> v0
+{
+	i : u64 mut := 0;
+	len ::= cstrlen(str);
+	chr : u8& mut := null;
+	while(i < len)
+	{
+		chr = (str at i);
+		putchar(deref chr);
+		i = i + 1;
+	}
 };
 
 cstreql ::= func(lhs : u8&, rhs : u8&) -> bool
@@ -47,15 +54,6 @@ cstreql ::= func(lhs : u8&, rhs : u8&) -> bool
 	return true;
 };
 
-to_tzstring ::= func(cstr : u8 mut&) -> tzstring
-{
-	return tzstring
-	{
-		.ptr := cstr;
-		.len := cstrlen(cstr);
-	};
-};
-
 strcpy ::= func(dst : u8 mut&, src : u8&, count : u64) -> v0
 {
 	i : u64 mut := 0;
@@ -70,51 +68,135 @@ strcpy ::= func(dst : u8 mut&, src : u8&, count : u64) -> v0
 	}
 };
 
-to_zstring ::= func(str : tzstring, a : arena mut&) -> u8&
+string_view ::= struct
 {
-	ptr ::= arena_push(a, str.len + 1);
-	strcpy(ptr, str.ptr, str.len);
-	deref (((ptr@u64) + str.len)@u8 mut&) = 0;
-	return ptr;
+	str : u8&;
+	len : u64;
 };
 
-create_string ::= func(size : u64, a : arena mut&) -> tzstring
+string ::= struct
 {
-	return tzstring
+	sso : u8 mut#32;
+	data : u8 mut&;
+	len : u64 mut;
+	cap : u64 mut;
+};
+
+create_string ::= func(cstring : u8&, mem : arena mut&) -> string
+{
+	ret : string mut;
+	ret.len = cstrlen(cstring);
+
+	sso_size : u64 static := __sizeof(ret.sso) / __sizeof(u8);
+	if(ret.len < sso_size)
 	{
-		.ptr := arena_push(a, size);
-		.len := size;
-	};
-};
-
-string_copy ::=  func(str : tzstring, a : arena mut&) -> tzstring
-{
-	return create_string(str.len, a);
-};
-
-print_string ::= func(str : tzstring) -> v0
-{
-	i : u64 mut := 0;
-	ptr : u8& mut;
-	while(i < (str.len))
-	{
-		ptr = ((str.ptr)@u64 + i)@u8&;
-		putchar(deref ptr);
-		i = i + 1;
+		// yes, sso is large enough.
+		ret.data = null;
+		strcpy((ret.sso) at 0, cstring, ret.len);
+		ret.cap = sso_size;
+		return ret;
 	}
+	// sso too small. need to alloc.
+	ret.data = arena_push(mem, ret.len);
+	ret.cap = ret.len;
+	strcpy(ret.data, cstring, ret.len);
+	return ret;
 };
 
-puts ::= func(str : u8&) -> v0
+string_is_small ::= func(str : string&) -> bool
+{
+	sso_size : u64 static := __sizeof(str->sso) / __sizeof(u8);
+	return str->len < sso_size;
+};
+
+print_string ::= func(str : string&) -> v0
 {
 	i : u64 mut := 0;
-	len ::= cstrlen(str);
-	chr : u8& mut := null;
+	len ::= str->len;
+
+	dst : u8 mut& mut := str->data;
+	if(string_is_small(str))
+	{
+		dst = (str->sso) at 0;
+	}
+
 	while(i < len)
 	{
-		chr = (str at i);
-		putchar(deref chr);
+		putchar(deref(dst at i));
 		i = i + 1;
 	}
+};
+
+string_append ::= func(str : string mut&, append : string&, mem : arena mut&) -> v0
+{
+	if(append->len == 0)
+	{
+		return;
+	}
+	total_len ::= (str->len) + (append->len);
+	old_data : u8& mut := str->data;
+	if(old_data == null)
+	{
+		old_data = (str->sso) at 0;
+	}
+	old_len ::= str->len;
+
+	append_data : u8& mut := append->data;
+	if(append_data == null)
+	{
+		append_data = (append->sso) at 0;
+	}
+
+	if(total_len > (str->cap))
+	{
+		// we need to realloc.
+		str->data = arena_push(mem, total_len);
+		// copy back over the old bit
+		strcpy(str->data, old_data, old_len);
+		old_data = (str->data);
+		str->cap = total_len;
+	}
+	// append the new bit.
+	strcpy((old_data at old_len)@_, append_data, append->len);
+	str->len = total_len;
+};
+
+string_append_cstr ::= func(str : string mut&, append : u8&, mem : arena mut&) -> v0
+{
+	fake_str : string mut := string{};
+	fake_str.len = cstrlen(append);
+	fake_str.data = append@_;
+	string_append(str, ref fake_str, mem);
+};
+
+string_clear ::= func(str : string mut&) -> v0
+{
+	str->len = 0;
+};
+
+string_duplicate ::= func(str : string&, mem : arena mut&) -> string
+{
+	ret : string mut;
+	ret.len = (str->len);
+	if(string_is_small(str))
+	{
+		strcpy(ret.sso at 0, str->sso at 0, ret.len);
+		ret.data = null;
+		ret.cap = __sizeof(ret.sso) / __sizeof(u8);
+		return ret;
+	}
+	ret.cap = ret.len;
+	ret.data = arena_push(mem, ret.len);
+	return ret;
+};
+
+string_at ::= func(str : string&, idx : u64) -> u8 mut&
+{
+	if(string_is_small(str))
+	{
+		return str->sso at idx;
+	}
+	return str->data at idx;
 };
 
 == build ==

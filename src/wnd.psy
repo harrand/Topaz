@@ -20,6 +20,8 @@ if static(__is_linux)
 	__error("wnd.psy is not yet supported on linux");
 }
 
+window_handle ::= enum{};
+
 main_window : u64 mut := 0;
 window_is_open : bool mut := false;
 
@@ -119,7 +121,7 @@ unregister_wndclass ::= func() -> v0
 };
 CW_USEDEFAULT ::= -2147483648;
 
-open_window ::= func(w : u32 weak, h : u32 weak, title : u8&) -> u64
+open_window ::= func(w : u32 weak, h : u32 weak, title : u8&) -> window_handle
 {
 	hinst ::= GetModuleHandleA(null);
 	ret ::= CreateWindowExA(768, window_classname, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w, h, 0, 0, hinst, null);
@@ -131,16 +133,16 @@ open_window ::= func(w : u32 weak, h : u32 weak, title : u8&) -> u64
 	ShowWindow(ret, 5);
 	window_is_open = true;
 	main_window = ret;
-	return ret;
+	return ret@_;
 };
 
-close_window ::= func(wnd : u64) -> v0
+close_window ::= func(wnd : window_handle) -> v0
 {
 	window_is_open = false;
-	DestroyWindow(wnd);
+	DestroyWindow(wnd@s64@u64);
 };
 
-window_is_open ::= func(wnd : u64) -> bool
+window_is_open ::= func(wnd : window_handle) -> bool
 {
 	return window_is_open;
 };
