@@ -78,6 +78,9 @@ opengl_functions_t ::= struct
 	use_program : func(program : u32) -> v0;
 	draw_arrays : func(mode : s32, first : s32, count : u32) -> v0;
 
+	create_buffers : func(n : u32, buffers : u32 mut&) -> v0;
+	delete_buffers : func(n : u32, buffers : u32&) -> v0;
+
 	debug_message_callback : func(callback : u64 weak, userparam : v0&) -> v0;
 	debug_message_insert : func(source : s32, type : s32, id : u32, severity : s32, length : u32, msg : u8&) -> v0;
 };
@@ -315,6 +318,9 @@ opengl_init_context ::= func(wnd : window_handle) -> v0
 	gl.link_program = load_ogl_function("glLinkProgram");
 	gl.use_program = load_ogl_function("glUseProgram");
 	gl.draw_arrays = load_ogl_function("glDrawArrays");
+
+	gl.create_buffers = load_ogl_function("glCreateBuffers");
+	gl.delete_buffers = load_ogl_function("glDeleteBuffers");
 
 	gl.debug_message_callback = load_ogl_function("glDebugMessageCallback");
 	gl.debug_message_insert = load_ogl_function("glDebugMessageInsert");
