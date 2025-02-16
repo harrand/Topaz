@@ -188,7 +188,7 @@ glPolygonMode ::= func(face : s32, mode : s32) -> v0 := extern;
 
 SwapBuffers ::= func(hdc : u64) -> s32 := extern;
 
-opengl_init_context ::= func(wnd : u64) -> v0
+opengl_init_context ::= func(wnd : window_handle) -> v0
 {
 	if(wgl_functions.loaded == false)
 	{
@@ -214,7 +214,7 @@ opengl_init_context ::= func(wnd : u64) -> v0
 	// ready for pain?
 	// step 1: set proper correct pixel format
 
-	hdc ::= GetDC(wnd);
+	hdc ::= GetDC(wnd@s64@u64);
 
 	attribs : s32 mut#23;
 	deref (attribs at 0) = 8193;
@@ -318,6 +318,14 @@ opengl_init_context ::= func(wnd : u64) -> v0
 
 	gl.debug_message_callback = load_ogl_function("glDebugMessageCallback");
 	gl.debug_message_insert = load_ogl_function("glDebugMessageInsert");
+};
+
+opengl_swap_buffers ::= func(wnd : window_handle) -> v0
+{
+	wndval ::= wnd@s64@u64;
+	dc ::= GetDC(wndval);
+	defer ReleaseDC(wndval, dc);
+	SwapBuffers(dc);
 };
 
 == build ==

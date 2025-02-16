@@ -24,25 +24,12 @@ main ::= func() -> s32
 	wrangle_window_class();
 	setup_arenas();
 
-	str1 ::= create_string("hello there!", frame_arena);
-	str2 ::= string_duplicate(ref str1, frame_arena);
-	deref string_at(ref str1, 1) = 'u';
-	print_string(ref str1);
-	putchar(10);
-	print_string(ref str2);
-
-	myvec ::= vec2{.x := 69.0; .y := 1.0;};
-
-	ptr : f32 mut& := arena_push(permanent_arena, __sizeof(f32));
-	(deref ptr) = vec2_length(myvec);
-
 	wnd ::= open_window(800, 600, "Topaz Test");
 	defer close_window(wnd);
 	wndval ::= wnd@s64@u64;
 
-	opengl_init_context(wndval);
+	opengl_init_context(wnd);
 	gl.clear_colour(0.5, 0.0, 1.0, 1.0);
-	hacky_hdc ::= GetDC(wndval);
 
 	// GL_DEBUG_OUTPUT
 	gl.enable(37600);
@@ -138,9 +125,10 @@ main ::= func() -> s32
 		gl.use_program(prog);
 		gl.draw_arrays(GL_TRIANGLES, 0, 3);
 
-		SwapBuffers(hacky_hdc);
-		if(is_key_down(key.w))
+		opengl_swap_buffers(wnd);
+		if(is_key_down(key.escape))
 		{
+			puts("goodbye");
 			__debugbreak();
 		}
 	}
