@@ -20,6 +20,7 @@ arena_create ::= func(initial_capacity : u64) -> arena
 	return arena{.ptr := ptr; .cap := initial_capacity; .cursor := 0;};
 };
 
+[[private]]
 _arena_double_capacity ::= func(a : arena mut&) -> v0
 {
 	// need to increase size. let's double the cap.
@@ -41,15 +42,6 @@ arena_push ::= func(a : arena mut&, bytes : u64) -> v0& weak
 	return addr@v0&;
 };
 
-arena_pop ::= func(a : arena mut&, bytes : u64) -> v0
-{
-	if((a->cursor) < bytes)
-	{
-		__debugbreak();
-	}
-	(a->cursor) = (a->cursor) - bytes;
-};
-
 arena_clear ::= func(a : arena mut&) -> v0
 {
 	(a->cursor) = 0;
@@ -59,12 +51,6 @@ arena_destroy ::= func(a : arena) -> v0
 {
 	VirtualFree(a.ptr, 0, MEM_RELEASE);
 };
-
-permanent_arena_val : arena mut := arena{};
-permanent_arena : arena mut& := ref permanent_arena_val;
-
-frame_arena_val : arena mut := arena{};
-frame_arena : arena mut& := ref frame_arena_val;
 
 == build ==
 {

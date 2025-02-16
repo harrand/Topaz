@@ -12,10 +12,16 @@ wrangle_window_class ::= macro() -> v0
 
 setup_arenas ::= macro() -> v0
 {
-	permanent_arena_val = arena_create(4096 * 1024);
+	permanent_arena_val : arena mut := arena_create(4096 * 1024);
+	permanent_arena ::= ref permanent_arena_val;
+	defer puts("arena free: ");
+	defer putuint(permanent_arena_val.cursor);
+	defer puts("B");
+	defer putchar(10);
 	defer arena_destroy(permanent_arena_val);
 
-	frame_arena_val = arena_create(4096 * 1024);
+	frame_arena_val : arena mut := arena_create(4096 * 1024);
+	frame_arena ::= ref frame_arena_val;
 	defer arena_destroy(frame_arena_val);
 };
 

@@ -190,14 +190,14 @@ directory_create ::= func(path : u8&) -> bool
 	}
 };
 
-directory_delete ::= func(path : u8&) -> bool
+directory_delete ::= func(path : u8&, a : arena mut&) -> bool
 {
 	if static(__is_windows)
 	{
 		// note: pFrom must be *double* null terminated.
 		// pain.
 		strlen ::= cstrlen(path);
-		pathbuf : u8 mut& := arena_push(frame_arena, strlen + 2);
+		pathbuf : u8 mut& := arena_push(a, strlen + 2);
 		strcpy(pathbuf, path, strlen);
 		deref(pathbuf at strlen) = 0;
 		deref(pathbuf at (strlen + 1)) = 0;
@@ -234,13 +234,12 @@ private_dir_iter ::= func(find : WIN32_FIND_DATAA mut&, callback : func(path : u
 	}
 };
 
-directory_iterate ::= func(path : u8&, callback : func(path : u8&) -> v0) -> v0
+directory_iterate ::= func(path : u8&, callback : func(path : u8&) -> v0, a : arena mut&) -> v0
 {
 	// we're given a directory name
 	// we want to search dirname/*
 	bufsize ::= cstrlen(path) + 2;
-	buf : u8 mut& := arena_push(frame_arena, bufsize);
-	defer arena_pop(frame_arena, bufsize);
+	buf : u8 mut& := arena_push(a, bufsize);
 	strcpy(buf, path, bufsize - 2);
 	deref(buf at (bufsize - 2)) = '/';
 	deref(buf at (bufsize - 1)) = '*';
