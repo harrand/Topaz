@@ -37,80 +37,10 @@ main ::= func() -> s32
 	vulkan_init();
 	defer vulkan_term();
 
-	/*
-	opengl_init_context(wnd);
-	gl.clear_colour(0.5, 0.0, 1.0, 1.0);
-
-	// GL_DEBUG_OUTPUT
-	gl.enable(37600);
-	// GL_DEBUG_OUTPUT_SYNCHRONOUS
-	gl.enable(33346);
-	gl.debug_message_callback(ogl_debug_callback, null);
-
-	vao : u32 mut;
-	gl.create_vertex_arrays(1, ref vao);
-	gl.bind_vertex_array(vao);
-
-	vertex_shader ::= gl.create_shader(35633);
-	fragment_shader ::= gl.create_shader(35632);
-	defer gl.delete_shader(vertex_shader);
-	defer gl.delete_shader(fragment_shader);
-
-	vertex_src ::= __embed("src/vertex.glsl");
-	fragment_src ::= __embed("src/fragment.glsl");
-	gl.shader_source(vertex_shader, 1, ref vertex_src, null);
-	gl.shader_source(fragment_shader, 1, ref fragment_src, null);
-
-	gl.compile_shader(vertex_shader);
-	gl.compile_shader(fragment_shader);
-
-	GL_COMPILE_STATUS ::= 35713;
-	GL_LINK_STATUS ::= 35714;
-
-	vertex_cpl : s32 mut;
-	gl.get_shader_iv(vertex_shader, GL_COMPILE_STATUS, ref vertex_cpl);
-	if(vertex_cpl == 0)
-	{
-		puts("failed to compile vertex shader");
-		__debugbreak();
-	}
-
-	fragment_cpl : s32 mut;
-	gl.get_shader_iv(fragment_shader, GL_COMPILE_STATUS, ref fragment_cpl);
-	if(fragment_cpl == 0)
-	{
-		puts("failed to compile fragment shader");
-		__debugbreak();
-	}
-
-	// create program
-	prog ::= gl.create_program();
-	gl.attach_shader(prog, vertex_shader);
-	gl.attach_shader(prog, fragment_shader);
-	
-	gl.link_program(prog);
-	shader_lnk : s32 mut;
-	gl.get_program_iv(prog, GL_LINK_STATUS, ref shader_lnk);
-	if(shader_lnk == 0)
-	{
-		puts("failed to link shader program");
-		__debugbreak();
-	}
-	*/
-
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
 		window_update();
-		/*
-		gl.clear(16384);
-		gl.viewport(0, 0, 800, 600);
-
-		gl.use_program(prog);
-		gl.draw_arrays(0b0100, 0, 3);
-
-		opengl_swap_buffers(wnd);
-		*/
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
@@ -122,7 +52,6 @@ main ::= func() -> s32
 
 == build ==
 {
-	__message("topaz");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/tz_gl.psy");
 	add_source_file("src/keyboard.psy");
