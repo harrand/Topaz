@@ -26,41 +26,81 @@ VkInstanceCreateInfo ::= struct
 	ppEnabledExtensionNames : u8&&;
 };
 
+VkSystemAllocationScope ::= enum
+{
+	.COMMAND := 0;
+	.OBJECT := 1;
+	.CACHE := 2;
+	.DEVICE := 3;
+	.INSTANCE := 4;
+};
+
+VkInternalAllocationType ::= enum
+{
+	.EXECUTABLE := 0;
+};
+
+VkAllocationCallbacks ::= struct
+{
+	pUserData : v0&;
+	pfnAllocationFunction : func(pUserData : v0&, size : u64, align : u64, allocationScope : s32) -> v0&;
+	pfnReallocationFunction : func(pUserData : v0&, pOriginal : v0&, size : u64, align : u64, allocationScope : s32) -> v0&;
+	pfnFreeFunction : func(pUserData : v0&, mem : v0&) -> v0;
+	pfnInternalAllocation : func(pUserData : v0&, size : u64, allocationType : s32, allocationScope : s32) -> v0;
+	pfnInternalFree : func(pUserData : v0&, size : u64, allocationType : s32, allocationScope : s32) -> v0;
+};
+
+vk_functions_t ::= struct
+{
+	create_instance : func(pCreateInfo : VkInstanceCreateInfo&, pAllocator : VkAllocationCallbacks&, pInstance : u64 mut&) -> s32;
+	destroy_instance : func(instance : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+};
+
+vk : vk_functions_t mut;
+
 vulkan_driver : u64 weak mut := -1;
 vulkan_driver_initialised : bool mut := false;
 
-vulkan_initialise ::= func(appinfo : VkApplicationInfo, instance_create : VkInstanceCreateInfo mut) -> v0
+load_vk_function ::= func(funcname : u8&, module : u64) -> u64 weak
 {
-	if(vulkan_driver_initialised == false)
+	addr ::= GetProcAddress(module, funcname);
+	if(addr == null)
 	{
-		putchar('E');
+		puts("failed to load function ");
+		puts(funcname);
+		putchar(10);
+		__debugbreak();
+	}
+	return addr;
+};
+
+donestr ::= "done.\n";
+
+vulkan_init ::= func() -> v0
+{
+	initialised_driver : bool mut := false;
+	if(!vulkan_driver_initialised)
+	{
 		vulkan_driver = LoadLibraryA("vulkan-1.dll");
 		if(vulkan_driver == 0)
 		{
-			putchar('S');
 			__debugbreak();
 		}
+		puts("loading from vulkan driver...");
 		vulkan_driver_initialised = true;
+		initialised_driver = true;
 	}
-	instance_create.pApplicationInfo = ref appinfo;
+	defer puts(donestr);
 
-	vkCreateInstance : func(pCreateInfo : VkInstanceCreateInfo&, pAllocator : u64, pInstance : u64 mut&) -> s32 weak := GetProcAddress(vulkan_driver, "vkCreateInstance");
-	if(vkCreateInstance == null)
+	vk.create_instance = load_vk_function("vkCreateInstance", vulkan_driver);
+	if(vk.create_instance == null)
 	{
 		__debugbreak();
 	}
-
-	vkDestroyInstance : func(instance : u64, pAllocator : u64) -> v0 := GetProcAddress(vulkan_driver, "vkDestroyInstance");
-
-	vulkan_instance : u64 mut;
-	result ::= vkCreateInstance(ref instance_create, 0, ref vulkan_instance);
-	if(result != 0)
+	if(initialised_driver)
 	{
-		putchar('x');
-		__debugbreak();
+		FreeLibrary(vulkan_driver);
 	}
-	vkDestroyInstance(vulkan_instance, 0);
-	FreeLibrary(vulkan_driver);
 };
 
 == build ==

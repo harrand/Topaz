@@ -225,9 +225,9 @@ directory_delete ::= func(path : u8&, a : arena mut&) -> bool
 [[private]]
 private_dir_iter ::= func(find : WIN32_FIND_DATAA mut&, callback : func(path : u8&) -> v0) -> v0
 {
-	if(cstreql(find->cFileName at 0, ".") == false)
+	if(!cstreql(find->cFileName at 0, "."))
 	{
-		if(cstreql(find->cFileName at 0, "..") == false)
+		if(!cstreql(find->cFileName at 0, ".."))
 		{
 			callback(find->cFileName at 0);
 		}

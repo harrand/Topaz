@@ -193,7 +193,7 @@ SwapBuffers ::= func(hdc : u64) -> s32 := extern;
 
 opengl_init_context ::= func(wnd : window_handle) -> v0
 {
-	if(wgl_functions.loaded == false)
+	if(!(wgl_functions.loaded))
 	{
 		load_wgl_functions();
 	}

@@ -34,6 +34,9 @@ main ::= func() -> s32
 	defer close_window(wnd);
 	wndval ::= wnd@s64@u64;
 
+	vulkan_init();
+
+	/*
 	opengl_init_context(wnd);
 	gl.clear_colour(0.5, 0.0, 1.0, 1.0);
 
@@ -92,11 +95,13 @@ main ::= func() -> s32
 		puts("failed to link shader program");
 		__debugbreak();
 	}
+	*/
 
 	while(window_is_open(wnd))
 	{
 		arena_clear(frame_arena);
 		window_update();
+		/*
 		gl.clear(16384);
 		gl.viewport(0, 0, 800, 600);
 
@@ -104,6 +109,7 @@ main ::= func() -> s32
 		gl.draw_arrays(0b0100, 0, 3);
 
 		opengl_swap_buffers(wnd);
+		*/
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
@@ -117,13 +123,12 @@ main ::= func() -> s32
 {
 	add_source_file("src/file.psy");
 	add_source_file("src/opengl.psy");
+	add_source_file("src/vulkan.psy");
 	add_source_file("src/string.psy");
 	add_source_file("src/arena.psy");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/vec.psy");
 	add_source_file("src/keyboard.psy");
-	//add_source_file("src/vulkan.psy");
-
 
 	set_output_directory("build");
 	set_executable("tz");
