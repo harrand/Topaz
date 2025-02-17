@@ -97,13 +97,20 @@ vulkan_init ::= func() -> v0
 	{
 		__debugbreak();
 	}
-	if(initialised_driver)
+};
+
+vulkan_term ::= func() -> v0
+{
+	// let go of the vulkan driver.
+	if(vulkan_driver_initialised)
 	{
 		FreeLibrary(vulkan_driver);
+		vulkan_driver_initialised = false;
 	}
 };
 
 == build ==
 {
+	add_source_file("src/string.psy");
 	add_link_library("Kernel32.lib");
 }

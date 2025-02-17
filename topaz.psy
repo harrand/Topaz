@@ -35,6 +35,7 @@ main ::= func() -> s32
 	wndval ::= wnd@s64@u64;
 
 	vulkan_init();
+	defer vulkan_term();
 
 	/*
 	opengl_init_context(wnd);
@@ -121,13 +122,9 @@ main ::= func() -> s32
 
 == build ==
 {
-	add_source_file("src/file.psy");
-	add_source_file("src/opengl.psy");
-	add_source_file("src/vulkan.psy");
-	add_source_file("src/string.psy");
-	add_source_file("src/arena.psy");
+	__message("topaz");
 	add_source_file("src/wnd.psy");
-	add_source_file("src/vec.psy");
+	add_source_file("src/tz_gl.psy");
 	add_source_file("src/keyboard.psy");
 
 	set_output_directory("build");
