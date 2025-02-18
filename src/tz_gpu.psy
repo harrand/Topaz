@@ -1,0 +1,111 @@
+tz_gpu_appinfo ::= struct
+{
+	name : u8&;
+	ver_maj : u32;
+	ver_min : u32;
+};
+
+// globals.
+[[private]]
+vkinst : u64 mut;
+
+[[private]]
+surface : u64 mut := 0;
+[[private]]
+swapchain : u64 mut := 0;
+[[private]]
+swapchain_width : u64 mut := 0;
+[[private]]
+swapchain_height : u64 mut := 0;
+
+// implementation details
+
+[[private]]
+impl_need_swapchain ::= func(w : u32, h : u32, wnd : u64) -> VkResult
+{
+	res : s32 mut := 0;
+	if(surface == 0)
+	{
+		// create surface.
+		if static(__is_windows)
+		{
+			create ::= VkWin32SurfaceCreateInfoKHR{};
+			res = vk.create_win32_surface_khr(vkinst, ref create, null, ref surface);
+		}
+		if static(__is_linux)
+		{
+			__error("linux vulkan support NYI");
+		}
+	}
+	vk_check(res);
+
+	if(swapchain_width == w)
+	{
+		if(swapchain_height == h)
+		{
+			return VkResult.VK_SUCCESS;
+		}
+	}
+
+	// get physical device.
+	// create swapchain.
+	// create swapchain images and views.
+	// set swapchain_width and height to the new values.
+	// create system image and system depth image.
+
+	return res@u64@_;
+};
+
+[[private]]
+impl_force_new_swapchain ::= func(wnd : u64) -> VkResult
+{
+	w ::= swapchain_width;
+	h ::= swapchain_height;
+	swapchain_width = 0;
+	swapchain_height = 0;
+	return impl_need_swapchain(w, h, wnd);
+};
+
+// api
+
+tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
+{
+	TZ_GPU_VERSION ::= VK_MAKE_API_VERSION(0, 0, 1, 0);
+	vulkan_init();
+
+	appinfo ::= VkApplicationInfo
+	{
+		.sType := 0;
+		.pNext := null;
+		.pApplicationName := info.name;
+		.applicationVersion := VK_MAKE_API_VERSION(0, info.ver_maj, info.ver_min, 0);
+		.pEngineName := "tz_gpu";
+		.engineVersion := TZ_GPU_VERSION;
+		.apiVersion := VK_MAKE_API_VERSION(0, 1, 3, 0);
+	};
+
+	create ::= VkInstanceCreateInfo
+	{
+		.sType := 1;
+		.pNext := null;
+		.flags := 0;
+		.pApplicationInfo := ref appinfo;
+		.enabledLayerCount := 0;
+		.ppEnabledLayerNames := null;
+		.enabledExtensionCount := 0;
+		.ppEnabledExtensionNames := null;
+	};
+
+	vk_check(vk.create_instance(ref create, null, ref vkinst));
+};
+
+tz_gpu_term ::= func() -> v0
+{
+	vk.destroy_instance(vkinst, null);
+	vulkan_term();
+};
+
+== build ==
+{
+	add_source_file("src/vulkan.psy");
+}

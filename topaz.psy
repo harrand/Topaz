@@ -34,8 +34,13 @@ main ::= func() -> s32
 	defer close_window(wnd);
 	wndval ::= wnd@s64@u64;
 
-	vulkan_init();
-	defer vulkan_term();
+	tz_gpu_init(tz_gpu_appinfo
+	{
+		.name := "Topaz";
+		.ver_maj := 6;
+		.ver_min := 0;
+	});
+	defer tz_gpu_term();
 
 	while(window_is_open(wnd))
 	{
@@ -53,7 +58,7 @@ main ::= func() -> s32
 == build ==
 {
 	add_source_file("src/wnd.psy");
-	add_source_file("src/tz_gl.psy");
+	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 
 	set_output_directory("build");

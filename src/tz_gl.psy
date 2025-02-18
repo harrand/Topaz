@@ -1,5 +1,0 @@
-
-== build ==
-{
-	add_source_file("src/vulkan.psy");
-}
