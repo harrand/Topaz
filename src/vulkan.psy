@@ -194,6 +194,26 @@ VkPhysicalDeviceProperties ::= struct
 	sparseProperties : VkPhysicalDeviceSparseProperties;
 };
 
+VkMemoryType ::= struct
+{
+	propertyFlags : s32;
+	heapIndex : u32;
+};
+
+VkMemoryHeap ::= struct
+{
+	size : u64;
+	flags : u32;
+};
+
+VkPhysicalDeviceMemoryProperties ::= struct
+{
+	memoryTypeCount : u32;
+	memoryTypes : VkMemoryType#32;
+	memoryHeapCount : u32;
+	memoryHeaps : VkMemoryHeap#32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -206,6 +226,7 @@ vk_functions_t ::= struct
 
 	enumerate_physical_devices : func(instance : u64, pPhysicalDeviceCount : u32 mut&, pPhysicalDevices : u64 mut&) -> s32;
 	get_physical_device_properties : func(physicalDevice : u64, pProperties : VkPhysicalDeviceProperties mut&) -> v0;
+	get_physical_device_memory_properties : func(physicalDevice : u64, pMemoryProperties : VkPhysicalDeviceMemoryProperties mut&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -271,6 +292,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 {
 	vk.enumerate_physical_devices = load_vk_fn("vkEnumeratePhysicalDevices", instance);
 	vk.get_physical_device_properties = load_vk_fn("vkGetPhysicalDeviceProperties", instance);
+	vk.get_physical_device_memory_properties = load_vk_fn("vkGetPhysicalDeviceMemoryProperties", instance);
 };
 
 vulkan_term ::= func() -> v0

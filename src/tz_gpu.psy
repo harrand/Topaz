@@ -11,6 +11,31 @@ tz_gpu_err ::= enum
 	.unknown := 1;
 };
 
+tz_gpu_hardware_type ::= enum
+{
+	.gpu := 0;
+	.igpu := 1;
+	.cpu := 2;
+	.unknown := 3;
+};
+
+tz_gpu_hardware_caps ::= enum
+{
+	.graphics_compute := 0;
+	.graphics_only := 1;
+	.compute_only := 2;
+	.none := 3;
+};
+
+tz_gpu_hardware ::= struct
+{
+	name : string;
+	target_heap : u64;
+	vram_size_mib : u64;
+	type : tz_gpu_hardware_type;
+	caps : tz_gpu_hardware_caps;
+};
+
 // globals.
 [[private]]
 vkinst : u64 mut;
@@ -72,6 +97,47 @@ impl_force_new_swapchain ::= func(wnd : u64) -> VkResult
 	return impl_need_swapchain(w, h, wnd);
 };
 
+
+[[private]]
+impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : arena mut&) -> v0
+{
+	props : VkPhysicalDeviceProperties mut;
+	vk.get_physical_device_properties(pdev, ref props);
+	memprops : VkPhysicalDeviceMemoryProperties mut;
+	vk.get_physical_device_memory_properties(pdev, ref memprops);
+
+	(hw->vram_size_mib) = 0;
+	(hw->target_heap) = 0;
+	counter : u32 mut := 0;
+
+	cur_vk_heap : VkMemoryHeap mut;
+	cur_mem_ty : VkMemoryType mut;
+
+	max_mem : u64 mut := 0;
+	size : u64 mut := 0;
+	while(counter < (memprops.memoryHeapCount))
+	{
+		cur_vk_heap = deref(memprops.memoryHeaps at counter);
+		cur_mem_ty = deref(memprops.memoryTypes at counter);
+
+		size = 0;
+		if(cur_vk_heap.flags & 1)
+		{
+			size = (cur_vk_heap.size) / (1024 * 1024);
+		}
+		if(size > max_mem)
+		{
+			max_mem = size;
+			(hw->target_heap) = counter@_;
+		}
+		(hw->vram_size_mib) = (hw->vram_size_mib) + size;
+
+		counter = counter + 1;
+	}
+
+	(hw->name) = create_string(props.deviceName at 0, a);
+};
+
 // api
 
 tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
@@ -112,36 +178,6 @@ tz_gpu_term ::= func() -> v0
 	vulkan_term();
 };
 
-tz_gpu_hardware_type ::= enum
-{
-	.gpu := 0;
-	.igpu := 1;
-	.cpu := 2;
-	.unknown := 3;
-};
-
-tz_gpu_hardware_caps ::= enum
-{
-	.graphics_compute := 0;
-	.graphics_only := 1;
-	.compute_only := 2;
-	.none := 3;
-};
-
-tz_gpu_hardware_mem ::= struct
-{
-	size_mib : u64;
-};
-
-tz_gpu_hardware ::= struct
-{
-	name : string;
-	vram_heaps : tz_gpu_hardware_mem#8;
-	vram_heap_count : u64;
-	type : tz_gpu_hardware_type;
-	caps : tz_gpu_hardware_caps;
-};
-
 tz_gpu_hardware_count ::= func() -> u64
 {
 	ret : u32 mut;
@@ -161,16 +197,9 @@ tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut&, array_size : u64,
 	}
 	
 	counter : u64 mut := 0;
-	cur_pdev : u64 mut;
-	props : VkPhysicalDeviceProperties mut;
-	hardware_ptr : tz_gpu_hardware mut& mut;
 	while(counter < array_size)
 	{
-		hardware_ptr = array at counter;
-		cur_pdev = deref(pdev_storage at counter);
-		vk.get_physical_device_properties(cur_pdev, ref props);
-
-		(hardware_ptr->name) = create_string(props.deviceName at 0, a);
+		impl_fill_hardware_info(array at counter, deref(pdev_storage at counter), a);
 		counter = (counter + 1);
 	}
 	return tz_gpu_err.none;

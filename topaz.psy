@@ -35,7 +35,12 @@ print_hardwares ::= macro() -> v0
 		curhw = hardware_list at counter;
 		curname = ref (curhw->name);
 		print_string(curname);
+		putchar(9);
+		putuint(curhw->vram_size_mib);
+		putchar(9);
+		putuint(curhw->target_heap);
 		putchar(10);
+
 		counter = (counter + 1);
 	}
 };
