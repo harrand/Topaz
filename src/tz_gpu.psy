@@ -5,6 +5,12 @@ tz_gpu_appinfo ::= struct
 	ver_min : u32;
 };
 
+tz_gpu_err ::= enum
+{
+	.none := 0;
+	.unknown := 1;
+};
+
 // globals.
 [[private]]
 vkinst : u64 mut;
@@ -21,7 +27,7 @@ swapchain_height : u64 mut := 0;
 // implementation details
 
 [[private]]
-impl_need_swapchain ::= func(w : u32, h : u32, wnd : u64) -> VkResult
+impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
 {
 	res : s32 mut := 0;
 	if(surface == 0)
@@ -39,9 +45,9 @@ impl_need_swapchain ::= func(w : u32, h : u32, wnd : u64) -> VkResult
 	}
 	vk_check(res);
 
-	if(swapchain_width == w)
+	if(swapchain_width@_ == w)
 	{
-		if(swapchain_height == h)
+		if(swapchain_height@_ == h)
 		{
 			return VkResult.VK_SUCCESS;
 		}
@@ -97,12 +103,77 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 	};
 
 	vk_check(vk.create_instance(ref create, null, ref vkinst));
+	vulkan_load_functions(vkinst);
 };
 
 tz_gpu_term ::= func() -> v0
 {
 	vk.destroy_instance(vkinst, null);
 	vulkan_term();
+};
+
+tz_gpu_hardware_type ::= enum
+{
+	.gpu := 0;
+	.igpu := 1;
+	.cpu := 2;
+	.unknown := 3;
+};
+
+tz_gpu_hardware_caps ::= enum
+{
+	.graphics_compute := 0;
+	.graphics_only := 1;
+	.compute_only := 2;
+	.none := 3;
+};
+
+tz_gpu_hardware_mem ::= struct
+{
+	size_mib : u64;
+};
+
+tz_gpu_hardware ::= struct
+{
+	name : string;
+	vram_heaps : tz_gpu_hardware_mem#8;
+	vram_heap_count : u64;
+	type : tz_gpu_hardware_type;
+	caps : tz_gpu_hardware_caps;
+};
+
+tz_gpu_hardware_count ::= func() -> u64
+{
+	ret : u32 mut;
+	vk_check(vk.enumerate_physical_devices(vkinst, ref ret, null));
+	return ret@_;
+};
+
+tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut&, array_size : u64, a : arena mut&) -> tz_gpu_err
+{
+	// need an array of VkPhysicalDevices for vulkan to write into.
+	pdev_storage : u64 mut& := arena_push(a, __sizeof(u64) * array_size);
+	physical_device_count : u32 mut := array_size@_;
+	result ::= vk.enumerate_physical_devices(vkinst, ref physical_device_count, pdev_storage);
+	if(result != 0)
+	{
+		return tz_gpu_err.unknown;
+	}
+	
+	counter : u64 mut := 0;
+	cur_pdev : u64 mut;
+	props : VkPhysicalDeviceProperties mut;
+	hardware_ptr : tz_gpu_hardware mut& mut;
+	while(counter < array_size)
+	{
+		hardware_ptr = array at counter;
+		cur_pdev = deref(pdev_storage at counter);
+		vk.get_physical_device_properties(cur_pdev, ref props);
+
+		(hardware_ptr->name) = create_string(props.deviceName at 0, a);
+		counter = (counter + 1);
+	}
+	return tz_gpu_err.none;
 };
 
 == build ==

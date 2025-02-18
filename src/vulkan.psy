@@ -62,6 +62,138 @@ if static(__is_windows)
 	};
 }
 
+VkPhysicalDeviceLimits ::= struct
+{
+	maxImageDimension1D : u32;
+	maxImageDimension2D : u32;
+	maxImageDimension3D : u32;
+	maxImageDimensionCube : u32;
+	maxImageArrayLayers : u32;
+	maxTexelBufferElements : u32;
+	maxUniformBufferRange : u32;
+	maxStorageBufferRange : u32;
+	maxPushConstantSize : u32;
+	maxMemoryAllocationCount : u32;
+	maxSamplerAllocationCount : u32;
+	bufferImageGranularity : u64;
+	sparseAddressSpaceSize : u64;
+	maxBoundDescriptorSets : u32;
+	maxPerStageDescriptorSamplers : u32;
+	maxPerStageDescriptorUniformSamplers : u32;
+	maxPerStageDescriptorStorageSamplers : u32;
+	maxPerStageDescriptorSampledImages : u32;
+	maxPerStageDescriptorStorageImages : u32;
+	maxPerStageDescriptorInputAttachments : u32;
+	maxPerStageResources : u32;
+	maxDescriptorSetSamplers : u32;
+	maxDescriptorSetUniformBuffers : u32;
+	maxDescriptorSetUniformBuffersDynamic : u32;
+	maxDescriptorSetStorageBuffers : u32;
+	maxDescriptorSetStorageBuffersDynamic : u32;
+	maxDescriptorSetSampledImages : u32;
+	maxDescriptorSetStorageImages : u32;
+	maxDescriptorSetInputAttachments : u32;
+	maxVertexInputAttributes : u32;
+	maxVertexInputBindings : u32;
+	maxVertexInputAttributeOffset : u32;
+	maxVertexInputBindingStride : u32;
+	maxVertexOutputComponents : u32;
+	maxTessellationGenerationLevel : u32;
+	maxTessellationPatchSize : u32;
+	maxTessellationControlPerVertexInputComponents : u32;
+	maxTessellationControlPerVertexOutputComponents : u32;
+	maxTessellationControlPerPatchOutputComponents : u32;
+	maxTessellationControlTotalOutputComponents : u32;
+	maxTessellationEvaluationInputComponents : u32;
+	maxTessellationEvaluationOutputComponents : u32;
+	maxGeometryShaderInvocations : u32;
+	maxGeometryInputComponents : u32;
+	maxGeometryOutputComponents : u32;
+	maxGeometryOutputVertices : u32;
+	maxGeometryTotalOutputComponents : u32;
+	maxFragmentInputComponents : u32;
+	maxFragmentOutputAttachments : u32;
+	maxFragmentDualSrcAttachments : u32;
+	maxFragmentCombinedOutputResources : u32;
+	maxComputeSharedMemorySize : u32;
+	maxComputeWorkGroupCount : u32#3;
+	maxComputeWorkGroupInvocations : u32;
+	maxComputeWorkGroupSize : u32#3;
+	subPixelPrecisionBits : u32;
+	subTexelPrecisionBits : u32;
+	mipmapPrecisionBits : u32;
+	maxDrawIndexedIndexValue : u32;
+	maxDrawIndirectCount : u32;
+	maxSamplerLodBias : f32;
+	maxSamplerAnisotropy : f32;
+	maxViewports : u32;
+	maxViewportDimensions : u32#2;
+	viewportBoundsRange : f32#2;
+	viewportSubPixelBits : u32;
+	minMemoryMapAlignment : u64;
+	minTexelBufferOffsetAlignment : u64;
+	minUniformBufferOffsetAlignment : u64;
+	minStorageBufferOffsetAlignment : u64;
+	minTexelOffset : s32;
+	maxTexelOffset : u32;
+	minTexelGatherOffset : s32;
+	maxTexelGatherOffset : u32;
+	minInterpolationOffset : f32;
+	maxInterpolationOffset : f32;
+	subPixelInterpolationOffsetBits : u32;
+	maxFramebufferWidth : u32;
+	maxFramebufferHeight : u32;
+	maxFramebufferLayers : u32;
+	framebufferColorSampleCounts : u32;
+	framebufferDepthSampleCounts : u32;
+	framebufferStencilSampleCounts : u32;
+	framebufferNoAttachmentsSampleCounts : u32;
+	maxColorAttachments : u32;
+	sampledImageColorSampleCounts : u32;
+	sampledImageIntegerSampleCounts : u32;
+	sampledImageDepthSampleCounts : u32;
+	sampledImageStencilSampleCounts : u32;
+	storageImageSampleCounts : u32;
+	maxSampleMaskWords : u32;
+	timestampComputeAndGraphics : u32;
+	timestampPeriod : f32;
+	maxClipDistances : u32;
+	maxCullDistances : u32;
+	maxCombinedClipAndCullDistances : u32;
+	discreteQueuePriorities : u32;
+	pointSizeRange : f32#2;
+	lineWidthRange : f32#2;
+	pointSizeGranularity : f32;
+	lineWidthGranularity : f32;
+	strictLines : u32;
+	standardSampleLocations : u32;
+	optimalBufferCopyOffsetAlignment : u64;
+	optimalBufferCopyRowPitchAlignment : u64;
+	nonCoherentAtomSize : u64;
+};
+
+VkPhysicalDeviceSparseProperties ::= struct
+{
+	residencyStandard2DBlockShape : u32;
+	residencyStandard2DMultisampleBlockShape : u32;
+	residencyStandard3DBlockShape : u32;
+	residencyAlignedMipSize : u32;
+	residencyNonResidentStrict : u32;
+};
+
+VkPhysicalDeviceProperties ::= struct
+{
+	apiVersion : u32;
+	driverVersion : u32;
+	vendorID : u32;
+	deviceID : u32;
+	deviceType : s32;
+	deviceName : u8#256;
+	pipelineCacheUUID : u8#16;
+	limits : VkPhysicalDeviceLimits;
+	sparseProperties : VkPhysicalDeviceSparseProperties;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -71,6 +203,9 @@ vk_functions_t ::= struct
 	{
 		create_win32_surface_khr : func(instance : u64, pCreateInfo : VkWin32SurfaceCreateInfoKHR&, pAllocator : VkAllocationCallbacks&, surface : u64 mut&) -> s32;
 	}
+
+	enumerate_physical_devices : func(instance : u64, pPhysicalDeviceCount : u32 mut&, pPhysicalDevices : u64 mut&) -> s32;
+	get_physical_device_properties : func(physicalDevice : u64, pProperties : VkPhysicalDeviceProperties mut&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -130,6 +265,12 @@ vulkan_init ::= func() -> v0
 	{
 		vk.create_win32_surface_khr = load_vk_driver_fn("vkCreateWin32SurfaceKHR", vulkan_driver);
 	}
+};
+
+vulkan_load_functions ::= func(instance : u64) -> v0
+{
+	vk.enumerate_physical_devices = load_vk_fn("vkEnumeratePhysicalDevices", instance);
+	vk.get_physical_device_properties = load_vk_fn("vkGetPhysicalDeviceProperties", instance);
 };
 
 vulkan_term ::= func() -> v0
