@@ -41,6 +41,7 @@ tz_gpu_hardware ::= struct
 frame_data ::= struct
 {
 	cpool : u64;
+	cmds : u64;
 };
 
 // globals.
@@ -520,10 +521,22 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	
 	counter : u64 mut := 0;
 	frame_ptr : frame_data mut& mut;
+
+	cmd_info : VkCommandBufferAllocateInfo mut := VkCommandBufferAllocateInfo
+	{
+		.sType := 40;
+		.pNext := null;
+		.commandPool := 0;
+		.level := 0;
+		.commandBufferCount := 1;
+	};
+
 	while(counter < frame_overlap)
 	{
 		frame_ptr = (frames at counter);
-		vk.create_command_pool(used_device, ref pool_create, null, ref (frame_ptr->cpool));
+		vk_check(vk.create_command_pool(used_device, ref pool_create, null, ref (frame_ptr->cpool)));
+		cmd_info.commandPool = (frame_ptr->cpool);
+		vk_check(vk.allocate_command_buffers(used_device, ref cmd_info, ref (frame_ptr->cmds)));
 
 		counter = counter + 1;
 	}

@@ -443,6 +443,15 @@ VkCommandPoolCreateInfo ::= struct
 	queueFamilyIndex : u32;
 };
 
+VkCommandBufferAllocateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	commandPool : u64;
+	level : s32;
+	commandBufferCount : u32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -469,6 +478,7 @@ vk_functions_t ::= struct
 
 	create_command_pool : func(device : u64, pCreateInfo : VkCommandPoolCreateInfo&, pAllocator : VkAllocationCallbacks&, pCommandPool : u64 mut&) -> s32;
 	destroy_command_pool : func(device : u64, commandPool : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+	allocate_command_buffers : func(device : u64, pAllocateInfo : VkCommandBufferAllocateInfo&, pCommandBuffers : u64 mut&) -> s32;
 };
 
 vk : vk_functions_t mut;
@@ -547,6 +557,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 
 	vk.create_command_pool = load_vk_fn("vkCreateCommandPool", instance);
 	vk.destroy_command_pool = load_vk_fn("vkDestroyCommandPool", instance);
+	vk.allocate_command_buffers = load_vk_fn("vkAllocateCommandBuffers", instance);
 };
 
 vulkan_term ::= func() -> v0
