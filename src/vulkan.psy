@@ -402,6 +402,7 @@ vk_functions_t ::= struct
 	{
 		create_win32_surface_khr : func(instance : u64, pCreateInfo : VkWin32SurfaceCreateInfoKHR&, pAllocator : VkAllocationCallbacks&, surface : u64 mut&) -> s32;
 	}
+	destroy_surface_khr : func(instance : u64, surface : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
 	enumerate_physical_devices : func(instance : u64, pPhysicalDeviceCount : u32 mut&, pPhysicalDevices : u64 mut&) -> s32;
 	get_physical_device_properties : func(physicalDevice : u64, pProperties : VkPhysicalDeviceProperties mut&) -> v0;
@@ -409,6 +410,7 @@ vk_functions_t ::= struct
 	get_physical_device_queue_family_properties : func(physicalDevice : u64, pQueueFamilyPropertyCount : u32 mut&, pQueueFamilyProperties : VkQueueFamilyProperties mut&) -> v0;
 
 	create_device : func(physicalDevice : u64, pCreateInfo : VkDeviceCreateInfo&, pAllocator : VkAllocationCallbacks&, pDevice : u64 mut&) -> s32;
+	destroy_device : func(device : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 	get_device_queue : func(device : u64, queueFamilyIndex : u32, queueIndex : u32, pQueue : u64 mut&) -> v0;
 };
 
@@ -464,21 +466,23 @@ vulkan_init ::= func() -> v0
 	vk.create_instance = load_vk_driver_fn("vkCreateInstance", vulkan_driver);
 	vk.destroy_instance = load_vk_driver_fn("vkDestroyInstance", vulkan_driver);
 	vk.get_instance_proc_addr = load_vk_driver_fn("vkGetInstanceProcAddr", vulkan_driver);
-
-	if static(__is_windows)
-	{
-		vk.create_win32_surface_khr = load_vk_driver_fn("vkCreateWin32SurfaceKHR", vulkan_driver);
-	}
 };
 
 vulkan_load_functions ::= func(instance : u64) -> v0
 {
+	if static(__is_windows)
+	{
+		vk.create_win32_surface_khr = load_vk_fn("vkCreateWin32SurfaceKHR", instance);
+	}
+	vk.destroy_surface_khr = load_vk_fn("vkDestroySurfaceKHR", instance);
+
 	vk.enumerate_physical_devices = load_vk_fn("vkEnumeratePhysicalDevices", instance);
 	vk.get_physical_device_properties = load_vk_fn("vkGetPhysicalDeviceProperties", instance);
 	vk.get_physical_device_memory_properties = load_vk_fn("vkGetPhysicalDeviceMemoryProperties", instance);
 	vk.get_physical_device_queue_family_properties = load_vk_fn("vkGetPhysicalDeviceQueueFamilyProperties", instance);
 
 	vk.create_device = load_vk_fn("vkCreateDevice", instance);
+	vk.destroy_device = load_vk_fn("vkDestroyDevice", instance);
 	vk.get_device_queue = load_vk_fn("vkGetDeviceQueue", instance);
 };
 

@@ -61,24 +61,29 @@ swapchain_height : u64 mut := 0;
 
 // implementation details
 
-[[private]]
+//[[private]]
 impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
 {
-	res : s32 mut := 0;
 	if(surface == 0)
 	{
 		// create surface.
 		if static(__is_windows)
 		{
-			create ::= VkWin32SurfaceCreateInfoKHR{};
-			res = vk.create_win32_surface_khr(vkinst, ref create, null, ref surface);
+			create ::= VkWin32SurfaceCreateInfoKHR
+			{
+				.sType := 1000009000;
+				.pNext := null;
+				.flags := 0;
+				.hinstance := GetModuleHandleA(null);
+				.hwnd := wnd;
+			};
+			vk_check(vk.create_win32_surface_khr(vkinst, ref create, null, ref surface));
 		}
 		if static(__is_linux)
 		{
 			__error("linux vulkan support NYI");
 		}
 	}
-	vk_check(res);
 
 	if(swapchain_width@_ == w)
 	{
@@ -94,7 +99,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
 	// set swapchain_width and height to the new values.
 	// create system image and system depth image.
 
-	return res@u64@_;
+	return VkResult.VK_SUCCESS;
 };
 
 [[private]]
@@ -201,16 +206,33 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 		.apiVersion := VK_MAKE_API_VERSION(0, 1, 3, 0);
 	};
 
+	extensions : u8& mut#3;
+	deref(extensions at 0) = "VK_KHR_surface";
+	if static(__is_windows)
+	{
+		deref(extensions at 1) = "VK_KHR_win32_surface";
+	}
+	if static(__is_linux)
+	{
+		deref(extensions at 1) = "VK_KHR_xlib_surface";
+	}
+	// todo: make VK_EXT_debug_utils optional.
+	deref(extensions at 2) = "VK_EXT_debug_utils";
+	extension_count : u32 := __sizeof(extensions) / __sizeof(u8&);
+
+	layers : u8& mut#1;
+	deref(layers at 0) = "VK_LAYER_KHRONOS_validation";
+
 	create ::= VkInstanceCreateInfo
 	{
 		.sType := 1;
 		.pNext := null;
 		.flags := 0;
 		.pApplicationInfo := ref appinfo;
-		.enabledLayerCount := 0;
-		.ppEnabledLayerNames := null;
-		.enabledExtensionCount := 0;
-		.ppEnabledExtensionNames := null;
+		.enabledLayerCount := 1;
+		.ppEnabledLayerNames := layers at 0;
+		.enabledExtensionCount := extension_count;
+		.ppEnabledExtensionNames := extensions at 0;
 	};
 
 	vk_check(vk.create_instance(ref create, null, ref vkinst));
@@ -219,6 +241,11 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 
 tz_gpu_term ::= func() -> v0
 {
+	vk.destroy_device(used_device, null);
+	if(surface != 0)
+	{
+		vk.destroy_surface_khr(vkinst, surface, null);
+	}
 	vk.destroy_instance(vkinst, null);
 	vulkan_term();
 };
@@ -431,4 +458,5 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 == build ==
 {
 	add_source_file("src/vulkan.psy");
+	add_source_file("src/wnd.psy");
 }
