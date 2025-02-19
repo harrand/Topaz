@@ -108,6 +108,20 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 
 	(hw->vram_size_mib) = 0;
 	(hw->target_heap) = 0;
+
+	(hw->type) = (tz_gpu_hardware_type.unknown);
+	if(props.deviceType == 0x01)
+	{
+		(hw->type) = (tz_gpu_hardware_type.igpu);
+	}
+	if(props.deviceType == 0x02)
+	{
+		(hw->type) = (tz_gpu_hardware_type.gpu);
+	}
+	if(props.deviceType == 0x04)
+	{
+		(hw->type) = (tz_gpu_hardware_type.cpu);
+	}
 	counter : u32 mut := 0;
 
 	cur_vk_heap : VkMemoryHeap mut;
