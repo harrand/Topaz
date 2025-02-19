@@ -378,6 +378,12 @@ VkDeviceCreateInfo ::= struct
 	pEnabledFeatures : VkPhysicalDeviceFeatures&;
 };
 
+VkExtent2D ::= struct
+{
+	width : u32;
+	height : u32;
+};
+
 VkExtent3D ::= struct
 {
 	width : u32;
@@ -393,6 +399,42 @@ VkQueueFamilyProperties ::= struct
 	minImageTransferGranularity : VkExtent3D;
 };
 
+VkSurfaceCapabilitiesKHR ::= struct
+{
+	minImageCount : u32;
+	maxImageCount : u32;
+	currentExtent : VkExtent2D;
+	minImageExtent : VkExtent2D;
+	maxImageExtent : VkExtent2D;
+	maxImageArrayLayers : u32;
+	supportedTransforms : s32;
+	currentTransform : s32;
+	supportedCompositeAlpha : s32;
+	supportedUsageFlags : s32;
+};
+
+VkSwapchainCreateInfoKHR ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	surface : u64;
+	minImageCount : u32;
+	imageFormat : s32;
+	imageColorSpace : s32;
+	imageExtent : VkExtent2D;
+	imageArrayLayers : u32;
+	imageUsage : s32;
+	imageSharingMode : s32;
+	queueFamilyIndexCount : u32;
+	pQueueFamilyIndices : u32&;
+	preTransform : s32;
+	compositeAlpha : s32;
+	presentMode : s32;
+	clipped : u32;
+	oldSwapchain : u64;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -404,10 +446,14 @@ vk_functions_t ::= struct
 	}
 	destroy_surface_khr : func(instance : u64, surface : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
+	create_swapchain_khr : func(device : u64, pCreateInfo : VkSwapchainCreateInfoKHR&, pAllocator : VkAllocationCallbacks&, pSwapchain : u64 mut&) -> s32;
+	destroy_swapchain_khr : func(device : u64, swapchain : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
 	enumerate_physical_devices : func(instance : u64, pPhysicalDeviceCount : u32 mut&, pPhysicalDevices : u64 mut&) -> s32;
 	get_physical_device_properties : func(physicalDevice : u64, pProperties : VkPhysicalDeviceProperties mut&) -> v0;
 	get_physical_device_memory_properties : func(physicalDevice : u64, pMemoryProperties : VkPhysicalDeviceMemoryProperties mut&) -> v0;
 	get_physical_device_queue_family_properties : func(physicalDevice : u64, pQueueFamilyPropertyCount : u32 mut&, pQueueFamilyProperties : VkQueueFamilyProperties mut&) -> v0;
+	get_physical_device_surface_capabilities_khr : func(physicalDevice : u64, surface : u64, pSurfaceCapabilities : VkSurfaceCapabilitiesKHR mut&) -> s32;
 
 	create_device : func(physicalDevice : u64, pCreateInfo : VkDeviceCreateInfo&, pAllocator : VkAllocationCallbacks&, pDevice : u64 mut&) -> s32;
 	destroy_device : func(device : u64, pAllocator : VkAllocationCallbacks&) -> v0;
@@ -475,11 +521,14 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 		vk.create_win32_surface_khr = load_vk_fn("vkCreateWin32SurfaceKHR", instance);
 	}
 	vk.destroy_surface_khr = load_vk_fn("vkDestroySurfaceKHR", instance);
+	vk.create_swapchain_khr = load_vk_fn("vkCreateSwapchainKHR", instance);
+	vk.destroy_swapchain_khr = load_vk_fn("vkDestroySwapchainKHR", instance);
 
 	vk.enumerate_physical_devices = load_vk_fn("vkEnumeratePhysicalDevices", instance);
 	vk.get_physical_device_properties = load_vk_fn("vkGetPhysicalDeviceProperties", instance);
 	vk.get_physical_device_memory_properties = load_vk_fn("vkGetPhysicalDeviceMemoryProperties", instance);
 	vk.get_physical_device_queue_family_properties = load_vk_fn("vkGetPhysicalDeviceQueueFamilyProperties", instance);
+	vk.get_physical_device_surface_capabilities_khr = load_vk_fn("vkGetPhysicalDeviceSurfaceCapabilitiesKHR", instance);
 
 	vk.create_device = load_vk_fn("vkCreateDevice", instance);
 	vk.destroy_device = load_vk_fn("vkDestroyDevice", instance);

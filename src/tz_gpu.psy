@@ -46,6 +46,8 @@ used_device : u64 mut;
 [[private]]
 used_hardware : u64 mut;
 [[private]]
+used_qfi : u32 mut;
+[[private]]
 graphics_queue : u64 mut;
 [[private]]
 compute_queue : u64 mut;
@@ -92,6 +94,34 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
 			return VkResult.VK_SUCCESS;
 		}
 	}
+
+	caps : VkSurfaceCapabilitiesKHR mut;
+	vk.get_physical_device_surface_capabilities_khr(used_hardware, surface, ref caps);
+
+	swch_create ::= VkSwapchainCreateInfoKHR
+	{
+		.sType := 1000001000;
+		.pNext := null;
+		.flags := 0;
+		.surface := surface;
+		.minImageCount := 2;
+		.imageFormat := 44;
+		.imageColorSpace := 0;
+		.imageExtent := VkExtent2D{.width := 800; .height := 600;};
+		.imageArrayLayers := 1;
+		.imageUsage := (0x00000010 | 0x00000002);
+		.imageSharingMode := 0;
+		.queueFamilyIndexCount := 1;
+		.pQueueFamilyIndices := ref used_qfi;
+		.preTransform := caps.currentTransform;
+		.compositeAlpha := 0x00000001;
+		// 0 = immediate. fifo (vsync) = 2
+		.presentMode := 0;
+		.clipped := 0;
+		.oldSwapchain := swapchain;
+	};
+	old_swapchain ::= swapchain;
+	vk_check(vk.create_swapchain_khr(used_device, ref swch_create, null, ref swapchain));
 
 	// get physical device.
 	// create swapchain.
@@ -241,6 +271,10 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 
 tz_gpu_term ::= func() -> v0
 {
+	if(swapchain != 0)
+	{
+		vk.destroy_swapchain_khr(used_device, swapchain, null);
+	}
 	vk.destroy_device(used_device, null);
 	if(surface != 0)
 	{
@@ -430,6 +464,10 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 		};
 	};
 
+	extensions : u8& mut#1;
+	deref(extensions at 0) = "VK_KHR_swapchain";
+	extension_count : u32 := __sizeof(extensions) / __sizeof(u8&);
+
 	create ::= VkDeviceCreateInfo
 	{
 		.sType := 3;
@@ -439,13 +477,14 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 		.pQueueCreateInfos := (ref qcreate)@_;
 		.enabledLayerCount := 0;
 		.ppEnabledLayerNames := null;
-		.enabledExtensionCount := 0;
-		.ppEnabledExtensionNames := null;
+		.enabledExtensionCount := extension_count;
+		.ppEnabledExtensionNames := extensions at 0;
 		.pEnabledFeatures := null;
 	};
 
 	vk_check(vk.create_device(pdev, ref create, null, ref used_device));
 	used_hardware = pdev;
+	used_qfi = hardware.id;
 
 	vk.get_device_queue(used_device, hardware.id, 0, ref graphics_queue);
 	vk.get_device_queue(used_device, hardware.id, 0, ref compute_queue);
