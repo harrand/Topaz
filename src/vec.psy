@@ -38,6 +38,23 @@ vec2_dot ::= func(lhs : vec2, rhs : vec2) -> f32
 	return (lhs.x * rhs.x) + (lhs.y * rhs.y);
 };
 
+// vec2
+vec2u32 ::= struct
+{
+	x : u32;
+	y : u32;
+};
+
+vec2u32_zero ::= func() -> vec2u32
+{
+	return vec2u32{.x := 0.0; .y := 0.0;};
+};
+
+vec2u32_filled ::= func(val : u32) -> vec2u32
+{
+	return vec2u32{.x := val; .y := val;};
+};
+
 // vec3
 vec3 ::= struct
 {

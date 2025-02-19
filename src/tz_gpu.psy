@@ -64,7 +64,7 @@ swapchain_height : u64 mut := 0;
 // implementation details
 
 //[[private]]
-impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
+impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle) -> VkResult
 {
 	if(surface == 0)
 	{
@@ -77,7 +77,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
 				.pNext := null;
 				.flags := 0;
 				.hinstance := GetModuleHandleA(null);
-				.hwnd := wnd;
+				.hwnd := wnd@s64@u64;
 			};
 			vk_check(vk.create_win32_surface_khr(vkinst, ref create, null, ref surface));
 		}
@@ -133,7 +133,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : u64) -> VkResult
 };
 
 [[private]]
-impl_force_new_swapchain ::= func(wnd : u64) -> VkResult
+impl_force_new_swapchain ::= func(wnd : window_handle) -> VkResult
 {
 	w ::= swapchain_width;
 	h ::= swapchain_height;

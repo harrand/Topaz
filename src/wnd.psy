@@ -50,6 +50,15 @@ ShowWindow ::= func(hwnd : u64, nCmdShow : s32) -> s32 := extern;
 DestroyWindow ::= func(hwnd : u64) -> s32 := extern;
 PostQuitMessage ::= func(nExitCode : s32) -> v0 := extern;
 
+RECT ::= struct
+{
+	left : s32;
+	top : s32;
+	right : s32;
+	bottom : s32;
+};
+GetClientRect ::= func(hwnd : u64, lpRect : RECT mut&) -> s32 := extern;
+
 wndproc ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64
 {
 	if(msg == 16) // WM_CLOSE
@@ -162,9 +171,20 @@ window_update ::= func() -> v0
 	}
 };
 
+window_get_dimensions ::= func(wnd : window_handle) -> vec2u32
+{
+	rect : RECT mut;
+	if(GetClientRect(wnd@s64@u64, ref rect) != 0)
+	{
+		return vec2u32{.x := (rect.right - rect.left)@_; .y := (rect.bottom - rect.top)@_;};
+	}
+	return vec2u32{.x := 0; .y := 0;};
+};
+
 == build ==
 {
 	add_source_file("src/string.psy");
+	add_source_file("src/vec.psy");
 	add_link_library("User32.lib");
 	add_link_library("Kernel32.lib");
 }
