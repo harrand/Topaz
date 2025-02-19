@@ -435,6 +435,14 @@ VkSwapchainCreateInfoKHR ::= struct
 	oldSwapchain : u64;
 };
 
+VkCommandPoolCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	queueFamilyIndex : u32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -458,6 +466,9 @@ vk_functions_t ::= struct
 	create_device : func(physicalDevice : u64, pCreateInfo : VkDeviceCreateInfo&, pAllocator : VkAllocationCallbacks&, pDevice : u64 mut&) -> s32;
 	destroy_device : func(device : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 	get_device_queue : func(device : u64, queueFamilyIndex : u32, queueIndex : u32, pQueue : u64 mut&) -> v0;
+
+	create_command_pool : func(device : u64, pCreateInfo : VkCommandPoolCreateInfo&, pAllocator : VkAllocationCallbacks&, pCommandPool : u64 mut&) -> s32;
+	destroy_command_pool : func(device : u64, commandPool : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -533,6 +544,9 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.create_device = load_vk_fn("vkCreateDevice", instance);
 	vk.destroy_device = load_vk_fn("vkDestroyDevice", instance);
 	vk.get_device_queue = load_vk_fn("vkGetDeviceQueue", instance);
+
+	vk.create_command_pool = load_vk_fn("vkCreateCommandPool", instance);
+	vk.destroy_command_pool = load_vk_fn("vkDestroyCommandPool", instance);
 };
 
 vulkan_term ::= func() -> v0

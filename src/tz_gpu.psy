@@ -38,7 +38,15 @@ tz_gpu_hardware ::= struct
 	native_handle : u64;
 };
 
+frame_data ::= struct
+{
+	cpool : u64;
+};
+
 // globals.
+[[private]]
+frame_overlap ::= 2;
+frames : frame_data mut#2;
 [[private]]
 vkinst : u64 mut;
 [[private]]
@@ -63,7 +71,7 @@ swapchain_height : u64 mut := 0;
 
 // implementation details
 
-//[[private]]
+[[private]]
 impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle) -> VkResult
 {
 	if(surface == 0)
@@ -271,6 +279,19 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 
 tz_gpu_term ::= func() -> v0
 {
+	counter : u64 mut := 0;
+	frame_ptr : frame_data mut& mut;
+	while(counter < frame_overlap)
+	{
+		frame_ptr = (frames at counter);
+		if(frame_ptr->cpool != 0)
+		{
+			vk.destroy_command_pool(used_device, frame_ptr->cpool, null);
+			(frame_ptr->cpool) = 0;
+		}
+
+		counter = counter + 1;
+	}
 	if(swapchain != 0)
 	{
 		vk.destroy_swapchain_khr(used_device, swapchain, null);
@@ -486,8 +507,26 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	used_hardware = pdev;
 	used_qfi = hardware.id;
 
-	vk.get_device_queue(used_device, hardware.id, 0, ref graphics_queue);
-	vk.get_device_queue(used_device, hardware.id, 0, ref compute_queue);
+	vk.get_device_queue(used_device, used_qfi, 0, ref graphics_queue);
+	vk.get_device_queue(used_device, used_qfi, 0, ref compute_queue);
+
+	pool_create ::= VkCommandPoolCreateInfo
+	{
+		.sType := 39;
+		.pNext := null;
+		.flags := 0x02;
+		.queueFamilyIndex := used_qfi;
+	};
+	
+	counter : u64 mut := 0;
+	frame_ptr : frame_data mut& mut;
+	while(counter < frame_overlap)
+	{
+		frame_ptr = (frames at counter);
+		vk.create_command_pool(used_device, ref pool_create, null, ref (frame_ptr->cpool));
+
+		counter = counter + 1;
+	}
 
 	puts("using ");
 	print_string(ref (hardware.name));

@@ -50,8 +50,10 @@ main ::= func() -> s32
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 
+	/*
 	dims ::= window_get_dimensions(wnd);
 	impl_need_swapchain(dims.x@_, dims.y@_, wnd);
+	*/
 
 	defer tz_gpu_term();
 
