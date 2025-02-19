@@ -34,11 +34,21 @@ tz_gpu_hardware ::= struct
 	vram_size_mib : u64;
 	type : tz_gpu_hardware_type;
 	caps : tz_gpu_hardware_caps;
+	id : u32;
+	native_handle : u64;
 };
 
 // globals.
 [[private]]
 vkinst : u64 mut;
+[[private]]
+used_device : u64 mut;
+[[private]]
+used_hardware : u64 mut;
+[[private]]
+graphics_queue : u64 mut;
+[[private]]
+compute_queue : u64 mut;
 
 [[private]]
 surface : u64 mut := 0;
@@ -106,6 +116,8 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 	memprops : VkPhysicalDeviceMemoryProperties mut;
 	vk.get_physical_device_memory_properties(pdev, ref memprops);
 
+	(hw->id) = -1;
+	(hw->native_handle) = pdev;
 	(hw->vram_size_mib) = 0;
 	(hw->target_heap) = 0;
 
@@ -146,6 +158,25 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 		}
 		(hw->vram_size_mib) = (hw->vram_size_mib) + size;
 
+		counter = counter + 1;
+	}
+
+	family_count : u32 mut := 0;
+	vk.get_physical_device_queue_family_properties(pdev, ref family_count, null);
+	families : VkQueueFamilyProperties mut& := arena_push(a, __sizeof(VkQueueFamilyProperties) * family_count);
+	vk.get_physical_device_queue_family_properties(pdev, ref family_count, families);
+
+	counter = 0;
+	cur_fam : VkQueueFamilyProperties mut;
+	while(counter < family_count)
+	{
+		// hw->idx should be set to the first graphics compute queue.
+		cur_fam = deref(families at counter);
+		if((cur_fam.queueFlags) & 0x03)
+		{
+			(hw->id) = counter;
+			counter = family_count;
+		}
 		counter = counter + 1;
 	}
 
@@ -202,7 +233,7 @@ tz_gpu_hardware_count ::= func() -> u64
 tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut&, array_size : u64, a : arena mut&) -> tz_gpu_err
 {
 	// need an array of VkPhysicalDevices for vulkan to write into.
-	pdev_storage : u64 mut& := arena_push(a, __sizeof(u64) * array_size);
+pdev_storage : u64 mut& := arena_push(a, __sizeof(u64) * array_size);
 	physical_device_count : u32 mut := array_size@_;
 	result ::= vk.enumerate_physical_devices(vkinst, ref physical_device_count, pdev_storage);
 	if(result != 0)
@@ -217,6 +248,184 @@ tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut&, array_size : u64,
 		counter = (counter + 1);
 	}
 	return tz_gpu_err.none;
+};
+
+tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
+{
+	pdev ::= hardware.native_handle;
+	queue_priority : f32 := 1.0;
+
+	qcreate ::= VkDeviceQueueCreateInfo
+	{
+		.sType := 2;
+		.pNext := null;
+		.flags := 0;
+		.queueFamilyIndex := hardware.id;
+		.queueCount := 1;
+		.pQueuePriorities := ref queue_priority;
+	};
+
+	features13 ::= VkPhysicalDeviceVulkan13Features
+	{
+		.sType := 53;
+		.pNext := null;
+		.robustImageAccess := 0;
+		.inlineUniformBlock := 0;
+		.descriptorBindingInlineUniformBlockUpdateAfterBind := 0;
+		.pipelineCreationCacheControl := 0;
+		.privateData := 0;
+		.shaderDemoteToHelperInvocation := 0;
+		.shaderTerminateInvocation := 0;
+		.subgroupSizeControl := 0;
+		.computeFullSubgroups := 0;
+		.synchronization2 := 1;
+		.textureCompressionASTC_HDR := 0;
+		.shaderZeroInitializeWorkgroupMemory := 0;
+		.dynamicRendering := 1;
+		.shaderIntegerDotProduct := 0;
+		.maintenance4 := 0;
+	};
+
+	features12 ::= VkPhysicalDeviceVulkan12Features 
+	{
+		.sType := 51;
+		.pNext := (ref features13)@_;
+		.samplerMirrorClampToEdge := 0;
+		.drawIndirectCount := 1;
+		.storageBuffer8BitAccess := 0;
+		.uniformAndStorageBuffer8BitAccess := 0;
+		.storagePushConstant8 := 0;
+		.shaderBufferInt64Atomics := 0;
+		.shaderSharedInt64Atomics := 0;
+		.shaderFloat16 := 0;
+		.shaderInt8 := 0;
+		.descriptorIndexing := 1;
+		.shaderInputAttachmentArrayDynamicIndexing := 0;
+		.shaderUniformTexelBufferArrayDynamicIndexing := 0;
+		.shaderStorageTexelBufferArrayDynamicIndexing := 0;
+		.shaderUniformBufferArrayNonUniformIndexing := 0;
+		.shaderSampledImageArrayNonUniformIndexing := 1;
+		.shaderStorageBufferArrayNonUniformIndexing := 0;
+		.shaderStorageImageArrayNonUniformIndexing := 0;
+		.shaderInputAttachmentArrayNonUniformIndexing := 0;
+		.shaderUniformTexelBufferArrayNonUniformIndexing := 0;
+		.shaderStorageTexelBufferArrayNonUniformIndexing := 0;
+		.descriptorBindingUniformBufferUpdateAfterBind := 0;
+		.descriptorBindingSampledImageUpdateAfterBind := 1;
+		.descriptorBindingStorageImageUpdateAfterBind := 0;
+		.descriptorBindingStorageBufferUpdateAfterBind := 0;
+		.descriptorBindingUniformTexelBufferUpdateAfterBind := 0;
+		.descriptorBindingStorageTexelBufferUpdateAfterBind := 0;
+		.descriptorBindingUpdateUnusedWhilePending := 1;
+		.descriptorBindingPartiallyBound := 1;
+		.descriptorBindingVariableDescriptorCount := 1;
+		.runtimeDescriptorArray := 1;
+		.samplerFilterMinmax := 0;
+		.scalarBlockLayout := 0;
+		.imagelessFramebuffer := 0;
+		.uniformBufferStandardLayout := 0;
+		.shaderSubgroupExtendedTypes := 0;
+		.separateDepthStencilLayouts := 0;
+		.hostQueryReset := 0;
+		.timelineSemaphore := 1;
+		.bufferDeviceAddress := 1;
+		.bufferDeviceAddressCaptureReplay := 0;
+		.bufferDeviceAddressMultiDevice := 0;
+		.vulkanMemoryModel := 0;
+		.vulkanMemoryModelDeviceScope := 0;
+		.vulkanMemoryModelAvailabilityVisibilityChains := 0;
+		.shaderOutputViewportIndex := 0;
+		.shaderOutputLayer := 0;
+		.subgroupBroadcastDynamicId := 0;
+	};
+
+	enabled_features ::= VkPhysicalDeviceFeatures2
+	{
+		.sType := 1000059000;
+		.pNext := (ref features12)@_;
+		.features := VkPhysicalDeviceFeatures
+		{
+			.robustBufferAccess := 0;
+			.fullDrawIndexUint32 := 0;
+			.imageCubeArray := 0;
+			.independentBlend := 0;
+			.geometryShader := 0;
+			.tessellationShader := 0;
+			.sampleRateShading := 0;
+			.dualSrcBlend := 0;
+			.logicOp := 0;
+			.multiDrawIndirect := 0;
+			.drawIndirectFirstInstance := 0;
+			.depthClamp := 0;
+			.depthBiasClamp := 0;
+			.fillModeNonSolid := 0;
+			.depthBounds := 0;
+			.wideLines := 0;
+			.largePoints := 0;
+			.alphaToOne := 0;
+			.multiViewport := 0;
+			.samplerAnisotropy := 0;
+			.textureCompressionETC2 := 0;
+			.textureCompressionASTC_LDR := 0;
+			.textureCompressionBC := 0;
+			.occlusionQueryPrecise := 0;
+			.pipelineStatisticsQuery := 0;
+			.vertexPipelineStoresAndAtomics := 0;
+			.fragmentStoresAndAtomics := 0;
+			.shaderTessellationAndGeometryPointSize := 0;
+			.shaderImageGatherExtended := 0;
+			.shaderStorageImageExtendedFormats := 0;
+			.shaderStorageImageMultisample := 0;
+			.shaderStorageImageReadWithoutFormat := 0;
+			.shaderStorageImageWriteWithoutFormat := 0;
+			.shaderUniformBufferArrayDynamicIndexing := 0;
+			.shaderSampledImageArrayDynamicIndexing := 0;
+			.shaderStorageBufferArrayDynamicIndexing := 0;
+			.shaderStorageImageArrayDynamicIndexing := 0;
+			.shaderClipDistance := 0;
+			.shaderCullDistance := 0;
+			.shaderFloat64 := 0;
+			.shaderInt64 := 0;
+			.shaderInt16 := 0;
+			.shaderResourceResidency := 0;
+			.shaderResourceMinLod := 0;
+			.sparseBinding := 0;
+			.sparseResidencyBuffer := 0;
+			.sparseResidencyImage2D := 0;
+			.sparseResidencyImage3D := 0;
+			.sparseResidency2Samples := 0;
+			.sparseResidency4Samples := 0;
+			.sparseResidency8Samples := 0;
+			.sparseResidency16Samples := 0;
+			.sparseResidencyAliased := 0;
+			.variableMultisampleRate := 0;
+			.inheritedQueries := 0;
+		};
+	};
+
+	create ::= VkDeviceCreateInfo
+	{
+		.sType := 3;
+		.pNext := (ref enabled_features)@_;
+		.flags := 0;
+		.queueCreateInfoCount := 1;
+		.pQueueCreateInfos := (ref qcreate)@_;
+		.enabledLayerCount := 0;
+		.ppEnabledLayerNames := null;
+		.enabledExtensionCount := 0;
+		.ppEnabledExtensionNames := null;
+		.pEnabledFeatures := null;
+	};
+
+	vk_check(vk.create_device(pdev, ref create, null, ref used_device));
+	used_hardware = pdev;
+
+	vk.get_device_queue(used_device, hardware.id, 0, ref graphics_queue);
+	vk.get_device_queue(used_device, hardware.id, 0, ref compute_queue);
+
+	puts("using ");
+	print_string(ref (hardware.name));
+	putchar(10);
 };
 
 == build ==

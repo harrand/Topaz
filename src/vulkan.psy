@@ -214,6 +214,185 @@ VkPhysicalDeviceMemoryProperties ::= struct
 	memoryHeaps : VkMemoryHeap#32;
 };
 
+VkDeviceQueueCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	queueFamilyIndex : u32;
+	queueCount : u32;
+	pQueuePriorities : f32&;
+};
+
+VkPhysicalDeviceVulkan13Features ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	robustImageAccess : u32;
+	inlineUniformBlock : u32;
+	descriptorBindingInlineUniformBlockUpdateAfterBind : u32;
+	pipelineCreationCacheControl : u32;
+	privateData : u32;
+	shaderDemoteToHelperInvocation : u32;
+	shaderTerminateInvocation : u32;
+	subgroupSizeControl : u32;
+	computeFullSubgroups : u32;
+	synchronization2 : u32;
+	textureCompressionASTC_HDR : u32;
+	shaderZeroInitializeWorkgroupMemory : u32;
+	dynamicRendering : u32;
+	shaderIntegerDotProduct : u32;
+	maintenance4 : u32;
+};
+
+VkPhysicalDeviceVulkan12Features ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	samplerMirrorClampToEdge : u32;
+	drawIndirectCount : u32;
+	storageBuffer8BitAccess : u32;
+	uniformAndStorageBuffer8BitAccess : u32;
+	storagePushConstant8 : u32;
+	shaderBufferInt64Atomics : u32;
+	shaderSharedInt64Atomics : u32;
+	shaderFloat16 : u32;
+	shaderInt8 : u32;
+	descriptorIndexing : u32;
+	shaderInputAttachmentArrayDynamicIndexing : u32;
+	shaderUniformTexelBufferArrayDynamicIndexing : u32;
+	shaderStorageTexelBufferArrayDynamicIndexing : u32;
+	shaderUniformBufferArrayNonUniformIndexing : u32;
+	shaderSampledImageArrayNonUniformIndexing : u32;
+	shaderStorageBufferArrayNonUniformIndexing : u32;
+	shaderStorageImageArrayNonUniformIndexing : u32;
+	shaderInputAttachmentArrayNonUniformIndexing : u32;
+	shaderUniformTexelBufferArrayNonUniformIndexing : u32;
+	shaderStorageTexelBufferArrayNonUniformIndexing : u32;
+	descriptorBindingUniformBufferUpdateAfterBind : u32;
+	descriptorBindingSampledImageUpdateAfterBind : u32;
+	descriptorBindingStorageImageUpdateAfterBind : u32;
+	descriptorBindingStorageBufferUpdateAfterBind : u32;
+	descriptorBindingUniformTexelBufferUpdateAfterBind : u32;
+	descriptorBindingStorageTexelBufferUpdateAfterBind : u32;
+	descriptorBindingUpdateUnusedWhilePending : u32;
+	descriptorBindingPartiallyBound : u32;
+	descriptorBindingVariableDescriptorCount : u32;
+	runtimeDescriptorArray : u32;
+	samplerFilterMinmax : u32;
+	scalarBlockLayout : u32;
+	imagelessFramebuffer : u32;
+	uniformBufferStandardLayout : u32;
+	shaderSubgroupExtendedTypes : u32;
+	separateDepthStencilLayouts : u32;
+	hostQueryReset : u32;
+	timelineSemaphore : u32;
+	bufferDeviceAddress : u32;
+	bufferDeviceAddressCaptureReplay : u32;
+	bufferDeviceAddressMultiDevice : u32;
+	vulkanMemoryModel : u32;
+	vulkanMemoryModelDeviceScope : u32;
+	vulkanMemoryModelAvailabilityVisibilityChains : u32;
+	shaderOutputViewportIndex : u32;
+	shaderOutputLayer : u32;
+	subgroupBroadcastDynamicId : u32;
+};
+
+VkPhysicalDeviceFeatures ::= struct
+{
+	robustBufferAccess : u32;
+	fullDrawIndexUint32 : u32;
+	imageCubeArray : u32;
+	independentBlend : u32;
+	geometryShader : u32;
+	tessellationShader : u32;
+	sampleRateShading : u32;
+	dualSrcBlend : u32;
+	logicOp : u32;
+	multiDrawIndirect : u32;
+	drawIndirectFirstInstance : u32;
+	depthClamp : u32;
+	depthBiasClamp : u32;
+	fillModeNonSolid : u32;
+	depthBounds : u32;
+	wideLines : u32;
+	largePoints : u32;
+	alphaToOne : u32;
+	multiViewport : u32;
+	samplerAnisotropy : u32;
+	textureCompressionETC2 : u32;
+	textureCompressionASTC_LDR : u32;
+	textureCompressionBC : u32;
+	occlusionQueryPrecise : u32;
+	pipelineStatisticsQuery : u32;
+	vertexPipelineStoresAndAtomics : u32;
+	fragmentStoresAndAtomics : u32;
+	shaderTessellationAndGeometryPointSize : u32;
+	shaderImageGatherExtended : u32;
+	shaderStorageImageExtendedFormats : u32;
+	shaderStorageImageMultisample : u32;
+	shaderStorageImageReadWithoutFormat : u32;
+	shaderStorageImageWriteWithoutFormat : u32;
+	shaderUniformBufferArrayDynamicIndexing : u32;
+	shaderSampledImageArrayDynamicIndexing : u32;
+	shaderStorageBufferArrayDynamicIndexing : u32;
+	shaderStorageImageArrayDynamicIndexing : u32;
+	shaderClipDistance : u32;
+	shaderCullDistance : u32;
+	shaderFloat64 : u32;
+	shaderInt64 : u32;
+	shaderInt16 : u32;
+	shaderResourceResidency : u32;
+	shaderResourceMinLod : u32;
+	sparseBinding : u32;
+	sparseResidencyBuffer : u32;
+	sparseResidencyImage2D : u32;
+	sparseResidencyImage3D : u32;
+	sparseResidency2Samples : u32;
+	sparseResidency4Samples : u32;
+	sparseResidency8Samples : u32;
+	sparseResidency16Samples : u32;
+	sparseResidencyAliased : u32;
+	variableMultisampleRate : u32;
+	inheritedQueries : u32;
+};
+
+VkPhysicalDeviceFeatures2 ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	features : VkPhysicalDeviceFeatures;
+};
+
+VkDeviceCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	queueCreateInfoCount : u32;
+	pQueueCreateInfos : VkDeviceQueueCreateInfo&;
+	enabledLayerCount : u32;
+	ppEnabledLayerNames : u8&&;
+	enabledExtensionCount : u32;
+	ppEnabledExtensionNames : u8&&;
+	pEnabledFeatures : VkPhysicalDeviceFeatures&;
+};
+
+VkExtent3D ::= struct
+{
+	width : u32;
+	height : u32;
+	depth : u32;
+};
+
+VkQueueFamilyProperties ::= struct
+{
+	queueFlags : u32;
+	queueCount : u32;
+	timestampValidBits : u32;
+	minImageTransferGranularity : VkExtent3D;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -227,6 +406,10 @@ vk_functions_t ::= struct
 	enumerate_physical_devices : func(instance : u64, pPhysicalDeviceCount : u32 mut&, pPhysicalDevices : u64 mut&) -> s32;
 	get_physical_device_properties : func(physicalDevice : u64, pProperties : VkPhysicalDeviceProperties mut&) -> v0;
 	get_physical_device_memory_properties : func(physicalDevice : u64, pMemoryProperties : VkPhysicalDeviceMemoryProperties mut&) -> v0;
+	get_physical_device_queue_family_properties : func(physicalDevice : u64, pQueueFamilyPropertyCount : u32 mut&, pQueueFamilyProperties : VkQueueFamilyProperties mut&) -> v0;
+
+	create_device : func(physicalDevice : u64, pCreateInfo : VkDeviceCreateInfo&, pAllocator : VkAllocationCallbacks&, pDevice : u64 mut&) -> s32;
+	get_device_queue : func(device : u64, queueFamilyIndex : u32, queueIndex : u32, pQueue : u64 mut&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -293,6 +476,10 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.enumerate_physical_devices = load_vk_fn("vkEnumeratePhysicalDevices", instance);
 	vk.get_physical_device_properties = load_vk_fn("vkGetPhysicalDeviceProperties", instance);
 	vk.get_physical_device_memory_properties = load_vk_fn("vkGetPhysicalDeviceMemoryProperties", instance);
+	vk.get_physical_device_queue_family_properties = load_vk_fn("vkGetPhysicalDeviceQueueFamilyProperties", instance);
+
+	vk.create_device = load_vk_fn("vkCreateDevice", instance);
+	vk.get_device_queue = load_vk_fn("vkGetDeviceQueue", instance);
 };
 
 vulkan_term ::= func() -> v0

@@ -25,28 +25,6 @@ setup_arenas ::= macro() -> v0
 	defer arena_destroy(frame_arena_val);
 };
 
-print_hardwares ::= macro() -> v0
-{
-	counter : u64 mut := 0;
-	curname : string& mut;
-	curhw : tz_gpu_hardware& mut;
-	while(counter < hardware_count)
-	{
-		curhw = hardware_list at counter;
-		curname = ref (curhw->name);
-		print_string(curname);
-		puts("   ");
-		putuint(curhw->vram_size_mib);
-		puts("   ");
-		putuint(curhw->target_heap);
-		puts("   ");
-		puts(__enumname(curhw->type));
-		putchar(10);
-
-		counter = (counter + 1);
-	}
-};
-
 main ::= func() -> s32
 {
 	wrangle_window_class();
@@ -70,7 +48,7 @@ main ::= func() -> s32
 
 	hardware_list : tz_gpu_hardware mut& := arena_push(permanent_arena, __sizeof(tz_gpu_hardware) * hardware_count);
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
-	print_hardwares();
+	tz_gpu_use_hardware(deref(hardware_list at 0));
 
 	defer tz_gpu_term();
 
