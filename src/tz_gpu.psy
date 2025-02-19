@@ -47,7 +47,16 @@ frame_data ::= struct
 	swapchain_sem : u64;
 };
 
+scratch_data ::= struct
+{
+	cpool : u64;
+	cmds : u64;
+	fence : u64;
+};
+
 // globals.
+[[private]]
+scratch : scratch_data mut;
 [[private]]
 frame_overlap ::= 2;
 frames : frame_data mut#2;
@@ -285,6 +294,15 @@ tz_gpu_term ::= func() -> v0
 {
 	counter : u64 mut := 0;
 	frame_ptr : frame_data mut& mut;
+	if(scratch.cpool != 0)
+	{
+		vk.destroy_command_pool(used_device, scratch.cpool, null);
+		scratch.cpool = 0;
+	}
+	if(scratch.fence != 0)
+	{
+		vk.destroy_fence(used_device, scratch.fence, null);
+	}
 	while(counter < frame_overlap)
 	{
 		frame_ptr = (frames at counter);
@@ -570,6 +588,12 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 
 		counter = counter + 1;
 	}
+
+	vk_check(vk.create_command_pool(used_device, ref pool_create, null, ref (scratch.cpool)));
+	cmd_info.commandPool = scratch.cpool;
+	vk_check(vk.allocate_command_buffers(used_device, ref cmd_info, ref (scratch.cmds)));
+
+	vk_check(vk.create_fence(used_device, ref fence_create, null, ref (scratch.fence)));
 
 	puts("using ");
 	print_string(ref (hardware.name));
