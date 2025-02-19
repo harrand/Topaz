@@ -42,6 +42,9 @@ frame_data ::= struct
 {
 	cpool : u64;
 	cmds : u64;
+
+	swapchain_fence : u64;
+	swapchain_sem : u64;
 };
 
 // globals.
@@ -290,6 +293,16 @@ tz_gpu_term ::= func() -> v0
 			vk.destroy_command_pool(used_device, frame_ptr->cpool, null);
 			(frame_ptr->cpool) = 0;
 		}
+		if(frame_ptr->swapchain_fence != 0)
+		{
+			vk.destroy_fence(used_device, frame_ptr->swapchain_fence, null);
+			(frame_ptr->swapchain_fence) = 0;
+		}
+		if(frame_ptr->swapchain_sem != 0)
+		{
+			vk.destroy_semaphore(used_device, frame_ptr->swapchain_sem, null);
+			(frame_ptr->swapchain_sem) = 0;
+		}
 
 		counter = counter + 1;
 	}
@@ -531,12 +544,29 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 		.commandBufferCount := 1;
 	};
 
+	fence_create ::= VkFenceCreateInfo
+	{
+		.sType := 8;
+		.pNext := null;
+		.flags := 0;
+	};
+
+	sem_create ::= VkSemaphoreCreateInfo
+	{
+		.sType := 9;
+		.pNext := null;
+		.flags := 0;
+	};
+
 	while(counter < frame_overlap)
 	{
 		frame_ptr = (frames at counter);
 		vk_check(vk.create_command_pool(used_device, ref pool_create, null, ref (frame_ptr->cpool)));
 		cmd_info.commandPool = (frame_ptr->cpool);
 		vk_check(vk.allocate_command_buffers(used_device, ref cmd_info, ref (frame_ptr->cmds)));
+
+		vk_check(vk.create_fence(used_device, ref fence_create, null, ref (frame_ptr->swapchain_fence)));
+		vk_check(vk.create_semaphore(used_device, ref sem_create, null, ref (frame_ptr->swapchain_sem)));
 
 		counter = counter + 1;
 	}

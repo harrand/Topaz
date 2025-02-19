@@ -452,6 +452,20 @@ VkCommandBufferAllocateInfo ::= struct
 	commandBufferCount : u32;
 };
 
+VkFenceCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+};
+
+VkSemaphoreCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -479,6 +493,12 @@ vk_functions_t ::= struct
 	create_command_pool : func(device : u64, pCreateInfo : VkCommandPoolCreateInfo&, pAllocator : VkAllocationCallbacks&, pCommandPool : u64 mut&) -> s32;
 	destroy_command_pool : func(device : u64, commandPool : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 	allocate_command_buffers : func(device : u64, pAllocateInfo : VkCommandBufferAllocateInfo&, pCommandBuffers : u64 mut&) -> s32;
+
+	create_fence : func(device : u64, pCreateInfo : VkFenceCreateInfo&, pAllocator : VkAllocationCallbacks&, pFence : u64 mut&) -> s32;
+	destroy_fence : func(device : u64, fence : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	create_semaphore : func(device : u64, pCreateInfo : VkSemaphoreCreateInfo&, pAllocator : VkAllocationCallbacks&, pSemaphore : u64 mut&) -> s32;
+	destroy_semaphore : func(device : u64, semaphore : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -558,6 +578,12 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.create_command_pool = load_vk_fn("vkCreateCommandPool", instance);
 	vk.destroy_command_pool = load_vk_fn("vkDestroyCommandPool", instance);
 	vk.allocate_command_buffers = load_vk_fn("vkAllocateCommandBuffers", instance);
+
+	vk.create_fence = load_vk_fn("vkCreateFence", instance);
+	vk.destroy_fence = load_vk_fn("vkDestroyFence", instance);
+
+	vk.create_semaphore = load_vk_fn("vkCreateSemaphore", instance);
+	vk.destroy_semaphore = load_vk_fn("vkDestroySemaphore", instance);
 };
 
 vulkan_term ::= func() -> v0
