@@ -466,6 +466,50 @@ VkSemaphoreCreateInfo ::= struct
 	flags : s32;
 };
 
+VkDescriptorSetLayoutBinding ::= struct
+{
+	binding : u32;
+	descriptorType : s32;
+	descriptorCount : u32;
+	stageFlags : s32;
+	pImmutableSamplers : u64&;
+};
+
+VkDescriptorSetLayoutBindingFlagsCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	bindingCount : u32;
+	pBindingFlags : s32&;
+};
+
+VkDescriptorSetLayoutCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	bindingCount : u32;
+	pBindings : VkDescriptorSetLayoutBinding&;
+};
+
+VkPushConstantRange ::= struct
+{
+	stageFlags : s32;
+	offset : u32;
+	size : u32;
+};
+
+VkPipelineLayoutCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	setLayoutCount : u32;
+	pSetLayouts : u64&;
+	pushConstantRangeCount : u32;
+	pPushConstantRanges : VkPushConstantRange&;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -499,6 +543,11 @@ vk_functions_t ::= struct
 
 	create_semaphore : func(device : u64, pCreateInfo : VkSemaphoreCreateInfo&, pAllocator : VkAllocationCallbacks&, pSemaphore : u64 mut&) -> s32;
 	destroy_semaphore : func(device : u64, semaphore : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	create_descriptor_set_layout : func(device : u64, pCreateInfo : VkDescriptorSetLayoutCreateInfo&, pAllocator : VkAllocationCallbacks&, pSetLayout : u64 mut&) -> s32;
+	destroy_descriptor_set_layout : func(device : u64, descriptorSetLayout : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+	create_pipeline_layout : func(device : u64, pCreateInfo : VkPipelineLayoutCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelineLayout : u64 mut&) -> s32;
+	destroy_pipeline_layout : func(device : u64, pipelineLayout : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -584,6 +633,11 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 
 	vk.create_semaphore = load_vk_fn("vkCreateSemaphore", instance);
 	vk.destroy_semaphore = load_vk_fn("vkDestroySemaphore", instance);
+
+	vk.create_descriptor_set_layout = load_vk_fn("vkCreateDescriptorSetLayout", instance);
+	vk.destroy_descriptor_set_layout = load_vk_fn("vkDestroyDescriptorSetLayout", instance);
+	vk.create_pipeline_layout = load_vk_fn("vkCreatePipelineLayout", instance);
+	vk.destroy_pipeline_layout = load_vk_fn("vkDestroyPipelineLayout", instance);
 };
 
 vulkan_term ::= func() -> v0

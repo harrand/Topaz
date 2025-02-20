@@ -50,16 +50,21 @@ frame_data ::= struct
 scratch_data ::= struct
 {
 	cpool : u64;
-	cmds : u64;
+cmds : u64;
 	fence : u64;
 };
 
 // globals.
+MAX_GLOBAL_IMAGE_COUNT ::= 8192;
+MAX_IMAGE_COUNT_PER_PASS ::= 4096;
+
 [[private]]
 scratch : scratch_data mut;
 [[private]]
 frame_overlap ::= 2;
 frames : frame_data mut#2;
+[[private]]
+set_layouts : u64 mut#2;
 [[private]]
 vkinst : u64 mut;
 [[private]]
@@ -74,6 +79,9 @@ graphics_queue : u64 mut;
 compute_queue : u64 mut;
 
 [[private]]
+pipeline_layout : u64 mut;
+
+[[private]]
 surface : u64 mut := 0;
 [[private]]
 swapchain : u64 mut := 0;
@@ -83,6 +91,78 @@ swapchain_width : u64 mut := 0;
 swapchain_height : u64 mut := 0;
 
 // implementation details
+
+[[private]]
+impl_initialise_pipeline_layout ::= func() -> u64
+{
+	bindings : VkDescriptorSetLayoutBinding mut#2;
+	deref(bindings at 0) = VkDescriptorSetLayoutBinding
+	{
+		.binding := 0;
+		.descriptorType := 7; /*storage buffer*/
+		.descriptorCount := 1;
+		.stageFlags := 0x7FFFFFFF;
+		.pImmutableSamplers := null;
+	};
+	deref(bindings at 1) = VkDescriptorSetLayoutBinding
+	{
+		.binding := 1;
+		.descriptorType := 1; /*combined image sampler*/
+		.descriptorCount := MAX_GLOBAL_IMAGE_COUNT@u32;
+		.stageFlags := 0x7FFFFFFF;
+		.pImmutableSamplers := null;
+	};
+	bindings_size : u32 := __sizeof(bindings) / __sizeof(deref(bindings at 0));
+
+	flags : s32 mut#2;
+	deref(flags at 0) = 0;
+	deref(flags at 1) =
+		(0x00000004 | /*VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT*/ 
+		0x00000001 | /*VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT*/
+		0x00000002 | /*VK_DESCRIPTOR_BINDING_UPDATE_UNUSED_WHILE_PENDING_BIT*/
+		0x00000008); /*VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT*/
+	flags_size : u32 := __sizeof(flags) / __sizeof(deref(flags at 0));
+
+	flags_create ::= VkDescriptorSetLayoutBindingFlagsCreateInfo
+	{
+		.sType := 1000161000;
+		.pNext := null;
+		.bindingCount := flags_size@u32;
+		.pBindingFlags := flags at 0;
+	};
+
+	layout_create ::= VkDescriptorSetLayoutCreateInfo
+	{
+		.sType := 32;
+		.pNext := (ref flags_create)@_;
+		.flags := 0x00000002; /*VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT */
+		.bindingCount := bindings_size@u32;
+		.pBindings := bindings at 0;
+	};
+
+	counter : u64 mut := 0;
+	while(counter < frame_overlap)
+	{
+		vk_check(vk.create_descriptor_set_layout(used_device, ref layout_create, null, set_layouts at counter));
+		counter = counter + 1;
+	}
+
+	create ::= VkPipelineLayoutCreateInfo
+	{
+		.sType := 30;
+		.pNext := null;
+		.flags := 0;
+		.setLayoutCount := frame_overlap@u32;
+		.pSetLayouts := set_layouts at 0;
+		.pushConstantRangeCount := 0;
+		.pPushConstantRanges := null;
+	};
+
+	ret : u64 mut;
+	vk_check(vk.create_pipeline_layout(used_device, ref create, null, ref ret));
+
+	return ret;
+};
 
 [[private]]
 impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle) -> VkResult
@@ -292,8 +372,11 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 
 tz_gpu_term ::= func() -> v0
 {
-	counter : u64 mut := 0;
-	frame_ptr : frame_data mut& mut;
+	if(pipeline_layout != 0)
+	{
+		vk.destroy_pipeline_layout(used_device, pipeline_layout, null);
+		pipeline_layout = 0;
+	}
 	if(scratch.cpool != 0)
 	{
 		vk.destroy_command_pool(used_device, scratch.cpool, null);
@@ -303,6 +386,8 @@ tz_gpu_term ::= func() -> v0
 	{
 		vk.destroy_fence(used_device, scratch.fence, null);
 	}
+	counter : u64 mut := 0;
+	frame_ptr : frame_data mut& mut;
 	while(counter < frame_overlap)
 	{
 		frame_ptr = (frames at counter);
@@ -321,6 +406,10 @@ tz_gpu_term ::= func() -> v0
 			vk.destroy_semaphore(used_device, frame_ptr->swapchain_sem, null);
 			(frame_ptr->swapchain_sem) = 0;
 		}
+
+		// dont forget descriptor layouts.
+		vk.destroy_descriptor_set_layout(used_device, deref(set_layouts at counter), null);
+		deref(set_layouts at counter) = 0;
 
 		counter = counter + 1;
 	}
@@ -594,6 +683,8 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	vk_check(vk.allocate_command_buffers(used_device, ref cmd_info, ref (scratch.cmds)));
 
 	vk_check(vk.create_fence(used_device, ref fence_create, null, ref (scratch.fence)));
+
+	pipeline_layout = impl_initialise_pipeline_layout();
 
 	puts("using ");
 	print_string(ref (hardware.name));
