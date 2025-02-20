@@ -50,6 +50,14 @@ VkAllocationCallbacks ::= struct
 	pfnInternalFree : func(pUserData : v0&, size : u64, allocationType : s32, allocationScope : s32) -> v0;
 };
 
+VkMemoryAllocateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	allocationSize : u64;
+	memoryTypeIndex : u32;
+};
+
 if static(__is_windows)
 {
 	VkWin32SurfaceCreateInfoKHR ::= struct
@@ -515,6 +523,13 @@ vk_functions_t ::= struct
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
 	create_instance : func(pCreateInfo : VkInstanceCreateInfo&, pAllocator : VkAllocationCallbacks&, pInstance : u64 mut&) -> s32;
 	destroy_instance : func(instance : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	allocate_memory : func(device : u64, pAllocateInfo : VkMemoryAllocateInfo&, pAllocator : VkAllocationCallbacks&, pMemory : u64 mut&) -> s32;
+	free_memory : func(device : u64, memory : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	bind_buffer_memory : func(device : u64, buffer : u64, memory : u64, memoryOffset : u64) -> s32;
+	bind_image_memory : func(device : u64, image : u64, memory : u64, memoryOffset : u64) -> s32;
+
 	if static(__is_windows)
 	{
 		create_win32_surface_khr : func(instance : u64, pCreateInfo : VkWin32SurfaceCreateInfoKHR&, pAllocator : VkAllocationCallbacks&, surface : u64 mut&) -> s32;
@@ -606,6 +621,12 @@ vulkan_init ::= func() -> v0
 
 vulkan_load_functions ::= func(instance : u64) -> v0
 {
+	vk.allocate_memory = load_vk_fn("vkAllocateMemory", instance);
+	vk.free_memory = load_vk_fn("vkFreeMemory", instance);
+
+	vk.bind_buffer_memory = load_vk_fn("vkBindBufferMemory", instance);
+	vk.bind_image_memory = load_vk_fn("vkBindImageMemory", instance);
+
 	if static(__is_windows)
 	{
 		vk.create_win32_surface_khr = load_vk_fn("vkCreateWin32SurfaceKHR", instance);

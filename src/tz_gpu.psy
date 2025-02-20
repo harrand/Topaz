@@ -30,12 +30,29 @@ tz_gpu_hardware_caps ::= enum
 tz_gpu_hardware ::= struct
 {
 	name : string;
-	target_heap : u64;
+	target_heap_gpu : u64;
+	target_heap_cpu : u64;
 	vram_size_mib : u64;
 	type : tz_gpu_hardware_type;
 	caps : tz_gpu_hardware_caps;
 	id : u32;
 	native_handle : u64;
+};
+
+valloc_initial_size : u64 static := (32 * 1024 * 1024); /*32 mib*/
+
+valloc_t ::= struct
+{
+	device_mem : u64;
+	size : u64;
+	cursor : u64;
+};
+
+vallocator_t ::= struct
+{
+	buffer_gpu : valloc_t;
+	image_gpu : valloc_t;
+	buffer_cpu : valloc_t;
 };
 
 frame_data ::= struct
@@ -59,6 +76,8 @@ MAX_GLOBAL_IMAGE_COUNT ::= 8192;
 MAX_IMAGE_COUNT_PER_PASS ::= 4096;
 
 [[private]]
+vallocator : vallocator_t mut;
+[[private]]
 scratch : scratch_data mut;
 [[private]]
 frame_overlap ::= 2;
@@ -73,6 +92,10 @@ used_device : u64 mut;
 used_hardware : u64 mut;
 [[private]]
 used_qfi : u32 mut;
+[[private]]
+used_mti_gpu : u32 mut;
+[[private]]
+used_mti_cpu : u32 mut;
 [[private]]
 graphics_queue : u64 mut;
 [[private]]
@@ -91,6 +114,88 @@ swapchain_width : u64 mut := 0;
 swapchain_height : u64 mut := 0;
 
 // implementation details
+
+[[private]]
+impl_vallocator_initial_setup ::= func() -> v0
+{
+	gpucreate ::= VkMemoryAllocateInfo
+	{
+		.sType := 5;
+		.pNext := null;
+		.allocationSize := valloc_initial_size;
+		.memoryTypeIndex := used_mti_gpu;
+	};
+	cpucreate ::= VkMemoryAllocateInfo
+	{
+		.sType := 5;
+		.pNext := null;
+		.allocationSize := valloc_initial_size;
+		.memoryTypeIndex := used_mti_cpu;
+	};
+
+	// create initial allocations for each case (buffer gpu, image gpu, buffer cpu).
+	bgpu ::= ref(vallocator.buffer_gpu);
+	vk_check(vk.allocate_memory(used_device, ref gpucreate, null, ref (bgpu->device_mem)));
+	igpu ::= ref(vallocator.image_gpu);
+	vk_check(vk.allocate_memory(used_device, ref gpucreate, null, ref (igpu->device_mem)));
+
+	bcpu ::= ref(vallocator.buffer_cpu);
+	vk_check(vk.allocate_memory(used_device, ref cpucreate, null, ref (bcpu->device_mem)));
+};
+
+[[private]]
+impl_vallocator_free_all ::= func() -> v0
+{
+	bgpu ::= vallocator.buffer_gpu;
+	vk.free_memory(used_device, bgpu.device_mem, null);
+	igpu ::= vallocator.image_gpu;
+	vk.free_memory(used_device, igpu.device_mem, null);
+
+	bcpu ::= vallocator.buffer_cpu;
+	vk.free_memory(used_device, bcpu.device_mem, null);
+};
+
+[[impl]]
+impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) -> v0
+{
+	valloc : valloc_t mut& mut := ref (vallocator.buffer_cpu);
+	if(gpu_memory)
+	{
+		valloc = ref (vallocator.buffer_gpu);
+	}
+	ret ::= vk.bind_buffer_memory(used_device, buffer, valloc->device_mem, valloc->cursor);
+	if(ret == -1) /* out of host memory */
+	{
+		puts("oom when binding buffer memory. todo: multiple allocations");
+		__debugbreak();
+	}
+	if(ret == -2) /* out of device memory */
+	{
+		puts("voom when binding buffer memory. todo: multiple allocations");
+		__debugbreak();
+	}
+	// todo: align safely.
+	valloc->cursor = (valloc->cursor) + bufsize;
+};
+
+[[impl]]
+impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
+{
+	valloc : valloc_t mut& mut := ref (vallocator.image_gpu);
+	ret ::= vk.bind_image_memory(used_device, image, valloc->device_mem, valloc->cursor);
+	if(ret == -1) /* out of host memory */
+	{
+		puts("oom when binding image memory. todo: multiple allocations");
+		__debugbreak();
+	}
+	if(ret == -2) /* out of device memory */
+	{
+		puts("voom when binding image memory. todo: multiple allocations");
+		__debugbreak();
+	}
+	// todo: align safely.
+	valloc->cursor = (valloc->cursor) + imgsize;
+};
 
 [[private]]
 impl_initialise_pipeline_layout ::= func() -> u64
@@ -255,7 +360,8 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 	(hw->id) = -1;
 	(hw->native_handle) = pdev;
 	(hw->vram_size_mib) = 0;
-	(hw->target_heap) = 0;
+	(hw->target_heap_gpu) = 0;
+	(hw->target_heap_cpu) = 0;
 
 	(hw->type) = (tz_gpu_hardware_type.unknown);
 	if(props.deviceType == 0x01)
@@ -283,14 +389,18 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 		cur_mem_ty = deref(memprops.memoryTypes at counter);
 
 		size = 0;
-		if(cur_vk_heap.flags & 1)
+		if(cur_vk_heap.flags & 1) /* gpu memory */
 		{
 			size = (cur_vk_heap.size) / (1024 * 1024);
+		}
+		if(cur_vk_heap.flags == 0) /* not gpu memory */
+		{
+			(hw->target_heap_cpu) = counter@_;
 		}
 		if(size > max_mem)
 		{
 			max_mem = size;
-			(hw->target_heap) = counter@_;
+			(hw->target_heap_gpu) = counter@_;
 		}
 		(hw->vram_size_mib) = (hw->vram_size_mib) + size;
 
@@ -417,6 +527,9 @@ tz_gpu_term ::= func() -> v0
 	{
 		vk.destroy_swapchain_khr(used_device, swapchain, null);
 	}
+
+	impl_vallocator_free_all();
+
 	vk.destroy_device(used_device, null);
 	if(surface != 0)
 	{
@@ -627,6 +740,8 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	vk_check(vk.create_device(pdev, ref create, null, ref used_device));
 	used_hardware = pdev;
 	used_qfi = hardware.id;
+	used_mti_gpu = hardware.target_heap_gpu;
+	used_mti_cpu = hardware.target_heap_cpu;
 
 	vk.get_device_queue(used_device, used_qfi, 0, ref graphics_queue);
 	vk.get_device_queue(used_device, used_qfi, 0, ref compute_queue);
@@ -685,6 +800,7 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	vk_check(vk.create_fence(used_device, ref fence_create, null, ref (scratch.fence)));
 
 	pipeline_layout = impl_initialise_pipeline_layout();
+	impl_vallocator_initial_setup();
 
 	puts("using ");
 	print_string(ref (hardware.name));
