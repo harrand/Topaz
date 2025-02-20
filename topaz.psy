@@ -50,6 +50,16 @@ main ::= func() -> s32
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 
+	buf ::= tz_gpu_create_buffer(64, tz_gpu_access.static, permanent_arena);
+	if(buf == (tz_gpu_resource.invalid))
+	{
+		puts("bruh");
+		__debugbreak();
+	}
+	puts("buffer resource handle: ");
+	putuint(buf@s64);
+	putchar(10);
+
 	/*
 	dims ::= window_get_dimensions(wnd);
 	impl_need_swapchain(dims.x@_, dims.y@_, wnd);

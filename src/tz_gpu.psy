@@ -39,6 +39,17 @@ tz_gpu_hardware ::= struct
 	native_handle : u64;
 };
 
+tz_gpu_access ::= enum
+{
+	.static := 0;
+	.dynamic := 1;
+};
+
+tz_gpu_resource ::= enum
+{
+	.invalid := -1;
+};
+
 valloc_initial_size : u64 static := (32 * 1024 * 1024); /*32 mib*/
 
 valloc_t ::= struct
@@ -113,7 +124,35 @@ swapchain_width : u64 mut := 0;
 [[private]]
 swapchain_height : u64 mut := 0;
 
+resource_data_t ::= struct
+{
+	is_buffer : bool;
+	vk_handle : u64;
+	buffer_device_address : u64;
+};
+resources : resource_data_t mut& mut;
+resource_count : u64 mut := 0;
+resource_cap : u64 mut := 0;
+
 // implementation details
+
+[[private]]
+impl_alloc_new_resource ::= func(a : arena mut&) -> resource_data_t mut&
+{
+	if(resource_cap == 0)
+	{
+		resources = arena_push(a, __sizeof(resource_data_t) * 1024);
+		resource_cap = 1024;
+	}
+	if(resource_count > resource_cap)
+	{
+		puts("ran out of resources. todo: fix this.");
+		__debugbreak();
+	}
+	id ::= resource_count;
+	resource_count = resource_count + 1;
+	return resources at id;
+};
 
 [[private]]
 impl_vallocator_initial_setup ::= func() -> v0
@@ -546,6 +585,26 @@ tz_gpu_term ::= func() -> v0
 		vk.destroy_swapchain_khr(used_device, swapchain, null);
 	}
 
+	// destroy all resources.
+	counter = 0;
+	resptr : resource_data_t mut& mut;
+	while(counter < resource_count)
+	{
+		resptr = resources at counter;	
+		if(resptr->is_buffer)
+		{
+			vk.destroy_buffer(used_device, resptr->vk_handle, null);
+			(resptr->vk_handle) = 0;
+		}
+		if(!(resptr->is_buffer))
+		{
+			puts("errtodo: delete image resources.");
+			__debugbreak();
+		}
+		counter = counter + 1;
+	}
+	resource_count = 0;
+
 	impl_vallocator_free_all();
 
 	vk.destroy_device(used_device, null);
@@ -823,6 +882,23 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	puts("using ");
 	print_string(ref (hardware.name));
 	putchar(10);
+};
+
+tz_gpu_create_buffer ::= func(size : u64, access : tz_gpu_access, a : arena mut&) -> tz_gpu_resource
+{
+	retid ::= resource_count;
+	resptr ::= impl_alloc_new_resource(a);
+	resptr->is_buffer = true;
+	create ::= VkBufferCreateInfo
+	{
+		.sType := 12;
+		.pNext := null;
+		.flags := 0;
+		.size := size;
+		.usage := (0x00000020 | 0x00020000);
+	};
+	vk_check(vk.create_buffer(used_device, ref create, null, ref (resptr->vk_handle)));
+	return retid@tz_gpu_resource;
 };
 
 == build ==

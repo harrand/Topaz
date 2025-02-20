@@ -518,6 +518,18 @@ VkPipelineLayoutCreateInfo ::= struct
 	pPushConstantRanges : VkPushConstantRange&;
 };
 
+VkBufferCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	size : u64;
+	usage : s32;
+	sharingMode : s32;
+	queueFamilyIndexCount : u32;
+	pQueueFamilyIndices : u32&;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -563,6 +575,9 @@ vk_functions_t ::= struct
 	destroy_descriptor_set_layout : func(device : u64, descriptorSetLayout : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 	create_pipeline_layout : func(device : u64, pCreateInfo : VkPipelineLayoutCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelineLayout : u64 mut&) -> s32;
 	destroy_pipeline_layout : func(device : u64, pipelineLayout : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	create_buffer : func(device : u64, pCreateInfo : VkBufferCreateInfo&, pAllocator : VkAllocationCallbacks&, pBuffer : u64 mut&) -> s32;
+	destroy_buffer : func(device : u64, buffer : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -659,6 +674,9 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.destroy_descriptor_set_layout = load_vk_fn("vkDestroyDescriptorSetLayout", instance);
 	vk.create_pipeline_layout = load_vk_fn("vkCreatePipelineLayout", instance);
 	vk.destroy_pipeline_layout = load_vk_fn("vkDestroyPipelineLayout", instance);
+
+	vk.create_buffer = load_vk_fn("vkCreateBuffer", instance);
+	vk.destroy_buffer = load_vk_fn("vkDestroyBuffer", instance);
 };
 
 vulkan_term ::= func() -> v0
