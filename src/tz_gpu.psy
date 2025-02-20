@@ -50,17 +50,59 @@ tz_gpu_resource ::= enum
 	.invalid := -1;
 };
 
-tz_gpu_shader ::= enum
-{
-	.invalid := -1;
-};
-
 tz_gpu_shader_sources ::= struct
 {
 	vertex_spv_data : u8 mut&;
 	vertex_spv_count : u64;
 	fragment_spv_data : u8 mut&;
 	fragment_spv_count : u64;
+};
+
+tz_gpu_shader ::= enum
+{
+	.invalid := -1;
+};
+
+tz_gpu_cull ::= enum
+{
+	.back := 0;
+	.front := 1;
+	.none := 0;
+};
+
+tz_gpu_graphics_state ::= struct
+{
+	clear_colour : vec4;
+	scissor : vec4u32;
+	colour_targets_data : tz_gpu_resource&;
+	colour_targets_count : u64;
+	depth_target : tz_gpu_resource;
+	index_buffer : tz_gpu_resource;
+	draw_buffer : tz_gpu_resource;
+	culling : tz_gpu_cull;
+	static_tri_count : u64;
+};
+
+tz_gpu_compute_state ::= struct
+{
+	kernelx : u32;
+	kernely : u32;
+	kernelz : u32;
+};
+
+tz_gpu_pass_info ::= struct
+{
+	graphics : tz_gpu_graphics_state;
+	compute : tz_gpu_compute_state;
+	shader : tz_gpu_shader;
+	resources_data : tz_gpu_resource&;
+	resources_count : u64;
+	name : u8&;
+};
+
+tz_gpu_pass ::= enum
+{
+	.invalid := -1;
 };
 
 valloc_initial_size : u64 static := (32 * 1024 * 1024); /*32 mib*/
@@ -1053,6 +1095,11 @@ tz_gpu_create_compute_shader ::= func(compute_source : u8&, compute_source_len :
 	vk.create_shader_module(used_device, ref vcreate, null, ref (resptr->compute_module));
 
 	return retid@tz_gpu_shader;
+};
+
+tz_gpu_create_pass ::= func(info : tz_gpu_pass_info) -> tz_gpu_pass
+{
+	return tz_gpu_pass.invalid;
 };
 
 == build ==

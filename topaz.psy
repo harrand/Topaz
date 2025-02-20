@@ -53,7 +53,7 @@ main ::= func() -> s32
 	buf ::= tz_gpu_create_buffer(4096, tz_gpu_access.static, permanent_arena);
 	if(buf == (tz_gpu_resource.invalid))
 	{
-		puts("bruh");
+		puts("failed to create buffer");
 		__debugbreak();
 	}
 	puts("buffer resource handle: ");
@@ -64,7 +64,21 @@ main ::= func() -> s32
 	shader ::= tz_gpu_create_graphics_shader(shader_data.vertex_spv_data, shader_data.vertex_spv_count, shader_data.fragment_spv_data, shader_data.fragment_spv_count, permanent_arena);
 	if(shader == (tz_gpu_shader.invalid))
 	{
-		puts("dodgy shader");
+		puts("failed to create shader");
+		__debugbreak();
+	}
+
+	pass ::= tz_gpu_create_pass(tz_gpu_pass_info
+	{
+		.graphics := tz_gpu_graphics_state{};
+		.shader := shader;
+		.resources_data := null;
+		.resources_count := 0;
+		.name := "Triangle Renderer";
+	});
+	if(pass == (tz_gpu_pass.invalid))
+	{
+		puts("failed to create pass");
 		__debugbreak();
 	}
 
