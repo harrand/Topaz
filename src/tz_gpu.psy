@@ -78,7 +78,7 @@ frame_data ::= struct
 scratch_data ::= struct
 {
 	cpool : u64;
-cmds : u64;
+	cmds : u64;
 	fence : u64;
 };
 
@@ -157,17 +157,24 @@ impl_alloc_new_resource ::= func(a : arena mut&) -> resource_data_t mut&
 [[private]]
 impl_vallocator_initial_setup ::= func() -> v0
 {
+	bda_flags ::= VkMemoryAllocateFlagsInfo
+	{
+		.sType := 1000060000;
+		.pNext := null;
+		.flags := 0x00000002;
+		.deviceMask := 0;
+	};
 	gpucreate ::= VkMemoryAllocateInfo
 	{
 		.sType := 5;
-		.pNext := null;
+		.pNext := (ref bda_flags)@_;
 		.allocationSize := valloc_initial_size;
 		.memoryTypeIndex := used_mti_gpu;
 	};
 	cpucreate ::= VkMemoryAllocateInfo
 	{
 		.sType := 5;
-		.pNext := null;
+		.pNext := (ref bda_flags)@_;
 		.allocationSize := valloc_initial_size;
 		.memoryTypeIndex := used_mti_cpu;
 	};
@@ -175,11 +182,17 @@ impl_vallocator_initial_setup ::= func() -> v0
 	// create initial allocations for each case (buffer gpu, image gpu, buffer cpu).
 	bgpu ::= ref(vallocator.buffer_gpu);
 	vk_check(vk.allocate_memory(used_device, ref gpucreate, null, ref (bgpu->device_mem)));
+	(bgpu->size) = valloc_initial_size;
+	(bgpu->cursor) = 0;
 	igpu ::= ref(vallocator.image_gpu);
 	vk_check(vk.allocate_memory(used_device, ref gpucreate, null, ref (igpu->device_mem)));
+	(igpu->size) = valloc_initial_size;
+	(igpu->cursor) = 0;
 
 	bcpu ::= ref(vallocator.buffer_cpu);
 	vk_check(vk.allocate_memory(used_device, ref cpucreate, null, ref (bcpu->device_mem)));
+	(bcpu->size) = valloc_initial_size;
+	(bcpu->cursor) = 0;
 };
 
 [[private]]
@@ -898,6 +911,14 @@ tz_gpu_create_buffer ::= func(size : u64, access : tz_gpu_access, a : arena mut&
 		.usage := (0x00000020 | 0x00020000);
 	};
 	vk_check(vk.create_buffer(used_device, ref create, null, ref (resptr->vk_handle)));
+	bda ::= VkBufferDeviceAddressInfo
+	{
+		.sType := 1000244001;
+		.pNext := null;
+		.buffer := resptr->vk_handle;
+	};
+	impl_bind_buffer_mem(resptr->vk_handle, size, access == (tz_gpu_access.static));
+	resptr->buffer_device_address = vk.get_buffer_device_address(used_device, ref bda);
 	return retid@tz_gpu_resource;
 };
 

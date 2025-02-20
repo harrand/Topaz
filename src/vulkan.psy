@@ -50,6 +50,14 @@ VkAllocationCallbacks ::= struct
 	pfnInternalFree : func(pUserData : v0&, size : u64, allocationType : s32, allocationScope : s32) -> v0;
 };
 
+VkMemoryAllocateFlagsInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	deviceMask : u32;
+};
+
 VkMemoryAllocateInfo ::= struct
 {
 	sType : s32;
@@ -530,6 +538,13 @@ VkBufferCreateInfo ::= struct
 	pQueueFamilyIndices : u32&;
 };
 
+VkBufferDeviceAddressInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	buffer : u64;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -578,6 +593,8 @@ vk_functions_t ::= struct
 
 	create_buffer : func(device : u64, pCreateInfo : VkBufferCreateInfo&, pAllocator : VkAllocationCallbacks&, pBuffer : u64 mut&) -> s32;
 	destroy_buffer : func(device : u64, buffer : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	get_buffer_device_address : func(device : u64, pInfo : VkBufferDeviceAddressInfo&) -> u64;
 };
 
 vk : vk_functions_t mut;
@@ -677,6 +694,8 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 
 	vk.create_buffer = load_vk_fn("vkCreateBuffer", instance);
 	vk.destroy_buffer = load_vk_fn("vkDestroyBuffer", instance);
+
+	vk.get_buffer_device_address = load_vk_fn("vkGetBufferDeviceAddress", instance);
 };
 
 vulkan_term ::= func() -> v0
