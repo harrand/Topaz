@@ -1034,6 +1034,27 @@ tz_gpu_create_graphics_shader ::= func(vertex_source : u8&, vertex_source_len : 
 	return retid@tz_gpu_shader;
 };
 
+tz_gpu_create_compute_shader ::= func(compute_source : u8&, compute_source_len : u64, a : arena mut&) -> tz_gpu_shader
+{
+	retid ::= shaders_count;
+	resptr ::= impl_alloc_new_shader(a);
+	resptr->is_graphics = false;
+	resptr->vertex_module = 0;
+	resptr->fragment_module = 0;
+
+	vcreate ::= VkShaderModuleCreateInfo
+	{
+		.sType := 16;
+		.pNext := null;
+		.flags := 0;
+		.codeSize := compute_source_len@_;
+		.pCode := compute_source@_;
+	};
+	vk.create_shader_module(used_device, ref vcreate, null, ref (resptr->compute_module));
+
+	return retid@tz_gpu_shader;
+};
+
 == build ==
 {
 	add_source_file("src/vulkan.psy");
