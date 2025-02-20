@@ -1,4 +1,5 @@
 #version 430
+#pragma shader_stage fragment
 layout(location = 0) out vec4 fcol;
 void main()
 {

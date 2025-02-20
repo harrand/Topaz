@@ -149,3 +149,20 @@ vec4_dot ::= func(lhs : vec4, rhs : vec4) -> f32
 {
 	return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z) + (lhs.w * rhs.w);
 };
+
+// vec4
+vec4u32 ::= struct
+{
+	x : u32;
+	y : u32;
+};
+
+vec4u32_zero ::= func() -> vec4u32
+{
+	return vec4u32{.x := 0.0; .y := 0.0;};
+};
+
+vec4u32_filled ::= func(val : u32) -> vec4u32
+{
+	return vec4u32{.x := val; .y := val;};
+};

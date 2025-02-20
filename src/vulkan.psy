@@ -545,6 +545,15 @@ VkBufferDeviceAddressInfo ::= struct
 	buffer : u64;
 };
 
+VkShaderModuleCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	codeSize : u64;
+	pCode : u32&; // ok vulkan thinks its really clever to use u32s here so i will respect it, even though i've decided it was a stupid decision.
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -595,6 +604,9 @@ vk_functions_t ::= struct
 	destroy_buffer : func(device : u64, buffer : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
 	get_buffer_device_address : func(device : u64, pInfo : VkBufferDeviceAddressInfo&) -> u64;
+
+	create_shader_module : func(device : u64, pCreateInfo : VkShaderModuleCreateInfo&, pAllocator : VkAllocationCallbacks&, pShaderModule : u64 mut&) -> s32;
+	destroy_shader_module : func(device : u64, shaderModule : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -696,6 +708,9 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.destroy_buffer = load_vk_fn("vkDestroyBuffer", instance);
 
 	vk.get_buffer_device_address = load_vk_fn("vkGetBufferDeviceAddress", instance);
+
+	vk.create_shader_module = load_vk_fn("vkCreateShaderModule", instance);
+	vk.destroy_shader_module = load_vk_fn("vkDestroyShaderModule", instance);
 };
 
 vulkan_term ::= func() -> v0

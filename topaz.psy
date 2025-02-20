@@ -60,10 +60,13 @@ main ::= func() -> s32
 	putuint(buf@s64);
 	putchar(10);
 
-	/*
-	dims ::= window_get_dimensions(wnd);
-	impl_need_swapchain(dims.x@_, dims.y@_, wnd);
-	*/
+	shader_data ::= tz_gpu_load_shader_files("build/vertex.spv", "build/fragment.spv", permanent_arena);
+	shader ::= tz_gpu_create_graphics_shader(shader_data.vertex_spv_data, shader_data.vertex_spv_count, shader_data.fragment_spv_data, shader_data.fragment_spv_count, permanent_arena);
+	if(shader == (tz_gpu_shader.invalid))
+	{
+		puts("dodgy shader");
+		__debugbreak();
+	}
 
 	defer tz_gpu_term();
 
