@@ -163,6 +163,15 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 	{
 		valloc = ref (vallocator.buffer_gpu);
 	}
+	if((valloc->cursor + bufsize) > (valloc->size))
+	{
+		puts("allocation too large. requested ");
+		putuint(valloc->cursor + bufsize);
+		puts("B but there was only ");
+		putuint(valloc->size);
+		puts("B remaining.");
+		__debugbreak();
+	}
 	ret ::= vk.bind_buffer_memory(used_device, buffer, valloc->device_mem, valloc->cursor);
 	if(ret == -1) /* out of host memory */
 	{
@@ -182,6 +191,15 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 {
 	valloc : valloc_t mut& mut := ref (vallocator.image_gpu);
+	if((valloc->cursor + imgsize) > (valloc->size))
+	{
+		puts("allocation too large. requested ");
+		putuint(valloc->cursor + imgsize);
+		puts("B but there was only ");
+		putuint(valloc->size);
+		puts("B remaining.");
+		__debugbreak();
+	}
 	ret ::= vk.bind_image_memory(used_device, image, valloc->device_mem, valloc->cursor);
 	if(ret == -1) /* out of host memory */
 	{
