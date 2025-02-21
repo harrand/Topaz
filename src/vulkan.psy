@@ -554,6 +554,28 @@ VkShaderModuleCreateInfo ::= struct
 	pCode : u32&; // ok vulkan thinks its really clever to use u32s here so i will respect it, even though i've decided it was a stupid decision.
 };
 
+VkPipelineShaderStageCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	stage : s32;
+	module : u64;
+	pName : u8&;
+	pSpecializationInfo : v0&;
+};
+
+VkComputePipelineCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	stage : VkPipelineShaderStageCreateInfo;
+	layout : u64;
+	basePipelineHandle : u64;
+	basePipelineIndex : s32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -607,6 +629,9 @@ vk_functions_t ::= struct
 
 	create_shader_module : func(device : u64, pCreateInfo : VkShaderModuleCreateInfo&, pAllocator : VkAllocationCallbacks&, pShaderModule : u64 mut&) -> s32;
 	destroy_shader_module : func(device : u64, shaderModule : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	create_compute_pipelines : func(device : u64, pipelineCache : u64, createInfoCount : u32, pCreateInfos : VkComputePipelineCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelines : u64 mut&) -> s32;
+	destroy_pipeline : func(device : u64, pipeline : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -711,6 +736,9 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 
 	vk.create_shader_module = load_vk_fn("vkCreateShaderModule", instance);
 	vk.destroy_shader_module = load_vk_fn("vkDestroyShaderModule", instance);
+
+	vk.create_compute_pipelines = load_vk_fn("vkCreateComputePipelines", instance);
+	vk.destroy_pipeline = load_vk_fn("vkDestroyPipeline", instance);
 };
 
 vulkan_term ::= func() -> v0

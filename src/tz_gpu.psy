@@ -206,6 +206,8 @@ pass_data_t ::= struct
 {
 	info : tz_gpu_pass_info;
 	metabuf : u64;
+	is_compute : bool;
+	pipeline : u64;
 };
 
 passes : pass_data_t mut& mut;
@@ -213,6 +215,48 @@ passes_count : u64 mut := 0;
 passes_cap : u64 mut := 0;
 
 // implementation details
+
+[[private]]
+impl_shader_is_compute ::= func(shader : tz_gpu_shader) -> bool
+{
+	shadptr ::= (shaders at (shader@s64));
+	return (shadptr->compute_module) != 0;
+};
+
+[[private]]
+impl_create_compute_pipeline ::= func(shader : tz_gpu_shader) -> u64
+{
+	shadptr ::= (shaders at (shader@s64));
+	compute_shader_module ::= shadptr->compute_module;
+	if(compute_shader_module == 0)
+	{
+		puts("invalid compute shader");
+		__debugbreak();
+	}
+	create ::= VkComputePipelineCreateInfo
+	{
+		.sType := 29;
+		.pNext := null;
+		.flags := 0;
+		.stage := VkPipelineShaderStageCreateInfo
+		{
+			.sType := 18;
+			.pNext := null;
+			.flags := 0;
+			.stage := 0x00000020; 
+			.module := compute_shader_module;
+			.pName := "main";
+			.pSpecializationInfo := null;
+		};
+		.layout := pipeline_layout;
+		.basePipelineHandle := 0;
+		.basePipelineIndex := -1;
+	};
+	ret : u64 mut;
+
+	vk_check(vk.create_compute_pipelines(used_device, 0, 1, ref create, null, ref ret));
+	return ret;
+};
 
 [[private]]
 impl_alloc_new_pass ::= func(a : arena mut&) -> pass_data_t mut&
@@ -1178,6 +1222,17 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 		.pQueueFamilyIndices := ref used_qfi;
 	};
 	vk_check(vk.create_buffer(used_device, ref meta_create, null, ref (passptr->metabuf)));
+
+	// create pipeline.
+	passptr->is_compute = impl_shader_is_compute(info.shader);
+	if(passptr->is_compute)
+	{
+		passptr->pipeline = impl_create_compute_pipeline(info.shader);
+	}
+	if(!(passptr->is_compute))
+	{
+		puts("graphics passes are NYI");
+	}
 	return retid@tz_gpu_pass;
 };
 
