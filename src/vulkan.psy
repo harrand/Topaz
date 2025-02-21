@@ -587,7 +587,7 @@ VkPipelineVertexInputStateCreateInfo ::= struct
 	pVertexAttributeDescriptions : v0&;
 };
 
-VkPipelineInputAssemblyCreateInfo ::= struct
+VkPipelineInputAssemblyStateCreateInfo ::= struct
 {
 	sType : s32;
 	pNext : v0&;
@@ -707,6 +707,38 @@ VkPipelineRenderingCreateInfo ::= struct
 	stencilAttachmentFormat : s32;
 };
 
+VkPipelineDynamicStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	dynamicStateCount : u32;
+	pDynamicStates : s32&;
+};
+
+VkGraphicsPipelineCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	stageCount : u32;
+	pStages : VkPipelineShaderStageCreateInfo&;
+	pVertexInputState : VkPipelineVertexInputStateCreateInfo&;
+	pInputAssemblyState : VkPipelineInputAssemblyStateCreateInfo&;
+	pTessellationState : VkPipelineTessellationStateCreateInfo&;
+	pViewportState : VkPipelineViewportStateCreateInfo&;
+	pRasterizationState : VkPipelineRasterizationStateCreateInfo&;
+	pMultisampleState : VkPipelineMultisampleStateCreateInfo&;
+	pDepthStencilState : VkPipelineDepthStencilStateCreateInfo&;
+	pColorBlendState : VkPipelineColorBlendStateCreateInfo&;
+	pDynamicState : VkPipelineDynamicStateCreateInfo&;
+	layout : u64;
+	renderPass : u64;
+	subpass : u32;
+	basePipelineHandle : u64;
+	basePipelineIndex : s32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -762,6 +794,7 @@ vk_functions_t ::= struct
 	destroy_shader_module : func(device : u64, shaderModule : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
 	create_compute_pipelines : func(device : u64, pipelineCache : u64, createInfoCount : u32, pCreateInfos : VkComputePipelineCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelines : u64 mut&) -> s32;
+	create_graphics_pipelines : func(device : u64, pipelineCache : u64, createInfoCount : u32, pCreateInfos : VkGraphicsPipelineCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelines : u64 mut&) -> s32;
 	destroy_pipeline : func(device : u64, pipeline : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 };
 
@@ -869,6 +902,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.destroy_shader_module = load_vk_fn("vkDestroyShaderModule", instance);
 
 	vk.create_compute_pipelines = load_vk_fn("vkCreateComputePipelines", instance);
+	vk.create_graphics_pipelines = load_vk_fn("vkCreateGraphicsPipelines", instance);
 	vk.destroy_pipeline = load_vk_fn("vkDestroyPipeline", instance);
 };
 

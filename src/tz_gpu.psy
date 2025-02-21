@@ -275,7 +275,7 @@ impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu
 		.pVertexAttributeDescriptions := null;
 	};
 
-	iasm ::= VkPipelineInputAssemblyCreateInfo
+	iasm ::= VkPipelineInputAssemblyStateCreateInfo
 	{
 		.sType := 20;
 		.pNext := null;
@@ -431,9 +431,48 @@ impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu
 		.viewMask := 0;
 		.colorAttachmentCount := (graphics.colour_targets_count)@_;
 		.pColorAttachmentFormats := color_formats;
+		.depthAttachmentFormat := 126;
+		.stencilAttachmentFormat := 0;
+	};
+
+	dynamic_states : s32 mut#2;
+	deref(dynamic_states at 0) = 0; /*VK_DYNAMIC_STATE_VIEWPORT*/
+	deref(dynamic_states at 1) = 1; /*VK_DYNAMIC_STATE_SCISSOR*/
+
+	dyn ::= VkPipelineDynamicStateCreateInfo
+	{
+		.sType := 27;
+		.pNext := null;
+		.flags := 0;
+		.dynamicStateCount := (__sizeof(dynamic_states) / __sizeof(deref(dynamic_states at 0)));
+		.pDynamicStates := dynamic_states at 0;
+	};
+
+	create ::= VkGraphicsPipelineCreateInfo
+	{
+		.sType := 28;
+		.pNext := (ref rendering)@_;
+		.flags := 0;
+		.stageCount := 2;
+		.pStages := shader_creates at 0;
+		.pVertexInputState := ref vtx;
+		.pInputAssemblyState := ref iasm;
+		.pTessellationState := ref tess;
+		.pViewportState := ref vwprt;
+		.pRasterizationState := ref raster;
+		.pMultisampleState := ref multi;
+		.pDepthStencilState := ref depth_stencil;
+		.pColorBlendState := ref blend;
+		.pDynamicState := ref dyn;
+		.layout := pipeline_layout;
+		.renderPass := 0;
+		.subpass := 0;
+		.basePipelineHandle := 0;
+		.basePipelineIndex := -1;
 	};
 
 	ret : u64 mut;
+	vk_check(vk.create_graphics_pipelines(used_device, 0, 1, ref create, null, ref ret));
 	return ret;
 };
 
@@ -977,6 +1016,7 @@ tz_gpu_term ::= func() -> v0
 	{
 		passptr = passes at counter;	
 		vk.destroy_buffer(used_device, passptr->metabuf, null);
+		vk.destroy_pipeline(used_device, passptr->pipeline, null);
 		counter = counter + 1;
 	}
 	passes_count = 0;
@@ -1446,7 +1486,6 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 	if(!(passptr->is_compute))
 	{
 		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, a);
-		puts("graphics passes are NYI");
 	}
 	return retid@tz_gpu_pass;
 };
