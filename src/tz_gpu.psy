@@ -67,7 +67,8 @@ tz_gpu_cull ::= enum
 {
 	.back := 0;
 	.front := 1;
-	.none := 0;
+	.none := 2;
+	.both := 3;
 };
 
 tz_gpu_graphics_state ::= struct
@@ -224,7 +225,220 @@ impl_shader_is_compute ::= func(shader : tz_gpu_shader) -> bool
 };
 
 [[private]]
-impl_create_compute_pipeline ::= func(shader : tz_gpu_shader) -> u64
+impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu_graphics_state, a : arena mut&) -> u64
+{
+	shadptr ::= (shaders at (shader@s64));
+	vertex_shader_module ::= shadptr->vertex_module;
+	if(vertex_shader_module == 0)
+	{
+		puts("invalid vertex shader");
+		__debugbreak();
+	}
+	fragment_shader_module ::= shadptr->fragment_module;
+	if(fragment_shader_module == 0)
+	{
+		puts("invalid fragment shader");
+		__debugbreak();
+	}
+
+	shader_creates : VkPipelineShaderStageCreateInfo mut#2;
+	deref(shader_creates at 0) = VkPipelineShaderStageCreateInfo
+	{
+		.sType := 18;
+		.pNext := null;
+		.flags := 0;
+		.stage := 0x00000001;
+		.module := vertex_shader_module;
+		.pName := "main";
+		.pSpecializationInfo := null;
+
+	};
+	deref(shader_creates at 1) = VkPipelineShaderStageCreateInfo
+	{
+		.sType := 18;
+		.pNext := null;
+		.flags := 0;
+		.stage := 0x00000010;
+		.module := fragment_shader_module;
+		.pName := "main";
+		.pSpecializationInfo := null;
+	};
+
+	vtx ::= VkPipelineVertexInputStateCreateInfo
+	{
+		.sType := 19;
+		.pNext := null;
+		.flags := 0;
+		.vertexBindingDescriptionCount := 0;
+		.pVertexBindingDescriptions := null;
+		.vertexAttributeDescriptionCount := 0;
+		.pVertexAttributeDescriptions := null;
+	};
+
+	iasm ::= VkPipelineInputAssemblyCreateInfo
+	{
+		.sType := 20;
+		.pNext := null;
+		.flags := 0;
+		.topology := 3;
+		.primitiveRestartEnable := 0;
+	};
+
+	tess ::= VkPipelineTessellationStateCreateInfo
+	{
+		.sType := 21;
+		.pNext := null;
+		.flags := 0;
+		.patchControlPoints := 3;
+	};
+
+	vwprt ::= VkPipelineViewportStateCreateInfo
+	{
+		.sType := 22;
+		.pNext := null;
+		.flags := 0;
+		.viewportCount := 1;
+		/*remember: this is dynamic state so we pass nulls even though there will be a viewport and scissor.*/
+		.pViewports := null;
+		.scissorCount := 1;
+		.pScissors := null;
+	};
+
+	cull_bits : s32 mut;
+	if(graphics.culling == (tz_gpu_cull.both))
+	{
+		cull_bits = 3;
+	}
+	if(graphics.culling == (tz_gpu_cull.front))
+	{
+		cull_bits = 1;
+	}
+	if(graphics.culling == (tz_gpu_cull.back))
+	{
+		cull_bits = 2;
+	}
+	if(graphics.culling == (tz_gpu_cull.none))
+	{
+		cull_bits = 0;
+	}
+
+	raster ::= VkPipelineRasterizationStateCreateInfo
+	{
+		.sType := 23;
+		.pNext := null;
+		.flags := 0;
+		.depthClampEnable := 0;
+		.rasterizerDiscardEnable := 0;
+		.polygonMode := 0;
+		.cullMode := cull_bits;
+		.frontFace := 0;
+		.depthBiasEnable := 0;
+		.depthBiasConstantFactor := 0.0;
+		.depthBiasClamp := 0.0;
+		.depthBiasSlopeFactor := 0.0;
+		.lineWidth := 1.0;
+	};
+
+	multi ::= VkPipelineMultisampleStateCreateInfo
+	{
+		.sType := 24;
+		.pNext := null;
+		.flags := 0;
+		.rasterizationSamples := 1;
+		.sampleShadingEnable := 0;
+		.minSampleShading := 1.0;
+		.pSampleMask := null;
+		.alphaToCoverageEnable := 0;
+		.alphaToOneEnable := 0;
+	};
+
+	depthTestEnable : u32 mut := 0;
+	depthWriteEnable : u32 mut := 1;
+
+	stencil_op_state ::= VkStencilOpState
+	{
+		.failOp := 0;
+		.passOp := 0;
+		.depthFailOp := 0;
+		.compareOp := 0;
+		.compareMask := 0;
+		.writeMask := 0;
+		.reference := 0;
+	};
+
+	depth_stencil ::= VkPipelineDepthStencilStateCreateInfo
+	{
+		.sType := 25;
+		.pNext := null;
+		.flags := 0;
+		.depthTestEnable := depthTestEnable;
+		.depthWriteEnable := depthWriteEnable;
+		.depthCompareOp := 1;
+		.depthBoundsTestEnable := 1;
+		.stencilTestEnable := 0;
+		.front := stencil_op_state;
+		.back := stencil_op_state;
+		.minDepthBounds := 0.0;
+		.maxDepthBounds := 1.0;
+	};
+
+	counter : u64 mut := 0;
+	blend_states : VkPipelineColorBlendAttachmentState mut& := arena_push(a, __sizeof(VkPipelineColorBlendAttachmentState) * (graphics.colour_targets_count));
+	while(counter < (graphics.colour_targets_count))
+	{
+		deref(blend_states at counter) = VkPipelineColorBlendAttachmentState
+		{
+			.blendEnable := 0;
+			.srcColorBlendFactor := 1;
+			.dstColorBlendFactor := 0;
+			.colorBlendOp := 0;
+			.srcAlphaBlendFactor := 1;
+			.dstAlphaBlendFactor := 0;
+			.alphaBlendOp := 0;
+			.colorWriteMask := (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008);
+		};
+		counter = (counter + 1);
+	}
+	counter = 0;
+
+	blend ::= VkPipelineColorBlendStateCreateInfo
+	{
+		.sType := 26;
+		.pNext := null;
+		.flags := 0;
+		.logicOpEnable := 0;
+		.logicOp := 0;
+		.attachmentCount := (graphics.colour_targets_count)@_;
+		.pAttachments := blend_states at 0;
+	};
+	deref((blend.blendConstants) at 0) = 0.0;
+	deref((blend.blendConstants) at 1) = 0.0;
+	deref((blend.blendConstants) at 2) = 0.0;
+	deref((blend.blendConstants) at 3) = 0.0;
+
+	color_formats : s32 mut& := arena_push(a, __sizeof(s32) * (graphics.colour_targets_count));
+	while(counter < (graphics.colour_targets_count))
+	{
+		deref(color_formats at counter) = 37;
+		counter = counter + 1;
+	}
+	counter = 0;
+
+	rendering ::= VkPipelineRenderingCreateInfo
+	{
+		.sType := 1000044002;
+		.pNext := null;
+		.viewMask := 0;
+		.colorAttachmentCount := (graphics.colour_targets_count)@_;
+		.pColorAttachmentFormats := color_formats;
+	};
+
+	ret : u64 mut;
+	return ret;
+};
+
+[[private]]
+impl_create_compute_pipeline ::= func(shader : tz_gpu_shader, compute : tz_gpu_compute_state) -> u64
 {
 	shadptr ::= (shaders at (shader@s64));
 	compute_shader_module ::= shadptr->compute_module;
@@ -1227,10 +1441,11 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 	passptr->is_compute = impl_shader_is_compute(info.shader);
 	if(passptr->is_compute)
 	{
-		passptr->pipeline = impl_create_compute_pipeline(info.shader);
+		passptr->pipeline = impl_create_compute_pipeline(info.shader, info.compute);
 	}
 	if(!(passptr->is_compute))
 	{
+		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, a);
 		puts("graphics passes are NYI");
 	}
 	return retid@tz_gpu_pass;

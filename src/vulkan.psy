@@ -576,6 +576,137 @@ VkComputePipelineCreateInfo ::= struct
 	basePipelineIndex : s32;
 };
 
+VkPipelineVertexInputStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	vertexBindingDescriptionCount : u32;
+	pVertexBindingDescriptions : v0&;
+	vertexAttributeDescriptionCount : u32;
+	pVertexAttributeDescriptions : v0&;
+};
+
+VkPipelineInputAssemblyCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	topology : s32;
+	primitiveRestartEnable : u32;
+};
+
+VkPipelineTessellationStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	patchControlPoints : u32;
+};
+
+VkPipelineViewportStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	viewportCount : u32;
+	pViewports : v0&;
+	scissorCount : u32;
+	pScissors : v0&;
+};
+
+VkPipelineRasterizationStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	depthClampEnable : u32;
+	rasterizerDiscardEnable : u32;
+	polygonMode : s32;
+	cullMode : s32;
+	frontFace : s32;
+	depthBiasEnable : u32;
+	depthBiasConstantFactor : f32;
+	depthBiasClamp : f32;
+	depthBiasSlopeFactor : f32;
+	lineWidth : f32;
+};
+
+VkPipelineMultisampleStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	rasterizationSamples : s32;
+	sampleShadingEnable : u32;
+	minSampleShading : f32;
+	pSampleMask : v0&;
+	alphaToCoverageEnable : u32;
+	alphaToOneEnable : u32;
+};
+
+VkStencilOpState ::= struct
+{
+	failOp : s32;
+	passOp : s32;
+	depthFailOp : s32;
+	compareOp : s32;
+	compareMask : u32;
+	writeMask : u32;
+	reference : u32;
+};
+
+VkPipelineDepthStencilStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	depthTestEnable : u32;
+	depthWriteEnable : u32;
+	depthCompareOp : s32;
+	depthBoundsTestEnable : u32;
+	stencilTestEnable : u32;
+	front : VkStencilOpState;
+	back : VkStencilOpState;
+	minDepthBounds : f32;
+	maxDepthBounds : f32;
+};
+
+VkPipelineColorBlendAttachmentState ::= struct
+{
+	blendEnable : u32;
+	srcColorBlendFactor : s32;
+	dstColorBlendFactor : s32;
+	colorBlendOp : s32;
+	srcAlphaBlendFactor : s32;
+	dstAlphaBlendFactor : s32;
+	alphaBlendOp : s32;
+	colorWriteMask : s32;
+};
+
+VkPipelineColorBlendStateCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	logicOpEnable : u32;
+	logicOp : s32;
+	attachmentCount : u32;
+	pAttachments : VkPipelineColorBlendAttachmentState&;
+	blendConstants : f32 mut#4;
+};
+
+VkPipelineRenderingCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	viewMask : u32;
+	colorAttachmentCount : u32;
+	pColorAttachmentFormats : s32&;
+	depthAttachmentFormat : s32;
+	stencilAttachmentFormat : s32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;

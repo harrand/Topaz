@@ -70,7 +70,18 @@ main ::= func() -> s32
 
 	pass ::= tz_gpu_create_pass(tz_gpu_pass_info
 	{
-		.graphics := tz_gpu_graphics_state{};
+		.graphics := tz_gpu_graphics_state
+		{
+			.clear_colour := vec4{.x := 0.0; .y := 0.0; .z := 1.0; .w := 1.0;};
+			.scissor := vec4u32_zero();
+			.colour_targets_data := null;
+			.colour_targets_count := 0;
+			.depth_target := tz_gpu_resource.invalid;
+			.index_buffer := tz_gpu_resource.invalid;
+			.draw_buffer := tz_gpu_resource.invalid;
+			.culling := tz_gpu_cull.none;
+			.static_tri_count := 1;
+		};
 		.shader := shader;
 		.resources_data := null;
 		.resources_count := 0;
