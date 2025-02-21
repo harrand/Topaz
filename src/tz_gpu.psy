@@ -201,7 +201,36 @@ shaders : shader_data_t mut& mut;
 shaders_count : u64 mut := 0;
 shaders_cap : u64 mut := 0;
 
+// internal pass data.
+pass_data_t ::= struct
+{
+	info : tz_gpu_pass_info;
+	metabuf : u64;
+};
+
+passes : pass_data_t mut& mut;
+passes_count : u64 mut := 0;
+passes_cap : u64 mut := 0;
+
 // implementation details
+
+[[private]]
+impl_alloc_new_pass ::= func(a : arena mut&) -> pass_data_t mut&
+{
+	if(passes_cap == 0)
+	{
+		passes = arena_push(a, __sizeof(pass_data_t) * 32);
+		passes_cap = 32;
+	}
+	if(passes_count > passes_cap)
+	{
+		puts("ran out of pass capacity. todo: fix this.");
+		__debugbreak();
+	}
+	id ::= passes_count;
+	passes_count = passes_count + 1;
+	return passes at id;
+};
 
 [[private]]
 impl_alloc_new_shader ::= func(a : arena mut&) -> shader_data_t mut&
@@ -683,6 +712,17 @@ tz_gpu_term ::= func() -> v0
 		vk.destroy_swapchain_khr(used_device, swapchain, null);
 	}
 
+	// destroy all passes
+	counter = 0;
+	passptr : pass_data_t mut& mut;
+	while(counter < passes_count)
+	{
+		passptr = passes at counter;	
+		vk.destroy_buffer(used_device, passptr->metabuf, null);
+		counter = counter + 1;
+	}
+	passes_count = 0;
+
 	// destroy all resources.
 	counter = 0;
 	resptr : resource_data_t mut& mut;
@@ -1019,6 +1059,9 @@ tz_gpu_create_buffer ::= func(size : u64, access : tz_gpu_access, a : arena mut&
 		.flags := 0;
 		.size := size;
 		.usage := (0x00000020 | 0x00020000);
+		.sharingMode := 0;
+		.queueFamilyIndexCount := 1;
+		.pQueueFamilyIndices := ref used_qfi;
 	};
 	vk_check(vk.create_buffer(used_device, ref create, null, ref (resptr->vk_handle)));
 	bda ::= VkBufferDeviceAddressInfo
@@ -1097,9 +1140,45 @@ tz_gpu_create_compute_shader ::= func(compute_source : u8&, compute_source_len :
 	return retid@tz_gpu_shader;
 };
 
-tz_gpu_create_pass ::= func(info : tz_gpu_pass_info) -> tz_gpu_pass
+tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_pass
 {
-	return tz_gpu_pass.invalid;
+	retid ::= passes_count;
+	passptr ::= impl_alloc_new_pass(a);
+	passptr->info = info;
+	// first thing we need is a metabuffer.
+	// this is a non-BDA buffer that contains all the BDA addresses.
+	// let's figure out how many buffer resources we have
+	buffer_rescount : u64 mut := 0;
+	counter : u64 mut := 0;
+	cur_resource : resource_data_t mut;
+	while(counter < (info.resources_count))
+	{
+		cur_resource = deref (resources at (deref(info.resources_data at counter)@s64));
+		if(cur_resource.is_buffer)
+		{
+			buffer_rescount = buffer_rescount + 1;
+		}
+		counter = counter + 1;
+	}
+
+	size : u64 mut := 1;
+	if(buffer_rescount > 0)
+	{
+		size = buffer_rescount * __sizeof(u64);
+	}
+	meta_create ::= VkBufferCreateInfo
+	{
+		.sType := 12;
+		.pNext := null;
+		.flags := 0;
+		.size := size;
+		.usage := (0x00000020 | 0x00000002);
+		.sharingMode := 0;
+		.queueFamilyIndexCount := 1;
+		.pQueueFamilyIndices := ref used_qfi;
+	};
+	vk_check(vk.create_buffer(used_device, ref meta_create, null, ref (passptr->metabuf)));
+	return retid@tz_gpu_pass;
 };
 
 == build ==

@@ -75,7 +75,7 @@ main ::= func() -> s32
 		.resources_data := null;
 		.resources_count := 0;
 		.name := "Triangle Renderer";
-	});
+	}, permanent_arena);
 	if(pass == (tz_gpu_pass.invalid))
 	{
 		puts("failed to create pass");
