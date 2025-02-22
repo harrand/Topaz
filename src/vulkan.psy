@@ -760,6 +760,102 @@ VkSubmitInfo ::= struct
 	pSignalSemaphores : u64&;
 };
 
+VkMemoryBarrier ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	srcAccessMask : s32;
+	dstAccessMask : s32;
+};
+
+VkBufferMemoryBarrier ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	srcAccessMask : s32;
+	dstAccessMask : s32;
+	srcQueueFamilyIndex : u32;
+	dstQueueFamilyIndex : u32;
+	buffer : u64;
+	offset : u64;
+	size : u64;
+};
+
+VkImageSubresourceRange ::= struct
+{
+	aspectMask : s32;
+	baseMipLevel : u32;
+	levelCount : u32;
+	baseArrayLayer : u32;
+	layerCount : u32;
+};
+
+VkImageMemoryBarrier ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	srcAccessMask : s32;
+	dstAccessMask : s32;
+	oldLayout : s32;
+	newLayout : s32;
+	srcQueueFamilyIndex : u32;
+	dstQueueFamilyIndex : u32;
+	image : u64;
+	subresourceRange : VkImageSubresourceRange;
+};
+
+VkOffset2D ::= struct
+{
+	x : s32;
+	y : s32;
+};
+
+VkRect2D ::= struct
+{
+	offset : VkOffset2D;
+	extent : VkExtent2D;
+};
+
+VkClearColorValue ::= struct
+{
+	float32 : f32#4;
+};
+
+// note this is meant to be a union of VkClearColorValue and VkClearDepthStencilValue
+// well we dont support that. VkClearColorValue is the larger of the two so it will just be that.
+VkClearValue ::= struct
+{
+	color : VkClearColorValue;
+};
+
+VkRenderingAttachmentInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	imageView : u64;
+	imageLayout : s32;
+	resolveMode : s32;
+	resolveImageView : u64;
+	resolveImageLayout : s32;
+	loadOp : s32;
+	storeOp : s32;
+	clearValue : VkClearValue;
+};
+
+VkRenderingInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	renderArea : VkRect2D;
+	layerCount : u32;
+	viewMask : u32;
+	colorAttachmentCount : u32;
+	pColorAttachments : VkRenderingAttachmentInfo&;
+	pDepthAttachment : VkRenderingAttachmentInfo&;
+	pStencilAttachment : VkRenderingAttachmentInfo&;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -827,6 +923,15 @@ vk_functions_t ::= struct
 	queue_submit : func(queue : u64, submitCount : u32, pSubmits : VkSubmitInfo&, fence : u64) -> s32;
 	wait_for_fences : func(device : u64, fenceCount : u32, pFences : u64&, waitAll : u32, timeout : u64) -> s32;
 	reset_fences : func(device : u64, fenceCount : u32, pFences : u64&) -> s32;
+
+	cmd_bind_pipeline : func(commandBuffer : u64, pipelineBindPoint : s32, pipeline : u64) -> v0;
+	cmd_dispatch : func(commandBuffer : u64, groupCountX : u32, groupCountY : u32, groupCountZ : u32) -> v0;
+	cmd_pipeline_barrier : func(commandBuffer : u64, srcStageMask : s32, dstStageMask : s32, dependencyFlags : s32, memoryBarrierCount : u32, pMemoryBarriers : VkMemoryBarrier&, bufferMemoryBarrierCount : u32, pBufferMemoryBarriers : VkBufferMemoryBarrier&, imageMemoryBarrierCount : u32, pImageMemoryBarriers : VkImageMemoryBarrier&) -> v0;
+	cmd_begin_rendering : func(commandBuffer : u64, pRenderingInfo : VkRenderingInfo&) -> v0;
+	cmd_end_rendering : func(commandBuffer : u64) -> v0;
+	cmd_set_viewport : func(commandBuffer : u64, firstViewport : u32, viewportCount : u32, pViewports : VkViewport&) -> v0;
+	cmd_set_scissor : func(commandBuffer : u64, firstScissor : u32, scissorCount : u32, pScissors : VkRect2D&) -> v0;
+	cmd_draw : func(commandBuffer : u64, vertexCount : u32, instanceCount : u32, firstVertex : u32, firstInstance : u32) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -945,6 +1050,15 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.queue_submit = load_vk_fn("vkQueueSubmit", instance);
 	vk.wait_for_fences = load_vk_fn("vkWaitForFences", instance);
 	vk.reset_fences = load_vk_fn("vkResetFences", instance);
+
+	vk.cmd_bind_pipeline = load_vk_fn("vkCmdBindPipeline", instance);
+	vk.cmd_dispatch = load_vk_fn("vkCmdDispatch", instance);
+	vk.cmd_pipeline_barrier = load_vk_fn("vkCmdPipelineBarrier", instance);
+	vk.cmd_begin_rendering = load_vk_fn("vkCmdBeginRendering", instance);
+	vk.cmd_end_rendering = load_vk_fn("vkCmdEndRendering", instance);
+	vk.cmd_set_viewport = load_vk_fn("vkCmdSetViewport", instance);
+	vk.cmd_set_scissor = load_vk_fn("vkCmdSetScissor", instance);
+	vk.cmd_draw = load_vk_fn("vkCmdDraw", instance);
 };
 
 vulkan_term ::= func() -> v0
