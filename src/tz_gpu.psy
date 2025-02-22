@@ -64,6 +64,7 @@ tz_gpu_resource_info ::= struct
 tz_gpu_resource ::= enum
 {
 	.invalid := -1;
+	.window_resource := -2;
 };
 
 tz_gpu_shader_sources ::= struct
@@ -205,7 +206,9 @@ resource_data_t ::= struct
 	info : tz_gpu_resource_info;
 	is_buffer : bool;
 	vk_handle : u64;
+	image_view : u64;
 	buffer_device_address : u64;
+
 };
 resources : resource_data_t mut& mut;
 resource_count : u64 mut := 0;
@@ -574,15 +577,132 @@ impl_record_compute_work ::= func(passptr : pass_data_t mut&, frame_id : u64) ->
 };
 
 [[private]]
-impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64) -> v0
+impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a : arena mut&) -> v0
 {
+	frame ::= deref(frames at frame_id);
+	pinfo ::= passptr->info;
+	ginfo ::= pinfo.graphics;
+	ccount ::= ginfo.colour_targets_count;
 
-	puts("graphics work is NYI");
-	__debugbreak();
+	if(ccount == 0)
+	{
+		puts("doesn't make sense to have a graphics pass with no colour attachments. please use one.");
+		__debugbreak();
+	}
+
+	colour_attachments : VkRenderingAttachmentInfo mut& := arena_push(a, __sizeof(VkRenderingAttachmentInfo) * ccount);
+	colour_transitions : VkImageMemoryBarrier mut& := arena_push(a, __sizeof(VkImageMemoryBarrier) * ccount);
+	colour_transition_count : u64 mut := 0;
+
+	counter : u64 mut := 0;
+	colour_target : tz_gpu_resource mut;
+	resptr : resource_data_t mut& mut;
+	render_target : u64 mut;
+	render_target_view : u64 mut;
+
+	clear_colour : VkClearColorValue mut;
+	ccol ::= ginfo.clear_colour;
+	deref((clear_colour.float32) at 0) = ccol.x;
+	deref((clear_colour.float32) at 1) = ccol.y;
+	deref((clear_colour.float32) at 2) = ccol.z;
+	deref((clear_colour.float32) at 3) = ccol.w;
+
+	while(counter < ccount)
+	{
+		colour_target = deref ((ginfo.colour_targets_data) at counter);
+		render_target = 0;
+		render_target_view = 0;
+
+		if(colour_target == (tz_gpu_resource.window_resource))
+		{
+			puts("colour target window resource is NYI");
+			__debugbreak();
+			/*
+			render_target = system_image;
+			render_target_view = system_image_view;
+			*/
+		}
+		/*else*/
+		if(colour_target != (tz_gpu_resource.window_resource))
+		{
+			resptr = (resources at (colour_target@s64));
+			render_target = (resptr->vk_handle);
+			render_target_view = (resptr->image_view);
+		}
+
+		deref(colour_attachments at counter) = VkRenderingAttachmentInfo
+		{
+			.sType := 1000044001;
+			.pNext := null;
+			.imageView := render_target_view;
+			.imageLayout := 2; /*VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL*/
+			.resolveMode := 0;
+			.resolveImageView := 0;
+			.resolveImageLayout := 0;
+			//.loadOp := 0; // VK_ATTACHMENT_LOAD_OP_LOAD (if we're noit clearing colour targets)
+			.loadOp := 1; // VK_ATTACHMENT_LOAD_OP_CLEAR (if we are clearing colour targets)
+			.storeOp := 0;
+			.clearValue := VkClearValue{.color := clear_colour;};
+		};
+		if(true) /*todo: if we're not clearing colour targets*/
+		{
+			deref (colour_transitions at colour_transition_count) = VkImageMemoryBarrier
+			{
+				.sType := 45;
+				.pNext := null;
+				.srcAccessMask := 0;
+				.dstAccessMask := 0x00000100; // VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
+				.oldLayout := 0;
+				.newLayout := 2; // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+				.srcQueueFamilyIndex := !0;
+				.dstQueueFamilyIndex := !0;
+				.image := render_target;
+				.subresourceRange := VkImageSubresourceRange
+				{
+					.aspectMask := 0x00000001; // VK_IMAGE_ASPECT_COLOR_BIT 
+					.baseMipLevel := 0;
+					.levelCount := 1;
+					.baseArrayLayer := 0;
+					.layerCount := 1;
+				};
+			};
+			colour_transition_count = colour_transition_count + 1;
+		}
+		
+		counter = counter + 1;
+	}
+
+	// if we have any colour transitions at all, do a pipeline barrier with them.
+	if(colour_transition_count > 0)
+	{
+		vk.cmd_pipeline_barrier(frame.cmds, 0x00002000, 0x00000400, 0, 0, null, 0, null, colour_transition_count@_, colour_transitions);
+	}
+	// todo: depth target stuffs.
+
+	render ::= VkRenderingInfo
+	{
+		.sType := 1000044000;
+		.pNext := null;
+		.flags := 0;
+		.renderArea := VkRect2D
+		{
+			.offset := VkOffset2D{.x := 0; .y := 0;};
+			.extent := VkExtent2D
+			{
+				// todo: get viewport of colour attachments here.
+			};
+		};
+		.layerCount := 1;
+		.viewMask := 0;
+		.colorAttachmentCount := ccount@_;
+		.pColorAttachments := colour_attachments;
+		.pDepthAttachment := null;
+		.pStencilAttachment := null;
+	};
 };
 
 [[private]]
-impl_record_gpu_work ::= func(pass : tz_gpu_pass, frame_id : u64) -> v0
+impl_record_gpu_work ::= func(pass : tz_gpu_pass, frame_id : u64, a : arena mut&) -> v0
 {
 	passptr : pass_data_t mut& := passes at (pass@s64);
 	if(passptr->is_compute)
@@ -591,7 +711,7 @@ impl_record_gpu_work ::= func(pass : tz_gpu_pass, frame_id : u64) -> v0
 	}
 	if(!(passptr->is_compute))
 	{
-		impl_record_graphics_work(passptr, frame_id);
+		impl_record_graphics_work(passptr, frame_id, a);
 	}
 };
 
@@ -1631,7 +1751,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 };
 
 // todo: take in render graph and go through the passes in that order instead.
-tz_gpu_execute ::= func() -> v0
+tz_gpu_execute ::= func(a : arena mut&) -> v0
 {
 	frame_begin ::= VkCommandBufferBeginInfo
 	{
@@ -1649,7 +1769,7 @@ tz_gpu_execute ::= func() -> v0
 	// create and use a graph.
 	while(counter < passes_count)
 	{
-		impl_record_gpu_work(counter@tz_gpu_pass, current_frame);
+		impl_record_gpu_work(counter@tz_gpu_pass, current_frame, a);
 		counter = counter + 1;
 	}
 	// if we just wrote to the system image:

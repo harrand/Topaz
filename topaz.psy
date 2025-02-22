@@ -75,14 +75,16 @@ main ::= func() -> s32
 		__debugbreak();
 	}
 
+	colour_target ::= tz_gpu_resource.window_resource;
+
 	pass ::= tz_gpu_create_pass(tz_gpu_pass_info
 	{
 		.graphics := tz_gpu_graphics_state
 		{
 			.clear_colour := vec4{.x := 0.0; .y := 0.0; .z := 1.0; .w := 1.0;};
 			.scissor := vec4u32_zero();
-			.colour_targets_data := null;
-			.colour_targets_count := 0;
+			.colour_targets_data := ref colour_target;
+			.colour_targets_count := 1;
 			.depth_target := tz_gpu_resource.invalid;
 			.index_buffer := tz_gpu_resource.invalid;
 			.draw_buffer := tz_gpu_resource.invalid;
@@ -114,7 +116,7 @@ main ::= func() -> s32
 		arena_clear(frame_arena);
 
 		window_update();
-		tz_gpu_execute();
+		tz_gpu_execute(frame_arena);
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
