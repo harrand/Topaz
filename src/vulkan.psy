@@ -739,6 +739,27 @@ VkGraphicsPipelineCreateInfo ::= struct
 	basePipelineIndex : s32;
 };
 
+VkCommandBufferBeginInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	pInheritanceInfo : v0&;
+};
+
+VkSubmitInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	waitSemaphoreCount : u32;
+	pWaitSemaphores : u64&;
+	pWaitDstStageMask : s32&;
+	commandBufferCount : u32;
+	pCommandBuffers : u64&;
+	signalSemaphoreCount : u32;
+	pSignalSemaphores : u64&;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -796,6 +817,16 @@ vk_functions_t ::= struct
 	create_compute_pipelines : func(device : u64, pipelineCache : u64, createInfoCount : u32, pCreateInfos : VkComputePipelineCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelines : u64 mut&) -> s32;
 	create_graphics_pipelines : func(device : u64, pipelineCache : u64, createInfoCount : u32, pCreateInfos : VkGraphicsPipelineCreateInfo&, pAllocator : VkAllocationCallbacks&, pPipelines : u64 mut&) -> s32;
 	destroy_pipeline : func(device : u64, pipeline : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+
+	begin_command_buffer : func(commandBuffer : u64, pBeginInfo : VkCommandBufferBeginInfo&) -> s32;
+	end_command_buffer : func(commandBuffer : u64) -> s32;
+	reset_command_buffer : func(commandBuffer : u64, flags : s32) -> s32;
+
+	map_memory : func(device : u64, memory : u64, offset : u64, size : u64, flags : s32, ppData : v0 mut&& weak) -> s32;
+
+	queue_submit : func(queue : u64, submitCount : u32, pSubmits : VkSubmitInfo&, fence : u64) -> s32;
+	wait_for_fences : func(device : u64, fenceCount : u32, pFences : u64&, waitAll : u32, timeout : u64) -> s32;
+	reset_fences : func(device : u64, fenceCount : u32, pFences : u64&) -> s32;
 };
 
 vk : vk_functions_t mut;
@@ -904,6 +935,16 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.create_compute_pipelines = load_vk_fn("vkCreateComputePipelines", instance);
 	vk.create_graphics_pipelines = load_vk_fn("vkCreateGraphicsPipelines", instance);
 	vk.destroy_pipeline = load_vk_fn("vkDestroyPipeline", instance);
+
+	vk.begin_command_buffer = load_vk_fn("vkBeginCommandBuffer", instance);
+	vk.end_command_buffer = load_vk_fn("vkEndCommandBuffer", instance);
+	vk.reset_command_buffer = load_vk_fn("vkResetCommandBuffer", instance);
+
+	vk.map_memory = load_vk_fn("vkMapMemory", instance);
+
+	vk.queue_submit = load_vk_fn("vkQueueSubmit", instance);
+	vk.wait_for_fences = load_vk_fn("vkWaitForFences", instance);
+	vk.reset_fences = load_vk_fn("vkResetFences", instance);
 };
 
 vulkan_term ::= func() -> v0
