@@ -176,9 +176,14 @@ window_get_dimensions ::= func(wnd : window_handle) -> vec2u32
 	rect : RECT mut;
 	if(GetClientRect(wnd@s64@u64, ref rect) != 0)
 	{
-		return vec2u32{.x := (rect.right - rect.left)@_; .y := (rect.bottom - rect.top)@_;};
+		return vec2u32{.x := ((rect.right) - (rect.left))@_; .y := ((rect.bottom) - (rect.top))@_;};
 	}
 	return vec2u32{.x := 0; .y := 0;};
+};
+
+get_main_window ::= func() -> window_handle
+{
+	return main_window@window_handle;
 };
 
 == build ==

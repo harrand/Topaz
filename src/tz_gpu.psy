@@ -197,6 +197,20 @@ swapchain : u64 mut := 0;
 swapchain_width : u64 mut := 0;
 [[private]]
 swapchain_height : u64 mut := 0;
+[[private]]
+swapchain_image_count : u32 mut;
+[[private]]
+swapchain_images : u64 mut& mut;
+[[private]]
+swapchain_views : u64 mut& mut;
+[[private]]
+swapchain_format ::= 44;
+[[private]]
+rgba_format ::= 37;
+
+system_image : u64 mut;
+//system_depth_image : u64 mut;
+system_image_view : u64 mut;
 
 [[private]]
 current_frame : u64 mut := 0;
@@ -477,7 +491,7 @@ impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu
 	color_formats : s32 mut& := arena_push(a, __sizeof(s32) * (graphics.colour_targets_count));
 	while(counter < (graphics.colour_targets_count))
 	{
-		deref(color_formats at counter) = 37;
+		deref(color_formats at counter) = rgba_format;
 		counter = counter + 1;
 	}
 	counter = 0;
@@ -569,6 +583,188 @@ impl_create_compute_pipeline ::= func(shader : tz_gpu_shader, compute : tz_gpu_c
 	return ret;
 };
 
+[[impl]]
+impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
+{
+	valloc : valloc_t mut& mut := ref (vallocator.image_gpu);
+	if((valloc->cursor + imgsize) > (valloc->size))
+	{
+		puts("allocation too large. requested ");
+		putuint(valloc->cursor + imgsize);
+		puts("B but there was only ");
+		putuint(valloc->size);
+		puts("B remaining.");
+		__debugbreak();
+	}
+	ret ::= vk.bind_image_memory(used_device, image, valloc->device_mem, valloc->cursor);
+	if(ret == -1) /* out of host memory */
+	{
+		puts("oom when binding image memory. todo: multiple allocations");
+		__debugbreak();
+	}
+	if(ret == -2) /* out of device memory */
+	{
+		puts("voom when binding image memory. todo: multiple allocations");
+		__debugbreak();
+	}
+	// todo: align safely.
+	valloc->cursor = (valloc->cursor) + imgsize;
+};
+
+
+[[private]]
+impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mut&) -> VkResult
+{
+	if(surface == 0)
+	{
+		// create surface.
+		if static(__is_windows)
+		{
+			create ::= VkWin32SurfaceCreateInfoKHR
+			{
+				.sType := 1000009000;
+				.pNext := null;
+				.flags := 0;
+				.hinstance := GetModuleHandleA(null);
+				.hwnd := wnd@s64@u64;
+			};
+			vk_check(vk.create_win32_surface_khr(vkinst, ref create, null, ref surface));
+		}
+		if static(__is_linux)
+		{
+			__error("linux vulkan support NYI");
+		}
+	}
+
+	if(swapchain_width@_ == w)
+	{
+		if(swapchain_height@_ == h)
+		{
+			return VkResult.VK_SUCCESS;
+		}
+	}
+
+	puts("(re)creating swapchain...");
+	putchar(10);
+
+	caps : VkSurfaceCapabilitiesKHR mut;
+	vk.get_physical_device_surface_capabilities_khr(used_hardware, surface, ref caps);
+
+	swch_create ::= VkSwapchainCreateInfoKHR
+	{
+		.sType := 1000001000;
+		.pNext := null;
+		.flags := 0;
+		.surface := surface;
+		.minImageCount := 2;
+		.imageFormat := swapchain_format;
+		.imageColorSpace := 0;
+		.imageExtent := VkExtent2D{.width := 800; .height := 600;};
+		.imageArrayLayers := 1;
+		.imageUsage := (0x00000010 | 0x00000002);
+		.imageSharingMode := 0;
+		.queueFamilyIndexCount := 1;
+		.pQueueFamilyIndices := ref used_qfi;
+		.preTransform := caps.currentTransform;
+		.compositeAlpha := 0x00000001;
+		// 0 = immediate. fifo (vsync) = 2
+		.presentMode := 0;
+		.clipped := 0;
+		.oldSwapchain := swapchain;
+	};
+	old_swapchain ::= swapchain;
+	vk_check(vk.create_swapchain_khr(used_device, ref swch_create, null, ref swapchain));
+
+	// todo: destroy old swapchain images if they already existed. right now we arent checking that and are just stomping over swapchain_images and swapchain_views.
+	vk.get_swapchain_images_khr(used_device, swapchain, ref swapchain_image_count, null);
+	swapchain_images = arena_push(a, __sizeof(u64) * swapchain_image_count);
+	swapchain_views = arena_push(a, __sizeof(u64) * swapchain_image_count);
+	vk.get_swapchain_images_khr(used_device, swapchain, ref swapchain_image_count, swapchain_images);
+
+	view_create : VkImageViewCreateInfo mut := VkImageViewCreateInfo
+	{
+		.sType := 15;
+		.pNext := null;
+		.flags := 0;
+		.image := 0; // note: will overwrite this in coming for-loop.
+		.viewType := 1;
+		.format := swapchain_format;
+		.components := VkComponentMapping
+		{
+			.r := 0;
+			.g := 0;
+			.b := 0;
+			.a := 0;
+		};
+		.subresourceRange := VkImageSubresourceRange
+		{
+			.aspectMask := 0x00000001;
+			.baseMipLevel := 0;
+			.levelCount := 1;
+			.baseArrayLayer := 0;
+			.layerCount := 1;
+		};
+	};
+
+	counter : u32 mut := 0;
+	while(counter < swapchain_image_count)
+	{
+		(view_create.image) = deref(swapchain_images at counter);
+
+		vk_check(vk.create_image_view(used_device, ref view_create, null, swapchain_views at counter));
+
+		counter = counter + 1;
+	}
+
+	// todo: destroy old system image + view if they already exist. i am not bothering rn.
+	system_image_create ::= VkImageCreateInfo
+	{
+		.sType := 14;
+		.pNext := null;
+		.flags := 0;
+		.imageType := 1;
+		.format := rgba_format;
+		.extent := VkExtent3D
+		{
+			.width := w@_;
+			.height := h@_;
+			.depth := 1;
+		};
+		.mipLevels := 1;
+		.arrayLayers := 1;
+		.samples := 1;
+		.tiling := 0;
+		.usage := (0x00000010) | (0x00000001); // VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT
+		.sharingMode := 0;
+		.queueFamilyIndexCount := 1;
+		.pQueueFamilyIndices := ref used_qfi;
+		.initialLayout := 0;
+	};
+	vk_check(vk.create_image(used_device, ref system_image_create, null, ref system_image));
+	impl_bind_image_mem(system_image, w * h * 4);
+	view_create.image = system_image;
+	view_create.format = rgba_format;
+	vk_check(vk.create_image_view(used_device, ref view_create, null, ref system_image_view));
+
+	swapchain_width = w;
+	swapchain_height = h;
+	// todo: system depth image
+
+	return VkResult.VK_SUCCESS;
+};
+
+[[private]]
+impl_force_new_swapchain ::= func(wnd : window_handle, a : arena mut&) -> VkResult
+{
+	w ::= swapchain_width;
+	h ::= swapchain_height;
+	swapchain_width = 0;
+	swapchain_height = 0;
+	return impl_need_swapchain(w, h, wnd, a);
+};
+
+
+
 [[private]]
 impl_record_compute_work ::= func(passptr : pass_data_t mut&, frame_id : u64) -> v0
 {
@@ -615,12 +811,14 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 
 		if(colour_target == (tz_gpu_resource.window_resource))
 		{
-			puts("colour target window resource is NYI");
-			__debugbreak();
-			/*
+			// need a new swapchain!
+			wnd ::= get_main_window();
+			windims ::= window_get_dimensions(wnd);
+			x ::= windims.x;
+			y ::= windims.y;
+			impl_need_swapchain(x@_, y@_, wnd, a);
 			render_target = system_image;
 			render_target_view = system_image_view;
-			*/
 		}
 		/*else*/
 		if(colour_target != (tz_gpu_resource.window_resource))
@@ -858,34 +1056,6 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 	return offset_from_zero;
 };
 
-[[impl]]
-impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
-{
-	valloc : valloc_t mut& mut := ref (vallocator.image_gpu);
-	if((valloc->cursor + imgsize) > (valloc->size))
-	{
-		puts("allocation too large. requested ");
-		putuint(valloc->cursor + imgsize);
-		puts("B but there was only ");
-		putuint(valloc->size);
-		puts("B remaining.");
-		__debugbreak();
-	}
-	ret ::= vk.bind_image_memory(used_device, image, valloc->device_mem, valloc->cursor);
-	if(ret == -1) /* out of host memory */
-	{
-		puts("oom when binding image memory. todo: multiple allocations");
-		__debugbreak();
-	}
-	if(ret == -2) /* out of device memory */
-	{
-		puts("voom when binding image memory. todo: multiple allocations");
-		__debugbreak();
-	}
-	// todo: align safely.
-	valloc->cursor = (valloc->cursor) + imgsize;
-};
-
 [[private]]
 impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_data : u8& weak, src_data_size : u64) -> v0
 {
@@ -983,86 +1153,6 @@ impl_initialise_pipeline_layout ::= func() -> u64
 
 	return ret;
 };
-
-[[private]]
-impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle) -> VkResult
-{
-	if(surface == 0)
-	{
-		// create surface.
-		if static(__is_windows)
-		{
-			create ::= VkWin32SurfaceCreateInfoKHR
-			{
-				.sType := 1000009000;
-				.pNext := null;
-				.flags := 0;
-				.hinstance := GetModuleHandleA(null);
-				.hwnd := wnd@s64@u64;
-			};
-			vk_check(vk.create_win32_surface_khr(vkinst, ref create, null, ref surface));
-		}
-		if static(__is_linux)
-		{
-			__error("linux vulkan support NYI");
-		}
-	}
-
-	if(swapchain_width@_ == w)
-	{
-		if(swapchain_height@_ == h)
-		{
-			return VkResult.VK_SUCCESS;
-		}
-	}
-
-	caps : VkSurfaceCapabilitiesKHR mut;
-	vk.get_physical_device_surface_capabilities_khr(used_hardware, surface, ref caps);
-
-	swch_create ::= VkSwapchainCreateInfoKHR
-	{
-		.sType := 1000001000;
-		.pNext := null;
-		.flags := 0;
-		.surface := surface;
-		.minImageCount := 2;
-		.imageFormat := 44;
-		.imageColorSpace := 0;
-		.imageExtent := VkExtent2D{.width := 800; .height := 600;};
-		.imageArrayLayers := 1;
-		.imageUsage := (0x00000010 | 0x00000002);
-		.imageSharingMode := 0;
-		.queueFamilyIndexCount := 1;
-		.pQueueFamilyIndices := ref used_qfi;
-		.preTransform := caps.currentTransform;
-		.compositeAlpha := 0x00000001;
-		// 0 = immediate. fifo (vsync) = 2
-		.presentMode := 0;
-		.clipped := 0;
-		.oldSwapchain := swapchain;
-	};
-	old_swapchain ::= swapchain;
-	vk_check(vk.create_swapchain_khr(used_device, ref swch_create, null, ref swapchain));
-
-	// get physical device.
-	// create swapchain.
-	// create swapchain images and views.
-	// set swapchain_width and height to the new values.
-	// create system image and system depth image.
-
-	return VkResult.VK_SUCCESS;
-};
-
-[[private]]
-impl_force_new_swapchain ::= func(wnd : window_handle) -> VkResult
-{
-	w ::= swapchain_width;
-	h ::= swapchain_height;
-	swapchain_width = 0;
-	swapchain_height = 0;
-	return impl_need_swapchain(w, h, wnd);
-};
-
 
 [[private]]
 impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : arena mut&) -> v0

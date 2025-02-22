@@ -32,7 +32,6 @@ main ::= func() -> s32
 
 	wnd ::= open_window(800, 600, "Topaz Test");
 	defer close_window(wnd);
-	wndval ::= wnd@s64@u64;
 
 	tz_gpu_init(tz_gpu_appinfo
 	{
@@ -115,8 +114,8 @@ main ::= func() -> s32
 		}
 		arena_clear(frame_arena);
 
-		window_update();
 		tz_gpu_execute(frame_arena);
+		window_update();
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
