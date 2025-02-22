@@ -197,6 +197,9 @@ swapchain_width : u64 mut := 0;
 [[private]]
 swapchain_height : u64 mut := 0;
 
+[[private]]
+current_frame : u64 mut := 0;
+
 resource_data_t ::= struct
 {
 	info : tz_gpu_resource_info;
@@ -564,6 +567,35 @@ impl_create_compute_pipeline ::= func(shader : tz_gpu_shader, compute : tz_gpu_c
 };
 
 [[private]]
+impl_record_compute_work ::= func(passptr : pass_data_t mut&, frame_id : u64) -> v0
+{
+	puts("compute work is NYI");
+	__debugbreak();
+};
+
+[[private]]
+impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64) -> v0
+{
+
+	puts("graphics work is NYI");
+	__debugbreak();
+};
+
+[[private]]
+impl_record_gpu_work ::= func(pass : tz_gpu_pass, frame_id : u64) -> v0
+{
+	passptr : pass_data_t mut& := passes at (pass@s64);
+	if(passptr->is_compute)
+	{
+		impl_record_compute_work(passptr, frame_id);
+	}
+	if(!(passptr->is_compute))
+	{
+		impl_record_graphics_work(passptr, frame_id);
+	}
+};
+
+[[private]]
 impl_alloc_new_pass ::= func(a : arena mut&) -> pass_data_t mut&
 {
 	if(passes_cap == 0)
@@ -735,7 +767,7 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 };
 
 [[private]]
-impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_data : u8& weak, src_data_size : u64, a : arena mut&) -> v0
+impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_data : u8& weak, src_data_size : u64) -> v0
 {
 	impl_begin_scratch_commands();
 	staging_create ::= VkBufferCreateInfo
@@ -757,6 +789,7 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 	mapped_ptr ::= cpumem.mapped_ptr;
 	mem_copy(mapped_ptr, src_data, src_data_size);
 	impl_end_and_execute_scratch_commands();
+	vk.destroy_buffer(used_device, staging, null);
 };
 
 [[private]]
@@ -1475,9 +1508,7 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 	}
 
 	// write resource data to gpu memory.
-	impl_begin_scratch_commands();
-	
-	impl_end_and_execute_scratch_commands();
+	impl_cpu_gpu_transfer(resptr->vk_handle, true, resinfo->data, info.data_size);
 
 	return retid@tz_gpu_resource;
 };
@@ -1597,6 +1628,54 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, a);
 	}
 	return retid@tz_gpu_pass;
+};
+
+// todo: take in render graph and go through the passes in that order instead.
+tz_gpu_execute ::= func() -> v0
+{
+	frame_begin ::= VkCommandBufferBeginInfo
+	{
+		.sType := 42;
+		.pNext := null;
+		.flags := 0;
+		.pInheritanceInfo := null;
+	};
+	frame ::= deref(frames at current_frame);
+	vk_check(vk.begin_command_buffer(frame.cmds, ref frame_begin));
+	// todo: vkcmdpipelinebarrier to transition swapchain image to TRANSFER_DST
+	// 		(if this pass will present)
+	counter : u64 mut := 0;
+	// todo: dont just iterate over all passes in order
+	// create and use a graph.
+	while(counter < passes_count)
+	{
+		impl_record_gpu_work(counter@tz_gpu_pass, current_frame);
+		counter = counter + 1;
+	}
+	// if we just wrote to the system image:
+	// 	1. system image must be in color attachment layout. to eventually present later on, we should now transition to transfer_src (to transfer it to swapchain image).
+	// 	2. record a command to do the blit (swapchain image should be transfer_dst)
+	// 	3. transition the swapchain image to present_src.
+
+	vk_check(vk.end_command_buffer(frame.cmds));
+	wait_stage : s32 := 0;
+	submit ::= VkSubmitInfo
+	{
+		.sType := 4;
+		.pNext := null;
+		.waitSemaphoreCount := 0;
+		.pWaitSemaphores := null;
+		.pWaitDstStageMask := ref wait_stage;
+		.commandBufferCount := 1;
+		.pCommandBuffers := ref (frame.cmds);
+		//.signalSemaphoreCount := 1;
+		//.pSignalSemaphores := ref (frame.swapchain_sem);
+		.signalSemaphoreCount := 0;
+		.pSignalSemaphores := null;
+	};
+	vk_check(vk.queue_submit(graphics_queue, 1, ref submit, frame.swapchain_fence));
+	vk_check(vk.wait_for_fences(used_device, 1, ref (frame.swapchain_fence), 1, -1@u64));
+	vk_check(vk.reset_fences(used_device, 1, ref (frame.swapchain_fence)));
 };
 
 == build ==

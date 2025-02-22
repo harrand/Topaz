@@ -104,8 +104,17 @@ main ::= func() -> s32
 
 	while(window_is_open(wnd))
 	{
+		if(frame_arena_val.cursor > 0)
+		{
+			puts("frame arena free: ");
+			putuint(frame_arena_val.cursor);
+			puts("B");
+			putchar(10);
+		}
 		arena_clear(frame_arena);
+
 		window_update();
+		tz_gpu_execute();
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
