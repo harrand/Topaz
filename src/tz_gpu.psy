@@ -593,17 +593,17 @@ impl_vallocator_initial_setup ::= func() -> v0
 	// create initial allocations for each case (buffer gpu, image gpu, buffer cpu).
 	bgpu ::= ref(vallocator.buffer_gpu);
 	vk_check(vk.allocate_memory(used_device, ref gpucreate, null, ref (bgpu->device_mem)));
-	(bgpu->size) = valloc_initial_size;
-	(bgpu->cursor) = 0;
+	bgpu->size = valloc_initial_size;
+	bgpu->cursor = 0;
 	igpu ::= ref(vallocator.image_gpu);
 	vk_check(vk.allocate_memory(used_device, ref gpucreate, null, ref (igpu->device_mem)));
-	(igpu->size) = valloc_initial_size;
-	(igpu->cursor) = 0;
+	igpu->size = valloc_initial_size;
+	igpu->cursor = 0;
 
 	bcpu ::= ref(vallocator.buffer_cpu);
 	vk_check(vk.allocate_memory(used_device, ref cpucreate, null, ref (bcpu->device_mem)));
-	(bcpu->size) = valloc_initial_size;
-	(bcpu->cursor) = 0;
+	bcpu->size = valloc_initial_size;
+	bcpu->cursor = 0;
 };
 
 [[private]]
