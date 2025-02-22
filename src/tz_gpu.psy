@@ -45,6 +45,22 @@ tz_gpu_access ::= enum
 	.dynamic := 1;
 };
 
+tz_gpu_resource_flag ::= enum
+{
+	.none := 0;
+	// ignore tz_gpu_resource_info.data, fill size with zeroes.
+	.zero_memory := 0b00000001;
+};
+
+tz_gpu_resource_info ::= struct
+{
+	data : v0&;
+	data_size : u64;
+	access : tz_gpu_access;
+	image_dimensions : vec2u32;
+	flags : tz_gpu_resource_flag;
+};
+
 tz_gpu_resource ::= enum
 {
 	.invalid := -1;
@@ -182,6 +198,7 @@ swapchain_height : u64 mut := 0;
 
 resource_data_t ::= struct
 {
+	info : tz_gpu_resource_info;
 	is_buffer : bool;
 	vk_handle : u64;
 	buffer_device_address : u64;
@@ -1345,17 +1362,18 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 	putchar(10);
 };
 
-tz_gpu_create_buffer ::= func(size : u64, access : tz_gpu_access, a : arena mut&) -> tz_gpu_resource
+tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz_gpu_resource
 {
 	retid ::= resource_count;
 	resptr ::= impl_alloc_new_resource(a);
+	resptr->info = info;
 	resptr->is_buffer = true;
 	create ::= VkBufferCreateInfo
 	{
 		.sType := 12;
 		.pNext := null;
 		.flags := 0;
-		.size := size;
+		.size := info.data_size;
 		.usage := (0x00000020 | 0x00020000);
 		.sharingMode := 0;
 		.queueFamilyIndexCount := 1;
@@ -1368,8 +1386,21 @@ tz_gpu_create_buffer ::= func(size : u64, access : tz_gpu_access, a : arena mut&
 		.pNext := null;
 		.buffer := resptr->vk_handle;
 	};
-	impl_bind_buffer_mem(resptr->vk_handle, size, access == (tz_gpu_access.static));
+	impl_bind_buffer_mem(resptr->vk_handle, info.data_size, info.access == (tz_gpu_access.static));
 	resptr->buffer_device_address = vk.get_buffer_device_address(used_device, ref bda);
+
+	// make a copy of the resource data using the arena.
+	resinfo ::= ref(resptr->info);
+	resinfo->data = arena_push(a, info.data_size);
+	if(info.data != null)
+	{
+		mem_copy(resinfo->data, info.data, info.data_size);
+	}
+
+	if(((info.flags) & (tz_gpu_resource_flag.zero_memory)) > 0)
+	{
+		mem_zero(resinfo->data, info.data_size);
+	}
 	return retid@tz_gpu_resource;
 };
 
@@ -1495,6 +1526,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 	add_source_file("src/vulkan.psy");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/file.psy");
+	add_source_file("src/mem.psy");
 
 	run_command("glslc -o build/vertex.spv src/vertex.glsl");
 	run_command("glslc -o build/fragment.spv src/fragment.glsl");
