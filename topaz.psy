@@ -139,5 +139,5 @@ main ::= func() -> s32
 
 	set_output_directory("build");
 	set_executable("tz");
-	set_optimisation(0);
+	set_optimisation(3);
 }

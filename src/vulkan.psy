@@ -1026,6 +1026,8 @@ vk_functions_t ::= struct
 	cmd_set_scissor : func(commandBuffer : u64, firstScissor : u32, scissorCount : u32, pScissors : VkRect2D&) -> v0;
 	cmd_blit_image : func(commandBuffer : u64, srcImage : u64, srcImageLayout : s32, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkImageBlit&, filter : s32) -> v0;
 	cmd_draw : func(commandBuffer : u64, vertexCount : u32, instanceCount : u32, firstVertex : u32, firstInstance : u32) -> v0;
+
+	device_wait_idle : func(device : u64) -> v0;
 };
 
 vk : vk_functions_t mut;
@@ -1163,6 +1165,8 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.cmd_set_scissor = load_vk_fn("vkCmdSetScissor", instance);
 	vk.cmd_blit_image = load_vk_fn("vkCmdBlitImage", instance);
 	vk.cmd_draw = load_vk_fn("vkCmdDraw", instance);
+
+	vk.device_wait_idle = load_vk_fn("vkDeviceWaitIdle", instance);
 };
 
 vulkan_term ::= func() -> v0

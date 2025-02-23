@@ -8,7 +8,10 @@ mem_zero ::= func(memory : u8 mut& weak, size : u64) -> v0
 	}
 };
 
-mem_copy ::= func(dst : u8 mut& weak, src : u8& weak, size : u64) -> v0
+// so there's possibly a bug in LLVM where it will still optimise hand-made loops to calls to memcpy sometimes
+// even though i've told it not to in the optimisation passes.
+// so here's a hand-rolled slow memcpy as a fallback. better than getting a linker error?
+memcpy ::= func(dst : u8 mut& weak, src : u8& weak, size : u64) -> v0
 {
 	counter : u64 mut := 0;
 	while(counter < size)
@@ -16,6 +19,11 @@ mem_copy ::= func(dst : u8 mut& weak, src : u8& weak, size : u64) -> v0
 		deref(dst at counter) = deref(src at counter);
 		counter = counter + 1;
 	}
+};
+
+mem_copy ::= func(dst : u8 mut& weak, src : u8& weak, size : u64) -> v0
+{
+	memcpy(dst, src, size);
 };
 
 == build ==
