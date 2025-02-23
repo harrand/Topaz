@@ -101,20 +101,25 @@ main ::= func() -> s32
 		__debugbreak();
 	}
 
+	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
+	tz_gpu_graph_add_pass(graph, pass);
+
 	defer tz_gpu_term();
 
 	while(window_is_open(wnd))
 	{
 		if(frame_arena_val.cursor > 0)
 		{
+			/*
 			puts("frame arena free: ");
 			putuint(frame_arena_val.cursor);
 			puts("B");
 			putchar(10);
+			*/
 		}
 		arena_clear(frame_arena);
 
-		tz_gpu_execute(frame_arena);
+		tz_gpu_execute(graph, frame_arena);
 		window_update();
 		if(is_key_down(key.escape))
 		{

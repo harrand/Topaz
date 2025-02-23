@@ -155,14 +155,16 @@ vec4u32 ::= struct
 {
 	x : u32;
 	y : u32;
+	z : u32;
+	w : u32;
 };
 
 vec4u32_zero ::= func() -> vec4u32
 {
-	return vec4u32{.x := 0.0; .y := 0.0;};
+	return vec4u32{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
 };
 
 vec4u32_filled ::= func(val : u32) -> vec4u32
 {
-	return vec4u32{.x := val; .y := val;};
+	return vec4u32{.x := val; .y := val; .z := val; .w := val;};
 };
