@@ -80,7 +80,7 @@ main ::= func() -> s32
 	{
 		.graphics := tz_gpu_graphics_state
 		{
-			.clear_colour := vec4{.x := 0.0; .y := 0.0; .z := 1.0; .w := 1.0;};
+			.clear_colour := vec4{.x := 1.0; .y := 0.0; .z := 1.0; .w := 1.0;};
 			.scissor := vec4u32_zero();
 			.colour_targets_data := ref colour_target;
 			.colour_targets_count := 1;
@@ -103,7 +103,7 @@ main ::= func() -> s32
 
 	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
 	tz_gpu_graph_add_pass(graph, pass);
-	//tz_gpu_graph_add_pass(graph, tz_gpu_pass.present);
+	tz_gpu_graph_add_pass(graph, tz_gpu_pass.present);
 
 	defer tz_gpu_term();
 
@@ -120,7 +120,7 @@ main ::= func() -> s32
 		}
 		arena_clear(frame_arena);
 
-		tz_gpu_execute(graph, frame_arena);
+		tz_gpu_execute(graph, permanent_arena, frame_arena);
 		window_update();
 		if(is_key_down(key.escape))
 		{

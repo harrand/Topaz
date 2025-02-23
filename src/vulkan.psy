@@ -905,6 +905,41 @@ VkViewport ::= struct
 	maxDepth : f32;
 };
 
+VkImageSubresourceLayers ::= struct
+{
+	aspectMask : s32;
+	mipLevel : u32;
+	baseArrayLayer : u32;
+	layerCount : u32;
+};
+
+VkOffset3D ::= struct
+{
+	x : s32;
+	y : s32;
+	z : s32;
+};
+
+VkImageBlit ::= struct
+{
+	srcSubresource : VkImageSubresourceLayers;
+	srcOffsets : VkOffset3D mut#2;
+	dstSubresource : VkImageSubresourceLayers;
+	dstOffsets : VkOffset3D mut#2;
+};
+
+VkPresentInfoKHR ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	waitSemaphoreCount : u32;
+	pWaitSemaphores : u64&;
+	swapchainCount : u32;
+	pSwapchains : u64&;
+	pImageIndices : u32&;
+	pResults : s32 mut&;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -926,6 +961,9 @@ vk_functions_t ::= struct
 	create_swapchain_khr : func(device : u64, pCreateInfo : VkSwapchainCreateInfoKHR&, pAllocator : VkAllocationCallbacks&, pSwapchain : u64 mut&) -> s32;
 	destroy_swapchain_khr : func(device : u64, swapchain : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 	get_swapchain_images_khr : func(device : u64, swapchain : u64, pSwapchainImageCount : u32 mut&, pSwapchainImages : u64&) -> s32;
+	acquire_next_image_khr : func(device : u64, swapchain : u64, timeout : u64, semaphore : u64, fence : u64, pImageIndex : u32 mut&) -> s32;
+
+	queue_present_khr : func(queue : u64, pPresentInfo : VkPresentInfoKHR&) -> s32;
 
 	create_image : func(device : u64, pCreateInfo : VkImageCreateInfo&, pAllocator : VkAllocationCallbacks&, pImage : u64 mut&) -> s32;
 	destroy_image : func(device : u64, image : u64, pAllocator : VkAllocationCallbacks&) -> v0;
@@ -986,6 +1024,7 @@ vk_functions_t ::= struct
 	cmd_end_rendering : func(commandBuffer : u64) -> v0;
 	cmd_set_viewport : func(commandBuffer : u64, firstViewport : u32, viewportCount : u32, pViewports : VkViewport&) -> v0;
 	cmd_set_scissor : func(commandBuffer : u64, firstScissor : u32, scissorCount : u32, pScissors : VkRect2D&) -> v0;
+	cmd_blit_image : func(commandBuffer : u64, srcImage : u64, srcImageLayout : s32, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkImageBlit&, filter : s32) -> v0;
 	cmd_draw : func(commandBuffer : u64, vertexCount : u32, instanceCount : u32, firstVertex : u32, firstInstance : u32) -> v0;
 };
 
@@ -1059,6 +1098,9 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.create_swapchain_khr = load_vk_fn("vkCreateSwapchainKHR", instance);
 	vk.destroy_swapchain_khr = load_vk_fn("vkDestroySwapchainKHR", instance);
 	vk.get_swapchain_images_khr = load_vk_fn("vkGetSwapchainImagesKHR", instance);
+	vk.acquire_next_image_khr = load_vk_fn("vkAcquireNextImageKHR", instance);
+
+	vk.queue_present_khr = load_vk_fn("vkQueuePresentKHR", instance);
 
 	vk.create_image = load_vk_fn("vkCreateImage", instance);
 	vk.destroy_image = load_vk_fn("vkDestroyImage", instance);
@@ -1119,6 +1161,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.cmd_end_rendering = load_vk_fn("vkCmdEndRendering", instance);
 	vk.cmd_set_viewport = load_vk_fn("vkCmdSetViewport", instance);
 	vk.cmd_set_scissor = load_vk_fn("vkCmdSetScissor", instance);
+	vk.cmd_blit_image = load_vk_fn("vkCmdBlitImage", instance);
 	vk.cmd_draw = load_vk_fn("vkCmdDraw", instance);
 };
 
@@ -1233,7 +1276,6 @@ vk_check ::= func(result : s32) -> v0
 		__debugbreak();
 	}
 };
-
 
 == build ==
 {
