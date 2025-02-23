@@ -1336,9 +1336,26 @@ tz_gpu_term ::= func() -> v0
 
 		counter = counter + 1;
 	}
+	counter = 0;
+	while(counter < (swapchain_image_count@_))
+	{
+		vk.destroy_image_view(used_device, deref(swapchain_views at counter), null);
+		counter = counter + 1;
+	}
 	if(swapchain != 0)
 	{
 		vk.destroy_swapchain_khr(used_device, swapchain, null);
+	}
+
+	if(system_image_view != 0)
+	{
+		vk.destroy_image_view(used_device, system_image_view, null);
+		system_image_view = 0;
+	}
+	if(system_image != 0)
+	{
+		vk.destroy_image(used_device, system_image, null);
+		system_image = 0;
 	}
 
 	// destroy all passes
