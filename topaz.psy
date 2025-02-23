@@ -103,6 +103,7 @@ main ::= func() -> s32
 
 	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
 	tz_gpu_graph_add_pass(graph, pass);
+	//tz_gpu_graph_add_pass(graph, tz_gpu_pass.present);
 
 	defer tz_gpu_term();
 

@@ -985,6 +985,10 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 [[private]]
 impl_record_gpu_work ::= func(pass : tz_gpu_pass, frame_id : u64, a : arena mut&) -> v0
 {
+	if(pass == (tz_gpu_pass.present))
+	{
+		return;
+	}
 	passptr : pass_data_t mut& := passes at (pass@s64);
 	if(passptr->is_compute)
 	{
@@ -994,6 +998,78 @@ impl_record_gpu_work ::= func(pass : tz_gpu_pass, frame_id : u64, a : arena mut&
 	{
 		impl_record_graphics_work(passptr, frame_id, a);
 	}
+};
+
+[[private]]
+impl_graph_will_present ::= func(graph : tz_gpu_graph) -> bool
+{
+	graphptr ::= graphs at (graph@s64);
+	count ::= graphptr->timeline_count;
+
+	counter : u64 mut := 0;
+	cur_entry : graph_entry mut;
+	while(counter < count)
+	{
+		cur_entry = deref (graphptr->timeline at counter);
+		if((cur_entry.handle) == ((tz_gpu_pass.present)@s64@_))
+		{
+			return true;
+		}
+		counter = counter + 1;
+	}
+	return false;
+};
+
+[[private]]
+impl_pass_writes_to_system_image ::= func(pass : tz_gpu_pass) -> bool
+{
+	if(pass == (tz_gpu_pass.present))
+	{
+		return false;
+	}
+	passptr ::= (passes at (pass@s64));
+	passinfo ::= passptr->info;
+	ginfo ::= passinfo.graphics;
+	counter : u64 mut := 0;
+	cur_colour_target : tz_gpu_resource mut;
+	if(!(passptr->is_compute))
+	{
+		while(counter < (ginfo.colour_targets_count))
+		{
+			cur_colour_target = deref((ginfo.colour_targets_data) at counter);
+			if(cur_colour_target == (tz_gpu_resource.window_resource))
+			{
+				return true;
+			}
+			counter = counter + 1;
+		}
+	}
+	return false;
+};
+
+[[private]]
+impl_graph_writes_to_system_image ::= func(graph : tz_gpu_graph) -> bool
+{
+	graphptr ::= graphs at (graph@s64);
+	count ::= graphptr->timeline_count;
+
+	counter : u64 mut := 0;
+	cur_entry : graph_entry mut;
+	cur_pass : tz_gpu_pass mut;
+	while(counter < count)
+	{
+		cur_entry = deref (graphptr->timeline at counter);
+		if(!(cur_entry.is_graph))
+		{
+			cur_pass = ((cur_entry.handle)@s64@tz_gpu_pass);
+			if(impl_pass_writes_to_system_image(cur_pass))
+			{
+				return true;
+			}
+		}
+		counter = counter + 1;
+	}
+	return false;
 };
 
 [[private]]
@@ -1998,7 +2074,6 @@ tz_gpu_graph_add_pass ::= func(graph : tz_gpu_graph, pass : tz_gpu_pass) -> v0
 	}
 	cur ::= graphptr->timeline_count;
 	entry_ptr ::= (graphptr->timeline) at cur;
-	puts("meep");
 	(entry_ptr->handle) = (pass@s64@_);
 	entry_ptr->is_graph = false;
 	(graphptr->timeline_count) = (graphptr->timeline_count) + 1;
@@ -2008,6 +2083,14 @@ tz_gpu_graph_add_pass ::= func(graph : tz_gpu_graph, pass : tz_gpu_pass) -> v0
 tz_gpu_execute ::= func(graph : tz_gpu_graph, a : arena mut&) -> v0
 {
 	graphptr ::= graphs at (graph@s64);
+	writes_to_system_image ::= impl_graph_writes_to_system_image(graph);
+	will_present ::= impl_graph_will_present(graph);
+	puts("writes to system image: ");
+	putuint(writes_to_system_image);
+	puts(", will present: ");
+	putuint(will_present);
+	putchar(10);
+
 	frame_begin ::= VkCommandBufferBeginInfo
 	{
 		.sType := 42;
