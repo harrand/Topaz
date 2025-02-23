@@ -1,10 +1,9 @@
 mem_zero ::= func(memory : u8 mut& weak, size : u64) -> v0
 {
-	counter : u64 mut := 0;
-	while(counter < size)
+	counter : u64 mut;
+	for(counter = 0, counter < size, counter = counter + 1)
 	{
 		deref(memory at counter) = 0;
-		counter = counter + 1;
 	}
 };
 
@@ -13,11 +12,10 @@ mem_zero ::= func(memory : u8 mut& weak, size : u64) -> v0
 // so here's a hand-rolled slow memcpy as a fallback. better than getting a linker error?
 memcpy ::= func(dst : u8 mut& weak, src : u8& weak, size : u64) -> v0
 {
-	counter : u64 mut := 0;
-	while(counter < size)
+	counter : u64 mut;
+	for(counter = 0, counter < size, counter = counter + 1)
 	{
 		deref(dst at counter) = deref(src at counter);
-		counter = counter + 1;
 	}
 };
 
