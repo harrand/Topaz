@@ -481,9 +481,9 @@ impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu
 		.maxDepthBounds := 1.0;
 	};
 
-	counter : u64 mut := 0;
+	counter : u64 mut;
 	blend_states : VkPipelineColorBlendAttachmentState mut& := arena_push(a, __sizeof(VkPipelineColorBlendAttachmentState) * (graphics.colour_targets_count));
-	while(counter < (graphics.colour_targets_count))
+	for(counter = 0, counter < (graphics.colour_targets_count), counter = counter + 1)
 	{
 		deref(blend_states at counter) = VkPipelineColorBlendAttachmentState
 		{
@@ -496,9 +496,7 @@ impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu
 			.alphaBlendOp := 0;
 			.colorWriteMask := (0x00000001 | 0x00000002 | 0x00000004 | 0x00000008);
 		};
-		counter = (counter + 1);
 	}
-	counter = 0;
 
 	blend ::= VkPipelineColorBlendStateCreateInfo
 	{
@@ -516,10 +514,9 @@ impl_create_graphics_pipeline ::= func(shader : tz_gpu_shader, graphics : tz_gpu
 	deref((blend.blendConstants) at 3) = 0.0;
 
 	color_formats : s32 mut& := arena_push(a, __sizeof(s32) * (graphics.colour_targets_count));
-	while(counter < (graphics.colour_targets_count))
+	for(counter = 0, counter < (graphics.colour_targets_count), counter = counter + 1)
 	{
 		deref(color_formats at counter) = rgba_format;
-		counter = counter + 1;
 	}
 	counter = 0;
 
@@ -732,14 +729,12 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 		};
 	};
 
-	counter : u32 mut := 0;
-	while(counter < swapchain_image_count)
+	counter : u32 mut;
+	for(counter = 0, counter < swapchain_image_count, counter = counter + 1)
 	{
 		(view_create.image) = deref(swapchain_images at counter);
 
 		vk_check(vk.create_image_view(used_device, ref view_create, null, swapchain_views at counter));
-
-		counter = counter + 1;
 	}
 
 	// todo: destroy old system image + view if they already exist. i am not bothering rn.
@@ -865,7 +860,7 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 		impl_require_swapchain(a);
 	}
 
-	while(counter < ccount)
+	for(counter = 0, counter < ccount, counter = counter + 1)
 	{
 		colour_target = deref ((ginfo.colour_targets_data) at counter);
 		render_target = 0;
@@ -924,8 +919,6 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 			};
 			colour_transition_count = colour_transition_count + 1;
 		}
-		
-		counter = counter + 1;
 	}
 
 	// if we have any colour transitions at all, do a pipeline barrier with them.
@@ -1019,16 +1012,15 @@ impl_graph_will_present ::= func(graph : tz_gpu_graph) -> bool
 	graphptr ::= graphs at (graph@s64);
 	count ::= graphptr->timeline_count;
 
-	counter : u64 mut := 0;
+	counter : u64 mut;
 	cur_entry : graph_entry mut;
-	while(counter < count)
+	for(counter = 0, counter < count, counter = counter + 1)
 	{
 		cur_entry = deref (graphptr->timeline at counter);
 		if((cur_entry.handle) == ((tz_gpu_pass.present)@s64@_))
 		{
 			return true;
 		}
-		counter = counter + 1;
 	}
 	return false;
 };
@@ -1047,14 +1039,13 @@ impl_pass_writes_to_system_image ::= func(pass : tz_gpu_pass) -> bool
 	cur_colour_target : tz_gpu_resource mut;
 	if(!(passptr->is_compute))
 	{
-		while(counter < (ginfo.colour_targets_count))
+		for(counter = 0, counter < (ginfo.colour_targets_count), counter = counter + 1)
 		{
 			cur_colour_target = deref((ginfo.colour_targets_data) at counter);
 			if(cur_colour_target == (tz_gpu_resource.window_resource))
 			{
 				return true;
 			}
-			counter = counter + 1;
 		}
 	}
 	return false;
@@ -1066,10 +1057,10 @@ impl_graph_writes_to_system_image ::= func(graph : tz_gpu_graph) -> bool
 	graphptr ::= graphs at (graph@s64);
 	count ::= graphptr->timeline_count;
 
-	counter : u64 mut := 0;
+	counter : u64 mut;
 	cur_entry : graph_entry mut;
 	cur_pass : tz_gpu_pass mut;
-	while(counter < count)
+	for(counter = 0, counter < count, counter = counter + 1)
 	{
 		cur_entry = deref (graphptr->timeline at counter);
 		if(!(cur_entry.is_graph))
@@ -1080,7 +1071,6 @@ impl_graph_writes_to_system_image ::= func(graph : tz_gpu_graph) -> bool
 				return true;
 			}
 		}
-		counter = counter + 1;
 	}
 	return false;
 };
@@ -1320,11 +1310,10 @@ impl_initialise_pipeline_layout ::= func() -> u64
 		.pBindings := bindings at 0;
 	};
 
-	counter : u64 mut := 0;
-	while(counter < frame_overlap)
+	counter : u64 mut;
+	for(counter = 0, counter < frame_overlap, counter = counter + 1)
 	{
 		vk_check(vk.create_descriptor_set_layout(used_device, ref layout_create, null, set_layouts at counter));
-		counter = counter + 1;
 	}
 
 	create ::= VkPipelineLayoutCreateInfo
@@ -1379,7 +1368,7 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 	size_gpu : u64 mut := 0;
 	size_cpu : u64 mut := 0;
 
-	while(counter < (memprops.memoryTypeCount))
+	for(counter = 0, counter < (memprops.memoryTypeCount), counter = counter + 1)
 	{
 		cur_mem_ty = deref(memprops.memoryTypes at counter);
 		cur_vk_heap = deref(memprops.memoryHeaps at (cur_mem_ty.heapIndex));
@@ -1399,15 +1388,12 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 				size_gpu = (cur_vk_heap.size);
 			}
 		}
-
-		counter = counter + 1;
 	}
 	counter = 0;
-	while(counter < (memprops.memoryHeapCount))
+	for(counter = 0, counter < (memprops.memoryHeapCount), counter = counter + 1)
 	{
 		cur_vk_heap = deref(memprops.memoryHeaps at counter);
 		(hw->vram_size_mib) = (hw->vram_size_mib) + (cur_vk_heap.size);
-		counter = counter + 1;
 	}
 
 	family_count : u32 mut := 0;
@@ -1415,9 +1401,8 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 	families : VkQueueFamilyProperties mut& := arena_push(a, __sizeof(VkQueueFamilyProperties) * family_count);
 	vk.get_physical_device_queue_family_properties(pdev, ref family_count, families);
 
-	counter = 0;
 	cur_fam : VkQueueFamilyProperties mut;
-	while(counter < family_count)
+	for(counter = 0, counter < family_count, counter = counter + 1)
 	{
 		// hw->idx should be set to the first graphics compute queue.
 		cur_fam = deref(families at counter);
@@ -1426,7 +1411,6 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut&, pdev : u64, a : aren
 			(hw->id) = counter;
 			counter = family_count;
 		}
-		counter = counter + 1;
 	}
 
 	(hw->name) = create_string(props.deviceName at 0, a);
@@ -1500,9 +1484,9 @@ tz_gpu_term ::= func() -> v0
 	{
 		vk.destroy_fence(used_device, scratch.fence, null);
 	}
-	counter : u64 mut := 0;
+	counter : u64 mut;
 	frame_ptr : frame_data mut& mut;
-	while(counter < frame_overlap)
+	for(counter = 0, counter < frame_overlap, counter = counter + 1)
 	{
 		frame_ptr = (frames at counter);
 		if(frame_ptr->cpool != 0)
@@ -1524,14 +1508,10 @@ tz_gpu_term ::= func() -> v0
 		// dont forget descriptor layouts.
 		vk.destroy_descriptor_set_layout(used_device, deref(set_layouts at counter), null);
 		deref(set_layouts at counter) = 0;
-
-		counter = counter + 1;
 	}
-	counter = 0;
-	while(counter < (swapchain_image_count@_))
+	for(counter = 0, counter < (swapchain_image_count@_), counter = counter + 1)
 	{
 		vk.destroy_image_view(used_device, deref(swapchain_views at counter), null);
-		counter = counter + 1;
 	}
 	if(swapchain != 0)
 	{
@@ -1550,21 +1530,18 @@ tz_gpu_term ::= func() -> v0
 	}
 
 	// destroy all passes
-	counter = 0;
 	passptr : pass_data_t mut& mut;
-	while(counter < passes_count)
+	for(counter = 0, counter < passes_count, counter = counter + 1)
 	{
 		passptr = passes at counter;	
 		vk.destroy_buffer(used_device, passptr->metabuf, null);
 		vk.destroy_pipeline(used_device, passptr->pipeline, null);
-		counter = counter + 1;
 	}
 	passes_count = 0;
 
 	// destroy all resources.
-	counter = 0;
 	resptr : resource_data_t mut& mut;
-	while(counter < resource_count)
+	for(counter = 0, counter < resource_count, counter = counter + 1)
 	{
 		resptr = resources at counter;	
 		if(resptr->is_buffer)
@@ -1577,14 +1554,12 @@ tz_gpu_term ::= func() -> v0
 			puts("errtodo: delete image resources.");
 			__debugbreak();
 		}
-		counter = counter + 1;
 	}
 	resource_count = 0;
 
 	// destroy all shaders.
-	counter = 0;
 	shad : shader_data_t mut& mut;
-	while(counter < shaders_count)
+	for(counter = 0, counter < shaders_count, counter = counter + 1)
 	{
 		shad = shaders at counter;	
 		if(shad->vertex_module != 0)
@@ -1602,7 +1577,6 @@ tz_gpu_term ::= func() -> v0
 			vk.destroy_shader_module(used_device, shad->compute_module, null);
 			shad->compute_module = 0;
 		}
-		counter = counter + 1;
 	}
 	shaders_count = 0;
 
@@ -1635,11 +1609,10 @@ tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut&, array_size : u64,
 		return tz_gpu_err.unknown;
 	}
 	
-	counter : u64 mut := 0;
-	while(counter < array_size)
+	counter : u64 mut;
+	for(counter = 0, counter < array_size, counter = counter + 1)
 	{
 		impl_fill_hardware_info(array at counter, deref(pdev_storage at counter), a);
-		counter = (counter + 1);
 	}
 	return tz_gpu_err.none;
 };
@@ -1858,7 +1831,7 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 		.flags := 0;
 	};
 
-	while(counter < frame_overlap)
+	for(counter = 0, counter < frame_overlap, counter = counter + 1)
 	{
 		frame_ptr = (frames at counter);
 		vk_check(vk.create_command_pool(used_device, ref pool_create, null, ref (frame_ptr->cpool)));
@@ -1867,8 +1840,6 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
 
 		vk_check(vk.create_fence(used_device, ref fence_create, null, ref (frame_ptr->swapchain_fence)));
 		vk_check(vk.create_semaphore(used_device, ref sem_create, null, ref (frame_ptr->swapchain_sem)));
-
-		counter = counter + 1;
 	}
 
 	vk_check(vk.create_command_pool(used_device, ref pool_create, null, ref (scratch.cpool)));
@@ -2005,16 +1976,15 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 	// this is a non-BDA buffer that contains all the BDA addresses.
 	// let's figure out how many buffer resources we have
 	buffer_rescount : u64 mut := 0;
-	counter : u64 mut := 0;
+	counter : u64 mut;
 	cur_resource : resource_data_t mut;
-	while(counter < (info.resources_count))
+	for(counter = 0, counter < (info.resources_count), counter = counter + 1)
 	{
 		cur_resource = deref (resources at (deref(info.resources_data at counter)@s64));
 		if(cur_resource.is_buffer)
 		{
 			buffer_rescount = buffer_rescount + 1;
 		}
-		counter = counter + 1;
 	}
 
 	size : u64 mut := 1;
@@ -2043,13 +2013,12 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 	passptr->targets_swapchain = false;
 
 	passptr->is_compute = impl_shader_is_compute(info.shader);
-	counter = 0;
 	ginfo ::= info.graphics;
 	cur_colour_target : tz_gpu_resource mut;
 	if(!(passptr->is_compute))
 	{
 		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, a);
-		while(counter < (ginfo.colour_targets_count))
+		for(counter = 0, counter < (ginfo.colour_targets_count), counter = counter + 1)
 		{
 			cur_colour_target = deref((ginfo.colour_targets_data) at counter);
 			if(cur_colour_target == (tz_gpu_resource.window_resource))
@@ -2061,8 +2030,6 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 				impl_need_swapchain(x@_, y@_, wnd, a);
 				passptr->targets_swapchain = true;
 			}
-
-			counter = counter + 1;
 		}
 
 		(passptr->colour_target_dimensions) = impl_get_pass_colour_target_dimensions(passptr);
@@ -2160,9 +2127,9 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut&, short : arena m
 		vk.cmd_pipeline_barrier(frame.cmds, 0x00002000, 0x00001000, 0, 0, null, 0, null, 1, ref barrier);
 	}
 
-	counter : u64 mut := 0;
+	counter : u64 mut;
 	cur_entry : graph_entry mut;
-	while(counter < (graphptr->timeline_count))
+	for(counter = 0, counter < (graphptr->timeline_count), counter = counter + 1)
 	{
 		cur_entry = deref((graphptr->timeline) at counter);
 		if(cur_entry.is_graph)
@@ -2171,7 +2138,6 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut&, short : arena m
 			__debugbreak();
 		}
 		impl_record_gpu_work((cur_entry.handle)@s64@tz_gpu_pass, current_frame, short);
-		counter = counter + 1;
 	}
 
 	// if we just wrote to the system image:

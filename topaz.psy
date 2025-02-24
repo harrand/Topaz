@@ -33,6 +33,14 @@ main ::= func() -> s32
 	wnd ::= open_window(800, 600, "Topaz Test");
 	defer close_window(wnd);
 
+	puts("watch as i count to 10!");
+	putchar(10);
+	counter : u64 mut;
+	for(counter = 0, counter < 10, counter = counter + 1)
+	{
+		putuint(counter);
+	}
+
 	tz_gpu_init(tz_gpu_appinfo
 	{
 		.name := "Topaz";
