@@ -10,11 +10,6 @@ wrangle_window_class ::= macro() -> v0
 	defer unregister_wndclass();
 };
 
-print_sizeof ::= macro(T : auto) -> v0
-{
-	putuint(__sizeof(T));
-};
-
 setup_arenas ::= macro() -> v0
 {
 	permanent_arena_val : arena mut := arena_create(4096 * 1024);
@@ -34,6 +29,11 @@ main ::= func() -> s32
 {
 	wrangle_window_class();
 	setup_arenas();
+
+	print("type of '5' = ");
+	print(__typename(5));
+	print(' ');
+	putchar(10);
 
 	wnd ::= open_window(800, 600, "Topaz Test");
 	defer close_window(wnd);
