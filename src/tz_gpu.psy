@@ -929,13 +929,6 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 	render_target : u64 mut;
 	render_target_view : u64 mut;
 
-	clear_colour : VkClearColorValue mut;
-	ccol ::= ginfo.clear_colour;
-	deref((clear_colour.float32) at 0) = ccol.x;
-	deref((clear_colour.float32) at 1) = ccol.y;
-	deref((clear_colour.float32) at 2) = ccol.z;
-	deref((clear_colour.float32) at 3) = ccol.w;
-
 	if(passptr->targets_swapchain)
 	{
 		impl_require_swapchain(a);
@@ -973,7 +966,7 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 			//.loadOp := 0; // VK_ATTACHMENT_LOAD_OP_LOAD (if we're noit clearing colour targets)
 			.loadOp := 1; // VK_ATTACHMENT_LOAD_OP_CLEAR (if we are clearing colour targets)
 			.storeOp := 0;
-			.clearValue := VkClearValue{.color := clear_colour;};
+			.clearValue := VkClearValue{.color := VkClearColorValue{.float32 := ginfo.clear_colour;};};
 		};
 		dimensions ::= passptr->colour_target_dimensions;
 		if(true) /*todo: if we're not clearing colour targets*/

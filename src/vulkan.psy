@@ -837,7 +837,7 @@ VkRect2D ::= struct
 
 VkClearColorValue ::= struct
 {
-	float32 : f32 mut#4;
+	float32 : vec4;
 };
 
 // note this is meant to be a union of VkClearColorValue and VkClearDepthStencilValue

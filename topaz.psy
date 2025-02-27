@@ -93,7 +93,7 @@ main ::= func() -> s32
 	{
 		.graphics := tz_gpu_graphics_state
 		{
-			.clear_colour := vec4{.x := 1.0; .y := 0.0; .z := 0.0; .w := 1.0;};
+			.clear_colour := vec4{.x := 0.7; .y := 0.5; .z := 0.0; .w := 1.0;};
 			.scissor := vec4u32_zero();
 			.colour_targets_data := ref colour_target;
 			.colour_targets_count := 1;
