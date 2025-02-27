@@ -176,6 +176,10 @@ frames : frame_data mut#2;
 [[private]]
 set_layouts : u64 mut#2;
 [[private]]
+descriptor_pools_data : u64 mut& mut;
+descriptor_pools_count : u64 mut := 0;
+descriptor_pools_cap : u64 mut := 0;
+[[private]]
 vkinst : u64 mut;
 [[private]]
 used_device : u64 mut;
@@ -281,6 +285,83 @@ passes_count : u64 mut := 0;
 passes_cap : u64 mut := 0;
 
 // implementation details
+
+[[private]]
+impl_new_descriptor_pool ::= func(a : arena mut&) -> u64
+{
+	if(descriptor_pools_cap == 0)
+	{
+		descriptor_pools_data = arena_push(a, __sizeof(u64) * 4);
+		descriptor_pools_cap = 4;
+	}
+	if(descriptor_pools_count > descriptor_pools_cap)
+	{
+		puts("todo: expand allocation of descriptor pool handles");
+		__debugbreak();
+	}
+	if(descriptor_pools_count == descriptor_pools_cap)
+	{
+		puts("todo: expand allocation of descriptor pool handles");
+		__debugbreak();
+	}
+
+	image_limit ::= VkDescriptorPoolSize
+	{
+		.type := 1; // VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+		.descriptorCount := MAX_IMAGE_COUNT_PER_PASS;
+	};
+	create ::= VkDescriptorPoolCreateInfo
+	{
+		.sType := 33;
+		.pNext := null;
+		.flags := 0x00000002;
+		.maxSets := frame_overlap * 256;
+		.poolSizeCount := 1;
+		.pPoolSizes := ref image_limit;
+	};
+	newpool : u64 mut;
+	vk_check(vk.create_descriptor_pool(used_device, ref create, null, ref newpool));
+	deref(descriptor_pools_data at descriptor_pools_count) = newpool;
+	descriptor_pools_count = descriptor_pools_count + 1;
+	return newpool;
+};
+
+[[private]]
+impl_populate_descriptors ::= func(passptr : pass_data_t mut&, a : arena mut&) -> v0
+{
+	pinfo ::= passptr->info;
+	if(descriptor_pools_count == 0)
+	{
+		impl_new_descriptor_pool(a);
+	}
+	image_count : u64 mut := 0;
+	counter : u64 mut;
+	cur_resh : tz_gpu_resource mut;
+	resptr : resource_data_t mut& mut;
+	for(counter = 0, counter < (pinfo.resources_count), counter = counter + 1)
+	{
+		cur_resh = deref((pinfo.resources_data) at counter);
+		if(cur_resh != (tz_gpu_resource.invalid))
+		{
+			if(cur_resh == (tz_gpu_resource.window_resource))
+			{
+				image_count = image_count + 1;
+			}
+			if(cur_resh != (tz_gpu_resource.window_resource))
+			{
+				resptr = resources at (cur_resh@s64);
+				if(!(resptr->is_buffer))
+				{
+					image_count = image_count + 1;
+				}
+			}
+		}
+	}
+
+	pool ::= deref(descriptor_pools_data at descriptor_pools_count);
+	// todo: try to allocate descriptors using this pool
+	// while this fails, continually spawn new pools.
+};
 
 [[private]]
 impl_shader_is_compute ::= func(shader : tz_gpu_shader) -> bool
@@ -1557,6 +1638,12 @@ tz_gpu_term ::= func() -> v0
 	}
 	resource_count = 0;
 
+	for(counter = 0, counter < descriptor_pools_count, counter = counter + 1)
+	{
+		vk.destroy_descriptor_pool(used_device, deref(descriptor_pools_data at counter), null);
+	}
+	descriptor_pools_count = 0;
+
 	// destroy all shaders.
 	shad : shader_data_t mut& mut;
 	for(counter = 0, counter < shaders_count, counter = counter + 1)
@@ -2034,6 +2121,9 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 
 		(passptr->colour_target_dimensions) = impl_get_pass_colour_target_dimensions(passptr);
 	}
+
+	impl_populate_descriptors(passptr, a);
+
 	return retid@tz_gpu_pass;
 };
 

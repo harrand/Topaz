@@ -27,6 +27,74 @@ putsint ::= func(v : s64 mut weak) -> v0
 	putuint(v);
 };
 
+cstrlen ::= func(cstr : u8&) -> u64
+{
+	c : u64 mut := 0;
+	if(cstr == null)
+	{
+		return c;
+	}
+	while((deref (cstr at c)) != 0)
+	{
+		c = c + 1;
+	}
+	return c;
+};
+
+
+puts ::= func(str : u8&) -> v0
+{
+	i : u64 mut := 0;
+	len ::= cstrlen(str);
+	chr : u8& mut := null;
+	while(i < len)
+	{
+		chr = (str at i);
+		putchar(deref chr);
+		i = i + 1;
+	}
+};
+
+print ::= macro(T : auto) -> v0
+{
+	if static(__is_a(T, u8&))
+	{
+		puts(T);
+	}
+	if static(__is_a(T, u64))
+	{
+		putuint(T);
+	}
+	if static(__is_a(T, u32))
+	{
+		putuint(T);
+	}
+	if static(__is_a(T, u16))
+	{
+		putuint(T);
+	}
+	if static(__is_a(T, u8))
+	{
+		putchar(T);
+	}
+	if static(__is_a(T, s64))
+	{
+		putsint(T);
+	}
+	if static(__is_a(T, s32))
+	{
+		putsint(T);
+	}
+	if static(__is_a(T, s16))
+	{
+		putsint(T);
+	}
+	if static(__is_a(T, s8))
+	{
+		putchar(T);
+	}
+};
+
 == build ==
 {
 	add_link_library("Kernel32.lib");

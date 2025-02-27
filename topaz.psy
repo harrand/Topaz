@@ -10,6 +10,11 @@ wrangle_window_class ::= macro() -> v0
 	defer unregister_wndclass();
 };
 
+print_sizeof ::= macro(T : auto) -> v0
+{
+	putuint(__sizeof(T));
+};
+
 setup_arenas ::= macro() -> v0
 {
 	permanent_arena_val : arena mut := arena_create(4096 * 1024);
@@ -88,7 +93,7 @@ main ::= func() -> s32
 	{
 		.graphics := tz_gpu_graphics_state
 		{
-			.clear_colour := vec4{.x := 1.0; .y := 0.0; .z := 1.0; .w := 1.0;};
+			.clear_colour := vec4{.x := 1.0; .y := 0.0; .z := 0.0; .w := 1.0;};
 			.scissor := vec4u32_zero();
 			.colour_targets_data := ref colour_target;
 			.colour_targets_count := 1;
@@ -141,11 +146,12 @@ main ::= func() -> s32
 
 == build ==
 {
+	add_source_file("src/debug.psy");
 	add_source_file("src/wnd.psy");
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 
 	set_output_directory("build");
 	set_executable("tz");
-	set_optimisation(3);
+	set_optimisation(0);
 }
