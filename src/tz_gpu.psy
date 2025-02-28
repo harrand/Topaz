@@ -212,15 +212,19 @@ swapchain_image_count : u32 mut;
 [[private]]
 swapchain_images : u64 mut& mut;
 [[private]]
+swapchain_images_cap : u64 mut := 0;
+[[private]]
 swapchain_views : u64 mut& mut;
+[[private]]
+swapchain_views_cap : u64 mut := 0;
 [[private]]
 swapchain_format ::= 44;
 [[private]]
 rgba_format ::= 37;
 
-system_image : u64 mut;
+system_image : u64 mut := 0;
 //system_depth_image : u64 mut;
-system_image_view : u64 mut;
+system_image_view : u64 mut := 0;
 
 [[private]]
 current_frame : u64 mut := 0;
@@ -291,7 +295,7 @@ impl_new_descriptor_pool ::= func(a : arena mut&) -> u64
 {
 	if(descriptor_pools_cap == 0)
 	{
-		descriptor_pools_data = arena_push(a, __sizeof(u64) * 4);
+		descriptor_pools_data = arena_push_n(a, 0@u64, 4);
 		descriptor_pools_cap = 4;
 	}
 	if(descriptor_pools_count > descriptor_pools_cap)
@@ -701,6 +705,13 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 		puts("B remaining.");
 		__debugbreak();
 	}
+
+	memreqs : VkImageMemoryRequirements mut;
+	vk.get_image_memory_requirements(used_device, image, ref memreqs);
+
+	padding ::= ((memreqs.align) - ((valloc->cursor) % (memreqs.align)) % (memreqs.align));
+	(valloc->cursor) = (valloc->cursor) + (padding);
+
 	ret ::= vk.bind_image_memory(used_device, image, valloc->device_mem, valloc->cursor);
 	if(ret == -1) /* out of host memory */
 	{
@@ -717,7 +728,7 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 };
 
 [[private]]
-impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mut&) -> VkResult
+impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mut&) -> bool
 {
 	if(surface == 0)
 	{
@@ -744,7 +755,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 	{
 		if(swapchain_height@_ == h)
 		{
-			return VkResult.VK_SUCCESS;
+			return false;
 		}
 	}
 
@@ -781,9 +792,29 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 
 	// todo: destroy old swapchain images if they already existed. right now we arent checking that and are just stomping over swapchain_images and swapchain_views.
 	vk.get_swapchain_images_khr(used_device, swapchain, ref swapchain_image_count, null);
-	swapchain_images = arena_push(a, __sizeof(u64) * swapchain_image_count);
-	swapchain_views = arena_push(a, __sizeof(u64) * swapchain_image_count);
+	if(swapchain_images_cap != (swapchain_image_count@_))
+	{
+		swapchain_images = arena_push(a, __sizeof(u64) * swapchain_image_count);
+		swapchain_images_cap = (swapchain_image_count@_);
+		puts("morbius");
+	}
+	if(swapchain_views_cap != (swapchain_image_count@_))
+	{
+		swapchain_views = arena_push(a, __sizeof(u64) * swapchain_image_count);
+		swapchain_views_cap = (swapchain_image_count@_);
+	}
 	vk.get_swapchain_images_khr(used_device, swapchain, ref swapchain_image_count, swapchain_images);
+
+	counter : u32 mut;
+	if(old_swapchain != 0)
+	{
+		// we already had a swapchain. we should delete the old images.
+		for(counter = 0, counter < swapchain_image_count, counter = counter + 1)
+		{
+			vk.destroy_image_view(used_device, deref(swapchain_views at counter), null);
+		}
+		vk.destroy_swapchain_khr(used_device, old_swapchain, null);
+	}
 
 	view_create : VkImageViewCreateInfo mut := VkImageViewCreateInfo
 	{
@@ -810,7 +841,6 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 		};
 	};
 
-	counter : u32 mut;
 	for(counter = 0, counter < swapchain_image_count, counter = counter + 1)
 	{
 		(view_create.image) = deref(swapchain_images at counter);
@@ -818,7 +848,12 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 		vk_check(vk.create_image_view(used_device, ref view_create, null, swapchain_views at counter));
 	}
 
-	// todo: destroy old system image + view if they already exist. i am not bothering rn.
+	if(system_image != 0)
+	{
+		// destroy old system image + view if they already exist. i am not bothering rn.
+		vk.destroy_image_view(used_device, system_image_view, null);
+		vk.destroy_image(used_device, system_image, null);
+	}
 	system_image_create ::= VkImageCreateInfo
 	{
 		.sType := 14;
@@ -852,27 +887,17 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 	swapchain_height = h;
 	// todo: system depth image
 
-	return VkResult.VK_SUCCESS;
+	return true;
 };
 
 [[private]]
-impl_require_swapchain ::= func(a : arena mut&) -> v0
+impl_require_swapchain ::= func(a : arena mut&) -> bool
 {
 	wnd ::= get_main_window();
 	windims ::= window_get_dimensions(wnd);
 	x ::= windims.x;
 	y ::= windims.y;
-	impl_need_swapchain(x@_, y@_, wnd, a);
-};
-
-[[private]]
-impl_force_new_swapchain ::= func(wnd : window_handle, a : arena mut&) -> VkResult
-{
-	w ::= swapchain_width;
-	h ::= swapchain_height;
-	swapchain_width = 0;
-	swapchain_height = 0;
-	return impl_need_swapchain(w, h, wnd, a);
+	return impl_need_swapchain(x@_, y@_, wnd, a);
 };
 
 [[private]]
@@ -932,7 +957,18 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 	if(passptr->targets_swapchain)
 	{
 		impl_require_swapchain(a);
+
+		dims ::= passptr->colour_target_dimensions;
+		if(dims.x != swapchain_width@_)
+		{
+			(passptr->colour_target_dimensions) = impl_get_pass_colour_target_dimensions(passptr);
+		}
+		if(dims.y != swapchain_height@_)
+		{
+			(passptr->colour_target_dimensions) = impl_get_pass_colour_target_dimensions(passptr);
+		}
 	}
+	dimensions ::= (passptr->colour_target_dimensions);
 
 	for(counter = 0, counter < ccount, counter = counter + 1)
 	{
@@ -968,7 +1004,6 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 			.storeOp := 0;
 			.clearValue := VkClearValue{.color := VkClearColorValue{.float32 := ginfo.clear_colour;};};
 		};
-		dimensions ::= passptr->colour_target_dimensions;
 		if(true) /*todo: if we're not clearing colour targets*/
 		{
 			deref (colour_transitions at colour_transition_count) = VkImageMemoryBarrier
@@ -1001,7 +1036,6 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 		vk.cmd_pipeline_barrier(frame.cmds, 0x00002000, 0x00000400, 0, 0, null, 0, null, colour_transition_count@_, colour_transitions);
 	}
 	// todo: depth target stuffs.
-
 	render ::= VkRenderingInfo
 	{
 		.sType := 1000044000;

@@ -41,9 +41,10 @@ main ::= func() -> s32
 	puts("watch as i count to 10!");
 	putchar(10);
 	counter : u64 mut;
-	for(counter = 0, counter < 10, counter = counter + 1)
+	for(counter = 0, counter <= 10, counter = counter + 1)
 	{
 		putuint(counter);
+		putchar(10);
 	}
 
 	tz_gpu_init(tz_gpu_appinfo
@@ -58,7 +59,7 @@ main ::= func() -> s32
 	putuint(hardware_count);
 	putchar(10);
 
-	hardware_list : tz_gpu_hardware mut& := arena_push(permanent_arena, __sizeof(tz_gpu_hardware) * hardware_count);
+	hardware_list : tz_gpu_hardware mut& := arena_push_one(permanent_arena, tz_gpu_hardware{});
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 

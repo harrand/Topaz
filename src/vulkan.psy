@@ -823,6 +823,13 @@ VkImageMemoryBarrier ::= struct
 	subresourceRange : VkImageSubresourceRange;
 };
 
+VkImageMemoryRequirements ::= struct
+{
+	size : u64;
+	align : u64;
+	memoryTypeBits : u32;
+};
+
 VkOffset2D ::= struct
 {
 	x : s32;
@@ -1030,6 +1037,7 @@ vk_functions_t ::= struct
 	end_command_buffer : func(commandBuffer : u64) -> s32;
 	reset_command_buffer : func(commandBuffer : u64, flags : s32) -> s32;
 
+	get_image_memory_requirements : func(device : u64, image : u64, pMemoryRequirements : VkImageMemoryRequirements mut&) -> v0;
 	map_memory : func(device : u64, memory : u64, offset : u64, size : u64, flags : s32, ppData : v0 mut&& weak) -> s32;
 
 	queue_submit : func(queue : u64, submitCount : u32, pSubmits : VkSubmitInfo&, fence : u64) -> s32;
@@ -1172,6 +1180,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.end_command_buffer = load_vk_fn("vkEndCommandBuffer", instance);
 	vk.reset_command_buffer = load_vk_fn("vkResetCommandBuffer", instance);
 
+	vk.get_image_memory_requirements = load_vk_fn("vkGetImageMemoryRequirements", instance);
 	vk.map_memory = load_vk_fn("vkMapMemory", instance);
 
 	vk.queue_submit = load_vk_fn("vkQueueSubmit", instance);

@@ -42,6 +42,16 @@ arena_push ::= func(a : arena mut&, bytes : u64) -> v0& weak
 	return addr@v0&;
 };
 
+arena_push_one ::= macro(ar : arena mut&, T : auto) -> v0& weak
+{
+	yield arena_push(ar, __sizeof(T));
+};
+
+arena_push_n ::= macro(ar : arena mut&, T : auto, count : u64 weak) -> v0& weak
+{
+	yield arena_push(ar, __sizeof(T) * count);
+};
+
 arena_clear ::= func(a : arena mut&) -> v0
 {
 	(a->cursor) = 0;
