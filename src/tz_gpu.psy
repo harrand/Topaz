@@ -278,6 +278,7 @@ pass_data_t ::= struct
 {
 	info : tz_gpu_pass_info;
 	metabuf : u64;
+	metabuf_size : u64;
 	is_compute : bool;
 	pipeline : u64;
 
@@ -468,7 +469,6 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&
 				}
 			}
 		}
-
 		deref(descriptor_writes at (2 + i)) = VkWriteDescriptorSet
 		{
 			.sType := 35;
@@ -531,6 +531,55 @@ impl_end_and_execute_scratch_commands ::= func() -> v0
 	vk_check(vk.queue_submit(graphics_queue, 1, ref submit, scratch.fence));
 	vk_check(vk.wait_for_fences(used_device, 1, ref (scratch.fence), 1, -1@u64));
 	vk_check(vk.reset_fences(used_device, 1, ref (scratch.fence)));
+};
+
+[[private]]
+impl_write_resources ::= func(passptr : pass_data_t mut&, long : arena mut&, short : arena mut&) -> v0
+{
+	pinfo ::= passptr->info;
+	if((pinfo.resources_count) == 0)
+	{
+		return;
+	}
+
+	impl_begin_scratch_commands();
+
+	buffer_addresses : u64 mut& := arena_push(short, __sizeof(u64) * (passptr->metabuf_size));
+	bufcount : u64 mut := 0;
+
+	i : u64 mut := 0;
+	curres : tz_gpu_resource mut;
+	resdata : resource_data_t mut;
+	for(i = 0, i < (pinfo.resources_count), i = i + 1)
+	{
+		curres = deref((pinfo.resources_data) at i);
+		if(curres != (tz_gpu_resource.invalid))
+		{
+			if(curres != (tz_gpu_resource.window_resource))
+			{
+				resdata = deref (resources at (curres@s64));
+				if(resdata.is_buffer)
+				{
+					defer bufcount = bufcount + 1;
+					deref(buffer_addresses at bufcount) = (resdata.vk_handle);
+					// todo: resource write buffer data to resdata.vk_handle.
+				}
+				if(!(resdata.is_buffer))
+				{
+					// todo: resource write image data to resdata.vk_handle.
+				}
+			}
+		}
+	}
+
+	// write to metabuffer.
+	scratchbuf : u64 mut;
+	if(bufcount > 0)
+	{
+		puts("writing to metabuffer...");
+		putchar(10);
+	}
+	impl_end_and_execute_scratch_commands();
 };
 
 [[private]]
@@ -2242,6 +2291,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : 
 		.pQueueFamilyIndices := ref used_qfi;
 	};
 	vk_check(vk.create_buffer(used_device, ref meta_create, null, ref (passptr->metabuf)));
+	(passptr->metabuf_size) = size;
 	impl_bind_buffer_mem(passptr->metabuf, size, true);
 	// create pipeline.
 	if(passptr->is_compute)
@@ -2270,6 +2320,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : 
 		(passptr->colour_target_dimensions) = impl_get_pass_colour_target_dimensions(passptr);
 	}
 
+	impl_write_resources(passptr, long, short);
 	impl_populate_descriptors(passptr, long, short);
 
 	return retid@tz_gpu_pass;
