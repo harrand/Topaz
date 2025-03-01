@@ -963,6 +963,64 @@ VkDescriptorPoolCreateInfo ::= struct
 	pPoolSizes : VkDescriptorPoolSize&;
 };
 
+VkDescriptorSetVariableDescriptorCountAllocateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	descriptorSetCount : u32;
+	pDescriptorCounts : u32&;
+};
+
+VkDescriptorSetAllocateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	descriptorPool : u64;
+	descriptorSetCount : u32;
+	pSetLayouts : u64&;
+};
+
+VkDescriptorImageInfo ::= struct
+{
+	sampler : u64;
+	imageView : u64;
+	imageLayout : s32;
+};
+
+VkDescriptorBufferInfo ::= struct
+{
+	buffer : u64;
+	offset : u64;
+	range : u64;
+};
+
+VkWriteDescriptorSet ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	dstSet : u64;
+	dstBinding : u32;
+	dstArrayElement : u32;
+	descriptorCount : u32;
+	descriptorType : s32;
+	pImageInfo : VkDescriptorImageInfo&;
+	pBufferInfo : VkDescriptorBufferInfo&;
+	pTexelBufferView : s32&;
+};
+
+VkCopyDescriptorSet ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	srcSet : u64;
+	srcBinding : u32;
+	srcArrayElement : u32;
+	dstSet : u64;
+	dstBinding : u32;
+	dstArrayElement : u32;
+	descriptorCount : u32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -1021,6 +1079,9 @@ vk_functions_t ::= struct
 	create_descriptor_pool : func(device : u64, pCreateInfo : VkDescriptorPoolCreateInfo&, pAllocator : VkAllocationCallbacks&, pDescriptorPool : u64 mut&) -> s32;
 	destroy_descriptor_pool : func(device : u64, descriptorPool : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
+	allocate_descriptor_sets : func(device : u64, pAllocateInfo : VkDescriptorSetAllocateInfo&, pDescriptorSets : u64 mut&) -> s32;
+	update_descriptor_sets : func(device : u64, descriptorWriteCount : u32, pDescriptorWrites : VkWriteDescriptorSet&, descriptorCopyCount : u32, pDescriptorCopies : VkCopyDescriptorSet&) -> v0;
+
 	create_buffer : func(device : u64, pCreateInfo : VkBufferCreateInfo&, pAllocator : VkAllocationCallbacks&, pBuffer : u64 mut&) -> s32;
 	destroy_buffer : func(device : u64, buffer : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
@@ -1045,6 +1106,7 @@ vk_functions_t ::= struct
 	reset_fences : func(device : u64, fenceCount : u32, pFences : u64&) -> s32;
 
 	cmd_bind_pipeline : func(commandBuffer : u64, pipelineBindPoint : s32, pipeline : u64) -> v0;
+	cmd_bind_descriptor_sets : func(commandBuffer : u64, pipelineBindPoint : s32, layout : u64, firstSet : u32, descriptorSetCount : u32, pDescriptorSets : u64&, dynamicOffsetCount : u32, pDynamicOffsets : u32&) -> v0;
 	cmd_dispatch : func(commandBuffer : u64, groupCountX : u32, groupCountY : u32, groupCountZ : u32) -> v0;
 	cmd_pipeline_barrier : func(commandBuffer : u64, srcStageMask : s32, dstStageMask : s32, dependencyFlags : s32, memoryBarrierCount : u32, pMemoryBarriers : VkMemoryBarrier&, bufferMemoryBarrierCount : u32, pBufferMemoryBarriers : VkBufferMemoryBarrier&, imageMemoryBarrierCount : u32, pImageMemoryBarriers : VkImageMemoryBarrier&) -> v0;
 	cmd_begin_rendering : func(commandBuffer : u64, pRenderingInfo : VkRenderingInfo&) -> v0;
@@ -1164,6 +1226,9 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.create_descriptor_pool = load_vk_fn("vkCreateDescriptorPool", instance);
 	vk.destroy_descriptor_pool = load_vk_fn("vkDestroyDescriptorPool", instance);
 
+	vk.allocate_descriptor_sets = load_vk_fn("vkAllocateDescriptorSets", instance);
+	vk.update_descriptor_sets = load_vk_fn("vkUpdateDescriptorSets", instance);
+
 	vk.create_buffer = load_vk_fn("vkCreateBuffer", instance);
 	vk.destroy_buffer = load_vk_fn("vkDestroyBuffer", instance);
 
@@ -1188,6 +1253,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.reset_fences = load_vk_fn("vkResetFences", instance);
 
 	vk.cmd_bind_pipeline = load_vk_fn("vkCmdBindPipeline", instance);
+	vk.cmd_bind_descriptor_sets = load_vk_fn("vkCmdBindDescriptorSets", instance);
 	vk.cmd_dispatch = load_vk_fn("vkCmdDispatch", instance);
 	vk.cmd_pipeline_barrier = load_vk_fn("vkCmdPipelineBarrier", instance);
 	vk.cmd_begin_rendering = load_vk_fn("vkCmdBeginRendering", instance);

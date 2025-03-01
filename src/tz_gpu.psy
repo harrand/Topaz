@@ -235,6 +235,7 @@ resource_data_t ::= struct
 	is_buffer : bool;
 	vk_handle : u64;
 	image_view : u64;
+	sampler : u64;
 	buffer_device_address : u64;
 
 };
@@ -282,6 +283,8 @@ pass_data_t ::= struct
 
 	targets_swapchain : bool;
 	colour_target_dimensions : vec2u32;
+
+	descriptor_sets : u64 mut#2;
 };
 
 passes : pass_data_t mut& mut;
@@ -331,14 +334,41 @@ impl_new_descriptor_pool ::= func(a : arena mut&) -> u64
 };
 
 [[private]]
-impl_populate_descriptors ::= func(passptr : pass_data_t mut&, a : arena mut&) -> v0
+impl_try_allocate_descriptors ::= func(pool : u64, sets_data : u64 mut&, image_count : u32) -> bool
+{
+	variable_counts : u32 mut#2;
+	deref(variable_counts at 0) = image_count;
+	deref(variable_counts at 1) = image_count;
+
+	variable_alloc ::= VkDescriptorSetVariableDescriptorCountAllocateInfo
+	{
+		.sType := 1000161003;
+		.pNext := null;
+		.descriptorSetCount := 2;
+		.pDescriptorCounts := variable_counts at 0;
+	};
+	alloc ::= VkDescriptorSetAllocateInfo
+	{
+		.sType := 34;
+		.pNext := (ref variable_alloc)@_;
+		.descriptorPool := pool;
+		.descriptorSetCount := 2;
+		.pSetLayouts := set_layouts at 0;
+	};
+	return (vk.allocate_descriptor_sets(used_device, ref alloc, sets_data)) == 0;
+};
+
+[[private]]
+impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&, short : arena mut&) -> v0
 {
 	pinfo ::= passptr->info;
 	if(descriptor_pools_count == 0)
 	{
-		impl_new_descriptor_pool(a);
+		impl_new_descriptor_pool(long);
 	}
-	image_count : u64 mut := 0;
+	pool : u64 mut := deref(descriptor_pools_data at (descriptor_pools_count - 1));
+
+	image_count : u32 mut := 0;
 	counter : u64 mut;
 	cur_resh : tz_gpu_resource mut;
 	resptr : resource_data_t mut& mut;
@@ -362,9 +392,104 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, a : arena mut&) -
 		}
 	}
 
-	pool ::= deref(descriptor_pools_data at descriptor_pools_count);
-	// todo: try to allocate descriptors using this pool
-	// while this fails, continually spawn new pools.
+	// allocate descriptors
+	alloc_success : bool mut := impl_try_allocate_descriptors(pool, passptr->descriptor_sets at 0, image_count);
+	while(!alloc_success)
+	{
+		pool = impl_new_descriptor_pool(long);
+		alloc_success = impl_try_allocate_descriptors(pool, passptr->descriptor_sets at 0, image_count);
+	}
+
+	// write to them.
+	image_array_descriptor_binding ::= 1;
+	image_writes : VkDescriptorImageInfo mut& := arena_push_n(short, VkDescriptorImageInfo{}, image_count * frame_overlap);
+
+	meta_buffer_write ::= VkDescriptorBufferInfo
+	{
+		.buffer := passptr->metabuf;
+		.offset := 0;
+		.range := !0;
+	};
+
+	descriptor_writes : VkWriteDescriptorSet mut#4;
+	// first write to the meta buffers.
+	deref(descriptor_writes at 0) = VkWriteDescriptorSet
+	{
+		.sType := 35;
+		.pNext := null;
+		.dstSet := deref(passptr->descriptor_sets at 0);
+		.dstBinding := 0;
+		.dstArrayElement := 0;
+		.descriptorCount := 1;
+		.descriptorType := 7; // VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+		.pImageInfo := null;
+		.pBufferInfo := ref meta_buffer_write;
+		.pTexelBufferView := null;
+	};
+
+	deref(descriptor_writes at 1) = VkWriteDescriptorSet
+	{
+		.sType := 35;
+		.pNext := null;
+		.dstSet := deref(passptr->descriptor_sets at 1);
+		.dstBinding := 0;
+		.dstArrayElement := 0;
+		.descriptorCount := 1;
+		.descriptorType := 7; // VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+		.pImageInfo := null;
+		.pBufferInfo := ref meta_buffer_write;
+		.pTexelBufferView := null;
+	};
+
+	// now let's do the images.
+	i : u32 mut;
+	j : u64 mut;
+	img_cursor : u64 mut := 0;
+	for(i = 0, i < frame_overlap, i = i + 1)
+	{
+		for(j = 0, j < (pinfo.resources_count), j = j + 1)
+		{
+			cur_resh = deref((pinfo.resources_data) at counter);
+			if(cur_resh != (tz_gpu_resource.invalid))
+			{
+				if(cur_resh != (tz_gpu_resource.window_resource))
+				{
+					resptr = resources at (cur_resh@s64);
+					if(!(resptr->is_buffer))
+					{
+						deref(image_writes at img_cursor) = VkDescriptorImageInfo
+						{
+							.sampler := resptr->sampler;
+							.imageView := resptr->image_view;
+							.imageLayout := 5; // VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+						};
+						img_cursor = img_cursor + 1;
+					}
+				}
+			}
+		}
+
+		deref(descriptor_writes at (2 + i)) = VkWriteDescriptorSet
+		{
+			.sType := 35;
+			.pNext := null;
+			.dstSet := deref(passptr->descriptor_sets at i);
+			.dstBinding := image_array_descriptor_binding;
+			.dstArrayElement := 0;
+			.descriptorCount := image_count;
+			.descriptorType := 1; // VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
+			.pImageInfo := image_writes at (i * image_count);
+			.pBufferInfo := ref meta_buffer_write;
+			.pTexelBufferView := null;
+		};
+	}
+
+	write_count : u32 mut := 4;
+	if(image_count == 0)
+	{
+		write_count = 2;
+	}
+	vk.update_descriptor_sets(used_device, write_count, descriptor_writes at 0, 0, null);
 };
 
 [[private]]
@@ -796,7 +921,6 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 	{
 		swapchain_images = arena_push(a, __sizeof(u64) * swapchain_image_count);
 		swapchain_images_cap = (swapchain_image_count@_);
-		puts("morbius");
 	}
 	if(swapchain_views_cap != (swapchain_image_count@_))
 	{
@@ -1061,7 +1185,7 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 	// actually do rendering.
 	vk.cmd_bind_pipeline(frame.cmds, 0, passptr->pipeline);
 	// todo: bind index buffer if it exists.
-	// todo: bind descriptor sets.
+	vk.cmd_bind_descriptor_sets(frame.cmds, 0, pipeline_layout, 0, 1, passptr->descriptor_sets at current_frame, 0, null);
 	viewport ::= VkViewport
 	{
 		.x := 0.0;
@@ -1362,7 +1486,7 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 	staging : u64 mut;
 	vk.create_buffer(used_device, ref staging_create, null, ref staging);
 	// todo: write to the buffer using map memory.
-	offset ::= impl_bind_buffer_mem(staging, src_data_size, false);
+	impl_bind_buffer_mem(staging, src_data_size, false);
 	cpumem ::= vallocator.buffer_cpu;
 	mapped_ptr ::= cpumem.mapped_ptr;
 	mem_copy(mapped_ptr, src_data, src_data_size);
@@ -2081,10 +2205,10 @@ tz_gpu_create_compute_shader ::= func(compute_source : u8&, compute_source_len :
 	return retid@tz_gpu_shader;
 };
 
-tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_pass
+tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : arena mut&) -> tz_gpu_pass
 {
 	retid ::= passes_count;
-	passptr ::= impl_alloc_new_pass(a);
+	passptr ::= impl_alloc_new_pass(long);
 	passptr->info = info;
 	// first thing we need is a metabuffer.
 	// this is a non-BDA buffer that contains all the BDA addresses.
@@ -2118,6 +2242,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 		.pQueueFamilyIndices := ref used_qfi;
 	};
 	vk_check(vk.create_buffer(used_device, ref meta_create, null, ref (passptr->metabuf)));
+	impl_bind_buffer_mem(passptr->metabuf, size, true);
 	// create pipeline.
 	if(passptr->is_compute)
 	{
@@ -2131,17 +2256,13 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 	cur_colour_target : tz_gpu_resource mut;
 	if(!(passptr->is_compute))
 	{
-		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, a);
+		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, long);
 		for(counter = 0, counter < (ginfo.colour_targets_count), counter = counter + 1)
 		{
 			cur_colour_target = deref((ginfo.colour_targets_data) at counter);
 			if(cur_colour_target == (tz_gpu_resource.window_resource))
 			{
-				wnd ::= get_main_window();
-				windims ::= window_get_dimensions(wnd);
-				x ::= windims.x;
-				y ::= windims.y;
-				impl_need_swapchain(x@_, y@_, wnd, a);
+				impl_require_swapchain(long);
 				passptr->targets_swapchain = true;
 			}
 		}
@@ -2149,7 +2270,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, a : arena mut&) -> tz_gpu_p
 		(passptr->colour_target_dimensions) = impl_get_pass_colour_target_dimensions(passptr);
 	}
 
-	impl_populate_descriptors(passptr, a);
+	impl_populate_descriptors(passptr, long, short);
 
 	return retid@tz_gpu_pass;
 };
