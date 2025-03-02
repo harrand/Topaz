@@ -63,15 +63,36 @@ main ::= func() -> s32
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 
-	tricol : vec4 mut := vec4{.x := 1.0; .y := 0.0; .z := 0.0; .w := 1.0;};
+	tricol : vec4 mut := vec4{.x := 0.5; .y := 0.5; .z := 0.5; .w := 1.0;};
 
 	buf ::= tz_gpu_create_buffer(tz_gpu_resource_info
 	{
-		.data := (ref tricol)@_;
+		.data := ref tricol;
 		.data_size := __sizeof(tricol);
 		.access := tz_gpu_access.static;
 		.flags := tz_gpu_resource_flag.none;
 	}, permanent_arena);
+
+	imgdata : u32 mut#4;
+	deref(imgdata at 0) = 0xFFFF0000;
+	deref(imgdata at 1) = 0xFF0000FF;
+	deref(imgdata at 2) = 0xFF0000FF;
+	deref(imgdata at 3) = 0xFFFF0000;
+
+	img ::= tz_gpu_create_image(tz_gpu_resource_info
+	{
+		.data := imgdata at 0;
+		.data_size := __sizeof(imgdata);
+		.access := tz_gpu_access.static;
+		.image_dimensions := vec2u32{.x := 2; .y := 2;};
+		.image_type := tz_gpu_image_type.rgba;
+		.flags := tz_gpu_resource_flag.none;
+	}, permanent_arena);
+
+	gpu_resources : tz_gpu_resource mut#2;
+	deref(gpu_resources at 0) = buf;
+	deref(gpu_resources at 1) = img;
+
 	if(buf == (tz_gpu_resource.invalid))
 	{
 		puts("failed to create buffer");
@@ -106,8 +127,8 @@ main ::= func() -> s32
 			.static_tri_count := 1;
 		};
 		.shader := shader;
-		.resources_data := ref buf;
-		.resources_count := 1;
+		.resources_data := gpu_resources at 0;
+		.resources_count := 2;
 		.name := "Triangle Renderer";
 	}, permanent_arena, frame_arena);
 	if(pass == (tz_gpu_pass.invalid))

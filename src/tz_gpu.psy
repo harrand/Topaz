@@ -52,12 +52,19 @@ tz_gpu_resource_flag ::= enum
 	.zero_memory := 0b00000001;
 };
 
+tz_gpu_image_type ::= enum
+{
+	.rgba := 0;
+	.depth := 1;
+};
+
 tz_gpu_resource_info ::= struct
 {
-	data : v0&;
+	data : v0& weak;
 	data_size : u64;
 	access : tz_gpu_access;
 	image_dimensions : vec2u32;
+	image_type : tz_gpu_image_type;
 	flags : tz_gpu_resource_flag;
 };
 
@@ -221,6 +228,8 @@ swapchain_views_cap : u64 mut := 0;
 swapchain_format ::= 44;
 [[private]]
 rgba_format ::= 37;
+[[private]]
+depth_format ::= 126;
 
 system_image : u64 mut := 0;
 //system_depth_image : u64 mut;
@@ -943,7 +952,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 
 	view_create : VkImageViewCreateInfo mut := VkImageViewCreateInfo
 	{
-		.sType := 15;
+.sType := 15;
 		.pNext := null;
 		.flags := 0;
 		.image := 0; // note: will overwrite this in coming for-loop.
@@ -1486,7 +1495,7 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 };
 
 [[private]]
-impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_data : u8& weak, src_data_size : u64) -> v0
+impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_data : u8& weak, src_data_size : u64, image_dimensions : vec2u32) -> v0
 {
 	impl_begin_scratch_commands();
 	staging_create ::= VkBufferCreateInfo
@@ -1510,6 +1519,8 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 	mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut&;
 	mem_copy(mapped_ptr at cursor, src_data, src_data_size);
 
+	aspect_mask : s32 := 1; // todo: suport depth.
+
 	if(dst_gpu_is_buffer)
 	{
 		cpy ::= VkBufferCopy
@@ -1519,6 +1530,46 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 			.size := src_data_size;
 		};
 		vk.cmd_copy_buffer(scratch.cmds, staging, dst_gpu_res, 1, ref cpy);
+	}
+	if(!dst_gpu_is_buffer)
+	{
+		cpy ::= VkBufferImageCopy
+		{
+			.bufferOffset := 0;
+			.bufferRowLength := 0;
+			.bufferImageHeight := 0;
+			.imageSubresource := VkImageSubresourceLayers
+			{
+				.aspectMask := aspect_mask; // todo: do depth if the image is a depth image.
+				.mipLevel := 0;
+				.baseArrayLayer := 0;
+				.layerCount := 1;
+			};
+			.imageOffset := VkOffset3D{.x := 0; .y := 0; .z := 0;};
+			.imageExtent := VkExtent3D{.width := image_dimensions.x; .height := image_dimensions.y; .depth := 1;};
+		};
+		barrier ::= VkImageMemoryBarrier
+		{
+			.sType := 45;
+			.pNext := null;
+			.srcAccessMask := 0;
+			.dstAccessMask := 0x00001000;/*VK_ACCESS_TRANSFER_WRITE_BIT*/
+			.oldLayout := 0;
+			.newLayout := 7; // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+			.srcQueueFamilyIndex := !0;
+			.dstQueueFamilyIndex := !0;
+			.image := dst_gpu_res;
+			.subresourceRange := VkImageSubresourceRange
+			{
+				.aspectMask := aspect_mask;
+				.baseMipLevel := 0;
+				.levelCount := 1;
+				.baseArrayLayer := 0;
+				.layerCount := 1;
+			};
+		};
+		vk.cmd_pipeline_barrier(scratch.cmds, 0, 0x00001000, 0, 0, null, 0, null, 1, ref barrier);
+		vk.cmd_copy_buffer_to_image(scratch.cmds, staging, dst_gpu_res, 7, 1, ref cpy);
 	}
 
 	impl_end_and_execute_scratch_commands();
@@ -1571,7 +1622,7 @@ impl_write_resources ::= func(passptr : pass_data_t mut&, long : arena mut&, sho
 	// write to metabuffer.
 	if(bufcount > 0)
 	{
-		impl_cpu_gpu_transfer(passptr->metabuf, true, buffer_addresses, passptr->metabuf_size);
+		impl_cpu_gpu_transfer(passptr->metabuf, true, buffer_addresses, passptr->metabuf_size, vec2u32_zero());
 	}
 };
 
@@ -1865,8 +1916,10 @@ tz_gpu_term ::= func() -> v0
 		}
 		if(!(resptr->is_buffer))
 		{
-			puts("errtodo: delete image resources.");
-			__debugbreak();
+			vk.destroy_sampler(used_device, resptr->sampler, null);
+			vk.destroy_image_view(used_device, resptr->image_view, null);
+			vk.destroy_image(used_device, resptr->vk_handle, null);
+			(resptr->vk_handle) = 0;
 		}
 	}
 	resource_count = 0;
@@ -2222,7 +2275,123 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 	}
 
 	// write resource data to gpu memory.
-	impl_cpu_gpu_transfer(resptr->vk_handle, true, resinfo->data, info.data_size);
+	impl_cpu_gpu_transfer(resptr->vk_handle, true, resinfo->data, info.data_size, vec2u32_zero());
+
+	return retid@tz_gpu_resource;
+};
+
+tz_gpu_create_image ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz_gpu_resource
+{
+	retid ::= resource_count;
+	resptr ::= impl_alloc_new_resource(a);
+	resptr->info = info;
+	resptr->is_buffer = false;
+	fmt : s32 mut;
+	aspect_mask : s32 mut;
+	if((info.image_type) == (tz_gpu_image_type.rgba))
+	{
+		fmt = rgba_format;
+		aspect_mask = 0x00000001;
+	}
+	if((info.image_type) == (tz_gpu_image_type.depth))
+	{
+		fmt = depth_format;
+		aspect_mask = 0x00000002;
+	}
+	dims ::= info.image_dimensions;
+	create : VkImageCreateInfo mut := VkImageCreateInfo
+	{
+		.sType := 14;
+		.pNext := null;
+		.flags := 0;
+		.imageType := 1;
+		.format := fmt;
+		.extent := VkExtent3D
+		{
+			.width := dims.x;
+			.height := dims.y;
+			.depth := 1;
+		};
+		.mipLevels := 1;
+		.arrayLayers := 1;
+		.samples := 1;
+		.tiling := 0;
+		.usage := (0x00000004 | 0x00000002); /* VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT */
+		.sharingMode := 0;
+		.queueFamilyIndexCount := 1;
+		.pQueueFamilyIndices := ref used_qfi;
+		.initialLayout := 0;
+	};
+	vk_check(vk.create_image(used_device, ref create, null, ref (resptr->vk_handle)));
+	w ::= dims.x;
+	h ::= dims.y;
+	impl_bind_image_mem(resptr->vk_handle, w * h * 4);
+
+	view_create ::= VkImageViewCreateInfo
+	{
+		.sType := 15;
+		.pNext := null;
+		.flags := 0;
+		.image := resptr->vk_handle;
+		.viewType := 1;
+		.format := fmt;
+		.components := VkComponentMapping
+		{
+			.r := 0;
+			.g := 0;
+			.b := 0;
+			.a := 0;
+		};
+		.subresourceRange := VkImageSubresourceRange
+		{
+			.aspectMask := aspect_mask;
+			.baseMipLevel := 0;
+			.levelCount := 1;
+			.baseArrayLayer := 0;
+			.layerCount := 1;
+		};
+	};
+
+	vk_check(vk.create_image_view(used_device, ref view_create, null, ref (resptr->image_view)));
+
+	sampler_create ::= VkSamplerCreateInfo
+	{
+		.sType := 31;
+		.pNext := null;
+		.flags := 0;
+		.magFilter := 0;
+		.minFilter := 0;
+		.mipmapMode := 0;
+		.addressModeU := 2;
+		.addressModeV := 2;
+		.addressModeW := 2;
+		.mipLodBias := 0.0;
+		.anisotropyEnable := 0;
+		.maxAnisotropy := 0.0;
+		.compareEnable := 0;
+		.compareOp := 7;
+		.minLod := 0.0;
+		.maxLod := 0.0;
+		.borderColor := 3;
+		.unnormalizedCoordinates := 0;
+	};
+	vk_check(vk.create_sampler(used_device, ref sampler_create, null, ref (resptr->sampler)));
+
+	// make a copy of the resource data using the arena.
+	resinfo ::= ref(resptr->info);
+	resinfo->data = arena_push(a, info.data_size);
+	if(info.data != null)
+	{
+		mem_copy(resinfo->data, info.data, info.data_size);
+	}
+
+	if(((info.flags) & (tz_gpu_resource_flag.zero_memory)) > 0)
+	{
+		mem_zero(resinfo->data, info.data_size);
+	}
+
+	// write resource data to gpu memory.
+	impl_cpu_gpu_transfer(resptr->vk_handle, false, resinfo->data, info.data_size, info.image_dimensions);
 
 	return retid@tz_gpu_resource;
 };

@@ -1028,6 +1028,38 @@ VkBufferCopy ::= struct
 	size : u64;
 };
 
+VkBufferImageCopy ::= struct
+{
+	bufferOffset : u64;
+	bufferRowLength : u32;
+	bufferImageHeight : u32;
+	imageSubresource : VkImageSubresourceLayers;
+	imageOffset : VkOffset3D;
+	imageExtent : VkExtent3D;
+};
+
+VkSamplerCreateInfo ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	flags : s32;
+	magFilter : s32;
+	minFilter : s32;
+	mipmapMode : s32;
+	addressModeU : s32;
+	addressModeV : s32;
+	addressModeW : s32;
+	mipLodBias : f32;
+	anisotropyEnable : u32;
+	maxAnisotropy : f32;
+	compareEnable : u32;
+	compareOp : s32;
+	minLod : f32;
+	maxLod : f32;
+	borderColor : s32;
+	unnormalizedCoordinates : u32;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -1057,6 +1089,8 @@ vk_functions_t ::= struct
 	destroy_image : func(device : u64, image : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 	create_image_view : func(device : u64, pCreateInfo : VkImageViewCreateInfo&, pAllocator : VkAllocationCallbacks&, pView : u64 mut&) -> s32;
 	destroy_image_view : func(device : u64, imageView : u64, pAllocator : VkAllocationCallbacks&) -> v0;
+	create_sampler : func(device : u64, pCreateInfo : VkSamplerCreateInfo&, pAllocator : VkAllocationCallbacks&, pSampler : u64 mut&) -> s32;
+	destroy_sampler : func(device : u64, sampler : u64, pAllocator : VkAllocationCallbacks&) -> v0;
 
 	enumerate_physical_devices : func(instance : u64, pPhysicalDeviceCount : u32 mut&, pPhysicalDevices : u64 mut&) -> s32;
 	get_physical_device_properties : func(physicalDevice : u64, pProperties : VkPhysicalDeviceProperties mut&) -> v0;
@@ -1124,6 +1158,7 @@ vk_functions_t ::= struct
 	cmd_blit_image : func(commandBuffer : u64, srcImage : u64, srcImageLayout : s32, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkImageBlit&, filter : s32) -> v0;
 	cmd_draw : func(commandBuffer : u64, vertexCount : u32, instanceCount : u32, firstVertex : u32, firstInstance : u32) -> v0;
 	cmd_copy_buffer : func(commandBuffer : u64, srcBuffer : u64, dstBuffer : u64, regionCount : u32, pRegions : VkBufferCopy&) -> v0;
+	cmd_copy_buffer_to_image : func(commandBuffer : u64, srcBuffer : u64, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkBufferImageCopy&) -> v0;
 
 	device_wait_idle : func(device : u64) -> v0;
 };
@@ -1206,6 +1241,8 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.destroy_image = load_vk_fn("vkDestroyImage", instance);
 	vk.create_image_view = load_vk_fn("vkCreateImageView", instance);
 	vk.destroy_image_view = load_vk_fn("vkDestroyImageView", instance);
+	vk.create_sampler = load_vk_fn("vkCreateSampler", instance);
+	vk.destroy_sampler = load_vk_fn("vkDestroySampler", instance);
 
 	vk.enumerate_physical_devices = load_vk_fn("vkEnumeratePhysicalDevices", instance);
 	vk.get_physical_device_properties = load_vk_fn("vkGetPhysicalDeviceProperties", instance);
@@ -1273,6 +1310,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.cmd_blit_image = load_vk_fn("vkCmdBlitImage", instance);
 	vk.cmd_draw = load_vk_fn("vkCmdDraw", instance);
 	vk.cmd_copy_buffer = load_vk_fn("vkCmdCopyBuffer", instance);
+	vk.cmd_copy_buffer_to_image = load_vk_fn("vkCmdCopyBufferToImage", instance);
 
 	vk.device_wait_idle = load_vk_fn("vkDeviceWaitIdle", instance);
 };
