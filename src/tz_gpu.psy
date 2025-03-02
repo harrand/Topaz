@@ -1070,6 +1070,16 @@ impl_require_swapchain ::= func(a : arena mut&) -> bool
 	windims ::= window_get_dimensions(wnd);
 	x ::= windims.x;
 	y ::= windims.y;
+	if(x == 0)
+	{
+		swapchain_width = 0;
+		swapchain_height = 0;
+	}
+	if(y == 0)
+	{
+		swapchain_width = 0;
+		swapchain_height = 0;
+	}
 	return impl_need_swapchain(x@_, y@_, wnd, a);
 };
 
@@ -2370,6 +2380,14 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut&, short : arena m
 	{
 		// make sure swapchain is available.
 		impl_require_swapchain(long);
+		if(swapchain_width == 0)
+		{
+			return;
+		}
+		if(swapchain_height == 0)
+		{
+			return;
+		}
 
 		vk_check(vk.acquire_next_image_khr(used_device, swapchain, 9999999999, 0, frame.swapchain_fence, ref image_index));
 		vk_check(vk.wait_for_fences(used_device, 1, ref (frame.swapchain_fence), 1, 9999999));
