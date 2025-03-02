@@ -105,8 +105,8 @@ main ::= func() -> s32
 			.static_tri_count := 1;
 		};
 		.shader := shader;
-		.resources_data := null;
-		.resources_count := 0;
+		.resources_data := ref buf;
+		.resources_count := 1;
 		.name := "Triangle Renderer";
 	}, permanent_arena, frame_arena);
 	if(pass == (tz_gpu_pass.invalid))

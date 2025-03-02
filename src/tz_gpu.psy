@@ -450,7 +450,7 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&
 	{
 		for(j = 0, j < (pinfo.resources_count), j = j + 1)
 		{
-			cur_resh = deref((pinfo.resources_data) at counter);
+			cur_resh = deref((pinfo.resources_data) at j);
 			if(cur_resh != (tz_gpu_resource.invalid))
 			{
 				if(cur_resh != (tz_gpu_resource.window_resource))
@@ -2539,8 +2539,6 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut&, short : arena m
 	add_source_file("src/wnd.psy");
 	add_source_file("src/file.psy");
 	add_source_file("src/mem.psy");
-
-	add_link_library("libcmt.lib");
 
 	run_command("glslc -o build/vertex.spv src/vertex.glsl");
 	run_command("glslc -o build/fragment.spv src/fragment.glsl");
