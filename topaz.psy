@@ -63,12 +63,12 @@ main ::= func() -> s32
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 
-	tricol : vec4 mut := vec4{.x := 0.5; .y := 0.5; .z := 0.5; .w := 1.0;};
+	pos : vec4 mut := vec4{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
 
 	buf ::= tz_gpu_create_buffer(tz_gpu_resource_info
 	{
-		.data := ref tricol;
-		.data_size := __sizeof(tricol);
+		.data := ref pos;
+		.data_size := __sizeof(pos);
 		.access := tz_gpu_access.static;
 		.flags := tz_gpu_resource_flag.none;
 	}, permanent_arena);
@@ -162,6 +162,27 @@ main ::= func() -> s32
 		{
 			puts("goodbye");
 			__debugbreak();
+		}
+		speed ::= 0.0002;
+		if(is_key_down(key.w))
+		{
+			pos.y = (pos.y + speed);
+			tz_gpu_resource_write(buf, ref pos, __sizeof(vec4), 0);
+		}
+		if(is_key_down(key.s))
+		{
+			pos.y = (pos.y - speed);
+			tz_gpu_resource_write(buf, ref pos, __sizeof(vec4), 0);
+		}
+		if(is_key_down(key.a))
+		{
+			pos.x = (pos.x - speed);
+			tz_gpu_resource_write(buf, ref pos, __sizeof(vec4), 0);
+		}
+		if(is_key_down(key.d))
+		{
+			pos.x = (pos.x + speed);
+			tz_gpu_resource_write(buf, ref pos, __sizeof(vec4), 0);
 		}
 	}
 	return 0;
