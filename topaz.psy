@@ -63,13 +63,14 @@ main ::= func() -> s32
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 
+	tricol : vec4 mut := vec4{.x := 1.0; .y := 0.0; .z := 0.0; .w := 1.0;};
+
 	buf ::= tz_gpu_create_buffer(tz_gpu_resource_info
 	{
-		.data := null;
-		.data_size := 4096;
+		.data := (ref tricol)@_;
+		.data_size := __sizeof(tricol);
 		.access := tz_gpu_access.static;
-		//.flags := tz_gpu_resource_flag.none;
-		.flags := tz_gpu_resource_flag.zero_memory;
+		.flags := tz_gpu_resource_flag.none;
 	}, permanent_arena);
 	if(buf == (tz_gpu_resource.invalid))
 	{

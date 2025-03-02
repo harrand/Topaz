@@ -507,6 +507,7 @@ impl_begin_scratch_commands ::= func() -> v0
 		.sType := 42;
 		.pNext := null;
 		.flags := 0x00000001; /*VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT*/
+		.pInheritanceInfo := null;
 	};
 
 	vk_check(vk.begin_command_buffer(scratch.cmds, ref create));
@@ -531,55 +532,6 @@ impl_end_and_execute_scratch_commands ::= func() -> v0
 	vk_check(vk.queue_submit(graphics_queue, 1, ref submit, scratch.fence));
 	vk_check(vk.wait_for_fences(used_device, 1, ref (scratch.fence), 1, -1@u64));
 	vk_check(vk.reset_fences(used_device, 1, ref (scratch.fence)));
-};
-
-[[private]]
-impl_write_resources ::= func(passptr : pass_data_t mut&, long : arena mut&, short : arena mut&) -> v0
-{
-	pinfo ::= passptr->info;
-	if((pinfo.resources_count) == 0)
-	{
-		return;
-	}
-
-	impl_begin_scratch_commands();
-
-	buffer_addresses : u64 mut& := arena_push(short, __sizeof(u64) * (passptr->metabuf_size));
-	bufcount : u64 mut := 0;
-
-	i : u64 mut := 0;
-	curres : tz_gpu_resource mut;
-	resdata : resource_data_t mut;
-	for(i = 0, i < (pinfo.resources_count), i = i + 1)
-	{
-		curres = deref((pinfo.resources_data) at i);
-		if(curres != (tz_gpu_resource.invalid))
-		{
-			if(curres != (tz_gpu_resource.window_resource))
-			{
-				resdata = deref (resources at (curres@s64));
-				if(resdata.is_buffer)
-				{
-					defer bufcount = bufcount + 1;
-					deref(buffer_addresses at bufcount) = (resdata.vk_handle);
-					// todo: resource write buffer data to resdata.vk_handle.
-				}
-				if(!(resdata.is_buffer))
-				{
-					// todo: resource write image data to resdata.vk_handle.
-				}
-			}
-		}
-	}
-
-	// write to metabuffer.
-	scratchbuf : u64 mut;
-	if(bufcount > 0)
-	{
-		puts("writing to metabuffer...");
-		putchar(10);
-	}
-	impl_end_and_execute_scratch_commands();
 };
 
 [[private]]
@@ -880,7 +832,7 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 		__debugbreak();
 	}
 
-	memreqs : VkImageMemoryRequirements mut;
+	memreqs : VkMemoryRequirements mut;
 	vk.get_image_memory_requirements(used_device, image, ref memreqs);
 
 	padding ::= ((memreqs.align) - ((valloc->cursor) % (memreqs.align)) % (memreqs.align));
@@ -1510,6 +1462,12 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 		puts("B remaining.");
 		__debugbreak();
 	}
+
+	memreqs : VkMemoryRequirements mut;
+	vk.get_buffer_memory_requirements(used_device, buffer, ref memreqs);
+	padding ::= ((memreqs.align) - ((valloc->cursor) % (memreqs.align)) % (memreqs.align));
+	(valloc->cursor) = (valloc->cursor) + (padding);
+
 	ret ::= vk.bind_buffer_memory(used_device, buffer, valloc->device_mem, valloc->cursor);
 	if(ret == -1) /* out of host memory */
 	{
@@ -1545,13 +1503,78 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 	staging : u64 mut;
 	vk.create_buffer(used_device, ref staging_create, null, ref staging);
 	// todo: write to the buffer using map memory.
+	old_cpumem ::= vallocator.buffer_cpu;
+	cursor ::= old_cpumem.cursor;
 	impl_bind_buffer_mem(staging, src_data_size, false);
 	cpumem ::= vallocator.buffer_cpu;
-	mapped_ptr ::= cpumem.mapped_ptr;
-	mem_copy(mapped_ptr, src_data, src_data_size);
+	mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut&;
+	mem_copy(mapped_ptr at cursor, src_data, src_data_size);
+
+	if(dst_gpu_is_buffer)
+	{
+		cpy ::= VkBufferCopy
+		{
+			.srcOffset := 0;
+			.dstOffset := 0;
+			.size := src_data_size;
+		};
+		vk.cmd_copy_buffer(scratch.cmds, staging, dst_gpu_res, 1, ref cpy);
+	}
+
 	impl_end_and_execute_scratch_commands();
 	vk.destroy_buffer(used_device, staging, null);
 };
+
+[[private]]
+impl_write_resources ::= func(passptr : pass_data_t mut&, long : arena mut&, short : arena mut&) -> v0
+{
+	pinfo ::= passptr->info;
+	if((pinfo.resources_count) == 0)
+	{
+		return;
+	}
+
+	buffer_addresses : u64 mut& := arena_push(short, passptr->metabuf_size);
+	bufcount : u64 mut := 0;
+
+	i : u64 mut := 0;
+	curres : tz_gpu_resource mut;
+	resdata : resource_data_t mut;
+	for(i = 0, i < (pinfo.resources_count), i = i + 1)
+	{
+		curres = deref((pinfo.resources_data) at i);
+		if(curres != (tz_gpu_resource.invalid))
+		{
+			if(curres != (tz_gpu_resource.window_resource))
+			{
+				resdata = deref (resources at (curres@s64));
+				if(resdata.is_buffer)
+				{
+					defer bufcount = bufcount + 1;
+					deref(buffer_addresses at bufcount) = (resdata.buffer_device_address);
+					// todo: resource write buffer data to resdata.vk_handle.
+				}
+				if(!(resdata.is_buffer))
+				{
+					// todo: resource write image data to resdata.vk_handle.
+				}
+			}
+		}
+	}
+
+	if(bufcount != ((passptr->metabuf_size) / __sizeof(u64)))
+	{
+		puts("internal metabuf logic error");
+		__debugbreak();
+	}
+
+	// write to metabuffer.
+	if(bufcount > 0)
+	{
+		impl_cpu_gpu_transfer(passptr->metabuf, true, buffer_addresses, passptr->metabuf_size);
+	}
+};
+
 
 [[private]]
 impl_initialise_pipeline_layout ::= func() -> u64
@@ -2159,7 +2182,7 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 	resptr ::= impl_alloc_new_resource(a);
 	resptr->info = info;
 	resptr->is_buffer = true;
-	create ::= VkBufferCreateInfo
+	create : VkBufferCreateInfo mut := VkBufferCreateInfo
 	{
 		.sType := 12;
 		.pNext := null;
@@ -2170,6 +2193,10 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		.queueFamilyIndexCount := 1;
 		.pQueueFamilyIndices := ref used_qfi;
 	};
+	if(info.access == (tz_gpu_access.static))
+	{
+		create.usage = (create.usage) | 0x00000002;
+	}
 	vk_check(vk.create_buffer(used_device, ref create, null, ref (resptr->vk_handle)));
 	bda ::= VkBufferDeviceAddressInfo
 	{
@@ -2178,7 +2205,8 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		.buffer := resptr->vk_handle;
 	};
 	impl_bind_buffer_mem(resptr->vk_handle, info.data_size, info.access == (tz_gpu_access.static));
-	resptr->buffer_device_address = vk.get_buffer_device_address(used_device, ref bda);
+	tmp_bda ::= vk.get_buffer_device_address(used_device, ref bda);
+	(resptr->buffer_device_address) = tmp_bda;
 
 	// make a copy of the resource data using the arena.
 	resinfo ::= ref(resptr->info);
@@ -2295,7 +2323,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : 
 		.pNext := null;
 		.flags := 0;
 		.size := size;
-		.usage := (0x00000020 | 0x00000002);
+		.usage := (0x00000020 | 0x00000002); /* VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT */
 		.sharingMode := 0;
 		.queueFamilyIndexCount := 1;
 		.pQueueFamilyIndices := ref used_qfi;

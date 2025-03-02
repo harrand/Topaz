@@ -823,7 +823,7 @@ VkImageMemoryBarrier ::= struct
 	subresourceRange : VkImageSubresourceRange;
 };
 
-VkImageMemoryRequirements ::= struct
+VkMemoryRequirements ::= struct
 {
 	size : u64;
 	align : u64;
@@ -1021,6 +1021,13 @@ VkCopyDescriptorSet ::= struct
 	descriptorCount : u32;
 };
 
+VkBufferCopy ::= struct
+{
+	srcOffset : u64;
+	dstOffset : u64;
+	size : u64;
+};
+
 vk_functions_t ::= struct
 {
 	get_instance_proc_addr : func(instance : u64, funcname : u8&) -> u64 weak;
@@ -1098,7 +1105,8 @@ vk_functions_t ::= struct
 	end_command_buffer : func(commandBuffer : u64) -> s32;
 	reset_command_buffer : func(commandBuffer : u64, flags : s32) -> s32;
 
-	get_image_memory_requirements : func(device : u64, image : u64, pMemoryRequirements : VkImageMemoryRequirements mut&) -> v0;
+	get_image_memory_requirements : func(device : u64, image : u64, pMemoryRequirements : VkMemoryRequirements mut&) -> v0;
+	get_buffer_memory_requirements : func(device : u64, buffer : u64, pMemoryRequirements : VkMemoryRequirements mut&) -> v0;
 	map_memory : func(device : u64, memory : u64, offset : u64, size : u64, flags : s32, ppData : v0 mut&& weak) -> s32;
 
 	queue_submit : func(queue : u64, submitCount : u32, pSubmits : VkSubmitInfo&, fence : u64) -> s32;
@@ -1115,6 +1123,7 @@ vk_functions_t ::= struct
 	cmd_set_scissor : func(commandBuffer : u64, firstScissor : u32, scissorCount : u32, pScissors : VkRect2D&) -> v0;
 	cmd_blit_image : func(commandBuffer : u64, srcImage : u64, srcImageLayout : s32, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkImageBlit&, filter : s32) -> v0;
 	cmd_draw : func(commandBuffer : u64, vertexCount : u32, instanceCount : u32, firstVertex : u32, firstInstance : u32) -> v0;
+	cmd_copy_buffer : func(commandBuffer : u64, srcBuffer : u64, dstBuffer : u64, regionCount : u32, pRegions : VkBufferCopy&) -> v0;
 
 	device_wait_idle : func(device : u64) -> v0;
 };
@@ -1246,6 +1255,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.reset_command_buffer = load_vk_fn("vkResetCommandBuffer", instance);
 
 	vk.get_image_memory_requirements = load_vk_fn("vkGetImageMemoryRequirements", instance);
+	vk.get_buffer_memory_requirements = load_vk_fn("vkGetBufferMemoryRequirements", instance);
 	vk.map_memory = load_vk_fn("vkMapMemory", instance);
 
 	vk.queue_submit = load_vk_fn("vkQueueSubmit", instance);
@@ -1262,6 +1272,7 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.cmd_set_scissor = load_vk_fn("vkCmdSetScissor", instance);
 	vk.cmd_blit_image = load_vk_fn("vkCmdBlitImage", instance);
 	vk.cmd_draw = load_vk_fn("vkCmdDraw", instance);
+	vk.cmd_copy_buffer = load_vk_fn("vkCmdCopyBuffer", instance);
 
 	vk.device_wait_idle = load_vk_fn("vkDeviceWaitIdle", instance);
 };
