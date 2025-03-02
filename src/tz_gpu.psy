@@ -1818,10 +1818,23 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 	}
 	// todo: make VK_EXT_debug_utils optional.
 	deref(extensions at 2) = "VK_EXT_debug_utils";
-	extension_count : u32 := __sizeof(extensions) / __sizeof(u8&);
+	extension_count : u32 mut := __sizeof(extensions) / __sizeof(u8&);
 
 	layers : u8& mut#1;
 	deref(layers at 0) = "VK_LAYER_KHRONOS_validation";
+
+	if static(__config() == "debug")
+	{
+		layer_count ::= 1;
+		puts("validation layers enabled");
+		putchar(10);
+	}
+	if static(__config() == "release")
+	{
+		layer_count ::= 0;
+		extension_count = (extension_count - 1);
+	}
+
 
 	create ::= VkInstanceCreateInfo
 	{
@@ -1829,7 +1842,7 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 		.pNext := null;
 		.flags := 0;
 		.pApplicationInfo := ref appinfo;
-		.enabledLayerCount := 1;
+		.enabledLayerCount := layer_count;
 		.ppEnabledLayerNames := layers at 0;
 		.enabledExtensionCount := extension_count;
 		.ppEnabledExtensionNames := extensions at 0;

@@ -197,5 +197,15 @@ main ::= func() -> s32
 
 	set_output_directory("build");
 	set_executable("tz");
-	set_optimisation(0);
+
+	if static(__config() == "debug")
+	{
+		set_optimisation(0);
+		enable_debug_symbols(true);
+	}
+	if static(__config() == "release")
+	{
+		set_optimisation(3);
+		enable_debug_symbols(false);
+	}
 }
