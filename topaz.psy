@@ -69,7 +69,7 @@ main ::= func() -> s32
 	{
 		.data := ref pos;
 		.data_size := __sizeof(pos);
-		.access := tz_gpu_access.static;
+		.access := tz_gpu_access.dynamic;
 		.flags := tz_gpu_resource_flag.none;
 	}, permanent_arena);
 

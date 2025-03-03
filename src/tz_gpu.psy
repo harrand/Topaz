@@ -1580,7 +1580,14 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 impl_write_a_resource ::= func(resptr : resource_data_t&) -> v0
 {
 	rinfo ::= resptr->info;
-	impl_cpu_gpu_transfer(resptr->vk_handle, resptr->is_buffer, rinfo.data, rinfo.data_size, rinfo.image_dimensions);
+	if((rinfo.access) == (tz_gpu_access.dynamic))
+	{
+		mem_copy(resptr->mapped_ptr, rinfo.data, rinfo.data_size);
+	}
+	if((rinfo.access) == (tz_gpu_access.static))
+	{
+		impl_cpu_gpu_transfer(resptr->vk_handle, resptr->is_buffer, rinfo.data, rinfo.data_size, rinfo.image_dimensions);
+	}
 };
 
 [[private]]
@@ -2785,7 +2792,6 @@ tz_gpu_resource_write ::= func(res : tz_gpu_resource, data : v0& weak, data_size
 	rinfo ::= resptr->info;
 
 	mem_copy(rinfo.data, data, data_size);
-
 	impl_write_a_resource(resptr);
 };
 
