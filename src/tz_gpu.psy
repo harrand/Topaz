@@ -43,6 +43,8 @@ tz_gpu_buffer_flag ::= enum
 {
 	.none := 0;
 	.dynamic := 1;
+	.index_buffer := 2;
+	.draw_indirect_buffer := 4;
 };
 
 tz_gpu_image_flag ::= enum
@@ -309,6 +311,26 @@ passes_count : u64 mut := 0;
 passes_cap : u64 mut := 0;
 
 // implementation details
+
+[[private]]
+impl_buffer_is_descriptor_relevant ::= func(resptr : resource_data_t&) -> bool
+{
+	if(!(resptr->is_buffer))
+	{
+		return false;
+	}
+	rinfo ::= resptr->info;
+	flags ::= rinfo.buffer_flags;
+	if(flags & (tz_gpu_buffer_flag.index_buffer))
+	{
+		return false;
+	}
+	if(flags & (tz_gpu_buffer_flag.draw_indirect_buffer))
+	{
+		return false;
+	}
+	return true;
+};
 
 [[private]]
 impl_new_descriptor_pool ::= func(a : arena mut&) -> u64
@@ -2522,7 +2544,10 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : 
 		cur_resource = deref (resources at (deref(info.resources_data at counter)@s64));
 		if(cur_resource.is_buffer)
 		{
-			buffer_rescount = buffer_rescount + 1;
+			if(impl_buffer_is_descriptor_relevant(ref cur_resource))
+			{
+				buffer_rescount = buffer_rescount + 1;
+			}
 		}
 	}
 
