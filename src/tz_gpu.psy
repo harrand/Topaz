@@ -41,10 +41,10 @@ tz_gpu_hardware ::= struct
 
 tz_gpu_buffer_flag ::= enum
 {
-	.none := 0;
-	.dynamic := 1;
-	.index_buffer := 2;
-	.draw_indirect_buffer := 4;
+	.none := 0b0000;
+	.dynamic := 0b0001;
+	.index_buffer := 0b0010;
+	.draw_buffer := 0b0100;
 };
 
 tz_gpu_image_flag ::= enum
@@ -142,6 +142,14 @@ tz_gpu_pass ::= enum
 tz_gpu_graph ::= enum
 {
 	.invalid := -1;
+};
+
+tz_gpu_draw_indirect_command ::= struct
+{
+	vertex_count : u32;
+	instance_count : u32;
+	first_vertex : u32;
+	first_instance : u32;
 };
 
 valloc_initial_size : u64 static := (32 * 1024 * 1024); /*32 mib*/
@@ -313,23 +321,10 @@ passes_cap : u64 mut := 0;
 // implementation details
 
 [[private]]
-impl_buffer_is_descriptor_relevant ::= func(resptr : resource_data_t&) -> bool
+impl_resource_size_bytes ::= func(resptr : resource_data_t&) -> u64
 {
-	if(!(resptr->is_buffer))
-	{
-		return false;
-	}
 	rinfo ::= resptr->info;
-	flags ::= rinfo.buffer_flags;
-	if(flags & (tz_gpu_buffer_flag.index_buffer))
-	{
-		return false;
-	}
-	if(flags & (tz_gpu_buffer_flag.draw_indirect_buffer))
-	{
-		return false;
-	}
-	return true;
+	return rinfo.data_size;
 };
 
 [[private]]
@@ -1264,7 +1259,18 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 	// todo: draw buffer logic.
 	// for now we just do the draw.
 	tri_count ::= ginfo.static_tri_count;
-	vk.cmd_draw(frame.cmds, tri_count * 3, 1, 0, 0);
+	drawbuf ::= ginfo.draw_buffer;
+	if(drawbuf == (tz_gpu_resource.invalid))
+	{
+		vk.cmd_draw(frame.cmds, tri_count * 3, 1, 0, 0);
+	}
+	if(drawbuf != (tz_gpu_resource.invalid))
+	{
+		drawbufres ::= resources at (drawbuf@s64);
+		drawbufinfo ::= drawbufres->info;
+		draw_buf_max_size_unindexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indirect_command);
+		vk.cmd_draw_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_unindexed, __sizeof(tz_gpu_draw_indirect_command));
+	}
 
 	vk.cmd_end_rendering(frame.cmds);
 };
@@ -1501,11 +1507,11 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 		__debugbreak();
 	}
 
-	offset_from_zero ::= valloc->cursor;
 	memreqs : VkMemoryRequirements mut;
 	vk.get_buffer_memory_requirements(used_device, buffer, ref memreqs);
 	padding ::= ((memreqs.align) - ((valloc->cursor) % (memreqs.align)) % (memreqs.align));
 	(valloc->cursor) = (valloc->cursor) + (padding);
+	offset_from_zero ::= valloc->cursor;
 
 	ret ::= vk.bind_buffer_memory(used_device, buffer, valloc->device_mem, valloc->cursor);
 	if(ret == -1) /* out of host memory */
@@ -1518,8 +1524,7 @@ impl_bind_buffer_mem ::= func(buffer : u64, bufsize : u64, gpu_memory : bool) ->
 		puts("voom when binding buffer memory. todo: multiple allocations");
 		__debugbreak();
 	}
-	// todo: align safely.
-	valloc->cursor = (valloc->cursor) + bufsize;
+	(valloc->cursor) = (valloc->cursor) + bufsize;
 	return offset_from_zero;
 };
 
@@ -1611,7 +1616,7 @@ impl_write_a_resource ::= func(resptr : resource_data_t&) -> v0
 	is_dynamic_buffer : bool mut := resptr->is_buffer;
 	if(is_dynamic_buffer)
 	{
-		is_dynamic_buffer = ((rinfo.buffer_flags) == (tz_gpu_buffer_flag.dynamic));
+		is_dynamic_buffer = (((rinfo.buffer_flags) & (tz_gpu_buffer_flag.dynamic)) > 0);
 	}
 	if(is_dynamic_buffer)
 	{
@@ -2306,10 +2311,18 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		.queueFamilyIndexCount := 1;
 		.pQueueFamilyIndices := ref used_qfi;
 	};
-	dynamic ::= (info.buffer_flags) == (tz_gpu_buffer_flag.dynamic);
+	dynamic ::= ((info.buffer_flags) & (tz_gpu_buffer_flag.dynamic)) > 0;
 	if(!dynamic)
 	{
 		create.usage = (create.usage) | 0x00000002;
+	}
+	if(((info.buffer_flags) & (tz_gpu_buffer_flag.index_buffer)) > 0)
+	{
+		create.usage = (create.usage) | 0x00000040;
+	}
+	if(((info.buffer_flags) & (tz_gpu_buffer_flag.draw_buffer)) > 0)
+	{
+		create.usage = (create.usage) | 0x00000100;
 	}
 	vk_check(vk.create_buffer(used_device, ref create, null, ref (resptr->vk_handle)));
 	bda ::= VkBufferDeviceAddressInfo
@@ -2318,13 +2331,14 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		.pNext := null;
 		.buffer := resptr->vk_handle;
 	};
-	is_dynamic ::= (info.buffer_flags) == (tz_gpu_buffer_flag.dynamic);
 	cursor ::= impl_bind_buffer_mem(resptr->vk_handle, info.data_size, !dynamic);
 	if(dynamic)
 	{
 		cpumem ::= vallocator.buffer_cpu;
 		mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut&;
 		(resptr->mapped_ptr) = (mapped_ptr at cursor)@_;
+		puts("cursor: ");
+		putuint(cursor);
 	}
 	tmp_bda ::= vk.get_buffer_device_address(used_device, ref bda);
 	(resptr->buffer_device_address) = tmp_bda;
@@ -2544,10 +2558,7 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : 
 		cur_resource = deref (resources at (deref(info.resources_data at counter)@s64));
 		if(cur_resource.is_buffer)
 		{
-			if(impl_buffer_is_descriptor_relevant(ref cur_resource))
-			{
-				buffer_rescount = buffer_rescount + 1;
-			}
+			buffer_rescount = buffer_rescount + 1;
 		}
 	}
 
@@ -2583,6 +2594,25 @@ tz_gpu_create_pass ::= func(info : tz_gpu_pass_info, long : arena mut&, short : 
 	cur_colour_target : tz_gpu_resource mut;
 	if(!(passptr->is_compute))
 	{
+		if((ginfo.draw_buffer) != (tz_gpu_resource.invalid))
+		{
+			drawbuf_handle ::= (ginfo.draw_buffer)@s64;
+			drawbuf : resource_data_t& := resources at drawbuf_handle;
+			dbinfo ::= drawbuf->info;
+			dbflags ::= dbinfo.buffer_flags;
+			if((dbflags & (tz_gpu_buffer_flag.draw_buffer)) <= 0)
+			{
+				puts("error: draw_buffer (");
+				putuint(drawbuf_handle);
+				puts(") passed to graphics renderer ");
+				putchar('"');
+				puts(info.name);
+				putchar('"');
+				puts(" did not have tz_gpu_buffer_flag.draw_buffer.");
+				__debugbreak();
+			}
+		}
+
 		passptr->pipeline = impl_create_graphics_pipeline(info.shader, info.graphics, long);
 		for(counter = 0, counter < (ginfo.colour_targets_count), counter = counter + 1)
 		{
@@ -2826,6 +2856,13 @@ tz_gpu_resource_write ::= func(res : tz_gpu_resource, data : v0& weak, data_size
 
 	mem_copy(rinfo->data, data, data_size);
 	impl_write_a_resource(resptr);
+};
+
+tz_gpu_resource_size ::= func(res : tz_gpu_resource) -> u64
+{
+	resptr ::= resources at (res@s64);
+	rinfo ::= resptr->info;
+	return rinfo.data_size;
 };
 
 == build ==

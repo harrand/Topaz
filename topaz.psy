@@ -25,6 +25,12 @@ setup_arenas ::= macro() -> v0
 	defer arena_destroy(frame_arena_val);
 };
 
+single_draw ::= struct
+{
+	count : u32;
+	command : tz_gpu_draw_indirect_command;
+};
+
 main ::= func() -> s32
 {
 	wrangle_window_class();
@@ -64,6 +70,26 @@ main ::= func() -> s32
 	tz_gpu_use_hardware(deref(hardware_list at 0));
 
 	pos : vec4 mut := vec4{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
+
+	drawdata ::= single_draw
+	{
+		.count := 1;
+		.command := tz_gpu_draw_indirect_command
+		{
+			.vertex_count := 3;
+			.instance_count := 1;
+			.first_vertex := 0;
+			.first_instance := 0;
+		};
+	};
+
+	drawbuf ::= tz_gpu_create_buffer(tz_gpu_resource_info
+	{
+		.data := ref drawdata;
+		.data_size := __sizeof(drawdata);
+		.flags := tz_gpu_resource_flag.none;
+		.buffer_flags := (tz_gpu_buffer_flag.draw_buffer);
+	}, permanent_arena);
 
 	buf ::= tz_gpu_create_buffer(tz_gpu_resource_info
 	{
@@ -121,7 +147,7 @@ main ::= func() -> s32
 			.colour_targets_count := 1;
 			.depth_target := tz_gpu_resource.invalid;
 			.index_buffer := tz_gpu_resource.invalid;
-			.draw_buffer := tz_gpu_resource.invalid;
+			.draw_buffer := drawbuf;
 			.culling := tz_gpu_cull.none;
 			.static_tri_count := 1;
 		};
