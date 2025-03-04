@@ -69,8 +69,8 @@ main ::= func() -> s32
 	{
 		.data := ref pos;
 		.data_size := __sizeof(pos);
-		.access := tz_gpu_access.dynamic;
 		.flags := tz_gpu_resource_flag.none;
+		.buffer_flags := tz_gpu_buffer_flag.dynamic;
 	}, permanent_arena);
 
 	imgdata : u32 mut#4;
@@ -83,7 +83,6 @@ main ::= func() -> s32
 	{
 		.data := imgdata at 0;
 		.data_size := __sizeof(imgdata);
-		.access := tz_gpu_access.static;
 		.image_dimensions := vec2u32{.x := 2; .y := 2;};
 		.image_type := tz_gpu_image_type.rgba;
 		.flags := tz_gpu_resource_flag.none;
@@ -208,4 +207,7 @@ main ::= func() -> s32
 		set_optimisation(3);
 		enable_debug_symbols(false);
 	}
+
+	run_command("glslc -o build/vertex.spv src/vertex.glsl");
+	run_command("glslc -o build/fragment.spv src/fragment.glsl");
 }

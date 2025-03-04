@@ -39,10 +39,15 @@ tz_gpu_hardware ::= struct
 	native_handle : u64;
 };
 
-tz_gpu_access ::= enum
+tz_gpu_buffer_flag ::= enum
 {
-	.static := 0;
+	.none := 0;
 	.dynamic := 1;
+};
+
+tz_gpu_image_flag ::= enum
+{
+	.none := 0;
 };
 
 tz_gpu_resource_flag ::= enum
@@ -62,10 +67,11 @@ tz_gpu_resource_info ::= struct
 {
 	data : v0& weak;
 	data_size : u64;
-	access : tz_gpu_access;
 	image_dimensions : vec2u32;
 	image_type : tz_gpu_image_type;
 	flags : tz_gpu_resource_flag;
+	buffer_flags : tz_gpu_buffer_flag;
+	image_flags : tz_gpu_image_flag;
 };
 
 tz_gpu_resource ::= enum
@@ -1580,11 +1586,16 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 impl_write_a_resource ::= func(resptr : resource_data_t&) -> v0
 {
 	rinfo ::= resptr->info;
-	if((rinfo.access) == (tz_gpu_access.dynamic))
+	is_dynamic_buffer : bool mut := resptr->is_buffer;
+	if(is_dynamic_buffer)
+	{
+		is_dynamic_buffer = ((rinfo.buffer_flags) == (tz_gpu_buffer_flag.dynamic));
+	}
+	if(is_dynamic_buffer)
 	{
 		mem_copy(resptr->mapped_ptr, rinfo.data, rinfo.data_size);
 	}
-	if((rinfo.access) == (tz_gpu_access.static))
+	if(!is_dynamic_buffer)
 	{
 		impl_cpu_gpu_transfer(resptr->vk_handle, resptr->is_buffer, rinfo.data, rinfo.data_size, rinfo.image_dimensions);
 	}
@@ -2273,7 +2284,8 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		.queueFamilyIndexCount := 1;
 		.pQueueFamilyIndices := ref used_qfi;
 	};
-	if(info.access == (tz_gpu_access.static))
+	dynamic ::= (info.buffer_flags) == (tz_gpu_buffer_flag.dynamic);
+	if(!dynamic)
 	{
 		create.usage = (create.usage) | 0x00000002;
 	}
@@ -2284,8 +2296,9 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		.pNext := null;
 		.buffer := resptr->vk_handle;
 	};
-	cursor ::= impl_bind_buffer_mem(resptr->vk_handle, info.data_size, info.access == (tz_gpu_access.static));
-	if(info.access == (tz_gpu_access.dynamic))
+	is_dynamic ::= (info.buffer_flags) == (tz_gpu_buffer_flag.dynamic);
+	cursor ::= impl_bind_buffer_mem(resptr->vk_handle, info.data_size, !dynamic);
+	if(dynamic)
 	{
 		cpumem ::= vallocator.buffer_cpu;
 		mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut&;
@@ -2320,11 +2333,6 @@ tz_gpu_create_image ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz_
 	resptr->is_buffer = false;
 	fmt : s32 mut;
 	aspect_mask : s32 mut;
-	if((info.access) == (tz_gpu_access.dynamic))
-	{
-		puts("images cannot be dynamic access");
-		__debugbreak();
-	}
 	if((info.image_type) == (tz_gpu_image_type.rgba))
 	{
 		fmt = rgba_format;
@@ -2789,19 +2797,16 @@ tz_gpu_resource_write ::= func(res : tz_gpu_resource, data : v0& weak, data_size
 {
 	vk.device_wait_idle(used_device);
 	resptr ::= (resources at (res@s64));
-	rinfo ::= resptr->info;
+	rinfo ::= ref (resptr->info);
 
-	mem_copy(rinfo.data, data, data_size);
+	mem_copy(rinfo->data, data, data_size);
 	impl_write_a_resource(resptr);
 };
 
 == build ==
 {
-	add_source_file("src/vulkan.psy");
-	add_source_file("src/wnd.psy");
-	add_source_file("src/file.psy");
-	add_source_file("src/mem.psy");
-
-	run_command("glslc -o build/vertex.spv src/vertex.glsl");
-	run_command("glslc -o build/fragment.spv src/fragment.glsl");
+	add_source_file("vulkan.psy");
+	add_source_file("wnd.psy");
+	add_source_file("file.psy");
+	add_source_file("mem.psy");
 }

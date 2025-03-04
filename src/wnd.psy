@@ -188,8 +188,8 @@ get_main_window ::= func() -> window_handle
 
 == build ==
 {
-	add_source_file("src/string.psy");
-	add_source_file("src/vec.psy");
+	add_source_file("string.psy");
+	add_source_file("vec.psy");
 	add_link_library("User32.lib");
 	add_link_library("Kernel32.lib");
 }

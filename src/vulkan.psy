@@ -1429,6 +1429,6 @@ vk_check ::= func(result : s32) -> v0
 
 == build ==
 {
-	add_source_file("src/string.psy");
+	add_source_file("string.psy");
 	add_link_library("Kernel32.lib");
 }
