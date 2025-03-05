@@ -256,6 +256,9 @@ rgba_format ::= 37;
 [[private]]
 depth_format ::= 126;
 
+[[private]]
+target_window : tz_wnd_window mut;
+
 system_image : u64 mut := 0;
 //system_depth_image : u64 mut;
 system_image_view : u64 mut := 0;
@@ -896,8 +899,13 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 };
 
 [[private]]
-impl_need_swapchain ::= func(w : u64, h : u64, wnd : tz_wnd_window, a : arena mut&) -> bool
+impl_need_swapchain ::= func(w : u64, h : u64, a : arena mut&) -> bool
 {
+	if(target_window == (tz_wnd_window.invalid))
+	{
+		puts("one or more GPU passes need access to the swapchain, but no valid window was ever provided via tz_gpu_use_hardware.");
+		__debugbreak();
+	}
 	if(surface == 0)
 	{
 		// create surface.
@@ -909,7 +917,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : tz_wnd_window, a : arena mu
 				.pNext := null;
 				.flags := 0;
 				.hinstance := GetModuleHandleA(null);
-				.hwnd := wnd@s64@u64;
+				.hwnd := tz_wnd_get_native_handle(target_window);
 			};
 			vk_check(vk.create_win32_surface_khr(vkinst, ref create, null, ref surface));
 		}
@@ -1060,8 +1068,7 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : tz_wnd_window, a : arena mu
 [[private]]
 impl_require_swapchain ::= func(a : arena mut&) -> bool
 {
-	wnd ::= tz_wnd_get_main_window();
-	windims ::= tz_wnd_get_dimensions(wnd);
+	windims ::= tz_wnd_get_dimensions(target_window);
 	x ::= windims.x;
 	y ::= windims.y;
 	if(x == 0)
@@ -1074,7 +1081,7 @@ impl_require_swapchain ::= func(a : arena mut&) -> bool
 		swapchain_width = 0;
 		swapchain_height = 0;
 	}
-	return impl_need_swapchain(x@_, y@_, wnd, a);
+	return impl_need_swapchain(x@_, y@_, a);
 };
 
 [[private]]
@@ -1869,6 +1876,7 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo) -> v0
 {
 	TZ_GPU_VERSION ::= VK_MAKE_API_VERSION(0, 0, 1, 0);
 	vulkan_init();
+	target_window = tz_wnd_window.invalid;
 
 	appinfo ::= VkApplicationInfo
 	{
@@ -2085,8 +2093,9 @@ tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut&, array_size : u64,
 	return tz_gpu_err.none;
 };
 
-tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware) -> v0
+tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware, window : tz_wnd_window) -> v0
 {
+	target_window = window;
 	pdev ::= hardware.native_handle;
 	queue_priority : f32 := 1.0;
 

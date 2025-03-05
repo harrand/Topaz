@@ -72,6 +72,8 @@ lpWindowName : u8&,
 	PeekMessageA ::= func(lpMsg : WINMSG mut&, hwnd : u64, wMsgFilterMin : u32, wMsgFilterMax : u32, wRemoveMsg : u32) -> s32 := extern;
 	TranslateMessage ::= func(lpMsg : WINMSG&) -> s32 := extern;
 	DispatchMessageA ::= func(lpMsg : WINMSG&) -> s64 := extern;
+	SetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32, dwNewLong : s64) -> s64 := extern;
+	GetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32) -> s64 := extern;
 }
 
 window_data_t ::= struct
@@ -81,7 +83,18 @@ window_data_t ::= struct
 };
 
 [[private]]
-main_window : window_data_t mut;
+windows : window_data_t mut& mut;
+[[private]]
+window_count : u64 mut := 0;
+[[private]]
+window_cap : u64 mut := 0;
+
+impl_close_window ::= func(wndhandle : u64) -> v0
+{
+	wndptr ::= windows at wndhandle;
+	(wndptr->open) = false;
+	DestroyWindow(wndptr->handle);
+};
 
 if static(__is_windows)
 {
@@ -89,11 +102,8 @@ if static(__is_windows)
 	{
 		if(msg == 16) // WM_CLOSE
 		{
-			DestroyWindow(hwnd);
-			if(hwnd == (main_window.handle))
-			{
-				(main_window.open) = false;
-			}
+			wndhandle ::= GetWindowLongPtrA(hwnd, 0);
+			impl_close_window(wndhandle@u64);
 			return 0;
 		}
 		if(msg == 2) // WM_DESTROY
@@ -142,24 +152,42 @@ tz_wnd_window ::= enum
 	.invalid := -1;
 };
 
-tz_wnd_open_window ::= func(w : u64, h : u64, title : u8&) -> tz_wnd_window
+tz_wnd_open_window ::= func(w : u64, h : u64, title : u8&, a : arena mut&) -> tz_wnd_window
 {
+	if(window_cap == 0)
+	{
+		initial_window_capacity ::= 8;
+		windows = arena_push(a, __sizeof(window_data_t) * initial_window_capacity);
+		window_cap = initial_window_capacity;
+	}
+	if(window_count >= window_cap)
+	{
+		new_capacity ::= window_cap * 2;
+		windows = arena_push(a, __sizeof(window_data_t) * new_capacity);
+		window_cap = new_capacity;
+	}
+	retid ::= window_count;
+	wndptr ::= windows at retid;
+	window_count = window_count + 1;
+
 	if static(__is_windows)
 	{
 		hinst ::= GetModuleHandleA(null);
-		ret ::= CreateWindowExA(768, window_classname, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, hinst, null);
-		if(ret == 0)
+		hwnd ::= CreateWindowExA(768, window_classname, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, hinst, null);
+		if(hwnd == 0)
 		{
 			__debugbreak();
 		}
 
-		ShowWindow(ret, 5);
-		main_window = window_data_t
+		ShowWindow(hwnd, 5);
+		deref(wndptr) = window_data_t
 		{
-			.handle := ret@u64;
+			.handle := hwnd@u64;
 			.open := true;
 		};
-		return ret@_;
+		SetWindowLongPtrA(hwnd, 0, retid@_);
+		(wndptr->handle) = hwnd;
+		return retid@_;
 	}
 	if static(__is_linux)
 	{
@@ -168,20 +196,13 @@ tz_wnd_open_window ::= func(w : u64, h : u64, title : u8&) -> tz_wnd_window
 
 tz_wnd_close_window ::= func(wnd : tz_wnd_window) -> v0
 {
-	wndval ::= wnd@s64@u64;
-	if((main_window.handle) == wndval)
-	{
-		DestroyWindow(wndval);
-	}
+	impl_close_window(wnd@s64@u64);
 };
 
 tz_wnd_is_open ::= func(wnd : tz_wnd_window) -> bool
 {
-	if((main_window.handle) == (wnd@s64@u64))
-	{
-		return (main_window.open);
-	}
-	return false;
+	wndptr ::= windows at (wnd@s64);
+	return wndptr->open;
 };
 
 tz_wnd_update ::= func() -> v0
@@ -203,17 +224,20 @@ tz_wnd_update ::= func() -> v0
 
 tz_wnd_get_dimensions ::= func(wnd : tz_wnd_window) -> vec2u32
 {
+	wndptr ::= windows at (wnd@s64);
+
 	rect : RECT mut;
-	if(GetClientRect(wnd@s64@u64, ref rect) != 0)
+	if(GetClientRect(wndptr->handle, ref rect) != 0)
 	{
 		return vec2u32{.x := ((rect.right) - (rect.left))@_; .y := ((rect.bottom) - (rect.top))@_;};
 	}
 	return vec2u32{.x := 0; .y := 0;};
 };
 
-tz_wnd_get_main_window ::= func() -> tz_wnd_window
+tz_wnd_get_native_handle ::= func(wnd : tz_wnd_window) -> u64
 {
-	return (main_window.handle)@s64@tz_wnd_window;
+	wndptr ::= windows at (wnd@s64);
+	return wndptr->handle;
 };
 
 == build ==

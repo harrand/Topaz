@@ -41,7 +41,7 @@ main ::= func() -> s32
 	print(' ');
 	putchar(10);
 
-	wnd ::= tz_wnd_open_window(800, 600, "Topaz Test");
+	wnd ::= tz_wnd_open_window(800, 600, "Topaz Test", permanent_arena);
 	defer tz_wnd_close_window(wnd);
 
 	puts("watch as i count to 10!");
@@ -67,7 +67,7 @@ main ::= func() -> s32
 
 	hardware_list : tz_gpu_hardware mut& := arena_push_one(permanent_arena, tz_gpu_hardware{});
 	tz_gpu_iterate_hardware(hardware_list, hardware_count, permanent_arena);
-	tz_gpu_use_hardware(deref(hardware_list at 0));
+	tz_gpu_use_hardware(deref(hardware_list at 0), wnd);
 
 	pos : vec4 mut := vec4{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
 
