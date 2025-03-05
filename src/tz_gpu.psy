@@ -896,7 +896,7 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64) -> v0
 };
 
 [[private]]
-impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mut&) -> bool
+impl_need_swapchain ::= func(w : u64, h : u64, wnd : tz_wnd_window, a : arena mut&) -> bool
 {
 	if(surface == 0)
 	{
@@ -1060,8 +1060,8 @@ impl_need_swapchain ::= func(w : u64, h : u64, wnd : window_handle, a : arena mu
 [[private]]
 impl_require_swapchain ::= func(a : arena mut&) -> bool
 {
-	wnd ::= get_main_window();
-	windims ::= window_get_dimensions(wnd);
+	wnd ::= tz_wnd_get_main_window();
+	windims ::= tz_wnd_get_dimensions(wnd);
 	x ::= windims.x;
 	y ::= windims.y;
 	if(x == 0)
@@ -2896,6 +2896,6 @@ tz_gpu_resource_size ::= func(res : tz_gpu_resource) -> u64
 == build ==
 {
 	add_source_file("vulkan.psy");
-	add_source_file("wnd.psy");
+	add_source_file("tz_wnd.psy");
 	add_source_file("file.psy");
 }

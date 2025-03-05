@@ -1,0 +1,224 @@
+if static(__is_windows)
+{
+	WNDCLASSEXA ::= struct
+	{
+		cbSize : u32;
+		style : u32;
+		wndproc : func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64;
+		cbClsExtra : s32;
+		cbWndExtra : s32;
+		hInstance : u64;
+		hIcon : u64;
+		hCursor : u64;
+		hbrBackground : u64;
+		lpszMenuName : u8&;
+		lpszClassName : u8&;
+		hIconSm : u64;
+	};
+
+	PostMessageA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s32 := extern;
+	DefWindowProcA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64 := extern;
+	LoadIconA ::= func(hinstance : u64, lpIconName : u8&) -> u64 := extern;
+	LoadCursorA ::= func(hinstance : u64, lpIconName : u8&) -> u64 := extern;
+	RegisterClassExA ::= func(class : WNDCLASSEXA&) -> u16 := extern;
+	CreateWindowExA ::= func
+	(
+		dwExStyle : u32,
+		lpClassName : u8&,
+lpWindowName : u8&,
+		dwStyle : u32,
+		x : s32,
+		y : s32,
+		nWidth : s32,
+		nHeight : s32,
+		hWndParent : u64,
+		hMenu : u64,
+		hInstance : u64,
+		lpParam : v0&
+	) -> u64 := extern;
+	ShowWindow ::= func(hwnd : u64, nCmdShow : s32) -> s32 := extern;
+
+	DestroyWindow ::= func(hwnd : u64) -> s32 := extern;
+	PostQuitMessage ::= func(nExitCode : s32) -> v0 := extern;
+
+	RECT ::= struct
+	{
+		left : s32;
+		top : s32;
+		right : s32;
+		bottom : s32;
+	};
+	GetClientRect ::= func(hwnd : u64, lpRect : RECT mut&) -> s32 := extern;
+	GetModuleHandleA ::= func(lpModuleName : u8&) -> u64 := extern;
+
+	POINT ::= struct
+	{
+		x : s64;
+		y : s64;
+	};
+
+	WINMSG ::= struct
+	{
+		hwnd : u64;
+		message : u32;
+		wparam : u64;
+		lparam : s64;
+		time : u64;
+		pt : POINT;
+	};
+
+	CW_USEDEFAULT ::= -2147483648;
+
+	PeekMessageA ::= func(lpMsg : WINMSG mut&, hwnd : u64, wMsgFilterMin : u32, wMsgFilterMax : u32, wRemoveMsg : u32) -> s32 := extern;
+	TranslateMessage ::= func(lpMsg : WINMSG&) -> s32 := extern;
+	DispatchMessageA ::= func(lpMsg : WINMSG&) -> s64 := extern;
+}
+
+window_data_t ::= struct
+{
+	handle : u64;
+	open : bool;
+};
+
+[[private]]
+main_window : window_data_t mut;
+
+if static(__is_windows)
+{
+	wndproc ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64) -> s64
+	{
+		if(msg == 16) // WM_CLOSE
+		{
+			DestroyWindow(hwnd);
+			if(hwnd == (main_window.handle))
+			{
+				(main_window.open) = false;
+			}
+			return 0;
+		}
+		if(msg == 2) // WM_DESTROY
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
+		return DefWindowProcA(hwnd, msg, wparam, lparam);
+	};
+
+	window_classname ::= "Topaz";
+	window_class_registered : bool mut := false;
+
+	register_wndclass ::= func() -> v0
+	{
+		hinst ::= GetModuleHandleA(null);
+		magic_int_resource ::= (32512@u64)@u8&;
+		COLOR_WINDOW ::= 5;
+		window_class ::= WNDCLASSEXA
+		{
+			.cbSize := __sizeof(WNDCLASSEXA);
+			.style := 43;
+			.wndproc := wndproc;
+			.cbClsExtra := __sizeof(u64);
+			.cbWndExtra := 0;
+			.hInstance := hinst;
+			.hIcon := LoadIconA(0, magic_int_resource);
+			.hCursor := LoadCursorA(0, magic_int_resource);
+			.hbrBackground := COLOR_WINDOW + 1;
+			.lpszMenuName := null;
+			.lpszClassName := window_classname;
+			.hIconSm := LoadIconA(0, magic_int_resource);
+		};
+		RegisterClassExA(ref window_class);
+		window_class_registered = true;
+	};
+
+	unregister_wndclass ::= func() -> v0
+	{
+		window_class_registered = false;
+	};
+}
+
+tz_wnd_window ::= enum
+{
+	.invalid := -1;
+};
+
+tz_wnd_open_window ::= func(w : u64, h : u64, title : u8&) -> tz_wnd_window
+{
+	if static(__is_windows)
+	{
+		hinst ::= GetModuleHandleA(null);
+		ret ::= CreateWindowExA(768, window_classname, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, hinst, null);
+		if(ret == 0)
+		{
+			__debugbreak();
+		}
+
+		ShowWindow(ret, 5);
+		main_window = window_data_t
+		{
+			.handle := ret@u64;
+			.open := true;
+		};
+		return ret@_;
+	}
+	if static(__is_linux)
+	{
+	}
+};
+
+tz_wnd_close_window ::= func(wnd : tz_wnd_window) -> v0
+{
+	wndval ::= wnd@s64@u64;
+	if((main_window.handle) == wndval)
+	{
+		DestroyWindow(wndval);
+	}
+};
+
+tz_wnd_is_open ::= func(wnd : tz_wnd_window) -> bool
+{
+	if((main_window.handle) == (wnd@s64@u64))
+	{
+		return (main_window.open);
+	}
+	return false;
+};
+
+tz_wnd_update ::= func() -> v0
+{
+	if static(__is_windows)
+	{
+		msg : WINMSG mut := WINMSG{};
+		mybool ::= PeekMessageA(ref msg, 0, 0, 0, 1);
+		if(mybool@bool)
+		{
+			TranslateMessage(ref msg);
+			DispatchMessageA(ref msg);
+		}
+	}
+	if static(__is_linux)
+	{
+	}
+};
+
+tz_wnd_get_dimensions ::= func(wnd : tz_wnd_window) -> vec2u32
+{
+	rect : RECT mut;
+	if(GetClientRect(wnd@s64@u64, ref rect) != 0)
+	{
+		return vec2u32{.x := ((rect.right) - (rect.left))@_; .y := ((rect.bottom) - (rect.top))@_;};
+	}
+	return vec2u32{.x := 0; .y := 0;};
+};
+
+tz_wnd_get_main_window ::= func() -> tz_wnd_window
+{
+	return (main_window.handle)@s64@tz_wnd_window;
+};
+
+== build ==
+{
+	add_source_file("vec.psy");
+	add_link_library("User32.lib");
+	add_link_library("Kernel32.lib");
+}
