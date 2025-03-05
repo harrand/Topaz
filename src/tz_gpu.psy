@@ -1550,7 +1550,7 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 	cursor ::= impl_bind_buffer_mem(staging, src_data_size, false);
 	cpumem ::= vallocator.buffer_cpu;
 	mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut&;
-	mem_copy(mapped_ptr at cursor, src_data, src_data_size);
+	__memcpy(mapped_ptr at cursor, src_data, src_data_size);
 
 	aspect_mask : s32 := 1; // todo: suport depth.
 
@@ -1620,7 +1620,7 @@ impl_write_a_resource ::= func(resptr : resource_data_t&) -> v0
 	}
 	if(is_dynamic_buffer)
 	{
-		mem_copy(resptr->mapped_ptr, rinfo.data, rinfo.data_size);
+		__memcpy(resptr->mapped_ptr, rinfo.data, rinfo.data_size);
 	}
 	if(!is_dynamic_buffer)
 	{
@@ -2348,12 +2348,12 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 	resinfo->data = arena_push(a, info.data_size);
 	if(info.data != null)
 	{
-		mem_copy(resinfo->data, info.data, info.data_size);
+		__memcpy(resinfo->data, info.data, info.data_size);
 	}
 
 	if(((info.flags) & (tz_gpu_resource_flag.zero_memory)) > 0)
 	{
-		mem_zero(resinfo->data, info.data_size);
+		__memset(resinfo->data, 0, info.data_size);
 	}
 
 	// write resource data to gpu memory.
@@ -2463,12 +2463,12 @@ tz_gpu_create_image ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz_
 	resinfo->data = arena_push(a, info.data_size);
 	if(info.data != null)
 	{
-		mem_copy(resinfo->data, info.data, info.data_size);
+		__memcpy(resinfo->data, info.data, info.data_size);
 	}
 
 	if(((info.flags) & (tz_gpu_resource_flag.zero_memory)) > 0)
 	{
-		mem_zero(resinfo->data, info.data_size);
+		__memset(resinfo->data, 0, info.data_size);
 	}
 
 	// write resource data to gpu memory.
@@ -2854,7 +2854,7 @@ tz_gpu_resource_write ::= func(res : tz_gpu_resource, data : v0& weak, data_size
 	resptr ::= (resources at (res@s64));
 	rinfo ::= ref (resptr->info);
 
-	mem_copy(rinfo->data, data, data_size);
+	__memcpy(rinfo->data, data, data_size);
 	impl_write_a_resource(resptr);
 };
 
@@ -2870,5 +2870,4 @@ tz_gpu_resource_size ::= func(res : tz_gpu_resource) -> u64
 	add_source_file("vulkan.psy");
 	add_source_file("wnd.psy");
 	add_source_file("file.psy");
-	add_source_file("mem.psy");
 }
