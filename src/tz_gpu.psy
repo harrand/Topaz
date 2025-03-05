@@ -152,6 +152,15 @@ tz_gpu_draw_indirect_command ::= struct
 	first_instance : u32;
 };
 
+tz_gpu_draw_indexed_indirect_command ::= struct
+{
+	index_count : u32;
+	instance_count : u32;
+	first_index : u32;
+	vertex_offset : s32;
+	first_instance : u32;
+};
+
 valloc_initial_size : u64 static := (32 * 1024 * 1024); /*32 mib*/
 
 valloc_t ::= struct
@@ -1260,16 +1269,37 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 	// for now we just do the draw.
 	tri_count ::= ginfo.static_tri_count;
 	drawbuf ::= ginfo.draw_buffer;
-	if(drawbuf == (tz_gpu_resource.invalid))
+	idxbuf ::= ginfo.index_buffer;
+	if(idxbuf == (tz_gpu_resource.invalid))
 	{
-		vk.cmd_draw(frame.cmds, tri_count * 3, 1, 0, 0);
+		if(drawbuf == (tz_gpu_resource.invalid))
+		{
+			vk.cmd_draw(frame.cmds, tri_count * 3, 1, 0, 0);
+		}
+		if(drawbuf != (tz_gpu_resource.invalid))
+		{
+			drawbufres ::= resources at (drawbuf@s64);
+			drawbufinfo ::= drawbufres->info;
+			draw_buf_max_size_unindexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indirect_command);
+			vk.cmd_draw_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_unindexed, __sizeof(tz_gpu_draw_indirect_command));
+		}
 	}
-	if(drawbuf != (tz_gpu_resource.invalid))
+	if(idxbuf != (tz_gpu_resource.invalid))
 	{
-		drawbufres ::= resources at (drawbuf@s64);
-		drawbufinfo ::= drawbufres->info;
-		draw_buf_max_size_unindexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indirect_command);
-		vk.cmd_draw_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_unindexed, __sizeof(tz_gpu_draw_indirect_command));
+		idxbufres ::= resources at (idxbuf@s64);
+		idxbufinfo ::= idxbufres->info;
+		vk.cmd_bind_index_buffer(frame.cmds, idxbufres->vk_handle, 0, 1);
+		if(drawbuf == (tz_gpu_resource.invalid))
+		{
+			vk.cmd_draw_indexed(frame.cmds, tri_count * 3, 1, 0, 0, 0);
+		}
+		if(drawbuf != (tz_gpu_resource.invalid))
+		{
+			drawbufres ::= resources at (drawbuf@s64);
+			drawbufinfo ::= drawbufres->info;
+			draw_buf_max_size_indexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indexed_indirect_command);
+			vk.cmd_draw_indexed_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_indexed, __sizeof(tz_gpu_draw_indexed_indirect_command));
+		}
 	}
 
 	vk.cmd_end_rendering(frame.cmds);
@@ -2337,8 +2367,6 @@ tz_gpu_create_buffer ::= func(info : tz_gpu_resource_info, a : arena mut&) -> tz
 		cpumem ::= vallocator.buffer_cpu;
 		mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut&;
 		(resptr->mapped_ptr) = (mapped_ptr at cursor)@_;
-		puts("cursor: ");
-		putuint(cursor);
 	}
 	tmp_bda ::= vk.get_buffer_device_address(used_device, ref bda);
 	(resptr->buffer_device_address) = tmp_bda;

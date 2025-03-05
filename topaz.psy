@@ -28,7 +28,7 @@ setup_arenas ::= macro() -> v0
 single_draw ::= struct
 {
 	count : u32;
-	command : tz_gpu_draw_indirect_command;
+	command : tz_gpu_draw_indexed_indirect_command;
 };
 
 main ::= func() -> s32
@@ -74,11 +74,12 @@ main ::= func() -> s32
 	drawdata ::= single_draw
 	{
 		.count := 1;
-		.command := tz_gpu_draw_indirect_command
+		.command := tz_gpu_draw_indexed_indirect_command
 		{
-			.vertex_count := 3;
+			.index_count := 3;
 			.instance_count := 1;
-			.first_vertex := 0;
+			.first_index := 0;
+			.vertex_offset := 0;
 			.first_instance := 0;
 		};
 	};
@@ -97,6 +98,19 @@ main ::= func() -> s32
 		.data_size := __sizeof(pos);
 		.flags := tz_gpu_resource_flag.none;
 		.buffer_flags := tz_gpu_buffer_flag.dynamic;
+	}, permanent_arena);
+
+	indices : u32 mut#3;
+	deref(indices at 0) = 0;
+	deref(indices at 1) = 1;
+	deref(indices at 2) = 2;
+
+	idxbuf ::= tz_gpu_create_buffer(tz_gpu_resource_info
+	{
+		.data := indices at 0;
+		.data_size := __sizeof(indices);
+		.flags := tz_gpu_resource_flag.none;
+		.buffer_flags := tz_gpu_buffer_flag.index_buffer;
 	}, permanent_arena);
 
 	imgdata : u32 mut#4;
@@ -146,7 +160,7 @@ main ::= func() -> s32
 			.colour_targets_data := ref colour_target;
 			.colour_targets_count := 1;
 			.depth_target := tz_gpu_resource.invalid;
-			.index_buffer := tz_gpu_resource.invalid;
+			.index_buffer := idxbuf;
 			.draw_buffer := drawbuf;
 			.culling := tz_gpu_cull.none;
 			.static_tri_count := 1;
@@ -186,7 +200,7 @@ main ::= func() -> s32
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
-			__debugbreak();
+			close_window(wnd);
 		}
 		speed ::= 0.0002;
 		if(is_key_down(key.w))

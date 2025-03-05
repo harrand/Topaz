@@ -1156,8 +1156,11 @@ vk_functions_t ::= struct
 	cmd_set_viewport : func(commandBuffer : u64, firstViewport : u32, viewportCount : u32, pViewports : VkViewport&) -> v0;
 	cmd_set_scissor : func(commandBuffer : u64, firstScissor : u32, scissorCount : u32, pScissors : VkRect2D&) -> v0;
 	cmd_blit_image : func(commandBuffer : u64, srcImage : u64, srcImageLayout : s32, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkImageBlit&, filter : s32) -> v0;
+	cmd_bind_index_buffer : func(commandBuffer : u64, buffer : u64, offset : u64, indexType : s32) -> v0;
 	cmd_draw : func(commandBuffer : u64, vertexCount : u32, instanceCount : u32, firstVertex : u32, firstInstance : u32) -> v0;
+	cmd_draw_indexed : func(commandBuffer : u64, indexCount : u32, instanceCount : u32, firstIndex : u32, vertexOffset : s32, firstInstance : u32) -> v0;
 	cmd_draw_indirect_count : func(commandBuffer : u64, buffer : u64, offset : u64, countBuffer : u64, countBufferOffset : u64, maxDrawCount : u32, stride : u32) -> v0;
+	cmd_draw_indexed_indirect_count : func(commandBuffer : u64, buffer : u64, offset : u64, countBuffer : u64, countBufferOffset : u64, maxDrawCount : u32, stride : u32) -> v0;
 	cmd_copy_buffer : func(commandBuffer : u64, srcBuffer : u64, dstBuffer : u64, regionCount : u32, pRegions : VkBufferCopy&) -> v0;
 	cmd_copy_buffer_to_image : func(commandBuffer : u64, srcBuffer : u64, dstImage : u64, dstImageLayout : s32, regionCount : u32, pRegions : VkBufferImageCopy&) -> v0;
 
@@ -1309,8 +1312,11 @@ vulkan_load_functions ::= func(instance : u64) -> v0
 	vk.cmd_set_viewport = load_vk_fn("vkCmdSetViewport", instance);
 	vk.cmd_set_scissor = load_vk_fn("vkCmdSetScissor", instance);
 	vk.cmd_blit_image = load_vk_fn("vkCmdBlitImage", instance);
+	vk.cmd_bind_index_buffer = load_vk_fn("vkCmdBindIndexBuffer", instance);
 	vk.cmd_draw = load_vk_fn("vkCmdDraw", instance);
+	vk.cmd_draw_indexed = load_vk_fn("vkCmdDrawIndexed", instance);
 	vk.cmd_draw_indirect_count = load_vk_fn("vkCmdDrawIndirectCount", instance);
+	vk.cmd_draw_indexed_indirect_count = load_vk_fn("vkCmdDrawIndexedIndirectCount", instance);
 	vk.cmd_copy_buffer = load_vk_fn("vkCmdCopyBuffer", instance);
 	vk.cmd_copy_buffer_to_image = load_vk_fn("vkCmdCopyBufferToImage", instance);
 
