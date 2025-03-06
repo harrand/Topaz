@@ -200,6 +200,7 @@ main ::= func() -> s32
 		if(is_key_down(key.escape))
 		{
 			puts("goodbye");
+			putchar(10);
 			tz_wnd_close_window(wnd);
 		}
 		speed ::= 0.0002;
@@ -222,6 +223,10 @@ main ::= func() -> s32
 		{
 			pos.x = (pos.x + speed);
 			tz_gpu_resource_write(buf, ref pos, __sizeof(vec4), 0);
+		}
+		if(is_key_down(key.z))
+		{
+			tz_gpu_resize_buffer(buf, __sizeof(pos) * 2, permanent_arena, frame_arena);
 		}
 	}
 	return 0;
