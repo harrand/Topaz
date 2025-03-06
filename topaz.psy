@@ -182,6 +182,11 @@ main ::= func() -> s32
 
 	defer tz_gpu_term();
 
+	tz_mesh_init(tz_mesh_config
+	{
+	}, permanent_arena);
+	tz_mesh_upload(tz_mesh_data{}, permanent_arena);
+
 	while(tz_wnd_is_open(wnd))
 	{
 		if(frame_arena_val.cursor > 0)
@@ -235,6 +240,7 @@ main ::= func() -> s32
 == build ==
 {
 	add_source_file("src/debug.psy");
+	add_source_file("src/tz_mesh.psy");
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 	add_source_file("src/tz_wnd.psy");

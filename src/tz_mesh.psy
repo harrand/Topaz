@@ -1,0 +1,164 @@
+tz_mesh_vertex ::= struct
+{
+	pos : vec3;
+	texcoord : vec2;
+};
+
+tz_mesh_config ::= struct
+{
+	clear_colour : vec4;
+};
+
+tz_mesh_handle ::= enum
+{
+	.invalid := -1;
+};
+
+tz_mesh_locator ::= struct
+{
+	vertex_offset : u64;
+	vertex_count : u64;
+	index_offset : u64;
+	index_count : u64;
+};
+
+tz_mesh_data ::= struct
+{
+	vertex_data : tz_mesh_vertex&;
+	vertex_count : u64;
+	index_data : u32&;
+	index_count : u64;
+};
+
+[[private]]
+vb : tz_gpu_resource mut;
+[[private]]
+vertex_count : u64 mut;
+[[private]]
+vertex_cap : u64 mut;
+[[private]]
+ib : tz_gpu_resource mut;
+[[private]]
+index_count : u64 mut;
+[[private]]
+index_cap : u64 mut;
+[[private]]
+geometry_pass : tz_gpu_pass mut;
+[[private]]
+mesh_renderer_initialised : bool mut := false;
+[[private]]
+mesh_renderer_config : tz_mesh_config mut;
+
+[[private]]
+mesh_locators : tz_mesh_locator mut& mut;
+[[private]]
+mesh_locators_count : u64 mut;
+[[private]]
+mesh_locators_cap : u64 mut;
+
+
+[[private]]
+initial_vertex_cap ::= 8192;
+[[private]]
+initial_index_cap ::= 8192;
+[[private]]
+initial_mesh_locator_cap ::= 64;
+
+[[private]]
+impl_initialise_renderer ::= func(a : arena mut&) -> v0
+{
+	mesh_renderer_config = tz_mesh_config
+	{
+		.clear_colour := vec4_filled(1.0);
+	};
+	vertex_cap = initial_vertex_cap;
+	vertex_count = 0;
+	index_cap = initial_index_cap;
+	index_count = 0;
+
+	vb = tz_gpu_create_buffer(tz_gpu_resource_info
+	{
+		.data := null;
+		.data_size := vertex_cap * __sizeof(tz_mesh_vertex);
+		.flags := tz_gpu_resource_flag.zero_memory;
+		.buffer_flags := tz_gpu_buffer_flag.none;
+	}, a);
+
+	ib = tz_gpu_create_buffer(tz_gpu_resource_info
+	{
+		.data := null;
+		.data_size := vertex_cap * __sizeof(u32);
+		.flags := tz_gpu_resource_flag.zero_memory;
+		.buffer_flags := tz_gpu_buffer_flag.none;
+	}, a);
+
+	mesh_locators_count = 0;
+	mesh_locators_cap = initial_mesh_locator_cap;
+	mesh_locators = arena_push(a, __sizeof(tz_mesh_locator) * initial_mesh_locator_cap);
+
+	shader_data ::= tz_gpu_load_shader_files("build/mesh_renderer_vertex.spv", "build/mesh_renderer_fragment.spv", a);
+	shader ::= tz_gpu_create_graphics_shader(shader_data.vertex_spv_data, shader_data.vertex_spv_count, shader_data.fragment_spv_data, shader_data.fragment_spv_count, a);
+
+	mesh_renderer_initialised = true;
+};
+
+[[private]]
+impl_find_vertex_region ::= func(vtx_count : u64) -> u64
+{
+	return -1@u64;
+};
+
+[[private]]
+impl_find_index_region ::= func(idx_count : u64) -> u64
+{
+	return -1@u64;
+};
+
+tz_mesh_init ::= func(config : tz_mesh_config, a : arena mut&) -> v0
+{
+	impl_initialise_renderer(a);
+};
+
+tz_mesh_upload ::= func(mesh : tz_mesh_data, a : arena mut&) -> tz_mesh_handle
+{
+	if(!mesh_renderer_initialised)
+	{
+		puts("tz_mesh_init not called before using tz_mesh.");
+		__debugbreak();
+	}
+
+	retid ::= mesh_locators_count;
+	if(mesh_locators_count >= mesh_locators_cap)
+	{
+		puts("ran out of mesh locator capacity");
+		__debugbreak();
+	}
+	locptr ::= mesh_locators at mesh_locators_count;
+	mesh_locators_count = mesh_locators_count + 1;
+
+	locptr->vertex_offset = impl_find_vertex_region(mesh.vertex_count);
+	locptr->vertex_count = mesh.vertex_count;
+	locptr->index_offset = impl_find_index_region(mesh.index_count);
+	locptr->index_count = mesh.index_count;
+	if((locptr->vertex_offset) == -1)
+	{
+		puts("ran out of vertex capacity");
+		__debugbreak();
+	}
+	if((locptr->index_offset) == -1)
+	{
+		puts("ran out of vertex capacity");
+		__debugbreak();
+	}
+
+	return retid@tz_mesh_handle;
+};
+
+== build ==
+{
+	add_source_file("vec.psy");
+	add_source_file("tz_gpu.psy");
+
+	run_command("glslc -o build/mesh_renderer_vertex.spv src/mesh_renderer_vertex.glsl");
+	run_command("glslc -o build/mesh_renderer_fragment.spv src/mesh_renderer_fragment.glsl");
+}
