@@ -2936,9 +2936,6 @@ tz_gpu_resource_size ::= func(res : tz_gpu_resource) -> u64
 
 tz_gpu_resize_buffer ::= func(res : tz_gpu_resource, new_size : u64, long : arena mut&, short : arena mut&) -> v0
 {
-	// going to have to recreate the buffer completely.
-	// problem is, all the passes that use this buffer as a resource will need to have their metabuffer written to.
-	// this is because the metabuffer will contain the BDA of the old buffer which is now out of date.
 	resptr ::= resources at (res@s64);
 	oldinfo ::= resptr->info;
 	olddata ::= oldinfo.data;
@@ -2967,6 +2964,9 @@ tz_gpu_resize_buffer ::= func(res : tz_gpu_resource, new_size : u64, long : aren
 
 	impl_init_buffer(resptr, oldinfo, long);
 
+	// problem is, all the passes that use this buffer as a resource will need to have their metabuffer written to.
+	// this is because the metabuffer will contain the BDA of the old buffer which is now out of date.
+	// solution:
 	// for all passes, if they contained this buffer, rewrite their metabuffers.
 	counter : u64 mut;
 	for(counter = 0, counter < passes_count, counter = counter + 1)
