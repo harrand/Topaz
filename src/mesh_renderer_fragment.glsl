@@ -1,4 +1,4 @@
-#version 430
+#version 460 core
 #extension GL_EXT_nonuniform_qualifier : require
 #pragma shader_stage fragment
 layout(location = 0) out vec4 fcol;

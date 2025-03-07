@@ -98,7 +98,7 @@ main ::= func() -> s32
 		.index_count := 6;
 	}, permanent_arena);
 
-	tz_mesh_add_to_draw_list(quad);
+	tz_mesh_add_to_draw_list(quad, 8612);
 
 	while(tz_wnd_is_open(wnd))
 	{

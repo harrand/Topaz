@@ -2272,10 +2272,28 @@ tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware, window : tz_wnd_window)
 		.subgroupBroadcastDynamicId := 0;
 	};
 
+	features11 ::= VkPhysicalDeviceVulkan11Features 
+	{
+		.sType := 49;
+		.pNext := (ref features12)@_;
+		.storageBuffer16BitAccess := 0;
+		.uniformAndStorageBuffer16BitAccess := 0;
+		.storagePushConstant16 := 0;
+		.storageInputOutput16 := 0;
+		.multiview := 0;
+		.multiviewGeometryShader := 0;
+		.multiviewTessellationShader := 0;
+		.variablePointersStorageBuffer := 0;
+		.variablePointers := 0;
+		.protectedMemory := 0;
+		.samplerYcbcrConversion := 0;
+		.shaderDrawParameters := 1;
+	};
+
 	enabled_features ::= VkPhysicalDeviceFeatures2
 	{
 		.sType := 1000059000;
-		.pNext := (ref features12)@_;
+		.pNext := (ref features11)@_;
 		.features := VkPhysicalDeviceFeatures
 		{
 			.robustBufferAccess := 0;

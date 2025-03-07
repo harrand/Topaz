@@ -314,6 +314,24 @@ VkPhysicalDeviceVulkan12Features ::= struct
 	subgroupBroadcastDynamicId : u32;
 };
 
+VkPhysicalDeviceVulkan11Features ::= struct
+{
+	sType : s32;
+	pNext : v0&;
+	storageBuffer16BitAccess : u32;
+	uniformAndStorageBuffer16BitAccess : u32;
+	storagePushConstant16 : u32;
+	storageInputOutput16 : u32;
+	multiview : u32;
+	multiviewGeometryShader : u32;
+	multiviewTessellationShader : u32;
+	variablePointersStorageBuffer : u32;
+	variablePointers : u32;
+	protectedMemory : u32;
+	samplerYcbcrConversion : u32;
+	shaderDrawParameters : u32;
+};
+
 VkPhysicalDeviceFeatures ::= struct
 {
 	robustBufferAccess : u32;

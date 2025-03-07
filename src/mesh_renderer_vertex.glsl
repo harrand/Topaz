@@ -1,4 +1,4 @@
-#version 430
+#version 460 core
 #extension GL_EXT_buffer_reference : require
 #extension GL_EXT_scalar_block_layout : require
 #pragma shader_stage vertex
@@ -26,5 +26,6 @@ void main()
 {
 	vertex_t cur_vertex = vertex.data[gl_VertexIndex];
 	gl_Position = vec4(cur_vertex.pos, 1.0);
+	int data_id = gl_BaseInstance;
 	uv = cur_vertex.texcoord;
 }
