@@ -176,16 +176,39 @@ main ::= func() -> s32
 		__debugbreak();
 	}
 
-	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
-	tz_gpu_graph_add_pass(graph, pass);
-	tz_gpu_graph_add_pass(graph, tz_gpu_pass.present);
-
 	defer tz_gpu_term();
 
 	tz_mesh_init(tz_mesh_config
 	{
 	}, permanent_arena);
-	tz_mesh_upload(tz_mesh_data{}, permanent_arena);
+
+	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
+	tz_gpu_graph_add_pass(graph, tz_mesh_get_pass());
+	tz_gpu_graph_add_pass(graph, tz_gpu_pass.present);
+
+	mesh_vertices : tz_mesh_vertex mut#4;
+	// Vertex positions (x, y, z) and texture coordinates (u, v)
+	deref(mesh_vertices at 0) = tz_mesh_vertex{.pos := vec3{.x := -0.5; .y := -0.5; .z := 0.0;}; .texcoord := vec2{.x := 0.0; .y := 1.0;};};
+	deref(mesh_vertices at 1) = tz_mesh_vertex{.pos := vec3{.x :=  0.5; .y := -0.5; .z := 0.0;}; .texcoord := vec2{.x := 1.0; .y := 1.0;};};
+	deref(mesh_vertices at 2) = tz_mesh_vertex{.pos := vec3{.x := -0.5; .y :=  0.5; .z := 0.0;}; .texcoord := vec2{.x := 0.0; .y := 0.0;};};
+	deref(mesh_vertices at 3) = tz_mesh_vertex{.pos := vec3{.x :=  0.5; .y :=  0.5; .z := 0.0;}; .texcoord := vec2{.x := 1.0; .y := 0.0;};};
+
+	// Triangle indices
+	mesh_indices : u32 mut#6;
+	deref(mesh_indices at 0) = 0;
+	deref(mesh_indices at 1) = 1;
+	deref(mesh_indices at 2) = 2;
+	deref(mesh_indices at 3) = 2;
+	deref(mesh_indices at 4) = 1;
+	deref(mesh_indices at 5) = 3;
+
+	tz_mesh_upload(tz_mesh_data
+	{
+		.vertex_data := mesh_vertices at 0;
+		.vertex_count := 4;
+		.index_data := mesh_indices at 0;
+		.index_count := 6;
+	}, permanent_arena);
 
 	while(tz_wnd_is_open(wnd))
 	{

@@ -33,15 +33,12 @@ tz_mesh_data ::= struct
 [[private]]
 vb : tz_gpu_resource mut;
 [[private]]
-vertex_count : u64 mut;
-[[private]]
 vertex_cap : u64 mut;
 [[private]]
 ib : tz_gpu_resource mut;
 [[private]]
-index_count : u64 mut;
-[[private]]
 index_cap : u64 mut;
+
 [[private]]
 geometry_pass : tz_gpu_pass mut;
 [[private]]
@@ -55,7 +52,6 @@ mesh_locators : tz_mesh_locator mut& mut;
 mesh_locators_count : u64 mut;
 [[private]]
 mesh_locators_cap : u64 mut;
-
 
 [[private]]
 initial_vertex_cap ::= 8192;
@@ -72,9 +68,7 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 		.clear_colour := vec4_filled(1.0);
 	};
 	vertex_cap = initial_vertex_cap;
-	vertex_count = 0;
 	index_cap = initial_index_cap;
-	index_count = 0;
 
 	vb = tz_gpu_create_buffer(tz_gpu_resource_info
 	{
@@ -89,7 +83,7 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 		.data := null;
 		.data_size := vertex_cap * __sizeof(u32);
 		.flags := tz_gpu_resource_flag.zero_memory;
-		.buffer_flags := tz_gpu_buffer_flag.none;
+		.buffer_flags := tz_gpu_buffer_flag.index_buffer;
 	}, a);
 
 	mesh_locators_count = 0;
@@ -99,19 +93,106 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 	shader_data ::= tz_gpu_load_shader_files("build/mesh_renderer_vertex.spv", "build/mesh_renderer_fragment.spv", a);
 	shader ::= tz_gpu_create_graphics_shader(shader_data.vertex_spv_data, shader_data.vertex_spv_count, shader_data.fragment_spv_data, shader_data.fragment_spv_count, a);
 
+	colour_targets : tz_gpu_resource mut& := arena_push(a, __sizeof(tz_gpu_resource) * 1);
+	deref(colour_targets at 0) = (tz_gpu_resource.window_resource);
+
+	geom_resources : tz_gpu_resource mut& := arena_push(a, __sizeof(tz_gpu_resource) * 1);
+	deref(geom_resources at 0) = vb;
+
+	geometry_pass = tz_gpu_create_pass(tz_gpu_pass_info
+	{
+		.graphics := tz_gpu_graphics_state
+		{
+			.clear_colour := mesh_renderer_config.clear_colour;
+			.scissor := vec4u32_zero();
+			.colour_targets_data := colour_targets at 0;
+			.colour_targets_count := 1;
+			.depth_target := tz_gpu_resource.invalid;
+			.index_buffer := ib;
+			.draw_buffer := tz_gpu_resource.invalid;
+			.culling := tz_gpu_cull.none;
+			.static_tri_count := 2;
+		};
+		.shader := shader;
+		.resources_data := geom_resources;
+		.resources_count := 1;
+		.name := "Mesh Renderer";
+	}, a, a);
+
 	mesh_renderer_initialised = true;
 };
 
 [[private]]
 impl_find_vertex_region ::= func(vtx_count : u64) -> u64
 {
+	current_offset : u64 mut := 0;
+
+	counter : u64 mut;
+	curloc : tz_mesh_locator mut;
+	gap_size : u64 mut;
+	for(counter = 0, counter < mesh_locators_count, counter = counter + 1)
+	{
+		curloc = deref(mesh_locators at counter);
+
+		gap_size = ((curloc.vertex_offset) - current_offset);
+		if(gap_size >= vtx_count)
+		{
+			return current_offset;
+		}
+		current_offset = (curloc.vertex_offset) + (curloc.vertex_count);
+	}
+
+	// current_offset now is at the very end of all the mesh locators.
+	// maybe there's space for our new count here?
+
+	if((vertex_cap - current_offset) >= vtx_count)
+	{
+		return current_offset;
+	}
+
 	return -1@u64;
 };
 
 [[private]]
 impl_find_index_region ::= func(idx_count : u64) -> u64
 {
+	current_offset : u64 mut := 0;
+
+	counter : u64 mut;
+	curloc : tz_mesh_locator mut;
+	gap_size : u64 mut;
+	for(counter = 0, counter < mesh_locators_count, counter = counter + 1)
+	{
+		curloc = deref(mesh_locators at counter);
+
+		gap_size = ((curloc.index_offset) - current_offset);
+		if(gap_size >= idx_count)
+		{
+			return current_offset;
+		}
+		current_offset = (curloc.index_offset) + (curloc.index_count);
+	}
+
+	// current_offset now is at the very end of all the mesh locators.
+	// maybe there's space for our new count here?
+
+	if((index_cap - current_offset) >= idx_count)
+	{
+		return current_offset;
+	}
 	return -1@u64;
+};
+
+[[private]]
+impl_write_mesh_data ::= func(loc : tz_mesh_locator, vertex_data : tz_mesh_vertex&, index_data : u32&) -> v0
+{
+	vb_offset ::= (loc.vertex_offset) * __sizeof(tz_mesh_vertex);
+	vb_writelen ::= (loc.vertex_count) * __sizeof(tz_mesh_vertex);
+	tz_gpu_resource_write(vb, vertex_data, vb_writelen, vb_offset);
+
+	ib_offset ::= (loc.index_offset) * __sizeof(u32);
+	ib_writelen ::= (loc.index_count) * __sizeof(u32);
+	tz_gpu_resource_write(ib, index_data, ib_writelen, ib_offset);
 };
 
 tz_mesh_init ::= func(config : tz_mesh_config, a : arena mut&) -> v0
@@ -136,10 +217,10 @@ tz_mesh_upload ::= func(mesh : tz_mesh_data, a : arena mut&) -> tz_mesh_handle
 	locptr ::= mesh_locators at mesh_locators_count;
 	mesh_locators_count = mesh_locators_count + 1;
 
-	locptr->vertex_offset = impl_find_vertex_region(mesh.vertex_count);
-	locptr->vertex_count = mesh.vertex_count;
-	locptr->index_offset = impl_find_index_region(mesh.index_count);
-	locptr->index_count = mesh.index_count;
+	(locptr->vertex_offset) = impl_find_vertex_region(mesh.vertex_count);
+	(locptr->vertex_count) = (mesh.vertex_count);
+	(locptr->index_offset) = impl_find_index_region(mesh.index_count);
+	(locptr->index_count) = (mesh.index_count);
 	if((locptr->vertex_offset) == -1)
 	{
 		puts("ran out of vertex capacity");
@@ -147,11 +228,18 @@ tz_mesh_upload ::= func(mesh : tz_mesh_data, a : arena mut&) -> tz_mesh_handle
 	}
 	if((locptr->index_offset) == -1)
 	{
-		puts("ran out of vertex capacity");
+		puts("ran out of index capacity");
 		__debugbreak();
 	}
 
+	impl_write_mesh_data(deref locptr, mesh.vertex_data, mesh.index_data);
+
 	return retid@tz_mesh_handle;
+};
+
+tz_mesh_get_pass ::= func() -> tz_gpu_pass
+{
+	return geometry_pass;
 };
 
 == build ==
