@@ -144,7 +144,7 @@ tz_gpu_graph ::= enum
 	.invalid := -1;
 };
 
-tz_gpu_draw_indirect_command ::= struct
+tz_gpu_draw_command ::= struct
 {
 	vertex_count : u32;
 	instance_count : u32;
@@ -152,7 +152,7 @@ tz_gpu_draw_indirect_command ::= struct
 	first_instance : u32;
 };
 
-tz_gpu_draw_indexed_indirect_command ::= struct
+tz_gpu_draw_indexed_command ::= struct
 {
 	index_count : u32;
 	instance_count : u32;
@@ -1313,8 +1313,8 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 		{
 			drawbufres ::= resources at (drawbuf@s64);
 			drawbufinfo ::= drawbufres->info;
-			draw_buf_max_size_unindexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indirect_command);
-			vk.cmd_draw_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_unindexed, __sizeof(tz_gpu_draw_indirect_command));
+			draw_buf_max_size_unindexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_command);
+			vk.cmd_draw_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_unindexed, __sizeof(tz_gpu_draw_command));
 		}
 	}
 	if(idxbuf != (tz_gpu_resource.invalid))
@@ -1330,8 +1330,8 @@ impl_record_graphics_work ::= func(passptr : pass_data_t mut&, frame_id : u64, a
 		{
 			drawbufres ::= resources at (drawbuf@s64);
 			drawbufinfo ::= drawbufres->info;
-			draw_buf_max_size_indexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indexed_indirect_command);
-			vk.cmd_draw_indexed_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_indexed, __sizeof(tz_gpu_draw_indexed_indirect_command));
+			draw_buf_max_size_indexed ::= ((drawbufinfo.data_size) - __sizeof(u32)) / __sizeof(tz_gpu_draw_indexed_command);
+			vk.cmd_draw_indexed_indirect_count(frame.cmds, drawbufres->vk_handle, __sizeof(u32), drawbufres->vk_handle, 0, draw_buf_max_size_indexed, __sizeof(tz_gpu_draw_indexed_command));
 		}
 	}
 
@@ -2923,7 +2923,9 @@ tz_gpu_resource_write ::= func(res : tz_gpu_resource, data : v0& weak, data_size
 	resptr ::= (resources at (res@s64));
 	rinfo ::= ref (resptr->info);
 
-	__memcpy(rinfo->data, data, data_size);
+	ptr ::= (rinfo->data)@u8 mut& mut;
+
+	__memcpy(ptr at offset, data, data_size);
 	impl_write_a_resource(resptr);
 };
 

@@ -25,12 +25,6 @@ setup_arenas ::= macro() -> v0
 	defer arena_destroy(frame_arena_val);
 };
 
-single_draw ::= struct
-{
-	count : u32;
-	command : tz_gpu_draw_indexed_indirect_command;
-};
-
 main ::= func() -> s32
 {
 	wrangle_window_class();
@@ -95,13 +89,15 @@ main ::= func() -> s32
 	deref(mesh_indices at 4) = 1;
 	deref(mesh_indices at 5) = 3;
 
-	tz_mesh_upload(tz_mesh_data
+	quad ::= tz_mesh_upload(tz_mesh_data
 	{
 		.vertex_data := mesh_vertices at 0;
 		.vertex_count := 4;
 		.index_data := mesh_indices at 0;
 		.index_count := 6;
 	}, permanent_arena);
+
+	tz_mesh_add_to_draw_list(quad);
 
 	while(tz_wnd_is_open(wnd))
 	{

@@ -40,6 +40,13 @@ ib : tz_gpu_resource mut;
 index_cap : u64 mut;
 
 [[private]]
+db : tz_gpu_resource mut;
+[[private]]
+db_cap : u64 mut;
+[[private]]
+db_cursor : u64 mut;
+
+[[private]]
 geometry_pass : tz_gpu_pass mut;
 [[private]]
 mesh_renderer_initialised : bool mut := false;
@@ -53,6 +60,8 @@ mesh_locators_count : u64 mut;
 [[private]]
 mesh_locators_cap : u64 mut;
 
+[[private]]
+initial_draw_cap ::= 512;
 [[private]]
 initial_vertex_cap ::= 8192;
 [[private]]
@@ -81,9 +90,19 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 	ib = tz_gpu_create_buffer(tz_gpu_resource_info
 	{
 		.data := null;
-		.data_size := vertex_cap * __sizeof(u32);
+		.data_size := index_cap * __sizeof(u32);
 		.flags := tz_gpu_resource_flag.zero_memory;
 		.buffer_flags := tz_gpu_buffer_flag.index_buffer;
+	}, a);
+
+	db_cap = initial_draw_cap;
+	db_cursor = 0;
+	db = tz_gpu_create_buffer(tz_gpu_resource_info
+	{
+		.data := null;
+		.data_size := __sizeof(u32) + (__sizeof(tz_gpu_draw_indexed_command) * db_cap);
+		.flags := tz_gpu_resource_flag.zero_memory;
+		.buffer_flags := tz_gpu_buffer_flag.draw_buffer;
 	}, a);
 
 	mesh_locators_count = 0;
@@ -109,7 +128,7 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 			.colour_targets_count := 1;
 			.depth_target := tz_gpu_resource.invalid;
 			.index_buffer := ib;
-			.draw_buffer := tz_gpu_resource.invalid;
+			.draw_buffer := db;
 			.culling := tz_gpu_cull.none;
 			.static_tri_count := 2;
 		};
@@ -235,6 +254,26 @@ tz_mesh_upload ::= func(mesh : tz_mesh_data, a : arena mut&) -> tz_mesh_handle
 	impl_write_mesh_data(deref locptr, mesh.vertex_data, mesh.index_data);
 
 	return retid@tz_mesh_handle;
+};
+
+tz_mesh_add_to_draw_list ::= func(mesh : tz_mesh_handle) -> v0
+{
+	loc ::= deref(mesh_locators at (mesh@s64));
+	new_draw_count : u32 := db_cursor + 1;
+	tz_gpu_resource_write(db, ref new_draw_count, __sizeof(u32), 0);
+
+	cmd_offset ::= __sizeof(u32) + (db_cursor * __sizeof(tz_gpu_draw_indexed_command));
+	cmd ::= tz_gpu_draw_indexed_command
+	{
+		.index_count := (loc.index_count)@_;
+		.instance_count := 1;
+		.first_index := (loc.index_offset)@_;
+		.vertex_offset := 0;
+		.first_instance := 0;
+	};
+	tz_gpu_resource_write(db, ref cmd, __sizeof(tz_gpu_draw_indexed_command), cmd_offset);
+
+	db_cursor = new_draw_count@_;
 };
 
 tz_mesh_get_pass ::= func() -> tz_gpu_pass
