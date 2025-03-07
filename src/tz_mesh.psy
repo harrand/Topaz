@@ -72,10 +72,6 @@ initial_mesh_locator_cap ::= 64;
 [[private]]
 impl_initialise_renderer ::= func(a : arena mut&) -> v0
 {
-	mesh_renderer_config = tz_mesh_config
-	{
-		.clear_colour := vec4_filled(1.0);
-	};
 	vertex_cap = initial_vertex_cap;
 	index_cap = initial_index_cap;
 
@@ -216,6 +212,7 @@ impl_write_mesh_data ::= func(loc : tz_mesh_locator, vertex_data : tz_mesh_verte
 
 tz_mesh_init ::= func(config : tz_mesh_config, a : arena mut&) -> v0
 {
+	mesh_renderer_config = config;
 	impl_initialise_renderer(a);
 };
 
@@ -258,6 +255,11 @@ tz_mesh_upload ::= func(mesh : tz_mesh_data, a : arena mut&) -> tz_mesh_handle
 
 tz_mesh_add_to_draw_list ::= func(mesh : tz_mesh_handle) -> v0
 {
+	if(db_cursor >= db_cap)
+	{
+		puts("ran out of draw list capacity");
+		__debugbreak();
+	}
 	loc ::= deref(mesh_locators at (mesh@s64));
 	new_draw_count : u32 := db_cursor + 1;
 	tz_gpu_resource_write(db, ref new_draw_count, __sizeof(u32), 0);

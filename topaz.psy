@@ -67,6 +67,7 @@ main ::= func() -> s32
 
 	tz_mesh_init(tz_mesh_config
 	{
+		.clear_colour := vec4{.x := 0.5; .y := 0.0; .z := 0.0; .w := 1.0;};
 	}, permanent_arena);
 
 	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
