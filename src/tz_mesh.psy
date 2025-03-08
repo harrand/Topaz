@@ -7,6 +7,10 @@ tz_mesh_vertex ::= struct
 tz_mesh_config ::= struct
 {
 	clear_colour : vec4;
+	object_extra_data_size : u64;
+	// object buffer will, target SAM/reBAR memory.
+	// enable this if you expect to update your object data often, including on a per-frame basis.
+	objects_dynamic : bool;
 };
 
 tz_mesh_handle ::= enum
@@ -30,6 +34,11 @@ tz_mesh_data ::= struct
 	index_count : u64;
 };
 
+tz_mesh_object_data ::= struct
+{
+	world_position : vec3;
+};
+
 [[private]]
 vb : tz_gpu_resource mut;
 [[private]]
@@ -45,6 +54,11 @@ db : tz_gpu_resource mut;
 db_cap : u64 mut;
 [[private]]
 db_cursor : u64 mut;
+
+[[private]]
+ob : tz_gpu_resource mut;
+[[private]]
+ob_cap : u64 mut;
 
 [[private]]
 geometry_pass : tz_gpu_pass mut;
@@ -91,14 +105,28 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 		.buffer_flags := tz_gpu_buffer_flag.index_buffer;
 	}, a);
 
-	db_cap = initial_draw_cap;
+	db_cap = (__sizeof(u32) + (__sizeof(tz_gpu_draw_indexed_command) * initial_draw_cap));
 	db_cursor = 0;
 	db = tz_gpu_create_buffer(tz_gpu_resource_info
 	{
 		.data := null;
-		.data_size := __sizeof(u32) + (__sizeof(tz_gpu_draw_indexed_command) * db_cap);
+		.data_size := db_cap;
 		.flags := tz_gpu_resource_flag.zero_memory;
 		.buffer_flags := tz_gpu_buffer_flag.draw_buffer;
+	}, a);
+
+	ob_cap = (initial_draw_cap * (__sizeof(tz_mesh_object_data) + (mesh_renderer_config.object_extra_data_size)));
+	ob_flags : tz_gpu_buffer_flag mut := tz_gpu_buffer_flag.none;
+	if(mesh_renderer_config.objects_dynamic)
+	{
+		ob_flags = (tz_gpu_buffer_flag.dynamic);
+	}
+	ob = tz_gpu_create_buffer(tz_gpu_resource_info
+	{
+		.data := null;
+		.data_size := ob_cap;
+		.flags := tz_gpu_resource_flag.zero_memory;
+		.buffer_flags := ob_flags;
 	}, a);
 
 	mesh_locators_count = 0;
@@ -111,8 +139,10 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 	colour_targets : tz_gpu_resource mut& := arena_push(a, __sizeof(tz_gpu_resource) * 1);
 	deref(colour_targets at 0) = (tz_gpu_resource.window_resource);
 
-	geom_resources : tz_gpu_resource mut& := arena_push(a, __sizeof(tz_gpu_resource) * 1);
+	geom_rescount ::= 2;
+	geom_resources : tz_gpu_resource mut& := arena_push(a, __sizeof(tz_gpu_resource) * geom_rescount);
 	deref(geom_resources at 0) = vb;
+	deref(geom_resources at 1) = ob;
 
 	geometry_pass = tz_gpu_create_pass(tz_gpu_pass_info
 	{
@@ -130,7 +160,7 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 		};
 		.shader := shader;
 		.resources_data := geom_resources;
-		.resources_count := 1;
+		.resources_count := geom_rescount;
 		.name := "Mesh Renderer";
 	}, a, a);
 
@@ -253,7 +283,7 @@ tz_mesh_upload ::= func(mesh : tz_mesh_data, a : arena mut&) -> tz_mesh_handle
 	return retid@tz_mesh_handle;
 };
 
-tz_mesh_add_to_draw_list ::= func(mesh : tz_mesh_handle, data_id : u64) -> v0
+tz_mesh_add_to_draw_list ::= func(mesh : tz_mesh_handle, object_id : u64) -> v0
 {
 	if(db_cursor >= db_cap)
 	{
@@ -271,11 +301,23 @@ tz_mesh_add_to_draw_list ::= func(mesh : tz_mesh_handle, data_id : u64) -> v0
 		.instance_count := 1;
 		.first_index := (loc.index_offset)@_;
 		.vertex_offset := 0;
-		.first_instance := data_id@_;
+		.first_instance := object_id@_;
 	};
 	tz_gpu_resource_write(db, ref cmd, __sizeof(tz_gpu_draw_indexed_command), cmd_offset);
 
 	db_cursor = new_draw_count@_;
+};
+
+tz_mesh_set_object_data ::= func(object_id : u64, base_data : tz_mesh_object_data, extra_data : v0& weak) -> v0
+{
+	extra_size ::= mesh_renderer_config.object_extra_data_size;
+	base_size ::= __sizeof(tz_mesh_object_data);
+	offset ::= object_id * (base_size + extra_size);
+	tz_gpu_resource_write(ob, ref base_data, base_size, offset);
+	if(extra_size > 0)
+	{
+		tz_gpu_resource_write(ob, extra_data, extra_size, offset + base_size);
+	}
 };
 
 tz_mesh_get_pass ::= func() -> tz_gpu_pass

@@ -68,6 +68,8 @@ main ::= func() -> s32
 	tz_mesh_init(tz_mesh_config
 	{
 		.clear_colour := vec4{.x := 0.5; .y := 0.0; .z := 0.0; .w := 1.0;};
+		.object_extra_data_size := 0;
+		.objects_dynamic := false;
 	}, permanent_arena);
 
 	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
@@ -98,7 +100,11 @@ main ::= func() -> s32
 		.index_count := 6;
 	}, permanent_arena);
 
-	tz_mesh_add_to_draw_list(quad, 8612);
+	tz_mesh_add_to_draw_list(quad, 0);
+	tz_mesh_set_object_data(0, tz_mesh_object_data
+	{
+		.world_position := vec3{.x := -0.5; .y := 0.5; .z := 0.0;};
+	}, null);
 
 	while(tz_wnd_is_open(wnd))
 	{

@@ -11,21 +11,42 @@ struct vertex_t
 	vec2 texcoord;
 };
 
+struct object_t
+{
+	vec3 world_position;
+};
+
 layout(scalar, buffer_reference, buffer_reference_align = 8) readonly buffer vertex_data_t
 {
 	vertex_t data[];
 };
 
+layout(scalar, buffer_reference, buffer_reference_align = 8) readonly buffer object_data_t
+{
+	object_t data[];
+};
+
 layout(std430, set = 0, binding = 0) readonly buffer MetaBuffer
 {
 	vertex_data_t vertex;
+	object_data_t object;
 };
 
 layout(location = 0) out vec2 uv;
 void main()
 {
 	vertex_t cur_vertex = vertex.data[gl_VertexIndex];
-	gl_Position = vec4(cur_vertex.pos, 1.0);
-	int data_id = gl_BaseInstance;
+	uint data_id = gl_BaseInstance;
+	if(data_id == -1)
+	{
+		// no object data associated.
+	}
+	else
+	{
+		object_t cur_object = object.data[data_id];
+		cur_vertex.pos += cur_object.world_position;
+	}
 	uv = cur_vertex.texcoord;
+
+	gl_Position = vec4(cur_vertex.pos, 1.0);
 }
