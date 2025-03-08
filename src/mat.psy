@@ -1,0 +1,30 @@
+mat4 ::= struct
+{
+	data : f32 mut#16;
+};
+
+mat4_filled ::= func(val : f32) -> mat4
+{
+	ret : mat4 mut;
+	counter : u64 mut;
+	for(counter = 0, counter < 16, counter = counter + 1)
+	{
+		deref((ret.data) at counter) = val;
+	}
+	return ret;
+};
+
+mat4_zero ::= func() -> mat4
+{
+	return mat4_filled(0.0);
+};
+
+mat4_identity ::= func() -> mat4
+{
+	ret ::= mat4_filled(0.0);
+	deref((ret.data) at 0) = 1.0;
+	deref((ret.data) at 5) = 1.0;
+	deref((ret.data) at 10) = 1.0;
+	deref((ret.data) at 15) = 1.0;
+	return ret;
+};

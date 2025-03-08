@@ -103,7 +103,7 @@ main ::= func() -> s32
 	tz_mesh_add_to_draw_list(quad, 0);
 	tz_mesh_set_object_data(0, tz_mesh_object_data
 	{
-		.world_position := vec3{.x := -0.5; .y := 0.5; .z := 0.0;};
+		.model_matrix := mat4_identity();
 	}, null);
 
 	while(tz_wnd_is_open(wnd))
@@ -138,6 +138,7 @@ main ::= func() -> s32
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 	add_source_file("src/tz_wnd.psy");
+	add_source_file("src/mat.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

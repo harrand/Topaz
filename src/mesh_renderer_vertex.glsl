@@ -13,7 +13,7 @@ struct vertex_t
 
 struct object_t
 {
-	vec3 world_position;
+	mat4 model;
 };
 
 layout(scalar, buffer_reference, buffer_reference_align = 8) readonly buffer vertex_data_t
@@ -36,6 +36,8 @@ layout(location = 0) out vec2 uv;
 void main()
 {
 	vertex_t cur_vertex = vertex.data[gl_VertexIndex];
+	vec4 pos = vec4(cur_vertex.pos, 1.0f);
+
 	uint data_id = gl_BaseInstance;
 	if(data_id == -1)
 	{
@@ -44,9 +46,9 @@ void main()
 	else
 	{
 		object_t cur_object = object.data[data_id];
-		cur_vertex.pos += cur_object.world_position;
+		pos *= cur_object.model;
 	}
 	uv = cur_vertex.texcoord;
 
-	gl_Position = vec4(cur_vertex.pos, 1.0);
+	gl_Position = pos;
 }
