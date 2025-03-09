@@ -71,7 +71,48 @@ mat4_debug_print ::= func(m : mat4) -> v0
 	}
 };
 
+mat4_multiply ::= func(l : mat4, r : mat4) -> mat4
+{
+	ret : mat4 mut := mat4_zero();
+	row : u32 mut := 0;
+	col : u32 mut := 0;
+
+	for(row = 0, row < 4, row = row + 1)
+	{
+		for(col = 0, col < 4, col = col + 1)
+		{
+			deref((ret.data) at ((row * 4) + col)) =
+				((deref((l.data) at ((row * 4) + 0)) * deref((r.data) at ((0 * 4) + col))) +
+				(deref((l.data) at ((row * 4) + 1)) * deref((r.data) at ((1 * 4) + col))) +
+				(deref((l.data) at ((row * 4) + 2)) * deref((r.data) at ((2 * 4) + col))) +
+				(deref((l.data) at ((row * 4) + 3)) * deref((r.data) at ((3 * 4) + col))));
+		}
+	}
+
+	return ret;
+};
+
+mat4_translate ::= func(v : vec3) -> mat4
+{
+	ret : mat4 mut := mat4_identity();
+	deref((ret.data) at 3) = (v.x);
+	deref((ret.data) at 7) = (v.y);
+	deref((ret.data) at 11) = (v.z);
+	return ret;
+};
+
+mat4_scale ::= func(v : vec3) -> mat4
+{
+	ret ::= mat4_zero();
+	deref((ret.data) at 0) = (v.x);
+	deref((ret.data) at 5) = (v.y);
+	deref((ret.data) at 10) = (v.z);
+	deref((ret.data) at 15) = 1.0;
+	return ret;
+};
+
 == build ==
 {
 	add_source_file("io.psy");
+	add_source_file("vec.psy");
 }

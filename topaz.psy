@@ -101,18 +101,12 @@ main ::= func() -> s32
 	}, permanent_arena);
 
 	tz_mesh_add_to_draw_list(quad, 0);
+	model ::= mat4_multiply(mat4_translate(vec3{.x := -1.0; .y := 0.5; .z := 0.0;}), mat4_scale(vec3_filled(0.6)));
+	mat4_debug_print(model);
 	tz_mesh_set_object_data(0, tz_mesh_object_data
 	{
-		.model_matrix := mat4_identity();
+		.model_matrix := model;
 	}, null);
-	mymat ::= mat4_zero();
-	for(counter = 0, counter < 16, counter = counter + 1)
-	{
-		deref((mymat.data) at counter) = (counter@f32);
-	}
-	mat4_debug_print(mymat);
-	putchar(10);
-	mat4_debug_print(mat4_transpose(mymat));
 
 	while(tz_wnd_is_open(wnd))
 	{
