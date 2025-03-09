@@ -105,6 +105,14 @@ main ::= func() -> s32
 	{
 		.model_matrix := mat4_identity();
 	}, null);
+	mymat ::= mat4_zero();
+	for(counter = 0, counter < 16, counter = counter + 1)
+	{
+		deref((mymat.data) at counter) = (counter@f32);
+	}
+	mat4_debug_print(mymat);
+	putchar(10);
+	mat4_debug_print(mat4_transpose(mymat));
 
 	while(tz_wnd_is_open(wnd))
 	{
@@ -134,11 +142,11 @@ main ::= func() -> s32
 == build ==
 {
 	add_source_file("src/debug.psy");
+	add_source_file("src/mat.psy");
 	add_source_file("src/tz_mesh.psy");
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 	add_source_file("src/tz_wnd.psy");
-	add_source_file("src/mat.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

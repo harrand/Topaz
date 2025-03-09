@@ -28,3 +28,50 @@ mat4_identity ::= func() -> mat4
 	deref((ret.data) at 15) = 1.0;
 	return ret;
 };
+
+mat4_transpose ::= func(m : mat4) -> mat4
+{
+	x : u32 mut;
+	y : u32 mut;
+	lhs : f32 mut& mut;
+	rhs : f32 mut& mut;
+	tmp : f32 mut;
+	for(x = 0, x < 3, x = x + 1)
+	{
+		for(y = x + 1, y < 4, y = y + 1)
+		{
+			if(x != y)
+			{
+				lhs = (m.data) at ((x * 4) + y);	
+				rhs = (m.data) at ((y * 4) + x);	
+				tmp = deref lhs;
+				deref lhs = deref rhs;
+				deref rhs = tmp;
+			}
+		}
+	}
+	return m;
+};
+
+mat4_debug_print ::= func(m : mat4) -> v0
+{
+	r : u32 mut;
+	for(r = 0, r < 4, r = r + 1)
+	{
+		putchar('|');
+		putfloat(deref((m.data) at ((r * 4) + 0)));
+		puts(", ");
+		putfloat(deref((m.data) at ((r * 4) + 1)));
+		puts(", ");
+		putfloat(deref((m.data) at ((r * 4) + 2)));
+		puts(", ");
+		putfloat(deref((m.data) at ((r * 4) + 3)));
+		putchar('|');
+		putchar(10);
+	}
+};
+
+== build ==
+{
+	add_source_file("io.psy");
+}

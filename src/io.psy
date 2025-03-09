@@ -27,6 +27,27 @@ putsint ::= func(v : s64 mut weak) -> v0
 	putuint(v);
 };
 
+// print a float, correct to 2 decimal places.
+putfloat ::= func(f : f32 mut) -> v0
+{
+	if(f < 0)
+	{
+		putchar('-');
+		f = (-f);
+	}
+	scaledf ::= ((f * 100.0) + 0.5);
+	scaled ::= scaledf@s32;
+	int_part ::= scaled / 100;
+	decimal_part ::= scaled % 100;
+	putuint(int_part);
+	putchar('.');
+	if(decimal_part < 10)
+	{
+		putchar('0');
+	}
+	putuint(decimal_part);
+};
+
 cstrlen ::= func(cstr : u8&) -> u64
 {
 	c : u64 mut := 0;
