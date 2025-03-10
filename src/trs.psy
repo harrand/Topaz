@@ -1,0 +1,11 @@
+trs ::= struct
+{
+	
+};
+
+== build ==
+{
+	add_source_file("mat.psy");
+	add_source_file("quat.psy");
+	add_source_file("vec.psy");
+}

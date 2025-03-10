@@ -27,6 +27,14 @@ setup_arenas ::= macro() -> v0
 
 main ::= func() -> s32
 {
+	counter : u64 mut;
+	my_vals ::= zero@s64#8;
+	for(counter = 0, counter < 8, counter = counter + 1)
+	{
+		putsint(deref(my_vals at counter));
+		putchar(10);
+	}
+
 	wrangle_window_class();
 	setup_arenas();
 
@@ -40,7 +48,6 @@ main ::= func() -> s32
 
 	puts("watch as i count to 10!");
 	putchar(10);
-	counter : u64 mut;
 	for(counter = 0, counter <= 10, counter = counter + 1)
 	{
 		putuint(counter);
@@ -101,7 +108,7 @@ main ::= func() -> s32
 	}, permanent_arena);
 
 	tz_mesh_add_to_draw_list(quad, 0);
-	model ::= mat4_multiply(mat4_translate(vec3{.x := -1.0; .y := 0.5; .z := 0.0;}), mat4_scale(vec3_filled(0.6)));
+	model : mat4 mut:= mat4_multiply(mat4_translate(vec3{.x := -1.0; .y := 0.5; .z := 0.0;}), mat4_scale(vec3_filled(0.6)));
 	mat4_debug_print(model);
 	tz_mesh_set_object_data(0, tz_mesh_object_data
 	{

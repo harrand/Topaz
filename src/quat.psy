@@ -1,0 +1,8 @@
+quat ::= struct
+{
+};
+
+== build ==
+{
+	add_source_file("vec.psy");
+}

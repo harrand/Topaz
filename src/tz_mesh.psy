@@ -149,7 +149,7 @@ impl_initialise_renderer ::= func(a : arena mut&) -> v0
 		.graphics := tz_gpu_graphics_state
 		{
 			.clear_colour := mesh_renderer_config.clear_colour;
-			.scissor := vec4u32_zero();
+			.scissor := zero;
 			.colour_targets_data := colour_targets at 0;
 			.colour_targets_count := 1;
 			.depth_target := tz_gpu_resource.invalid;

@@ -1737,7 +1737,7 @@ impl_write_resources ::= func(passptr : pass_data_t mut&, long : arena mut&, sho
 	// write to metabuffer.
 	if(bufcount > 0)
 	{
-		impl_cpu_gpu_transfer(passptr->metabuf, true, buffer_addresses, passptr->metabuf_size, vec2u32_zero());
+		impl_cpu_gpu_transfer(passptr->metabuf, true, buffer_addresses, passptr->metabuf_size, zero);
 	}
 };
 

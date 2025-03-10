@@ -5,11 +5,6 @@ vec2 ::= struct
 	y : f32;
 };
 
-vec2_zero ::= func() -> vec2
-{
-	return vec2{.x := 0.0; .y := 0.0;};
-};
-
 vec2_filled ::= func(val : f32) -> vec2
 {
 	return vec2{.x := val; .y := val;};
@@ -32,11 +27,6 @@ vec2u32 ::= struct
 	y : u32;
 };
 
-vec2u32_zero ::= func() -> vec2u32
-{
-	return vec2u32{.x := 0.0; .y := 0.0;};
-};
-
 vec2u32_filled ::= func(val : u32) -> vec2u32
 {
 	return vec2u32{.x := val; .y := val;};
@@ -48,11 +38,6 @@ vec3 ::= struct
 	x : f32;
 	y : f32;
 	z : f32;
-};
-
-vec3_zero ::= func() -> vec3
-{
-	return vec3{.x := 0.0; .y := 0.0; .z := 0.0;};
 };
 
 vec3_filled ::= func(val : f32) -> vec3
@@ -88,11 +73,6 @@ vec4 ::= struct
 	w : f32;
 };
 
-vec4_zero ::= func() -> vec4
-{
-	return vec4{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
-};
-
 vec4_filled ::= func(val : f32) -> vec4
 {
 	return vec4{.x := val; .y := val; .z := val; .w := val;};
@@ -115,11 +95,6 @@ vec4u32 ::= struct
 	y : u32;
 	z : u32;
 	w : u32;
-};
-
-vec4u32_zero ::= func() -> vec4u32
-{
-	return vec4u32{.x := 0.0; .y := 0.0; .z := 0.0; .w := 0.0;};
 };
 
 vec4u32_filled ::= func(val : u32) -> vec4u32
