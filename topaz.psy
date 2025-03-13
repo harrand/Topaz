@@ -25,8 +25,15 @@ setup_arenas ::= macro() -> v0
 	defer arena_destroy(frame_arena_val);
 };
 
+say_hello ::= func(d : v0&) -> v0
+{
+	puts("hello!");
+	putchar(10);
+};
+
 main ::= func() -> s32
 {
+	tz_job_execute(say_hello);
 	counter : u64 mut;
 	my_vals ::= zero@s64#8;
 	for(counter = 0, counter < 8, counter = counter + 1)
@@ -37,6 +44,12 @@ main ::= func() -> s32
 
 	wrangle_window_class();
 	setup_arenas();
+
+	jsondata ::= create_string("{\"msg\": \"hello world!\"}", frame_arena);
+	doc ::= json_parse(jsondata, frame_arena);
+	puts("json top-level node children: ");
+	putuint(doc.children_count);
+	putchar(10);
 
 	print("type of '5' = ");
 	print(__typename(5));
@@ -143,11 +156,14 @@ main ::= func() -> s32
 == build ==
 {
 	add_source_file("src/debug.psy");
+	add_source_file("src/tz_job.psy");
 	add_source_file("src/mat.psy");
 	add_source_file("src/tz_mesh.psy");
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 	add_source_file("src/tz_wnd.psy");
+
+	add_source_file("src/json.psy");
 
 	set_output_directory("build");
 	set_executable("tz");

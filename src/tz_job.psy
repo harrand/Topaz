@@ -1,0 +1,24 @@
+tz_job ::= enum
+{
+	.invalid := -1;
+};
+
+tz_job_execute ::= func(fn : v0& weak) -> tz_job
+{
+	if static(__is_windows)
+	{
+		CreateThread ::= func(lpThreadAttributes : v0&, dwStackSize : u64, lpStartAddress : v0&, lpParameter : v0&, dwCreationFlags : u32, lpThreadId : u32 mut&) -> u64 := extern;
+		WaitForSingleObject ::= func(handle : u64, dwMillis : u32) -> u32 := extern;
+
+		// note: no job system here. just create a new thread and run the function!
+
+		t ::= CreateThread(null, 0, fn, null, 0, null);
+		WaitForSingleObject(t, 99999999999);
+	}
+	return tz_job.invalid;
+};
+
+== build ==
+{
+	add_link_library("Kernel32.lib");
+}
