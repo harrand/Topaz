@@ -3,22 +3,212 @@ tz_job ::= enum
 	.invalid := -1;
 };
 
-tz_job_execute ::= func(fn : v0& weak) -> tz_job
+[[private]]
+[[thread_local]]
+local_arena_value : arena mut;
+
+[[private]]
+impl_worker_data ::= struct
+{
+	global_thread_id : u64;
+	local_thread_id : u64;
+	current_job_id : u64;
+	close_flag : bool;
+
+	local_arena : arena mut& mut;
+};
+
+[[private]]
+workers : impl_worker_data mut& mut;
+[[private]]
+worker_count : u32 mut;
+
+[[private]]
+job_wrapper ::= struct
+{
+	fn : func() -> v0;
+};
+
+[[private]]
+job_queue : job_wrapper mut& mut;
+[[private]]
+job_queue_size : u64 mut;
+[[private]]
+job_queue_cap : u64 mut;
+
+[[private]]
+impl_sleep ::= func(millis : u64) -> v0
 {
 	if static(__is_windows)
 	{
-		CreateThread ::= func(lpThreadAttributes : v0&, dwStackSize : u64, lpStartAddress : v0&, lpParameter : v0&, dwCreationFlags : u32, lpThreadId : u32 mut&) -> u64 := extern;
-		WaitForSingleObject ::= func(handle : u64, dwMillis : u32) -> u32 := extern;
-
-		// note: no job system here. just create a new thread and run the function!
-
-		t ::= CreateThread(null, 0, fn, null, 0, null);
-		WaitForSingleObject(t, 99999999999);
+		Sleep ::= func(dwMilliseconds : u32) -> v0 := extern;
+		Sleep(millis@_);
 	}
+};
+
+if static(__is_windows)
+{
+	GetActiveProcessorCount ::= func(groupNumber : u16) -> u32 := extern;
+	CreateThread ::= func(lpThreadAttributes : v0&, dwStackSize : u64, lpStartAddress : v0& weak, lpParameter : v0& weak, dwCreationFlags : u32, lpThreadId : u32 mut&) -> u64 := extern;
+	WaitForSingleObject ::= func(handle : u64, dwMillis : u32) -> u32 := extern;
+
+	CreateMutexA ::= func(lpMutexAttributes : v0&, bInitialOwner : s32, lpName : u8&) -> u64 := extern;
+
+	CRITICAL_SECTION ::= struct
+	{
+		LockCount : u32;
+		RecursionCount : u32;
+		OwningThread : v0&;
+		LockSemaphore : v0&;
+		SpinCount : u32;
+	};
+
+	InitializeCriticalSection ::= func(lpCriticalSection : CRITICAL_SECTION mut&) -> v0 := extern;
+	EnterCriticalSection ::= func(lpCriticalSection : CRITICAL_SECTION mut&) -> v0 := extern;
+	LeaveCriticalSection ::= func(lpCriticalSection : CRITICAL_SECTION mut&) -> v0 := extern;
+
+
+	[[private]]
+	job_queue_cs : CRITICAL_SECTION mut;
+}
+
+
+[[private]]
+worker_tmain ::= func(p : v0&) -> v0
+{
+	local_arena_value = arena_create(4096 * 1024);
+	defer arena_destroy(local_arena_value);
+
+	me ::= p@impl_worker_data mut&;
+	me->local_arena = (ref local_arena_value);
+	found_job : job_wrapper mut;
+	while(true)
+	{
+		found_job = zero;
+		EnterCriticalSection(ref job_queue_cs);
+		if(job_queue_size > 0)
+		{
+			found_job = deref(job_queue at 0);
+			if(job_queue_size > 1)
+			{
+				__memcpy(job_queue at 0, job_queue at 1, __sizeof(job_wrapper) * (job_queue_size - 1));
+			}
+			if(job_queue_size == 1)
+			{
+				deref(job_queue at 0) = zero;
+			}
+			job_queue_size = job_queue_size - 1;
+		}
+		LeaveCriticalSection(ref job_queue_cs);
+
+		// do the job.
+		if((found_job.fn) != null)
+		{
+			found_job.fn();
+		}
+		if((found_job.fn) == null)
+		{
+			impl_sleep(1);
+		}
+	}
+};
+
+[[private]]
+impl_logical_threads_count ::= func() -> u32
+{
+	if static(__is_windows)
+	{
+		return GetActiveProcessorCount(-1);
+	}
+};
+
+tz_job_local_arena ::= func() -> arena mut&
+{
+	return ref local_arena_value;
+};
+
+tz_job_sleep ::= func(millis : u64) -> v0
+{
+	impl_sleep(millis);
+};
+
+tz_job_initialise ::= func(a : arena mut&) -> v0
+{
+	if static(__is_windows)
+	{
+		timeBeginPeriod ::= func(uPeriod : u32) -> s32 := extern;
+		timeBeginPeriod(1);
+	}
+
+	worker_count = impl_logical_threads_count();
+	workers = arena_push(a, __sizeof(impl_worker_data) * worker_count);
+
+	InitializeCriticalSection(ref job_queue_cs);
+	EnterCriticalSection(ref job_queue_cs);
+
+	job_queue = arena_push(a, __sizeof(deref job_queue) * 1024);
+	job_queue_size = 0;
+	job_queue_cap = 1024;
+
+	LeaveCriticalSection(ref job_queue_cs);
+
+	counter : u32 mut := 0;
+	wptr : impl_worker_data mut& mut;
+	for(counter = 0, counter < worker_count, counter = counter + 1)
+	{
+		wptr = (workers at counter);
+		deref(wptr) = impl_worker_data
+		{
+			.local_thread_id := counter@_;
+			.current_job_id := -1;
+			.close_flag := false;
+			.local_arena := null;
+		};
+		(wptr->global_thread_id) = CreateThread(null, 0, worker_tmain, wptr, 0, null);
+	}
+};
+
+tz_job_terminate ::= func() -> v0
+{
+	counter : u32 mut;
+	wptr : impl_worker_data mut& mut;
+	for(counter = 0, counter < worker_count, counter = counter + 1)
+	{
+		wptr = (workers at counter);
+		(wptr->close_flag) = true;
+	}
+};
+
+tz_job_worker_count ::= func() -> u32
+{
+	return worker_count;
+};
+
+tz_job_execute ::= func(fn : v0& weak) -> tz_job
+{
+	if(workers == null)
+	{
+		puts("tz_job_execute error: threadpool not initialised");
+		__debugbreak();
+	}
+
+	EnterCriticalSection(ref job_queue_cs);
+	//__atomic_add(ref job_queue_size, 1);
+	deref(job_queue at job_queue_size) = job_wrapper{.fn := fn;};
+	if(job_queue_size >= job_queue_cap)
+	{
+		puts("ran out of jobs");
+		__debugbreak();
+	}
+	job_queue_size = job_queue_size + 1;
+	LeaveCriticalSection(ref job_queue_cs);
+
 	return tz_job.invalid;
 };
 
 == build ==
 {
 	add_link_library("Kernel32.lib");
+	add_link_library("winmm.lib");
+	add_source_file("arena.psy");
 }

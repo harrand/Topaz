@@ -25,15 +25,18 @@ setup_arenas ::= macro() -> v0
 	defer arena_destroy(frame_arena_val);
 };
 
-say_hello ::= func(d : v0&) -> v0
+naptime ::= func() -> v0
 {
-	puts("hello!");
+	puts("zzzzzzzz");
+	puts("...");
+	puts("...");
+	puts("...");
+	tz_job_sleep(1);
 	putchar(10);
 };
 
 main ::= func() -> s32
 {
-	tz_job_execute(say_hello);
 	counter : u64 mut;
 	my_vals ::= zero@s64#8;
 	for(counter = 0, counter < 8, counter = counter + 1)
@@ -44,6 +47,8 @@ main ::= func() -> s32
 
 	wrangle_window_class();
 	setup_arenas();
+
+	tz_job_initialise(permanent_arena);
 
 	jsondata ::= create_string("{\"msg\": \"hello world!\"}", frame_arena);
 	doc ::= json_parse(jsondata, frame_arena);
@@ -149,7 +154,16 @@ main ::= func() -> s32
 			putchar(10);
 			tz_wnd_close_window(wnd);
 		}
+		if(is_key_down(key.q))
+		{
+			tz_job_execute(naptime);
+		}
+		if(!tz_wnd_is_open(wnd))
+		{
+			puts("closin' time");
+		}
 	}
+	tz_job_terminate();
 	return 0;
 };
 
