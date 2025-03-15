@@ -27,12 +27,7 @@ setup_arenas ::= macro() -> v0
 
 naptime ::= func() -> v0
 {
-	puts("zzzzzzzz");
-	puts("...");
-	puts("...");
-	puts("...");
-	tz_job_sleep(1);
-	putchar(10);
+	tz_job_sleep(10);
 };
 
 main ::= func() -> s32
@@ -133,6 +128,8 @@ main ::= func() -> s32
 		.model_matrix := model;
 	}, null);
 
+	jh : tz_job mut;
+
 	while(tz_wnd_is_open(wnd))
 	{
 		if(frame_arena_val.cursor > 0)
@@ -156,11 +153,8 @@ main ::= func() -> s32
 		}
 		if(is_key_down(key.q))
 		{
-			tz_job_execute(naptime);
-		}
-		if(!tz_wnd_is_open(wnd))
-		{
-			puts("closin' time");
+			jh = tz_job_execute(naptime, permanent_arena);
+			tz_job_block(jh);
 		}
 	}
 	tz_job_terminate();
