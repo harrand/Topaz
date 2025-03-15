@@ -128,8 +128,6 @@ main ::= func() -> s32
 		.model_matrix := model;
 	}, null);
 
-	jh : tz_job mut;
-
 	while(tz_wnd_is_open(wnd))
 	{
 		if(frame_arena_val.cursor > 0)
@@ -153,8 +151,7 @@ main ::= func() -> s32
 		}
 		if(is_key_down(key.q))
 		{
-			jh = tz_job_execute(naptime, permanent_arena);
-			tz_job_block(jh);
+			tz_job_execute(naptime, permanent_arena);
 		}
 	}
 	tz_job_terminate();

@@ -336,16 +336,13 @@ passes_cap : u64 mut := 0;
 impl_pass_uses_resource ::= func(pass : tz_gpu_pass, res : tz_gpu_resource) -> bool
 {
 	counter : u64 mut;
-	passptr : pass_data_t& mut;
-	passinfo : tz_gpu_pass_info mut;
-	cur_rescount : u64 mut;
-	cur_residx : u64 mut;
-	cur_res : tz_gpu_resource mut;
 	for(counter = 0, counter < passes_count, counter = counter + 1)
 	{
-		passptr = passes at counter;
-		passinfo = (passptr->info);
-		cur_rescount = (passinfo.resources_count);
+		passptr : pass_data_t& := passes at counter;
+		passinfo ::= passptr->info;
+		cur_rescount ::= passinfo.resources_count;
+		cur_residx : u64 mut;
+		cur_res : tz_gpu_resource mut;
 		for(cur_residx = 0, cur_residx < cur_rescount, cur_residx = cur_residx + 1)
 		{
 			cur_res = deref((passinfo.resources_data) at cur_residx);
@@ -440,13 +437,11 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&
 	}
 	pool : u64 mut := deref(descriptor_pools_data at (descriptor_pools_count - 1));
 
-	image_count : u32 mut := 0;
 	counter : u64 mut;
-	cur_resh : tz_gpu_resource mut;
-	resptr : resource_data_t mut& mut;
+	image_count : u32 mut := 0;
 	for(counter = 0, counter < (pinfo.resources_count), counter = counter + 1)
 	{
-		cur_resh = deref((pinfo.resources_data) at counter);
+		cur_resh ::= deref((pinfo.resources_data) at counter);
 		if(cur_resh != (tz_gpu_resource.invalid))
 		{
 			if(cur_resh == (tz_gpu_resource.window_resource))
@@ -455,7 +450,7 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&
 			}
 			if(cur_resh != (tz_gpu_resource.window_resource))
 			{
-				resptr = resources at (cur_resh@s64);
+				resptr ::= resources at (cur_resh@s64);
 				if(!(resptr->is_buffer))
 				{
 					image_count = image_count + 1;
@@ -517,6 +512,7 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&
 	i : u32 mut;
 	j : u64 mut;
 	img_cursor : u64 mut := 0;
+	resptr : resource_data_t& mut;
 	for(i = 0, i < frame_overlap, i = i + 1)
 	{
 		for(j = 0, j < (pinfo.resources_count), j = j + 1)
