@@ -44,13 +44,7 @@ main ::= func() -> s32
 	setup_arenas();
 
 	tz_job_initialise(permanent_arena);
-
-	jsondata ::= create_string("{\"msg\": \"hello world!\"}", frame_arena);
-	doc ::= json_parse(jsondata, frame_arena);
-	puts("json top-level node children: ");
-	putuint(doc.children_count);
-	putchar(10);
-
+	
 	print("type of '5' = ");
 	print(__typename(5));
 	print(' ');
@@ -167,8 +161,6 @@ main ::= func() -> s32
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");
 	add_source_file("src/tz_wnd.psy");
-
-	add_source_file("src/json.psy");
 
 	set_output_directory("build");
 	set_executable("tz");
