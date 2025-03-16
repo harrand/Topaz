@@ -73,23 +73,92 @@ mat4_debug_print ::= func(m : mat4) -> v0
 
 mat4_multiply ::= func(l : mat4, r : mat4) -> mat4
 {
-	ret : mat4 mut := mat4_zero();
-	row : u32 mut := 0;
-	col : u32 mut := 0;
+	ret : mat4 mut;
 
-	for(row = 0, row < 4, row = row + 1)
-	{
-		for(col = 0, col < 4, col = col + 1)
-		{
-			deref((ret.data) at ((row * 4) + col)) =
-				((deref((l.data) at ((row * 4) + 0)) * deref((r.data) at ((0 * 4) + col))) +
-				(deref((l.data) at ((row * 4) + 1)) * deref((r.data) at ((1 * 4) + col))) +
-				(deref((l.data) at ((row * 4) + 2)) * deref((r.data) at ((2 * 4) + col))) +
-				(deref((l.data) at ((row * 4) + 3)) * deref((r.data) at ((3 * 4) + col))));
-		}
-	}
+    // Row 0
+    deref((ret.data) at 0)  = ((deref((l.data) at 0) * deref((r.data) at 0)) +
+                              (deref((l.data) at 1) * deref((r.data) at 4)) +
+                              (deref((l.data) at 2) * deref((r.data) at 8)) +
+                              (deref((l.data) at 3) * deref((r.data) at 12)));
 
-	return ret;
+    deref((ret.data) at 1)  = ((deref((l.data) at 0) * deref((r.data) at 1)) +
+                              (deref((l.data) at 1) * deref((r.data) at 5)) +
+                              (deref((l.data) at 2) * deref((r.data) at 9)) +
+                              (deref((l.data) at 3) * deref((r.data) at 13)));
+
+    deref((ret.data) at 2)  = ((deref((l.data) at 0) * deref((r.data) at 2)) +
+                              (deref((l.data) at 1) * deref((r.data) at 6)) +
+                              (deref((l.data) at 2) * deref((r.data) at 10)) +
+                              (deref((l.data) at 3) * deref((r.data) at 14)));
+
+    deref((ret.data) at 3)  = ((deref((l.data) at 0) * deref((r.data) at 3)) +
+                              (deref((l.data) at 1) * deref((r.data) at 7)) +
+                              (deref((l.data) at 2) * deref((r.data) at 11)) +
+                              (deref((l.data) at 3) * deref((r.data) at 15)));
+
+    // Row 1
+    deref((ret.data) at 4)  = ((deref((l.data) at 4) * deref((r.data) at 0)) +
+                              (deref((l.data) at 5) * deref((r.data) at 4)) +
+                              (deref((l.data) at 6) * deref((r.data) at 8)) +
+                              (deref((l.data) at 7) * deref((r.data) at 12)));
+
+    deref((ret.data) at 5)  = ((deref((l.data) at 4) * deref((r.data) at 1)) +
+                              (deref((l.data) at 5) * deref((r.data) at 5)) +
+                              (deref((l.data) at 6) * deref((r.data) at 9)) +
+                              (deref((l.data) at 7) * deref((r.data) at 13)));
+
+    deref((ret.data) at 6)  = ((deref((l.data) at 4) * deref((r.data) at 2)) +
+                              (deref((l.data) at 5) * deref((r.data) at 6)) +
+                              (deref((l.data) at 6) * deref((r.data) at 10)) +
+                              (deref((l.data) at 7) * deref((r.data) at 14)));
+
+    deref((ret.data) at 7)  = ((deref((l.data) at 4) * deref((r.data) at 3)) +
+                              (deref((l.data) at 5) * deref((r.data) at 7)) +
+                              (deref((l.data) at 6) * deref((r.data) at 11)) +
+                              (deref((l.data) at 7) * deref((r.data) at 15)));
+
+    // Row 2
+    deref((ret.data) at 8)  = ((deref((l.data) at 8) * deref((r.data) at 0)) +
+                              (deref((l.data) at 9) * deref((r.data) at 4)) +
+                              (deref((l.data) at 10) * deref((r.data) at 8)) +
+                              (deref((l.data) at 11) * deref((r.data) at 12)));
+
+    deref((ret.data) at 9)  = ((deref((l.data) at 8) * deref((r.data) at 1)) +
+                              (deref((l.data) at 9) * deref((r.data) at 5)) +
+                              (deref((l.data) at 10) * deref((r.data) at 9)) +
+                              (deref((l.data) at 11) * deref((r.data) at 13)));
+
+    deref((ret.data) at 10) = ((deref((l.data) at 8) * deref((r.data) at 2)) +
+                              (deref((l.data) at 9) * deref((r.data) at 6)) +
+                              (deref((l.data) at 10) * deref((r.data) at 10)) +
+                              (deref((l.data) at 11) * deref((r.data) at 14)));
+
+    deref((ret.data) at 11) = ((deref((l.data) at 8) * deref((r.data) at 3)) +
+                              (deref((l.data) at 9) * deref((r.data) at 7)) +
+                              (deref((l.data) at 10) * deref((r.data) at 11)) +
+                              (deref((l.data) at 11) * deref((r.data) at 15)));
+
+    // Row 3
+    deref((ret.data) at 12) = ((deref((l.data) at 12) * deref((r.data) at 0)) +
+                              (deref((l.data) at 13) * deref((r.data) at 4)) +
+                              (deref((l.data) at 14) * deref((r.data) at 8)) +
+                              (deref((l.data) at 15) * deref((r.data) at 12)));
+
+    deref((ret.data) at 13) = ((deref((l.data) at 12) * deref((r.data) at 1)) +
+                              (deref((l.data) at 13) * deref((r.data) at 5)) +
+                              (deref((l.data) at 14) * deref((r.data) at 9)) +
+                              (deref((l.data) at 15) * deref((r.data) at 13)));
+
+    deref((ret.data) at 14) = ((deref((l.data) at 12) * deref((r.data) at 2)) +
+                              (deref((l.data) at 13) * deref((r.data) at 6)) +
+                              (deref((l.data) at 14) * deref((r.data) at 10)) +
+                              (deref((l.data) at 15) * deref((r.data) at 14)));
+
+    deref((ret.data) at 15) = ((deref((l.data) at 12) * deref((r.data) at 3)) +
+                              (deref((l.data) at 13) * deref((r.data) at 7)) +
+                              (deref((l.data) at 14) * deref((r.data) at 11)) +
+                              (deref((l.data) at 15) * deref((r.data) at 15)));
+    return ret;
 };
 
 mat4_translate ::= func(v : vec3) -> mat4

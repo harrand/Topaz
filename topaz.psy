@@ -83,7 +83,7 @@ main ::= func() -> s32
 	{
 		.clear_colour := vec4{.x := 0.5; .y := 0.0; .z := 0.0; .w := 1.0;};
 		.object_extra_data_size := 0;
-		.objects_dynamic := false;
+		.objects_dynamic := true;
 	}, permanent_arena);
 
 	graph ::= tz_gpu_create_graph("triangle renderer", permanent_arena);
@@ -115,7 +115,7 @@ main ::= func() -> s32
 	}, permanent_arena);
 
 	tz_mesh_add_to_draw_list(quad, 0);
-	model : mat4 mut:= mat4_multiply(mat4_translate(vec3{.x := -1.0; .y := 0.5; .z := 0.0;}), mat4_scale(vec3_filled(0.6)));
+	model : mat4 mut := mat4_multiply(mat4_translate(vec3{.x := 0.0; .y := 0.0; .z := 0.5;}), mat4_scale(vec3_filled(0.5)));
 	mat4_debug_print(model);
 	tz_mesh_set_object_data(0, tz_mesh_object_data
 	{
@@ -147,6 +147,24 @@ main ::= func() -> s32
 		{
 			tz_job_execute(naptime, permanent_arena);
 		}
+		if(is_key_down(key.d))
+		{
+			myrot ::= quat_from_axis_angle(vec3{.x := 0.0; .y := 1.0; .z := 0.0;}, 0.001);
+			model = mat4_multiply(model, quat2matrix(myrot));
+			tz_mesh_set_object_data(0, tz_mesh_object_data
+			{
+				.model_matrix := model;
+			}, null);
+		}
+		if(is_key_down(key.a))
+		{
+			myrot ::= quat_from_axis_angle(vec3{.x := 0.0; .y := 1.0; .z := 0.0;}, -0.001);
+			model = mat4_multiply(model, quat2matrix(myrot));
+			tz_mesh_set_object_data(0, tz_mesh_object_data
+			{
+				.model_matrix := model;
+			}, null);
+		}
 	}
 	tz_job_terminate();
 	return 0;
@@ -157,6 +175,7 @@ main ::= func() -> s32
 	add_source_file("src/debug.psy");
 	add_source_file("src/tz_job.psy");
 	add_source_file("src/mat.psy");
+	add_source_file("src/trs.psy");
 	add_source_file("src/tz_mesh.psy");
 	add_source_file("src/tz_gpu.psy");
 	add_source_file("src/keyboard.psy");

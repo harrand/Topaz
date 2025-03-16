@@ -1,6 +1,8 @@
 trs ::= struct
 {
-	
+	translate : vec3;
+	rotate : vec4;
+	scale : vec3;
 };
 
 == build ==

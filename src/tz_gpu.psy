@@ -2770,7 +2770,7 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut&, short : arena m
 		}
 
 		vk_check(vk.acquire_next_image_khr(used_device, swapchain, 9999999999, 0, frame.swapchain_fence, ref image_index));
-		vk_check(vk.wait_for_fences(used_device, 1, ref (frame.swapchain_fence), 1, 9999999));
+		vk_check(vk.wait_for_fences(used_device, 1, ref (frame.swapchain_fence), 1, !0));
 		vk_check(vk.reset_fences(used_device, 1, ref (frame.swapchain_fence)));
 		swapchain_image = deref(swapchain_images at image_index);
 	}
