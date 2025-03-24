@@ -30,8 +30,24 @@ naptime ::= func() -> v0
 	tz_job_sleep(10);
 };
 
+print_typename ::= macro(T : auto) -> v0
+{
+	__message(__concat("type = ", __typename(T)));
+};
+
+double ::= macro(val : auto) -> auto
+{
+	yield val * 2;
+};
+
 main ::= func() -> s32
 {
+	myint ::= alias u64;
+	if static(!__is_type(u64))
+	{
+		__error("waah");
+	}
+
 	counter : u64 mut;
 	my_vals ::= zero@s64#8;
 	for(counter = 0, counter < 8, counter = counter + 1)

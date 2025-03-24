@@ -342,10 +342,9 @@ impl_pass_uses_resource ::= func(pass : tz_gpu_pass, res : tz_gpu_resource) -> b
 		passinfo ::= passptr->info;
 		cur_rescount ::= passinfo.resources_count;
 		cur_residx : u64 mut;
-		cur_res : tz_gpu_resource mut;
 		for(cur_residx = 0, cur_residx < cur_rescount, cur_residx = cur_residx + 1)
 		{
-			cur_res = deref((passinfo.resources_data) at cur_residx);
+			cur_res ::= deref((passinfo.resources_data) at cur_residx);
 			if(cur_res == res)
 			{
 				return true;
@@ -367,15 +366,10 @@ impl_new_descriptor_pool ::= func(a : arena mut&) -> u64
 {
 	if(descriptor_pools_cap == 0)
 	{
-		descriptor_pools_data = arena_push_n(a, 0@u64, 4);
+		descriptor_pools_data = arena_push_n(a, alias u64, 4);
 		descriptor_pools_cap = 4;
 	}
-	if(descriptor_pools_count > descriptor_pools_cap)
-	{
-		puts("todo: expand allocation of descriptor pool handles");
-		__debugbreak();
-	}
-	if(descriptor_pools_count == descriptor_pools_cap)
+	if(descriptor_pools_count >= descriptor_pools_cap)
 	{
 		puts("todo: expand allocation of descriptor pool handles");
 		__debugbreak();
@@ -469,7 +463,7 @@ impl_populate_descriptors ::= func(passptr : pass_data_t mut&, long : arena mut&
 
 	// write to them.
 	image_array_descriptor_binding ::= 1;
-	image_writes : VkDescriptorImageInfo mut& := arena_push_n(short, VkDescriptorImageInfo{}, image_count * frame_overlap);
+	image_writes : VkDescriptorImageInfo mut& := arena_push_n(short, alias VkDescriptorImageInfo, image_count * frame_overlap);
 
 	meta_buffer_write ::= VkDescriptorBufferInfo
 	{

@@ -47,7 +47,7 @@ arena_push_one ::= macro(ar : arena mut&, T : auto) -> v0& weak
 	yield arena_push(ar, __sizeof(T));
 };
 
-arena_push_n ::= macro(ar : arena mut&, T : auto, count : u64 weak) -> v0& weak
+arena_push_n ::= macro(ar : arena mut&, T : auto, count : u64 weak) -> auto
 {
 	yield arena_push(ar, __sizeof(T) * count);
 };

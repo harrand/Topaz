@@ -27,6 +27,8 @@ job_wrapper ::= struct
 };
 
 [[private]]
+job_global_arena : arena mut& mut;
+[[private]]
 job_queue : tz_job mut& mut;
 [[private]]
 job_queue_size : u64 mut;
@@ -141,8 +143,11 @@ worker_tmain ::= func(p : v0&) -> u32
 			deref(job_storage at (found_job_id@s64)) = found_job;
 			if(job_free_list_size >= job_free_list_cap)
 			{
-				puts("todo: increase job free list size");
-				__debugbreak();
+				old_cap ::= job_free_list_cap;
+				old_free_list ::= job_free_list;
+
+				job_free_list_cap = job_free_list_cap * 2;
+				job_free_list = arena_push(job_global_arena, job_free_list_cap * __sizeof(deref job_free_list));
 			}
 			deref(job_free_list at job_free_list_size) = found_job_id;
 			job_free_list_size = job_free_list_size + 1;
@@ -183,6 +188,8 @@ tz_job_initialise ::= func(a : arena mut&) -> v0
 		timeBeginPeriod ::= func(uPeriod : u32) -> s32 := extern;
 		timeBeginPeriod(1);
 	}
+
+	job_global_arena = a;
 
 	job_storage = arena_push(a, __sizeof(deref job_storage) * 4096);
 	job_storage_cap = 4096;
@@ -251,8 +258,13 @@ tz_job_execute ::= func(fn : v0& weak, a : arena mut&) -> tz_job
 		// need a new job.
 		if(job_storage_size >= job_storage_cap)
 		{
-			puts("todo: increase job storage size");
-			__debugbreak();
+			old_cap ::= job_storage_cap;
+			old_job_storage ::= job_storage;
+
+			job_storage_cap = job_storage_cap * 2;
+			job_storage = arena_push(a, job_storage_cap * __sizeof(deref job_storage));
+
+			__memcpy(job_storage, old_job_storage, old_cap * __sizeof(deref job_storage));
 		}
 		ret = (job_storage_size@tz_job);
 		job_storage_size = job_storage_size + 1;
