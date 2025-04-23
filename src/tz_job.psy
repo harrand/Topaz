@@ -143,9 +143,6 @@ worker_tmain ::= func(p : v0&) -> u32
 			deref(job_storage at (found_job_id@s64)) = found_job;
 			if(job_free_list_size >= job_free_list_cap)
 			{
-				old_cap ::= job_free_list_cap;
-				old_free_list ::= job_free_list;
-
 				job_free_list_cap = job_free_list_cap * 2;
 				job_free_list = arena_push(job_global_arena, job_free_list_cap * __sizeof(deref job_free_list));
 			}
@@ -331,7 +328,10 @@ tz_job_block ::= func(job : tz_job) -> v0
 
 == build ==
 {
-	add_link_library("Kernel32.lib");
-	add_link_library("winmm.lib");
-	add_source_file("arena.psy");
+	add_source_file("stdlib/arena.psy");
+	if static(__is_windows)
+	{
+		add_link_library("Kernel32.lib");
+		add_link_library("winmm.lib");
+	}
 }

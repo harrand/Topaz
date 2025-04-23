@@ -197,6 +197,8 @@ main ::= func() -> s32
 	add_source_file("src/keyboard.psy");
 	add_source_file("src/tz_wnd.psy");
 
+	add_link_library("libcmt.lib");
+
 	set_output_directory("build");
 	set_executable("tz");
 

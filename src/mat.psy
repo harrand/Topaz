@@ -182,6 +182,7 @@ mat4_scale ::= func(v : vec3) -> mat4
 
 == build ==
 {
-	add_source_file("io.psy");
+	add_source_file("stdlib/io.psy");
+
 	add_source_file("vec.psy");
 }

@@ -13,3 +13,6 @@
 [submodule "lib/lua"]
 	path = lib/lua
 	url = https://github.com/lua/lua
+[submodule "src/stdlib"]
+	path = src/stdlib
+	url = https://github.com/harrand/psystdlib

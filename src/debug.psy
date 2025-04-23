@@ -22,6 +22,7 @@ assert ::= func(expr : bool, errmsg : u8&) -> v0
 
 == build ==
 {
-	add_source_file("io.psy");
+	add_source_file("stdlib/io.psy");
+
 	add_source_file("string.psy");
 }
