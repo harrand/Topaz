@@ -1,0 +1,10 @@
+== build ==
+{
+	add_source_directory("src/");
+	set_executable("tz");
+}
+
+main ::= func(-> s32)
+{
+	return 0;
+};
