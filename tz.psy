@@ -25,6 +25,7 @@ main ::= func(-> s32)
 	setup_arenas();
 	wnd ::= tz_window_open(800, 600, "Epic Window Bro", global_arena);
 	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", global_arena);
+
 	while(tz_window_is_open(wnd) || tz_window_is_open(wnd2))
 	{
 		tz_update_windows();

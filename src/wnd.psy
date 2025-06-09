@@ -148,6 +148,21 @@ tz_window_is_open ::= func(wnd : tz_wnd -> bool)
 	return (_window_data at (wnd@s64))->open;
 };
 
+tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
+{
+	rect : RECT mut;
+	if(GetClientRect((_window_data at (wnd@s64))->handle, ref rect) != 0)
+	{
+		return u32[2]{(rect.right - rect.left)@u32; (rect.bottom - rect.top)@u32;};
+	}
+	return zero;
+};
+
+tz_window_native ::= func(wnd : tz_wnd -> u64)
+{
+	return (_window_data at (wnd@s64))->handle;
+};
+
 tz_update_windows ::= func(-> v0)
 {
 	if static(_win32)
