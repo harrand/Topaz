@@ -2,6 +2,11 @@
 {
 	add_source_directory("src/");
 	set_executable("tz");
+
+	if static(_win32)
+	{
+		add_link_library("User32.lib");
+	}
 }
 
 main ::= func(-> s32)

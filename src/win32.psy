@@ -1,0 +1,78 @@
+if static(_win32)
+{
+	WNDCLASSEXA ::= struct
+	{
+		cbSize : u32;
+		style : u32;
+		wndproc : func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s64);
+		cbClsExtra : s32;
+		cbWndExtra : s32;
+		hInstance : u64;
+		hIcon : u64;
+		hCursor : u64;
+		hbrBackground : u64;
+		lpszMenuName : u8&;
+		lpszClassName : u8&;
+		hIconSm : u64;
+	};
+
+	PostMessageA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s32) := extern;
+	DefWindowProcA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s64) := extern;
+	LoadIconA ::= func(hinstance : u64, lpIconName : u8& -> u64) := extern;
+	LoadCursorA ::= func(hinstance : u64, lpIconName : u8& -> u64) := extern;
+	RegisterClassExA ::= func(class : WNDCLASSEXA& -> u16) := extern;
+	CreateWindowExA ::= func
+	(
+		dwExStyle : u32,
+		lpClassName : u8&,
+lpWindowName : u8&,
+		dwStyle : u32,
+		x : s32,
+		y : s32,
+		nWidth : s32,
+		nHeight : s32,
+		hWndParent : u64,
+		hMenu : u64,
+		hInstance : u64,
+		lpParam : v0&
+		-> u64
+	) := extern;
+	ShowWindow ::= func(hwnd : u64, nCmdShow : s32 -> s32) := extern;
+
+	DestroyWindow ::= func(hwnd : u64 -> s32) := extern;
+	PostQuitMessage ::= func(nExitCode : s32 -> v0) := extern;
+
+	RECT ::= struct
+	{
+		left : s32;
+		top : s32;
+		right : s32;
+		bottom : s32;
+	};
+	GetClientRect ::= func(hwnd : u64, lpRect : RECT mut& -> s32) := extern;
+	GetModuleHandleA ::= func(lpModuleName : u8& -> u64) := extern;
+
+	POINT ::= struct
+	{
+		x : s64;
+		y : s64;
+	};
+
+	WINMSG ::= struct
+	{
+		hwnd : u64;
+		message : u32;
+		wparam : u64;
+		lparam : s64;
+		time : u64;
+		pt : POINT;
+	};
+
+	CW_USEDEFAULT ::= -2147483648;
+
+	PeekMessageA ::= func(lpMsg : WINMSG mut&, hwnd : u64, wMsgFilterMin : u32, wMsgFilterMax : u32, wRemoveMsg : u32 -> s32) := extern;
+	TranslateMessage ::= func(lpMsg : WINMSG& -> s32) := extern;
+	DispatchMessageA ::= func(lpMsg : WINMSG& -> s64) := extern;
+	SetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32, dwNewLong : s64 -> s64) := extern;
+	GetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32 -> s64) := extern;
+}

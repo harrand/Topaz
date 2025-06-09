@@ -1,0 +1,18 @@
+window_handle ::= enum{};
+
+window_data_t ::= struct
+{
+	handle : window_handle;
+	open : bool;
+};
+
+window_data : window_data_t mut& mut := zero;
+window_count : u64 mut := zero;
+window_cap : u64 mut := zero;
+
+_close_window ::= func(wndh : u64 -> v0)
+{
+	wndptr ::= window_data at wndh;
+	wndptr->open = false;
+	DestroyWindow(wndptr->handle@s64 weak);
+};
