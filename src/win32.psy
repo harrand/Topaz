@@ -75,4 +75,6 @@ lpWindowName : u8&,
 	DispatchMessageA ::= func(lpMsg : WINMSG& -> s64) := extern;
 	SetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32, dwNewLong : s64 -> s64) := extern;
 	GetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32 -> s64) := extern;
+
+	GetLastError ::= func(-> u32) := extern;
 }

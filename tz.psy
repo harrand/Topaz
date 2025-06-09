@@ -1,15 +1,32 @@
 == build ==
 {
+	add_source_directory("src/stdlib/src");
 	add_source_directory("src/");
 	set_executable("tz");
 
 	if static(_win32)
 	{
 		add_link_library("User32.lib");
+		add_link_library("Shell32.lib");
 	}
 }
 
+global_arena_value : arena mut := zero;
+global_arena : arena mut& mut := zero;
+
+setup_arenas ::= func(-> v0)
+{
+	global_arena_value = arena_create(1024 * 1024);
+	global_arena = ref global_arena_value;
+};
+
 main ::= func(-> s32)
 {
+	setup_arenas();
+	wnd ::= tz_window_open(800, 600, "Epic Window Bro", global_arena);
+	while(tz_window_is_open(wnd))
+	{
+		tz_update_windows();
+	}
 	return 0;
 };

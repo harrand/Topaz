@@ -1,18 +1,142 @@
-window_handle ::= enum{};
+tz_wnd ::= enum{};
 
-window_data_t ::= struct
+_window_data_t ::= struct
 {
-	handle : window_handle;
+	handle : u64;
 	open : bool;
 };
 
-window_data : window_data_t mut& mut := zero;
-window_count : u64 mut := zero;
-window_cap : u64 mut := zero;
+_window_data : _window_data_t mut& mut := zero;
+_window_count : u64 mut := zero;
+_window_cap : u64 mut := zero;
 
 _close_window ::= func(wndh : u64 -> v0)
 {
-	wndptr ::= window_data at wndh;
+	wndptr ::= _window_data at wndh;
 	wndptr->open = false;
 	DestroyWindow(wndptr->handle@s64 weak);
+};
+
+if static(_win32)
+{
+	wndproc ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s64)
+	{
+		if(msg == 16) // WM_CLOSE
+		{
+			_close_window(GetWindowLongPtrA(hwnd, 0)@u64);
+			return 0;
+		}
+		if(msg == 2) // WM_DESTROY
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
+		return DefWindowProcA(hwnd, msg, wparam lparam);
+	};
+
+	wndclass_name ::= "Topaz";
+	wndclass_registered : bool mut := false;
+
+	_register_wndclass ::= func(-> v0)
+	{
+		hinst ::= GetModuleHandleA(zero);
+		magic_int_resource ::= (32512@u64)@u8&;
+		COLOR_WINDOW ::= 5;
+		window_class ::= WNDCLASSEXA
+		{
+			.cbSize := __sizeof(WNDCLASSEXA);
+			.style := 43;
+			.wndproc := wndproc;
+			.cbClsExtra := __sizeof(u64);
+			.cbWndExtra := 0;
+			.hInstance := hinst;
+			.hIcon := LoadIconA(0, magic_int_resource);
+			.hCursor := LoadCursorA(0, magic_int_resource);
+			.hbrBackground := COLOR_WINDOW + 1;
+			.lpszMenuName := zero;
+			.lpszClassName := wndclass_name;
+			.hIconSm := LoadIconA(0, magic_int_resource);
+		};
+		if(RegisterClassExA(ref window_class) == 0)
+		{
+			putzstr("failed to register window class: ");
+			putuint(GetLastError());
+			__debugbreak();
+		}
+		wndclass_registered = true;
+	};
+}
+
+tz_window_open ::= func(w : u64, h : u64, title : u8&, a : arena mut& -> tz_wnd)
+{
+	if(!wndclass_registered)
+	{
+		_register_wndclass();
+	}
+	if(_window_cap == 0)
+	{
+		_window_cap = 8;
+		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
+	}
+	while(_window_count >= _window_cap)
+	{
+		oldcap ::= _window_cap;
+		olddata ::= _window_data;
+		_window_cap = _window_cap * 2;
+		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
+		cpymem(_window_data, olddata, oldcap * __sizeof(deref _window_data));
+	}
+	retid ::= _window_count;
+	wndptr ::= _window_data at retid;
+	_window_count = _window_count + 1;
+
+	if static(_win32)
+	{
+		hwnd ::= CreateWindowExA(768, wndclass_name, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, GetModuleHandleA(zero), zero);
+		if(hwnd == 0)
+		{
+			putzstr("failed to open window: ");
+			putsint(GetLastError());
+			__debugbreak();
+		}
+		ShowWindow(hwnd, 5);
+		deref wndptr = _window_data_t
+		{
+			.handle := hwnd@u64;
+			.open := true;
+		};
+		SetWindowLongPtrA(hwnd, 0, retid@s64);
+		return retid@s64@tz_wnd;
+	}
+	else
+	{
+		__error("tz_window_open NYI on linux");
+	}
+};
+
+tz_window_close ::= func(wnd : tz_wnd -> v0)
+{
+	_close_window(wnd@s64@u64);
+};
+
+tz_window_is_open ::= func(wnd : tz_wnd -> bool)
+{
+	return (_window_data at (wnd@s64))->open;
+};
+
+tz_update_windows ::= func(-> v0)
+{
+	if static(_win32)
+	{
+		msg ::= WINMSG mut{};
+		if(PeekMessageA(ref msg, 0, 0, 0, 1)@bool)
+		{
+			TranslateMessage(ref msg);
+			DispatchMessageA(ref msg);
+		}
+	}
+	else
+	{
+		__error("tz_update_windows NYI on linux");
+	}
 };
