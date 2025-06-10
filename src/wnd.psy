@@ -1,5 +1,127 @@
 tz_wnd ::= enum{};
 
+tz_window_flag ::= enum
+{
+	.maximised := 1;
+	.transparent := 2;
+	.invisible := 4;
+};
+
+tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a : arena mut& -> tz_wnd)
+{
+	if(!wndclass_registered)
+	{
+		_register_wndclass();
+	}
+	if(_window_cap == 0)
+	{
+		_window_cap = 8;
+		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
+	}
+	while(_window_count >= _window_cap)
+	{
+		oldcap ::= _window_cap;
+		olddata ::= _window_data;
+		_window_cap = _window_cap * 2;
+		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
+		cpymem(_window_data, olddata, oldcap * __sizeof(deref _window_data));
+	}
+	retid ::= _window_count;
+	wndptr ::= _window_data at retid;
+	_window_count = _window_count + 1;
+
+	if static(_win32)
+	{
+		hwnd ::= CreateWindowExA(768, wndclass_name, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, GetModuleHandleA(zero), zero);
+		if(hwnd == 0)
+		{
+			putzstr("failed to open window: ");
+			putsint(GetLastError());
+			__debugbreak();
+		}
+		if((flags & (tz_window_flag.transparent)) != zero)
+		{
+			bb ::= DWM_BLURBEHIND
+			{
+				.dwFlags := 1 | 2;
+				.fEnable := true@s32;
+				.hRgnBlur := CreateRectRgn(0, 0, -1, -1);
+				.fTransitionOnMaximized := zero;
+			};
+			DwmEnableBlurBehindWindow(hwnd, ref bb);
+		}
+		if((flags & (tz_window_flag.invisible)) == zero)
+		{
+			ShowWindow(hwnd, 5);
+		}
+		deref wndptr = _window_data_t
+		{
+			.handle := hwnd@u64;
+			.open := true;
+		};
+		if(SetWindowLongPtrA(hwnd, -21, retid@s64) == 0)
+		{
+			if(GetLastError() != 0)
+			{
+				putzstr("failed to set window metadata: ");
+				putsint(GetLastError());
+				__debugbreak();
+			}
+		}
+		return retid@s64@tz_wnd;
+	}
+	else
+	{
+		__error("tz_window_open NYI on linux");
+	}
+};
+
+tz_window_close ::= func(wnd : tz_wnd -> v0)
+{
+	_close_window(wnd@s64@u64);
+};
+
+tz_window_is_open ::= func(wnd : tz_wnd -> bool)
+{
+	return (_window_data at (wnd@s64))->open;
+};
+
+tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
+{
+	rect : RECT mut;
+	if(GetClientRect((_window_data at (wnd@s64))->handle, ref rect) != 0)
+	{
+		return u32[2]{(rect.right - rect.left)@u32; (rect.bottom - rect.top)@u32;};
+	}
+	return zero;
+};
+
+tz_window_native ::= func(wnd : tz_wnd -> u64)
+{
+	return (_window_data at (wnd@s64))->handle;
+};
+
+tz_update_windows ::= func(-> v0)
+{
+	if static(_win32)
+	{
+		msg ::= WINMSG mut{};
+		if(PeekMessageA(ref msg, 0, 0, 0, 1)@bool)
+		{
+			TranslateMessage(ref msg);
+			DispatchMessageA(ref msg);
+		}
+	}
+	else
+	{
+		__error("tz_update_windows NYI on linux");
+	}
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////        IMPL        /////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
 _window_data_t ::= struct
 {
 	handle : u64;
@@ -83,99 +205,3 @@ if static(_win32)
 	};
 }
 
-tz_window_open ::= func(w : u64, h : u64, title : u8&, a : arena mut& -> tz_wnd)
-{
-	if(!wndclass_registered)
-	{
-		_register_wndclass();
-	}
-	if(_window_cap == 0)
-	{
-		_window_cap = 8;
-		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
-	}
-	while(_window_count >= _window_cap)
-	{
-		oldcap ::= _window_cap;
-		olddata ::= _window_data;
-		_window_cap = _window_cap * 2;
-		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
-		cpymem(_window_data, olddata, oldcap * __sizeof(deref _window_data));
-	}
-	retid ::= _window_count;
-	wndptr ::= _window_data at retid;
-	_window_count = _window_count + 1;
-
-	if static(_win32)
-	{
-		hwnd ::= CreateWindowExA(768, wndclass_name, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, GetModuleHandleA(zero), zero);
-		if(hwnd == 0)
-		{
-			putzstr("failed to open window: ");
-			putsint(GetLastError());
-			__debugbreak();
-		}
-		ShowWindow(hwnd, 5);
-		deref wndptr = _window_data_t
-		{
-			.handle := hwnd@u64;
-			.open := true;
-		};
-		if(SetWindowLongPtrA(hwnd, -21, retid@s64) == 0)
-		{
-			if(GetLastError() != 0)
-			{
-				putzstr("failed to set window metadata: ");
-				putsint(GetLastError());
-				__debugbreak();
-			}
-		}
-		return retid@s64@tz_wnd;
-	}
-	else
-	{
-		__error("tz_window_open NYI on linux");
-	}
-};
-
-tz_window_close ::= func(wnd : tz_wnd -> v0)
-{
-	_close_window(wnd@s64@u64);
-};
-
-tz_window_is_open ::= func(wnd : tz_wnd -> bool)
-{
-	return (_window_data at (wnd@s64))->open;
-};
-
-tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
-{
-	rect : RECT mut;
-	if(GetClientRect((_window_data at (wnd@s64))->handle, ref rect) != 0)
-	{
-		return u32[2]{(rect.right - rect.left)@u32; (rect.bottom - rect.top)@u32;};
-	}
-	return zero;
-};
-
-tz_window_native ::= func(wnd : tz_wnd -> u64)
-{
-	return (_window_data at (wnd@s64))->handle;
-};
-
-tz_update_windows ::= func(-> v0)
-{
-	if static(_win32)
-	{
-		msg ::= WINMSG mut{};
-		if(PeekMessageA(ref msg, 0, 0, 0, 1)@bool)
-		{
-			TranslateMessage(ref msg);
-			DispatchMessageA(ref msg);
-		}
-	}
-	else
-	{
-		__error("tz_update_windows NYI on linux");
-	}
-};

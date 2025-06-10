@@ -8,6 +8,8 @@
 	{
 		add_link_library("User32.lib");
 		add_link_library("Shell32.lib");
+		add_link_library("Gdi32.lib");
+		add_link_library("Dwmapi.lib");
 	}
 }
 
@@ -20,11 +22,21 @@ setup_arenas ::= func(-> v0)
 	global_arena = ref global_arena_value;
 };
 
+destroy_arenas ::= func(-> v0)
+{
+	putzstr("arena size: ");
+	putuint(global_arena->cur);
+	putzstr("B");
+	putchar(10);
+	arena_destroy(global_arena);
+};
+
 main ::= func(-> s32)
 {
 	setup_arenas();
-	wnd ::= tz_window_open(800, 600, "Epic Window Bro", global_arena);
-	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", global_arena);
+	defer destroy_arenas();
+	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
+	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", tz_window_flag.transparent, global_arena);
 
 	while(tz_window_is_open(wnd) || tz_window_is_open(wnd2))
 	{
