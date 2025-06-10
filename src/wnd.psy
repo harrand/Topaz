@@ -101,6 +101,22 @@ tz_window_native ::= func(wnd : tz_wnd -> u64)
 	return (_window_data at (wnd@s64))->handle;
 };
 
+tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut&, len : u64, actual_len : u64 mut& -> bool)
+{
+	nat ::= tz_window_native(wnd);
+	wintextlen ::= GetWindowTextLengthA(nat)@u64;
+	if(actual_len != zero)
+	{
+		deref actual_len = wintextlen;
+	}
+	if(len >= wintextlen)
+	{
+		GetWindowTextA(nat, buf, len@_);
+		return true;
+	}
+	return false;
+};
+
 tz_update_windows ::= func(-> v0)
 {
 	if static(_win32)
