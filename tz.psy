@@ -49,6 +49,8 @@ main ::= func(-> s32)
 	putchar('"');
 	putchar(10);
 
+	tz_window_set_title(wnd2, "A new window title");
+
 	while(tz_window_is_open(wnd) || tz_window_is_open(wnd2))
 	{
 		tz_update_windows();

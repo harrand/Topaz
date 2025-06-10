@@ -91,4 +91,5 @@ lpWindowName : u8&,
 
 	GetWindowTextLengthA ::= func(hwnd : u64 -> s32) := extern;
 	GetWindowTextA ::= func(hwnd : u64, lpString : u8 mut&, nMaxCount : s32 -> s32) := extern;
+	SetWindowTextA ::= func(hwnd : u64, lpString : u8& -> s32) := extern;
 }

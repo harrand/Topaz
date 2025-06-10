@@ -117,6 +117,11 @@ tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut&, len : u64, actual_len : u6
 	return false;
 };
 
+tz_window_set_title ::= func(wnd : tz_wnd, title : u8& -> v0)
+{
+	SetWindowTextA(tz_window_native(wnd), title);
+};
+
 tz_update_windows ::= func(-> v0)
 {
 	if static(_win32)
