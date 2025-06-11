@@ -96,6 +96,31 @@ tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
 	return zero;
 };
 
+tz_window_set_dimensions ::= func(wnd : tz_wnd, dims : u32[2] -> v0)
+{
+	nat ::= tz_window_native(wnd);
+	// get current window rect (incl. title bar, borders etc)
+	wndrect : RECT mut;
+	GetWindowRect(nat, ref wndrect);
+	// now the client area dims
+	clientrect : RECT mut;
+	GetClientRect(nat, ref clientrect);
+	wwidth ::= wndrect.right - wndrect.left;
+	wheight ::= wndrect.bottom - wndrect.top;
+	cwidth ::= clientrect.right - clientrect.left;
+	cheight ::= clientrect.bottom - clientrect.top;
+	
+	border_width ::= wwidth - cwidth;
+	border_height ::= wheight - cheight;
+
+	width ::= deref(dims at 0);
+	height ::= deref(dims at 1);
+
+	SWP_NOZORDER ::= 4;
+	SWP_NOMOVE ::= 2;
+	SetWindowPos(nat, zero, zero, zero, width@_ + border_width, height@_ + border_height, SWP_NOZORDER | SWP_NOMOVE);
+};
+
 tz_window_native ::= func(wnd : tz_wnd -> u64)
 {
 	return (_window_data at (wnd@s64))->handle;

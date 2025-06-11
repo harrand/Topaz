@@ -49,7 +49,9 @@ lpWindowName : u8&,
 		right : s32;
 		bottom : s32;
 	};
+	GetWindowRect ::= func(hwnd : u64, lpRect : RECT mut& -> s32) := extern;
 	GetClientRect ::= func(hwnd : u64, lpRect : RECT mut& -> s32) := extern;
+	SetWindowPos ::= func(hwnd : u64, hwndInsertAfter : u64, x : s32, y : s32, cx : s32, cy : s32, uflags : u32 -> s32) := extern;
 	GetModuleHandleA ::= func(lpModuleName : u8& -> u64) := extern;
 
 	POINT ::= struct
