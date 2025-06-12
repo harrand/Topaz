@@ -36,7 +36,7 @@ main ::= func(-> s32)
 	setup_arenas();
 	defer destroy_arenas();
 	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
-	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", tz_window_flag.transparent, global_arena);
+	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", zero, global_arena);
 
 	buf : u8 mut[64];
 	if(!tz_window_title(wnd2, buf at 0, 64, zero))

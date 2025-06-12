@@ -5,6 +5,7 @@ tz_window_flag ::= enum
 	.maximised := 1;
 	.transparent := 2;
 	.invisible := 4;
+	.bare := 8;
 };
 
 tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a : arena mut& -> tz_wnd)
@@ -32,7 +33,16 @@ tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a
 
 	if static(_win32)
 	{
-		hwnd ::= CreateWindowExA(768, wndclass_name, title, 13565952, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, GetModuleHandleA(zero), zero);
+		WS_POPUP ::= 0x80000000;
+		WS_BORDER ::= 0x00800000; 
+		WS_SYSMENU ::= 0x00080000; 
+		WS_CAPTION ::= 0x00C00000;
+		style : u32 mut := 13565952;
+		if((flags & (tz_window_flag.bare)) != zero)
+		{
+			style = WS_POPUP | WS_BORDER | WS_SYSMENU;
+		}
+		hwnd ::= CreateWindowExA(zero, wndclass_name, title, style, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, GetModuleHandleA(zero), zero);
 		if(hwnd == 0)
 		{
 			putzstr("failed to open window: ");
