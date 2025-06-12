@@ -66,9 +66,12 @@ tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a
 		}
 		deref wndptr = _window_data_t
 		{
-			.handle := hwnd@u64;
+			.handle := hwnd;
 			.open := true;
+			.win32_placement_cache := zero;
 		};
+		wndptr->win32_placement_cache.length = __sizeof(WINDOWPLACEMENT);
+		GetWindowPlacement(hwnd, ref(wndptr->win32_placement_cache));
 		if(SetWindowLongPtrA(hwnd, -21, retid@s64) == 0)
 		{
 			if(GetLastError() != 0)
@@ -131,6 +134,11 @@ tz_window_set_dimensions ::= func(wnd : tz_wnd, dims : u32[2] -> v0)
 	SetWindowPos(nat, zero, zero, zero, width@_ + border_width, height@_ + border_height, SWP_NOZORDER | SWP_NOMOVE);
 };
 
+tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
+{
+	
+};
+
 tz_window_native ::= func(wnd : tz_wnd -> u64)
 {
 	return (_window_data at (wnd@s64))->handle;
@@ -182,6 +190,7 @@ _window_data_t ::= struct
 {
 	handle : u64;
 	open : bool;
+	win32_placement_cache : WINDOWPLACEMENT;
 };
 
 _window_data : _window_data_t mut& mut := zero;
