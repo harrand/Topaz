@@ -33,10 +33,6 @@ tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a
 
 	if static(_win32)
 	{
-		WS_POPUP ::= 0x80000000;
-		WS_BORDER ::= 0x00800000; 
-		WS_SYSMENU ::= 0x00080000; 
-		WS_CAPTION ::= 0x00C00000;
 		style : u32 mut := 13565952;
 		if((flags & (tz_window_flag.bare)) != zero)
 		{
@@ -62,7 +58,7 @@ tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a
 		}
 		if((flags & (tz_window_flag.invisible)) == zero)
 		{
-			ShowWindow(hwnd, 5);
+			ShowWindow(hwnd, SW_SHOW);
 		}
 		deref wndptr = _window_data_t
 		{
@@ -129,14 +125,57 @@ tz_window_set_dimensions ::= func(wnd : tz_wnd, dims : u32[2] -> v0)
 	width ::= deref(dims at 0);
 	height ::= deref(dims at 1);
 
-	SWP_NOZORDER ::= 4;
-	SWP_NOMOVE ::= 2;
 	SetWindowPos(nat, zero, zero, zero, width@_ + border_width, height@_ + border_height, SWP_NOZORDER | SWP_NOMOVE);
+};
+
+tz_window_show ::= func(wnd : tz_wnd -> v0)
+{
+	wnddata ::= _window_data at (wnd@s64);
+	nat ::= wnddata->handle;
+
+	WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+
+	dwStyle ::= GetWindowLongPtrA(nat, GWL_STYLE);
+	SetWindowLongPtrA(nat, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
+	if((dwStyle & WS_OVERLAPPEDWINDOW) == zero)
+	{
+		SetWindowPlacement(nat, ref(wnddata->win32_placement_cache));
+		SetWindowPos(nat, zero, zero, zero, zero, zero, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
+};
+
+tz_window_maximize ::= func(wnd : tz_wnd -> v0)
+{
+	ShowWindow(tz_window_native(wnd), SW_MAXIMIZE);
+};
+
+tz_window_minimize ::= func(wnd : tz_wnd -> v0)
+{
+	ShowWindow(tz_window_native(wnd), SW_MINIMIZE);
 };
 
 tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
 {
-	
+	wnddata ::= _window_data at (wnd@s64);
+	nat ::= wnddata->handle;
+
+	WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+
+	dwStyle ::= GetWindowLongPtrA(nat, GWL_STYLE);
+	mi ::= MONITORINFO mut
+	{
+		.cbSize := __sizeof(MONITORINFO);
+	};
+	if(GetMonitorInfoA(MonitorFromWindow(nat, 1), ref mi)@bool)
+	{
+		if((dwStyle & WS_OVERLAPPEDWINDOW) != zero)
+		{
+			GetWindowPlacement(nat, ref(wnddata->win32_placement_cache));
+		}
+		SetWindowLongPtrA(nat, GWL_STYLE, dwStyle & (~WS_OVERLAPPEDWINDOW));
+		HWND_TOP ::= 0;
+		SetWindowPos(nat, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, (mi.rcMonitor.right) - (mi.rcMonitor.left), (mi.rcMonitor.bottom) - (mi.rcMonitor.top), SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+	}
 };
 
 tz_window_native ::= func(wnd : tz_wnd -> u64)

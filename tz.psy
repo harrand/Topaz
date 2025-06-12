@@ -50,6 +50,7 @@ main ::= func(-> s32)
 	putchar(10);
 
 	tz_window_set_title(wnd2, "A new window title");
+	tz_window_fullscreen(wnd2);
 
 	while(tz_window_is_open(wnd) || tz_window_is_open(wnd2))
 	{
