@@ -25,7 +25,7 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 		olddata ::= _window_data;
 		_window_cap = _window_cap * 2;
 		_window_data = arena_alloc(a, __sizeof(deref _window_data) * _window_cap);
-		cpymem(_window_data, olddata, oldcap * __sizeof(deref _window_data));
+		memcpy(_window_data, olddata, oldcap * __sizeof(deref _window_data));
 	}
 	retid ::= _window_count;
 	wndptr ::= _window_data # retid;
@@ -34,7 +34,7 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 	static if(_win32)
 	{
 		style : u32 mut := 13565952;
-		if((flags & (tz_window_flag.bare)) != zero)
+		if((flags & tz_window_flag.bare) != zero)
 		{
 			style = WS_POPUP | WS_BORDER | WS_SYSMENU;
 		}
@@ -45,7 +45,7 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 			putsint(GetLastError());
 			__debugbreak();
 		}
-		if((flags & (tz_window_flag.transparent)) != zero)
+		if((flags & tz_window_flag.transparent) != zero)
 		{
 			bb ::= DWM_BLURBEHIND
 			{
@@ -56,7 +56,7 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 			};
 			DwmEnableBlurBehindWindow(hwnd, ref bb);
 		}
-		if((flags & (tz_window_flag.invisible)) == zero)
+		if((flags & tz_window_flag.invisible) == zero)
 		{
 			ShowWindow(hwnd, SW_SHOW);
 		}
