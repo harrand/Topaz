@@ -1,4 +1,4 @@
-tz_wnd ::= enum{};
+tz_wnd ::= enum{.invalid := -1;};
 
 tz_window_flag ::= enum
 {

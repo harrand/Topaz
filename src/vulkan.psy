@@ -21,9 +21,9 @@ VkInstanceCreateInfo ::= struct
 	flags : s32 weak;
 	pApplicationInfo : VkApplicationInfo?;
 	enabledLayerCount : u32;
-	ppEnabledLayerNames : u8??;
+	ppEnabledLayerNames : u8???;
 	enabledExtensionCount : u32;
-	ppEnabledExtensionNames : u8??;
+	ppEnabledExtensionNames : u8???;
 };
 
 VkSystemAllocationScope ::= enum
@@ -1440,10 +1440,3 @@ vk_check ::= func(result : s32 -> v0)
 		__debugbreak();
 	}
 };
-
-== build ==
-{
-	add_source_file("string.psy");
-	add_source_file("vec.psy");
-	add_link_library("Kernel32.lib");
-}
