@@ -4,7 +4,7 @@
 	add_source_directory("src/");
 	set_executable("tz");
 
-	if static(_win32)
+	static if(_win32)
 	{
 		add_link_library("User32.lib");
 		add_link_library("Shell32.lib");
@@ -14,7 +14,7 @@
 }
 
 global_arena_value : arena mut := zero;
-global_arena : arena mut& mut := zero;
+global_arena : arena mut? mut := zero;
 
 setup_arenas ::= func(-> v0)
 {
@@ -39,18 +39,17 @@ main ::= func(-> s32)
 	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", zero, global_arena);
 
 	buf : u8 mut[64];
-	if(!tz_window_title(wnd2, buf at 0, 64, zero))
+	if(!tz_window_title(wnd2, buf # 0, 64, zero))
 	{
 		__debugbreak();
 	}
 	putzstr("window title: ");
 	putchar('"');
-	putzstr(buf at 0);
+	putzstr(buf # 0);
 	putchar('"');
 	putchar(10);
 
 	tz_window_set_title(wnd2, "A new window title");
-	tz_window_fullscreen(wnd2);
 
 	while(tz_window_is_open(wnd) || tz_window_is_open(wnd2))
 	{

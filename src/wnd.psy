@@ -8,7 +8,7 @@ tz_window_flag ::= enum
 	.bare := 8;
 };
 
-tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a : arena mut& -> tz_wnd)
+tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a : arena mut? -> tz_wnd)
 {
 	if(!wndclass_registered)
 	{
@@ -28,10 +28,10 @@ tz_window_open ::= func(w : u64, h : u64, title : u8&, flags : tz_window_flag, a
 		cpymem(_window_data, olddata, oldcap * __sizeof(deref _window_data));
 	}
 	retid ::= _window_count;
-	wndptr ::= _window_data at retid;
+	wndptr ::= _window_data # retid;
 	_window_count = _window_count + 1;
 
-	if static(_win32)
+	static if(_win32)
 	{
 		style : u32 mut := 13565952;
 		if((flags & (tz_window_flag.bare)) != zero)
@@ -92,13 +92,13 @@ tz_window_close ::= func(wnd : tz_wnd -> v0)
 
 tz_window_is_open ::= func(wnd : tz_wnd -> bool)
 {
-	return (_window_data at (wnd@s64))->open;
+	return (_window_data # (wnd@s64))->open;
 };
 
 tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
 {
 	rect : RECT mut;
-	if(GetClientRect((_window_data at (wnd@s64))->handle, ref rect) != 0)
+	if(GetClientRect((_window_data # (wnd@s64))->handle, ref rect) != 0)
 	{
 		return u32[2]{(rect.right - rect.left)@u32; (rect.bottom - rect.top)@u32;};
 	}
@@ -122,15 +122,15 @@ tz_window_set_dimensions ::= func(wnd : tz_wnd, dims : u32[2] -> v0)
 	border_width ::= wwidth - cwidth;
 	border_height ::= wheight - cheight;
 
-	width ::= deref(dims at 0);
-	height ::= deref(dims at 1);
+	width ::= deref(dims # 0);
+	height ::= deref(dims # 1);
 
 	SetWindowPos(nat, zero, zero, zero, width@_ + border_width, height@_ + border_height, SWP_NOZORDER | SWP_NOMOVE);
 };
 
 tz_window_show ::= func(wnd : tz_wnd -> v0)
 {
-	wnddata ::= _window_data at (wnd@s64);
+	wnddata ::= _window_data # (wnd@s64);
 	nat ::= wnddata->handle;
 
 	WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
@@ -156,7 +156,7 @@ tz_window_minimize ::= func(wnd : tz_wnd -> v0)
 
 tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
 {
-	wnddata ::= _window_data at (wnd@s64);
+	wnddata ::= _window_data # (wnd@s64);
 	nat ::= wnddata->handle;
 
 	WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
@@ -180,10 +180,10 @@ tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
 
 tz_window_native ::= func(wnd : tz_wnd -> u64)
 {
-	return (_window_data at (wnd@s64))->handle;
+	return (_window_data # (wnd@s64))->handle;
 };
 
-tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut&, len : u64, actual_len : u64 mut& -> bool)
+tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut?, len : u64, actual_len : u64 mut? -> bool)
 {
 	nat ::= tz_window_native(wnd);
 	wintextlen ::= GetWindowTextLengthA(nat)@u64;
@@ -199,14 +199,14 @@ tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut&, len : u64, actual_len : u6
 	return false;
 };
 
-tz_window_set_title ::= func(wnd : tz_wnd, title : u8& -> v0)
+tz_window_set_title ::= func(wnd : tz_wnd, title : u8? -> v0)
 {
 	SetWindowTextA(tz_window_native(wnd), title);
 };
 
 tz_update_windows ::= func(-> v0)
 {
-	if static(_win32)
+	static if(_win32)
 	{
 		msg ::= WINMSG mut{};
 		if(PeekMessageA(ref msg, 0, 0, 0, 1)@bool)
@@ -232,13 +232,13 @@ _window_data_t ::= struct
 	win32_placement_cache : WINDOWPLACEMENT;
 };
 
-_window_data : _window_data_t mut& mut := zero;
+_window_data : _window_data_t mut? mut := zero;
 _window_count : u64 mut := zero;
 _window_cap : u64 mut := zero;
 
 _close_window ::= func(wndh : u64 -> v0)
 {
-	wndptr ::= _window_data at wndh;
+	wndptr ::= _window_data # wndh;
 	wndptr->open = false;
 	DestroyWindow(wndptr->handle@s64 weak);
 };
@@ -256,7 +256,7 @@ _no_windows_left ::= func(-> bool)
 	return true;
 };
 
-if static(_win32)
+static if(_win32)
 {
 	wndproc ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s64)
 	{
@@ -273,7 +273,7 @@ if static(_win32)
 				return 0;
 			}
 		}
-		return DefWindowProcA(hwnd, msg, wparam lparam);
+		return DefWindowProcA(hwnd, msg, wparam, lparam);
 	};
 
 	wndclass_name ::= "Topaz";
@@ -282,7 +282,7 @@ if static(_win32)
 	_register_wndclass ::= func(-> v0)
 	{
 		hinst ::= GetModuleHandleA(zero);
-		magic_int_resource ::= (32512@u64)@u8&;
+		magic_int_resource ::= (32512@u64)@u8?;
 		COLOR_WINDOW ::= 5;
 		window_class ::= WNDCLASSEXA
 		{

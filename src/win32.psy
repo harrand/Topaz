@@ -1,4 +1,4 @@
-if static(_win32)
+static if(_win32)
 {
 	WNDCLASSEXA ::= struct
 	{
@@ -11,21 +11,21 @@ if static(_win32)
 		hIcon : u64;
 		hCursor : u64;
 		hbrBackground : u64;
-		lpszMenuName : u8&;
-		lpszClassName : u8&;
+		lpszMenuName : u8?;
+		lpszClassName : u8?;
 		hIconSm : u64;
 	};
 
 	PostMessageA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s32) := extern;
 	DefWindowProcA ::= func(hwnd : u64, msg : u32, wparam : u64, lparam : s64 -> s64) := extern;
-	LoadIconA ::= func(hinstance : u64, lpIconName : u8& -> u64) := extern;
-	LoadCursorA ::= func(hinstance : u64, lpIconName : u8& -> u64) := extern;
-	RegisterClassExA ::= func(class : WNDCLASSEXA& -> u16) := extern;
+	LoadIconA ::= func(hinstance : u64, lpIconName : u8? -> u64) := extern;
+	LoadCursorA ::= func(hinstance : u64, lpIconName : u8? -> u64) := extern;
+	RegisterClassExA ::= func(class : WNDCLASSEXA? -> u16) := extern;
 	CreateWindowExA ::= func
 	(
 		dwExStyle : u32,
-		lpClassName : u8&,
-lpWindowName : u8&,
+		lpClassName : u8?,
+lpWindowName : u8?,
 		dwStyle : u32,
 		x : s32,
 		y : s32,
@@ -34,7 +34,7 @@ lpWindowName : u8&,
 		hWndParent : u64,
 		hMenu : u64,
 		hInstance : u64,
-		lpParam : v0&
+		lpParam : v0?
 		-> u64
 	) := extern;
 	ShowWindow ::= func(hwnd : u64, nCmdShow : s32 -> s32) := extern;
@@ -49,10 +49,10 @@ lpWindowName : u8&,
 		right : s32;
 		bottom : s32;
 	};
-	GetWindowRect ::= func(hwnd : u64, lpRect : RECT mut& -> s32) := extern;
-	GetClientRect ::= func(hwnd : u64, lpRect : RECT mut& -> s32) := extern;
+	GetWindowRect ::= func(hwnd : u64, lpRect : RECT mut? -> s32) := extern;
+	GetClientRect ::= func(hwnd : u64, lpRect : RECT mut? -> s32) := extern;
 	SetWindowPos ::= func(hwnd : u64, hwndInsertAfter : u64, x : s32, y : s32, cx : s32, cy : s32, uflags : u32 -> s32) := extern;
-	GetModuleHandleA ::= func(lpModuleName : u8& -> u64) := extern;
+	GetModuleHandleA ::= func(lpModuleName : u8? -> u64) := extern;
 
 	POINT ::= struct
 	{
@@ -72,9 +72,9 @@ lpWindowName : u8&,
 
 	CW_USEDEFAULT ::= -2147483648;
 
-	PeekMessageA ::= func(lpMsg : WINMSG mut&, hwnd : u64, wMsgFilterMin : u32, wMsgFilterMax : u32, wRemoveMsg : u32 -> s32) := extern;
-	TranslateMessage ::= func(lpMsg : WINMSG& -> s32) := extern;
-	DispatchMessageA ::= func(lpMsg : WINMSG& -> s64) := extern;
+	PeekMessageA ::= func(lpMsg : WINMSG mut?, hwnd : u64, wMsgFilterMin : u32, wMsgFilterMax : u32, wRemoveMsg : u32 -> s32) := extern;
+	TranslateMessage ::= func(lpMsg : WINMSG? -> s32) := extern;
+	DispatchMessageA ::= func(lpMsg : WINMSG? -> s64) := extern;
 	SetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32, dwNewLong : s64 -> s64) := extern;
 	GetWindowLongPtrA ::= func(hwnd : u64, nIndex : s32 -> s64) := extern;
 
@@ -89,11 +89,11 @@ lpWindowName : u8&,
 	};
 
 	CreateRectRgn ::= func(x1 : s32, y1 : s32, x2 : s32, y2 : s32 -> u64) := extern;
-	DwmEnableBlurBehindWindow ::= func(hwnd : u64, pBlurBehind : DWM_BLURBEHIND& -> s32) := extern;
+	DwmEnableBlurBehindWindow ::= func(hwnd : u64, pBlurBehind : DWM_BLURBEHIND? -> s32) := extern;
 
 	GetWindowTextLengthA ::= func(hwnd : u64 -> s32) := extern;
-	GetWindowTextA ::= func(hwnd : u64, lpString : u8 mut&, nMaxCount : s32 -> s32) := extern;
-	SetWindowTextA ::= func(hwnd : u64, lpString : u8& -> s32) := extern;
+	GetWindowTextA ::= func(hwnd : u64, lpString : u8 mut?, nMaxCount : s32 -> s32) := extern;
+	SetWindowTextA ::= func(hwnd : u64, lpString : u8? -> s32) := extern;
 
 	WINDOWPLACEMENT ::= struct
 	{
@@ -105,8 +105,8 @@ lpWindowName : u8&,
 		rcNormalPosition : RECT;
 		rcDevice : RECT;
 	};
-	GetWindowPlacement ::= func(hwnd : u64, lpwndpl : WINDOWPLACEMENT mut& -> s32) := extern;
-	SetWindowPlacement ::= func(hwnd : u64, lpwndpl : WINDOWPLACEMENT& -> s32) := extern;
+	GetWindowPlacement ::= func(hwnd : u64, lpwndpl : WINDOWPLACEMENT mut? -> s32) := extern;
+	SetWindowPlacement ::= func(hwnd : u64, lpwndpl : WINDOWPLACEMENT? -> s32) := extern;
 
 	MONITORINFO ::= struct
 	{
@@ -116,7 +116,7 @@ lpWindowName : u8&,
 		dwFlags : u32;
 	};
 
-	GetMonitorInfoA ::= func(hMonitor : u64, lpmi : MONITORINFO mut& -> s32) := extern;
+	GetMonitorInfoA ::= func(hMonitor : u64, lpmi : MONITORINFO mut? -> s32) := extern;
 	MonitorFromWindow ::= func(hwnd : u64, dwFlags : u32 -> u64) := extern;
 
 	SW_HIDE ::= 0;
