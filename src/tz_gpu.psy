@@ -1554,7 +1554,7 @@ impl_cpu_gpu_transfer ::= func(dst_gpu_res : u64, dst_gpu_is_buffer : bool, src_
 	cursor ::= impl_bind_buffer_mem(staging, src_data_size, false);
 	cpumem ::= vallocator.buffer_cpu;
 	mapped_ptr ::= (cpumem.mapped_ptr)@u8 mut?;
-	memcpy(mapped_ptr # cursor, src_data, src_data_size);
+	memcopy(mapped_ptr # cursor, src_data, src_data_size);
 
 	aspect_mask : s32 := 1; // todo: suport depth.
 
@@ -1623,7 +1623,7 @@ impl_write_a_resource ::= func(resptr : resource_data_t? -> v0)
 	}
 	if(is_dynamic_buffer)
 	{
-		memcpy(resptr->mapped_ptr, rinfo.data, rinfo.data_size);
+		memcopy(resptr->mapped_ptr, rinfo.data, rinfo.data_size);
 	}
 	if(!is_dynamic_buffer)
 	{
@@ -1832,7 +1832,7 @@ impl_fill_hardware_info ::= func(hw : tz_gpu_hardware mut?, pdev : u64, a : aren
 
 	namelen ::= zstrlen(props.deviceName # 0);
 	hw->name = arena_alloc(a, namelen + 1);
-	memcpy(hw->name, props.deviceName # 0, namelen);
+	memcopy(hw->name, props.deviceName # 0, namelen);
 	deref(hw->name # namelen) = 0;
 };
 
@@ -1886,7 +1886,7 @@ impl_init_buffer ::= func(resptr : resource_data_t mut?, info : tz_gpu_resource_
 	resinfo->data = arena_alloc(a, info.data_size);
 	if(info.data != zero)
 	{
-		memcpy(resinfo->data, info.data, info.data_size);
+		memcopy(resinfo->data, info.data, info.data_size);
 	}
 
 	if(((info.flags) & (tz_gpu_resource_flag.zero_memory)) != zero)
@@ -2488,7 +2488,7 @@ tz_gpu_create_image ::= func(info : tz_gpu_resource_info, a : arena mut? -> tz_g
 	resinfo->data = arena_alloc(a, info.data_size);
 	if(info.data != zero)
 	{
-		memcpy(resinfo->data, info.data, info.data_size);
+		memcopy(resinfo->data, info.data, info.data_size);
 	}
 
 	if(((info.flags) & (tz_gpu_resource_flag.zero_memory)) != zero)
@@ -2674,7 +2674,7 @@ tz_gpu_create_graph ::= func(name : u8?, a : arena mut? -> tz_gpu_graph)
 	graphptr ::= impl_alloc_new_graph(a);
 	namelen ::= zstrlen(name);
 	graphptr->name = arena_alloc(a, namelen + 1);
-	memcpy(graphptr->name, name, namelen);
+	memcopy(graphptr->name, name, namelen);
 	deref((graphptr->name) # namelen) = 0;
 
 	initial_timeline_capacity ::= 8;
@@ -2894,7 +2894,7 @@ tz_gpu_resource_write ::= func(res : tz_gpu_resource, data : v0? weak, data_size
 
 	ptr ::= (rinfo->data)@u8 mut? mut;
 
-	memcpy(ptr # offset, data, data_size);
+	memcopy(ptr # offset, data, data_size);
 	impl_write_a_resource(resptr);
 };
 
@@ -2926,7 +2926,7 @@ tz_gpu_resize_buffer ::= func(res : tz_gpu_resource, new_size : u64, long : aren
 		oldinfo.data_size = new_size;
 
 		// preserve old data
-		memcpy(oldinfo.data, olddata, olddatasize);
+		memcopy(oldinfo.data, olddata, olddatasize);
 		// fill the rest with zeros.
 		offset_ptr ::= (oldinfo.data)@u8 mut? mut;
 		offset_ptr = offset_ptr # olddatasize;
