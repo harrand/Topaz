@@ -41,14 +41,10 @@ tz_gpu_hardware ::= struct
 
 tz_gpu_buffer_flag ::= enum
 {
-	.none := 0;
-	.dynamic := 1;
-	.index_buffer := 2;
-	.draw_buffer := 4;
-	//.none := 0b0000;
-	//.dynamic := 0b0001;
-	//.index_buffer := 0b0010;
-	//.draw_buffer := 0b0100;
+	.none := 0b0000;
+	.dynamic := 0b0001;
+	.index_buffer := 0b0010;
+	.draw_buffer := 0b0100;
 };
 
 tz_gpu_image_flag ::= enum
@@ -60,8 +56,7 @@ tz_gpu_resource_flag ::= enum
 {
 	.none := 0;
 	// ignore tz_gpu_resource_info.data, fill size with zeroes.
-	.zero_memory := 1;
-	//.zero_memory := 0b00000001;
+	.zero_memory := 0b00000001;
 };
 
 tz_gpu_image_type ::= enum
@@ -102,9 +97,9 @@ tz_gpu_shader ::= enum
 
 tz_gpu_cull ::= enum
 {
-	.back := 0;
+	.none := 0;
+	.back := 2;
 	.front := 1;
-	.none := 2;
 	.both := 3;
 };
 
@@ -2729,13 +2724,9 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut?, short : arena m
 			return;
 		}
 
-		putzstr("A"); putchar(10);
 		vk_check(vk.acquire_next_image_khr(used_device, swapchain, 9999999999, 0, frame.swapchain_fence, ref image_index));
-		putzstr("B"); putchar(10);
 		vk_check(vk.wait_for_fences(used_device, 1, ref (frame.swapchain_fence), 1, ~0));
-		putzstr("C"); putchar(10);
 		vk_check(vk.reset_fences(used_device, 1, ref (frame.swapchain_fence)));
-		putzstr("D"); putchar(10);
 		swapchain_image = deref(swapchain_images # image_index);
 	}
 
@@ -2771,9 +2762,7 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut?, short : arena m
 		.flags := 0;
 		.pInheritanceInfo := zero;
 	};
-	putzstr("E"); putchar(10);
 	vk_check(vk.begin_command_buffer(frame.cmds, ref frame_begin));
-	putzstr("F"); putchar(10);
 
 	if(will_present)
 	{
@@ -2871,13 +2860,9 @@ tz_gpu_execute ::= func(graph : tz_gpu_graph, long : arena mut?, short : arena m
 		.signalSemaphoreCount := 1;
 		.pSignalSemaphores := ref (frame.swapchain_sem);
 	};
-	putzstr("G"); putchar(10);
 	vk_check(vk.queue_submit(graphics_queue, 1, ref submit, frame.swapchain_fence));
-	putzstr("H"); putchar(10);
 	vk_check(vk.wait_for_fences(used_device, 1, ref (frame.swapchain_fence), 1, -1@u64));
-	putzstr("I"); putchar(10);
 	vk_check(vk.reset_fences(used_device, 1, ref (frame.swapchain_fence)));
-	putzstr("J"); putchar(10);
 
 	// present if we need to.
 	present_res : s32 mut;

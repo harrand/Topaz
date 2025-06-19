@@ -3,6 +3,7 @@
 	add_source_directory("src/stdlib/src");
 	add_source_directory("src/");
 	set_executable("tz");
+	set_optimization(3);
 
 	static if(_win32)
 	{
@@ -36,20 +37,6 @@ main ::= func(-> s32)
 	setup_arenas();
 	defer destroy_arenas();
 	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
-	wnd2 ::= tz_window_open(400, 400, "Smaller Window 2", zero, global_arena);
-
-	buf : u8 mut[64];
-	if(!tz_window_title(wnd2, buf # 0, 64, zero))
-	{
-		__debugbreak();
-	}
-	putzstr("window title: ");
-	putchar('"');
-	putzstr(buf # 0);
-	putchar('"');
-	putchar(10);
-
-	tz_window_set_title(wnd2, "A new window title");
 
 	tz_gpu_init(tz_gpu_appinfo
 	{
@@ -73,7 +60,7 @@ main ::= func(-> s32)
 	{
 		.graphics := tz_gpu_graphics_state
 		{
-			.clear_colour := zero;
+			.clear_colour := f32[4]{0.5; 0.0; 1.0; 1.0;};
 			.scissor := zero;
 			.colour_targets_data := colour_targets # 0;
 			.colour_targets_count := 1;
@@ -94,7 +81,7 @@ main ::= func(-> s32)
 	tz_gpu_graph_add_pass(graph, pass);
 	tz_gpu_graph_add_pass(graph, tz_gpu_pass.present);
 
-	while(tz_window_is_open(wnd) || tz_window_is_open(wnd2))
+	while(tz_window_is_open(wnd))
 	{
 		tz_gpu_execute(graph, global_arena, global_arena);
 		tz_update_windows();
