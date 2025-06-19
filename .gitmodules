@@ -1,18 +1,3 @@
-[submodule "lib/VulkanMemoryAllocator"]
-	path = lib/VulkanMemoryAllocator
-	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-[submodule "lib/textc"]
-	path = lib/textc
-	url = https://github.com/harrand/textc
-[submodule "lib/concurrentqueue"]
-	path = lib/concurrentqueue
-	url = https://github.com/cameron314/concurrentqueue
-[submodule "lib/stb"]
-	path = lib/stb
-	url = https://github.com/nothings/stb
-[submodule "lib/lua"]
-	path = lib/lua
-	url = https://github.com/lua/lua
 [submodule "src/stdlib"]
 	path = src/stdlib
 	url = https://github.com/harrand/psystdlib
