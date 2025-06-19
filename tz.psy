@@ -1,6 +1,6 @@
 == build ==
 {
-	add_source_directory("src/stdlib/src");
+	add_source_directory("src/stdlib");
 	add_source_directory("src/");
 	set_executable("tz");
 	set_optimization(3);
