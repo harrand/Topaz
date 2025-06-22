@@ -54,7 +54,7 @@ main ::= func(-> s32)
 
 	shader_data ::= tz_gpu_load_shader_files("build/vertex.spv", "build/fragment.spv", global_arena);
 	shader ::= tz_gpu_create_graphics_shader(shader_data.vertex_spv_data, shader_data.vertex_spv_count, shader_data.fragment_spv_data, shader_data.fragment_spv_count, global_arena);
-	colour_targets : tz_gpu_resource mut? := arena_alloc(global_arena, __sizeof(tz_gpu_resource) * 1);
+	colour_targets : tz_gpu_resource mut[1];
 	deref(colour_targets # 0) = (tz_gpu_resource.window_resource);
 
 	pass ::= tz_gpu_create_pass(tz_gpu_pass_info
@@ -64,7 +64,7 @@ main ::= func(-> s32)
 			.clear_colour := f32[4]{0.5; 0.0; 1.0; 1.0;};
 			.scissor := zero;
 			.colour_targets_data := colour_targets # 0;
-			.colour_targets_count := 1;
+			.colour_targets_count := __sizeof(colour_targets) / __sizeof(deref(colour_targets # 0));
 			.depth_target := tz_gpu_resource.invalid;
 			.index_buffer := tz_gpu_resource.invalid;
 			.draw_buffer := tz_gpu_resource.invalid;

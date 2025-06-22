@@ -33,10 +33,11 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 
 	static if(_win32)
 	{
-		style : u32 mut := 13565952;
+		WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+		style : u32 mut := WS_OVERLAPPEDWINDOW;
 		if((flags & tz_window_flag.bare) != zero)
 		{
-			style = WS_POPUP | WS_BORDER | WS_SYSMENU;
+			style = WS_POPUP;
 		}
 		hwnd ::= CreateWindowExA(zero, wndclass_name, title, style, CW_USEDEFAULT, CW_USEDEFAULT, w@s32, h@s32, 0, 0, GetModuleHandleA(zero), zero);
 		if(hwnd == 0)

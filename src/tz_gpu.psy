@@ -53,8 +53,7 @@ tz_gpu_image_flag ::= enum
 };
 
 tz_gpu_resource_flag ::= enum
-{
-	.none := 0;
+{ 
 	// ignore tz_gpu_resource_info.data, fill size with zeroes.
 	.zero_memory := 0b00000001;
 };
