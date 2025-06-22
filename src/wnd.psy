@@ -33,7 +33,6 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 
 	static if(_win32)
 	{
-		WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 		style : u32 mut := WS_OVERLAPPEDWINDOW;
 		if((flags & tz_window_flag.bare) != zero)
 		{
@@ -134,8 +133,6 @@ tz_window_show ::= func(wnd : tz_wnd -> v0)
 	wnddata ::= _window_data # (wnd@s64);
 	nat ::= wnddata->handle;
 
-	WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-
 	dwStyle ::= GetWindowLongPtrA(nat, GWL_STYLE);
 	SetWindowLongPtrA(nat, GWL_STYLE, dwStyle | WS_OVERLAPPEDWINDOW);
 	if((dwStyle & WS_OVERLAPPEDWINDOW) == zero)
@@ -159,8 +156,6 @@ tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
 {
 	wnddata ::= _window_data # (wnd@s64);
 	nat ::= wnddata->handle;
-
-	WS_OVERLAPPEDWINDOW ::= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
 	dwStyle ::= GetWindowLongPtrA(nat, GWL_STYLE);
 	mi ::= MONITORINFO mut

@@ -36,9 +36,34 @@ destroy_arenas ::= func(-> v0)
 
 main ::= func(-> s32)
 {
+	nums : s64 mut[8];
+	i : u64 mut;
+	for(i = 0, i < 8, i = i + 1)
+	{
+		deref(nums#i) = i@_;
+	}
+	putchar('{');
+	for(i = 0, i < 8, i = i + 1)
+	{
+		putsint(deref(nums#i));
+		putchar(10);
+	}
+	putchar('}');
+	putchar(10);
+	putsint(__arrcpy(nums#3 s64, 10, 11, 12, 13));
+	putchar(10);
+	putchar('{');
+	for(i = 0, i < 8, i = i + 1)
+	{
+		putsint(deref(nums#i));
+		putchar(10);
+	}
+	putchar('}');
+
 	setup_arenas();
 	defer destroy_arenas();
-	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
+	wnd ::= tz_window_open(800, 600, "Epic Window Bro", tz_window_flag.bare, global_arena);
+	tz_window_maximize(wnd);
 
 	tz_gpu_init(tz_gpu_appinfo
 	{
