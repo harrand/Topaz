@@ -3,7 +3,7 @@
 	add_source_directory("src/stdlib");
 	add_source_directory("src/");
 	set_library("tz");
-	set_optimization(0);
+	set_optimization(3);
 	run_command("glslc vertex.glsl -o build/vertex.spv");
 	run_command("glslc fragment.glsl -o build/fragment.spv");
 

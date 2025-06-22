@@ -7,19 +7,31 @@
 global_arena_value : arena mut := zero;
 global_arena : arena mut? mut := zero;
 
+frame_arena_value : arena mut := zero;
+frame_arena : arena mut? mut := zero;
+
 setup_arenas ::= func(-> v0)
 {
 	global_arena_value = arena_create(1024 * 1024);
 	global_arena = ref global_arena_value;
+
+	frame_arena_value = arena_create(1024 * 1024);
+	frame_arena = ref frame_arena_value;
 };
 
 destroy_arenas ::= func(-> v0)
 {
-	putzstr("arena size: ");
+	putzstr("global arena size: ");
 	putuint(global_arena->cur);
 	putzstr("B");
 	putchar(10);
 	arena_destroy(global_arena);
+
+	putzstr("frame arena size: ");
+	putuint(frame_arena->cur);
+	putzstr("B");
+	putchar(10);
+	arena_destroy(frame_arena);
 };
 
 main ::= func(-> s32)
@@ -64,7 +76,7 @@ main ::= func(-> s32)
 		.resources_data := zero;
 		.resources_count := 0;
 		.name := "Test Renderer";
-	}, global_arena, global_arena);
+	}, global_arena, frame_arena);
 
 	graph ::= tz_gpu_create_graph("test", global_arena);
 	tz_gpu_graph_add_pass(graph, pass);
@@ -72,7 +84,8 @@ main ::= func(-> s32)
 
 	while(tz_window_is_open(wnd))
 	{
-		tz_gpu_execute(graph, global_arena, global_arena);
+		arena_clear(frame_arena);
+		tz_gpu_execute(graph, global_arena, frame_arena);
 		tz_update_windows();
 	}
 	tz_gpu_term();
