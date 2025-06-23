@@ -21,9 +21,9 @@ VkInstanceCreateInfo ::= struct
 	flags : s32 weak;
 	pApplicationInfo : VkApplicationInfo?;
 	enabledLayerCount : u32;
-	ppEnabledLayerNames : u8???;
+	ppEnabledLayerNames : u8??;
 	enabledExtensionCount : u32;
-	ppEnabledExtensionNames : u8???;
+	ppEnabledExtensionNames : u8??;
 };
 
 VkSystemAllocationScope ::= enum

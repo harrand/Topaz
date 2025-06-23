@@ -213,9 +213,9 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo -> v0)
 		.flags := 0;
 		.pApplicationInfo := ref appinfo;
 		.enabledLayerCount := layer_count;
-		.ppEnabledLayerNames := (layers # 0)@_;
+		.ppEnabledLayerNames := (layers # 0);
 		.enabledExtensionCount := extension_count;
-		.ppEnabledExtensionNames := (extensions # 0)@_;
+		.ppEnabledExtensionNames := (extensions # 0);
 	};
 
 	vk_check(vk.create_instance(ref create, zero, ref vkinst));
