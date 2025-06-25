@@ -1,4 +1,22 @@
+== debug ==
+{
+	_base();
+	set_optimization(0);
+}
+
+== release ==
+{
+	_base();
+	set_optimization(3);
+}
+
 == default ==
+{
+	warning("no build config specified, defaulting to 'debug'");
+	debug();
+}
+
+== _base ==
 {
 	add_source_directory("src/stdlib");
 	add_source_directory("src/");
@@ -15,14 +33,3 @@
 	}
 }
 
-== debug ==
-{
-	default();
-	set_optimization(0);
-}
-
-== release ==
-{
-	default();
-	set_optimization(3);
-}

@@ -194,17 +194,17 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo -> v0)
 	layers : u8? mut[1];
 	deref(layers # 0) = "VK_LAYER_KHRONOS_validation";
 
-	//static if(__config() == "debug")
-	//{
-		//layer_count ::= 1;
-		//putzstr("validation layers enabled");
-		//putchar(10);
-	//}
-	//static if(__config() == "release")
-	//{
+	static if(_config == "release")
+	{
 		layer_count ::= 0;
 		extension_count = (extension_count - 1);
-	//}
+	}
+	else
+	{
+		layer_count ::= 1;
+		putzstr("validation layers enabled");
+		putchar(10);
+	}
 
 	create ::= VkInstanceCreateInfo
 	{
@@ -212,7 +212,7 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo -> v0)
 		.pNext := zero;
 		.flags := 0;
 		.pApplicationInfo := ref appinfo;
-		.enabledLayerCount := layer_count;
+		.enabledLayerCount := layer_count@_;
 		.ppEnabledLayerNames := (layers # 0);
 		.enabledExtensionCount := extension_count;
 		.ppEnabledExtensionNames := (extensions # 0);

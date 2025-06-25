@@ -6,12 +6,14 @@
 
 == debug ==
 {
-	default();
+	add_build_file("tz.psy", _config);
+	set_executable("tztest");
 }
 
 == release ==
 {
-	default();
+	add_build_file("tz.psy", _config);
+	set_executable("tztest");
 }
 
 global_arena_value : arena mut := zero;
@@ -46,30 +48,6 @@ destroy_arenas ::= func(-> v0)
 
 main ::= func(-> s32)
 {
-	nums : s64 mut[8];
-	i : u64 mut;
-	for(i = 0, i < 8, i = i + 1)
-	{
-		deref(nums#i) = i@_;
-	}
-	putchar('{');
-	for(i = 0, i < 8, i = i + 1)
-	{
-		putsint(deref(nums#i));
-		putchar(10);
-	}
-	putchar('}');
-	putchar(10);
-	putsint(__arrcpy(nums#3 s64, 10, 11, 12, 13));
-	putchar(10);
-	putchar('{');
-	for(i = 0, i < 8, i = i + 1)
-	{
-		putsint(deref(nums#i));
-		putchar(10);
-	}
-	putchar('}');
-
 	setup_arenas();
 	defer destroy_arenas();
 	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
