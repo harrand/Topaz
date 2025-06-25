@@ -1,9 +1,8 @@
-== build ==
+== default ==
 {
 	add_source_directory("src/stdlib");
 	add_source_directory("src/");
 	set_library("tz");
-	set_optimization(3);
 	run_command("glslc vertex.glsl -o build/vertex.spv");
 	run_command("glslc fragment.glsl -o build/fragment.spv");
 
@@ -14,4 +13,16 @@
 		add_link_library("Gdi32.lib");
 		add_link_library("Dwmapi.lib");
 	}
+}
+
+== debug ==
+{
+	default();
+	set_optimization(0);
+}
+
+== release ==
+{
+	default();
+	set_optimization(3);
 }

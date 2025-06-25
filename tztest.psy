@@ -1,7 +1,17 @@
-== build ==
+== default ==
 {
-	add_build_file("tz.psy");
+	add_build_file("tz.psy", _config);
 	set_executable("tztest");
+}
+
+== debug ==
+{
+	default();
+}
+
+== release ==
+{
+	default();
 }
 
 global_arena_value : arena mut := zero;
@@ -62,7 +72,7 @@ main ::= func(-> s32)
 
 	setup_arenas();
 	defer destroy_arenas();
-	wnd ::= tz_window_open(800, 600, "Epic Window Bro", tz_window_flag.bare, global_arena);
+	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
 	tz_window_maximize(wnd);
 
 	tz_gpu_init(tz_gpu_appinfo
@@ -112,6 +122,12 @@ main ::= func(-> s32)
 		arena_clear(frame_arena);
 		tz_gpu_execute(graph, global_arena, frame_arena);
 		tz_update_windows();
+
+		if(tz_key_down(tz_key.w))
+		{
+			putzstr("w");
+			putchar(10);
+		}
 	}
 	tz_gpu_term();
 	return 0;
