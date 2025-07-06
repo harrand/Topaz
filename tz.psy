@@ -21,8 +21,8 @@
 	add_source_directory("src/stdlib");
 	add_source_directory("src/");
 	set_library("tz");
-	run_command("glslc vertex.glsl -o build/vertex.spv");
-	run_command("glslc fragment.glsl -o build/fragment.spv");
+	prebuild_command("glslc vertex.glsl -o build/vertex.spv");
+	prebuild_command("glslc fragment.glsl -o build/fragment.spv");
 
 	static if(_win32)
 	{
