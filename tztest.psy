@@ -53,6 +53,10 @@ main ::= func(-> s32)
 	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
 	tz_window_maximize(wnd);
 
+	putzstr("curloc: ");
+	putloc(__curloc());
+	putchar(10);
+
 	tz_gpu_init(tz_gpu_appinfo
 	{
 		.name := "Topaz";
@@ -65,8 +69,9 @@ main ::= func(-> s32)
 	tz_gpu_iterate_hardware(hardware_list # 0, hardware_count, global_arena);
 	tz_gpu_use_hardware(deref(hardware_list # 0), wnd);
 
-	shader_data ::= tz_gpu_load_shader_files("build/vertex.spv", "build/fragment.spv", global_arena);
-	shader ::= tz_gpu_create_graphics_shader(shader_data.vertex_spv_data, shader_data.vertex_spv_count, shader_data.fragment_spv_data, shader_data.fragment_spv_count, global_arena);
+	vtx ::= __embed("build/vertex.spv");
+	frg ::= __embed("build/fragment.spv");
+	shader ::= tz_gpu_create_graphics_shader(vtx.data, vtx.size, frg.data, frg.size, global_arena);
 	colour_targets : tz_gpu_resource mut[1];
 	deref(colour_targets # 0) = (tz_gpu_resource.window_resource);
 

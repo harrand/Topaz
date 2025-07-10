@@ -2,6 +2,7 @@
 {
 	_base();
 	set_optimization(0);
+	debug_symbols(true);
 }
 
 == release ==
