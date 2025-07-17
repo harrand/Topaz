@@ -1,4 +1,4 @@
-tz_wnd ::= enum{.invalid := -1;};
+tz_window ::= enum{.invalid := -1;};
 
 tz_window_flag ::= enum
 {
@@ -8,7 +8,7 @@ tz_window_flag ::= enum
 	.bare := 8;
 };
 
-tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a : arena mut? -> tz_wnd)
+tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a : arena mut? -> tz_window)
 {
 	if(!wndclass_registered)
 	{
@@ -77,7 +77,12 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 				__debugbreak();
 			}
 		}
-		return retid@s64@tz_wnd;
+		ret ::= retid@s64@tz_window;
+		if((flags & tz_window_flag.maximised) != zero)
+		{
+			tz_window_maximize(ret);
+		}
+		return ret;
 	}
 	else
 	{
@@ -85,17 +90,17 @@ tz_window_open ::= func(w : u64, h : u64, title : u8?, flags : tz_window_flag, a
 	}
 };
 
-tz_window_close ::= func(wnd : tz_wnd -> v0)
+tz_window_close ::= func(wnd : tz_window -> v0)
 {
 	_close_window(wnd@s64@u64);
 };
 
-tz_window_is_open ::= func(wnd : tz_wnd -> bool)
+tz_window_is_open ::= func(wnd : tz_window -> bool)
 {
 	return (_window_data # (wnd@s64))->open;
 };
 
-tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
+tz_window_dimensions ::= func(wnd : tz_window -> u32[2])
 {
 	rect : RECT mut;
 	if(GetClientRect((_window_data # (wnd@s64))->handle, ref rect) != 0)
@@ -105,7 +110,7 @@ tz_window_dimensions ::= func(wnd : tz_wnd -> u32[2])
 	return zero;
 };
 
-tz_window_set_dimensions ::= func(wnd : tz_wnd, dims : u32[2] -> v0)
+tz_window_set_dimensions ::= func(wnd : tz_window, dims : u32[2] -> v0)
 {
 	nat ::= tz_window_native(wnd);
 	// get current window rect (incl. title bar, borders etc)
@@ -128,7 +133,7 @@ tz_window_set_dimensions ::= func(wnd : tz_wnd, dims : u32[2] -> v0)
 	SetWindowPos(nat, zero, zero, zero, width@_ + border_width, height@_ + border_height, SWP_NOZORDER | SWP_NOMOVE);
 };
 
-tz_window_show ::= func(wnd : tz_wnd -> v0)
+tz_window_show ::= func(wnd : tz_window -> v0)
 {
 	wnddata ::= _window_data # (wnd@s64);
 	nat ::= wnddata->handle;
@@ -142,17 +147,17 @@ tz_window_show ::= func(wnd : tz_wnd -> v0)
 	}
 };
 
-tz_window_maximize ::= func(wnd : tz_wnd -> v0)
+tz_window_maximize ::= func(wnd : tz_window -> v0)
 {
 	ShowWindow(tz_window_native(wnd), SW_MAXIMIZE);
 };
 
-tz_window_minimize ::= func(wnd : tz_wnd -> v0)
+tz_window_minimize ::= func(wnd : tz_window -> v0)
 {
 	ShowWindow(tz_window_native(wnd), SW_MINIMIZE);
 };
 
-tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
+tz_window_fullscreen ::= func(wnd : tz_window -> v0)
 {
 	wnddata ::= _window_data # (wnd@s64);
 	nat ::= wnddata->handle;
@@ -174,12 +179,12 @@ tz_window_fullscreen ::= func(wnd : tz_wnd -> v0)
 	}
 };
 
-tz_window_native ::= func(wnd : tz_wnd -> u64)
+tz_window_native ::= func(wnd : tz_window -> u64)
 {
 	return (_window_data # (wnd@s64))->handle;
 };
 
-tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut?, len : u64, actual_len : u64 mut? -> bool)
+tz_window_title ::= func(wnd : tz_window, buf : u8 mut?, len : u64, actual_len : u64 mut? -> bool)
 {
 	nat ::= tz_window_native(wnd);
 	wintextlen ::= GetWindowTextLengthA(nat)@u64;
@@ -195,7 +200,7 @@ tz_window_title ::= func(wnd : tz_wnd, buf : u8 mut?, len : u64, actual_len : u6
 	return false;
 };
 
-tz_window_set_title ::= func(wnd : tz_wnd, title : u8? -> v0)
+tz_window_set_title ::= func(wnd : tz_window, title : u8? -> v0)
 {
 	SetWindowTextA(tz_window_native(wnd), title);
 };
@@ -221,12 +226,23 @@ tz_update_windows ::= func(-> v0)
 ////////////////////////////////////////        IMPL        /////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-_window_data_t ::= struct
+static if(_win32)
 {
-	handle : u64;
-	open : bool;
-	win32_placement_cache : WINDOWPLACEMENT;
-};
+	_window_data_t ::= struct
+	{
+		handle : u64;
+		open : bool;
+		win32_placement_cache : WINDOWPLACEMENT;
+	};
+}
+else
+{
+	_window_data_t ::= struct
+	{
+		handle : u64;
+		open : bool;
+	};
+}
 
 _window_data : _window_data_t mut? mut := zero;
 _window_count : u64 mut := zero;
@@ -244,7 +260,7 @@ _no_windows_left ::= func(-> bool)
 	i : u64 mut;
 	for(i = 0, i < _window_count, i = i + 1)
 	{
-		if(tz_window_is_open(i@tz_wnd))
+		if(tz_window_is_open(i@tz_window))
 		{
 			return false;
 		}

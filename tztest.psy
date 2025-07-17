@@ -46,12 +46,11 @@ destroy_arenas ::= func(-> v0)
 	arena_destroy(frame_arena);
 };
 
-main ::= func(-> s32)
+main ::= func(argc : s32, argv : u8??, envp : u8?? -> s32)
 {
 	setup_arenas();
 	defer destroy_arenas();
-	wnd ::= tz_window_open(800, 600, "Epic Window Bro", zero, global_arena);
-	tz_window_maximize(wnd);
+	wnd ::= tz_window_open(800, 600, "Epic Window Bro", tz_window_flag.maximised, global_arena);
 
 	putzstr("curloc: ");
 	putloc(__curloc());

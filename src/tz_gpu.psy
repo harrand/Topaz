@@ -164,7 +164,7 @@ tz_gpu_init ::= func(info : tz_gpu_appinfo -> v0)
 {
 	TZ_GPU_VERSION ::= VK_MAKE_API_VERSION(0, 0, 1, 0);
 	vulkan_init();
-	target_window = tz_wnd.invalid;
+	target_window = tz_window.invalid;
 
 	appinfo ::= VkApplicationInfo
 	{
@@ -380,7 +380,7 @@ tz_gpu_iterate_hardware ::= func(array : tz_gpu_hardware mut?, array_size : u64,
 	return tz_gpu_err.none;
 };
 
-tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware, window : tz_wnd -> v0)
+tz_gpu_use_hardware ::= func(hardware : tz_gpu_hardware, window : tz_window -> v0)
 {
 	target_window = window;
 	pdev ::= hardware.native_handle;
@@ -1280,7 +1280,7 @@ swapchain_format ::= 44;
 rgba_format ::= 37;
 depth_format ::= 126;
 
-target_window : tz_wnd mut;
+target_window : tz_window mut;
 
 system_image : u64 mut := 0;
 //system_depth_image : u64 mut;
@@ -1928,7 +1928,7 @@ impl_bind_image_mem ::= func(image : u64, imgsize : u64 -> v0)
 
 impl_need_swapchain ::= func(w : u64, h : u64, a : arena mut? -> bool)
 {
-	if(target_window == (tz_wnd.invalid))
+	if(target_window == (tz_window.invalid))
 	{
 		putzstr("one or more GPU passes need access to the swapchain, but no valid window was ever provided via tz_gpu_use_hardware.");
 		__debugbreak();
@@ -2958,5 +2958,5 @@ impl_init_buffer ::= func(resptr : resource_data_t mut?, info : tz_gpu_resource_
 	add_source_file("stdlib/file.psy");
 
 	add_source_file("vulkan.psy");
-	add_source_file("tz_wnd.psy");
+	add_source_file("tz_window.psy");
 }
